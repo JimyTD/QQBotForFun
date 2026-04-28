@@ -16,7 +16,8 @@ env/
 .uv-cache/
 
 # Env
-.env
+# 注：本项目为 Private 仓库，.env 被有意提交用于多地区同步配置。
+# 仍忽略 .env.local 等本地覆盖层。
 .env.local
 .env.*.local
 
