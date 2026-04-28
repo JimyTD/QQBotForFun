@@ -1,0 +1,326 @@
+# 本地端到端测试指南（Windows）
+
+- **Status**: Draft v1
+- **Last Updated**: 2026-04-28
+- **Owner**: @owner
+- **适用场景**: 本地 Windows 开发机测试完整 QQ 机器人流程，无需云服务器
+
+> 如果你需要生产部署（云服务器长期运行），请看 [`05-deployment.md`](./05-deployment.md)。
+
+---
+
+## 0. 你需要准备什么
+
+| 项 | 说明 | 必要性 |
+|---|---|---|
+| 专用 QQ 小号 | **不能用主号**，有封号风险 | 必需 |
+| 测试群 | 用主号拉小号进去 | 必需 |
+| Docker Desktop | 跑 NapCat 容器 | 必需 |
+| 代码环境 | `uv sync` 已跑过 | 必需 |
+| `.env` 已配好 | ADMIN_QQ、ZHIPU_API_KEY、SILICONFLOW_API_KEY | 必需 |
+| 题库已导入 | `python scripts/seed_turtle_soup.py` | 必需 |
+
+---
+
+## 1. 启动 NapCat
+
+### 1.1 启动容器
+
+在项目根目录：
+
+```powershell
+cd i:\QQBotForFun
+docker compose -f docker-compose.dev.yml up -d
+```
+
+等 10-20 秒让 NapCat 启动。确认容器状态：
+
+```powershell
+docker compose -f docker-compose.dev.yml ps
+```
+
+看到 `napcat` 状态是 `running` 即可。
+
+### 1.2 获取 WebUI 登录 Token
+
+NapCat 首次启动时会在日志里打印 WebUI Token：
+
+```powershell
+docker compose -f docker-compose.dev.yml logs napcat
+```
+
+找类似这样的行：
+```
+[WebUi] WebUI is ready, token: XXXXXXXXXXXX
+[WebUi] 请在浏览器打开 http://localhost:6099/webui?token=XXXX...
+```
+
+**复制这个 token**，或者直接复制完整 URL。
+
+---
+
+## 2. WebUI 登录小号
+
+### 2.1 打开 WebUI
+
+浏览器访问：**http://localhost:6099**
+
+用上一步拿到的 token 登录。
+
+### 2.2 QQ 扫码登录
+
+1. 点"QQ 登录"或"快速登录"
+2. 点"二维码登录"获取二维码
+3. 用你的**专用小号手机 QQ** 扫码
+4. 小号手机上确认登录
+5. WebUI 显示登录成功，在线状态为绿色
+
+> ⚠️ **安全提示**：
+> - 绝对不要用主号
+> - 新登录小号 1-2 小时内不要狂发消息，先养号
+> - 被风控后换小号或等 24 小时
+
+---
+
+## 3. 配置反向 WebSocket 连接
+
+NapCat 登录后，需要告诉它"连到我们的 bot"。
+
+### 3.1 在 WebUI 中
+
+左侧菜单 → **网络配置** → 找到 **Websocket 客户端**（不是服务器） → **新建**。
+
+字段填写：
+
+| 字段 | 值 |
+|---|---|
+| 启用 | ✅ 开 |
+| 名称 | `qqbot`（随便） |
+| URL | `ws://host.docker.internal:8080/onebot/v11/ws` |
+| 消息格式 | `array` |
+| Token | `change_me`（必须和 `.env` 里 `ONEBOT_ACCESS_TOKEN` 一致） |
+| 心跳间隔 | `30000` |
+| 重连间隔 | `3000` |
+| 上报自身消息 | ❌ 关 |
+
+**点保存**。
+
+此时 bot 还没启动，NapCat 连接会失败 / 一直重试，**这是正常的**，下一步启动 bot 后会自动连上。
+
+---
+
+## 4. 启动 Bot
+
+**重要**：**开一个新的 PowerShell 窗口**（不要关 NapCat 的那个日志窗口）。
+
+```powershell
+cd i:\QQBotForFun
+uv run --no-sync python -m src.bot
+```
+
+### 4.1 期望日志
+
+```
+[bot] startup: init llm config...
+[llm] init ok. providers=['zhipu', 'siliconflow'] scenes=[...]
+[bot] startup: init database...
+[bot] startup: recover active sessions...
+[bot] ready.
+INFO:     Uvicorn running on http://0.0.0.0:8080
+INFO:     OneBot V11 | Bot XXXXXXXX connected
+```
+
+最后一行 `Bot XXXXXXXX connected` 表示 NapCat 已连上，XXXXXXXX 是你的小号 QQ 号。
+
+### 4.2 如果 bot 启动报错
+
+见末尾"常见问题"。
+
+---
+
+## 5. 在群里测试
+
+### 5.1 拉小号进测试群
+
+用你**主号** 604384365 的手机 QQ：
+- 打开一个测试群（建议新建一个"bot 测试"群，不要用活跃的大群）
+- 邀请小号进群
+- 可以也邀请主号自己在群里方便测
+
+### 5.2 基础验证
+
+在测试群发：
+
+```
+/ping
+```
+→ 机器人应回复 `pong 🏓`
+
+```
+/menu
+```
+→ 显示游戏大厅，里面有 🐢 海龟汤
+
+```
+/help
+```
+→ 显示帮助
+
+```
+/balance
+```
+→ 查看金币（初始 0）
+
+### 5.3 开一局海龟汤
+
+```
+/play turtle_soup
+```
+
+机器人会：
+1. 显示"正在出题…"（或直接出题）
+2. 推送汤面卡片（局号、标题、故事）
+3. 提示"提问以 ? 结尾，宣告汤底以「汤底:」开头"
+
+然后你可以：
+
+```
+他活着吗？
+```
+→ 机器人判定并回复"✅ 是 / ❌ 不是 / 🤔 与此无关 / 💡 关键线索"
+
+```
+汤底: 我猜是…… (写你推理的完整故事)
+```
+→ 机器人判定 correct / partial / wrong
+
+### 5.4 其他游戏内指令
+
+- `/soup status` — 查看当前进度（提问几次了）
+- `/soup recap` — 回顾已发掘的关键线索
+- `/soup giveup` — 投降，公布汤底
+- `/quit` — 终止本局
+
+### 5.5 管理员指令（用主号 604384365 发）
+
+```
+/admin check 小号QQ
+/admin coin 小号QQ 500      # 给小号加 500 金币
+```
+
+---
+
+## 6. 停止与清理
+
+### 6.1 停 bot
+在 bot 运行的 PowerShell 窗口按 `Ctrl+C`。
+
+### 6.2 停 NapCat
+```powershell
+docker compose -f docker-compose.dev.yml down
+```
+
+### 6.3 数据保留
+- `data/bot.db`：所有游戏数据都在这里，重启后仍在
+- `napcat/data/`：登录态，下次启动免扫码
+
+### 6.4 完全重置
+```powershell
+docker compose -f docker-compose.dev.yml down -v    # 清空 volumes
+Remove-Item data\bot.db                             # 清空游戏数据
+python scripts/seed_turtle_soup.py                  # 重新导入题库
+```
+
+---
+
+## 7. 常见问题
+
+### Q1：NapCat WebUI 打不开 / 502 / 空白页
+
+```powershell
+docker compose -f docker-compose.dev.yml logs napcat --tail 100
+```
+看有没有 crash。重启容器：
+```powershell
+docker compose -f docker-compose.dev.yml restart napcat
+```
+
+### Q2：bot 启动报 `address already in use` (8080)
+
+端口被占用：
+```powershell
+netstat -ano | findstr :8080
+```
+看 PID，然后 `taskkill /PID <pid> /F`。
+
+或者改 `.env` 的 `PORT=8081`，同时改 NapCat WebUI 里的 URL 为 `ws://host.docker.internal:8081/onebot/v11/ws`。
+
+### Q3：bot 启动成功但 NapCat 连不上
+
+**大概率是 `host.docker.internal` 在你 Windows 上解析不到**。
+
+诊断：
+```powershell
+docker compose -f docker-compose.dev.yml exec napcat ping -c 2 host.docker.internal
+```
+
+不通的话，查你电脑局域网 IP：
+```powershell
+ipconfig
+```
+找"IPv4 地址"（例如 `192.168.1.100`）。
+
+改 NapCat WebUI 的 URL 为：`ws://192.168.1.100:8080/onebot/v11/ws`
+
+另外 Windows **防火墙**可能拦 Docker → 宿主机 8080 的连接。首次启动时如果弹了授权框记得点"允许"。或者临时关闭防火墙确认是不是这个问题。
+
+### Q4：发 `/ping` 没反应
+
+按优先级排查：
+
+1. **NapCat 有没有连上 bot**？看 bot 日志有没有 `Bot XXXXXXXX connected`
+2. **机器人是否在该群**？群成员列表里有没有小号
+3. **是不是群被风控**？小号在群里手动说句话看能不能发出
+4. **token 是否一致**？`.env` 的 `ONEBOT_ACCESS_TOKEN` 和 NapCat WebUI 里填的完全一样（大小写敏感）
+5. **bot 日志有没有收到消息**？正常会看到 `[OneBot V11] [group_xxx] xxx: /ping`
+
+### Q5：`/play turtle_soup` 报错 "出题失败"
+
+看 bot 日志：
+- `[llm] ... failed` → API key 问题或网络问题
+- `题库为空` → 没跑 seed 脚本
+
+### Q6：机器人发消息乱码 / 格式错乱
+
+看 bot 日志里实际发送的字符串——大概率是你客户端的字体渲染问题，换 QQ 新版客户端试试。
+
+### Q7：反复开同一局海龟汤被拒
+
+本群已有活跃对局。先 `/quit` 终止，或等超时（默认 60 分钟）。
+
+### Q8：小号被封 / 风控
+
+- 换一个小号重新扫码
+- 数据库里的游戏数据**不绑账号只绑群和 qq_id**，换机器人小号不影响玩家数据
+- 但 `napcat/data/` 里的登录态需要清掉：`docker volume rm qqbotforfun_napcat_data` 或 `Remove-Item napcat\data\* -Recurse -Force`
+
+---
+
+## 8. 跑完后你可以做什么
+
+1. **多跑几局海龟汤**，看 LLM 判定质量
+2. **改 prompt** 调优：`src/plugins/games/turtle_soup/prompts.py`
+3. **扩充题库**：
+   ```powershell
+   python scripts/generate_soup_with_llm.py 10    # LLM 生成 10 道
+   ```
+4. **加新游戏**：参考 [`04-game-development.md`](./04-game-development.md)
+5. **部署到云**：参考 [`05-deployment.md`](./05-deployment.md)
+
+---
+
+## 9. 变更日志
+
+| 版本 | 日期 | 变更 |
+|---|---|---|
+| v1 | 2026-04-28 | 初版 |

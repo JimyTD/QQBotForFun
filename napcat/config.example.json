@@ -1,0 +1,24 @@
+{
+  "network": {
+    "httpServers": [],
+    "websocketServers": [],
+    "httpClients": [],
+    "websocketClients": [
+      {
+        "enable": true,
+        "name": "qqbot",
+        "url": "ws://host.docker.internal:8080/onebot/v11/ws",
+        "reportSelfMessage": false,
+        "messagePostFormat": "array",
+        "reconnectInterval": 3000,
+        "token": "change_me",
+        "debug": false,
+        "heartInterval": 30000
+      }
+    ],
+    "plugins": []
+  },
+  "musicSignUrl": "",
+  "enableLocalFile2Url": false,
+  "parseMultMsg": false
+}
