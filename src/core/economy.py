@@ -5,14 +5,16 @@
 
 from __future__ import annotations
 
+from dataclasses import dataclass
+
 from nonebot import logger
-from sqlalchemy import select
+from sqlalchemy import func, select
 
 from core._models_common import EconomyBalance, EconomyItem, EconomyTx
 from core.errors import InsufficientFundsError
 from core.storage import get_session
 
-_registered_currencies: set[str] = {"coin", "ticket"}
+_registered_currencies: set[str] = {"coin", "ticket", "score"}
 
 
 def register_currency(currency_id: str) -> None:
@@ -147,3 +149,75 @@ async def list_items(qq_id: int) -> dict[str, int]:
         stmt = select(EconomyItem).where(EconomyItem.qq_id == qq_id)
         rows = (await sess.execute(stmt)).scalars().all()
         return {r.item_id: r.count for r in rows if r.count > 0}
+
+
+# ---------- 榜单 ----------
+@dataclass(frozen=True)
+class LeaderboardEntry:
+    """榜单单条记录。"""
+
+    rank: int          # 1-based 排名
+    qq_id: int
+    balance: int
+
+
+async def top_balances(
+    currency: str = "score", *, limit: int = 10, min_balance: int = 1
+) -> list[LeaderboardEntry]:
+    """取某货币的 TOP N。
+
+    - 余额 < min_balance 的条目不入榜（默认剔除 0 和负数）
+    - 按 balance 降序、qq_id 升序（稳定排序）
+    """
+    if limit <= 0:
+        return []
+    async with get_session() as sess:
+        stmt = (
+            select(EconomyBalance.qq_id, EconomyBalance.balance)
+            .where(
+                EconomyBalance.currency == currency,
+                EconomyBalance.balance >= min_balance,
+            )
+            .order_by(EconomyBalance.balance.desc(), EconomyBalance.qq_id.asc())
+            .limit(limit)
+        )
+        rows = (await sess.execute(stmt)).all()
+        return [
+            LeaderboardEntry(rank=i + 1, qq_id=int(r[0]), balance=int(r[1]))
+            for i, r in enumerate(rows)
+        ]
+
+
+async def rank_of(
+    qq_id: int, currency: str = "score", *, min_balance: int = 1
+) -> tuple[int | None, int]:
+    """查某人在全局榜的排名。
+
+    返回 (rank, balance)：
+    - rank=None 表示未入榜（余额 < min_balance 或无记录）
+    - rank 为 1-based
+    并列时使用"标准竞赛排名"：并列者同名次，后面跳号（1, 2, 2, 4）。
+    """
+    bal = await balance(qq_id, currency)
+    if bal < min_balance:
+        return None, bal
+    async with get_session() as sess:
+        # 严格大于当前余额的玩家数 + 1 = 我的排名
+        stmt = select(func.count(EconomyBalance.id)).where(
+            EconomyBalance.currency == currency,
+            EconomyBalance.balance > bal,
+        )
+        ahead = (await sess.execute(stmt)).scalar_one()
+        return int(ahead) + 1, bal
+
+
+async def count_in_leaderboard(
+    currency: str = "score", *, min_balance: int = 1
+) -> int:
+    """榜单总人数（余额 >= min_balance 的账户数）。"""
+    async with get_session() as sess:
+        stmt = select(func.count(EconomyBalance.id)).where(
+            EconomyBalance.currency == currency,
+            EconomyBalance.balance >= min_balance,
+        )
+        return int((await sess.execute(stmt)).scalar_one())

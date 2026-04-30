@@ -7,7 +7,7 @@ from typing import Any
 
 from nonebot import logger
 
-from core import economy, llm, render, session
+from core import llm, render, session
 from core.errors import LLMError, LLMJSONParseError
 from core.game_base import GameBase, GameMode, register_game
 from core.storage import get_session as db_session
@@ -170,16 +170,7 @@ class TurtleSoupGame(GameBase):
         # 结算
         winner_id = ctx.state.get("winner_id")
         if reason == EndReason.COMPLETED and winner_id:
-            cfg = get_config()
-            if cfg.reward_on_win > 0:
-                try:
-                    await economy.add(
-                        int(winner_id),
-                        cfg.reward_on_win,
-                        reason=f"turtle_soup_win:{ctx.session_id}",
-                    )
-                except Exception as e:  # noqa: BLE001
-                    logger.warning(f"[soup] grant reward failed: {e}")
+            # 赢家奖励已在 _handle_claim::correct 分支发放，这里只做题库统计
             await mark_win(int(puzzle["id"]))
             highlight = f"🏆 MVP：@{self._nickname_of(ctx, int(winner_id))}"
         elif reason == EndReason.ABORTED:
@@ -310,6 +301,17 @@ class TurtleSoupGame(GameBase):
             "key": f"💡 关键线索：{hint}" if hint else "💡 关键线索",
         }.get(verdict, "🤔 与此无关")
 
+        # 参与奖（核心设计：及时正反馈）——问出 key / partial 都给 score
+        # 注：partial 只在 _handle_claim 里出现；问答阶段只有 key 奖励
+        cfg = get_config()
+        if verdict == "key":
+            await self.award(
+                player_id,
+                cfg.reward_score_on_key_hit,
+                reason=f"turtle_soup_key:{ctx.session_id}",
+                currency="score",
+            )
+
         player = ctx.get_player(player_id)
         nickname = player.nickname if player else str(player_id)
         await session.broadcast(
@@ -351,6 +353,20 @@ class TurtleSoupGame(GameBase):
 
         if verdict == "correct":
             ctx.state["winner_id"] = player_id
+            # 赢家奖励：coin（钱包）+ score（排行榜），双轨制
+            cfg = get_config()
+            await self.award(
+                player_id,
+                cfg.reward_coin_on_win,
+                reason=f"turtle_soup_win:{ctx.session_id}",
+                currency="coin",
+            )
+            await self.award(
+                player_id,
+                cfg.reward_score_on_win,
+                reason=f"turtle_soup_win:{ctx.session_id}",
+                currency="score",
+            )
             await session.broadcast(
                 ctx.group_id,
                 render.text_card(
@@ -370,6 +386,14 @@ class TurtleSoupGame(GameBase):
             if runner is not None:
                 await runner.end(EndReason.COMPLETED)
         elif verdict == "partial":
+            # 部分正确也给少量 score 参与奖
+            cfg = get_config()
+            await self.award(
+                player_id,
+                cfg.reward_score_on_partial_hit,
+                reason=f"turtle_soup_partial:{ctx.session_id}",
+                currency="score",
+            )
             await session.broadcast(
                 ctx.group_id,
                 render.status_line(

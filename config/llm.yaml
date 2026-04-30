@@ -64,3 +64,13 @@ scenes:
     max_tokens: 512
     json_mode_default: true
     timeout_seconds: 45
+
+  trivia_host:
+    # 趣味问答出题（答案 + 2-5 别名 + 5 条线索 + 一句讲解）
+    # token 量中等，走 glm-4-flash 免费额度；temperature 高保证题目多样
+    provider: zhipu
+    model: glm-4-flash
+    temperature: 0.9
+    max_tokens: 1024
+    json_mode_default: true
+    timeout_seconds: 30

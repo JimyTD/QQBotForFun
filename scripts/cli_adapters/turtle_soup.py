@@ -8,6 +8,7 @@ from __future__ import annotations
 
 from core import llm
 from core.errors import LLMError, LLMJSONParseError
+from src.plugins.games.turtle_soup.config import get_config
 from src.plugins.games.turtle_soup.game import TurtleSoupGame
 from src.plugins.games.turtle_soup.prompts import (
     CLAIM_SYSTEM,
@@ -86,6 +87,26 @@ class TurtleSoupCLIAdapter(GameCLIAdapter):
         self.question_count = 0
         self.key_clues_shown: list[tuple[str, str]] = []
         self.max_q = 50
+        # CLI 本地累积的奖励（不真实调 economy，避免 qq_id=0 幽灵账户污染 DB）
+        self.cli_score = 0
+        self.cli_coin = 0
+
+    def _show_reward(self, *, score: int = 0, coin: int = 0, label: str = "") -> None:
+        """CLI 端本地累积并即时显示奖励，行为和 Bot 一致（只是不入 DB）。"""
+        if score <= 0 and coin <= 0:
+            return
+        self.cli_score += score
+        self.cli_coin += coin
+        parts = []
+        if score > 0:
+            parts.append(f"{C.MAG}+{score} score{C.R}")
+        if coin > 0:
+            parts.append(f"{C.YEL}+{coin} coin{C.R}")
+        suffix = f"（{label}）" if label else ""
+        print(
+            f"    {C.DIM}🎁 {' · '.join(parts)}{suffix}  "
+            f"本局累计：{self.cli_score} score / {self.cli_coin} coin{C.R}"
+        )
 
     async def start(self, mode_id: str) -> None:
         """统一入口：mode_id 决定是题库还是 LLM 生成。"""
@@ -212,6 +233,12 @@ class TurtleSoupCLIAdapter(GameCLIAdapter):
                     )
                     if verdict == "key" and hint:
                         self.key_clues_shown.append((text, hint))
+                        # 参与奖：问到 key 线索
+                        cfg = get_config()
+                        self._show_reward(
+                            score=cfg.reward_score_on_key_hit,
+                            label="关键线索命中",
+                        )
                     continue
 
             if kind == "claim":
@@ -227,6 +254,13 @@ class TurtleSoupCLIAdapter(GameCLIAdapter):
                     continue
 
                 if verdict == "correct":
+                    # 赢家奖励：coin + score
+                    cfg = get_config()
+                    self._show_reward(
+                        score=cfg.reward_score_on_win,
+                        coin=cfg.reward_coin_on_win,
+                        label="宣告成功",
+                    )
                     box(
                         "🏆 宣告成功！",
                         f"{feedback or '你答对了！'}\n\n【完整汤底】\n{puzzle.truth}",
@@ -236,6 +270,12 @@ class TurtleSoupCLIAdapter(GameCLIAdapter):
                     record_last_puzzle(_CLI_GROUP_ID, puzzle.id)
                     return
                 elif verdict == "partial":
+                    # 部分正确也给少量参与奖
+                    cfg = get_config()
+                    self._show_reward(
+                        score=cfg.reward_score_on_partial_hit,
+                        label="部分正确",
+                    )
                     print(f"汤主> {C.YEL}🟡 部分正确 · {feedback}{C.R}")
                     print(
                         f"{C.DIM}   可继续提问（? 结尾）"

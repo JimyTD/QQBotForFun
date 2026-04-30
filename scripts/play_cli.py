@@ -58,12 +58,14 @@ from cli_adapters.base import (  # noqa: E402
     resolve_mode,
 )
 from cli_adapters.turtle_soup import TurtleSoupCLIAdapter  # noqa: E402
+from cli_adapters.trivia import TriviaCLIAdapter  # noqa: E402
 
 
 # ============ 已注册的 CLI 游戏 ============
 # 顺序就是 "/菜单" 里的展示顺序
 ADAPTERS: dict[str, type[GameCLIAdapter]] = {
     "turtle_soup": TurtleSoupCLIAdapter,
+    "trivia": TriviaCLIAdapter,
     # "new_game": NewGameCLIAdapter,   # 未来新增
 }
 

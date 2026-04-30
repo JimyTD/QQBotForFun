@@ -1,15 +1,89 @@
 # 本地端到端测试指南（Windows）
 
-- **Status**: Draft v1
-- **Last Updated**: 2026-04-28
+- **Status**: Draft v1.1
+- **Last Updated**: 2026-04-30
 - **Owner**: @owner
 - **适用场景**: 本地 Windows 开发机测试完整 QQ 机器人流程，无需云服务器
 
 > 如果你需要生产部署（云服务器长期运行），请看 [`05-deployment.md`](./05-deployment.md)。
+> 本项目的 **CLI↔Bot 一致性铁律** 见 [`13-cli-bot-parity.md`](./13-cli-bot-parity.md)。
 
 ---
 
-## 0. 你需要准备什么
+## 0. 测试方式的两种选择
+
+| 方式 | 覆盖面 | 启动成本 | 什么时候用 |
+|---|---|---|---|
+| **CLI 测试**（§0.5） | 游戏主流程（状态机、判定、奖励发放） | 一条命令，秒起 | **日常开发首选**：改了游戏逻辑想快速验证 |
+| **QQ 群完整闭环**（§1-§5） | 全链路（NapCat ↔ bot ↔ 玩家） | 要起 Docker + 扫码登录 + 反向 WebSocket | 验证消息路由、多玩家交互、真实群聊体验 |
+
+由于 CLI 和 Bot 遵循 **1:1 对齐铁律**（[`13-cli-bot-parity.md`](./13-cli-bot-parity.md)），**CLI 跑通 ≈ 群里就能跑通**。除非你在改 bot 层（消息路由/NapCat 对接），否则 CLI 就够用了。
+
+---
+
+## 0.5 CLI 测试（最轻量，日常开发首选）
+
+`scripts/play_cli.py` 是**所有游戏的统一 CLI 入口**。它会读取 `ADAPTERS` 字典里注册的所有游戏（当前：海龟汤、趣味问答），和 QQ 群里的玩家交互逻辑保持 1:1 对齐。
+
+### 0.5.1 最常用启动方式（不带参数，完整菜单）
+
+```powershell
+cd i:\QQBotForFun
+uv run python scripts/play_cli.py
+```
+
+进入后会先让你选游戏，再选模式：
+
+```
+🎮 可用游戏
+   1. 海龟汤        [turtle_soup]
+   2. 趣味问答      [trivia]
+   Q. 退出
+选择游戏（编号 / ID / Q）>
+```
+
+### 0.5.2 跳过菜单的快捷启动
+
+| 用法 | 效果 |
+|---|---|
+| `uv run python scripts/play_cli.py` | **完整菜单**（推荐日常使用） |
+| `uv run python scripts/play_cli.py turtle_soup` | 跳过游戏选择，直接进海龟汤选模式 |
+| `uv run python scripts/play_cli.py turtle_soup 1` | 两层都跳，海龟汤 · 模式 1（题库随机）直接开局 |
+| `uv run python scripts/play_cli.py trivia` | 跳过游戏选择，直接进趣味问答选类目 |
+
+> ⚠️ 如果你是 AI Agent / 新协作者：**请默认用不带参数的方式启动**。带了 `turtle_soup` 会绕过游戏选择，容易让用户以为 CLI 只能玩海龟汤（实际是统一入口）。
+
+### 0.5.3 Debug 模式
+
+需要看 LLM 请求/响应原文时：
+
+```powershell
+$env:GAME_CLI_DEBUG=1; uv run python scripts/play_cli.py
+```
+
+（或设 `SOUP_DEBUG=1`，二者等价。）
+
+### 0.5.4 CLI 特殊行为（和 Bot 的差异点）
+
+CLI 遵守 1:1 对齐铁律，但有 2 个**非玩家可见**的差异：
+
+1. **经济系统不真发 DB**：CLI 的 `qq_id=0` 是虚拟账户。玩家能看到 `+2 score / +100 coin` 提示（行为一致），但不调 `economy.add`，避免污染生产数据。详见 [`09-conventions.md §0.5`](./09-conventions.md)。
+2. **局末烂题询问**：海龟汤 CLI 每局结束会追问 `这题要标记为烂题吗？(y/N)`，等同于 Bot 的 `/汤 烂题` 指令。
+
+### 0.5.5 新增游戏如何接入 CLI
+
+在 `scripts/cli_adapters/` 下新建 adapter（实现 `GameCLIAdapter` 协议，声明 `MODES`），再到 `scripts/play_cli.py` 顶部的 `ADAPTERS` 字典里注册一行即可。详见 [`04-game-development.md`](./04-game-development.md)。
+
+---
+
+
+
+## 0.9 QQ 群闭环测试准备
+
+> 下面的第 1 节开始讲"跑通完整 QQ 群机器人流程"的方式，需要 Docker / 小号 / NapCat。
+> **如果你只是想验证游戏逻辑，直接用上面的 §0.5（CLI 测试）就够了。**
+
+你需要准备：
 
 | 项 | 说明 | 必要性 |
 |---|---|---|
@@ -324,3 +398,4 @@ ipconfig
 | 版本 | 日期 | 变更 |
 |---|---|---|
 | v1 | 2026-04-28 | 初版 |
+| v1.1 | 2026-04-30 | 新增 §0.5 CLI 测试章节（统一入口 `play_cli.py` 用法、快捷启动、CLI 与 Bot 的差异点） |

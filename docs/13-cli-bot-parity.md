@@ -1,6 +1,9 @@
 # 13 · CLI ↔ QQ Bot 一致性铁律
 
-> **Status**: ACTIVE · **Last Updated**: 2026-04-29 · **Owner**: @JimyTD
+> **Status**: ACTIVE · **Last Updated**: 2026-04-30 · **Owner**: @JimyTD
+
+> 💡 **只是想启动 CLI 看看？** 直接看 [`12-local-testing.md §0.5`](./12-local-testing.md)。
+> 本文讲的是**为什么 CLI 和 Bot 必须对齐**（铁律与治理），不是使用指南。
 
 ---
 

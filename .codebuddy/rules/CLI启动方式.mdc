@@ -1,0 +1,15 @@
+---
+description: 
+alwaysApply: true
+enabled: true
+updatedAt: 2026-04-30T00:00:00.000Z
+provider: 
+---
+
+【QQBotForFun 项目规则】启动 CLI 测试器**默认使用无参数形式**：
+`uv run python scripts/play_cli.py`
+这会进入"选游戏 → 选模式"的完整菜单（当前支持海龟汤 / 趣味问答）。
+**不要**直接传 `turtle_soup` / `trivia` 作为参数——那会绕过游戏选择菜单，
+容易让用户以为 CLI 只能玩某一款游戏，实际它是统一入口（`ADAPTERS` 字典）。
+只有在用户明确要求"直接开某个游戏"时，才可以用 `play_cli.py <game_id>` 形式。
+详见 docs/12-local-testing.md §0.5。

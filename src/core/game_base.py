@@ -30,6 +30,9 @@ from core.errors import (
 from core.storage import get_session
 from core.types import EndReason, GameContext, User, new_session_id
 
+# 延迟导入 economy 避免循环（game_base 被 core 模块顶层导入）
+# 注意：economy.add 的失败不能阻塞游戏，所以 award() 里做了 try/except 防御
+
 
 # =====================================================================
 # 开局模式定义
@@ -114,6 +117,60 @@ class GameBase(ABC):
     def load_state(self, ctx: GameContext, data: dict[str, Any]) -> None:
         ctx.state.clear()
         ctx.state.update(data)
+
+    # ---- 经济奖励（统一接口）----
+    @staticmethod
+    async def award(
+        qq_id: int,
+        amount: int,
+        *,
+        reason: str,
+        currency: str = "coin",
+    ) -> None:
+        """为玩家发放奖励。
+
+        ─── 产品约束（核心设计哲学，详见 docs/09-conventions.md §0.5）───
+        **永不负反馈**：此方法只用于正向奖励。没有对应的 `penalize()`。
+        扣款类操作需要 `core.economy.deduct` 直接调用，但原则上游戏内不应该有。
+
+        ─── API 行为约定（实现选择，非哲学条款）───
+        - `amount <= 0` 静默跳过（方便调用方，不用每次判断 `if x > 0`）
+        - `economy.add` 失败只记 warn 日志、不向外抛（经济异常不应阻塞游戏主线）
+        - 所有游戏都应通过此方法发奖，而不是直接调 `economy.add`
+
+        参数：
+            qq_id:    玩家 QQ 号
+            amount:   奖励数量。<=0 时会直接忽略
+            reason:   流水记录原因，推荐格式：``"<game_id>_<event>:<session_id>"``
+            currency: 货币类型。常用：``"coin"`` 钱包 / ``"score"`` 排行榜积分
+
+        示例::
+
+            # 参与奖
+            await self.award(player_id, 2,
+                             reason=f"turtle_soup_key:{ctx.session_id}",
+                             currency="score")
+
+            # 赢家奖（双轨：coin 进钱包，score 进排行榜）
+            await self.award(winner_id, 100,
+                             reason=f"turtle_soup_win:{ctx.session_id}",
+                             currency="coin")
+            await self.award(winner_id, 20,
+                             reason=f"turtle_soup_win:{ctx.session_id}",
+                             currency="score")
+        """
+        if amount <= 0:
+            return
+        # 延迟导入避免循环（economy 本身不依赖 game_base，但 core 顶层是 economy 先加载）
+        from core import economy
+
+        try:
+            await economy.add(qq_id, amount, reason=reason, currency=currency)
+        except Exception as e:  # noqa: BLE001
+            logger.warning(
+                f"[game] award failed: qq={qq_id} amount={amount} "
+                f"currency={currency} reason={reason} err={e}"
+            )
 
 
 T = TypeVar("T", bound=type[GameBase])

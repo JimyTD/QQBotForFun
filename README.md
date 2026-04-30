@@ -18,9 +18,10 @@
 
 → 详见 [`docs/13-cli-bot-parity.md`](./docs/13-cli-bot-parity.md)，**所有游戏开发必读**。
 
-## 🎯 首个游戏
+## 🎯 已上线游戏
 
-**海龟汤**（纯 LLM 汤主模式）：LLM 自动出题 + 玩家自由提问 + LLM 判定。
+- **海龟汤**（`turtle_soup`）：纯 LLM 汤主模式 · 玩家自由提问 · LLM 判定
+- **趣味问答**（`trivia`）：听线索猜答案 · 6 类（国家/城市/美食/人物/动物/成语）· LLM 生成 · 10 题一局 · 结算入 score 榜
 
 ## 🏛️ 架构一图流
 
@@ -120,7 +121,9 @@ uv run python -m src.bot
 - `/ping` → 回复 `pong 🏓`
 - `/menu` → 显示游戏大厅
 - `/play turtle_soup` → 开始一局海龟汤
-- 以 `?` 结尾提问，以 `汤底:` 开头宣告
+- `/开始 trivia` → 开一局趣味问答（跟引导选类型）
+- `/开始 trivia 猜动物` → 直接开猜动物局
+- `/榜` → 查看全服趣味分排行榜
 
 ---
 
@@ -168,6 +171,7 @@ uv run pytest
 
 ### 游戏设计
 - [`games/turtle-soup.md`](./docs/games/turtle-soup.md)
+- [`games/trivia.md`](./docs/games/trivia.md)
 
 ### ADR
 - [`adr/0001-protocol-choice.md`](./docs/adr/0001-protocol-choice.md) — NapCat
@@ -200,4 +204,4 @@ uv run pytest
 ## 📝 状态
 
 - **Status**: MVP framework complete
-- **Last Updated**: 2026-04-28
+- **Last Updated**: 2026-04-30

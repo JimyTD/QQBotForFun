@@ -190,7 +190,46 @@ async def list_items(qq_id: int) -> dict[str, int]   # {item_id: count}
 
 - `coin`：通用金币
 - `ticket`：入场券（将来用）
+- `score`：跨游戏积分（趣味问答等"答对得分"类游戏共用）
 - 游戏可申请自定义货币，通过 `core.economy.register_currency("<id>")` 注册
+
+### 4.4 榜单（Leaderboard）
+
+跨游戏通用排行榜查询。`/榜` 指令基于这组 helper 实现。
+
+```python
+@dataclass(frozen=True)
+class LeaderboardEntry:
+    rank: int       # 1-based
+    qq_id: int
+    balance: int
+
+async def top_balances(
+    currency: str = "score",
+    *,
+    limit: int = 10,
+    min_balance: int = 1,   # balance < min_balance 的不入榜
+) -> list[LeaderboardEntry]
+
+async def rank_of(
+    qq_id: int,
+    currency: str = "score",
+    *,
+    min_balance: int = 1,
+) -> tuple[int | None, int]
+    """返回 (rank, balance)。rank=None 表示未上榜。
+    并列使用"标准竞赛排名"：100,100,50 → 排名 1,1,3。
+    """
+
+async def count_in_leaderboard(
+    currency: str = "score",
+    *,
+    min_balance: int = 1,
+) -> int
+    """榜单总人数。"""
+```
+
+排序规则：`balance DESC, qq_id ASC`（稳定）。
 
 ---
 
@@ -471,3 +510,4 @@ except PlayerQuitError:
 | 版本 | 日期 | 变更 |
 |---|---|---|
 | v0.1 | 2026-04-28 | 初版 |
+| v0.2 | 2026-04-30 | `economy` 新增 `top_balances` / `rank_of` / `count_in_leaderboard` 三个榜单 helper；`score` 加入默认已注册货币（供趣味问答等游戏跨局累计积分使用）。 |

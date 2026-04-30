@@ -16,6 +16,55 @@
 
 ---
 
+## 0.5 核心设计哲学：**及时正反馈 > 公平性**
+
+> QQBotForFun 是一个**内部群休闲游戏机器人**，不是严肃竞技游戏。群聊娱乐工具应遵循：
+
+### 原则
+
+1. **永远不做负反馈** —— 不扣金币、不扣分、不惩罚。`penalty_on_lose` 类字段必须永远为 0 或不生效。
+2. **每次有效互动都应得到小激励** —— 提问命中 key 线索、部分正确的宣告等都给小额 score。不只"赢家才有奖"。
+3. **不必担心分数通胀 / 公平性** —— 群游戏就是要让大家参与感满满。让玩家的每个动作都有正反馈比"分配公平"更重要。
+4. **简单直给，不搞难度分层** —— 奖励数字固定。避免"难度 5 给 10 倍分"这种复杂规则。
+5. **CLI 不真发经济** —— CLI 只是调试工具，`qq_id=0` 是虚拟账户。CLI 应本地累积并打印奖励信息（行为一致），但**不调** `economy.add`（副作用不同），避免污染 DB。
+
+### 反例（禁止做）
+
+- ❌ 扣金币 / 扣分 / 禁赛
+- ❌ "只有赢家拿分，其他人白玩"
+- ❌ "按难度系数给不同倍率奖励"（除非业务真的需要）
+- ❌ 单元测试里没断言 `penalty_on_lose == 0`
+
+### 正例（推荐做）
+
+- ✅ 问到 key 线索 +2 score；宣告 partial +1 score；宣告 correct +20 score +100 coin
+- ✅ 失败只展示结果，不扣任何东西
+- ✅ `test_rewards_are_non_negative` 这样的守门测试
+
+### 游戏接入经济的标准模板
+
+```python
+# 参与奖（在判定 key/partial 分支）
+await self._award_score(player_id, cfg.reward_score_on_key_hit,
+                        reason=f"{game_id}_key:{session_id}")
+
+# 赢家奖（在 correct 分支）
+await self._award_coin(winner_id, cfg.reward_coin_on_win, ...)
+await self._award_score(winner_id, cfg.reward_score_on_win, ...)
+
+# 失败分支：什么都不做
+```
+
+并遵守：
+- `coin` 是钱包货币（可消费，将来接商店用）
+- `score` 是荣誉积分（进 `/榜` 排行榜）
+
+> **注**：下面这条是 **API 实现建议**（务实的工程防御），不是上面的哲学条款，未来可以被推翻：
+> - 奖励辅助函数建议 try/except 吞掉 economy 异常，避免经济问题阻塞游戏主线（当前 `GameBase.award` 就是这么实现的）
+
+---
+
+
 ## 1. Python 风格
 
 ### 1.1 基础

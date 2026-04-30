@@ -56,6 +56,7 @@ def _load_plugins() -> None:
     nonebot.load_plugin("src.plugins.game_launcher")
     nonebot.load_plugin("src.plugins.admin")
     nonebot.load_plugin("src.plugins.games.turtle_soup")
+    nonebot.load_plugin("src.plugins.games.trivia")
 
 
 def _register_lifecycle() -> None:
