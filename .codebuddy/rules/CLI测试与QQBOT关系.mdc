@@ -1,0 +1,12 @@
+---
+description: 
+alwaysApply: true
+enabled: true
+updatedAt: 2026-04-29T09:30:58.292Z
+provider: 
+---
+
+【QQBotForFun 项目铁律】CLI ↔ Bot 一致性：scripts/play_cli.py 与 QQ 群机器人
+的玩家交互必须 1:1 对齐（决策点、指令、选项、状态机、判定逻辑）。任何改动
+玩家可见行为的 PR 必须同步修改 src/plugins/games/<id>/ 和 scripts/cli_adapters/<id>.py，
+缺一不可。CLI 跑通 = 群里就能跑通。详见 docs/13-cli-bot-parity.md。

@@ -27,6 +27,12 @@ env/
 *.swp
 *.swo
 
+# CodeBuddy / WorkBuddy 工作区数据
+# 只保留项目级规则（.codebuddy/rules/），忽略聊天历史/缓存/个人 memory
+.codebuddy/*
+!.codebuddy/rules/
+.workbuddy/
+
 # OS
 .DS_Store
 Thumbs.db
@@ -52,3 +58,6 @@ napcat/data/
 # Misc
 *.bak
 *.tmp
+
+# 清洗产物（自动生成，不入库；可由 scripts/crawler/clean_crawled.py 重新产出）
+scripts/crawler/raw/*.cleaned.json

@@ -38,10 +38,11 @@ class Settings(BaseSettings):
     # ---------- LLM ----------
     llm_config_path: str = "./config/llm.yaml"
     zhipu_api_key: str = ""
-    siliconflow_api_key: str = ""
     openai_api_key: str = ""
     openrouter_api_key: str = ""
     deepseek_api_key: str = ""
+    # 已移除（硅基流动免费额度 2026-04 耗尽）：
+    siliconflow_api_key: str = ""  # 保留字段以避免 .env 残留报错
 
     # ---------- Turtle Soup ----------
     game_turtle_soup_max_questions: int = 50

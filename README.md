@@ -9,6 +9,15 @@
 - **多游戏平台**：每个小游戏是独立插件，彼此隔离，公用一套 Core 能力层
 - **LLM 原生**：大模型作为汤主、NPC、判定者等
 
+## ⚠️ 核心开发铁律
+
+**CLI 测试器 = 单人 QQ 群模拟器**。
+
+`scripts/play_cli.py` 和 QQ 群里的机器人交互必须 **1:1 对齐**：玩家决策点、
+指令集、选项、状态机、判定逻辑完全相同。CLI 跑通 = 群里就能跑通。
+
+→ 详见 [`docs/13-cli-bot-parity.md`](./docs/13-cli-bot-parity.md)，**所有游戏开发必读**。
+
 ## 🎯 首个游戏
 
 **海龟汤**（纯 LLM 汤主模式）：LLM 自动出题 + 玩家自由提问 + LLM 判定。
@@ -155,6 +164,7 @@ uv run pytest
 - [`10-roadmap.md`](./docs/10-roadmap.md) — **实施清单（不可偏移基线）**
 - [`11-ui-style.md`](./docs/11-ui-style.md) — 文本 UI 规范
 - [`12-local-testing.md`](./docs/12-local-testing.md) — **本地端到端测试指南**
+- [`13-cli-bot-parity.md`](./docs/13-cli-bot-parity.md) — **CLI ↔ Bot 一致性铁律**（开发必读）
 
 ### 游戏设计
 - [`games/turtle-soup.md`](./docs/games/turtle-soup.md)

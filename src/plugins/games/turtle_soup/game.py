@@ -9,7 +9,7 @@ from nonebot import logger
 
 from core import economy, llm, render, session
 from core.errors import LLMError, LLMJSONParseError
-from core.game_base import GameBase, register_game
+from core.game_base import GameBase, GameMode, register_game
 from core.storage import get_session as db_session
 from core.types import EndReason, GameContext
 
@@ -22,7 +22,7 @@ from .prompts import (
     JUDGE_USER,
     format_clues,
 )
-from .puzzle_service import PuzzleData, mark_win, obtain_puzzle
+from .puzzle_service import PuzzleData, mark_win, obtain_puzzle, record_last_puzzle
 
 
 EMOJI = "🐢"
@@ -68,6 +68,22 @@ class TurtleSoupGame(GameBase):
     event_driven = True
     emoji = EMOJI
 
+    # 开局模式（与 scripts/cli_adapters/turtle_soup.py 的 MODES 保持同步）
+    MODES = [
+        GameMode(
+            id="library",
+            name="题库随机",
+            description="从题库挑一道现成的",
+            aliases=("快速", "fast", "库"),
+        ),
+        GameMode(
+            id="llm",
+            name="LLM 即时生成",
+            description="让大模型现场出一道（约 10-20s）",
+            aliases=("生成", "new", "ai"),
+        ),
+    ]
+
     # 在 launcher 启动时会查询该属性作为整局 timeout
     @property
     def default_session_timeout_seconds(self) -> int:  # pragma: no cover
@@ -81,9 +97,10 @@ class TurtleSoupGame(GameBase):
         ctx.state["question_count"] = 0
         ctx.state["last_activity_ts"] = datetime.utcnow().isoformat()
 
-        # 出题
+        # 出题（mode 由 /开始 选择流程传入，存在 ctx.config 里）
+        mode = ctx.config.get("mode") if ctx.config else None
         try:
-            puzzle = await obtain_puzzle()
+            puzzle = await obtain_puzzle(mode=mode)
         except Exception as e:  # noqa: BLE001
             logger.exception(f"[soup] obtain_puzzle failed: {e}")
             await session.broadcast(
@@ -129,8 +146,8 @@ class TurtleSoupGame(GameBase):
             footer=[
                 "💡 提问以 ? 结尾",
                 "💡 宣告汤底请以「汤底:」开头",
-                "💡 /soup giveup 投降 · /soup status 查看进度",
-                "💡 /quit 终止本局",
+                "💡 /汤 投降 投降 · /汤 状态 查看进度",
+                "💡 /结束 终止本局",
             ],
         )
         await session.broadcast(ctx.group_id, card)
@@ -143,6 +160,12 @@ class TurtleSoupGame(GameBase):
         qcount = int(ctx.state.get("question_count", 0))
         if not puzzle:
             return
+
+        # 记录本 group 最近玩过的题，用于 /汤 烂题 短窗口淘汰
+        try:
+            record_last_puzzle(ctx.group_id, int(puzzle["id"]))
+        except (KeyError, ValueError, TypeError) as e:
+            logger.warning(f"[soup] record_last_puzzle failed: {e}")
 
         # 结算
         winner_id = ctx.state.get("winner_id")
@@ -214,7 +237,7 @@ class TurtleSoupGame(GameBase):
         if qcount >= max_q and kind != "claim":
             await session.broadcast(
                 ctx.group_id,
-                "⚠️ 已达提问上限，请宣告汤底或 /soup giveup 投降。",
+                "⚠️ 已达提问上限，请宣告汤底或 /汤 投降 。",
                 at=player_id,
             )
             return
@@ -351,14 +374,16 @@ class TurtleSoupGame(GameBase):
                 ctx.group_id,
                 render.status_line(
                     f"@{nickname}", "📣 宣告", f"🟡 部分正确 · {feedback}"
-                ),
+                )
+                + "\n   可继续提问（? 结尾）或补充后重新宣告（汤底: 开头）",
             )
         else:
             await session.broadcast(
                 ctx.group_id,
                 render.status_line(
                     f"@{nickname}", "📣 宣告", f"❌ 不对 · {feedback}"
-                ),
+                )
+                + "\n   本次宣告不消耗提问额度，继续推理吧",
             )
 
     # ---------- 工具 ----------

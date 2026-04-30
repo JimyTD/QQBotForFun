@@ -25,7 +25,7 @@ _FAKE_PUZZLE = PuzzleData(
 async def test_full_flow_win() -> None:
     """玩家问一个问题 → 宣告正确 → 胜利结束。"""
 
-    async def fake_obtain() -> PuzzleData:
+    async def fake_obtain(**_kwargs) -> PuzzleData:  # 接受 mode 等 kwargs
         return _FAKE_PUZZLE
 
     async def fake_mark_win(_pid: int) -> None:
@@ -71,7 +71,7 @@ async def test_full_flow_win() -> None:
 
 
 async def test_flow_giveup() -> None:
-    async def fake_obtain() -> PuzzleData:
+    async def fake_obtain(**_kwargs) -> PuzzleData:
         return _FAKE_PUZZLE
 
     with patch(
@@ -88,7 +88,7 @@ async def test_flow_giveup() -> None:
 
 
 async def test_flow_judge_irrelevant() -> None:
-    async def fake_obtain() -> PuzzleData:
+    async def fake_obtain(**_kwargs) -> PuzzleData:
         return _FAKE_PUZZLE
 
     async def fake_chat(messages, *, scene, **kwargs):  # type: ignore[no-untyped-def]

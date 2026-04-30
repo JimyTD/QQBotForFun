@@ -23,6 +23,9 @@ class TurtleSoupConfig(BaseSettings):
     claim_timeout_seconds: int = 45
     reward_on_win: int = 100
     penalty_on_lose: int = 0
+    # 烂题淘汰机制
+    llm_generated_cap: int = 200         # llm_generated 总数上限，超限前删最老一条
+    mark_bad_window_seconds: int = 300   # 本局结束后 N 秒内允许玩家 /汤 烂题
 
 
 _config: TurtleSoupConfig | None = None

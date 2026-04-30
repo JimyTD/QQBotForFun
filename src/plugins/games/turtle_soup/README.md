@@ -2,12 +2,21 @@
 
 - Game ID: `turtle_soup`
 - 指令：
-  - `/play turtle_soup` — 开始一局
+  - `/开始 turtle_soup` — 开始一局（别名：`/play`、`/开局`、`/玩`）
   - 提问：以 `?` 或 `？` 结尾
   - 宣告：以 `汤底:` / `答案:` / `宣告:` 开头
-  - `/soup status` — 查看进度
-  - `/soup giveup` — 投降公布汤底
-  - `/soup recap` — 回顾关键线索
-  - `/quit` — 终止本局
+  - `/汤 状态` — 查看进度（别名：`/soup status`）
+  - `/汤 投降` — 投降公布汤底（别名：`/soup giveup`）
+  - `/汤 回顾` — 回顾关键线索（别名：`/soup recap`）
+  - `/汤 烂题` — **本局结束后 5 分钟内**可用，硬删上一题（仅 `llm_generated` 题；别名：`/soup bad`、`/汤 差评`、`/汤 删除`）
+  - `/结束` — 终止本局（别名：`/quit`）
+
+## 题库治理（v2.2+）
+
+- **来源**：`builtin`（人工种子）+ `llm_generated`（游戏中自动生成回写）
+- **上限**：`llm_generated` 总数受 `GAME_TURTLE_SOUP_LLM_GENERATED_CAP`（默认 200）限制，超限时 FIFO 淘汰最老的一条；`builtin` 永不被淘汰
+- **烂题反馈**：玩家通过 `/汤 烂题` 硬删刚玩过的题，窗口 5 分钟（由 `GAME_TURTLE_SOUP_MARK_BAD_WINDOW_SECONDS` 控制）
+- **CLI 特殊处理**：play_cli 在每局结束后会追问 `这题要标记为烂题吗？(y/N)`，与 Bot 的 `/汤 烂题` 等价
 
 详细设计见 [`docs/games/turtle-soup.md`](../../../../docs/games/turtle-soup.md)。
+

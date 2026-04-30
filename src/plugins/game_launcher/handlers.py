@@ -1,17 +1,29 @@
-"""游戏大厅：/play <game_id> 和 /quit"""
+"""游戏大厅：/开始 / /结束。
+
+与 CLI 对齐：
+  /开始              → 选游戏 → 选模式 → 开局
+  /开始 <ID或编号>    → 跳过选游戏
+  /开始 <ID> <模式>   → 直接开局
+  /结束              → 清掉当前群的选择态或游戏，回主菜单状态
+"""
 
 from __future__ import annotations
 
-from nonebot import logger, on_command
+from nonebot import on_command
 from nonebot.adapters.onebot.v11 import GroupMessageEvent, Message
 from nonebot.matcher import Matcher
 from nonebot.params import CommandArg
 
-from core import game_base, user
-from core.errors import GameAlreadyRunningError, GameNotFoundError
+from core import game_base
+from src.plugins.game_launcher import selection
 
-# -------------------- /play --------------------
-_play = on_command("play", aliases={"开始", "开局"}, priority=10, block=True)
+# -------------------- /开始 --------------------
+_play = on_command(
+    "开始",
+    aliases={"play", "开局", "玩"},
+    priority=10,
+    block=True,
+)
 
 
 @_play.handle()
@@ -20,57 +32,55 @@ async def _(
     event: GroupMessageEvent,
     args: Message = CommandArg(),
 ) -> None:
-    game_id = args.extract_plain_text().strip()
-    if not game_id:
-        await matcher.finish("用法：/play <game_id>\n查看游戏列表：/menu")
-        return
-
+    raw = args.extract_plain_text().strip()
     group_id = int(event.group_id)
-    host_id = int(event.user_id)
+    initiator_id = int(event.user_id)
 
-    try:
-        cls = game_base.get_game_class(game_id)
-    except GameNotFoundError:
-        await matcher.finish(f"⚠️ 未找到游戏 `{game_id}`。使用 /menu 查看可用游戏。")
+    # 群里已有进行中游戏？
+    runner = game_base.get_runner_by_group(group_id)
+    if runner is not None:
+        await matcher.finish(
+            f"⚠️ 本群已有进行中的「{runner.ctx.game_id}」。"
+            "先使用 /结束 终止当前游戏。"
+        )
         return
 
-    host_user = await user.get(host_id, group_id)
-
-    # v1 简化：开局者作为唯一玩家（允许中途有其他玩家加入由游戏自行处理）
-    players = [host_user]
-
-    # 游戏整局超时使用各游戏配置；这里可由 game class 暴露
-    session_timeout = getattr(cls, "default_session_timeout_seconds", None)
-
-    try:
-        await game_base.create_and_start(
-            game_id,
-            group_id=group_id,
-            host_id=host_id,
-            players=players,
-            config={},
-            session_timeout_seconds=session_timeout,
+    # 群里已有待选择？
+    if selection.has_pending(group_id):
+        await matcher.finish(
+            "⚠️ 本群正在进行游戏选择。@机器人 并发送编号继续，或 /结束 取消。"
         )
-    except GameAlreadyRunningError as e:
-        await matcher.finish(f"⚠️ {e}")
-    except Exception as e:  # noqa: BLE001
-        logger.exception(f"[launcher] start failed game={game_id}: {e}")
-        await matcher.finish(f"⚠️ 启动失败：{e}")
+        return
+
+    # 解析参数：最多 2 个 token（game 和 mode）
+    tokens = raw.split(maxsplit=1)
+    game_preselect = tokens[0] if tokens else None
+    mode_preselect = tokens[1] if len(tokens) > 1 else None
+
+    await selection.begin(
+        group_id,
+        initiator_id,
+        game_preselect=game_preselect,
+        mode_preselect=mode_preselect,
+    )
 
 
-# -------------------- /quit --------------------
-_quit = on_command("quit", aliases={"结束", "终止"}, priority=10, block=True)
+# -------------------- /结束 --------------------
+_quit = on_command("结束", aliases={"quit", "终止"}, priority=10, block=True)
 
 
 @_quit.handle()
 async def _(matcher: Matcher, event: GroupMessageEvent) -> None:
     group_id = int(event.group_id)
+
+    # 先清选择态
+    if selection.cancel(group_id):
+        await matcher.finish("🏳 已取消当前的游戏选择。")
+        return
+
+    # 再终止进行中游戏
     ok = await game_base.abort_by_group(group_id)
     if ok:
-        await matcher.finish("🏳 本局游戏已终止")
+        await matcher.finish("🏳 本局游戏已终止。")
     else:
-        await matcher.finish("本群当前没有进行中的游戏")
-
-
-# -------------------- /games（别名，兼容）--------------------
-# /games 的列表展示由 core_commands 的 /menu 承担，此处不重复
+        await matcher.finish("本群当前没有进行中的游戏或选择。")

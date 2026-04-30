@@ -1,8 +1,20 @@
 # 09 · 编码与文档规范
 
 - **Status**: Draft v1
-- **Last Updated**: 2026-04-28
+- **Last Updated**: 2026-04-29
 - **Owner**: @owner
+
+## 0. 核心铁律（最高优先级）
+
+**CLI ↔ Bot 一致性**：`scripts/play_cli.py` 与 QQ 群 bot 的玩家交互必须 1:1 对齐。
+
+任何改动玩家可见行为的 PR，必须同步修改：
+- `src/plugins/games/<id>/` — bot 路径
+- `scripts/cli_adapters/<id>.py` — CLI 路径
+
+违反此原则的 PR 不予合入。详见 [`13-cli-bot-parity.md`](./13-cli-bot-parity.md)。
+
+---
 
 ## 1. Python 风格
 
@@ -158,6 +170,11 @@ docs(roadmap): mark phase C completed
 ### 5.3 命名
 - 文件：`test_<module>.py`
 - 函数：`test_<scenario>_<expected>`，例如 `test_ask_timeout_raises`
+
+### 5.4 LLM 验收流水
+LLM 行为无法在单元测试里断言，因此 prompt 变更后需要**人工阅读真实产出**。
+产出脚本写入 `docs/test-runs/` 归档，命名 `YYYYMMDD[-HHMMSS]-<主题>[-<子场景>].md`，
+详见 `docs/test-runs/README.md`。**改动任何 prompt 都应产出至少一份流水并保留**。
 
 ## 6. 配置规范
 

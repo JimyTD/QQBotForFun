@@ -5,17 +5,23 @@
 - **Owner**: @owner
 
 > 本文是新增游戏的 **step-by-step 指南**。配合 [`03-core-api.md`](./03-core-api.md) 一起看。
+>
+> ⚠️ **必读前置**：[`13-cli-bot-parity.md`](./13-cli-bot-parity.md) — CLI 与 Bot
+> 交互必须保持 1:1 一致。新增游戏时必须同步实现 **游戏本体（bot 路径）+ CLI adapter**，
+> 两者缺一不可。
 
 ---
 
-## 1. 总览：五个步骤
+## 1. 总览：六个步骤
 
 ```
-1. 写游戏设计文档   →  docs/games/<id>.md
-2. 创建游戏目录      →  src/plugins/games/<id>/
-3. 实现 GameBase 子类 →  game.py
-4. 注册到大厅         →  @register_game 装饰器自动完成
-5. 写玩法说明与测试   →  README.md + tests/
+1. 写游戏设计文档     →  docs/games/<id>.md
+2. 创建游戏目录        →  src/plugins/games/<id>/
+3. 实现 GameBase 子类   →  game.py
+4. 注册到大厅           →  @register_game 装饰器自动完成
+5. 写 CLI adapter      →  scripts/cli_adapters/<id>.py
+                           在 scripts/play_cli.py 的 ADAPTERS 字典注册
+6. 写玩法说明与测试     →  README.md + tests/
 ```
 
 ---
@@ -49,7 +55,7 @@ src/plugins/games/<game_id>/
 ```python
 # src/plugins/games/<game_id>/game.py
 from core import session, llm
-from core.game_base import GameBase, GameContext, register_game, EndReason
+from core.game_base import GameBase, GameContext, GameMode, register_game, EndReason
 from core.errors import TimeoutError, PlayerQuitError
 
 
@@ -62,8 +68,17 @@ class YourGame(GameBase):
     max_players = 5
     version = "1.0"
 
+    # 必须声明至少一个开局模式（CLI 和 bot 共享）
+    MODES = [
+        GameMode(id="normal", name="常规", description="默认规则"),
+        GameMode(id="hard", name="困难", description="AI 更强"),
+    ]
+
     async def on_create(self, ctx: GameContext) -> None:
-        """开局前准备（例如出题）"""
+        """开局前准备（例如出题）。
+        mode = ctx.config.get('mode') 可拿到玩家选的模式 ID。
+        """
+        mode = ctx.config.get("mode", "normal")
         ctx.state["score"] = {p.qq_id: 0 for p in ctx.players}
 
     async def on_start(self, ctx: GameContext) -> None:
@@ -77,7 +92,6 @@ class YourGame(GameBase):
         self, ctx: GameContext, player_id: int, message: str
     ) -> None:
         """玩家发言处理"""
-        # 你的游戏逻辑
         pass
 
     async def on_end(self, ctx: GameContext, reason: EndReason) -> None:
@@ -85,7 +99,34 @@ class YourGame(GameBase):
         await session.broadcast(ctx.group_id, f"【{self.name}】结束（{reason.value}）")
 ```
 
-注册后，玩家在群里发 `/play your_game` 即可开局。
+注册后，玩家在群里发 `/开始` 即可引导选择；`/开始 your_game` 跳过游戏选择；
+`/开始 your_game normal` 直接开局。
+
+### 配套：CLI Adapter（必须同时提交，见项目铁律）
+
+```python
+# scripts/cli_adapters/your_game.py
+from src.plugins.games.your_game.game import YourGame
+from .base import C, GameCLIAdapter, box, info, prompt
+
+
+class YourGameCLIAdapter(GameCLIAdapter):
+    game_name = YourGame.name
+    MODES = YourGame.MODES   # 直接复用游戏本体的声明
+
+    def __init__(self, *, debug=False):
+        self.debug = debug
+
+    async def start(self, mode_id: str) -> None:
+        # 按模式准备（可以直接复用 bot 侧的 service 函数）
+        ...
+
+    async def play(self) -> None:
+        # 主循环：input() → 判定 → 打印
+        ...
+```
+
+别忘了在 `scripts/play_cli.py` 的 `ADAPTERS` 字典里注册一行。
 
 ---
 

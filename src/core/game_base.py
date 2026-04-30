@@ -13,6 +13,7 @@ from __future__ import annotations
 import asyncio
 from abc import ABC
 from collections.abc import Awaitable, Callable
+from dataclasses import dataclass, field
 from datetime import datetime
 from typing import Any, ClassVar, TypeVar
 
@@ -31,6 +32,45 @@ from core.types import EndReason, GameContext, User, new_session_id
 
 
 # =====================================================================
+# 开局模式定义
+# =====================================================================
+@dataclass
+class GameMode:
+    """一种开局模式。游戏类通过 MODES 类属性声明自己支持的所有模式。
+
+    同一份定义同时驱动：
+    - QQ bot 的 /开始 交互式菜单
+    - CLI 的两层选择（scripts/play_cli.py）
+    两者展示顺序和 id 必须一致（由游戏自己控制）。
+    """
+
+    id: str                           # 稳定内部 ID，作为 ctx.config["mode"] 的值
+    name: str                         # 玩家可见名称
+    description: str = ""             # 展示在选项后的简短描述
+    aliases: tuple[str, ...] = field(default_factory=tuple)
+
+
+def resolve_mode(modes: list[GameMode], token: str) -> GameMode | None:
+    """解析模式 token，支持编号（'1'）、id（'library'）、别名（'快速'）。"""
+    t = token.strip().lower()
+    if not t:
+        return None
+    try:
+        idx = int(t)
+        if 1 <= idx <= len(modes):
+            return modes[idx - 1]
+    except ValueError:
+        pass
+    for m in modes:
+        if t == m.id.lower():
+            return m
+        for alias in m.aliases:
+            if t == alias.lower():
+                return m
+    return None
+
+
+# =====================================================================
 # 游戏基类
 # =====================================================================
 class GameBase(ABC):
@@ -43,6 +83,8 @@ class GameBase(ABC):
     min_players: ClassVar[int] = 1
     max_players: ClassVar[int] = 10
     version: ClassVar[str] = "1.0"
+    # 开局模式（必须声明至少一项）
+    MODES: ClassVar[list[GameMode]] = []
     # 行为开关
     serialize_actions: ClassVar[bool] = False  # True 则 on_player_action 串行
     event_driven: ClassVar[bool] = False       # True 则 Core 会把群消息转给 on_player_action

@@ -35,6 +35,8 @@
 | D14 | `docs/adr/0001-protocol-choice.md` | ✅ | |
 | D15 | `docs/adr/0002-framework-choice.md` | ✅ | |
 | D16 | `docs/adr/0003-llm-gateway.md` | ✅ | |
+| D17 | `docs/12-local-testing.md` | ✅ | 本地端到端测试指南 |
+| D18 | `docs/13-cli-bot-parity.md` | ✅ | **CLI ↔ Bot 一致性铁律** |
 
 ## 2. 目录结构（最终态）
 

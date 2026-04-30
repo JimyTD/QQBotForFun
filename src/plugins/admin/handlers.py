@@ -9,14 +9,14 @@ from nonebot.params import CommandArg
 
 from core import economy, permission
 
-_admin = on_command("admin", priority=5, block=True)
+_admin = on_command("管理", aliases={"admin"}, priority=5, block=True)
 
 
 HELP = (
-    "/admin grant <qq>     授予管理员\n"
-    "/admin revoke <qq>    撤销管理员\n"
-    "/admin coin <qq> <n>  调整金币（可负）\n"
-    "/admin check <qq>     查询用户状态\n"
+    "/管理 授权 <QQ>       授予管理员\n"
+    "/管理 撤销 <QQ>       撤销管理员\n"
+    "/管理 金币 <QQ> <n>   调整金币（可负）\n"
+    "/管理 查询 <QQ>       查询用户状态\n"
 )
 
 
@@ -39,17 +39,17 @@ async def _(
     sub = parts[0]
     rest = parts[1:]
 
-    if sub == "grant" and len(rest) == 1:
+    if sub in ("授权", "grant") and len(rest) == 1:
         target = int(rest[0])
         await permission.grant_admin(target, granted_by=qq_id)
         await matcher.finish(f"✅ 已授予 {target} 管理员权限")
 
-    elif sub == "revoke" and len(rest) == 1:
+    elif sub in ("撤销", "revoke") and len(rest) == 1:
         target = int(rest[0])
         await permission.revoke_admin(target)
         await matcher.finish(f"✅ 已撤销 {target} 的管理员权限")
 
-    elif sub == "coin" and len(rest) == 2:
+    elif sub in ("金币", "coin") and len(rest) == 2:
         target = int(rest[0])
         delta = int(rest[1])
         if delta >= 0:
@@ -58,7 +58,7 @@ async def _(
             new_bal = await economy.add(target, delta, reason=f"admin_deduct_by_{qq_id}")
         await matcher.finish(f"✅ {target} 金币 {delta:+d} → {new_bal}")
 
-    elif sub == "check" and len(rest) == 1:
+    elif sub in ("查询", "check") and len(rest) == 1:
         target = int(rest[0])
         coin = await economy.balance(target, "coin")
         items = await economy.list_items(target)

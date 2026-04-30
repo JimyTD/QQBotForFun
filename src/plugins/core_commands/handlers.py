@@ -13,8 +13,8 @@ from core.game_base import list_games
 from core.render import MenuItem
 
 
-# -------------------- /ping --------------------
-_ping = on_command("ping", priority=10, block=True)
+# -------------------- /测试 --------------------
+_ping = on_command("测试", aliases={"ping"}, priority=10, block=True)
 
 
 @_ping.handle()
@@ -22,23 +22,24 @@ async def _(matcher: Matcher) -> None:
     await matcher.finish("pong 🏓")
 
 
-# -------------------- /help --------------------
-_help = on_command("help", aliases={"帮助"}, priority=10, block=True)
+# -------------------- /帮助 --------------------
+_help = on_command("帮助", aliases={"help", "说明"}, priority=10, block=True)
 
 HELP_TEXT = render.text_card(
     "使用帮助",
     [
-        "🎮 /menu       查看游戏大厅",
-        "🎮 /games      同 /menu",
-        "🎮 /play <id>  开始一局游戏",
-        "🏳 /quit       终止当前群内的游戏",
-        "📊 /profile    查看个人信息",
-        "💰 /balance    查看金币余额",
-        "🏓 /ping       测试机器人是否在线",
-        "📜 /help       显示本帮助",
+        "🎮 /开始       选择游戏开始（引导式）",
+        "🎮 /开始 <ID>  跳过选游戏直接进模式选择",
+        "🎮 /开始 <ID> <模式>  两步都跳过直接开局",
+        "📋 /菜单       查看游戏大厅",
+        "🏳 /结束       终止当前群内的游戏或选择",
+        "📊 /资料       查看个人信息",
+        "💰 /金币       查看金币余额",
+        "🏓 /测试       测试机器人是否在线",
+        "📜 /帮助       显示本帮助",
     ],
     emoji="📜",
-    footer="海龟汤：/play turtle_soup",
+    footer="游戏进行中 @机器人 + 数字 可做选择",
 )
 
 
@@ -47,8 +48,13 @@ async def _(matcher: Matcher) -> None:
     await matcher.finish(HELP_TEXT)
 
 
-# -------------------- /menu & /games --------------------
-_menu = on_command("menu", aliases={"games", "大厅", "游戏"}, priority=10, block=True)
+# -------------------- /菜单 --------------------
+_menu = on_command(
+    "菜单",
+    aliases={"menu", "games", "大厅", "游戏"},
+    priority=10,
+    block=True,
+)
 
 
 @_menu.handle()
@@ -65,23 +71,29 @@ async def _(matcher: Matcher, event: MessageEvent) -> None:
             MenuItem(
                 emoji=emoji,
                 name=g.name,
-                subtitle=f"{g.min_players}-{g.max_players} 人 · {g.description}"
-                if g.description
-                else f"{g.min_players}-{g.max_players} 人",
-                command=f"/play {g.id}",
+                subtitle=(
+                    f"{g.min_players}-{g.max_players} 人 · {g.description}"
+                    if g.description
+                    else f"{g.min_players}-{g.max_players} 人"
+                ),
+                command=f"/开始 {g.id}",
             )
         )
 
     # 个人金币
     qq_id = int(event.user_id)
     coin = await economy.balance(qq_id, "coin")
-    footer = [f"💰 金币：{coin}", "📜 /help 查看帮助"]
+    footer = [
+        f"💰 金币：{coin}",
+        "🎮 开始游戏：/开始",
+        "📜 /帮助 查看帮助",
+    ]
 
     await matcher.finish(render.menu("游戏大厅", items, footer=footer))
 
 
-# -------------------- /profile --------------------
-_profile = on_command("profile", aliases={"我的", "资料"}, priority=10, block=True)
+# -------------------- /资料 --------------------
+_profile = on_command("资料", aliases={"profile", "我的"}, priority=10, block=True)
 
 
 @_profile.handle()
@@ -108,8 +120,8 @@ async def _(matcher: Matcher, event: MessageEvent) -> None:
     await matcher.finish(render.text_card("个人资料", lines, emoji="📊"))
 
 
-# -------------------- /balance --------------------
-_balance = on_command("balance", aliases={"金币", "余额"}, priority=10, block=True)
+# -------------------- /金币 --------------------
+_balance = on_command("金币", aliases={"balance", "余额"}, priority=10, block=True)
 
 
 @_balance.handle()
