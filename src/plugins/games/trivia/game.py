@@ -250,9 +250,12 @@ class TriviaGame(GameBase):
         idx = int(ctx.state["current_index"])
         cfg = get_config()
 
+        # 收集本局已出过的答案 + 别名，强制 LLM 换新（prompt 层 + validation 层双保险）
+        avoid = self._collect_used_names(ctx)
+
         # 尝试最多 cfg.llm_retry_times 次（generate_puzzle 内部也会重试）
         try:
-            puzzle = await generate_puzzle(type_id)
+            puzzle = await generate_puzzle(type_id, avoid=avoid)
         except PuzzleGenerationError as e:
             logger.warning(f"[trivia] puzzle gen failed for idx={idx}: {e}")
             # 记一条"出题失败"的占位 history，不消耗题号
@@ -412,6 +415,7 @@ class TriviaGame(GameBase):
         ctx.state.setdefault("history", []).append(
             {
                 "answer": puzzle.get("answer"),
+                "aliases": list(puzzle.get("aliases", [])),
                 "winner": winner_id,
                 "clues_used": clues_used,
                 "awarded": awarded,
@@ -469,6 +473,21 @@ class TriviaGame(GameBase):
     def _nickname_of(ctx: GameContext, qq_id: int) -> str:
         p = ctx.get_player(qq_id)
         return p.nickname if p else str(qq_id)
+
+    @staticmethod
+    def _collect_used_names(ctx: GameContext) -> list[str]:
+        """收集本局 history 里已出过的 answer + aliases，用于 generate_puzzle 的 avoid。"""
+        used: list[str] = []
+        for item in ctx.state.get("history", []) or []:
+            if not isinstance(item, dict):
+                continue
+            ans = item.get("answer")
+            if isinstance(ans, str) and ans.strip():
+                used.append(ans.strip())
+            for a in item.get("aliases", []) or []:
+                if isinstance(a, str) and a.strip():
+                    used.append(a.strip())
+        return used
 
     def dump_state(self, ctx: GameContext) -> dict[str, Any]:
         return dict(ctx.state)

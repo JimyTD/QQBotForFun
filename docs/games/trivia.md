@@ -199,12 +199,29 @@ LLM 输出 JSON：
 
 | 场景 | 版本 | 说明 |
 |---|---|---|
-| `trivia_host` | 1.0 | 出题，接收 `type` 参数，由代码层从 `TYPE_STYLE_GUIDES` 取对应风格卡注入 |
+| `trivia_host` | 1.2 | 出题，接收 `type` 参数；v1.1 新增 `avoid` 参数；v1.2 加强 `person` 类 prompt，显式告诉 LLM "答案名=作品名" 的自泄露陷阱 |
 
 每个 type 对应一张风格卡（见 `prompts.py::TYPE_STYLE_GUIDES`），职责：
 - 限定答案范围（比如"成语必须有典故"）
 - 约束线索风格（比如"猜国家从地理/文化入手，不要直接给国名首字母"）
 - 提示 LLM 给合适的别名（比如"猜城市要给中英文名"）
+
+### 8.1 本局去重（v1.1）
+
+每生成一道新题前，代码会从 `ctx.state.history` 收集**本局已出过的所有答案 + 别名**，通过 `generate_puzzle(..., avoid=[...])` 传给生成器。双保险：
+
+1. **Prompt 层**：`build_host_user_prompt()` 把列表展开为"⚠️ 严禁再出：「孙悟空」「悟空」「齐天大圣」…"追加到 user 消息尾部
+2. **Validation 层**：归一化后的禁用集合被传给 `_validate()`；即使 LLM 忽略 prompt 仍产出重复答案（或任一别名命中），也会触发失败并重试
+
+两层都过不去才算生成失败。用于防止 "10 题有 5 题孙悟空" 这类训练集偏好导致的重复。
+
+### 8.2 重试滚动 avoid（v1.3）
+
+`generate_puzzle` 内部重试时（默认 5 次），**每次失败的 answer+aliases 会自动追加进 avoid**。
+
+动机：person 类实测中 LLM 连续试"哈利·波特"→自泄露→再试"孙悟空"→别名齐天大圣泄露→循环 3 次用完 retry。滚动 avoid 强制 LLM 每次失败后必须换新答案。
+
+配合 `llm_retry_times: 5`（v1.3 从 3 提到 5），给 LLM 足够机会换到**不容易自泄露**的答案（像"爱因斯坦"这种名字本身不是作品名/绰号的）。
 
 ## 9. 配置项
 
@@ -213,7 +230,7 @@ class TriviaConfig(BaseSettings):
     total_questions_per_game: int = 10      # 每局题数
     max_clues_per_puzzle: int = 5           # 每题线索数（= prompt 里的固定值）
     session_timeout_minutes: int = 30       # 整局无活动超时
-    llm_retry_times: int = 3                # 单题生成重试次数
+    llm_retry_times: int = 5                # 单题生成重试次数（v1.3 从 3 提到 5）
     generator_timeout_seconds: int = 20     # 单次出题 LLM 调用超时
 
     # 计分（score 入全局榜，2026-04-30 v1.2 校准对齐海龟汤）
@@ -341,3 +358,5 @@ await self.award(qq, coin_total,
 | 1.0 | 2026-04-30 | 初版：6 类线索题、纯 LLM 生成、字符串宽松匹配、10 题自动结算、入 score 货币 |
 | 1.1 | 2026-04-30 | 接入 `GameBase.award` 统一奖励接口；新增双轨金币奖励（coin 3/2/1 + MVP 30），与海龟汤单位时间产出对齐 |
 | 1.2 | 2026-04-30 | **score 大幅下调对齐海龟汤**：5/3/1 + MVP 10（原 15/10/5 + MVP 20）。海龟汤赢一局 20 分是基准，问答 10 题全对理论上限 60 分 ≈ 3x 海龟汤，平均 6 题 ≈ 28 分与之接近，不碾压榜单。coin 不变。 |
+| 1.3 | 2026-04-30 | **修复本局重复出题**：`generate_puzzle` 新增 `avoid` 参数；`game.py` / CLI adapter 从 history 收集已出答案+别名传入；prompt + validation 双层去重，防止"10 题 5 次孙悟空"。Prompt 版本 bump 到 1.1。 |
+| 1.3.1 | 2026-04-30 | **修复 person 类连环自泄露**：`generate_puzzle` 重试时失败答案自动追加进 avoid（rolling avoid）；`llm_retry_times` 从 3 提到 5；`person` prompt 加强对"名字=作品名"陷阱的警告。Prompt 版本 1.1 → 1.2。 |

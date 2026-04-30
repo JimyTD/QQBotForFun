@@ -62,10 +62,6 @@ _menu = on_command(
 @_menu.handle()
 async def _(matcher: Matcher, event: MessageEvent) -> None:
     games = list_games()
-    if not games:
-        await matcher.finish("🎮 大厅暂无可用游戏")
-        return
-
     items: list[MenuItem] = []
     for g in games:
         emoji = getattr(g, "emoji", "🎮")
@@ -81,6 +77,21 @@ async def _(matcher: Matcher, event: MessageEvent) -> None:
                 command=f"/开始 {g.id}",
             )
         )
+
+    # —— 小工具区（非游戏） ——
+    # 目前只有"今天吃什么"。以后新增的 tools 可以在这里扩展。
+    items.append(
+        MenuItem(
+            emoji="🍱",
+            name="今天吃什么",
+            subtitle="选择困难症一键甩锅 · 小工具",
+            command="/吃什么",
+        )
+    )
+
+    if not items:
+        await matcher.finish("🎮 大厅暂无可用游戏")
+        return
 
     # 个人金币
     qq_id = int(event.user_id)

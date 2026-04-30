@@ -139,13 +139,28 @@ class TriviaCLIAdapter:
     # ---------- 内部 ----------
     async def _prepare_next(self) -> None:
         """生成当前 current_index 对应的题目。失败则 puzzle=None 占位。"""
+        avoid = self._collect_used_names()
         try:
-            self.puzzle = await generate_puzzle(self.type_id)
+            self.puzzle = await generate_puzzle(self.type_id, avoid=avoid)
             self.clues_shown = 1
         except PuzzleGenerationError as e:
             print(f"{C.RED}⚠️ 第 {self.current_index + 1} 题出题失败：{e}{C.R}")
             self.puzzle = None
             self.clues_shown = 0
+
+    def _collect_used_names(self) -> list[str]:
+        """本局已出过的答案+别名，用于 generate_puzzle 的 avoid。"""
+        used: list[str] = []
+        for item in self.history:
+            if not isinstance(item, dict):
+                continue
+            ans = item.get("answer")
+            if isinstance(ans, str) and ans.strip():
+                used.append(ans.strip())
+            for a in item.get("aliases", []) or []:
+                if isinstance(a, str) and a.strip():
+                    used.append(a.strip())
+        return used
 
     def _announce_current(self) -> None:
         if self.puzzle is None:
@@ -177,6 +192,7 @@ class TriviaCLIAdapter:
         self.history.append(
             {
                 "answer": self.puzzle.answer,
+                "aliases": list(self.puzzle.aliases),
                 "winner": _CLI_PLAYER_NAME if winner else None,
                 "clues_used": clues_used,
                 "awarded": awarded,

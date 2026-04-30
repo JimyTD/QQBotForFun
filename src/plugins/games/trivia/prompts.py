@@ -5,7 +5,7 @@
 
 from __future__ import annotations
 
-TRIVIA_HOST_PROMPT_VERSION = "1.0"
+TRIVIA_HOST_PROMPT_VERSION = "1.2"
 
 
 # ------------------------------------------------------------------
@@ -106,7 +106,16 @@ TYPE_STYLE_GUIDES: dict[str, dict[str, str]] = {
   4. 外貌特征 / 口头禅 / 标志性装扮
   5. 基本送分：用最直接的一句话描述他的身份
 
-⚠️ 严禁：任何线索里直接出现人物的名字。""",
+⚠️ 严禁：任何线索里直接出现人物的名字。
+
+⚠️⚠️ 特别提醒（人物类高发陷阱）：
+  - 如果答案的**名字本身就是作品名**（比如"哈利·波特""堂吉诃德""福尔摩斯"也是书名/系列名），
+    **线索里绝对不要提那部作品的标题**——提了就等于说出答案。
+    ❌ 错误：答案"哈利·波特" / 线索"他是《哈利·波特》系列的主角"
+    ✅ 正确：改说"他是 J.K. 罗琳笔下那个额头有闪电疤痕的男孩"，避开书名
+  - 神话角色（孙悟空/宙斯/哪吒）的称号（"大圣""斗战胜佛""雷神"）一旦写进 aliases，
+    线索里就**全部不能出现**——所以叙述事迹时要绕开这些称号。
+  - 写每条线索前，**先在脑中把 answer 和所有 aliases 列一遍**，确认这条线索不含它们中任何一个的字。""",
     },
 
     "animal": {
@@ -204,10 +213,35 @@ def build_host_system_prompt(type_id: str) -> str:
     return HOST_SYSTEM.format(type_guide=TYPE_STYLE_GUIDES[type_id]["guide"])
 
 
-def build_host_user_prompt(type_id: str) -> str:
+def build_host_user_prompt(type_id: str, avoid: list[str] | None = None) -> str:
+    """渲染出题 user prompt。
+
+    avoid: 本局已出过的答案/别名列表。会被展开成显式禁词，**强制** LLM 换新答案。
+    """
     if type_id not in TYPE_STYLE_GUIDES:
         raise ValueError(f"unknown trivia type: {type_id}")
-    return HOST_USER.format(type_name=TYPE_STYLE_GUIDES[type_id]["name"])
+    base = HOST_USER.format(type_name=TYPE_STYLE_GUIDES[type_id]["name"])
+    if avoid:
+        # 去重、去空、截断到前 30 条（避免 prompt 过长）
+        seen: set[str] = set()
+        deduped: list[str] = []
+        for item in avoid:
+            if not isinstance(item, str):
+                continue
+            s = item.strip()
+            if not s or s in seen:
+                continue
+            seen.add(s)
+            deduped.append(s)
+        deduped = deduped[:30]
+        if deduped:
+            listing = "、".join(f"「{x}」" for x in deduped)
+            base += (
+                f"\n\n⚠️ 本局已经出过以下答案及其别名，**严禁**再次作为答案或别名出现，"
+                f"也不要出内容高度相近的题：{listing}。"
+                f"\n请选择一个明显不同的新答案。"
+            )
+    return base
 
 
 def type_display_name(type_id: str) -> str:

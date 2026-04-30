@@ -209,3 +209,159 @@ class TestValidateCaseInsensitive:
         ok, reason = _validate(data, "country")
         assert not ok
         assert "leaked" in reason
+
+
+class TestValidateAvoidDuplicates:
+    """v1.1 新增：本局去重 —— avoid_norms 命中答案/别名时判失败。"""
+
+    def test_no_avoid_passes(self) -> None:
+        # 没有 avoid 时，正常通过
+        ok, _ = _validate(_good_puzzle(), "country", avoid_norms=frozenset())
+        assert ok
+
+    def test_answer_in_avoid_fails(self) -> None:
+        from src.plugins.games.trivia.answer_matcher import normalize
+
+        avoid = frozenset([normalize("加拿大")])
+        ok, reason = _validate(_good_puzzle(), "country", avoid_norms=avoid)
+        assert not ok
+        assert "duplicate" in reason.lower()
+
+    def test_alias_in_avoid_fails(self) -> None:
+        # 答案没重，但其中一个别名（Canada）命中历史禁用集合，仍算重复
+        from src.plugins.games.trivia.answer_matcher import normalize
+
+        avoid = frozenset([normalize("Canada")])
+        ok, reason = _validate(_good_puzzle(), "country", avoid_norms=avoid)
+        assert not ok
+        assert "duplicate" in reason.lower()
+
+    def test_normalized_match(self) -> None:
+        # 归一化后才能匹配（大小写/空格/标点都不影响）
+        from src.plugins.games.trivia.answer_matcher import normalize
+
+        avoid = frozenset([normalize("加-拿-大")])  # 加了横线
+        ok, _ = _validate(_good_puzzle(), "country", avoid_norms=avoid)
+        assert not ok
+
+    def test_unrelated_avoid_passes(self) -> None:
+        # 禁用集合里都是不相关的东西 → 通过
+        from src.plugins.games.trivia.answer_matcher import normalize
+
+        avoid = frozenset([normalize("美国"), normalize("日本"), normalize("法国")])
+        ok, _ = _validate(_good_puzzle(), "country", avoid_norms=avoid)
+        assert ok
+
+
+class TestBuildHostUserPromptWithAvoid:
+    """v1.1 新增：prompt 层把 avoid 展开成禁词列表。"""
+
+    def test_no_avoid_no_extra_text(self) -> None:
+        from src.plugins.games.trivia.prompts import build_host_user_prompt
+
+        p = build_host_user_prompt("country", avoid=None)
+        assert "严禁" not in p
+        # 原样保留
+        assert build_host_user_prompt("country") == p
+
+    def test_empty_avoid_no_extra_text(self) -> None:
+        from src.plugins.games.trivia.prompts import build_host_user_prompt
+
+        p = build_host_user_prompt("country", avoid=[])
+        assert "严禁" not in p
+
+    def test_avoid_list_injected(self) -> None:
+        from src.plugins.games.trivia.prompts import build_host_user_prompt
+
+        p = build_host_user_prompt("person", avoid=["孙悟空", "悟空", "齐天大圣"])
+        assert "严禁" in p
+        assert "孙悟空" in p
+        assert "齐天大圣" in p
+
+    def test_avoid_dedup(self) -> None:
+        from src.plugins.games.trivia.prompts import build_host_user_prompt
+
+        p = build_host_user_prompt("person", avoid=["孙悟空", "孙悟空", "  孙悟空  "])
+        # 只应出现一次（加引号后）
+        assert p.count("「孙悟空」") == 1
+
+    def test_avoid_truncated_to_30(self) -> None:
+        from src.plugins.games.trivia.prompts import build_host_user_prompt
+
+        avoid = [f"人物{i}" for i in range(50)]
+        p = build_host_user_prompt("person", avoid=avoid)
+        # 前 30 条在里面
+        assert "「人物0」" in p
+        assert "「人物29」" in p
+        # 第 31 条应被截掉
+        assert "「人物30」" not in p
+
+
+class TestGeneratePuzzleRollingAvoid:
+    """v1.3 新增：重试时失败答案自动进 avoid，防止连续挑同款易自泄露答案。
+
+    不调真实 LLM，用 monkeypatch 注入可控响应。
+    """
+
+    @pytest.mark.asyncio
+    async def test_failed_answer_added_to_avoid_on_retry(self, monkeypatch) -> None:
+        from src.plugins.games.trivia import puzzle_generator as pg
+
+        # 记录每次调用时 user prompt 里的内容
+        calls: list[str] = []
+
+        class _FakeResp:
+            def __init__(self, payload: dict) -> None:
+                self._payload = payload
+
+            def json(self) -> dict:
+                return self._payload
+
+        # 第 1 次：哈利·波特，线索自泄露 → fail
+        # 第 2 次：爱因斯坦，干净 → pass
+        responses = [
+            {
+                "answer": "哈利·波特",
+                "aliases": ["Harry Potter"],
+                "clues": [
+                    "他是《哈利·波特》系列主角",  # 自泄露
+                    "他有一道闪电疤痕",
+                    "他在霍格沃茨学习魔法",
+                    "他的朋友是赫敏和罗恩",
+                    "他和伏地魔对抗",
+                ],
+                "explanation": "J.K. 罗琳笔下的男孩巫师。",
+            },
+            {
+                "answer": "爱因斯坦",
+                "aliases": ["Einstein", "阿尔伯特"],
+                "clues": [
+                    "他提出了改变物理学的理论",
+                    "他在瑞士专利局工作过",
+                    "他的相对论让时空变得可变",
+                    "他因光电效应获诺贝尔奖",
+                    "他的头发和吐舌头照片很有名",
+                ],
+                "explanation": "20 世纪最伟大的物理学家之一。",
+            },
+        ]
+        idx = {"i": 0}
+
+        async def fake_chat(*, messages, scene, json_mode):
+            user_msg = next((m.content for m in messages if m.role == "user"), "")
+            calls.append(user_msg)
+            resp = _FakeResp(responses[idx["i"]])
+            idx["i"] += 1
+            return resp
+
+        monkeypatch.setattr(pg.llm, "chat", fake_chat)
+
+        puzzle = await pg.generate_puzzle("person", retries=5, avoid=[])
+
+        assert puzzle.answer == "爱因斯坦"
+        # 两次调用，第 2 次的 user prompt 已经注入了失败答案
+        assert len(calls) == 2
+        assert "哈利·波特" in calls[1]
+        # 第 1 次还不知道要避
+        assert "哈利·波特" not in calls[0]
+

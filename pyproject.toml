@@ -41,6 +41,7 @@ dev = [
     "pytest-cov>=5.0",
     "ruff>=0.4",
     "mypy>=1.10",
+    "pillow>=10.0",          # 仅开发时用：压缩种子图（scripts/foods/*）
 ]
 
 [project.scripts]

@@ -59,6 +59,7 @@ from cli_adapters.base import (  # noqa: E402
 )
 from cli_adapters.turtle_soup import TurtleSoupCLIAdapter  # noqa: E402
 from cli_adapters.trivia import TriviaCLIAdapter  # noqa: E402
+from cli_adapters.food import FoodCLIAdapter  # noqa: E402
 
 
 # ============ 已注册的 CLI 游戏 ============
@@ -66,6 +67,7 @@ from cli_adapters.trivia import TriviaCLIAdapter  # noqa: E402
 ADAPTERS: dict[str, type[GameCLIAdapter]] = {
     "turtle_soup": TurtleSoupCLIAdapter,
     "trivia": TriviaCLIAdapter,
+    "food": FoodCLIAdapter,
     # "new_game": NewGameCLIAdapter,   # 未来新增
 }
 
@@ -116,10 +118,17 @@ def pick_game(preselect: str | None = None) -> type[GameCLIAdapter] | None:
 def pick_mode(
     adapter_cls: type[GameCLIAdapter], preselect: str | None = None
 ) -> GameMode | None:
-    """返回选中的 GameMode；输入 q/quit 返回 None（退出当前游戏选择）。"""
+    """返回选中的 GameMode；输入 q/quit 返回 None（退出当前游戏选择）。
+
+    特例：如果 adapter 只定义了 1 个模式，直接返回它（无意义的"选择"略过）。
+    """
     modes = adapter_cls.MODES
     if not modes:
         raise RuntimeError(f"{adapter_cls.__name__} has no MODES defined")
+
+    # 单模式直接跳过菜单（工具型功能常见场景）
+    if len(modes) == 1:
+        return modes[0]
 
     if preselect:
         m = resolve_mode(modes, preselect)

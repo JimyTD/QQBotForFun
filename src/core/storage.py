@@ -193,3 +193,11 @@ def _import_all_models() -> None:
         from nonebot import logger
 
         logger.debug(f"[storage] turtle_soup models not loaded: {e}")
+
+    # 小工具模型
+    try:
+        from src.plugins.tools.food import models as _food_models  # noqa: F401
+    except Exception as e:  # noqa: BLE001
+        from nonebot import logger
+
+        logger.debug(f"[storage] tools/food models not loaded: {e}")
