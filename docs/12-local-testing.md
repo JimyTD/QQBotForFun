@@ -74,7 +74,37 @@ CLI 遵守 1:1 对齐铁律，但有 2 个**非玩家可见**的差异：
 
 在 `scripts/cli_adapters/` 下新建 adapter（实现 `GameCLIAdapter` 协议，声明 `MODES`），再到 `scripts/play_cli.py` 顶部的 `ADAPTERS` 字典里注册一行即可。详见 [`04-game-development.md`](./04-game-development.md)。
 
+### 0.5.6 AI Agent 帮你启动 CLI（开发辅助）
+
+**人类用户直接用 §0.5.1 的 `uv run python scripts/play_cli.py` 就行，这一小节不用看。**
+
+如果是 AI Agent 需要"在用户桌面上弹一个能交互的 CLI 窗口"（agent 自己的 shell 没 TTY，直接跑 CLI 会 EOF 秒退），正确姿势：
+
+```powershell
+# ⚠️ 下面命令里的 uv.exe 路径是 @jimygong 机器上的实测值，换机器 / 换用户必须替换！
+# 新 agent 第一次在一台新机器上用时，请先在 **用户自己的 PowerShell**（不是 agent 的 shell）里跑：
+#     where.exe uv
+# 把输出的完整路径（例如 C:\Users\<你>\AppData\Local\Python\pythoncore-3.1x-64\Scripts\uv.exe）
+# 替换下面的 <UV_EXE_ABSOLUTE_PATH> 占位符。
+Start-Process -FilePath cmd -ArgumentList '/k','cd /d i:\QQBotForFun && <UV_EXE_ABSOLUTE_PATH> run python scripts/play_cli.py'
+
+# 已知可工作的实测示例（@jimygong 机器，2026-04-30）——直接 Ctrl+C/V 用，不过机器不同就会失效：
+Start-Process -FilePath cmd -ArgumentList '/k','cd /d i:\QQBotForFun && C:\Users\jimygong\AppData\Local\Python\pythoncore-3.14-64\Scripts\uv.exe run python scripts/play_cli.py'
+```
+
+**关键坑点**（2026-04-30 实测）：
+1. `Start-Process` 弹出的新 cmd 窗口标题是 `管理员: C:\Windows\System32`，**以管理员身份运行**（因为继承了 agent 进程的身份）
+2. 管理员窗口**只继承系统 PATH，不继承用户 PATH**
+3. `uv.exe` 装在用户目录（`C:\Users\<用户名>\AppData\Local\Python\...\Scripts\uv.exe`），管理员窗口里直接跑 `uv` 会报 **"不是内部或外部命令"**
+4. **必须用 `uv.exe` 的完整绝对路径**，不要依赖 PATH —— 这就是上面命令里要用占位符而不是直接写 `uv` 的原因
+
+**别的踩过的坑**：
+- bash 里用 `start "标题" ...` 会被引号转义搞坏，报"系统找不到文件"
+- agent 自己的 PowerShell 里直接跑 `uv` 会被安全钩静默拦截（返回空）；所有 uv 命令在 agent 端应走 bash
+- 弹出的窗口**归用户所有**，agent 看不到里面的输出、发不了输入——这叫"启动"不叫"驱动"。想让 agent 自动走完一局对局，得给 CLI 加 `--script <file>` 模式
+
 ---
+
 
 
 
@@ -399,3 +429,5 @@ ipconfig
 |---|---|---|
 | v1 | 2026-04-28 | 初版 |
 | v1.1 | 2026-04-30 | 新增 §0.5 CLI 测试章节（统一入口 `play_cli.py` 用法、快捷启动、CLI 与 Bot 的差异点） |
+| v1.2 | 2026-04-30 | §0.5.6 增加 AI Agent 启动 CLI 的姿势（Start-Process + uv 完整路径，解决管理员窗口缺用户 PATH 的问题） |
+| v1.3 | 2026-04-30 | §0.5.6 的 uv.exe 绝对路径改成占位符 `<UV_EXE_ABSOLUTE_PATH>` 并加使用说明（原硬编了 `jimygong` 用户名，换机器会失效），实测示例保留作参考 |
