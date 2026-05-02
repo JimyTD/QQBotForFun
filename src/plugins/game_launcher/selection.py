@@ -81,7 +81,7 @@ async def begin(
         if game_cls is None:
             await session.broadcast(
                 group_id,
-                f"⚠️ 未找到游戏「{game_preselect}」。使用 /菜单 查看可用游戏。",
+                f"⚠️ 未找到游戏「{game_preselect}」。@我 菜单 查看可用游戏。",
             )
             return
 
@@ -127,12 +127,12 @@ async def _enter_game_stage(group_id: int, initiator_id: int) -> None:
     _pending[group_id] = ps
     ps.timeout_task = asyncio.create_task(_timeout_watcher(group_id))
 
-    lines = ["🎮 可用游戏（@机器人 并发送数字或 ID 选择）", ""]
+    lines = ["🎮 可用游戏（@我 发送数字或 ID 选择）", ""]
     for i, g in enumerate(games, 1):
         emoji = getattr(g, "emoji", "🎮")
         lines.append(f"  {i}. {emoji} {g.name}  [{g.id}]")
     lines.append("")
-    lines.append(f"⏱ {SELECTION_TIMEOUT_SECONDS}s 内未选择将自动取消 · /结束 可随时退出")
+    lines.append(f"⏱ {SELECTION_TIMEOUT_SECONDS}s 内未选择将自动取消 · @我 结束 可随时退出")
 
     await session.broadcast(group_id, "\n".join(lines))
 
@@ -164,8 +164,8 @@ async def _enter_mode_stage(
         lines.append(f"  {i}. {m.name}{sub}")
     lines.append("")
     lines.append(
-        "@机器人 并发送数字或别名选择 · "
-        f"⏱ {SELECTION_TIMEOUT_SECONDS}s 超时 · /结束 退出"
+        "@我 发送数字或别名选择 · "
+        f"⏱ {SELECTION_TIMEOUT_SECONDS}s 超时 · @我 结束 退出"
     )
 
     await session.broadcast(group_id, "\n".join(lines))
@@ -180,7 +180,7 @@ async def handle_selection_message(
     """如果群里处于选择态且这条消息看起来是一次选择，处理之并返回 True。
 
     规则：
-    - 必须 @机器人（at_bot=True），避免误触发
+    - 必须 @机器人（at_bot=True）
     - 消息内容应当是编号、ID 或模式别名
     """
     ps = _pending.get(group_id)
@@ -199,7 +199,7 @@ async def handle_selection_message(
         if game_cls is None:
             await session.broadcast(
                 group_id,
-                f"@{qq_id} ⚠️ 未识别「{content}」，请 @机器人 并发送正确的编号或游戏 ID。",
+                f"⚠️ 未识别「{content}」，请发送正确的编号或游戏 ID。",
             )
             return True
         # 进入模式选择
@@ -213,7 +213,7 @@ async def handle_selection_message(
         if mode is None:
             await session.broadcast(
                 group_id,
-                f"@{qq_id} ⚠️ 未识别模式「{content}」，请 @机器人 并发送正确的编号或模式名。",
+                f"⚠️ 未识别模式「{content}」，请发送正确的编号或模式名。",
             )
             return True
         _cancel(group_id)
@@ -265,9 +265,12 @@ async def _launch_game(
     game_cls: type[GameBase],
     mode: GameMode,
 ) -> None:
-    host_user = await user.get(initiator_id, group_id)
-    players = [host_user]
-    session_timeout = getattr(game_cls, "default_session_timeout_seconds", None)
+    # 不限制 players —— 海龟汤/趣味问答等群游戏允许所有群友参与
+    # player_ids 为空时 session.route_incoming_message 会放行所有人
+    players: list = []
+    # default_session_timeout_seconds 是实例 @property，不能在类上 getattr
+    # 传 None 让 create_and_start 内部处理
+    session_timeout = None
 
     try:
         await game_base.create_and_start(

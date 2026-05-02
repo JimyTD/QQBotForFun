@@ -1,20 +1,20 @@
 """全局消息入站路由。
 
-处理优先级：
+处理优先级（priority=5，低于命令的 priority=3）：
   1. 如果群里正在 [选择态]，且消息 @机器人，交给 selection 处理
-  2. 否则转 `core.session.route_incoming_message`（游戏内 / ask 等待）
-  3. 若被消费，阻断后续插件匹配
+  2. 否则 @机器人 的消息转 `core.session.route_incoming_message`（游戏内提问等）
+  3. 若都未消费，回复帮助信息（兜底）
 """
 
 from __future__ import annotations
 
-from nonebot import get_bot, on_message
+from nonebot import on_message
 from nonebot.adapters.onebot.v11 import (
     GroupMessageEvent,
     MessageEvent,
-    MessageSegment,
     PrivateMessageEvent,
 )
+from nonebot.matcher import Matcher
 from nonebot.rule import Rule
 
 from core import session as csession
@@ -29,14 +29,8 @@ _matcher = on_message(
 
 def _is_at_bot(event: MessageEvent) -> bool:
     """检查消息是否 @了当前机器人。"""
-    try:
-        self_id = str(get_bot().self_id)
-    except Exception:  # noqa: BLE001
-        return False
-    for seg in event.get_message():
-        if isinstance(seg, MessageSegment) and seg.type == "at":
-            if str(seg.data.get("qq", "")) == self_id:
-                return True
+    if hasattr(event, "is_tome"):
+        return event.is_tome()
     return False
 
 
@@ -49,8 +43,19 @@ def _strip_at(event: MessageEvent) -> str:
     return "".join(parts).strip()
 
 
+# 兜底帮助文案（当 @机器人 但无法识别指令时回复）
+_FALLBACK_HELP = (
+    "🤖 我没听懂，试试以下指令吧：\n"
+    "\n"
+    "🎮 @我 海龟汤\n"
+    "🎮 @我 趣味问答\n"
+    "🍱 @我 吃什么\n"
+    "📜 @我 帮助（查看完整指令）"
+)
+
+
 @_matcher.handle()
-async def _route(event: MessageEvent) -> None:
+async def _route(event: MessageEvent, matcher: Matcher) -> None:
     qq_id = int(event.user_id)
     group_id: int | None = None
     if isinstance(event, GroupMessageEvent):
@@ -58,21 +63,32 @@ async def _route(event: MessageEvent) -> None:
     elif isinstance(event, PrivateMessageEvent):
         group_id = None
 
-    # 1) 选择态优先（必须群内且 @机器人）
+    # 必须 @机器人 才处理
+    at_bot = _is_at_bot(event)
+    if not at_bot:
+        return
+
+    text = _strip_at(event)
+
+    # 只 @了机器人但没说话 → 回复帮助
+    if not text:
+        await matcher.finish(_FALLBACK_HELP)
+        return
+
+    # 1) 选择态优先
     if group_id is not None and selection.has_pending(group_id):
-        at_bot = _is_at_bot(event)
-        text_no_at = _strip_at(event)
         consumed = await selection.handle_selection_message(
-            group_id, qq_id, text_no_at, at_bot=at_bot
+            group_id, qq_id, text, at_bot=True
         )
         if consumed:
-            _matcher.stop_propagation()
+            matcher.stop_propagation()
             return
 
-    # 2) 常规路由（游戏内 / ask 等待）
-    text = event.get_plaintext().strip()
-    if not text:
-        return
+    # 2) 常规路由（游戏内提问 / ask 等待）
     consumed = await csession.route_incoming_message(qq_id, group_id, text)
     if consumed:
-        _matcher.stop_propagation()
+        matcher.stop_propagation()
+        return
+
+    # 3) 兜底：@机器人 但没被任何命令或游戏消费 → 回复帮助
+    await matcher.finish(_FALLBACK_HELP)

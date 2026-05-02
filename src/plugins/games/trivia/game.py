@@ -135,7 +135,7 @@ class TriviaGame(GameBase):
                 "💡 群里任意发言即可作答",
                 "💡 发 「线索」 要下一条线索",
                 "💡 发 「跳过」 放弃本题",
-                "💡 /问答 状态 查看进度 · /结束 终止本局",
+                "💡 @我 问答状态 查看进度 · @我 结束 终止本局",
             ],
             emoji=EMOJI,
         )
@@ -212,7 +212,7 @@ class TriviaGame(GameBase):
         else:
             lines.append("（本局无人得分）")
 
-        footer_lines = ["发送 /榜 查看全服趣味分排行 · /金币 查钱包余额"]
+        footer_lines = ["@我 榜 查看全服趣味分排行 · @我 金币 查钱包余额"]
         try:
             await session.broadcast(
                 ctx.group_id,

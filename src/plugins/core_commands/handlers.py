@@ -7,6 +7,7 @@ from nonebot.adapters.onebot.v11 import GroupMessageEvent, MessageEvent
 from nonebot.matcher import Matcher
 from nonebot.params import CommandArg
 from nonebot.adapters.onebot.v11 import Message
+from nonebot.rule import to_me
 
 from core import economy, render, user
 from core.game_base import list_games
@@ -14,7 +15,7 @@ from core.render import MenuItem
 
 
 # -------------------- /测试 --------------------
-_ping = on_command("测试", aliases={"ping"}, priority=10, block=True)
+_ping = on_command("测试", aliases={"ping"}, rule=to_me(), priority=3, block=True)
 
 
 @_ping.handle()
@@ -23,25 +24,33 @@ async def _(matcher: Matcher) -> None:
 
 
 # -------------------- /帮助 --------------------
-_help = on_command("帮助", aliases={"help", "说明"}, priority=10, block=True)
+_help = on_command("帮助", aliases={"help", "说明"}, rule=to_me(), priority=3, block=True)
 
 HELP_TEXT = render.text_card(
     "使用帮助",
     [
-        "🎮 /开始       选择游戏开始（引导式）",
-        "🎮 /开始 <ID>  跳过选游戏直接进模式选择",
-        "🎮 /开始 <ID> <模式>  两步都跳过直接开局",
-        "📋 /菜单       查看游戏大厅",
-        "🏳 /结束       终止当前群内的游戏或选择",
-        "📊 /资料       查看个人信息",
-        "💰 /金币       查看金币余额",
-        "🏆 /榜         查看积分榜 TOP 10",
-        "🏆 /榜 我      查看自己的排名",
-        "🏓 /测试       测试机器人是否在线",
-        "📜 /帮助       显示本帮助",
+        "所有指令都需要 @我",
+        "",
+        "🎮 @我 海龟汤      快速开一局海龟汤",
+        "🎮 @我 趣味问答    快速开一局趣味问答",
+        "🎮 @我 开始        引导式选择游戏和模式",
+        "",
+        "游戏中：",
+        "💬 @我 你的问题    直接提问（海龟汤）",
+        "💬 @我 汤底:答案   宣告答案（海龟汤）",
+        "📊 @我 状态        查看进度",
+        "📜 @我 回顾        关键线索回顾（海龟汤）",
+        "🏳 @我 结束        投降 / 终止游戏",
+        "",
+        "其他：",
+        "📋 @我 菜单        游戏大厅",
+        "📊 @我 资料        个人信息",
+        "💰 @我 金币        金币余额",
+        "🏆 @我 榜          积分榜 TOP 10",
+        "🍱 @我 吃什么      今天吃什么",
+        "🏓 @我 测试        测试是否在线",
     ],
     emoji="📜",
-    footer="游戏进行中 @机器人 + 数字 可做选择",
 )
 
 
@@ -54,7 +63,8 @@ async def _(matcher: Matcher) -> None:
 _menu = on_command(
     "菜单",
     aliases={"menu", "games", "大厅", "游戏"},
-    priority=10,
+    rule=to_me(),
+    priority=3,
     block=True,
 )
 
@@ -74,7 +84,7 @@ async def _(matcher: Matcher, event: MessageEvent) -> None:
                     if g.description
                     else f"{g.min_players}-{g.max_players} 人"
                 ),
-                command=f"/开始 {g.id}",
+                command=f"@我 开始 {g.id}",
             )
         )
 
@@ -85,7 +95,7 @@ async def _(matcher: Matcher, event: MessageEvent) -> None:
             emoji="🍱",
             name="今天吃什么",
             subtitle="选择困难症一键甩锅 · 小工具",
-            command="/吃什么",
+            command="@我 吃什么",
         )
     )
 
@@ -98,15 +108,15 @@ async def _(matcher: Matcher, event: MessageEvent) -> None:
     coin = await economy.balance(qq_id, "coin")
     footer = [
         f"💰 金币：{coin}",
-        "🎮 开始游戏：/开始",
-        "📜 /帮助 查看帮助",
+        "🎮 开始游戏：@我 开始",
+        "📜 @我 帮助 查看帮助",
     ]
 
     await matcher.finish(render.menu("游戏大厅", items, footer=footer))
 
 
 # -------------------- /资料 --------------------
-_profile = on_command("资料", aliases={"profile", "我的"}, priority=10, block=True)
+_profile = on_command("资料", aliases={"profile", "我的"}, rule=to_me(), priority=10, block=True)
 
 
 @_profile.handle()
@@ -134,7 +144,7 @@ async def _(matcher: Matcher, event: MessageEvent) -> None:
 
 
 # -------------------- /金币 --------------------
-_balance = on_command("金币", aliases={"balance", "余额"}, priority=10, block=True)
+_balance = on_command("金币", aliases={"balance", "余额"}, rule=to_me(), priority=3, block=True)
 
 
 @_balance.handle()
@@ -234,7 +244,8 @@ async def _format_self(qq_id: int, specified: str | None) -> str:
 _leaderboard = on_command(
     "榜",
     aliases={"rank", "排行", "排行榜", "leaderboard"},
-    priority=10,
+    rule=to_me(),
+    priority=3,
     block=True,
 )
 
@@ -272,7 +283,7 @@ async def _(
     if not economy.is_registered(currency):
         await matcher.finish(
             f"⚠️ 未知货币「{currency}」。可用：{'、'.join(sorted(_CURRENCY_LABELS))}\n"
-            f"或 /榜 我 查自己的排名"
+            f"或 @我 榜 我 查自己的排名"
         )
         return
     await matcher.finish(await _format_top(currency, qq_id))

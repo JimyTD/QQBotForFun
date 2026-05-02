@@ -34,7 +34,7 @@ def _configure_nonebot() -> None:
         port=settings.port,
         log_level=settings.log_level,
         onebot_access_token=settings.onebot_access_token,
-        command_start={"/", ""},
+        command_start={""},
         command_sep={" "},
     )
 
@@ -48,12 +48,16 @@ def _load_plugins() -> None:
     # 官方插件
     nonebot.load_plugin("nonebot_plugin_apscheduler")
 
-    # 消息路由（必须先加载，保证优先级）
+    # game_launcher 必须在 message_router 之前加载
+    # （message_router 会 import game_launcher.selection，若后加载会触发
+    #  "Module not loaded as a plugin" 错误）
+    nonebot.load_plugin("src.plugins.game_launcher")
+
+    # 消息路由
     nonebot.load_plugin("src.plugins.message_router")
 
     # 本项目插件
     nonebot.load_plugin("src.plugins.core_commands")
-    nonebot.load_plugin("src.plugins.game_launcher")
     nonebot.load_plugin("src.plugins.admin")
     nonebot.load_plugin("src.plugins.games.turtle_soup")
     nonebot.load_plugin("src.plugins.games.trivia")

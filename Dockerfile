@@ -27,4 +27,4 @@ RUN mkdir -p /app/data /app/logs
 EXPOSE 8080
 
 # 默认启动：先跑迁移 + seed，再启动 bot
-CMD ["sh", "-c", "alembic upgrade head && python scripts/seed_turtle_soup.py && python -m src.bot"]
+CMD ["sh", "-c", "alembic upgrade head && python scripts/seed_turtle_soup.py && python scripts/seed_foods.py && python -m src.bot"]

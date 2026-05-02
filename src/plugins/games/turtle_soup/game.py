@@ -29,23 +29,23 @@ EMOJI = "🐢"
 
 
 def _classify_message(text: str) -> str:
-    """将玩家消息分类：question / claim / command / chat。"""
+    """将玩家消息分类：question / claim / command。
+
+    所有 @机器人 的消息都会到这里（message_router 已过滤），
+    所以非命令、非宣告的消息统一当作提问。
+    """
     s = text.strip()
     if not s:
-        return "chat"
-    # 指令：以 / 开头交给 NoneBot 的 matcher（这里已经在 session 之后被路由到游戏，
-    # 说明它不是我们已知的命令；保险起见仍跳过以 / 开头的）
+        return "command"  # 空消息忽略
+    # 指令：以 / 开头
     if s.startswith("/"):
         return "command"
     lowered = s.lower()
     for kw in ("汤底:", "汤底：", "答案:", "答案：", "宣告:", "宣告：", "claim:", "claim："):
         if lowered.startswith(kw):
             return "claim"
-    if s.endswith("?") or s.endswith("？"):
-        return "question"
-    if s.startswith(("问:", "问：", "q:", "Q:")):
-        return "question"
-    return "chat"
+    # 其他所有消息当作提问
+    return "question"
 
 
 def _strip_claim_prefix(text: str) -> str:
@@ -144,10 +144,9 @@ class TurtleSoupGame(GameBase):
             ],
             emoji=EMOJI,
             footer=[
-                "💡 提问以 ? 结尾",
+                "💡 @我 发送问题即可提问",
                 "💡 宣告汤底请以「汤底:」开头",
-                "💡 /汤 投降 投降 · /汤 状态 查看进度",
-                "💡 /结束 终止本局",
+                "💡 @我 结束 投降 · @我 状态 查看进度",
             ],
         )
         await session.broadcast(ctx.group_id, card)
@@ -219,7 +218,7 @@ class TurtleSoupGame(GameBase):
         self, ctx: GameContext, player_id: int, message: str
     ) -> None:
         kind = _classify_message(message)
-        if kind == "chat" or kind == "command":
+        if kind == "command":
             return
 
         # 软上限
@@ -228,7 +227,7 @@ class TurtleSoupGame(GameBase):
         if qcount >= max_q and kind != "claim":
             await session.broadcast(
                 ctx.group_id,
-                "⚠️ 已达提问上限，请宣告汤底或 /汤 投降 。",
+                "⚠️ 已达提问上限，请宣告汤底或 @我 结束 投降。",
                 at=player_id,
             )
             return

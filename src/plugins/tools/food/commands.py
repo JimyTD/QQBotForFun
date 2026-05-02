@@ -12,11 +12,13 @@
 
 from __future__ import annotations
 
+import base64
 from pathlib import Path
 
 from nonebot import on_command
 from nonebot.adapters.onebot.v11 import Message, MessageSegment
 from nonebot.matcher import Matcher
+from nonebot.rule import to_me
 
 from core import render
 from src.plugins.tools.food.storage import pick_random
@@ -29,7 +31,8 @@ _ROOT = Path(__file__).resolve().parents[4]  # src/plugins/tools/food/commands.p
 _cmd = on_command(
     "吃什么",
     aliases={"今天吃什么", "eat", "food"},
-    priority=10,
+    rule=to_me(),
+    priority=3,
     block=True,
 )
 
@@ -55,7 +58,8 @@ async def _(matcher: Matcher) -> None:
     if food.image_path:
         abs_path = _ROOT / food.image_path
         if abs_path.exists():
-            # OneBot V11 支持 file:// 本地图片
-            msg += MessageSegment.image(f"file:///{abs_path.as_posix()}")
+            # 用 base64 发送图片（避免 NapCat 容器无法访问 Bot 容器的文件）
+            b64 = base64.b64encode(abs_path.read_bytes()).decode()
+            msg += MessageSegment.image(f"base64://{b64}")
 
     await matcher.finish(msg)
