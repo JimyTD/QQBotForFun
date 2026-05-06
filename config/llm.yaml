@@ -4,6 +4,11 @@ providers:
     api_key: ${ZHIPU_API_KEY}
     timeout_seconds: 60
 
+  longcat:
+    base_url: https://api.longcat.chat/openai
+    api_key: ${LONGCAT_API_KEY}
+    timeout_seconds: 30
+
   # 可选供应商（需要时取消注释并填 .env 对应 KEY）
   # openrouter:
   #   base_url: https://openrouter.ai/api/v1
@@ -75,9 +80,9 @@ scenes:
     timeout_seconds: 30
 
   ask_ai:
-    # 查资料：群内单轮问答，输入少、需要知识面和准确性
-    provider: zhipu
-    model: glm-4-flashx
+    # 查资料：需要广博知识面，LongCat-Flash-Lite 比智谱 flash 系列知识更准确
+    provider: longcat
+    model: LongCat-Flash-Lite
     temperature: 0.7
     max_tokens: 1024
     timeout_seconds: 30
