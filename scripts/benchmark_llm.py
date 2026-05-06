@@ -1,6 +1,6 @@
 """LLM 模型可用性 & 延迟 & 稳定性测试
 
-针对我们两家供应商（智谱 / 硅基流动）的多个模型，做三轮调用：
+针对我们的供应商（智谱 / 龙猫）的多个模型，做三轮调用：
 1. 简单 chat（"你好"）
 2. JSON 判定场景（模拟 turtle_soup_judge）
 3. 并发 3 次（模拟高频率场景看是否限速）
@@ -47,7 +47,7 @@ from src.settings import get_settings  # noqa: E402
 # ============ 测试矩阵 ============
 @dataclass
 class ModelSpec:
-    provider: str       # zhipu / siliconflow
+    provider: str       # zhipu / longcat
     model: str
     note: str = ""
 
@@ -55,16 +55,13 @@ class ModelSpec:
 MODELS: list[ModelSpec] = [
     # --- 智谱 ---
     ModelSpec("zhipu", "glm-4-flash", "老版永久免费，额度宽松"),
-    ModelSpec("zhipu", "glm-4-flashx", "flash 增强版"),
+    ModelSpec("zhipu", "glm-4-flashx", "flash 增强版（当前主力）"),
+    ModelSpec("zhipu", "glm-4-flash-250414", "2025-04 新版 flash，免费"),
     ModelSpec("zhipu", "glm-4.5-flash", "2026 年中版本"),
-    ModelSpec("zhipu", "glm-4.7-flash", "2026-01 新版，刚才 429"),
-    ModelSpec("zhipu", "glm-4-air", "小模型付费"),
-    # --- 硅基流动 ---
-    ModelSpec("siliconflow", "Qwen/Qwen2.5-7B-Instruct", "永久免费"),
-    ModelSpec("siliconflow", "Qwen/Qwen2.5-32B-Instruct", "付费但便宜"),
-    ModelSpec("siliconflow", "Qwen/Qwen2.5-72B-Instruct", "我们之前用的"),
-    ModelSpec("siliconflow", "deepseek-ai/DeepSeek-V2.5", "DeepSeek"),
-    ModelSpec("siliconflow", "THUDM/glm-4-9b-chat", "GLM 开源版"),
+    ModelSpec("zhipu", "glm-4.7-flash", "2026-01 新版，30B 免费"),
+    # --- 龙猫（美团） ---
+    ModelSpec("longcat", "LongCat-Flash-Chat", "通用对话，500万tokens/天免费"),
+    ModelSpec("longcat", "LongCat-Flash-Lite", "轻量MoE，5000万tokens/天免费"),
 ]
 
 
@@ -73,18 +70,19 @@ PROVIDERS = {
     "zhipu": {
         "base_url": "https://open.bigmodel.cn/api/paas/v4",
     },
-    "siliconflow": {
-        "base_url": "https://api.siliconflow.cn/v1",
+    "longcat": {
+        "base_url": "https://api.longcat.chat/openai",
     },
 }
 
 
 def get_client(provider: str) -> AsyncOpenAI:
     settings = get_settings()
-    key_attr = {
+    key_map = {
         "zhipu": "zhipu_api_key",
-        "siliconflow": "siliconflow_api_key",
-    }[provider]
+        "longcat": "longcat_api_key",
+    }
+    key_attr = key_map[provider]
     api_key = getattr(settings, key_attr, "") or ""
     return AsyncOpenAI(
         base_url=PROVIDERS[provider]["base_url"],

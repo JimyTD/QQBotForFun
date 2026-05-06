@@ -23,15 +23,15 @@ defaults:
   backoff_base_seconds: 1.0
   backoff_max_seconds: 10.0
 
-# 模型说明（2026-04 实测，详见 scripts/benchmark_llm.py）：
-# - glm-4-flash    ：永久免费，额度宽松，~880ms，稳定（大 token 场景用它）
-# - glm-4-flashx   ：flash 增强版，~840ms，稳定，但大 token 请求偶限速 1302/1305
-# - glm-4-air      ：付费但便宜，~758ms 最快，强一些
+# 模型说明（2026-05 实测，详见 scripts/benchmark_llm.py）：
+# - glm-4-flash    ：永久免费，额度宽松，延迟波动大（1.7s~5s），已被 250414 取代
+# - glm-4-flash-250414：新版 flash，免费，~1.1s，稳定性极好（波动78ms），出题用
+# - glm-4-flashx   ：flash 增强版，~600ms，稳定，判定/宣告用
 # - glm-4.5-flash  ：实测限速严重、延迟 13s+，不推荐
 # - glm-4.7-flash  ：个人号 1302 速率限制，不可用
 #
 # 差异化策略：
-# - 大 token 场景（出题 2048 tokens）走 glm-4-flash（免费额度大）
+# - 大 token 出题场景走 glm-4-flash-250414（快且稳定）
 # - 小 token 高质量场景（判定/宣告）走 glm-4-flashx（推理更准）
 
 scenes:
@@ -42,9 +42,9 @@ scenes:
     max_tokens: 1024
 
   turtle_soup_host:
-    # 出题 token 消耗大，走 glm-4-flash 避开 flashx 的限流
+    # 出题 token 消耗大，走 glm-4-flash-250414（比老 flash 快 4 倍且更稳定）
     provider: zhipu
-    model: glm-4-flash
+    model: glm-4-flash-250414
     temperature: 0.9
     max_tokens: 2048
     json_mode_default: true
@@ -66,19 +66,18 @@ scenes:
     timeout_seconds: 45
 
   trivia_host:
-    # 趣味问答出题（答案 + 2-5 别名 + 5 条线索 + 一句讲解）
-    # token 量中等，走 glm-4-flash 免费额度；temperature 高保证题目多样
+    # 趣味问答出题，走 glm-4-flash-250414（快且稳定）
     provider: zhipu
-    model: glm-4-flash
+    model: glm-4-flash-250414
     temperature: 0.9
     max_tokens: 1024
     json_mode_default: true
     timeout_seconds: 30
 
   ask_ai:
-    # 查资料：群内单轮问答，免费模型，回答简洁
+    # 查资料：群内单轮问答，输入少、需要知识面和准确性
     provider: zhipu
-    model: glm-4-flash
+    model: glm-4-flashx
     temperature: 0.7
     max_tokens: 1024
     timeout_seconds: 30
