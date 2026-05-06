@@ -63,6 +63,7 @@ def _load_plugins() -> None:
     nonebot.load_plugin("src.plugins.games.trivia")
     # 小工具（tools/）—— 独立拔插式小功能
     nonebot.load_plugin("src.plugins.tools.food")
+    nonebot.load_plugin("src.plugins.tools.ask_ai")
 
 
 def _register_lifecycle() -> None:

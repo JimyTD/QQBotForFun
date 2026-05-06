@@ -74,3 +74,11 @@ scenes:
     max_tokens: 1024
     json_mode_default: true
     timeout_seconds: 30
+
+  ask_ai:
+    # 查资料：群内单轮问答，免费模型，回答简洁
+    provider: zhipu
+    model: glm-4-flash
+    temperature: 0.7
+    max_tokens: 1024
+    timeout_seconds: 30

@@ -22,9 +22,10 @@ def test_classify_claim() -> None:
     assert _classify_message("宣告：真相就是…") == "claim"
 
 
-def test_classify_chat() -> None:
-    assert _classify_message("嗯嗯嗯") == "chat"
-    assert _classify_message("") == "chat"
+def test_classify_fallback_question() -> None:
+    # v2.4+ 所有非命令/非宣告消息统一当提问（不再有 chat 分类）
+    assert _classify_message("嗯嗯嗯") == "question"
+    assert _classify_message("") == "command"  # 空消息视为无效指令忽略
 
 
 def test_classify_command() -> None:

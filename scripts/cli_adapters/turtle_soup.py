@@ -33,6 +33,7 @@ HELP_TEXT = (
     "  · 宣告汤底：以「汤底:」或「答案:」开头\n"
     "  · status / 状态  查看进度\n"
     "  · recap  / 回顾  查看关键线索\n"
+    "  · hint   / 提示  花金币购买一条方向性提示\n"
     "  · giveup / 投降  投降公布汤底\n"
     "  · quit   / 退出  退出当前游戏\n"
     "  · help   / 帮助  查看本帮助\n"
@@ -55,6 +56,8 @@ def _classify(text: str) -> str:
         return "status"
     if lowered in ("recap", "回顾"):
         return "recap"
+    if lowered in ("hint", "提示"):
+        return "hint"
     if lowered in ("giveup", "投降", "认输"):
         return "giveup"
     if lowered in ("quit", "exit", "退出"):
@@ -86,6 +89,7 @@ class TurtleSoupCLIAdapter(GameCLIAdapter):
         self.puzzle: PuzzleData | None = None
         self.question_count = 0
         self.key_clues_shown: list[tuple[str, str]] = []
+        self.hints_purchased: list[int] = []  # 已购买提示对应的线索索引
         self.max_q = 50
         # CLI 本地累积的奖励（不真实调 economy，避免 qq_id=0 幽灵账户污染 DB）
         self.cli_score = 0
@@ -155,6 +159,47 @@ class TurtleSoupCLIAdapter(GameCLIAdapter):
         data = resp.json()
         return str(data.get("verdict", "wrong")), str(data.get("feedback", "") or "")
 
+    async def _handle_hint(self) -> None:
+        """CLI 端购买提示逻辑：直接揭示一条未发现的关键线索。"""
+        assert self.puzzle is not None
+        cfg = get_config()
+
+        # 防超限
+        if len(self.hints_purchased) >= cfg.max_hints_per_game:
+            print(
+                f"{C.RED}⚠️ 本局已购买 {cfg.max_hints_per_game} 次提示，"
+                f"达到上限。{C.R}"
+            )
+            return
+
+        # 检查是否还有未揭示的线索
+        all_clues = self.puzzle.key_clues
+        undiscovered_indices = [
+            i for i in range(len(all_clues)) if i not in self.hints_purchased
+        ]
+        if not undiscovered_indices:
+            print(f"{C.DIM}💡 所有关键线索都已揭示，靠你自己推理汤底啦！{C.R}")
+            return
+
+        # 直接揭示第一条未发现的线索
+        target_idx = undiscovered_indices[0]
+        clue_text = all_clues[target_idx]
+        self.hints_purchased.append(target_idx)
+
+        # 归入回顾列表
+        self.key_clues_shown.append(("[购买提示]", clue_text))
+
+        # 模拟扣币（CLI 本地）
+        self.cli_coin -= cfg.hint_cost_coin
+        hints_used = len(self.hints_purchased)
+        print(
+            f"\n{C.B}🔮 购买提示（{hints_used}/{cfg.max_hints_per_game}）{C.R}"
+        )
+        print(f"  {C.MAG}💡 关键线索：{clue_text}{C.R}")
+        print(
+            f"  {C.DIM}💰 花费 {cfg.hint_cost_coin} 金币{C.R}"
+        )
+
     async def play(self) -> None:  # noqa: C901
         assert self.puzzle is not None
         puzzle = self.puzzle
@@ -187,6 +232,9 @@ class TurtleSoupCLIAdapter(GameCLIAdapter):
                     print(f"\n{C.B}📜 关键线索回顾{C.R}")
                     for q, h in self.key_clues_shown:
                         print(f"  💡 {q} → {h}")
+                continue
+            if kind == "hint":
+                await self._handle_hint()
                 continue
             if kind == "giveup":
                 box(
@@ -233,11 +281,20 @@ class TurtleSoupCLIAdapter(GameCLIAdapter):
                     )
                     if verdict == "key" and hint:
                         self.key_clues_shown.append((text, hint))
-                        # 参与奖：问到 key 线索
+                        # 参与奖：问到 key 线索 → score + coin
                         cfg = get_config()
                         self._show_reward(
                             score=cfg.reward_score_on_key_hit,
+                            coin=cfg.reward_coin_on_key_hit,
                             label="关键线索命中",
+                        )
+                    elif verdict == "yes":
+                        # 参与奖：问到 yes → score + coin
+                        cfg = get_config()
+                        self._show_reward(
+                            score=cfg.reward_score_on_yes,
+                            coin=cfg.reward_coin_on_yes,
+                            label="提问正确",
                         )
                     continue
 

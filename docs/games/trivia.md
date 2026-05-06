@@ -1,10 +1,12 @@
 # 游戏设计文档 · 趣味问答（Trivia）
 
 - **Game ID**: `trivia`
-- **Status**: Design v1
-- **Last Updated**: 2026-04-30
+- **Status**: Design v1.4（题库化，运行时无 LLM）
+- **Last Updated**: 2026-05-06
 - **Owner**: @owner
-- **Version**: 1.0（LLM 实时生成线索题）
+- **Version**: 1.4（题库驱动，每答案 2 套线索）
+
+> **题库子系统的完整设计、决策依据、生成流程见 [trivia-bank.md](./trivia-bank.md)**。
 
 ---
 
@@ -21,29 +23,29 @@
 设计目标：
 - **节奏轻松**：没有倒计时，群友随时参与
 - **门槛低**：常识题为主，涉及的都是家喻户晓的东西
-- **可持续**：LLM 生成题目，题库无限，不会重复
+- **稳定性强**：v1.4 起改为**纯题库**，运行时不再调 LLM，零延迟、零翻车
 
 ## 2. 范围与不做什么
 
-### v1.0 **做**
+### v1.4 **做**
 - ✅ 6 个固定类型（国家 / 城市 / 美食 / 人物 / 动物 / 成语）
-- ✅ LLM 实时生成题目（含答案、2-5 个别名、5 条线索、讲解）
+- ✅ **题库驱动**（580 道精选题 × 每题 2 套线索 = 1160 套）
 - ✅ 字符串宽松匹配判定答案（不调 LLM，即时响应）
 - ✅ 玩家指令：`线索` / `跳过` / `/问答 状态` / `/问答 结束`
 - ✅ 每题结算展示本局 TOP 3
-- ✅ 答对按"第几条线索命中"分档得分（15 / 10 / 5）
-- ✅ 10 题自动结束 + MVP +20 分
-- ✅ 结算入 `economy.score`，支持 `/榜` 查全局榜
+- ✅ 答对按"第几条线索命中"分档得分（5 / 3 / 1）
+- ✅ 10 题自动结束 + MVP +10 分
+- ✅ 结算入 `economy.score` + `economy.coin` 双轨，支持 `/榜` 查全局榜
 - ✅ 答错每次都回应
 
-### v1.0 **不做**（未来 v2+）
-- ❌ 预置题库（纯 LLM 生成，零维护）
-- ❌ 烂题淘汰机制（题目不持久化，烂题就当乐子翻篇）
-- ❌ 持久化题目记录（只记总得分到 economy.score）
+### **明确不做**
+- ❌ ~~LLM 实时出题~~（v1.4 起移除，改为题库）
+- ❌ 烂题淘汰机制（生成期已审核）
+- ❌ 持久化每题记录（只记总得分到 economy）
 - ❌ 每类自定义题数（所有类型都 10 题）
 - ❌ 倒计时 / 抢答时限
 - ❌ 私聊出题 / 多群联机
-- ❌ 难度分级
+- ❌ 运行时难度分级（题库已带 difficulty 字段，预留未来）
 
 ## 3. 术语
 
@@ -167,39 +169,49 @@ def match(user_text: str, answer: str, aliases: list[str]) -> bool:
 
 ## 7. 题目结构
 
-LLM 输出 JSON：
+题库每条：
 
 ```json
 {
   "answer": "加拿大",
   "aliases": ["Canada", "枫叶国"],
-  "clues": [
-    "它曾是英国和法国的殖民地，独立史与两大宗主国相关",
-    "它的国歌名为《O Canada》",
-    "被称为\"枫叶之国\"，国旗上有一片红色枫叶",
-    "是世界上面积第二大的国家",
-    "首都是渥太华，最大城市是多伦多"
+  "clue_sets": [
+    [
+      "它曾是英国和法国的殖民地，独立史与两大宗主国相关",
+      "它的国歌名为《O Canada》",
+      "被称为\"枫叶之国\"，国旗上有一片红色枫叶",
+      "是世界上面积第二大的国家",
+      "首都是渥太华，最大城市是多伦多"
+    ],
+    [
+      "其官方语言之一是法语，部分地区曾爆发独立运动",
+      "国土横跨六个时区，是七国集团成员之一",
+      "拥有世界上最长的国际边界线，与南方邻国接壤",
+      "出产高质量的木材和枫糖浆",
+      "首都位于安大略省，毗邻渥太华河"
+    ]
   ],
-  "explanation": "面积约 998 万平方公里，仅次于俄罗斯。官方语言英语和法语。"
+  "explanation": "面积约 998 万平方公里，仅次于俄罗斯。官方语言英语和法语。",
+  "difficulty": "easy",
+  "source": "llm_gen_2026-05-06"
 }
 ```
 
 **字段约束**：
-- `answer`：3-15 字；必须是"明确、唯一"的答案
-- `aliases`：2-5 个，常见别名/英文名/简称；**不得与 answer 完全相同**
-- `clues`：**固定 5 条**，按"从难到易"排列（第 1 条最隐晦，第 5 条几乎是送分）
+- `answer`：3-15 字；**必须是该事物的主名称**（非绰号/昵称）
+- `aliases`：2-5 个，常见别名/英文名/简称/诗意称呼；**不得与 answer 完全相同**
+- `clue_sets`：**N 套线索（v1.4: N=2）**，每套**固定 5 条**从难到易；运行时随机抽一套
 - `explanation`：一句话讲解（20-60 字），答对或跳过后展示
+- `difficulty`：`easy` / `medium`，运行时暂不使用
+- `source`：生成来源标记（`llm_gen_YYYY-MM-DD` / `manual`）
 
-**生成期代码自检**（见 §11 自检清单）：
-- `answer` 是否出现在任何 `clues` 里 → 是则重试
-- `aliases` 是否为空 → 空则重试
-- `clues` 长度是否为 5 → 不是则重试
+**运行时不再生成**，只是查表 + 抽线索。生成期审核流程见 [trivia-bank.md](./trivia-bank.md)。
 
 ## 8. Prompt 版本
 
 | 场景 | 版本 | 说明 |
 |---|---|---|
-| `trivia_host` | 1.2 | 出题，接收 `type` 参数；v1.1 新增 `avoid` 参数；v1.2 加强 `person` 类 prompt，显式告诉 LLM "答案名=作品名" 的自泄露陷阱 |
+| `trivia_host` | 1.3 | **仅生成期使用**。v1.1 加 `avoid` 参数；v1.2 加 person 自泄露警告；v1.3 强制 answer 主名称 + 反编造提醒 + 新增 ALT_CLUE 第 2 套线索模板 |
 
 每个 type 对应一张风格卡（见 `prompts.py::TYPE_STYLE_GUIDES`），职责：
 - 限定答案范围（比如"成语必须有典故"）
@@ -230,8 +242,6 @@ class TriviaConfig(BaseSettings):
     total_questions_per_game: int = 10      # 每局题数
     max_clues_per_puzzle: int = 5           # 每题线索数（= prompt 里的固定值）
     session_timeout_minutes: int = 30       # 整局无活动超时
-    llm_retry_times: int = 5                # 单题生成重试次数（v1.3 从 3 提到 5）
-    generator_timeout_seconds: int = 20     # 单次出题 LLM 调用超时
 
     # 计分（score 入全局榜，2026-04-30 v1.2 校准对齐海龟汤）
     score_tier_1_clue: int = 5
@@ -360,3 +370,4 @@ await self.award(qq, coin_total,
 | 1.2 | 2026-04-30 | **score 大幅下调对齐海龟汤**：5/3/1 + MVP 10（原 15/10/5 + MVP 20）。海龟汤赢一局 20 分是基准，问答 10 题全对理论上限 60 分 ≈ 3x 海龟汤，平均 6 题 ≈ 28 分与之接近，不碾压榜单。coin 不变。 |
 | 1.3 | 2026-04-30 | **修复本局重复出题**：`generate_puzzle` 新增 `avoid` 参数；`game.py` / CLI adapter 从 history 收集已出答案+别名传入；prompt + validation 双层去重，防止"10 题 5 次孙悟空"。Prompt 版本 bump 到 1.1。 |
 | 1.3.1 | 2026-04-30 | **修复 person 类连环自泄露**：`generate_puzzle` 重试时失败答案自动追加进 avoid（rolling avoid）；`llm_retry_times` 从 3 提到 5；`person` prompt 加强对"名字=作品名"陷阱的警告。Prompt 版本 1.1 → 1.2。 |
+| **1.4** | **2026-05-06** | **题库化重构**：运行时改为纯题库（`get_puzzle_from_bank`），不再调 LLM；离线脚本 `scripts/generate_trivia_bank.py` 批量生成 6 类共 580 道、每题 2 套线索；`puzzle_generator` 拆分为运行时 API（`load_bank` / `get_puzzle_from_bank`）和生成期 API（`generate_puzzle` / `generate_alt_clue_set`）；prompt 版本 1.2 → 1.3（加 answer 主名称约束 + 反编造提醒 + ALT_CLUE 模板）。详见 [trivia-bank.md](./trivia-bank.md)。|

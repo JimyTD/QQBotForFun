@@ -19,9 +19,9 @@ from .prompts import (
     type_display_name,
 )
 from .puzzle_generator import (
-    PuzzleGenerationError,
+    BankNotAvailableError,
     TriviaPuzzle,
-    generate_puzzle,
+    get_puzzle_from_bank,
 )
 
 
@@ -245,35 +245,24 @@ class TriviaGame(GameBase):
 
     # ---------- 核心流程 ----------
     async def _prepare_next_puzzle(self, ctx: GameContext) -> None:
-        """为当前 current_index 生成题目。失败则把占位塞进 history 并推进 index。"""
+        """为当前 current_index 从题库抽题。题库缺失/为空时触发错误广播并结束整局。"""
         type_id = ctx.state["type"]
         idx = int(ctx.state["current_index"])
-        cfg = get_config()
 
-        # 收集本局已出过的答案 + 别名，强制 LLM 换新（prompt 层 + validation 层双保险）
+        # 本局已出过的答案+别名（题库内抽题时避免重复）
         avoid = self._collect_used_names(ctx)
 
-        # 尝试最多 cfg.llm_retry_times 次（generate_puzzle 内部也会重试）
         try:
-            puzzle = await generate_puzzle(type_id, avoid=avoid)
-        except PuzzleGenerationError as e:
-            logger.warning(f"[trivia] puzzle gen failed for idx={idx}: {e}")
-            # 记一条"出题失败"的占位 history，不消耗题号
+            puzzle = get_puzzle_from_bank(type_id, avoid=avoid)
+        except BankNotAvailableError as e:
+            logger.error(f"[trivia] bank unavailable for type={type_id}: {e}")
             ctx.state["current_puzzle"] = None
             ctx.state["clues_shown"] = 0
-            # 广播并直接跳过
             await session.broadcast(
                 ctx.group_id,
-                f"⚠️ 第 {idx + 1} 题出题失败，跳过。",
+                f"⚠️ 趣味问答题库（{type_id}）暂不可用，对局无法继续。请联系管理员。",
             )
-            ctx.state.setdefault("history", []).append(
-                {"answer": None, "winner": None, "clues_used": 0, "awarded": 0, "skipped_gen": True}
-            )
-            ctx.state["current_index"] = idx + 1
-            if ctx.state["current_index"] >= int(ctx.state["total"]):
-                await self._end_game(ctx, EndReason.COMPLETED)
-            else:
-                await self._prepare_next_puzzle(ctx)
+            await self._end_game(ctx, EndReason.ERROR)
             return
 
         ctx.state["current_puzzle"] = {
@@ -337,12 +326,14 @@ class TriviaGame(GameBase):
         puzzle = ctx.state.get("current_puzzle")
         if not puzzle:
             return
+        # 立即清除防止并发重复跳过
+        ctx.state["current_puzzle"] = None
         nickname = self._nickname_of(ctx, player_id)
         await session.broadcast(
             ctx.group_id,
             f"⏭ @{nickname} 跳过了本题",
         )
-        await self._settle_question(ctx, winner_id=None, clues_used=int(ctx.state["clues_shown"]))
+        await self._settle_question(ctx, winner_id=None, clues_used=int(ctx.state["clues_shown"]), puzzle=puzzle)
 
     async def _handle_answer(
         self, ctx: GameContext, player_id: int, message: str
@@ -352,6 +343,9 @@ class TriviaGame(GameBase):
             return
 
         if match(message, puzzle["answer"], puzzle.get("aliases", [])):
+            # ⚠️ 立即清除 current_puzzle，防止并发答对时重复出题
+            ctx.state["current_puzzle"] = None
+
             clues_used = int(ctx.state["clues_shown"])
             score_delta = _score_for_tier(clues_used)
             coin_delta = _coin_for_tier(clues_used)
@@ -376,7 +370,7 @@ class TriviaGame(GameBase):
                     emoji="🎉",
                 ),
             )
-            await self._settle_question(ctx, winner_id=int(player_id), clues_used=clues_used)
+            await self._settle_question(ctx, winner_id=int(player_id), clues_used=clues_used, puzzle=puzzle)
         else:
             nickname = self._nickname_of(ctx, player_id)
             # 答错每次都回应（方案 A）
@@ -391,8 +385,10 @@ class TriviaGame(GameBase):
         *,
         winner_id: int | None,
         clues_used: int,
+        puzzle: dict | None = None,
     ) -> None:
-        puzzle = ctx.state.get("current_puzzle") or {}
+        if puzzle is None:
+            puzzle = ctx.state.get("current_puzzle") or {}
         idx = int(ctx.state["current_index"])
         total = int(ctx.state["total"])
         awarded = _score_for_tier(clues_used) if winner_id is not None else 0

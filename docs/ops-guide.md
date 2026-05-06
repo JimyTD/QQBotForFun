@@ -143,3 +143,38 @@ NapCat 不会受影响，不需要重新扫码。
 - **NapCat 每次重启都需要重新扫码**，且重启后 WebSocket 配置可能被重置为空，需要重新写入。
 - **新 QQ 号前几天容易被风控踢下线**，养号几天后会稳定。
 - **`docker compose up -d --build bot`** 只重建 Bot，不影响 NapCat/数据库，是最轻量的更新方式。
+
+---
+
+## 六、数据卷规范（重要）
+
+docker-compose.yml 使用**固定名称的外部卷**（`external: true`），确保无论项目目录怎么变，数据永远在同一个卷里。
+
+### 卷名约定
+
+| 卷名 | 用途 |
+|------|------|
+| `qqbot_pg_data` | PostgreSQL 数据（用户金币、积分、对局记录等） |
+| `qqbot_redis_data` | Redis 缓存 |
+| `qqbot_napcat_data` | NapCat 登录态和配置 |
+
+### 首次部署（全新服务器）
+
+必须先手动创建卷：
+
+```bash
+docker volume create qqbot_pg_data
+docker volume create qqbot_redis_data
+docker volume create qqbot_napcat_data
+```
+
+之后再 `docker compose up -d`。
+
+### 换目录重新部署
+
+只要卷存在，数据就不会丢。直接在新目录 `docker compose up -d` 即可挂载同一份数据。
+
+### 禁止操作
+
+- ❌ 不要 `docker volume rm qqbot_pg_data`（除非你确认要清空所有数据）
+- ❌ 不要在 docker-compose.yml 里去掉 `external: true`（会导致 compose 自建带前缀的新卷）

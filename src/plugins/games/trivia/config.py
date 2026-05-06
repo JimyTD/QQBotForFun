@@ -20,12 +20,6 @@ class TriviaConfig(BaseSettings):
 
     # --- 超时 ---
     session_timeout_minutes: int = 30
-    generator_timeout_seconds: int = 20
-
-    # --- LLM ---
-    # 5 次给足够空间：LLM 经常连续挑到同类易自泄露的答案（e.g. 哈利·波特/宙斯），
-    # 每次失败后会把失败答案加进 avoid，强制换新，需要更多轮才能换到非自泄露答案
-    llm_retry_times: int = 5
 
     # --- 计分（score 入全局榜）---
     # 2026-04-30 v1.2 校准：对齐海龟汤（赢一局 20 分）。

@@ -2,6 +2,7 @@
 
 - @机器人 /状态    查看当前进度
 - @机器人 /回顾    查看已问过的关键线索
+- @机器人 /提示    花金币购买一条方向性提示
 - @机器人 /烂题    烂题淘汰（本局结束后短窗口内可用）
 
 投降/结束 已合并到 game_launcher 的 /结束 命令。
@@ -18,6 +19,7 @@ from sqlalchemy import select
 from core import game_base, render
 from core.storage import get_session as db_session
 
+from .config import get_config
 from .models import SoupQuestion
 from .puzzle_service import mark_bad_by_group
 
@@ -81,6 +83,44 @@ async def _(matcher: Matcher, event: GroupMessageEvent) -> None:
     else:
         await matcher.finish(
             render.list_card("关键线索回顾", key_lines, emoji="📜")
+        )
+
+
+# -------------------- /提示 --------------------
+_hint = on_command("提示", aliases={"hint"}, rule=to_me(), priority=3, block=True)
+
+
+@_hint.handle()
+async def _(matcher: Matcher, event: GroupMessageEvent) -> None:
+    group_id = int(event.group_id)
+    runner = game_base.get_runner_by_group(group_id)
+    if runner is None or runner.ctx.game_id != "turtle_soup":
+        await matcher.finish("⚠️ 当前没有海龟汤在进行，无法购买提示。")
+        return
+
+    ctx = runner.ctx
+    player_id = int(event.user_id)
+    cfg = get_config()
+
+    # 调用 game 层的 handle_hint
+    from .game import TurtleSoupGame
+
+    game_instance = TurtleSoupGame()
+    clue_text = await game_instance.handle_hint(ctx, player_id)
+    if clue_text:
+        hints_used = len(ctx.state.get("hints_purchased", []))
+        max_hints = cfg.max_hints_per_game
+        await matcher.finish(
+            render.text_card(
+                "购买提示",
+                [
+                    f"💡 关键线索：{clue_text}",
+                    "",
+                    f"💰 花费 {cfg.hint_cost_coin} 金币",
+                ],
+                emoji="🔮",
+                footer=[f"已用 {hints_used}/{max_hints} 次提示机会"],
+            )
         )
 
 

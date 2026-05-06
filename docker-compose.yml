@@ -54,5 +54,13 @@ services:
 
 volumes:
   pg_data:
+    # ⚠️ 固定卷名，确保换目录部署时数据不丢失
+    # 首次部署需手动创建：docker volume create qqbot_pg_data
+    external: true
+    name: qqbot_pg_data
   redis_data:
+    external: true
+    name: qqbot_redis_data
   napcat_data:
+    external: true
+    name: qqbot_napcat_data

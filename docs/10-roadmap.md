@@ -229,3 +229,4 @@ QQBotForFun/
 | v1 | 2026-04-28 | 初版基线 |
 | v1.1 | 2026-04-30 | `economy` 追加榜单 helper；`/榜` 指令加入基础命令集；`score` 作为跨游戏积分货币默认注册。 |
 | v1.2 | 2026-04-30 | 第二款游戏 `trivia`（趣味问答）落地：6 类线索题、LLM 生成、宽松字符串判定、10 题自动结算、入 score 榜。详见 `docs/games/trivia.md`。 |
+| v1.3 | 2026-05-06 | `trivia` 题库化重构（v1.4）：运行时改为纯题库（650 道 × 2 套线索），不再调 LLM；新增 `seeds/trivia_bank/`（6 类 JSON）；验收通过（单题 <1ms，跨局重复 <30%）。详见 `docs/games/trivia-bank.md`。 |

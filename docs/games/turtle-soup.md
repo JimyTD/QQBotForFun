@@ -1,10 +1,10 @@
 # 游戏设计文档 · 海龟汤（Turtle Soup）
 
 - **Game ID**: `turtle_soup`
-- **Status**: Design v1
-- **Last Updated**: 2026-04-28
+- **Status**: Design v1.1
+- **Last Updated**: 2026-05-06
 - **Owner**: @owner
-- **Version**: 1.0（纯 LLM 汤主模式）
+- **Version**: 1.1（新增购买提示功能）
 
 ---
 
@@ -115,11 +115,11 @@
 | 指令 | 作用域 | 说明 |
 |---|---|---|
 | `/play turtle_soup` | 群 | 开局 |
-| `/soup hint` | 游戏中 | 花费金币买一条提示（可选，v1.1） |
-| `/soup status` | 游戏中 | 查看已提问数 / 剩余时间 |
-| `/soup giveup` | 游戏中 | 投降，公布汤底 |
-| `/soup quit` | 游戏中 | 终止游戏（开局者或管理员） |
-| `/soup recap` | 游戏中 | 回顾已问过的关键线索 |
+| `@机器人 /提示` | 游戏中 | 花费金币购买一条方向性提示（每局限 3 次） |
+| `@机器人 /状态` | 游戏中 | 查看已提问数 / 剩余时间 |
+| `@机器人 /回顾` | 游戏中 | 回顾已问过的关键线索 |
+| `@机器人 /烂题` | 局后 | 烂题淘汰（本局结束后短窗口内可用 |
+| 投降/结束 | 游戏中 | 由 game_launcher 的 /结束 统一处理 |
 
 ## 6. LLM 设计
 
@@ -350,8 +350,15 @@ class TurtleSoupConfig(BaseSettings):
     claim_timeout_seconds: int = 45
 
     # 奖励（可选，接入 economy）
-    reward_on_win: int = 100
-    penalty_on_lose: int = 0
+    reward_coin_on_win: int = 100
+    reward_score_on_win: int = 20
+    reward_score_on_key_hit: int = 2
+    reward_score_on_partial_hit: int = 1
+    penalty_on_lose: int = 0              # 永远保持 0（不做负反馈）
+
+    # 购买提示
+    hint_cost_coin: int = 30              # 每次购买消耗 coin
+    max_hints_per_game: int = 3           # 每局最多购买次数
 
     class Config:
         env_prefix = "GAME_TURTLE_SOUP_"
@@ -390,7 +397,6 @@ class TurtleSoupConfig(BaseSettings):
 ## 12. 未来扩展（v2+）
 
 - 真人出题模式（`/soup submit` 投稿）
-- 提示购买（`/soup hint`，消耗金币获取定向线索）
 - 难度分级与段位
 - 多群联机汤（同一道汤不同群并行，比速度）
 - LLM 对话式汤主（不仅判定，还会暖场、调侃）
@@ -399,4 +405,5 @@ class TurtleSoupConfig(BaseSettings):
 
 | 版本 | 日期 | 变更 |
 |---|---|---|
+| 1.1 | 2026-05-06 | 新增 `/提示` 指令：花金币购买方向性提示（每局限 3 次，5 coin/次） |
 | 1.0 | 2026-04-28 | 初版设计 |

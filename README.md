@@ -21,7 +21,7 @@
 ## 🎯 已上线游戏
 
 - **海龟汤**（`turtle_soup`）：纯 LLM 汤主模式 · 玩家自由提问 · LLM 判定
-- **趣味问答**（`trivia`）：听线索猜答案 · 6 类（国家/城市/美食/人物/动物/成语）· LLM 生成 · 10 题一局 · 结算入 score 榜
+- **趣味问答**（`trivia`）：听线索猜答案 · 6 类（国家/城市/美食/人物/动物/成语）· **题库驱动**（580 道 × 2 套线索）· 10 题一局 · 结算入 score 榜
 
 ## 🏛️ 架构一图流
 
@@ -66,7 +66,7 @@
 - Python 3.11
 - Docker Desktop
 - 一个专用 QQ 小号
-- 智谱 AI API Key、硅基流动 API Key（已获得）
+- 智谱 AI API Key（[open.bigmodel.cn](https://open.bigmodel.cn)）
 
 ### 2. 安装
 ```powershell
@@ -172,6 +172,7 @@ uv run pytest
 ### 游戏设计
 - [`games/turtle-soup.md`](./docs/games/turtle-soup.md)
 - [`games/trivia.md`](./docs/games/trivia.md)
+- [`games/trivia-bank.md`](./docs/games/trivia-bank.md) — 趣味问答题库子系统设计
 
 ### ADR
 - [`adr/0001-protocol-choice.md`](./docs/adr/0001-protocol-choice.md) — NapCat

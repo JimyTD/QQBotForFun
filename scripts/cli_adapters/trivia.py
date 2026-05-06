@@ -16,8 +16,8 @@ from src.plugins.games.trivia.config import get_config
 from src.plugins.games.trivia.game import TriviaGame, _coin_for_tier, _score_for_tier
 from src.plugins.games.trivia.prompts import TYPE_STYLE_GUIDES, type_display_name
 from src.plugins.games.trivia.puzzle_generator import (
-    PuzzleGenerationError,
-    generate_puzzle,
+    BankNotAvailableError,
+    get_puzzle_from_bank,
 )
 
 from .base import C, GameCLIAdapter, box, info, prompt
@@ -138,18 +138,19 @@ class TriviaCLIAdapter:
 
     # ---------- 内部 ----------
     async def _prepare_next(self) -> None:
-        """生成当前 current_index 对应的题目。失败则 puzzle=None 占位。"""
+        """从题库抽当前题。题库不可用则打印错误并 puzzle=None（调用方会终止对局）。"""
         avoid = self._collect_used_names()
         try:
-            self.puzzle = await generate_puzzle(self.type_id, avoid=avoid)
+            self.puzzle = get_puzzle_from_bank(self.type_id, avoid=avoid)
             self.clues_shown = 1
-        except PuzzleGenerationError as e:
-            print(f"{C.RED}⚠️ 第 {self.current_index + 1} 题出题失败：{e}{C.R}")
+        except BankNotAvailableError as e:
+            print(f"{C.RED}⚠️ 题库不可用：{e}{C.R}")
+            print(f"{C.DIM}请运行 scripts/generate_trivia_bank.py 生成题库{C.R}")
             self.puzzle = None
             self.clues_shown = 0
 
     def _collect_used_names(self) -> list[str]:
-        """本局已出过的答案+别名，用于 generate_puzzle 的 avoid。"""
+        """本局已出过的答案+别名，用于题库抽题时跳过。"""
         used: list[str] = []
         for item in self.history:
             if not isinstance(item, dict):

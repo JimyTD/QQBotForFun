@@ -8,7 +8,8 @@ from typing import Any
 from nonebot import logger
 
 from core import llm, render, session
-from core.errors import LLMError, LLMJSONParseError
+from core.economy import balance as eco_balance, deduct as eco_deduct
+from core.errors import InsufficientFundsError, LLMError, LLMJSONParseError
 from core.game_base import GameBase, GameMode, register_game
 from core.storage import get_session as db_session
 from core.types import EndReason, GameContext
@@ -146,6 +147,7 @@ class TurtleSoupGame(GameBase):
             footer=[
                 "💡 @我 发送问题即可提问",
                 "💡 宣告汤底请以「汤底:」开头",
+                "💡 @我 /提示 花金币买方向提示",
                 "💡 @我 结束 投降 · @我 状态 查看进度",
             ],
         )
@@ -300,8 +302,7 @@ class TurtleSoupGame(GameBase):
             "key": f"💡 关键线索：{hint}" if hint else "💡 关键线索",
         }.get(verdict, "🤔 与此无关")
 
-        # 参与奖（核心设计：及时正反馈）——问出 key / partial 都给 score
-        # 注：partial 只在 _handle_claim 里出现；问答阶段只有 key 奖励
+        # 参与奖（核心设计：及时正反馈）
         cfg = get_config()
         if verdict == "key":
             await self.award(
@@ -309,6 +310,25 @@ class TurtleSoupGame(GameBase):
                 cfg.reward_score_on_key_hit,
                 reason=f"turtle_soup_key:{ctx.session_id}",
                 currency="score",
+            )
+            await self.award(
+                player_id,
+                cfg.reward_coin_on_key_hit,
+                reason=f"turtle_soup_key:{ctx.session_id}",
+                currency="coin",
+            )
+        elif verdict == "yes":
+            await self.award(
+                player_id,
+                cfg.reward_score_on_yes,
+                reason=f"turtle_soup_yes:{ctx.session_id}",
+                currency="score",
+            )
+            await self.award(
+                player_id,
+                cfg.reward_coin_on_yes,
+                reason=f"turtle_soup_yes:{ctx.session_id}",
+                currency="coin",
             )
 
         player = ctx.get_player(player_id)
@@ -408,6 +428,82 @@ class TurtleSoupGame(GameBase):
                 )
                 + "\n   本次宣告不消耗提问额度，继续推理吧",
             )
+
+    # ---------- 购买提示 ----------
+    async def handle_hint(self, ctx: GameContext, player_id: int) -> str | None:
+        """花金币直接揭示一条未发现的关键线索。
+
+        返回被揭示的线索文本（成功时），或 None（已由内部发送错误消息）。
+        揭示后自动归入"已发掘线索"，/回顾 可查看。
+        供 commands.py 的 /提示 指令调用。
+        """
+        cfg = get_config()
+        puzzle = ctx.state.get("puzzle")
+        if not puzzle:
+            return None
+
+        # 防超限
+        hints_purchased: list[int] = ctx.state.setdefault("hints_purchased", [])
+        if len(hints_purchased) >= cfg.max_hints_per_game:
+            await session.broadcast(
+                ctx.group_id,
+                f"⚠️ 本局已购买 {cfg.max_hints_per_game} 次提示，达到上限。",
+                at=player_id,
+            )
+            return None
+
+        # 检查是否还有未揭示的线索
+        all_clues: list[str] = puzzle.get("key_clues", [])
+        undiscovered_indices = [
+            i for i in range(len(all_clues)) if i not in hints_purchased
+        ]
+        if not undiscovered_indices:
+            await session.broadcast(
+                ctx.group_id,
+                "💡 所有关键线索都已揭示，靠你自己推理汤底啦！",
+                at=player_id,
+            )
+            return None
+
+        # 扣币
+        try:
+            await eco_deduct(
+                player_id,
+                cfg.hint_cost_coin,
+                reason=f"turtle_soup_hint:{ctx.session_id}",
+                currency="coin",
+            )
+        except InsufficientFundsError:
+            cur_bal = await eco_balance(player_id, currency="coin")
+            await session.broadcast(
+                ctx.group_id,
+                f"💰 金币不足！购买提示需要 {cfg.hint_cost_coin} 枚，"
+                f"你当前只有 {cur_bal} 枚。",
+                at=player_id,
+            )
+            return None
+
+        # 直接揭示第一条未发现的线索
+        target_idx = undiscovered_indices[0]
+        clue_text = all_clues[target_idx]
+
+        # 记录已购买
+        hints_purchased.append(target_idx)
+        ctx.state["hints_purchased"] = hints_purchased
+
+        # 写入 DB（verdict="hint"），使 /回顾 能看到
+        async with db_session() as sess:
+            sess.add(
+                SoupQuestion(
+                    session_id=ctx.session_id,
+                    asker_id=player_id,
+                    question="[购买提示]",
+                    verdict="key",
+                    hint=clue_text,
+                )
+            )
+
+        return clue_text
 
     # ---------- 工具 ----------
     @staticmethod

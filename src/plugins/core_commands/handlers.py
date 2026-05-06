@@ -38,6 +38,7 @@ HELP_TEXT = render.text_card(
         "游戏中：",
         "💬 @我 你的问题    直接提问（海龟汤）",
         "💬 @我 汤底:答案   宣告答案（海龟汤）",
+        "🔮 @我 提示        花金币买一条关键线索",
         "📊 @我 状态        查看进度",
         "📜 @我 回顾        关键线索回顾（海龟汤）",
         "🏳 @我 结束        投降 / 终止游戏",
@@ -48,6 +49,7 @@ HELP_TEXT = render.text_card(
         "💰 @我 金币        金币余额",
         "🏆 @我 榜          积分榜 TOP 10",
         "🍱 @我 吃什么      今天吃什么",
+        "🔍 @我 查资料 问题  问AI",
         "🏓 @我 测试        测试是否在线",
     ],
     emoji="📜",
@@ -116,7 +118,7 @@ async def _(matcher: Matcher, event: MessageEvent) -> None:
 
 
 # -------------------- /资料 --------------------
-_profile = on_command("资料", aliases={"profile", "我的"}, rule=to_me(), priority=10, block=True)
+_profile = on_command("资料", aliases={"profile", "我的"}, rule=to_me(), priority=3, block=True)
 
 
 @_profile.handle()
