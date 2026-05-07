@@ -112,6 +112,23 @@ cd /root/OLD_DIR && docker compose down
 cd /root/NEW_DIR && docker compose up -d
 ```
 
+### 4.5 数据库迁移（重要！）
+
+新版本如果包含新的数据模型（ORM 表），需要在 bot 启动后执行迁移：
+
+```bash
+# 方式 1：用 alembic（推荐，如果有 migration 文件）
+cd /root/NEW_DIR && docker compose exec -T bot alembic upgrade head
+
+# 方式 2：手动建表（如果还没生成 migration）
+# 查看 bot 日志是否有 "UndefinedTableError" 报错，根据对应的 models.py 手动建表：
+cd /root/NEW_DIR && docker compose exec -T postgres psql -U qqbot qqbot -c "CREATE TABLE IF NOT EXISTS <表名> (...);"
+# 建表后重启 bot：
+docker compose restart bot
+```
+
+**如何判断是否需要迁移：** 部署后检查 bot 日志，如果看到 `UndefinedTableError` 或 `relation "xxx" does not exist`，就需要建表。
+
 ### 5. 写入 NapCat WebSocket 配置
 
 ```
