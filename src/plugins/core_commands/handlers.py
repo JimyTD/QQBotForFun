@@ -118,7 +118,7 @@ async def _(matcher: Matcher, event: MessageEvent) -> None:
 
 
 # -------------------- /资料 --------------------
-_profile = on_command("资料", aliases={"profile", "我的"}, rule=to_me(), priority=3, block=True)
+_profile = on_command("资料", aliases={"profile", "我的资料", "个人资料"}, rule=to_me(), priority=3, block=True)
 
 
 @_profile.handle()
