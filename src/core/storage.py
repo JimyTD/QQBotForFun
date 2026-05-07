@@ -201,3 +201,10 @@ def _import_all_models() -> None:
         from nonebot import logger
 
         logger.debug(f"[storage] tools/food models not loaded: {e}")
+
+    try:
+        from src.plugins.tools.reminder import models as _reminder_models  # noqa: F401
+    except Exception as e:  # noqa: BLE001
+        from nonebot import logger
+
+        logger.debug(f"[storage] tools/reminder models not loaded: {e}")

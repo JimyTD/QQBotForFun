@@ -64,6 +64,7 @@ def _load_plugins() -> None:
     # 小工具（tools/）—— 独立拔插式小功能
     nonebot.load_plugin("src.plugins.tools.food")
     nonebot.load_plugin("src.plugins.tools.ask_ai")
+    nonebot.load_plugin("src.plugins.tools.reminder")
 
 
 def _register_lifecycle() -> None:
