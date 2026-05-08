@@ -49,12 +49,16 @@ async def schedule_once(
         except Exception as e:  # noqa: BLE001
             logger.exception(f"[scheduler] once job error ({job_id}): {e}")
 
-    sched.add_job(_wrap, "date", id=job_id, misfire_grace_time=30)
-    # apscheduler 'date' 不接受 delay 直接；改用 next_run_time
     from datetime import datetime, timedelta
 
     run_time = datetime.now() + timedelta(seconds=delay)
-    sched.reschedule_job(job_id, trigger="date", run_date=run_time)
+    sched.add_job(
+        _wrap,
+        "date",
+        id=job_id,
+        run_date=run_time,
+        misfire_grace_time=300,  # 5 分钟容忍窗口
+    )
 
     if tag:
         _tag_index.setdefault(tag, set()).add(job_id)
@@ -90,6 +94,7 @@ async def schedule_cron(
         day=day,
         month=month,
         day_of_week=day_of_week,
+        misfire_grace_time=300,  # 5 分钟容忍窗口
     )
     if tag:
         _tag_index.setdefault(tag, set()).add(job_id)

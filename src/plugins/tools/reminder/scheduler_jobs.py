@@ -10,7 +10,7 @@ from __future__ import annotations
 
 import base64
 import random
-from datetime import date, datetime, time, timedelta
+from datetime import date, datetime, time, timedelta, timezone
 from pathlib import Path
 from typing import Any
 
@@ -18,6 +18,20 @@ from nonebot import logger
 from nonebot.adapters.onebot.v11 import Message, MessageSegment
 
 from .storage import get_enabled_groups
+
+# ======================== 时区 ========================
+
+CST = timezone(timedelta(hours=8))  # 北京时间
+
+
+def _now() -> datetime:
+    """返回北京时间当前时刻。"""
+    return datetime.now(CST)
+
+
+def _today() -> date:
+    """返回北京时间今天日期。"""
+    return _now().date()
 
 # ======================== 配置 ========================
 
@@ -108,14 +122,14 @@ _planned_date: date | None = None
 async def plan_today() -> None:
     """为今天所有窗口规划发送时间。仅工作日执行。"""
     global _planned_date
-    today = date.today()
+    today = _today()
 
     if today.weekday() >= 5:  # 周末不发
         logger.debug("[reminder] weekend, skip planning")
         return
 
     _planned_date = today
-    now = datetime.now()
+    now = _now()
     planned_count = 0
 
     for slot_name, config in WINDOWS.items():
@@ -128,7 +142,7 @@ async def plan_today() -> None:
         start_min = config["start"].hour * 60 + config["start"].minute
         end_min = config["end"].hour * 60 + config["end"].minute
         chosen_min = random.randint(start_min, end_min - 1)
-        trigger_time = datetime.combine(today, time(chosen_min // 60, chosen_min % 60))
+        trigger_time = datetime.combine(today, time(chosen_min // 60, chosen_min % 60), tzinfo=CST)
 
         # 跳过已过去的时间（用于 bot 中途启动补偿场景）
         if trigger_time <= now:
@@ -199,4 +213,4 @@ async def _send_reminder(slot: str) -> None:
 
 def is_planned_today() -> bool:
     """检查今天是否已规划。"""
-    return _planned_date == date.today()
+    return _planned_date == _today()

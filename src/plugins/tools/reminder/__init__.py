@@ -33,9 +33,10 @@ try:
         # 1. 预加载图片缓存
         load_image_cache()
 
-        # 2. 注册每日规划 cron：工作日 00:05
-        await schedule_cron("5 0 * * 1-5", plan_today, tag="reminder_daily_plan")
-        logger.info("[reminder] registered daily plan cron (00:05 weekdays)")
+        # 2. 注册每日规划 cron：工作日北京时间 00:05（= UTC 16:05 前一天）
+        #    但使用 startup compensation 机制兜底，所以 cron 设为 UTC 16:05
+        await schedule_cron("5 16 * * 0-4", plan_today, tag="reminder_daily_plan")
+        logger.info("[reminder] registered daily plan cron (00:05 CST = 16:05 UTC weekdays)")
 
         # 3. 启动补偿：如果今天还没规划过，立即规划
         if not is_planned_today():
