@@ -17,6 +17,7 @@ class ReminderGroup(Base):
 
     group_id: Mapped[str] = mapped_column(String(32), primary_key=True)
     enabled: Mapped[bool] = mapped_column(default=False, nullable=False)
+    mode: Mapped[str] = mapped_column(String(16), default="always", nullable=False)  # always / random
     enabled_at: Mapped[datetime | None] = mapped_column(nullable=True)
     enabled_by: Mapped[str | None] = mapped_column(String(32), nullable=True)
 

@@ -17,8 +17,6 @@ from typing import Any
 from nonebot import logger
 from nonebot.adapters.onebot.v11 import Message, MessageSegment
 
-from .storage import get_enabled_groups
-
 # ======================== 时区 ========================
 
 CST = timezone(timedelta(hours=8))  # 北京时间
@@ -133,11 +131,6 @@ async def plan_today() -> None:
     planned_count = 0
 
     for slot_name, config in WINDOWS.items():
-        # 概率判定
-        if random.random() > config["probability"]:
-            logger.debug(f"[reminder] {slot_name} not triggered today (probability miss)")
-            continue
-
         # 在窗口内随机选一个分钟
         start_min = config["start"].hour * 60 + config["start"].minute
         end_min = config["end"].hour * 60 + config["end"].minute
@@ -167,10 +160,20 @@ async def plan_today() -> None:
 
 async def _send_reminder(slot: str) -> None:
     """一次性定时任务触发回调。"""
-    # 1. 查询启用的群
-    enabled_groups = await get_enabled_groups()
-    if not enabled_groups:
-        logger.debug(f"[reminder] {slot} triggered but no enabled groups")
+    from .storage import get_enabled_groups_by_mode
+
+    # 1. 查询启用的群（按模式分组）
+    groups_by_mode = await get_enabled_groups_by_mode()
+    always_groups = groups_by_mode.get("always", [])
+    random_groups = groups_by_mode.get("random", [])
+
+    # 对 random 模式的群做概率判定
+    probability = WINDOWS.get(slot, {}).get("probability", 0.5)
+    active_random = [g for g in random_groups if random.random() <= probability]
+
+    target_groups = always_groups + active_random
+    if not target_groups:
+        logger.debug(f"[reminder] {slot} triggered but no target groups")
         return
 
     # 2. 随机选内容
@@ -202,13 +205,13 @@ async def _send_reminder(slot: str) -> None:
     # 4. 群发（静默失败）
     from core.session import broadcast
 
-    for group_id in enabled_groups:
+    for group_id in target_groups:
         try:
             await broadcast(int(group_id), msg)
         except Exception as e:  # noqa: BLE001
             logger.warning(f"[reminder] send failed group={group_id}: {e}")
 
-    logger.info(f"[reminder] sent {slot} to {len(enabled_groups)} groups")
+    logger.info(f"[reminder] sent {slot} to {len(target_groups)} groups (always={len(always_groups)}, random={len(active_random)})")
 
 
 def is_planned_today() -> bool:
