@@ -38,8 +38,13 @@ async def schedule_once(
     callback: Callable[..., Awaitable[Any]],
     *,
     tag: str | None = None,
+    run_date: Any | None = None,
     **kwargs: Any,
 ) -> str:
+    """注册一次性定时任务。
+
+    优先使用 run_date（带时区的 datetime），如果不提供则用 delay 秒数计算。
+    """
     sched = _ensure_scheduler()
     job_id = f"once_{uuid.uuid4().hex[:10]}"
 
@@ -49,14 +54,15 @@ async def schedule_once(
         except Exception as e:  # noqa: BLE001
             logger.exception(f"[scheduler] once job error ({job_id}): {e}")
 
-    from datetime import datetime, timedelta
+    if run_date is None:
+        from datetime import datetime, timedelta
+        run_date = datetime.now() + timedelta(seconds=delay)
 
-    run_time = datetime.now() + timedelta(seconds=delay)
     sched.add_job(
         _wrap,
         "date",
         id=job_id,
-        run_date=run_time,
+        run_date=run_date,
         misfire_grace_time=300,  # 5 分钟容忍窗口
     )
 

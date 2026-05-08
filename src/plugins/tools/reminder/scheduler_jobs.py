@@ -142,14 +142,14 @@ async def plan_today() -> None:
             logger.debug(f"[reminder] {slot_name} skipped (time already passed: {trigger_time:%H:%M})")
             continue
 
-        # 注册一次性定时任务
-        delay_seconds = (trigger_time - now).total_seconds()
+        # 注册一次性定时任务（直接传带时区的 trigger_time）
         from core.scheduler import schedule_once
 
         await schedule_once(
-            delay_seconds,
+            0,  # delay 不使用
             _send_reminder,
             tag="reminder_daily",
+            run_date=trigger_time,
             slot=slot_name,
         )
         planned_count += 1
