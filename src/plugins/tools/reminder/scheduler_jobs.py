@@ -176,38 +176,34 @@ async def _send_reminder(slot: str) -> None:
         logger.debug(f"[reminder] {slot} triggered but no target groups")
         return
 
-    # 2. 随机选内容
-    pool = CONTENT_POOL.get(slot)
-    if not pool:
+    # 2. 构造消息：随机文字 + 随机图片
+    text_pool = [item for item in (CONTENT_POOL.get(slot) or []) if item.type == "text"]
+    if not text_pool:
         return
-    item = random.choice(pool)
+    text_item = random.choice(text_pool)
+    text_msg = text_item.msg
 
-    # 3. 构造消息
-    msg: str | Message
-    if item.type == "text":
-        msg = item.msg
-    elif item.type == "image":
-        images = _image_cache.get(item.category, [])
-        if images:
-            img_path = random.choice(images)
-            try:
-                b64 = base64.b64encode(img_path.read_bytes()).decode()
-                msg = Message(MessageSegment.image(f"base64://{b64}"))
-            except Exception as e:  # noqa: BLE001
-                logger.warning(f"[reminder] failed to read image {img_path}: {e}")
-                return
-        else:
-            logger.warning(f"[reminder] no images for category={item.category}, skipping")
-            return
-    else:
-        return
+    # 图片：从对应分类的缓存中随机选一张
+    category_map = {"morning": "stand", "afternoon": "afternoon", "offwork": "offwork"}
+    category = category_map.get(slot, slot)
+    images = _image_cache.get(category, [])
+    img_msg: Message | None = None
+    if images:
+        img_path = random.choice(images)
+        try:
+            b64 = base64.b64encode(img_path.read_bytes()).decode()
+            img_msg = Message(MessageSegment.image(f"base64://{b64}"))
+        except Exception as e:  # noqa: BLE001
+            logger.warning(f"[reminder] failed to read image {img_path}: {e}")
 
-    # 4. 群发（静默失败）
+    # 3. 群发：先文字后图片
     from core.session import broadcast
 
     for group_id in target_groups:
         try:
-            await broadcast(int(group_id), msg)
+            await broadcast(int(group_id), text_msg)
+            if img_msg:
+                await broadcast(int(group_id), img_msg)
         except Exception as e:  # noqa: BLE001
             logger.warning(f"[reminder] send failed group={group_id}: {e}")
 
