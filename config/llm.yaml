@@ -86,3 +86,11 @@ scenes:
     temperature: 0.7
     max_tokens: 1024
     timeout_seconds: 30
+
+  web_search:
+    # 联网搜索总结：低温度，忠于搜索结果不编造
+    provider: zhipu
+    model: glm-4-flashx
+    temperature: 0.3
+    max_tokens: 512
+    timeout_seconds: 30

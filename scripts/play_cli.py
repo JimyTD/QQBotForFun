@@ -60,6 +60,7 @@ from cli_adapters.base import (  # noqa: E402
 from cli_adapters.turtle_soup import TurtleSoupCLIAdapter  # noqa: E402
 from cli_adapters.trivia import TriviaCLIAdapter  # noqa: E402
 from cli_adapters.food import FoodCLIAdapter  # noqa: E402
+from cli_adapters.web_search import WebSearchCLIAdapter  # noqa: E402
 
 
 # ============ 已注册的 CLI 游戏 ============
@@ -68,6 +69,7 @@ ADAPTERS: dict[str, type[GameCLIAdapter]] = {
     "turtle_soup": TurtleSoupCLIAdapter,
     "trivia": TriviaCLIAdapter,
     "food": FoodCLIAdapter,
+    "ask_ai": WebSearchCLIAdapter,
     # "new_game": NewGameCLIAdapter,   # 未来新增
 }
 
