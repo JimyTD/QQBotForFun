@@ -1,6 +1,7 @@
 """海龟汤游戏内指令（统一需要 @机器人）。
 
 - @机器人 /状态    查看当前进度
+- @机器人 /汤面    重新查看汤面（题面）
 - @机器人 /回顾    查看已问过的关键线索
 - @机器人 /提示    花金币购买一条方向性提示
 - @机器人 /烂题    烂题淘汰（本局结束后短窗口内可用）
@@ -49,6 +50,31 @@ async def _(matcher: Matcher, event: GroupMessageEvent) -> None:
                 f"提问：{qcount} / {max_q}",
             ],
             emoji="📊",
+        )
+    )
+
+
+# -------------------- /汤面 --------------------
+_surface = on_command("汤面", aliases={"surface", "题面"}, rule=to_me(), priority=3, block=True)
+
+
+@_surface.handle()
+async def _(matcher: Matcher, event: GroupMessageEvent) -> None:
+    group_id = int(event.group_id)
+    runner = game_base.get_runner_by_group(group_id)
+    if runner is None or runner.ctx.game_id != "turtle_soup":
+        return
+
+    ctx = runner.ctx
+    puzzle = ctx.state.get("puzzle", {})
+    title = puzzle.get("title", "未知")
+    surface = puzzle.get("surface", "（无汤面数据）")
+    await matcher.finish(
+        render.text_card(
+            f"🐢 《{title}》",
+            [surface],
+            emoji="🐢",
+            footer=["💡 提问以 ? 结尾；宣告以「汤底:」开头"],
         )
     )
 

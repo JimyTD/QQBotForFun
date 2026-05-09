@@ -31,12 +31,13 @@ HELP_TEXT = (
     "用法：\n"
     "  · 提问：以 ? 结尾的一句话（例：他活着吗？）\n"
     "  · 宣告汤底：以「汤底:」或「答案:」开头\n"
-    "  · status / 状态  查看进度\n"
-    "  · recap  / 回顾  查看关键线索\n"
-    "  · hint   / 提示  花金币购买一条方向性提示\n"
-    "  · giveup / 投降  投降公布汤底\n"
-    "  · quit   / 退出  退出当前游戏\n"
-    "  · help   / 帮助  查看本帮助\n"
+    "  · status / 状态   查看进度\n"
+    "  · surface/ 汤面   重新查看汤面（题面）\n"
+    "  · recap  / 回顾   查看关键线索\n"
+    "  · hint   / 提示   花金币购买一条方向性提示\n"
+    "  · giveup / 投降   投降公布汤底\n"
+    "  · quit   / 退出   退出当前游戏\n"
+    "  · help   / 帮助   查看本帮助\n"
     "（局末会询问是否标记为烂题）"
 )
 
@@ -54,6 +55,8 @@ def _classify(text: str) -> str:
         return "help"
     if lowered in ("status", "状态"):
         return "status"
+    if lowered in ("surface", "汤面", "题面"):
+        return "surface"
     if lowered in ("recap", "回顾"):
         return "recap"
     if lowered in ("hint", "提示"):
@@ -224,6 +227,13 @@ class TurtleSoupCLIAdapter(GameCLIAdapter):
                 continue
             if kind == "status":
                 print(f"{C.DIM}📊 已提问 {self.question_count}/{self.max_q} 次{C.R}")
+                continue
+            if kind == "surface":
+                box(
+                    f"🐢 《{puzzle.title}》",
+                    puzzle.surface,
+                    color=C.CYAN,
+                )
                 continue
             if kind == "recap":
                 if not self.key_clues_shown:
