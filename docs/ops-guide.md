@@ -143,15 +143,19 @@ docker compose restart napcat
 
 ---
 
-## 四、仅更新 Bot 代码（不重建整个环境）
+## 四、仅更新 Bot 代码（推荐，不需要扫码）
 
-如果只改了 `src/` 下的 Python 文件，可以直接在服务器上改文件后重建 Bot 容器：
+**绝大多数部署应该用这个方式**（只要没改 `docker-compose.yml`）：
 
 ```
-cd /root/QQBotForFun_20260502112049 && docker compose up -d --build bot
+cd /root/<新项目目录> && docker compose up -d --build bot
 ```
 
-NapCat 不会受影响，不需要重新扫码。
+NapCat 不会受影响，**不需要重新扫码**。
+
+> ⚠️ 仅当修改了 `docker-compose.yml`（如新增/删除服务、改端口映射等）时，
+> 才需要用"三、更新代码后重新部署"中的 `docker compose down` + `docker compose up -d` 全流程。
+> 全流程会重启 NapCat，需要重新扫码。
 
 ---
 
