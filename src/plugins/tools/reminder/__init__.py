@@ -33,10 +33,10 @@ try:
         # 1. 预加载图片缓存
         load_image_cache()
 
-        # 2. 注册每日规划 cron：工作日北京时间 00:05
-        #    apscheduler 按容器默认时区解释（CST），所以直接写 00:05
-        await schedule_cron("5 0 * * 1-5", plan_today, tag="reminder_daily_plan")
-        logger.info("[reminder] registered daily plan cron (00:05 CST weekdays)")
+        # 2. 注册每日规划 cron：每天北京时间 00:05 执行
+        #    由 plan_today() 内部判断是否中国工作日（含调休）
+        await schedule_cron("5 0 * * *", plan_today, tag="reminder_daily_plan")
+        logger.info("[reminder] registered daily plan cron (00:05 CST daily, CN workday check inside)")
 
         # 3. 启动补偿：如果今天还没规划过，立即规划
         if not is_planned_today():

@@ -103,6 +103,15 @@ wheels = [
 ]
 
 [[package]]
+name = "chinesecalendar"
+version = "1.11.0"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/ac/6f/c14fe8aedc706fab826c0ae7fccd1c8f69610254dcb004cd386a0662b3d5/chinesecalendar-1.11.0.tar.gz", hash = "sha256:1b85d920ffee8e19a98a2a27a699a99f39ca224b3b1096aa574384d3837f5492", size = 17359, upload-time = "2025-11-04T10:22:36.108Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/19/e7/8f0215070e3a154e861a5838282f493649fa6ebcee01c9e919922917bd25/chinesecalendar-1.11.0-py2.py3-none-any.whl", hash = "sha256:9479ead6010e6001472efdf97317699882c16604c7858ba26862dc9d36d56d46", size = 11222, upload-time = "2025-11-04T10:22:34.704Z" },
+]
+
+[[package]]
 name = "click"
 version = "8.3.3"
 source = { registry = "https://pypi.org/simple" }
@@ -779,6 +788,7 @@ dependencies = [
     { name = "aiosqlite" },
     { name = "alembic" },
     { name = "asyncpg" },
+    { name = "chinesecalendar" },
     { name = "httpx" },
     { name = "loguru" },
     { name = "nonebot-adapter-onebot" },
@@ -808,6 +818,7 @@ requires-dist = [
     { name = "aiosqlite", specifier = ">=0.20" },
     { name = "alembic", specifier = ">=1.13" },
     { name = "asyncpg", specifier = ">=0.29" },
+    { name = "chinesecalendar", specifier = ">=1.9" },
     { name = "httpx", specifier = ">=0.27" },
     { name = "loguru", specifier = ">=0.7" },
     { name = "mypy", marker = "extra == 'dev'", specifier = ">=1.10" },

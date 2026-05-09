@@ -118,12 +118,15 @@ _planned_date: date | None = None
 
 
 async def plan_today() -> None:
-    """为今天所有窗口规划发送时间。仅工作日执行。"""
+    """为今天所有窗口规划发送时间。仅中国法定工作日执行（含调休上班日）。"""
     global _planned_date
     today = _today()
 
-    if today.weekday() >= 5:  # 周末不发
-        logger.debug("[reminder] weekend, skip planning")
+    # 使用 chinese_calendar 判断中国法定工作日
+    from chinese_calendar import is_workday
+
+    if not is_workday(today):
+        logger.debug(f"[reminder] {today} is not a CN workday, skip planning")
         return
 
     _planned_date = today
