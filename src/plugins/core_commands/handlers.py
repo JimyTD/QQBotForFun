@@ -50,6 +50,8 @@ HELP_TEXT = render.text_card(
         "💰 @我 金币        金币余额",
         "🏆 @我 榜          积分榜 TOP 10",
         "🍱 @我 吃什么      今天吃什么",
+        "🃏 @我 查卡 卡名    游戏王卡片查询",
+        "🃏 @我 随机卡       随机一张游戏王卡",
         "🔍 @我 查资料 问题  联网搜索+AI回答",
         "🏓 @我 测试        测试是否在线",
     ],
@@ -92,13 +94,20 @@ async def _(matcher: Matcher, event: MessageEvent) -> None:
         )
 
     # —— 小工具区（非游戏） ——
-    # 目前只有"今天吃什么"。以后新增的 tools 可以在这里扩展。
     items.append(
         MenuItem(
             emoji="🍱",
             name="今天吃什么",
             subtitle="选择困难症一键甩锅 · 小工具",
             command="@我 吃什么",
+        )
+    )
+    items.append(
+        MenuItem(
+            emoji="🃏",
+            name="游戏王查卡",
+            subtitle="查卡片信息 · 小工具",
+            command="@我 查卡 卡名",
         )
     )
 

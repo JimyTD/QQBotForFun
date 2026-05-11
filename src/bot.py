@@ -65,6 +65,7 @@ def _load_plugins() -> None:
     nonebot.load_plugin("src.plugins.tools.food")
     nonebot.load_plugin("src.plugins.tools.ask_ai")
     nonebot.load_plugin("src.plugins.tools.reminder")
+    nonebot.load_plugin("src.plugins.tools.yugioh_card")
 
 
 def _register_lifecycle() -> None:
