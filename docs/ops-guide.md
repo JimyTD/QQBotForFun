@@ -9,7 +9,7 @@
 | 实例 ID | lhins-hwnz7rcz |
 | 地域 | ap-guangzhou |
 | 服务器 IP | 106.55.228.236 |
-| 项目路径 | `/root/QQBotForFun_20260511112304` |
+| 项目路径 | `/root/QQBotForFun_20260511114733` |
 | Bot QQ 号 | 3959381140 |
 | NapCat WebUI | http://106.55.228.236:6099 |
 | OneBot Token | `qqbot_fun_token_2026` |
@@ -24,7 +24,7 @@
 ### 1. 检查容器状态
 
 ```
-cd /root/QQBotForFun_20260502112049 && docker compose ps
+cd /root/QQBotForFun_20260511114733 && docker compose ps
 ```
 
 正常：4 个容器都 `Up`，postgres 为 `healthy`。
@@ -32,7 +32,7 @@ cd /root/QQBotForFun_20260502112049 && docker compose ps
 ### 2. 检查 NapCat 是否掉线
 
 ```
-cd /root/QQBotForFun_20260502112049 && docker compose logs napcat 2>&1 | grep -i 'kicked\|offline\|失效' | tail -3
+cd /root/QQBotForFun_20260511114733 && docker compose logs napcat 2>&1 | grep -i 'kicked\|offline\|失效' | tail -3
 ```
 
 如果有 `KickedOffLine` 记录，说明 QQ 掉线了，需要重新登录（见下方）。
@@ -40,7 +40,7 @@ cd /root/QQBotForFun_20260502112049 && docker compose logs napcat 2>&1 | grep -i
 ### 3. 检查 Bot 和 NapCat 的 WebSocket 连接
 
 ```
-cd /root/QQBotForFun_20260502112049 && docker compose logs bot 2>&1 | grep 'connected' | tail -1
+cd /root/QQBotForFun_20260511114733 && docker compose logs bot 2>&1 | grep 'connected' | tail -1
 ```
 
 如果最后连接时间是很久以前，说明 NapCat 掉线后没重连。
@@ -54,13 +54,13 @@ QQ 新号容易被风控踢下线，恢复步骤：
 ### 1. 重启 NapCat
 
 ```
-cd /root/QQBotForFun_20260502112049 && docker compose restart napcat
+cd /root/QQBotForFun_20260511114733 && docker compose restart napcat
 ```
 
 ### 2. 获取 WebUI Token
 
 ```
-cd /root/QQBotForFun_20260502112049 && docker compose logs napcat 2>&1 | grep 'WebUi Token' | tail -1
+cd /root/QQBotForFun_20260511114733 && docker compose logs napcat 2>&1 | grep 'WebUi Token' | tail -1
 ```
 
 ### 3. 浏览器扫码
@@ -136,7 +136,10 @@ docker compose restart bot
 cd /root/NEW_DIR && docker compose exec napcat sh -c 'cat > /app/napcat/config/onebot11_3959381140.json << EOF
 {"network":{"httpServers":[],"httpSseServers":[],"httpClients":[],"websocketServers":[],"websocketClients":[{"enable":true,"name":"qqbot","url":"ws://bot:8080/onebot/v11/ws","messagePostFormat":"array","reconnectInterval":3000,"token":"qqbot_fun_token_2026","heartInterval":30000}],"plugins":[]},"musicSignUrl":"","enableLocalFile2Url":false,"parseMultMsg":false,"imageDownloadProxy":"","timeout":{"baseTimeout":10000,"uploadSpeedKBps":256,"downloadSpeedKBps":256,"maxTimeout":1800000}}
 EOF'
-docker compose restart napcat
+# ⚠️ 必须用 stop+rm+up 而不是 restart！
+# restart 只是 stop+start 同一个容器实例，如果该容器创建时端口被占用
+# （常见于 down+up 切换目录时），端口映射会永久丢失，导致 WebUI 打不开。
+docker compose stop napcat && docker compose rm -f napcat && docker compose up -d napcat
 ```
 
 ### 6. 去 WebUI 扫码登录

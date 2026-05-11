@@ -32,8 +32,7 @@ HELP_TEXT = render.text_card(
         "所有指令都需要 @我",
         "",
         "🎮 @我 海龟汤      快速开一局海龟汤",
-        "🎮 @我 趣味问答    快速开一局趣味问答",
-        "🎮 @我 开始        引导式选择游戏和模式",
+        "🎮 @我 趣味问答    快速开一局趣味问答（随机类型）",
         "",
         "游戏中：",
         "💬 @我 你的问题    直接提问（海龟汤）",
@@ -76,6 +75,12 @@ _menu = on_command(
 
 @_menu.handle()
 async def _(matcher: Matcher, event: MessageEvent) -> None:
+    # 游戏 ID → 快捷开局指令的映射
+    _QUICK_CMD: dict[str, str] = {
+        "turtle_soup": "@我 海龟汤",
+        "trivia": "@我 趣味问答",
+    }
+
     games = list_games()
     items: list[MenuItem] = []
     for g in games:
@@ -89,7 +94,7 @@ async def _(matcher: Matcher, event: MessageEvent) -> None:
                     if g.description
                     else f"{g.min_players}-{g.max_players} 人"
                 ),
-                command=f"@我 开始 {g.id}",
+                command=_QUICK_CMD.get(g.id, f"@我 {g.name}"),
             )
         )
 
@@ -120,7 +125,7 @@ async def _(matcher: Matcher, event: MessageEvent) -> None:
     coin = await economy.balance(qq_id, "coin")
     footer = [
         f"💰 金币：{coin}",
-        "🎮 开始游戏：@我 开始",
+        "🎮 开始游戏：@我 海龟汤 / @我 趣味问答",
         "📜 @我 帮助 查看帮助",
     ]
 

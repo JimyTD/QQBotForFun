@@ -42,9 +42,9 @@ class GameMode:
     """一种开局模式。游戏类通过 MODES 类属性声明自己支持的所有模式。
 
     同一份定义同时驱动：
-    - QQ bot 的 /开始 交互式菜单
+    - QQ bot 的快捷开局（默认模式）和菜单展示
     - CLI 的两层选择（scripts/play_cli.py）
-    两者展示顺序和 id 必须一致（由游戏自己控制）。
+    两者 id 必须一致（由游戏自己控制）。
     """
 
     id: str                           # 稳定内部 ID，作为 ctx.config["mode"] 的值

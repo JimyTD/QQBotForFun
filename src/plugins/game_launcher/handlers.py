@@ -1,48 +1,34 @@
-"""游戏大厅：开始 / 结束 / 快捷开局。
+"""游戏大厅：快捷开局 / 结束。
 
 快捷开局：
   @机器人 海龟汤     → 默认模式（题库随机）直接开局
-  @机器人 趣味问答   → 默认模式直接开局
-
-引导式：
-  @机器人 开始              → 选游戏 → 选模式 → 开局
-  @机器人 开始 <ID或编号>    → 跳过选游戏
-  @机器人 开始 <ID> <模式>   → 直接开局
-  @机器人 结束              → 清掉当前群的选择态或游戏
+  @机器人 趣味问答   → 随机类型直接开局
+  @机器人 结束       → 终止当前群的游戏
 """
 
 from __future__ import annotations
 
+import random
+
 from nonebot import on_command
-from nonebot.adapters.onebot.v11 import GroupMessageEvent, Message
+from nonebot.adapters.onebot.v11 import GroupMessageEvent
 from nonebot.matcher import Matcher
-from nonebot.params import CommandArg
 from nonebot.rule import to_me
 
 from core import game_base
-from src.plugins.game_launcher import selection
+from core.errors import GameAlreadyRunningError
 
-# -------------------- /开始 --------------------
-_play = on_command(
-    "开始",
-    aliases={"play", "开局", "玩"},
-    rule=to_me(),
-    priority=3,
-    block=True,
-)
+from nonebot import logger
 
 
-@_play.handle()
-async def _(
+async def _launch_game(
     matcher: Matcher,
-    event: GroupMessageEvent,
-    args: Message = CommandArg(),
+    group_id: int,
+    initiator_id: int,
+    game_id: str,
+    mode_id: str,
 ) -> None:
-    raw = args.extract_plain_text().strip()
-    group_id = int(event.group_id)
-    initiator_id = int(event.user_id)
-
-    # 群里已有进行中游戏？
+    """通用开局辅助：检查冲突 → 调 create_and_start。"""
     runner = game_base.get_runner_by_group(group_id)
     if runner is not None:
         await matcher.finish(
@@ -51,28 +37,22 @@ async def _(
         )
         return
 
-    # 群里已有待选择？
-    if selection.has_pending(group_id):
-        await matcher.finish(
-            "⚠️ 本群正在进行游戏选择。发送编号继续，或 @我 结束 取消。"
+    try:
+        await game_base.create_and_start(
+            game_id,
+            group_id=group_id,
+            host_id=initiator_id,
+            players=[],
+            config={"mode": mode_id} if mode_id else {},
         )
-        return
-
-    # 解析参数：最多 2 个 token（game 和 mode）
-    tokens = raw.split(maxsplit=1)
-    game_preselect = tokens[0] if tokens else None
-    mode_preselect = tokens[1] if len(tokens) > 1 else None
-
-    await selection.begin(
-        group_id,
-        initiator_id,
-        game_preselect=game_preselect,
-        mode_preselect=mode_preselect,
-    )
+    except GameAlreadyRunningError as e:
+        await matcher.finish(f"⚠️ {e}")
+    except Exception as e:  # noqa: BLE001
+        logger.exception(f"[launcher] launch failed game={game_id}: {e}")
+        await matcher.finish(f"⚠️ 启动失败：{e}")
 
 
-# -------------------- 快捷开局 --------------------
-# @机器人 海龟汤 → /开始 turtle_soup library
+# -------------------- 快捷开局：海龟汤 --------------------
 _quick_soup = on_command(
     "海龟汤",
     aliases={"turtle_soup"},
@@ -81,28 +61,18 @@ _quick_soup = on_command(
     block=True,
 )
 
-
 @_quick_soup.handle()
 async def _(matcher: Matcher, event: GroupMessageEvent) -> None:
-    group_id = int(event.group_id)
-    initiator_id = int(event.user_id)
-
-    runner = game_base.get_runner_by_group(group_id)
-    if runner is not None:
-        await matcher.finish(
-            f"⚠️ 本群已有进行中的「{runner.ctx.game_id}」。"
-            "先 @我 结束 终止当前游戏。"
-        )
-        return
-
-    selection.cancel(group_id)  # 清掉可能的选择态
-    await selection.begin(
-        group_id, initiator_id,
-        game_preselect="turtle_soup",
+    await _launch_game(
+        matcher,
+        group_id=int(event.group_id),
+        initiator_id=int(event.user_id),
+        game_id="turtle_soup",
+        mode_id="library",  # 默认题库随机模式
     )
 
 
-# @机器人 趣味问答 → /开始 trivia（进入模式选择，因为趣味问答有多个分类）
+# -------------------- 快捷开局：趣味问答 --------------------
 _quick_trivia = on_command(
     "趣味问答",
     aliases={"trivia"},
@@ -111,24 +81,17 @@ _quick_trivia = on_command(
     block=True,
 )
 
-
 @_quick_trivia.handle()
 async def _(matcher: Matcher, event: GroupMessageEvent) -> None:
-    group_id = int(event.group_id)
-    initiator_id = int(event.user_id)
-
-    runner = game_base.get_runner_by_group(group_id)
-    if runner is not None:
-        await matcher.finish(
-            f"⚠️ 本群已有进行中的「{runner.ctx.game_id}」。"
-            "先 @我 结束 终止当前游戏。"
-        )
-        return
-
-    selection.cancel(group_id)
-    await selection.begin(
-        group_id, initiator_id,
-        game_preselect="trivia",
+    # 随机选一个类型
+    trivia_types = ["country", "city", "food", "person", "animal", "idiom"]
+    mode_id = random.choice(trivia_types)
+    await _launch_game(
+        matcher,
+        group_id=int(event.group_id),
+        initiator_id=int(event.user_id),
+        game_id="trivia",
+        mode_id=mode_id,
     )
 
 
@@ -141,19 +104,12 @@ _quit = on_command(
     block=True,
 )
 
-
 @_quit.handle()
 async def _(matcher: Matcher, event: GroupMessageEvent) -> None:
     group_id = int(event.group_id)
 
-    # 先清选择态
-    if selection.cancel(group_id):
-        await matcher.finish("🏳 已取消当前的游戏选择。")
-        return
-
-    # 再终止进行中游戏
     ok = await game_base.abort_by_group(group_id)
     if ok:
         await matcher.finish("🏳 本局游戏已终止。")
     else:
-        await matcher.finish("本群当前没有进行中的游戏或选择。")
+        await matcher.finish("本群当前没有进行中的游戏。")

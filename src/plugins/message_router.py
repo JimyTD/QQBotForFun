@@ -1,9 +1,8 @@
 """全局消息入站路由。
 
 处理优先级（priority=5，低于命令的 priority=3）：
-  1. 如果群里正在 [选择态]，且消息 @机器人，交给 selection 处理
-  2. 否则 @机器人 的消息转 `core.session.route_incoming_message`（游戏内提问等）
-  3. 若都未消费，回复帮助信息（兜底）
+  1. @机器人 的消息转 `core.session.route_incoming_message`（游戏内提问等）
+  2. 若未消费，回复帮助信息（兜底）
 """
 
 from __future__ import annotations
@@ -18,7 +17,6 @@ from nonebot.matcher import Matcher
 from nonebot.rule import Rule
 
 from core import session as csession
-from src.plugins.game_launcher import selection
 
 _matcher = on_message(
     rule=Rule(),
@@ -78,20 +76,11 @@ async def _route(event: MessageEvent, matcher: Matcher) -> None:
         await matcher.finish(_FALLBACK_HELP)
         return
 
-    # 1) 选择态优先
-    if group_id is not None and selection.has_pending(group_id):
-        consumed = await selection.handle_selection_message(
-            group_id, qq_id, text, at_bot=True
-        )
-        if consumed:
-            matcher.stop_propagation()
-            return
-
-    # 2) 常规路由（游戏内提问 / ask 等待）
+    # 1) 常规路由（游戏内提问 / ask 等待）
     consumed = await csession.route_incoming_message(qq_id, group_id, text)
     if consumed:
         matcher.stop_propagation()
         return
 
-    # 3) 兜底：@机器人 但没被任何命令或游戏消费 → 回复帮助
+    # 2) 兜底：@机器人 但没被任何命令或游戏消费 → 回复帮助
     await matcher.finish(_FALLBACK_HELP)
