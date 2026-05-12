@@ -304,6 +304,7 @@ async def test_basic():
 
 ## 12. Checklist：提交前自查
 
+### 代码层
 - [ ] 目录结构符合规范
 - [ ] 继承 `GameBase` 并用 `@register_game` 注册
 - [ ] 元信息（id/name/min/max_players）完整
@@ -314,3 +315,17 @@ async def test_basic():
 - [ ] 有 `docs/games/<id>.md`
 - [ ] 有至少 1 个基础测试
 - [ ] `on_end` 中释放所有资源（取消计时器、清理临时数据）
+
+### 注册 & 集成（每一项都必须，缺一个就不能用）
+- [ ] **`src/bot.py`** — `nonebot.load_plugin("src.plugins.<name>")` 注册
+- [ ] **commands.py** — `rule=to_me()`, `priority=3`（必须低于 message_router 的 5）
+- [ ] **`src/plugins/core_commands/handlers.py`** — 帮助文本 HELP_TEXT + 菜单 MenuItem
+- [ ] **`src/plugins/message_router.py`** — 兜底帮助文案 _FALLBACK_HELP
+- [ ] **`scripts/cli_adapters/<id>.py`** — CLI 适配器
+- [ ] **`scripts/play_cli.py`** — ADAPTERS 字典注册
+
+### 部署注意事项
+- [ ] **图片发送必须用 base64**（NapCat 和 Bot 容器文件系统隔离）
+- [ ] 无新依赖 → Dockerfile 不需要改；有新依赖 → 加到 pyproject.toml
+- [ ] 纯文件数据（JSON/图片）随 `COPY .` 进容器，不需要 seed 脚本
+- [ ] 部署时**只重建 Bot**：`docker compose up -d --build bot`（不碰 NapCat）

@@ -122,34 +122,34 @@ def render_unit_brief(unit: Unit) -> str:
 
 
 def render_compare(a: Unit, b: Unit) -> str:
-    """渲染两个单位的对比卡片。"""
+    """渲染两个单位的左右对比卡片。"""
     lines: list[str] = []
 
-    def _name(u: Unit) -> str:
+    def _n(u: Unit) -> str:
         return u.name if u.name != u.name_en else u.name_en
 
-    w = 18  # 列宽
-    lines.append(f"{'⚔️ 兵种对比':^40}")
-    lines.append("━" * 40)
-    lines.append(f"{'':>{w}} │ {_name(a):<{w}}")
-    lines.append(f"{'':>{w}} │ {_name(b):<{w}}")
-    lines.append("─" * 40)
+    lines.append("⚔️ 兵种对比")
+    lines.append("━" * 20)
+    lines.append(f"【{_n(a)}】 vs 【{_n(b)}】")
+    lines.append("")
 
     def _row(label: str, va: str, vb: str) -> str:
-        return f"{label:>{w}} │ {va:<{w}} │ {vb:<{w}}"
+        return f"{label}  {va}  │  {vb}"
 
     lines.append(_row("HP", str(a.hp), str(b.hp)))
     lines.append(_row("费用", a.cost_str, b.cost_str))
     lines.append(_row("人口", str(a.pop), str(b.pop)))
     lines.append(_row("速度", f"{a.speed:g}", f"{b.speed:g}"))
+    lines.append("")
 
     if a.attack_ranged or b.attack_ranged:
         lines.append(_row("远程攻击", f"{a.attack_ranged:g}", f"{b.attack_ranged:g}"))
-        lines.append(_row("远程射程", f"{a.range:g}", f"{b.range:g}"))
+        lines.append(_row("射程", f"{a.range:g}", f"{b.range:g}"))
     if a.attack_melee or b.attack_melee:
         lines.append(_row("近战攻击", f"{a.attack_melee:g}", f"{b.attack_melee:g}"))
     if a.attack_siege or b.attack_siege:
         lines.append(_row("攻城攻击", f"{a.attack_siege:g}", f"{b.attack_siege:g}"))
+    lines.append("")
 
     lines.append(_row("近战抗性", f"{a.armor_melee:.0%}", f"{b.armor_melee:.0%}"))
     lines.append(_row("远程抗性", f"{a.armor_ranged:.0%}", f"{b.armor_ranged:.0%}"))
