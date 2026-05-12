@@ -24,6 +24,7 @@ class Unit:
     id: str
     name: str           # 中文名（可能等于 name_en）
     name_en: str        # 英文名
+    aliases: list[str] = field(default_factory=list)  # 别名（用于搜索）
     wiki_url: str = ""
     icon_url: str = ""
 
@@ -105,6 +106,7 @@ class Unit:
             id=d.get("id", ""),
             name=d.get("name", ""),
             name_en=d.get("name_en", ""),
+            aliases=d.get("aliases", []),
             wiki_url=d.get("wiki_url", ""),
             icon_url=d.get("icon_url", ""),
             type=d.get("type", []),

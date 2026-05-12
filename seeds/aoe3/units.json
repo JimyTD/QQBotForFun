@@ -92,7 +92,11 @@
     "rof_siege": 3.0,
     "attack_melee": 10.0,
     "rof_melee": 1.5,
-    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/4/47/Ottomans_abus_gunner_portrait.jpg/revision/latest/scale-to-width-down/268?cb=20221020192033"
+    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/4/47/Ottomans_abus_gunner_portrait.jpg/revision/latest/scale-to-width-down/268?cb=20221020192033",
+    "aliases": [
+      "掷弹炮",
+      "阿布斯"
+    ]
   },
   {
     "id": "aenna",
@@ -421,7 +425,7 @@
   {
     "id": "architect",
     "name_en": "Architect",
-    "name": "Architect",
+    "name": "建筑师",
     "wiki_url": "https://ageofempires.fandom.com/wiki/Architect",
     "type": [
       "Villager"
@@ -518,7 +522,7 @@
   {
     "id": "arquebusier",
     "name_en": "Arquebusier",
-    "name": "Arquebusier",
+    "name": "火绳枪手",
     "wiki_url": "https://ageofempires.fandom.com/wiki/Arquebusier",
     "type": [
       "Infantry",
@@ -867,7 +871,7 @@
   {
     "id": "atakebune_age_of_empires_iii",
     "name_en": "Atakebune (Age of Empires III)",
-    "name": "Atakebune (Age of Empires III)",
+    "name": "安宅船",
     "wiki_url": "https://ageofempires.fandom.com/wiki/Atakebune_(Age_of_Empires_III)",
     "type": [
       "Ship",
@@ -959,7 +963,7 @@
   {
     "id": "azap",
     "name_en": "Azap",
-    "name": "Azap",
+    "name": "阿扎普",
     "wiki_url": "https://ageofempires.fandom.com/wiki/Azap",
     "type": [
       "Infantry",
@@ -1023,12 +1027,15 @@
     "rof_siege": 3.0,
     "attack_melee": 10.0,
     "rof_melee": 1.5,
-    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/6/68/Ottomans_azap_portrait.jpg/revision/latest/scale-to-width-down/268?cb=20221020192055"
+    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/6/68/Ottomans_azap_portrait.jpg/revision/latest/scale-to-width-down/268?cb=20221020192055",
+    "aliases": [
+      "轻步兵"
+    ]
   },
   {
     "id": "aztec_chief",
     "name_en": "Aztec Chief",
-    "name": "Aztec Chief",
+    "name": "阿兹特克酋长",
     "wiki_url": "https://ageofempires.fandom.com/wiki/Aztec_Chief",
     "type": [
       "Infantry",
@@ -1054,7 +1061,7 @@
   {
     "id": "aztec_eagle_warrior",
     "name_en": "Aztec Eagle Warrior",
-    "name": "Aztec Eagle Warrior",
+    "name": "阿兹特克鹰战士",
     "wiki_url": "https://ageofempires.fandom.com/wiki/Aztec_Eagle_Warrior",
     "type": [
       "Shock infantry",
@@ -1112,12 +1119,15 @@
     "rof_siege": 3.0,
     "attack_melee": 9.0,
     "rof_melee": 1.5,
-    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/8/86/Aztec_eagle_warrior_portrait_aoe3de.png/revision/latest/scale-to-width-down/268?cb=20210702042638"
+    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/8/86/Aztec_eagle_warrior_portrait_aoe3de.png/revision/latest/scale-to-width-down/268?cb=20210702042638",
+    "aliases": [
+      "鹰战士"
+    ]
   },
   {
     "id": "aztec_jaguar_warrior",
     "name_en": "Aztec Jaguar Warrior",
-    "name": "Aztec Jaguar Warrior",
+    "name": "阿兹特克豹战士",
     "wiki_url": "https://ageofempires.fandom.com/wiki/Aztec_Jaguar_Warrior",
     "type": [
       "Infantry",
@@ -1163,7 +1173,10 @@
         }
       ]
     },
-    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/2/2b/Aztec_jaguar_warrior_aoe3de.png/revision/latest/scale-to-width-down/268?cb=20220712020322"
+    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/2/2b/Aztec_jaguar_warrior_aoe3de.png/revision/latest/scale-to-width-down/268?cb=20220712020322",
+    "aliases": [
+      "豹战士"
+    ]
   },
   {
     "id": "aztec_war_chief",
@@ -1384,7 +1397,7 @@
   {
     "id": "barbary_warrior",
     "name_en": "Barbary Warrior",
-    "name": "Barbary Warrior",
+    "name": "巴巴里战士",
     "wiki_url": "https://ageofempires.fandom.com/wiki/Barbary_Warrior",
     "type": [
       "Infantry",
@@ -1440,7 +1453,7 @@
   {
     "id": "bashibozuk",
     "name_en": "Bashibozuk",
-    "name": "Bashibozuk",
+    "name": "巴什波祖克",
     "wiki_url": "https://ageofempires.fandom.com/wiki/Bashibozuk",
     "type": [
       "Infantry",
@@ -1591,7 +1604,7 @@
   {
     "id": "bedouin_horse_archer",
     "name_en": "Bedouin Horse Archer",
-    "name": "Bedouin Horse Archer",
+    "name": "贝都因骑射手",
     "wiki_url": "https://ageofempires.fandom.com/wiki/Bedouin_Horse_Archer",
     "type": [
       "Cavalry",
@@ -1816,7 +1829,7 @@
   {
     "id": "berber_spearman",
     "name_en": "Berber Spearman",
-    "name": "Berber Spearman",
+    "name": "柏柏尔长枪兵",
     "wiki_url": "https://ageofempires.fandom.com/wiki/Berber_Spearman",
     "type": [
       "Infantry",
@@ -1963,7 +1976,7 @@
   {
     "id": "black_brunswicker",
     "name_en": "Black Brunswicker",
-    "name": "Black Brunswicker",
+    "name": "黑色布伦瑞克兵",
     "wiki_url": "https://ageofempires.fandom.com/wiki/Black_Brunswicker",
     "type": [
       "Infantry",
@@ -2210,7 +2223,7 @@
   {
     "id": "boneguard_swordsman",
     "name_en": "Boneguard Swordsman",
-    "name": "Boneguard Swordsman",
+    "name": "骨卫剑士",
     "wiki_url": "https://ageofempires.fandom.com/wiki/Boneguard_Swordsman",
     "type": [
       "Infantry",
@@ -2519,7 +2532,7 @@
   {
     "id": "californio",
     "name_en": "Californio",
-    "name": "Californio",
+    "name": "加利福尼亚骑兵",
     "wiki_url": "https://ageofempires.fandom.com/wiki/Californio",
     "type": [
       "Cavalry",
@@ -3158,12 +3171,15 @@
     "rof_siege": 3.0,
     "attack_melee": 5.0,
     "rof_melee": 1.5,
-    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/3/3f/Cacador_de.png/revision/latest/scale-to-width-down/268?cb=20210206024026"
+    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/3/3f/Cacador_de.png/revision/latest/scale-to-width-down/268?cb=20210206024026",
+    "aliases": [
+      "猎人"
+    ]
   },
   {
     "id": "cavalry_archer_age_of_empires_iii",
     "name_en": "Cavalry Archer (Age of Empires III)",
-    "name": "Cavalry Archer (Age of Empires III)",
+    "name": "骑射手",
     "wiki_url": "https://ageofempires.fandom.com/wiki/Cavalry_Archer_(Age_of_Empires_III)",
     "type": [
       "Cavalry",
@@ -3398,7 +3414,7 @@
   {
     "id": "chakram_thrower_age_of_empires_iii",
     "name_en": "Chakram Thrower (Age of Empires III)",
-    "name": "Chakram Thrower (Age of Empires III)",
+    "name": "查克拉姆投掷手",
     "wiki_url": "https://ageofempires.fandom.com/wiki/Chakram_Thrower_(Age_of_Empires_III)",
     "type": [
       "Infantry",
@@ -3462,7 +3478,11 @@
     "rof_siege": 3.0,
     "attack_melee": 8.0,
     "rof_melee": 1.5,
-    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/6/6f/Chakram_aoe3de.png/revision/latest/scale-to-width-down/268?cb=20210211052440"
+    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/6/6f/Chakram_aoe3de.png/revision/latest/scale-to-width-down/268?cb=20210211052440",
+    "aliases": [
+      "飞轮兵",
+      "查克拉姆"
+    ]
   },
   {
     "id": "changdao_swordsman",
@@ -3504,12 +3524,16 @@
         }
       ]
     },
-    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/d/d9/Changdao_de.png/revision/latest/scale-to-width-down/268?cb=20210225025329"
+    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/d/d9/Changdao_de.png/revision/latest/scale-to-width-down/268?cb=20210225025329",
+    "aliases": [
+      "长刀兵",
+      "长刀"
+    ]
   },
   {
     "id": "chasqui",
     "name_en": "Chasqui",
-    "name": "Chasqui",
+    "name": "查斯基信使",
     "wiki_url": "https://ageofempires.fandom.com/wiki/Chasqui",
     "type": [
       "Shock infantry",
@@ -3714,7 +3738,7 @@
   {
     "id": "chevauleger",
     "name_en": "Chevauleger",
-    "name": "Chevauleger",
+    "name": "轻骑兵",
     "wiki_url": "https://ageofempires.fandom.com/wiki/Chevauleger",
     "type": [
       "Cavalry",
@@ -4034,7 +4058,7 @@
   {
     "id": "chu_ko_nu_age_of_empires_iii",
     "name_en": "Chu Ko Nu (Age of Empires III)",
-    "name": "Chu Ko Nu (Age of Empires III)",
+    "name": "诸葛弩手",
     "wiki_url": "https://ageofempires.fandom.com/wiki/Chu_Ko_Nu_(Age_of_Empires_III)",
     "type": [
       "Infantry",
@@ -4112,7 +4136,10 @@
     "rof_siege": 3.0,
     "attack_melee": 6.0,
     "rof_melee": 1.5,
-    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/3/39/Chu_ko_nu_aoe3de.png/revision/latest/scale-to-width-down/268?cb=20210225025445"
+    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/3/39/Chu_ko_nu_aoe3de.png/revision/latest/scale-to-width-down/268?cb=20210225025445",
+    "aliases": [
+      "连弩手"
+    ]
   },
   {
     "id": "church_wagon",
@@ -4131,7 +4158,7 @@
   {
     "id": "city_guard",
     "name_en": "City Guard",
-    "name": "City Guard",
+    "name": "城市卫兵",
     "wiki_url": "https://ageofempires.fandom.com/wiki/City_Guard",
     "type": [
       "Infantry",
@@ -4173,7 +4200,7 @@
   {
     "id": "club_warrior",
     "name_en": "Club Warrior",
-    "name": "Club Warrior",
+    "name": "棍棒战士",
     "wiki_url": "https://ageofempires.fandom.com/wiki/Club_Warrior",
     "type": [
       "Infantry",
@@ -4231,7 +4258,7 @@
   {
     "id": "colonial_looter",
     "name_en": "Colonial Looter",
-    "name": "Colonial Looter",
+    "name": "殖民劫掠者",
     "wiki_url": "https://ageofempires.fandom.com/wiki/Colonial_Looter",
     "type": [
       "Infantry",
@@ -4447,7 +4474,7 @@
   {
     "id": "conquistador_age_of_empires_iii",
     "name_en": "Conquistador (Age of Empires III)",
-    "name": "Conquistador (Age of Empires III)",
+    "name": "征服者",
     "wiki_url": "https://ageofempires.fandom.com/wiki/Conquistador_(Age_of_Empires_III)",
     "type": [
       "Cavalry",
@@ -4723,7 +4750,7 @@
   {
     "id": "counter_dragoon",
     "name_en": "Counter Dragoon",
-    "name": "Counter Dragoon",
+    "name": "反龙骑兵",
     "wiki_url": "https://ageofempires.fandom.com/wiki/Counter_Dragoon",
     "type": [
       "Cavalry",
@@ -4809,7 +4836,7 @@
   {
     "id": "counter_jaeger",
     "name_en": "Counter Jaeger",
-    "name": "Counter Jaeger",
+    "name": "反猎兵",
     "wiki_url": "https://ageofempires.fandom.com/wiki/Counter_Jaeger",
     "type": [
       "Infantry",
@@ -4904,7 +4931,7 @@
   {
     "id": "coureur_des_bois",
     "name_en": "Coureur des Bois",
-    "name": "Coureur des Bois",
+    "name": "丛林猎人",
     "wiki_url": "https://ageofempires.fandom.com/wiki/Coureur_des_Bois",
     "type": [
       "Villager"
@@ -4967,7 +4994,10 @@
     "rof_siege": 3.0,
     "attack_melee": 10.0,
     "rof_melee": 1.5,
-    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/f/f0/Coureur_aoe3de.png/revision/latest/scale-to-width-down/268?cb=20210203102825"
+    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/f/f0/Coureur_aoe3de.png/revision/latest/scale-to-width-down/268?cb=20210203102825",
+    "aliases": [
+      "猎人"
+    ]
   },
   {
     "id": "cowboy",
@@ -5064,7 +5094,10 @@
     "rof_siege": 3.0,
     "attack_melee": 18.0,
     "rof_melee": 1.5,
-    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/0/0f/Coyote_runner_aoe3de.png/revision/latest/scale-to-width-down/268?cb=20210206101655"
+    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/0/0f/Coyote_runner_aoe3de.png/revision/latest/scale-to-width-down/268?cb=20210206101655",
+    "aliases": [
+      "郊狼兵"
+    ]
   },
   {
     "id": "crabat",
@@ -5311,7 +5344,7 @@
   {
     "id": "cruzob_infantry",
     "name_en": "Cruzob Infantry",
-    "name": "Cruzob Infantry",
+    "name": "十字军步兵",
     "wiki_url": "https://ageofempires.fandom.com/wiki/Cruzob_Infantry",
     "type": [
       "Infantry",
@@ -5548,7 +5581,10 @@
     "rof_siege": 3.0,
     "attack_melee": 25.0,
     "rof_melee": 1.5,
-    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/f/f1/Cuirassier_de.png/revision/latest/scale-to-width-down/268?cb=20210206031600"
+    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/f/f1/Cuirassier_de.png/revision/latest/scale-to-width-down/268?cb=20210206031600",
+    "aliases": [
+      "铁骑"
+    ]
   },
   {
     "id": "culverin_age_of_empires_iii",
@@ -5897,7 +5933,7 @@
   {
     "id": "desert_warrior",
     "name_en": "Desert Warrior",
-    "name": "Desert Warrior",
+    "name": "沙漠战士",
     "wiki_url": "https://ageofempires.fandom.com/wiki/Desert_Warrior",
     "type": [
       "Infantry",
@@ -6024,7 +6060,7 @@
   {
     "id": "disciple",
     "name_en": "Disciple",
-    "name": "Disciple",
+    "name": "门徒",
     "wiki_url": "https://ageofempires.fandom.com/wiki/Disciple",
     "type": [
       "Shock infantry",
@@ -6215,7 +6251,10 @@
     "rof_siege": 3.0,
     "attack_melee": 11.0,
     "rof_melee": 1.5,
-    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/b/ba/Dragoon_aoe3de.png/revision/latest/scale-to-width-down/268?cb=20210206031800"
+    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/b/ba/Dragoon_aoe3de.png/revision/latest/scale-to-width-down/268?cb=20210206031800",
+    "aliases": [
+      "龙骑"
+    ]
   },
   {
     "id": "drummer",
@@ -6329,7 +6368,7 @@
   {
     "id": "eagle_scout_age_of_empires_iii",
     "name_en": "Eagle Scout (Age of Empires III)",
-    "name": "Eagle Scout (Age of Empires III)",
+    "name": "鹰侦察兵",
     "wiki_url": "https://ageofempires.fandom.com/wiki/Eagle_Scout_(Age_of_Empires_III)",
     "type": [
       "Infantry",
@@ -6382,7 +6421,7 @@
   {
     "id": "eclaireur",
     "name_en": "Eclaireur",
-    "name": "Eclaireur",
+    "name": "侦察骑兵",
     "wiki_url": "https://ageofempires.fandom.com/wiki/Eclaireur",
     "type": [
       "Cavalry",
@@ -6707,7 +6746,11 @@
         }
       ]
     },
-    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/b/b7/Falconet_aoe3de.png/revision/latest/scale-to-width-down/268?cb=20210206034127"
+    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/b/b7/Falconet_aoe3de.png/revision/latest/scale-to-width-down/268?cb=20210206034127",
+    "aliases": [
+      "轻炮",
+      "小炮"
+    ]
   },
   {
     "id": "farm_travois",
@@ -6728,7 +6771,7 @@
   {
     "id": "filibuster",
     "name_en": "Filibuster",
-    "name": "Filibuster",
+    "name": "冒险家",
     "wiki_url": "https://ageofempires.fandom.com/wiki/Filibuster",
     "type": [
       "Infantry",
@@ -6867,7 +6910,7 @@
   {
     "id": "fishing_boat_age_of_empires_iii",
     "name_en": "Fishing Boat (Age of Empires III)",
-    "name": "Fishing Boat (Age of Empires III)",
+    "name": "渔船",
     "wiki_url": "https://ageofempires.fandom.com/wiki/Fishing_Boat_(Age_of_Empires_III)",
     "type": [
       "Ship",
@@ -6912,7 +6955,7 @@
   {
     "id": "fishing_canoe",
     "name_en": "Fishing Canoe",
-    "name": "Fishing Canoe",
+    "name": "渔船独木舟",
     "wiki_url": "https://ageofempires.fandom.com/wiki/Fishing_Canoe",
     "type": [
       "Ship",
@@ -7295,7 +7338,10 @@
         }
       ]
     },
-    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/e/e8/Flying_crow_de.png/revision/latest/scale-to-width-down/268?cb=20210207122716"
+    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/e/e8/Flying_crow_de.png/revision/latest/scale-to-width-down/268?cb=20210207122716",
+    "aliases": [
+      "飞鸦"
+    ]
   },
   {
     "id": "forest_prowler",
@@ -7815,7 +7861,10 @@
         }
       ]
     },
-    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/b/b9/Gascenya_portrait_aoe3de.png/revision/latest/scale-to-width-down/268?cb=20210806034035"
+    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/b/b9/Gascenya_portrait_aoe3de.png/revision/latest/scale-to-width-down/268?cb=20210806034035",
+    "aliases": [
+      "弓手"
+    ]
   },
   {
     "id": "gatling_camel",
@@ -8468,7 +8517,10 @@
     "rof_siege": 3.0,
     "attack_melee": 8.0,
     "rof_melee": 1.5,
-    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/b/bb/Gurkha_de.png/revision/latest/scale-to-width-down/268?cb=20210206024539"
+    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/b/bb/Gurkha_de.png/revision/latest/scale-to-width-down/268?cb=20210206024539",
+    "aliases": [
+      "廓尔喀"
+    ]
   },
   {
     "id": "hackapell",
@@ -8695,7 +8747,7 @@
   {
     "id": "halberdier_age_of_empires_iii",
     "name_en": "Halberdier (Age of Empires III)",
-    "name": "Halberdier (Age of Empires III)",
+    "name": "戟兵",
     "wiki_url": "https://ageofempires.fandom.com/wiki/Halberdier_(Age_of_Empires_III)",
     "type": [
       "Infantry",
@@ -8798,7 +8850,10 @@
         }
       ]
     },
-    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/9/94/Hand_mortar_de.png/revision/latest/scale-to-width-down/268?cb=20210210132755"
+    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/9/94/Hand_mortar_de.png/revision/latest/scale-to-width-down/268?cb=20210210132755",
+    "aliases": [
+      "手炮"
+    ]
   },
   {
     "id": "harquebusier",
@@ -8899,7 +8954,7 @@
   {
     "id": "haudenosaunee_tomahawk",
     "name_en": "Haudenosaunee Tomahawk",
-    "name": "Haudenosaunee Tomahawk",
+    "name": "豪德诺索尼战斧兵",
     "wiki_url": "https://ageofempires.fandom.com/wiki/Haudenosaunee_Tomahawk",
     "type": [
       "Infantry",
@@ -9092,7 +9147,10 @@
         }
       ]
     },
-    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/8/83/Highlander_de.png/revision/latest/scale-to-width-down/268?cb=20210206070057"
+    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/8/83/Highlander_de.png/revision/latest/scale-to-width-down/268?cb=20210206070057",
+    "aliases": [
+      "高地兵"
+    ]
   },
   {
     "id": "highwayman",
@@ -9170,7 +9228,7 @@
   {
     "id": "hindu_villager",
     "name_en": "Hindu Villager",
-    "name": "Hindu Villager",
+    "name": "印度村民",
     "wiki_url": "https://ageofempires.fandom.com/wiki/Hindu_Villager",
     "type": [
       "Villager"
@@ -9441,7 +9499,7 @@
   {
     "id": "howdah_age_of_empires_iii",
     "name_en": "Howdah (Age of Empires III)",
-    "name": "Howdah (Age of Empires III)",
+    "name": "象轿兵",
     "wiki_url": "https://ageofempires.fandom.com/wiki/Howdah_(Age_of_Empires_III)",
     "type": [
       "Cavalry",
@@ -9761,7 +9819,10 @@
     "rof_siege": 3.0,
     "attack_melee": 30.0,
     "rof_melee": 1.5,
-    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/4/43/Hussar_aoe3de.png/revision/latest/scale-to-width-down/268?cb=20210206032350"
+    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/4/43/Hussar_aoe3de.png/revision/latest/scale-to-width-down/268?cb=20210206032350",
+    "aliases": [
+      "骠骑兵"
+    ]
   },
   {
     "id": "imam_age_of_empires_iii",
@@ -10054,7 +10115,10 @@
         }
       ]
     },
-    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/3/33/Iron_flail_de.png/revision/latest/scale-to-width-down/268?cb=20210225023139"
+    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/3/33/Iron_flail_de.png/revision/latest/scale-to-width-down/268?cb=20210225023139",
+    "aliases": [
+      "铁连枷"
+    ]
   },
   {
     "id": "iron_troop",
@@ -10455,7 +10519,7 @@
   {
     "id": "janissary_age_of_empires_iii",
     "name_en": "Janissary (Age of Empires III)",
-    "name": "Janissary (Age of Empires III)",
+    "name": "土耳其近卫军",
     "wiki_url": "https://ageofempires.fandom.com/wiki/Janissary_(Age_of_Empires_III)",
     "type": [
       "Infantry",
@@ -10505,7 +10569,12 @@
         }
       ]
     },
-    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/1/15/Janissary_aoe3de.png/revision/latest/scale-to-width-down/268?cb=20210206024836"
+    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/1/15/Janissary_aoe3de.png/revision/latest/scale-to-width-down/268?cb=20210206024836",
+    "aliases": [
+      "苏丹亲兵",
+      "亲兵",
+      "耶尼切里"
+    ]
   },
   {
     "id": "jat_lancer",
@@ -10547,7 +10616,7 @@
   {
     "id": "javanese_spearman",
     "name_en": "Javanese Spearman",
-    "name": "Javanese Spearman",
+    "name": "爪哇长枪兵",
     "wiki_url": "https://ageofempires.fandom.com/wiki/Javanese_Spearman",
     "type": [
       "Infantry",
@@ -10892,7 +10961,7 @@
   {
     "id": "keshik_age_of_empires_iii",
     "name_en": "Keshik (Age of Empires III)",
-    "name": "Keshik (Age of Empires III)",
+    "name": "怯薛",
     "wiki_url": "https://ageofempires.fandom.com/wiki/Keshik_(Age_of_Empires_III)",
     "type": [
       "Cavalry",
@@ -10953,7 +11022,7 @@
   {
     "id": "klamath_rifleman",
     "name_en": "Klamath Rifleman",
-    "name": "Klamath Rifleman",
+    "name": "克拉马特步枪手",
     "wiki_url": "https://ageofempires.fandom.com/wiki/Klamath_Rifleman",
     "type": [
       "Infantry",
@@ -11047,7 +11116,7 @@
   {
     "id": "knife_thrower",
     "name_en": "Knife Thrower",
-    "name": "Knife Thrower",
+    "name": "飞刀手",
     "wiki_url": "https://ageofempires.fandom.com/wiki/Knife_Thrower",
     "type": [
       "Infantry",
@@ -11179,7 +11248,7 @@
   {
     "id": "lancer_age_of_empires_iii",
     "name_en": "Lancer (Age of Empires III)",
-    "name": "Lancer (Age of Empires III)",
+    "name": "枪骑兵",
     "wiki_url": "https://ageofempires.fandom.com/wiki/Lancer_(Age_of_Empires_III)",
     "type": [
       "Cavalry",
@@ -11275,12 +11344,15 @@
         }
       ]
     },
-    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/d/d2/Landsknecht_de.png/revision/latest/scale-to-width-down/268?cb=20210206070951"
+    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/d/d2/Landsknecht_de.png/revision/latest/scale-to-width-down/268?cb=20210206070951",
+    "aliases": [
+      "景观步兵"
+    ]
   },
   {
     "id": "landwehr",
     "name_en": "Landwehr",
-    "name": "Landwehr",
+    "name": "国民军",
     "wiki_url": "https://ageofempires.fandom.com/wiki/Landwehr",
     "type": [
       "Infantry",
@@ -11568,7 +11640,7 @@
   {
     "id": "levied_bowman",
     "name_en": "Levied Bowman",
-    "name": "Levied Bowman",
+    "name": "征召弓手",
     "wiki_url": "https://ageofempires.fandom.com/wiki/Levied_Bowman",
     "type": [
       "Infantry",
@@ -11663,7 +11735,7 @@
   {
     "id": "levied_gunner",
     "name_en": "Levied Gunner",
-    "name": "Levied Gunner",
+    "name": "征召火枪手",
     "wiki_url": "https://ageofempires.fandom.com/wiki/Levied_Gunner",
     "type": [
       "Infantry",
@@ -11733,7 +11805,7 @@
   {
     "id": "levied_spearman",
     "name_en": "Levied Spearman",
-    "name": "Levied Spearman",
+    "name": "征召长枪兵",
     "wiki_url": "https://ageofempires.fandom.com/wiki/Levied_Spearman",
     "type": [
       "Infantry",
@@ -11930,7 +12002,7 @@
   {
     "id": "line_infantry",
     "name_en": "Line Infantry",
-    "name": "Line Infantry",
+    "name": "线列步兵",
     "wiki_url": "https://ageofempires.fandom.com/wiki/Line_Infantry",
     "type": [
       "Infantry",
@@ -11981,7 +12053,7 @@
   {
     "id": "lipka_tatar",
     "name_en": "Lipka Tatar",
-    "name": "Lipka Tatar",
+    "name": "立普卡鞑靼",
     "wiki_url": "https://ageofempires.fandom.com/wiki/Lipka_Tatar",
     "type": [
       "Cavalry",
@@ -12081,7 +12153,7 @@
   {
     "id": "llanero",
     "name_en": "Llanero",
-    "name": "Llanero",
+    "name": "草原骑手",
     "wiki_url": "https://ageofempires.fandom.com/wiki/Llanero",
     "type": [
       "Cavalry",
@@ -12348,7 +12420,10 @@
         }
       ]
     },
-    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/1/1f/Mahout_de.png/revision/latest/scale-to-width-down/268?cb=20210225192913"
+    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/1/1f/Mahout_de.png/revision/latest/scale-to-width-down/268?cb=20210225192913",
+    "aliases": [
+      "战象"
+    ]
   },
   {
     "id": "maigadi",
@@ -12619,7 +12694,7 @@
   {
     "id": "mapuche_ironwood_clubman",
     "name_en": "Mapuche Ironwood Clubman",
-    "name": "Mapuche Ironwood Clubman",
+    "name": "马普切铁木棍兵",
     "wiki_url": "https://ageofempires.fandom.com/wiki/Mapuche_Ironwood_Clubman",
     "type": [
       "Infantry",
@@ -12665,7 +12740,7 @@
   {
     "id": "marathan_catamaran",
     "name_en": "Marathan Catamaran",
-    "name": "Marathan Catamaran",
+    "name": "马拉塔双体船",
     "wiki_url": "https://ageofempires.fandom.com/wiki/Marathan_Catamaran",
     "type": [
       "Ship",
@@ -12696,7 +12771,7 @@
   {
     "id": "marathan_dacoit",
     "name_en": "Marathan Dacoit",
-    "name": "Marathan Dacoit",
+    "name": "马拉塔强盗",
     "wiki_url": "https://ageofempires.fandom.com/wiki/Marathan_Dacoit",
     "type": [
       "Infantry",
@@ -12749,7 +12824,7 @@
   {
     "id": "marathan_thuggee",
     "name_en": "Marathan Thuggee",
-    "name": "Marathan Thuggee",
+    "name": "马拉塔刺客",
     "wiki_url": "https://ageofempires.fandom.com/wiki/Marathan_Thuggee",
     "type": [
       "Infantry",
@@ -12849,7 +12924,7 @@
   {
     "id": "maya_holcan_spearman",
     "name_en": "Maya Holcan Spearman",
-    "name": "Maya Holcan Spearman",
+    "name": "玛雅霍坎长枪兵",
     "wiki_url": "https://ageofempires.fandom.com/wiki/Maya_Holcan_Spearman",
     "type": [
       "Infantry",
@@ -12951,7 +13026,10 @@
         }
       ]
     },
-    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/4/43/Meteor_hammer_de.png/revision/latest/scale-to-width-down/268?cb=20210225023214"
+    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/4/43/Meteor_hammer_de.png/revision/latest/scale-to-width-down/268?cb=20210225023214",
+    "aliases": [
+      "流星锤"
+    ]
   },
   {
     "id": "mexico_revolutionary",
@@ -13102,7 +13180,7 @@
   {
     "id": "mongol_scout",
     "name_en": "Mongol Scout",
-    "name": "Mongol Scout",
+    "name": "蒙古侦察骑兵",
     "wiki_url": "https://ageofempires.fandom.com/wiki/Mongol_Scout",
     "type": [
       "Cavalry",
@@ -13322,7 +13400,10 @@
         }
       ]
     },
-    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/6/6f/Mortar_de.png/revision/latest/scale-to-width-down/268?cb=20210206040117"
+    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/6/6f/Mortar_de.png/revision/latest/scale-to-width-down/268?cb=20210206040117",
+    "aliases": [
+      "迫击炮"
+    ]
   },
   {
     "id": "morutaru",
@@ -13371,7 +13452,7 @@
   {
     "id": "mountain_trooper",
     "name_en": "Mountain Trooper",
-    "name": "Mountain Trooper",
+    "name": "山地兵",
     "wiki_url": "https://ageofempires.fandom.com/wiki/Mountain_Trooper",
     "type": [
       "Infantry",
@@ -13457,7 +13538,7 @@
   {
     "id": "mounted_granadero",
     "name_en": "Mounted Granadero",
-    "name": "Mounted Granadero",
+    "name": "骑马掷弹兵",
     "wiki_url": "https://ageofempires.fandom.com/wiki/Mounted_Granadero",
     "type": [
       "Cavalry",
@@ -13523,7 +13604,7 @@
   {
     "id": "mounted_infantry",
     "name_en": "Mounted Infantry",
-    "name": "Mounted Infantry",
+    "name": "骑马步兵",
     "wiki_url": "https://ageofempires.fandom.com/wiki/Mounted_Infantry",
     "type": [
       "Cavalry",
@@ -13670,7 +13751,7 @@
   {
     "id": "muhbir",
     "name_en": "Muhbir",
-    "name": "Muhbir",
+    "name": "穆赫比尔",
     "wiki_url": "https://ageofempires.fandom.com/wiki/Muhbir",
     "type": [
       "Infantry",
@@ -13722,7 +13803,7 @@
   {
     "id": "musket_rider",
     "name_en": "Musket Rider",
-    "name": "Musket Rider",
+    "name": "火枪骑兵",
     "wiki_url": "https://ageofempires.fandom.com/wiki/Musket_Rider",
     "type": [
       "Cavalry",
@@ -13839,12 +13920,16 @@
         }
       ]
     },
-    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/a/a3/Musketeer_icon_aoe3de.png/revision/latest/scale-to-width-down/268?cb=20220710044112"
+    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/a/a3/Musketeer_icon_aoe3de.png/revision/latest/scale-to-width-down/268?cb=20220710044112",
+    "aliases": [
+      "火枪",
+      "枪兵"
+    ]
   },
   {
     "id": "naginata_rider_age_of_empires_iii",
     "name_en": "Naginata Rider (Age of Empires III)",
-    "name": "Naginata Rider (Age of Empires III)",
+    "name": "薙刀骑兵",
     "wiki_url": "https://ageofempires.fandom.com/wiki/Naginata_Rider_(Age_of_Empires_III)",
     "type": [
       "Cavalry",
@@ -14214,7 +14299,7 @@
   {
     "id": "ninja_age_of_empires_iii",
     "name_en": "Ninja (Age of Empires III)",
-    "name": "Ninja (Age of Empires III)",
+    "name": "忍者",
     "wiki_url": "https://ageofempires.fandom.com/wiki/Ninja_(Age_of_Empires_III)",
     "type": [
       "Infantry",
@@ -14346,7 +14431,7 @@
   {
     "id": "nootka_clubman",
     "name_en": "Nootka Clubman",
-    "name": "Nootka Clubman",
+    "name": "努特卡棍兵",
     "wiki_url": "https://ageofempires.fandom.com/wiki/Nootka_Clubman",
     "type": [
       "Infantry",
@@ -14549,7 +14634,10 @@
         }
       ]
     },
-    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/4/46/Oprichink_de.png/revision/latest/scale-to-width-down/268?cb=20210206032850"
+    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/4/46/Oprichink_de.png/revision/latest/scale-to-width-down/268?cb=20210206032850",
+    "aliases": [
+      "沙皇近卫"
+    ]
   },
   {
     "id": "orchard_rickshaw",
@@ -14609,7 +14697,7 @@
   {
     "id": "ordinance_rifleman",
     "name_en": "Ordinance Rifleman",
-    "name": "Ordinance Rifleman",
+    "name": "军械步枪兵",
     "wiki_url": "https://ageofempires.fandom.com/wiki/Ordinance_Rifleman",
     "type": [
       "Infantry",
@@ -14984,7 +15072,7 @@
   {
     "id": "padre",
     "name_en": "Padre",
-    "name": "Padre",
+    "name": "神父",
     "wiki_url": "https://ageofempires.fandom.com/wiki/Padre",
     "type": [
       "Hero",
@@ -15369,7 +15457,7 @@
   {
     "id": "pikeman_age_of_empires_iii",
     "name_en": "Pikeman (Age of Empires III)",
-    "name": "Pikeman (Age of Empires III)",
+    "name": "长枪兵",
     "wiki_url": "https://ageofempires.fandom.com/wiki/Pikeman_(Age_of_Empires_III)",
     "type": [
       "Infantry",
@@ -15418,12 +15506,15 @@
         }
       ]
     },
-    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/2/2d/Pikeman_aoe3de.png/revision/latest/scale-to-width-down/268?cb=20210206024937"
+    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/2/2d/Pikeman_aoe3de.png/revision/latest/scale-to-width-down/268?cb=20210206024937",
+    "aliases": [
+      "枪兵"
+    ]
   },
   {
     "id": "pirate_age_of_empires_iii",
     "name_en": "Pirate (Age of Empires III)",
-    "name": "Pirate (Age of Empires III)",
+    "name": "海盗",
     "wiki_url": "https://ageofempires.fandom.com/wiki/Pirate_(Age_of_Empires_III)",
     "type": [
       "Shock infantry",
@@ -15530,7 +15621,7 @@
   {
     "id": "plumed_spearman",
     "name_en": "Plumed Spearman",
-    "name": "Plumed Spearman",
+    "name": "羽饰长枪兵",
     "wiki_url": "https://ageofempires.fandom.com/wiki/Plumed_Spearman",
     "type": [
       "Infantry",
@@ -15582,7 +15673,7 @@
   {
     "id": "poruchik",
     "name_en": "Poruchik",
-    "name": "Poruchik",
+    "name": "少尉",
     "wiki_url": "https://ageofempires.fandom.com/wiki/Poruchik",
     "type": [
       "Infantry",
@@ -15792,12 +15883,15 @@
         }
       ]
     },
-    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/d/d2/Qiang_pikeman_de.png/revision/latest/scale-to-width-down/268?cb=20210225025409"
+    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/d/d2/Qiang_pikeman_de.png/revision/latest/scale-to-width-down/268?cb=20210225025409",
+    "aliases": [
+      "长枪兵"
+    ]
   },
   {
     "id": "qizilbash",
     "name_en": "Qizilbash",
-    "name": "Qizilbash",
+    "name": "奇兹尔巴什",
     "wiki_url": "https://ageofempires.fandom.com/wiki/Qizilbash",
     "type": [
       "Cavalry",
@@ -15841,7 +15935,10 @@
         }
       ]
     },
-    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/2/2b/Sufi_qizilbash_portrait.jpg/revision/latest/scale-to-width-down/268?cb=20220624214438"
+    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/2/2b/Sufi_qizilbash_portrait.jpg/revision/latest/scale-to-width-down/268?cb=20220624214438",
+    "aliases": [
+      "红头兵"
+    ]
   },
   {
     "id": "quaker_gun",
@@ -15875,7 +15972,7 @@
   {
     "id": "quechua_bolas_warrior",
     "name_en": "Quechua Bolas Warrior",
-    "name": "Quechua Bolas Warrior",
+    "name": "克丘亚流星锤战士",
     "wiki_url": "https://ageofempires.fandom.com/wiki/Quechua_Bolas_Warrior",
     "type": [
       "Infantry",
@@ -15962,7 +16059,7 @@
   {
     "id": "quechua_huaminca",
     "name_en": "Quechua Huaminca",
-    "name": "Quechua Huaminca",
+    "name": "克丘亚战士",
     "wiki_url": "https://ageofempires.fandom.com/wiki/Quechua_Huaminca",
     "type": [
       "Infantry",
@@ -16010,7 +16107,7 @@
   {
     "id": "raider_age_of_empires_iii",
     "name_en": "Raider (Age of Empires III)",
-    "name": "Raider (Age of Empires III)",
+    "name": "突袭者",
     "wiki_url": "https://ageofempires.fandom.com/wiki/Raider_(Age_of_Empires_III)",
     "type": [
       "Cavalry",
@@ -16132,12 +16229,15 @@
         }
       ]
     },
-    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/6/66/Rajput_de.png/revision/latest/scale-to-width-down/268?cb=20210225192507"
+    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/6/66/Rajput_de.png/revision/latest/scale-to-width-down/268?cb=20210225192507",
+    "aliases": [
+      "拉杰普特"
+    ]
   },
   {
     "id": "ram_age_of_empires_iii",
     "name_en": "Ram (Age of Empires III)",
-    "name": "Ram (Age of Empires III)",
+    "name": "攻城锤",
     "wiki_url": "https://ageofempires.fandom.com/wiki/Ram_(Age_of_Empires_III)",
     "type": [
       "Siege trooper"
@@ -16299,7 +16399,7 @@
   {
     "id": "regent_age_of_empires_iii",
     "name_en": "Regent (Age of Empires III)",
-    "name": "Regent (Age of Empires III)",
+    "name": "摄政",
     "wiki_url": "https://ageofempires.fandom.com/wiki/Regent_(Age_of_Empires_III)",
     "type": [
       "Cavalry",
@@ -16381,7 +16481,7 @@
   {
     "id": "rekrut",
     "name_en": "Rekrut",
-    "name": "Rekrut",
+    "name": "新兵",
     "wiki_url": "https://ageofempires.fandom.com/wiki/Rekrut",
     "type": [
       "Infantry",
@@ -16583,7 +16683,7 @@
   {
     "id": "revolutionary_sharpshooter",
     "name_en": "Revolutionary Sharpshooter",
-    "name": "Revolutionary Sharpshooter",
+    "name": "革命神射手",
     "wiki_url": "https://ageofempires.fandom.com/wiki/Revolutionary_Sharpshooter",
     "type": [
       "Infantry",
@@ -16851,7 +16951,10 @@
         }
       ]
     },
-    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/4/45/Rocket_de.png/revision/latest/scale-to-width-down/268?cb=20210206040444"
+    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/4/45/Rocket_de.png/revision/latest/scale-to-width-down/268?cb=20210206040444",
+    "aliases": [
+      "火箭"
+    ]
   },
   {
     "id": "rodelero",
@@ -16906,7 +17009,10 @@
         }
       ]
     },
-    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/4/4a/Randelero_de.png/revision/latest/scale-to-width-down/268?cb=20210206030341"
+    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/4/4a/Randelero_de.png/revision/latest/scale-to-width-down/268?cb=20210206030341",
+    "aliases": [
+      "剑盾兵"
+    ]
   },
   {
     "id": "romania",
@@ -16923,7 +17029,7 @@
   {
     "id": "ronin_age_of_empires_iii",
     "name_en": "Ronin (Age of Empires III)",
-    "name": "Ronin (Age of Empires III)",
+    "name": "浪人",
     "wiki_url": "https://ageofempires.fandom.com/wiki/Ronin_(Age_of_Empires_III)",
     "type": [
       "Infantry",
@@ -16971,7 +17077,7 @@
   {
     "id": "royal_arquebusier",
     "name_en": "Royal Arquebusier",
-    "name": "Royal Arquebusier",
+    "name": "皇家火绳枪手",
     "wiki_url": "https://ageofempires.fandom.com/wiki/Royal_Arquebusier",
     "type": [
       "Infantry",
@@ -17360,7 +17466,7 @@
   {
     "id": "sacred_band_infantry",
     "name_en": "Sacred Band Infantry",
-    "name": "Sacred Band Infantry",
+    "name": "圣团步兵",
     "wiki_url": "https://ageofempires.fandom.com/wiki/Sacred_Band_Infantry",
     "type": [
       "Infantry",
@@ -17575,7 +17681,7 @@
   {
     "id": "sansculotte",
     "name_en": "Sansculotte",
-    "name": "Sansculotte",
+    "name": "无套裤汉",
     "wiki_url": "https://ageofempires.fandom.com/wiki/Sansculotte",
     "type": [
       "Infantry",
@@ -17650,7 +17756,7 @@
   {
     "id": "saxon_cuirassier",
     "name_en": "Saxon Cuirassier",
-    "name": "Saxon Cuirassier",
+    "name": "萨克森胸甲骑兵",
     "wiki_url": "https://ageofempires.fandom.com/wiki/Saxon_Cuirassier",
     "type": [
       "Cavalry",
@@ -17903,7 +18009,7 @@
   {
     "id": "sennar_horseman",
     "name_en": "Sennar Horseman",
-    "name": "Sennar Horseman",
+    "name": "森纳尔骑兵",
     "wiki_url": "https://ageofempires.fandom.com/wiki/Sennar_Horseman",
     "type": [
       "Cavalry",
@@ -18006,7 +18112,7 @@
   {
     "id": "sentry",
     "name_en": "Sentry",
-    "name": "Sentry",
+    "name": "哨兵",
     "wiki_url": "https://ageofempires.fandom.com/wiki/Sentry",
     "type": [
       "Infantry",
@@ -18111,12 +18217,15 @@
         }
       ]
     },
-    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/8/81/Sepoy_de.png/revision/latest/scale-to-width-down/268?cb=20210206030536"
+    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/8/81/Sepoy_de.png/revision/latest/scale-to-width-down/268?cb=20210206030536",
+    "aliases": [
+      "印度步兵"
+    ]
   },
   {
     "id": "settler_wagon",
     "name_en": "Settler Wagon",
-    "name": "Settler Wagon",
+    "name": "移民马车",
     "wiki_url": "https://ageofempires.fandom.com/wiki/Settler_Wagon",
     "type": [
       "Villager"
@@ -18188,7 +18297,7 @@
   {
     "id": "shaolin_master",
     "name_en": "Shaolin Master",
-    "name": "Shaolin Master",
+    "name": "少林大师",
     "wiki_url": "https://ageofempires.fandom.com/wiki/Shaolin_Master",
     "type": [
       "Hero",
@@ -18315,7 +18424,7 @@
   {
     "id": "shinobi_age_of_empires_iii",
     "name_en": "Shinobi (Age of Empires III)",
-    "name": "Shinobi (Age of Empires III)",
+    "name": "忍者",
     "wiki_url": "https://ageofempires.fandom.com/wiki/Shinobi_(Age_of_Empires_III)",
     "type": [
       "Infantry",
@@ -18394,7 +18503,7 @@
   {
     "id": "shotel_warrior_age_of_empires_iii",
     "name_en": "Shotel Warrior (Age of Empires III)",
-    "name": "Shotel Warrior (Age of Empires III)",
+    "name": "肖特尔战士",
     "wiki_url": "https://ageofempires.fandom.com/wiki/Shotel_Warrior_(Age_of_Empires_III)",
     "type": [
       "Shock infantry",
@@ -18434,7 +18543,10 @@
         }
       ]
     },
-    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/c/c0/Shotel_warrior_aoe3de.png/revision/latest/scale-to-width-down/268?cb=20210211054852"
+    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/c/c0/Shotel_warrior_aoe3de.png/revision/latest/scale-to-width-down/268?cb=20210211054852",
+    "aliases": [
+      "肖特尔"
+    ]
   },
   {
     "id": "shrine_wagon",
@@ -18522,7 +18634,7 @@
   {
     "id": "sipahi_age_of_empires_iii",
     "name_en": "Sipahi (Age of Empires III)",
-    "name": "Sipahi (Age of Empires III)",
+    "name": "西帕希骑兵",
     "wiki_url": "https://ageofempires.fandom.com/wiki/Sipahi_(Age_of_Empires_III)",
     "type": [
       "Cavalry",
@@ -18547,12 +18659,15 @@
     "rof_siege": 3.0,
     "attack_melee": 35.0,
     "rof_melee": 1.5,
-    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/f/f3/Spahi_de.png/revision/latest/scale-to-width-down/268?cb=20210204142306"
+    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/f/f3/Spahi_de.png/revision/latest/scale-to-width-down/268?cb=20210204142306",
+    "aliases": [
+      "西帕希"
+    ]
   },
   {
     "id": "skirmisher_age_of_empires_iii",
     "name_en": "Skirmisher (Age of Empires III)",
-    "name": "Skirmisher (Age of Empires III)",
+    "name": "散兵",
     "wiki_url": "https://ageofempires.fandom.com/wiki/Skirmisher_(Age_of_Empires_III)",
     "type": [
       "Infantry",
@@ -18634,7 +18749,10 @@
     "rof_siege": 3.0,
     "attack_melee": 6.0,
     "rof_melee": 1.5,
-    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/7/75/Skirmisher_portrait_tar_updated.png/revision/latest/scale-to-width-down/268?cb=20211015043044"
+    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/7/75/Skirmisher_portrait_tar_updated.png/revision/latest/scale-to-width-down/268?cb=20211015043044",
+    "aliases": [
+      "轻步兵"
+    ]
   },
   {
     "id": "skull_knight",
@@ -18726,7 +18844,7 @@
   {
     "id": "sohei_archer",
     "name_en": "Sohei Archer",
-    "name": "Sohei Archer",
+    "name": "僧兵弓手",
     "wiki_url": "https://ageofempires.fandom.com/wiki/Sohei_Archer",
     "type": [
       "Hero",
@@ -18757,7 +18875,7 @@
   {
     "id": "sohei_naginata",
     "name_en": "Sohei Naginata",
-    "name": "Sohei Naginata",
+    "name": "僧兵薙刀手",
     "wiki_url": "https://ageofempires.fandom.com/wiki/Sohei_Naginata",
     "type": [
       "Infantry",
@@ -18858,12 +18976,15 @@
         }
       ]
     },
-    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/6/67/Soldado_portrait.png/revision/latest/scale-to-width-down/268?cb=20211218040155"
+    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/6/67/Soldado_portrait.png/revision/latest/scale-to-width-down/268?cb=20211218040155",
+    "aliases": [
+      "墨西哥士兵"
+    ]
   },
   {
     "id": "somali_darood_militia",
     "name_en": "Somali Darood Militia",
-    "name": "Somali Darood Militia",
+    "name": "索马里达鲁德民兵",
     "wiki_url": "https://ageofempires.fandom.com/wiki/Somali_Darood_Militia",
     "type": [
       "Infantry",
@@ -19052,12 +19173,15 @@
         }
       ]
     },
-    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/0/0e/Sowar_de.png/revision/latest/scale-to-width-down/268?cb=20210207130902"
+    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/0/0e/Sowar_de.png/revision/latest/scale-to-width-down/268?cb=20210207130902",
+    "aliases": [
+      "骑兵"
+    ]
   },
   {
     "id": "spearman_age_of_empires_iii",
     "name_en": "Spearman (Age of Empires III)",
-    "name": "Spearman (Age of Empires III)",
+    "name": "长矛兵",
     "wiki_url": "https://ageofempires.fandom.com/wiki/Spearman_(Age_of_Empires_III)",
     "type": [
       "Infantry",
@@ -19360,12 +19484,15 @@
         }
       ]
     },
-    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/7/76/Steppe_rider_de.png/revision/latest/scale-to-width-down/268?cb=20210225023003"
+    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/7/76/Steppe_rider_de.png/revision/latest/scale-to-width-down/268?cb=20210225023003",
+    "aliases": [
+      "草原骑"
+    ]
   },
   {
     "id": "stradiot",
     "name_en": "Stradiot",
-    "name": "Stradiot",
+    "name": "斯特拉迪奥特",
     "wiki_url": "https://ageofempires.fandom.com/wiki/Stradiot",
     "type": [
       "Cavalry",
@@ -19484,7 +19611,10 @@
     "rof_siege": 3.0,
     "attack_melee": 6.0,
     "rof_melee": 1.5,
-    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/c/c3/Strelet_de.png/revision/latest/scale-to-width-down/268?cb=20210206030752"
+    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/c/c3/Strelet_de.png/revision/latest/scale-to-width-down/268?cb=20210206030752",
+    "aliases": [
+      "射击兵"
+    ]
   },
   {
     "id": "sudanese_dervish",
@@ -19766,7 +19896,7 @@
   {
     "id": "tengri_wolf",
     "name_en": "Tengri Wolf",
-    "name": "Tengri Wolf",
+    "name": "腾格里狼",
     "wiki_url": "https://ageofempires.fandom.com/wiki/Tengri_Wolf",
     "type": [
       "Pet",
@@ -19852,7 +19982,7 @@
   {
     "id": "tiger_claw",
     "name_en": "Tiger Claw",
-    "name": "Tiger Claw",
+    "name": "虎爪",
     "wiki_url": "https://ageofempires.fandom.com/wiki/Tiger_Claw",
     "type": [
       "Shock infantry",
@@ -20557,7 +20687,7 @@
   {
     "id": "war_elephant_age_of_empires_iii",
     "name_en": "War Elephant (Age of Empires III)",
-    "name": "War Elephant (Age of Empires III)",
+    "name": "战象",
     "wiki_url": "https://ageofempires.fandom.com/wiki/War_Elephant_(Age_of_Empires_III)",
     "type": [
       "Cavalry",
@@ -20659,7 +20789,7 @@
   {
     "id": "war_wagon_age_of_empires_iii",
     "name_en": "War Wagon (Age of Empires III)",
-    "name": "War Wagon (Age of Empires III)",
+    "name": "战车",
     "wiki_url": "https://ageofempires.fandom.com/wiki/War_Wagon_(Age_of_Empires_III)",
     "type": [
       "Cavalry",
@@ -20845,7 +20975,7 @@
   {
     "id": "wokou_horseman",
     "name_en": "Wokou Horseman",
-    "name": "Wokou Horseman",
+    "name": "倭寇骑兵",
     "wiki_url": "https://ageofempires.fandom.com/wiki/Wokou_Horseman",
     "type": [
       "Cavalry",
@@ -20946,7 +21076,7 @@
   {
     "id": "wokou_monk",
     "name_en": "Wokou Monk",
-    "name": "Wokou Monk",
+    "name": "倭寇僧兵",
     "wiki_url": "https://ageofempires.fandom.com/wiki/Wokou_Monk",
     "type": [
       "Infantry",
@@ -21041,7 +21171,7 @@
   {
     "id": "wokou_pirate",
     "name_en": "Wokou Pirate",
-    "name": "Wokou Pirate",
+    "name": "倭寇海盗",
     "wiki_url": "https://ageofempires.fandom.com/wiki/Wokou_Pirate",
     "type": [
       "Shock infantry",
@@ -21085,7 +21215,7 @@
   {
     "id": "wokou_ronin",
     "name_en": "Wokou Ronin",
-    "name": "Wokou Ronin",
+    "name": "倭寇浪人",
     "wiki_url": "https://ageofempires.fandom.com/wiki/Wokou_Ronin",
     "type": [
       "Infantry",
@@ -21247,7 +21377,10 @@
     "rof_siege": 3.0,
     "attack_melee": 6.0,
     "rof_melee": 1.5,
-    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/8/89/Yabusame_de.png/revision/latest/scale-to-width-down/268?cb=20210206033735"
+    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/8/89/Yabusame_de.png/revision/latest/scale-to-width-down/268?cb=20210206033735",
+    "aliases": [
+      "骑射"
+    ]
   },
   {
     "id": "yamabushi",
@@ -21572,7 +21705,10 @@
     "rof_siege": 3.0,
     "attack_melee": 7.0,
     "rof_melee": 1.5,
-    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/0/0e/Yumi_archer_de.png/revision/latest/scale-to-width-down/268?cb=20210206030903"
+    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/0/0e/Yumi_archer_de.png/revision/latest/scale-to-width-down/268?cb=20210206030903",
+    "aliases": [
+      "弓手"
+    ]
   },
   {
     "id": "yrk",
@@ -21707,12 +21843,15 @@
     "rof_siege": 3.0,
     "attack_melee": 7.0,
     "rof_melee": 1.5,
-    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/4/4b/Zamburak_de.png/revision/latest/scale-to-width-down/268?cb=20210207130959"
+    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/4/4b/Zamburak_de.png/revision/latest/scale-to-width-down/268?cb=20210207130959",
+    "aliases": [
+      "骆驼"
+    ]
   },
   {
     "id": "zapotec_lightning_warrior",
     "name_en": "Zapotec Lightning Warrior",
-    "name": "Zapotec Lightning Warrior",
+    "name": "萨波特克闪电战士",
     "wiki_url": "https://ageofempires.fandom.com/wiki/Zapotec_Lightning_Warrior",
     "type": [
       "Infantry",
