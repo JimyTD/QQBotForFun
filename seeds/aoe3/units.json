@@ -96,7 +96,9 @@
     "aliases": [
       "掷弹炮",
       "阿布斯"
-    ]
+    ],
+    "damage_type_ranged": "Siege",
+    "damage_type_melee": "Hand"
   },
   {
     "id": "aenna",
@@ -184,7 +186,9 @@
     "rof_siege": 3.0,
     "attack_melee": 8.0,
     "rof_melee": 1.5,
-    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/c/ca/Aenna_de.png/revision/latest/scale-to-width-down/268?cb=20210206100036"
+    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/c/ca/Aenna_de.png/revision/latest/scale-to-width-down/268?cb=20210206100036",
+    "damage_type_ranged": "Ranged",
+    "damage_type_melee": "Hand"
   },
   {
     "id": "african_vagabond",
@@ -232,7 +236,9 @@
         }
       ]
     },
-    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/5/5d/African_vagabond_portrait.png/revision/latest/scale-to-width-down/268?cb=20220125043010"
+    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/5/5d/African_vagabond_portrait.png/revision/latest/scale-to-width-down/268?cb=20220125043010",
+    "damage_type_ranged": "Siege",
+    "damage_type_melee": "Hand"
   },
   {
     "id": "akan_ankobia",
@@ -284,7 +290,10 @@
         }
       ]
     },
-    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/b/bf/Akan_ankobia_portrait.png/revision/latest/scale-to-width-down/268?cb=20230909024630"
+    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/b/bf/Akan_ankobia_portrait.png/revision/latest/scale-to-width-down/268?cb=20230909024630",
+    "aoe_radius": 1,
+    "damage_type_ranged": "Ranged",
+    "damage_type_melee": "Hand"
   },
   {
     "id": "akan_archer",
@@ -320,7 +329,9 @@
     "rof_siege": 3.0,
     "attack_melee": 6.0,
     "rof_melee": 1.5,
-    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/5/53/Warrior_de.png/revision/latest/scale-to-width-down/268?cb=20210225023810"
+    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/5/53/Warrior_de.png/revision/latest/scale-to-width-down/268?cb=20210225023810",
+    "damage_type_ranged": "Ranged",
+    "damage_type_melee": "Hand"
   },
   {
     "id": "akan_tufohen",
@@ -340,7 +351,10 @@
     "armor_melee": 0.3,
     "speed": 4.0,
     "los": 18.0,
-    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/0/03/Akan_Tufohen_Portrait_Updated.png/revision/latest/scale-to-width-down/268?cb=20230909024808"
+    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/0/03/Akan_Tufohen_Portrait_Updated.png/revision/latest/scale-to-width-down/268?cb=20230909024808",
+    "aoe_radius": 1,
+    "damage_type_ranged": "Ranged",
+    "damage_type_melee": "Hand"
   },
   {
     "id": "amelia_black",
@@ -420,7 +434,9 @@
     "rof_siege": 3.0,
     "attack_melee": 11.0,
     "rof_melee": 1.5,
-    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/2/21/Apache_Cavalry_aoe3de.png/revision/latest/scale-to-width-down/268?cb=20210203113908"
+    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/2/21/Apache_Cavalry_aoe3de.png/revision/latest/scale-to-width-down/268?cb=20210203113908",
+    "damage_type_ranged": "Ranged",
+    "damage_type_melee": "Hand"
   },
   {
     "id": "architect",
@@ -517,7 +533,10 @@
         }
       ]
     },
-    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/f/ff/Mercenary_armored_pistoleer_portrait.jpg/revision/latest/scale-to-width-down/268?cb=20220526063538"
+    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/f/ff/Mercenary_armored_pistoleer_portrait.jpg/revision/latest/scale-to-width-down/268?cb=20220526063538",
+    "aoe_radius": 1,
+    "damage_type_ranged": "Siege",
+    "damage_type_melee": "Hand"
   },
   {
     "id": "arquebusier",
@@ -599,7 +618,9 @@
     "rof_siege": 3.0,
     "attack_melee": 5.0,
     "rof_melee": 1.5,
-    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/e/ea/Arquebusier_de.png/revision/latest/scale-to-width-down/268?cb=20210213223847"
+    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/e/ea/Arquebusier_de.png/revision/latest/scale-to-width-down/268?cb=20210213223847",
+    "damage_type_ranged": "Ranged",
+    "damage_type_melee": "Hand"
   },
   {
     "id": "arrow_knight",
@@ -673,7 +694,9 @@
     "rof_siege": 3.0,
     "attack_melee": 6.5,
     "rof_melee": 1.5,
-    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/4/43/Arrow_knight_de.png/revision/latest/scale-to-width-down/268?cb=20210207130325"
+    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/4/43/Arrow_knight_de.png/revision/latest/scale-to-width-down/268?cb=20210207130325",
+    "damage_type_ranged": "Siege",
+    "damage_type_melee": "Hand"
   },
   {
     "id": "arsenal_wagon",
@@ -754,7 +777,9 @@
     "rof_siege": 3.0,
     "attack_melee": 15.0,
     "rof_melee": 1.5,
-    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/3/3a/Arsonist_aoe3de.png/revision/latest/scale-to-width-down/268?cb=20210206041034"
+    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/3/3a/Arsonist_aoe3de.png/revision/latest/scale-to-width-down/268?cb=20210206041034",
+    "aoe_radius": 3,
+    "damage_type_ranged": "Siege"
   },
   {
     "id": "ashigaru_musketeer",
@@ -810,7 +835,9 @@
         }
       ]
     },
-    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/2/24/Ashigaru_de.png/revision/latest/scale-to-width-down/268?cb=20210206023504"
+    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/2/24/Ashigaru_de.png/revision/latest/scale-to-width-down/268?cb=20210206023504",
+    "damage_type_ranged": "Ranged",
+    "damage_type_melee": "Hand"
   },
   {
     "id": "askari",
@@ -866,7 +893,9 @@
     "rof_siege": 3.0,
     "attack_melee": 32.0,
     "rof_melee": 1.5,
-    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/2/28/Askari_aoe3de_portrait.png/revision/latest/scale-to-width-down/268?cb=20211006052623"
+    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/2/28/Askari_aoe3de_portrait.png/revision/latest/scale-to-width-down/268?cb=20211006052623",
+    "damage_type_ranged": "Ranged",
+    "damage_type_melee": "Hand"
   },
   {
     "id": "atakebune_age_of_empires_iii",
@@ -905,7 +934,9 @@
         }
       ]
     },
-    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/c/c8/Atakabune_aoe3de.png/revision/latest/scale-to-width-down/268?cb=20210203110138"
+    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/c/c8/Atakabune_aoe3de.png/revision/latest/scale-to-width-down/268?cb=20210203110138",
+    "aoe_radius": 1,
+    "damage_type_ranged": "Siege"
   },
   {
     "id": "axe_rider",
@@ -958,7 +989,9 @@
     },
     "attack_melee": 35.0,
     "rof_melee": 1.5,
-    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/a/ab/Axe_rider_aoe3de_updated.png/revision/latest/scale-to-width-down/268?cb=20220712023131"
+    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/a/ab/Axe_rider_aoe3de_updated.png/revision/latest/scale-to-width-down/268?cb=20220712023131",
+    "damage_type_ranged": "Siege",
+    "damage_type_melee": "Hand"
   },
   {
     "id": "azap",
@@ -1030,7 +1063,9 @@
     "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/6/68/Ottomans_azap_portrait.jpg/revision/latest/scale-to-width-down/268?cb=20221020192055",
     "aliases": [
       "轻步兵"
-    ]
+    ],
+    "damage_type_ranged": "Siege",
+    "damage_type_melee": "Hand"
   },
   {
     "id": "aztec_chief",
@@ -1122,7 +1157,9 @@
     "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/8/86/Aztec_eagle_warrior_portrait_aoe3de.png/revision/latest/scale-to-width-down/268?cb=20210702042638",
     "aliases": [
       "鹰战士"
-    ]
+    ],
+    "damage_type_ranged": "Ranged",
+    "damage_type_melee": "Hand"
   },
   {
     "id": "aztec_jaguar_warrior",
@@ -1176,7 +1213,9 @@
     "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/2/2b/Aztec_jaguar_warrior_aoe3de.png/revision/latest/scale-to-width-down/268?cb=20220712020322",
     "aliases": [
       "豹战士"
-    ]
+    ],
+    "damage_type_ranged": "Siege",
+    "damage_type_melee": "Hand"
   },
   {
     "id": "aztec_war_chief",
@@ -1300,7 +1339,10 @@
     "rof_siege": 3.0,
     "attack_melee": 12.0,
     "rof_melee": 2.0,
-    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/0/08/Bandido_portrait.png/revision/latest/scale-to-width-down/268?cb=20211213043516"
+    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/0/08/Bandido_portrait.png/revision/latest/scale-to-width-down/268?cb=20211213043516",
+    "aoe_radius": 3,
+    "damage_type_ranged": "Siege",
+    "damage_type_melee": "Hand"
   },
   {
     "id": "bank_wagon",
@@ -1378,7 +1420,9 @@
         }
       ]
     },
-    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/6/66/Corsair_de.png/revision/latest/scale-to-width-down/268?cb=20210206022332"
+    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/6/66/Corsair_de.png/revision/latest/scale-to-width-down/268?cb=20210206022332",
+    "damage_type_ranged": "Siege",
+    "damage_type_melee": "Hand"
   },
   {
     "id": "barbary_states",
@@ -1448,7 +1492,9 @@
         }
       ]
     },
-    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/c/cb/Barbarystates_rev_barbary_warrior_portrait_aoe3de_updated.jpg/revision/latest/scale-to-width-down/268?cb=20230803032844"
+    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/c/cb/Barbarystates_rev_barbary_warrior_portrait_aoe3de_updated.jpg/revision/latest/scale-to-width-down/268?cb=20230803032844",
+    "damage_type_ranged": "Siege",
+    "damage_type_melee": "Hand"
   },
   {
     "id": "bashibozuk",
@@ -1558,7 +1604,8 @@
     "attack_siege": 13.0,
     "range_siege": 18.0,
     "rof_siege": 1.5,
-    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/0/02/Battle_canoe_portrait_aoe3de.png/revision/latest/scale-to-width-down/268?cb=20210814004904"
+    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/0/02/Battle_canoe_portrait_aoe3de.png/revision/latest/scale-to-width-down/268?cb=20210814004904",
+    "damage_type_ranged": "Siege"
   },
   {
     "id": "battleship",
@@ -1599,7 +1646,9 @@
         }
       ]
     },
-    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/a/a6/Battleship_portrait.png/revision/latest/scale-to-width-down/268?cb=20220322185327"
+    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/a/a6/Battleship_portrait.png/revision/latest/scale-to-width-down/268?cb=20220322185327",
+    "aoe_radius": 20,
+    "damage_type_ranged": "Siege"
   },
   {
     "id": "bedouin_horse_archer",
@@ -1676,7 +1725,9 @@
     "rof_siege": 3.0,
     "attack_melee": 5.5,
     "rof_melee": 1.5,
-    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/4/40/Bedouin_horse_archer_aoe3de.png/revision/latest/scale-to-width-down/268?cb=20210602042953"
+    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/4/40/Bedouin_horse_archer_aoe3de.png/revision/latest/scale-to-width-down/268?cb=20210602042953",
+    "damage_type_ranged": "Ranged",
+    "damage_type_melee": "Hand"
   },
   {
     "id": "berber_arquebusier",
@@ -1765,7 +1816,9 @@
     "rof_siege": 3.0,
     "attack_melee": 5.0,
     "rof_melee": 1.5,
-    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/b/b7/Berber_arquebusier_aoe3de.png/revision/latest/scale-to-width-down/268?cb=20250713025247"
+    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/b/b7/Berber_arquebusier_aoe3de.png/revision/latest/scale-to-width-down/268?cb=20250713025247",
+    "damage_type_ranged": "Ranged",
+    "damage_type_melee": "Hand"
   },
   {
     "id": "berber_camel_rider",
@@ -1824,7 +1877,9 @@
         }
       ]
     },
-    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/6/61/Berber_camel_rider_portrait.png/revision/latest/scale-to-width-down/268?cb=20230909025543"
+    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/6/61/Berber_camel_rider_portrait.png/revision/latest/scale-to-width-down/268?cb=20230909025543",
+    "damage_type_ranged": "Ranged",
+    "damage_type_melee": "Hand"
   },
   {
     "id": "berber_spearman",
@@ -1877,7 +1932,9 @@
         }
       ]
     },
-    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/6/61/Berber_spearman_aoe3de.png/revision/latest/scale-to-width-down/268?cb=20210602040715"
+    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/6/61/Berber_spearman_aoe3de.png/revision/latest/scale-to-width-down/268?cb=20210602040715",
+    "damage_type_ranged": "Siege",
+    "damage_type_melee": "Hand"
   },
   {
     "id": "berber_sultan",
@@ -1900,7 +1957,9 @@
     "armor_ranged": 0.3,
     "speed": 6.75,
     "los": 18.0,
-    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/a/a0/Berber_sultan_portrait.png/revision/latest/scale-to-width-down/268?cb=20230909030034"
+    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/a/a0/Berber_sultan_portrait.png/revision/latest/scale-to-width-down/268?cb=20230909030034",
+    "damage_type_ranged": "Ranged",
+    "damage_type_melee": "Hand"
   },
   {
     "id": "bersagliere",
@@ -1971,7 +2030,9 @@
     "rof_siege": 3.0,
     "attack_melee": 5.5,
     "rof_melee": 1.5,
-    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/2/2d/Italians_bersagliere_portrait.jpg/revision/latest/scale-to-width-down/268?cb=20220526062605"
+    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/2/2d/Italians_bersagliere_portrait.jpg/revision/latest/scale-to-width-down/268?cb=20220526062605",
+    "damage_type_ranged": "Ranged",
+    "damage_type_melee": "Hand"
   },
   {
     "id": "black_brunswicker",
@@ -2023,7 +2084,9 @@
         }
       ]
     },
-    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/6/69/Hanover_black_brunswicker_portrait.jpg/revision/latest/scale-to-width-down/268?cb=20220526225120"
+    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/6/69/Hanover_black_brunswicker_portrait.jpg/revision/latest/scale-to-width-down/268?cb=20220526225120",
+    "damage_type_ranged": "Siege",
+    "damage_type_melee": "Hand"
   },
   {
     "id": "black_rider_age_of_empires_iii",
@@ -2103,7 +2166,9 @@
     "rof_siege": 3.0,
     "attack_melee": 18.0,
     "rof_melee": 1.5,
-    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/d/d9/Black_rider_aoe3de.png/revision/latest/scale-to-width-down/268?cb=20210206064653"
+    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/d/d9/Black_rider_aoe3de.png/revision/latest/scale-to-width-down/268?cb=20210206064653",
+    "damage_type_ranged": "Ranged",
+    "damage_type_melee": "Hand"
   },
   {
     "id": "bolas_warrior",
@@ -2179,7 +2244,10 @@
     "rof_siege": 3.0,
     "attack_melee": 8.0,
     "rof_melee": 1.5,
-    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/4/4b/DE_Bolas_Warrior_Icon.png/revision/latest/scale-to-width-down/268?cb=20210203062133"
+    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/4/4b/DE_Bolas_Warrior_Icon.png/revision/latest/scale-to-width-down/268?cb=20210203062133",
+    "aoe_radius": 2,
+    "damage_type_ranged": "Siege",
+    "damage_type_melee": "Hand"
   },
   {
     "id": "boneguard_musketeer",
@@ -2310,7 +2378,9 @@
         }
       ]
     },
-    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/7/7e/Mercenary_bosniak_rider_portrait.jpg/revision/latest/scale-to-width-down/268?cb=20220526063201"
+    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/7/7e/Mercenary_bosniak_rider_portrait.jpg/revision/latest/scale-to-width-down/268?cb=20220526063201",
+    "aoe_radius": 3,
+    "damage_type_ranged": "Hand"
   },
   {
     "id": "bow_rider",
@@ -2397,7 +2467,9 @@
     "rof_siege": 3.0,
     "attack_melee": 10.0,
     "rof_melee": 1.5,
-    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/0/02/Bow_rider_aoe3de_updated.png/revision/latest/scale-to-width-down/268?cb=20220712023743"
+    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/0/02/Bow_rider_aoe3de_updated.png/revision/latest/scale-to-width-down/268?cb=20220712023743",
+    "damage_type_ranged": "Ranged",
+    "damage_type_melee": "Hand"
   },
   {
     "id": "boyar_age_of_empires_iii",
@@ -2439,7 +2511,9 @@
         }
       ]
     },
-    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/6/6a/Phanar_boyar_portrait.jpg/revision/latest/scale-to-width-down/268?cb=20220526225527"
+    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/6/6a/Phanar_boyar_portrait.jpg/revision/latest/scale-to-width-down/268?cb=20220526225527",
+    "damage_type_ranged": "Siege",
+    "damage_type_melee": "Hand"
   },
   {
     "id": "brahmin",
@@ -2470,7 +2544,9 @@
     "armor_ranged": 0.2,
     "speed": 5.0,
     "los": 18.0,
-    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/1/1c/BrahminDE.png/revision/latest/scale-to-width-down/268?cb=20210207123351"
+    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/1/1c/BrahminDE.png/revision/latest/scale-to-width-down/268?cb=20210207123351",
+    "aoe_radius": 2,
+    "damage_type_melee": "Hand"
   },
   {
     "id": "brazil",
@@ -2516,7 +2592,9 @@
     "rof_siege": 3.0,
     "attack_melee": 20.0,
     "rof_melee": 1.5,
-    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/0/01/Outlaw_pirate_portrait_aoe3de_updated.jpg/revision/latest/scale-to-width-down/268?cb=20230803032848"
+    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/0/01/Outlaw_pirate_portrait_aoe3de_updated.jpg/revision/latest/scale-to-width-down/268?cb=20230803032848",
+    "damage_type_ranged": "Siege",
+    "damage_type_melee": "Hand"
   },
   {
     "id": "california_revolutionary",
@@ -2587,7 +2665,10 @@
     "rof_siege": 3.0,
     "attack_melee": 15.0,
     "rof_melee": 1.5,
-    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/6/6a/Californio_portrait.png/revision/latest/scale-to-width-down/268?cb=20211218035359"
+    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/6/6a/Californio_portrait.png/revision/latest/scale-to-width-down/268?cb=20211218035359",
+    "aoe_radius": 2,
+    "damage_type_ranged": "Ranged",
+    "damage_type_melee": "Hand"
   },
   {
     "id": "canada",
@@ -2638,7 +2719,9 @@
         }
       ]
     },
-    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/a/a5/Cannon_boat_portrait_aoe3de.png/revision/latest/scale-to-width-down/268?cb=20210814005219"
+    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/a/a5/Cannon_boat_portrait_aoe3de.png/revision/latest/scale-to-width-down/268?cb=20210814005219",
+    "aoe_radius": 3,
+    "damage_type_ranged": "Siege"
   },
   {
     "id": "cannoneer",
@@ -2736,7 +2819,9 @@
     "rof_siege": 3.0,
     "attack_melee": 15.0,
     "rof_melee": 1.5,
-    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/4/47/Cannoneer_portrait_aoe3de.png/revision/latest/scale-to-width-down/268?cb=20210827023734"
+    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/4/47/Cannoneer_portrait_aoe3de.png/revision/latest/scale-to-width-down/268?cb=20210827023734",
+    "damage_type_ranged": "Siege",
+    "damage_type_melee": "Hand"
   },
   {
     "id": "canoe_age_of_empires_iii",
@@ -2775,7 +2860,8 @@
     "attack_siege": 40.0,
     "range_siege": 18.0,
     "rof_siege": 2.0,
-    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/f/fa/Native_canoe_aoe3de.png/revision/latest/scale-to-width-down/268?cb=20210203110244"
+    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/f/fa/Native_canoe_aoe3de.png/revision/latest/scale-to-width-down/268?cb=20210203110244",
+    "damage_type_ranged": "Siege"
   },
   {
     "id": "captured_mortar",
@@ -2820,7 +2906,9 @@
         }
       ]
     },
-    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/b/b3/Captured_mortar_aoe3de.png/revision/latest/scale-to-width-down/268?cb=20210607005510"
+    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/b/b3/Captured_mortar_aoe3de.png/revision/latest/scale-to-width-down/268?cb=20210607005510",
+    "aoe_radius": 4,
+    "damage_type_ranged": "Siege"
   },
   {
     "id": "caravel_age_of_empires_iii",
@@ -2870,7 +2958,9 @@
         }
       ]
     },
-    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/f/f4/Caravel_aoe3de.png/revision/latest/scale-to-width-down/268?cb=20210203110336"
+    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/f/f4/Caravel_aoe3de.png/revision/latest/scale-to-width-down/268?cb=20210203110336",
+    "aoe_radius": 4,
+    "damage_type_ranged": "Siege"
   },
   {
     "id": "carbine_cavalry",
@@ -2947,7 +3037,9 @@
     "rof_siege": 3.0,
     "attack_melee": 12.0,
     "rof_melee": 1.5,
-    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/f/f3/Carbine_cavalry_aoe3de.png/revision/latest/scale-to-width-down/268?cb=20210428215450"
+    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/f/f3/Carbine_cavalry_aoe3de.png/revision/latest/scale-to-width-down/268?cb=20210428215450",
+    "damage_type_ranged": "Ranged",
+    "damage_type_melee": "Hand"
   },
   {
     "id": "carib_blowgunner",
@@ -3017,7 +3109,9 @@
     "rof_siege": 3.0,
     "attack_melee": 9.0,
     "rof_melee": 1.5,
-    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/0/09/Carib_blowgunner_aoe3de.png/revision/latest/scale-to-width-down/268?cb=20210211072056"
+    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/0/09/Carib_blowgunner_aoe3de.png/revision/latest/scale-to-width-down/268?cb=20210211072056",
+    "damage_type_ranged": "Ranged",
+    "damage_type_melee": "Hand"
   },
   {
     "id": "carolean",
@@ -3080,7 +3174,9 @@
     "rof_siege": 3.0,
     "attack_melee": 20.0,
     "rof_melee": 1.5,
-    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/3/39/Carolean.png/revision/latest/scale-to-width-down/268?cb=20210206023804"
+    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/3/39/Carolean.png/revision/latest/scale-to-width-down/268?cb=20210206023804",
+    "damage_type_ranged": "Siege",
+    "damage_type_melee": "Hand"
   },
   {
     "id": "cassador",
@@ -3174,7 +3270,9 @@
     "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/3/3f/Cacador_de.png/revision/latest/scale-to-width-down/268?cb=20210206024026",
     "aliases": [
       "猎人"
-    ]
+    ],
+    "damage_type_ranged": "Ranged",
+    "damage_type_melee": "Hand"
   },
   {
     "id": "cavalry_archer_age_of_empires_iii",
@@ -3249,7 +3347,9 @@
     "rof_siege": 3.0,
     "attack_melee": 6.5,
     "rof_melee": 1.5,
-    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/a/af/Cavalry_archer_portrait_aoe3de_updated.png/revision/latest/scale-to-width-down/268?cb=20210922024818"
+    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/a/af/Cavalry_archer_portrait_aoe3de_updated.png/revision/latest/scale-to-width-down/268?cb=20210922024818",
+    "damage_type_ranged": "Ranged",
+    "damage_type_melee": "Hand"
   },
   {
     "id": "central_america_revolutionary",
@@ -3359,7 +3459,9 @@
     "rof_siege": 3.0,
     "attack_melee": 10.0,
     "rof_melee": 1.5,
-    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/9/9f/Cetan_de.png/revision/latest/scale-to-width-down/268?cb=20210225025525"
+    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/9/9f/Cetan_de.png/revision/latest/scale-to-width-down/268?cb=20210225025525",
+    "damage_type_ranged": "Ranged",
+    "damage_type_melee": "Hand"
   },
   {
     "id": "cetbang_cannon",
@@ -3409,7 +3511,9 @@
         }
       ]
     },
-    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/c/cd/Cetbang_aoe3de.png/revision/latest/scale-to-width-down/268?cb=20210210073323"
+    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/c/cd/Cetbang_aoe3de.png/revision/latest/scale-to-width-down/268?cb=20210210073323",
+    "aoe_radius": 1,
+    "damage_type_ranged": "Siege"
   },
   {
     "id": "chakram_thrower_age_of_empires_iii",
@@ -3482,7 +3586,10 @@
     "aliases": [
       "飞轮兵",
       "查克拉姆"
-    ]
+    ],
+    "aoe_radius": 2,
+    "damage_type_ranged": "Siege",
+    "damage_type_melee": "Hand"
   },
   {
     "id": "changdao_swordsman",
@@ -3528,7 +3635,9 @@
     "aliases": [
       "长刀兵",
       "长刀"
-    ]
+    ],
+    "damage_type_ranged": "Siege",
+    "damage_type_melee": "Hand"
   },
   {
     "id": "chasqui",
@@ -3580,7 +3689,9 @@
         }
       ]
     },
-    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/8/88/Chasqui-icon-aoe3.png/revision/latest/scale-to-width-down/268?cb=20210203025947"
+    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/8/88/Chasqui-icon-aoe3.png/revision/latest/scale-to-width-down/268?cb=20210203025947",
+    "damage_type_ranged": "Siege",
+    "damage_type_melee": "Hand"
   },
   {
     "id": "chayton_black",
@@ -3733,7 +3844,9 @@
     "rof_siege": 3.0,
     "attack_melee": 6.0,
     "rof_melee": 1.5,
-    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/7/79/Cherokee_rifle_aoe3de.png/revision/latest/scale-to-width-down/268?cb=20250302015141"
+    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/7/79/Cherokee_rifle_aoe3de.png/revision/latest/scale-to-width-down/268?cb=20250302015141",
+    "damage_type_ranged": "Ranged",
+    "damage_type_melee": "Hand"
   },
   {
     "id": "chevauleger",
@@ -3806,7 +3919,9 @@
     "rof_siege": 3.0,
     "attack_melee": 26.5,
     "rof_melee": 1.5,
-    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/d/d9/Wittelsbach_chevauleger_portrait.jpg/revision/latest/scale-to-width-down/268?cb=20220526230012"
+    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/d/d9/Wittelsbach_chevauleger_portrait.jpg/revision/latest/scale-to-width-down/268?cb=20220526230012",
+    "damage_type_ranged": "Ranged",
+    "damage_type_melee": "Hand"
   },
   {
     "id": "cheyenne_rider",
@@ -3852,7 +3967,9 @@
         }
       ]
     },
-    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/f/f2/Cheyenne_rider_portrait_updated.jpg/revision/latest/scale-to-width-down/268?cb=20220624214505"
+    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/f/f2/Cheyenne_rider_portrait_updated.jpg/revision/latest/scale-to-width-down/268?cb=20220624214505",
+    "damage_type_ranged": "Siege",
+    "damage_type_melee": "Hand"
   },
   {
     "id": "chief_two_moon",
@@ -3952,7 +4069,9 @@
         }
       ]
     },
-    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/d/d5/Chimu-runner-icon-aoe3.png/revision/latest/scale-to-width-down/268?cb=20210206100433"
+    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/d/d5/Chimu-runner-icon-aoe3.png/revision/latest/scale-to-width-down/268?cb=20210206100433",
+    "damage_type_ranged": "Siege",
+    "damage_type_melee": "Hand"
   },
   {
     "id": "chinaco",
@@ -4008,7 +4127,9 @@
         }
       ]
     },
-    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/8/85/Chinaco_portrait.png/revision/latest/scale-to-width-down/268?cb=20211213044313"
+    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/8/85/Chinaco_portrait.png/revision/latest/scale-to-width-down/268?cb=20211213044313",
+    "aoe_radius": 3,
+    "damage_type_ranged": "Hand"
   },
   {
     "id": "chincha_raft",
@@ -4053,7 +4174,9 @@
     "attack_siege": 25.0,
     "range_siege": 20.0,
     "rof_siege": 2.0,
-    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/d/da/Chincha_raft_aoe3de.png/revision/latest/scale-to-width-down/268?cb=20210203110758"
+    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/d/da/Chincha_raft_aoe3de.png/revision/latest/scale-to-width-down/268?cb=20210203110758",
+    "aoe_radius": 1,
+    "damage_type_ranged": "Siege"
   },
   {
     "id": "chu_ko_nu_age_of_empires_iii",
@@ -4139,7 +4262,9 @@
     "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/3/39/Chu_ko_nu_aoe3de.png/revision/latest/scale-to-width-down/268?cb=20210225025445",
     "aliases": [
       "连弩手"
-    ]
+    ],
+    "damage_type_ranged": "Ranged",
+    "damage_type_melee": "Hand"
   },
   {
     "id": "church_wagon",
@@ -4253,7 +4378,9 @@
     },
     "attack_melee": 11.0,
     "rof_melee": 1.5,
-    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/c/cc/Club_warrior_de.png/revision/latest/scale-to-width-down/268?cb=20210206104348"
+    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/c/cc/Club_warrior_de.png/revision/latest/scale-to-width-down/268?cb=20210206104348",
+    "damage_type_ranged": "Siege",
+    "damage_type_melee": "Hand"
   },
   {
     "id": "colonial_looter",
@@ -4338,7 +4465,9 @@
     "rof_siege": 1.5,
     "attack_melee": 10.0,
     "rof_melee": 1.5,
-    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/1/19/Colonial_looter_portrait.png/revision/latest/scale-to-width-down/268?cb=20220125043228"
+    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/1/19/Colonial_looter_portrait.png/revision/latest/scale-to-width-down/268?cb=20220125043228",
+    "damage_type_ranged": "Ranged",
+    "damage_type_melee": "Hand"
   },
   {
     "id": "comanche_horse_archer",
@@ -4410,7 +4539,9 @@
     "rof_siege": 3.0,
     "attack_melee": 7.0,
     "rof_melee": 1.5,
-    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/7/75/Comanche_horse_archer_portrait_aoe3de.png/revision/latest/scale-to-width-down/268?cb=20220422055954"
+    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/7/75/Comanche_horse_archer_portrait_aoe3de.png/revision/latest/scale-to-width-down/268?cb=20220422055954",
+    "damage_type_ranged": "Siege",
+    "damage_type_melee": "Hand"
   },
   {
     "id": "comanchero",
@@ -4469,7 +4600,9 @@
     "rof_siege": 3.0,
     "attack_melee": 11.0,
     "rof_melee": 1.5,
-    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/2/24/Comanchero_icon_aoe3de.png/revision/latest/scale-to-width-down/268?cb=20210206020749"
+    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/2/24/Comanchero_icon_aoe3de.png/revision/latest/scale-to-width-down/268?cb=20210206020749",
+    "damage_type_ranged": "Ranged",
+    "damage_type_melee": "Hand"
   },
   {
     "id": "conquistador_age_of_empires_iii",
@@ -4542,7 +4675,10 @@
     "rof_siege": 3.0,
     "attack_melee": 10.0,
     "rof_melee": 1.5,
-    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/4/4f/Conquistador_aoe3de.png/revision/latest/scale-to-width-down/268?cb=20210203160418"
+    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/4/4f/Conquistador_aoe3de.png/revision/latest/scale-to-width-down/268?cb=20210203160418",
+    "aoe_radius": 1,
+    "damage_type_ranged": "Ranged",
+    "damage_type_melee": "Hand"
   },
   {
     "id": "corsair_marksman",
@@ -4663,7 +4799,9 @@
     "rof_siege": 2.0,
     "attack_melee": 8.0,
     "rof_melee": 1.5,
-    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/b/b7/Berber_arquebusier_aoe3de.png/revision/latest/scale-to-width-down/268?cb=20250713025247"
+    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/b/b7/Berber_arquebusier_aoe3de.png/revision/latest/scale-to-width-down/268?cb=20250713025247",
+    "damage_type_ranged": "Ranged",
+    "damage_type_melee": "Hand"
   },
   {
     "id": "cossack",
@@ -4699,7 +4837,9 @@
     "rof_siege": 3.0,
     "attack_melee": 26.0,
     "rof_melee": 1.5,
-    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/d/d8/Cossack_de.png/revision/latest/scale-to-width-down/268?cb=20210206031423"
+    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/d/d8/Cossack_de.png/revision/latest/scale-to-width-down/268?cb=20210206031423",
+    "damage_type_ranged": "Siege",
+    "damage_type_melee": "Hand"
   },
   {
     "id": "cossack_daredevil",
@@ -4745,7 +4885,9 @@
         }
       ]
     },
-    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/f/f4/Mounted_cossack_daredevil_portrait.jpg/revision/latest/scale-to-width-down/268?cb=20220526205741"
+    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/f/f4/Mounted_cossack_daredevil_portrait.jpg/revision/latest/scale-to-width-down/268?cb=20220526205741",
+    "damage_type_ranged": "Ranged",
+    "damage_type_melee": "Hand"
   },
   {
     "id": "counter_dragoon",
@@ -4831,7 +4973,9 @@
     "rof_siege": 3.0,
     "attack_melee": 16.0,
     "rof_melee": 1.5,
-    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/4/4a/Counter_dragoon_portrait.jpg/revision/latest/scale-to-width-down/268?cb=20231109203155"
+    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/4/4a/Counter_dragoon_portrait.jpg/revision/latest/scale-to-width-down/268?cb=20231109203155",
+    "damage_type_ranged": "Ranged",
+    "damage_type_melee": "Hand"
   },
   {
     "id": "counter_jaeger",
@@ -4926,7 +5070,9 @@
     "rof_siege": 3.0,
     "attack_melee": 16.0,
     "rof_melee": 1.5,
-    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/3/3f/Cacador_de.png/revision/latest/scale-to-width-down/268?cb=20210206024026"
+    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/3/3f/Cacador_de.png/revision/latest/scale-to-width-down/268?cb=20210206024026",
+    "damage_type_ranged": "Ranged",
+    "damage_type_melee": "Hand"
   },
   {
     "id": "coureur_des_bois",
@@ -5058,7 +5204,9 @@
     "rof_siege": 3.0,
     "attack_melee": 11.0,
     "rof_melee": 1.5,
-    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/9/9a/Cowboy_aoe3de.png/revision/latest/scale-to-width-down/268?cb=20210428215455"
+    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/9/9a/Cowboy_aoe3de.png/revision/latest/scale-to-width-down/268?cb=20210428215455",
+    "damage_type_ranged": "Ranged",
+    "damage_type_melee": "Hand"
   },
   {
     "id": "coyote_runner",
@@ -5097,7 +5245,9 @@
     "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/0/0f/Coyote_runner_aoe3de.png/revision/latest/scale-to-width-down/268?cb=20210206101655",
     "aliases": [
       "郊狼兵"
-    ]
+    ],
+    "damage_type_ranged": "Siege",
+    "damage_type_melee": "Hand"
   },
   {
     "id": "crabat",
@@ -5154,7 +5304,9 @@
     "rof_siege": 1.5,
     "attack_melee": 12.0,
     "rof_melee": 1.5,
-    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/3/38/Crabat_portrait.jpg/revision/latest/scale-to-width-down/268?cb=20220526205653"
+    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/3/38/Crabat_portrait.jpg/revision/latest/scale-to-width-down/268?cb=20220526205653",
+    "damage_type_ranged": "Ranged",
+    "damage_type_melee": "Hand"
   },
   {
     "id": "crazy_horse",
@@ -5162,7 +5314,9 @@
     "name": "Crazy Horse",
     "wiki_url": "https://ageofempires.fandom.com/wiki/Crazy_Horse",
     "age": "Around 37",
-    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/7/7a/Crazy_horse_aoe3de_compendium_section.png/revision/latest/scale-to-width-down/268?cb=20220722030137"
+    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/7/7a/Crazy_horse_aoe3de_compendium_section.png/revision/latest/scale-to-width-down/268?cb=20220722030137",
+    "aoe_radius": 1,
+    "damage_type_melee": "Hand"
   },
   {
     "id": "cree_tracker",
@@ -5248,7 +5402,10 @@
     "rof_siege": 3.0,
     "attack_melee": 9.0,
     "rof_melee": 1.5,
-    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/9/92/Cree_tracker_aoe3de.png/revision/latest/scale-to-width-down/268?cb=20210203161115"
+    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/9/92/Cree_tracker_aoe3de.png/revision/latest/scale-to-width-down/268?cb=20210203161115",
+    "aoe_radius": 2,
+    "damage_type_ranged": "Ranged",
+    "damage_type_melee": "Hand"
   },
   {
     "id": "crossbowman_age_of_empires_iii",
@@ -5339,7 +5496,9 @@
     "rof_siege": 3.0,
     "attack_melee": 7.0,
     "rof_melee": 1.5,
-    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/3/3d/Crossbow_aoe3de.png/revision/latest/scale-to-width-down/268?cb=20210206024158"
+    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/3/3d/Crossbow_aoe3de.png/revision/latest/scale-to-width-down/268?cb=20210206024158",
+    "damage_type_ranged": "Ranged",
+    "damage_type_melee": "Hand"
   },
   {
     "id": "cruzob_infantry",
@@ -5406,7 +5565,9 @@
     "rof_siege": 3.0,
     "attack_melee": 28.0,
     "rof_melee": 1.5,
-    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/a/a0/Cruzob_infantry_portrait.png/revision/latest/scale-to-width-down/268?cb=20211213050241"
+    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/a/a0/Cruzob_infantry_portrait.png/revision/latest/scale-to-width-down/268?cb=20211213050241",
+    "damage_type_ranged": "Ranged",
+    "damage_type_melee": "Hand"
   },
   {
     "id": "cuatrero",
@@ -5468,7 +5629,10 @@
     "rof_siege": 3.0,
     "attack_melee": 11.0,
     "rof_melee": 1.5,
-    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/3/3e/Vaquero_portrait.png/revision/latest/scale-to-width-down/268?cb=20211213044053"
+    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/3/3e/Vaquero_portrait.png/revision/latest/scale-to-width-down/268?cb=20211213044053",
+    "aoe_radius": 2,
+    "damage_type_ranged": "Ranged",
+    "damage_type_melee": "Hand"
   },
   {
     "id": "cuerudo",
@@ -5545,7 +5709,9 @@
     "rof_siege": 3.0,
     "attack_melee": 7.0,
     "rof_melee": 1.5,
-    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/2/24/Comanchero_icon_aoe3de.png/revision/latest/scale-to-width-down/268?cb=20210206020749"
+    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/2/24/Comanchero_icon_aoe3de.png/revision/latest/scale-to-width-down/268?cb=20210206020749",
+    "damage_type_ranged": "Siege",
+    "damage_type_melee": "Hand"
   },
   {
     "id": "cuirassier",
@@ -5584,7 +5750,9 @@
     "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/f/f1/Cuirassier_de.png/revision/latest/scale-to-width-down/268?cb=20210206031600",
     "aliases": [
       "铁骑"
-    ]
+    ],
+    "damage_type_ranged": "Siege",
+    "damage_type_melee": "Hand"
   },
   {
     "id": "culverin_age_of_empires_iii",
@@ -5654,7 +5822,13 @@
         }
       ]
     },
-    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/7/71/Culverin_icon_aoe3de.png/revision/latest/scale-to-width-down/268?cb=20240303182515"
+    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/7/71/Culverin_icon_aoe3de.png/revision/latest/scale-to-width-down/268?cb=20240303182515",
+    "aliases": [
+      "长炮",
+      "反炮"
+    ],
+    "aoe_radius": 3,
+    "damage_type_ranged": "Siege"
   },
   {
     "id": "dahomey_amazon",
@@ -5727,7 +5901,9 @@
     "rof_siege": 3.0,
     "attack_melee": 35.0,
     "rof_melee": 3.0,
-    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/b/be/Dahomey_amazon_aoe3de_portrait.png/revision/latest/scale-to-width-down/268?cb=20211006052454"
+    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/b/be/Dahomey_amazon_aoe3de_portrait.png/revision/latest/scale-to-width-down/268?cb=20211006052454",
+    "damage_type_ranged": "Ranged",
+    "damage_type_melee": "Hand"
   },
   {
     "id": "daimyo_age_of_empires_iii",
@@ -5804,7 +5980,9 @@
     "rof_siege": 2.5,
     "attack_melee": 25.0,
     "rof_melee": 1.2,
-    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/d/d7/Ottomans_deli_portrait.jpg/revision/latest/scale-to-width-down/268?cb=20221020192157"
+    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/d/d7/Ottomans_deli_portrait.jpg/revision/latest/scale-to-width-down/268?cb=20221020192157",
+    "damage_type_ranged": "Siege",
+    "damage_type_melee": "Hand"
   },
   {
     "id": "desert_archer",
@@ -5893,7 +6071,9 @@
     "rof_siege": 3.0,
     "attack_melee": 12.0,
     "rof_melee": 1.5,
-    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/c/c4/Desert_archer_portrait_aoe3de.png/revision/latest/scale-to-width-down/268?cb=20210814003622"
+    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/c/c4/Desert_archer_portrait_aoe3de.png/revision/latest/scale-to-width-down/268?cb=20210814003622",
+    "damage_type_ranged": "Ranged",
+    "damage_type_melee": "Hand"
   },
   {
     "id": "desert_raider_age_of_empires_iii",
@@ -5928,7 +6108,8 @@
     "range_siege": 6.0,
     "rof_siege": 1.5,
     "rof_melee": 1.5,
-    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/1/14/Desert_raider_portrait_aoe3de.png/revision/latest/scale-to-width-down/268?cb=20210814003759"
+    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/1/14/Desert_raider_portrait_aoe3de.png/revision/latest/scale-to-width-down/268?cb=20210814003759",
+    "damage_type_ranged": "Siege"
   },
   {
     "id": "desert_warrior",
@@ -5981,7 +6162,9 @@
         }
       ]
     },
-    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/1/14/Desert_warrior_portrait_aoe3de.png/revision/latest/scale-to-width-down/268?cb=20210814003314"
+    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/1/14/Desert_warrior_portrait_aoe3de.png/revision/latest/scale-to-width-down/268?cb=20210814003314",
+    "damage_type_ranged": "Siege",
+    "damage_type_melee": "Hand"
   },
   {
     "id": "desperado",
@@ -6035,7 +6218,9 @@
         }
       ]
     },
-    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/0/07/Desperado_portrait.png/revision/latest/scale-to-width-down/268?cb=20211218035039"
+    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/0/07/Desperado_portrait.png/revision/latest/scale-to-width-down/268?cb=20211218035039",
+    "damage_type_ranged": "Siege",
+    "damage_type_melee": "Hand"
   },
   {
     "id": "dinghy",
@@ -6107,7 +6292,9 @@
         }
       ]
     },
-    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/f/fe/Shaolin_monk_aoe3de.png/revision/latest/scale-to-width-down/268?cb=20210203100656"
+    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/f/fe/Shaolin_monk_aoe3de.png/revision/latest/scale-to-width-down/268?cb=20210203100656",
+    "damage_type_ranged": "Siege",
+    "damage_type_melee": "Hand"
   },
   {
     "id": "dojo_rickshaw",
@@ -6174,7 +6361,9 @@
         }
       ]
     },
-    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/9/9b/Aoe3de_germans_dopplesoldner_portrait_updated.jpg/revision/latest/scale-to-width-down/268?cb=20230803062958"
+    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/9/9b/Aoe3de_germans_dopplesoldner_portrait_updated.jpg/revision/latest/scale-to-width-down/268?cb=20230803062958",
+    "damage_type_ranged": "Siege",
+    "damage_type_melee": "Hand"
   },
   {
     "id": "dragoon",
@@ -6254,7 +6443,9 @@
     "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/b/ba/Dragoon_aoe3de.png/revision/latest/scale-to-width-down/268?cb=20210206031800",
     "aliases": [
       "龙骑"
-    ]
+    ],
+    "damage_type_ranged": "Ranged",
+    "damage_type_melee": "Hand"
   },
   {
     "id": "drummer",
@@ -6292,7 +6483,9 @@
     "rof_siege": 3.0,
     "attack_melee": 10.0,
     "rof_melee": 1.5,
-    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/2/22/Hanover_drummer_portrait.jpg/revision/latest/scale-to-width-down/268?cb=20220526225146"
+    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/2/22/Hanover_drummer_portrait.jpg/revision/latest/scale-to-width-down/268?cb=20220526225146",
+    "damage_type_ranged": "Ranged",
+    "damage_type_melee": "Hand"
   },
   {
     "id": "eagle_runner_knight",
@@ -6363,7 +6556,9 @@
     "rof_siege": 3.0,
     "attack_melee": 9.0,
     "rof_melee": 1.5,
-    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/2/2e/Eagle_runner_knight_portrait_aoe3de_updated.png/revision/latest/scale-to-width-down/268?cb=20211115055200"
+    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/2/2e/Eagle_runner_knight_portrait_aoe3de_updated.png/revision/latest/scale-to-width-down/268?cb=20211115055200",
+    "damage_type_ranged": "Ranged",
+    "damage_type_melee": "Hand"
   },
   {
     "id": "eagle_scout_age_of_empires_iii",
@@ -6416,7 +6611,9 @@
     "rof_siege": 3.0,
     "attack_melee": 10.0,
     "rof_melee": 1.5,
-    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/8/84/Eagle_scout_aoe3de.png/revision/latest/scale-to-width-down/268?cb=20210203100410"
+    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/8/84/Eagle_scout_aoe3de.png/revision/latest/scale-to-width-down/268?cb=20210203100410",
+    "damage_type_ranged": "Ranged",
+    "damage_type_melee": "Hand"
   },
   {
     "id": "eclaireur",
@@ -6473,7 +6670,9 @@
         }
       ]
     },
-    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/5/54/Rev_france_eclaireur_portrait_aoe3de.jpg/revision/latest/scale-to-width-down/268?cb=20230803054130"
+    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/5/54/Rev_france_eclaireur_portrait_aoe3de.jpg/revision/latest/scale-to-width-down/268?cb=20230803054130",
+    "damage_type_ranged": "Siege",
+    "damage_type_melee": "Hand"
   },
   {
     "id": "egypt",
@@ -6536,7 +6735,9 @@
         }
       ]
     },
-    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/d/d2/Elmeti_aoe3de.png/revision/latest/scale-to-width-down/268?cb=20210206065205"
+    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/d/d2/Elmeti_aoe3de.png/revision/latest/scale-to-width-down/268?cb=20210206065205",
+    "damage_type_ranged": "Siege",
+    "damage_type_melee": "Hand"
   },
   {
     "id": "envoy_age_of_empires_iii",
@@ -6663,7 +6864,9 @@
     "rof_siege": 3.0,
     "attack_melee": 7.0,
     "rof_melee": 1.5,
-    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/8/88/Phanar_evzone_portrait.jpg/revision/latest/scale-to-width-down/268?cb=20220526225554"
+    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/8/88/Phanar_evzone_portrait.jpg/revision/latest/scale-to-width-down/268?cb=20220526225554",
+    "damage_type_ranged": "Siege",
+    "damage_type_melee": "Hand"
   },
   {
     "id": "explorer_age_of_empires_iii",
@@ -6750,7 +6953,9 @@
     "aliases": [
       "轻炮",
       "小炮"
-    ]
+    ],
+    "aoe_radius": 5,
+    "damage_type_ranged": "Siege"
   },
   {
     "id": "farm_travois",
@@ -6824,7 +7029,9 @@
         }
       ]
     },
-    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/f/f1/Filibuster_aoe3de.png/revision/latest/scale-to-width-down/268?cb=20211218035510"
+    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/f/f1/Filibuster_aoe3de.png/revision/latest/scale-to-width-down/268?cb=20211218035510",
+    "damage_type_ranged": "Siege",
+    "damage_type_melee": "Hand"
   },
   {
     "id": "finland_revolutionary",
@@ -6871,7 +7078,9 @@
         }
       ]
     },
-    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/7/79/Fire_ship_aoe3de.png/revision/latest/scale-to-width-down/268?cb=20210203110900"
+    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/7/79/Fire_ship_aoe3de.png/revision/latest/scale-to-width-down/268?cb=20210203110900",
+    "aoe_radius": 2,
+    "damage_type_ranged": "Siege"
   },
   {
     "id": "fire_ship_age_of_empires_iii",
@@ -6905,7 +7114,9 @@
         }
       ]
     },
-    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/9/95/SPC_Fire_ship_aoe3de.png/revision/latest/scale-to-width-down/268?cb=20220520015612"
+    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/9/95/SPC_Fire_ship_aoe3de.png/revision/latest/scale-to-width-down/268?cb=20220520015612",
+    "aoe_radius": 2,
+    "damage_type_ranged": "Siege"
   },
   {
     "id": "fishing_boat_age_of_empires_iii",
@@ -7123,7 +7334,9 @@
         }
       ]
     },
-    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/6/6a/Flail_elephant_de.png/revision/latest/scale-to-width-down/268?cb=20210207131500"
+    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/6/6a/Flail_elephant_de.png/revision/latest/scale-to-width-down/268?cb=20210207131500",
+    "aoe_radius": 2,
+    "damage_type_melee": "Hand"
   },
   {
     "id": "flamethrower_age_of_empires_iii",
@@ -7156,7 +7369,9 @@
     "armor_ranged": 0.65,
     "speed": 4.25,
     "los": 14.0,
-    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/1/12/Flamethrower_de.png/revision/latest/scale-to-width-down/268?cb=20210209080519"
+    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/1/12/Flamethrower_de.png/revision/latest/scale-to-width-down/268?cb=20210209080519",
+    "aoe_radius": 1,
+    "damage_type_ranged": "Siege"
   },
   {
     "id": "flaming_arrow",
@@ -7210,7 +7425,9 @@
         }
       ]
     },
-    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/5/55/Flaming_arrow_aoe3de.png/revision/latest/scale-to-width-down/268?cb=20210209081138"
+    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/5/55/Flaming_arrow_aoe3de.png/revision/latest/scale-to-width-down/268?cb=20210209081138",
+    "aoe_radius": 2,
+    "damage_type_ranged": "Siege"
   },
   {
     "id": "flaming_hot_dog_cart",
@@ -7291,7 +7508,9 @@
         }
       ]
     },
-    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/9/99/Fluyt_aoe3de.png/revision/latest/scale-to-width-down/268?cb=20210203111824"
+    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/9/99/Fluyt_aoe3de.png/revision/latest/scale-to-width-down/268?cb=20210203111824",
+    "aoe_radius": 1,
+    "damage_type_ranged": "Siege"
   },
   {
     "id": "flying_crow",
@@ -7341,7 +7560,9 @@
     "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/e/e8/Flying_crow_de.png/revision/latest/scale-to-width-down/268?cb=20210207122716",
     "aliases": [
       "飞鸦"
-    ]
+    ],
+    "aoe_radius": 3,
+    "damage_type_ranged": "Siege"
   },
   {
     "id": "forest_prowler",
@@ -7429,7 +7650,9 @@
     "rof_siege": 3.0,
     "attack_melee": 7.0,
     "rof_melee": 1.5,
-    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/9/9e/Forest_prowler_de.png/revision/latest/scale-to-width-down/268?cb=20210206102441"
+    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/9/9e/Forest_prowler_de.png/revision/latest/scale-to-width-down/268?cb=20210206102441",
+    "damage_type_ranged": "Ranged",
+    "damage_type_melee": "Hand"
   },
   {
     "id": "frigate",
@@ -7471,7 +7694,9 @@
         }
       ]
     },
-    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/3/38/Frigate_aoe3de.png/revision/latest/scale-to-width-down/268?cb=20210203111900"
+    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/3/38/Frigate_aoe3de.png/revision/latest/scale-to-width-down/268?cb=20210203111900",
+    "aoe_radius": 1,
+    "damage_type_ranged": "Siege"
   },
   {
     "id": "fuchuan",
@@ -7510,7 +7735,9 @@
         }
       ]
     },
-    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/b/b7/Fuchuan_aoe3de.png/revision/latest/scale-to-width-down/268?cb=20210203112004"
+    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/b/b7/Fuchuan_aoe3de.png/revision/latest/scale-to-width-down/268?cb=20210203112004",
+    "aoe_radius": 1,
+    "damage_type_ranged": "Siege"
   },
   {
     "id": "fulani_archer",
@@ -7600,7 +7827,9 @@
     "rof_siege": 3.0,
     "attack_melee": 7.0,
     "rof_melee": 1.5,
-    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/4/4f/Fulani.png/revision/latest/scale-to-width-down/268?cb=20211006054336"
+    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/4/4f/Fulani.png/revision/latest/scale-to-width-down/268?cb=20211006054336",
+    "damage_type_ranged": "Ranged",
+    "damage_type_melee": "Hand"
   },
   {
     "id": "fune",
@@ -7639,7 +7868,9 @@
         }
       ]
     },
-    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/e/e2/Fune_aoe3de.png/revision/latest/scale-to-width-down/268?cb=20240121051805"
+    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/e/e2/Fune_aoe3de.png/revision/latest/scale-to-width-down/268?cb=20240121051805",
+    "aoe_radius": 1,
+    "damage_type_ranged": "Siege"
   },
   {
     "id": "fusilier",
@@ -7702,7 +7933,9 @@
     "rof_siege": 3.0,
     "attack_melee": 35.0,
     "rof_melee": 1.5,
-    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/1/13/Fusilier_de.png/revision/latest/scale-to-width-down/268?cb=20210206065419"
+    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/1/13/Fusilier_de.png/revision/latest/scale-to-width-down/268?cb=20210206065419",
+    "damage_type_ranged": "Ranged",
+    "damage_type_melee": "Hand"
   },
   {
     "id": "galleass_age_of_empires_iii",
@@ -7731,7 +7964,9 @@
     "armor_ranged": 0.75,
     "speed": 7.0,
     "los": 30.0,
-    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/a/a4/Galleass_portrait.png/revision/latest/scale-to-width-down/268?cb=20220710051922"
+    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/a/a4/Galleass_portrait.png/revision/latest/scale-to-width-down/268?cb=20220710051922",
+    "aoe_radius": 3,
+    "damage_type_ranged": "Hand"
   },
   {
     "id": "galleon_age_of_empires_iii",
@@ -7768,7 +8003,9 @@
         }
       ]
     },
-    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/1/12/Galleon_aoe3de.png/revision/latest/scale-to-width-down/268?cb=20210203112309"
+    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/1/12/Galleon_aoe3de.png/revision/latest/scale-to-width-down/268?cb=20210203112309",
+    "aoe_radius": 1,
+    "damage_type_ranged": "Siege"
   },
   {
     "id": "galley_age_of_empires_iii",
@@ -7807,7 +8044,9 @@
         }
       ]
     },
-    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/1/1f/Galley_aoe3de.png/revision/latest/scale-to-width-down/268?cb=20210203112417"
+    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/1/1f/Galley_aoe3de.png/revision/latest/scale-to-width-down/268?cb=20210203112417",
+    "aoe_radius": 1,
+    "damage_type_ranged": "Siege"
   },
   {
     "id": "gascenya",
@@ -7864,7 +8103,9 @@
     "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/b/b9/Gascenya_portrait_aoe3de.png/revision/latest/scale-to-width-down/268?cb=20210806034035",
     "aliases": [
       "弓手"
-    ]
+    ],
+    "damage_type_ranged": "Ranged",
+    "damage_type_melee": "Hand"
   },
   {
     "id": "gatling_camel",
@@ -7956,7 +8197,10 @@
     "rof_siege": 3.0,
     "attack_melee": 22.0,
     "rof_melee": 1.5,
-    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/b/b0/Gatling_camel_aoe3de_portrait.png/revision/latest/scale-to-width-down/268?cb=20211006052916"
+    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/b/b0/Gatling_camel_aoe3de_portrait.png/revision/latest/scale-to-width-down/268?cb=20211006052916",
+    "aoe_radius": 2,
+    "damage_type_ranged": "Siege",
+    "damage_type_melee": "Hand"
   },
   {
     "id": "gatling_gun",
@@ -8025,7 +8269,9 @@
         }
       ]
     },
-    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/c/cd/Gatlin_de.png/revision/latest/scale-to-width-down/268?cb=20210206034913"
+    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/c/cd/Gatlin_de.png/revision/latest/scale-to-width-down/268?cb=20210206034913",
+    "aoe_radius": 2,
+    "damage_type_ranged": "Siege"
   },
   {
     "id": "gaucho",
@@ -8091,7 +8337,9 @@
     "rof_siege": 3.0,
     "attack_melee": 7.0,
     "rof_melee": 1.5,
-    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/2/24/Comanchero_icon_aoe3de.png/revision/latest/scale-to-width-down/268?cb=20210206020749"
+    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/2/24/Comanchero_icon_aoe3de.png/revision/latest/scale-to-width-down/268?cb=20210206020749",
+    "damage_type_ranged": "Ranged",
+    "damage_type_melee": "Hand"
   },
   {
     "id": "general_age_of_empires_iii",
@@ -8114,7 +8362,9 @@
     "armor_ranged": 0.1,
     "speed": 4.5,
     "los": 18.0,
-    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/2/29/Us_general_aoe3de.png/revision/latest/scale-to-width-down/268?cb=20210428210125"
+    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/2/29/Us_general_aoe3de.png/revision/latest/scale-to-width-down/268?cb=20210428210125",
+    "damage_type_ranged": "Ranged",
+    "damage_type_melee": "Hand"
   },
   {
     "id": "general_kichiro",
@@ -8191,7 +8441,13 @@
         }
       ]
     },
-    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/c/cc/Mercenary_giant_grenadier_portrait.jpg/revision/latest/scale-to-width-down/268?cb=20220526063237"
+    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/c/cc/Mercenary_giant_grenadier_portrait.jpg/revision/latest/scale-to-width-down/268?cb=20220526063237",
+    "aliases": [
+      "巨型掷弹兵"
+    ],
+    "aoe_radius": 2,
+    "damage_type_ranged": "Siege",
+    "damage_type_melee": "Hand"
   },
   {
     "id": "gran_colombia",
@@ -8225,7 +8481,9 @@
     "armor_ranged": 0.1,
     "speed": 4.5,
     "los": 18.0,
-    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/6/68/Grandmaster_portrait_updated.jpg/revision/latest?cb=20220625153123"
+    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/6/68/Grandmaster_portrait_updated.jpg/revision/latest?cb=20220625153123",
+    "damage_type_ranged": "Ranged",
+    "damage_type_melee": "Hand"
   },
   {
     "id": "great_bombard_age_of_empires_iii",
@@ -8285,7 +8543,9 @@
         }
       ]
     },
-    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/4/48/Great_bombard_de.png/revision/latest/scale-to-width-down/268?cb=20210206040544"
+    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/4/48/Great_bombard_de.png/revision/latest/scale-to-width-down/268?cb=20210206040544",
+    "aoe_radius": 5,
+    "damage_type_ranged": "Siege"
   },
   {
     "id": "great_plains_chief",
@@ -8423,7 +8683,9 @@
         }
       ]
     },
-    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/d/d9/Gunslinger_aoe3de.png/revision/latest/scale-to-width-down/268?cb=20210428215500"
+    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/d/d9/Gunslinger_aoe3de.png/revision/latest/scale-to-width-down/268?cb=20210428215500",
+    "damage_type_ranged": "Siege",
+    "damage_type_melee": "Hand"
   },
   {
     "id": "gurkha",
@@ -8520,7 +8782,9 @@
     "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/b/bb/Gurkha_de.png/revision/latest/scale-to-width-down/268?cb=20210206024539",
     "aliases": [
       "廓尔喀"
-    ]
+    ],
+    "damage_type_ranged": "Ranged",
+    "damage_type_melee": "Hand"
   },
   {
     "id": "hackapell",
@@ -8556,7 +8820,9 @@
     "rof_siege": 3.0,
     "attack_melee": 121.0,
     "rof_melee": 1.5,
-    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/3/35/Hackapell_aoe3de.png/revision/latest/scale-to-width-down/268?cb=20210206065517"
+    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/3/35/Hackapell_aoe3de.png/revision/latest/scale-to-width-down/268?cb=20210206065517",
+    "damage_type_ranged": "Siege",
+    "damage_type_melee": "Hand"
   },
   {
     "id": "haiti",
@@ -8654,7 +8920,9 @@
     "rof_siege": 3.0,
     "attack_melee": 14.0,
     "rof_melee": 1.5,
-    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/c/ce/Hajduk_portrait.png/revision/latest/scale-to-width-down/268?cb=20230909034034"
+    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/c/ce/Hajduk_portrait.png/revision/latest/scale-to-width-down/268?cb=20230909034034",
+    "damage_type_ranged": "Ranged",
+    "damage_type_melee": "Hand"
   },
   {
     "id": "hakkapelit",
@@ -8742,7 +9010,10 @@
     "rof_siege": 3.0,
     "attack_melee": 22.0,
     "rof_melee": 1.5,
-    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/c/cd/Hakkapelit-icon-aoe3.png/revision/latest/scale-to-width-down/268?cb=20210206032521"
+    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/c/cd/Hakkapelit-icon-aoe3.png/revision/latest/scale-to-width-down/268?cb=20210206032521",
+    "aoe_radius": 1,
+    "damage_type_ranged": "Ranged",
+    "damage_type_melee": "Hand"
   },
   {
     "id": "halberdier_age_of_empires_iii",
@@ -8853,7 +9124,9 @@
     "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/9/94/Hand_mortar_de.png/revision/latest/scale-to-width-down/268?cb=20210210132755",
     "aliases": [
       "手炮"
-    ]
+    ],
+    "aoe_radius": 1,
+    "damage_type_ranged": "Siege"
   },
   {
     "id": "harquebusier",
@@ -8907,7 +9180,10 @@
     "rof_siege": 3.0,
     "attack_melee": 121.0,
     "rof_melee": 1.5,
-    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/d/df/Harquebusier_portrait_aoe3de_updated.png/revision/latest/scale-to-width-down/268?cb=20210921031138"
+    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/d/df/Harquebusier_portrait_aoe3de_updated.png/revision/latest/scale-to-width-down/268?cb=20210921031138",
+    "aoe_radius": 1,
+    "damage_type_ranged": "Ranged",
+    "damage_type_melee": "Hand"
   },
   {
     "id": "haudenosaunee_mantlet",
@@ -8949,7 +9225,9 @@
     "rof_siege": 3.0,
     "attack_melee": 10.0,
     "rof_melee": 1.5,
-    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/9/91/Iro_mantlet_de.png/revision/latest/scale-to-width-down/268?cb=20210207124929"
+    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/9/91/Iro_mantlet_de.png/revision/latest/scale-to-width-down/268?cb=20210207124929",
+    "damage_type_ranged": "Siege",
+    "damage_type_melee": "Hand"
   },
   {
     "id": "haudenosaunee_tomahawk",
@@ -9002,7 +9280,9 @@
     "rof_siege": 3.0,
     "attack_melee": 8.0,
     "rof_melee": 1.5,
-    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/3/31/Tomahawk_aoe3de.png/revision/latest/scale-to-width-down/268?cb=20250302020414"
+    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/3/31/Tomahawk_aoe3de.png/revision/latest/scale-to-width-down/268?cb=20250302020414",
+    "damage_type_ranged": "Hand",
+    "damage_type_melee": "Hand"
   },
   {
     "id": "haudenosaunee_war_chief",
@@ -9093,7 +9373,9 @@
         }
       ]
     },
-    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/e/ef/Heavy_cannon_de.png/revision/latest/scale-to-width-down/268?cb=20210211220249"
+    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/e/ef/Heavy_cannon_de.png/revision/latest/scale-to-width-down/268?cb=20210211220249",
+    "aoe_radius": 6,
+    "damage_type_ranged": "Siege"
   },
   {
     "id": "highlander",
@@ -9150,7 +9432,9 @@
     "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/8/83/Highlander_de.png/revision/latest/scale-to-width-down/268?cb=20210206070057",
     "aliases": [
       "高地兵"
-    ]
+    ],
+    "damage_type_ranged": "Ranged",
+    "damage_type_melee": "Hand"
   },
   {
     "id": "highwayman",
@@ -9223,7 +9507,9 @@
     "rof_siege": 3.0,
     "attack_melee": 6.0,
     "rof_melee": 1.5,
-    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/1/16/Highwayman_mounted_portrait.jpg/revision/latest/scale-to-width-down/268?cb=20220526205924"
+    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/1/16/Highwayman_mounted_portrait.jpg/revision/latest/scale-to-width-down/268?cb=20220526205924",
+    "damage_type_ranged": "Ranged",
+    "damage_type_melee": "Hand"
   },
   {
     "id": "hindu_villager",
@@ -9354,7 +9640,9 @@
         }
       ]
     },
-    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/d/de/Holcanspear_aoe3de.png/revision/latest/scale-to-width-down/268?cb=20220710044832"
+    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/d/de/Holcanspear_aoe3de.png/revision/latest/scale-to-width-down/268?cb=20220710044832",
+    "damage_type_ranged": "Siege",
+    "damage_type_melee": "Hand"
   },
   {
     "id": "hoop_thrower",
@@ -9444,7 +9732,9 @@
         }
       ]
     },
-    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/0/0c/Horse_art_de.png/revision/latest/scale-to-width-down/268?cb=20210206035955"
+    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/0/0c/Horse_art_de.png/revision/latest/scale-to-width-down/268?cb=20210206035955",
+    "aoe_radius": 5,
+    "damage_type_ranged": "Siege"
   },
   {
     "id": "hospitaller",
@@ -9494,7 +9784,9 @@
         }
       ]
     },
-    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/e/ef/Hospitaller_portrait.png/revision/latest/scale-to-width-down/268?cb=20220526062944"
+    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/e/ef/Hospitaller_portrait.png/revision/latest/scale-to-width-down/268?cb=20220526062944",
+    "damage_type_ranged": "Siege",
+    "damage_type_melee": "Hand"
   },
   {
     "id": "howdah_age_of_empires_iii",
@@ -9575,7 +9867,9 @@
     "rof_siege": 3.0,
     "attack_melee": 33.0,
     "rof_melee": 1.5,
-    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/d/d9/Howdah_aoe3de.png/revision/latest/scale-to-width-down/268?cb=20210225192614"
+    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/d/d9/Howdah_aoe3de.png/revision/latest/scale-to-width-down/268?cb=20210225192614",
+    "damage_type_ranged": "Ranged",
+    "damage_type_melee": "Hand"
   },
   {
     "id": "huaraca",
@@ -9646,7 +9940,9 @@
     "rof_siege": 4.0,
     "attack_melee": 8.0,
     "rof_melee": 1.5,
-    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/b/b1/Huaraca-icon-aoe3.png/revision/latest/scale-to-width-down/268?cb=20210203062039"
+    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/b/b1/Huaraca-icon-aoe3.png/revision/latest/scale-to-width-down/268?cb=20210203062039",
+    "damage_type_ranged": "Siege",
+    "damage_type_melee": "Hand"
   },
   {
     "id": "humbaraci",
@@ -9727,7 +10023,15 @@
     "rof_siege": 3.0,
     "attack_melee": 28.0,
     "rof_melee": 1.5,
-    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/d/d2/Ottomans_humbaraci_portrait.jpg/revision/latest/scale-to-width-down/268?cb=20221020192227"
+    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/d/d2/Ottomans_humbaraci_portrait.jpg/revision/latest/scale-to-width-down/268?cb=20221020192227",
+    "aliases": [
+      "乌鲁菲利",
+      "奥斯曼掷弹兵",
+      "掷弹兵"
+    ],
+    "aoe_radius": 2,
+    "damage_type_ranged": "Siege",
+    "damage_type_melee": "Hand"
   },
   {
     "id": "hungary",
@@ -9779,7 +10083,9 @@
     "rof_siege": 3.0,
     "attack_melee": 10.0,
     "rof_melee": 1.5,
-    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/6/61/Huron_Mantlet_aoe3de.png/revision/latest/scale-to-width-down/268?cb=20210203161636"
+    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/6/61/Huron_Mantlet_aoe3de.png/revision/latest/scale-to-width-down/268?cb=20210203161636",
+    "damage_type_ranged": "Siege",
+    "damage_type_melee": "Hand"
   },
   {
     "id": "hussar_age_of_empires_iii",
@@ -9822,7 +10128,9 @@
     "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/4/43/Hussar_aoe3de.png/revision/latest/scale-to-width-down/268?cb=20210206032350",
     "aliases": [
       "骠骑兵"
-    ]
+    ],
+    "damage_type_ranged": "Siege",
+    "damage_type_melee": "Hand"
   },
   {
     "id": "imam_age_of_empires_iii",
@@ -9966,7 +10274,8 @@
         }
       ]
     },
-    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/0/05/Inquisitor_portrait.jpg/revision/latest/scale-to-width-down/268?cb=20220526205617"
+    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/0/05/Inquisitor_portrait.jpg/revision/latest/scale-to-width-down/268?cb=20220526205617",
+    "damage_type_ranged": "Siege"
   },
   {
     "id": "insurgente",
@@ -10020,7 +10329,10 @@
     "range_min": 5,
     "range": 10,
     "rof_ranged": 3.0,
-    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/1/1c/Insurgente_portrait.png/revision/latest/scale-to-width-down/268?cb=20211218040003"
+    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/1/1c/Insurgente_portrait.png/revision/latest/scale-to-width-down/268?cb=20211218040003",
+    "aoe_radius": 2,
+    "damage_type_ranged": "Siege",
+    "damage_type_melee": "Hand"
   },
   {
     "id": "irish_brigadier",
@@ -10073,7 +10385,9 @@
         }
       ]
     },
-    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/c/c3/Mercenary_irish_brigade_portrait.jpg/revision/latest/scale-to-width-down/268?cb=20220526063415"
+    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/c/c3/Mercenary_irish_brigade_portrait.jpg/revision/latest/scale-to-width-down/268?cb=20220526063415",
+    "damage_type_ranged": "Ranged",
+    "damage_type_melee": "Hand"
   },
   {
     "id": "iron_flail",
@@ -10118,7 +10432,9 @@
     "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/3/33/Iron_flail_de.png/revision/latest/scale-to-width-down/268?cb=20210225023139",
     "aliases": [
       "铁连枷"
-    ]
+    ],
+    "damage_type_ranged": "Siege",
+    "damage_type_melee": "Hand"
   },
   {
     "id": "iron_troop",
@@ -10206,7 +10522,9 @@
     "rof_siege": 3.0,
     "attack_melee": 16.0,
     "rof_melee": 1.5,
-    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/4/48/Iron_troop_aoe3de.png/revision/latest/scale-to-width-down/268?cb=20210206070203"
+    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/4/48/Iron_troop_aoe3de.png/revision/latest/scale-to-width-down/268?cb=20210206070203",
+    "damage_type_ranged": "Ranged",
+    "damage_type_melee": "Hand"
   },
   {
     "id": "ironclad_age_of_empires_iii",
@@ -10245,7 +10563,9 @@
         }
       ]
     },
-    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/4/4c/Ironclad_aoe3de.png/revision/latest/scale-to-width-down/268?cb=20210429030835"
+    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/4/4c/Ironclad_aoe3de.png/revision/latest/scale-to-width-down/268?cb=20210429030835",
+    "aoe_radius": 6,
+    "damage_type_ranged": "Siege"
   },
   {
     "id": "irregular",
@@ -10295,7 +10615,9 @@
     "rof_siege": 3.0,
     "attack_melee": 10.0,
     "rof_melee": 1.5,
-    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/c/cb/Irregular_cn_jp_de.png/revision/latest/scale-to-width-down/268?cb=20210225022207"
+    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/c/cb/Irregular_cn_jp_de.png/revision/latest/scale-to-width-down/268?cb=20210225022207",
+    "damage_type_ranged": "Ranged",
+    "damage_type_melee": "Hand"
   },
   {
     "id": "jaeger",
@@ -10389,7 +10711,9 @@
     "rof_siege": 3.0,
     "attack_melee": 15.0,
     "rof_melee": 1.5,
-    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/4/47/Jaeger_portrait_aoe3de_updated.png/revision/latest/scale-to-width-down/268?cb=20210922031300"
+    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/4/47/Jaeger_portrait_aoe3de_updated.png/revision/latest/scale-to-width-down/268?cb=20210922031300",
+    "damage_type_ranged": "Ranged",
+    "damage_type_melee": "Hand"
   },
   {
     "id": "jaguar_prowl_knight",
@@ -10441,7 +10765,9 @@
         }
       ]
     },
-    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/1/1c/Jaguar_prowl_knight_portrait_aoe3de_updated.png/revision/latest/scale-to-width-down/268?cb=20211116051656"
+    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/1/1c/Jaguar_prowl_knight_portrait_aoe3de_updated.png/revision/latest/scale-to-width-down/268?cb=20211116051656",
+    "damage_type_ranged": "Siege",
+    "damage_type_melee": "Hand"
   },
   {
     "id": "jaguno",
@@ -10574,7 +10900,9 @@
       "苏丹亲兵",
       "亲兵",
       "耶尼切里"
-    ]
+    ],
+    "damage_type_ranged": "Siege",
+    "damage_type_melee": "Hand"
   },
   {
     "id": "jat_lancer",
@@ -10611,7 +10939,9 @@
     "rof_siege": 3.0,
     "attack_melee": 35.0,
     "rof_melee": 1.5,
-    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/4/4e/Jat_lancer_de.png/revision/latest/scale-to-width-down/268?cb=20210206070817"
+    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/4/4e/Jat_lancer_de.png/revision/latest/scale-to-width-down/268?cb=20210206070817",
+    "damage_type_ranged": "Siege",
+    "damage_type_melee": "Hand"
   },
   {
     "id": "javanese_spearman",
@@ -10661,7 +10991,9 @@
         }
       ]
     },
-    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/0/0a/Java_spearman_aoe3de.png/revision/latest/scale-to-width-down/268?cb=20210210073225"
+    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/0/0a/Java_spearman_aoe3de.png/revision/latest/scale-to-width-down/268?cb=20210210073225",
+    "damage_type_ranged": "Siege",
+    "damage_type_melee": "Hand"
   },
   {
     "id": "javelin_rider",
@@ -10737,7 +11069,9 @@
     "rof_siege": 3.0,
     "attack_melee": 10.0,
     "rof_melee": 1.5,
-    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/1/1a/Javelin_rider_aoe3de.png/revision/latest/scale-to-width-down/268?cb=20210614225122"
+    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/1/1a/Javelin_rider_aoe3de.png/revision/latest/scale-to-width-down/268?cb=20210614225122",
+    "damage_type_ranged": "Ranged",
+    "damage_type_melee": "Hand"
   },
   {
     "id": "jian_huang",
@@ -10840,7 +11174,9 @@
     "rof_siege": 3.0,
     "attack_melee": 10.0,
     "rof_melee": 1.5,
-    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/f/f5/Jungle-bowman-icon-aoe3.png/revision/latest/scale-to-width-down/268?cb=20210206102549"
+    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/f/f5/Jungle-bowman-icon-aoe3.png/revision/latest/scale-to-width-down/268?cb=20210206102549",
+    "damage_type_ranged": "Ranged",
+    "damage_type_melee": "Hand"
   },
   {
     "id": "kanuri_guard",
@@ -10914,7 +11250,9 @@
     "rof_siege": 3.0,
     "attack_melee": 15.0,
     "rof_melee": 1.5,
-    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/5/5e/Kanuri_guard_aoe3de_portrait.png/revision/latest/scale-to-width-down/268?cb=20211006053036"
+    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/5/5e/Kanuri_guard_aoe3de_portrait.png/revision/latest/scale-to-width-down/268?cb=20211006053036",
+    "damage_type_ranged": "Ranged",
+    "damage_type_melee": "Hand"
   },
   {
     "id": "kanya_horseman",
@@ -10956,7 +11294,9 @@
     },
     "attack_melee": 27.0,
     "rof_melee": 1.5,
-    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/8/89/Kanya_de.png/revision/latest/scale-to-width-down/268?cb=20210211081932"
+    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/8/89/Kanya_de.png/revision/latest/scale-to-width-down/268?cb=20210211081932",
+    "damage_type_ranged": "Siege",
+    "damage_type_melee": "Hand"
   },
   {
     "id": "keshik_age_of_empires_iii",
@@ -11017,7 +11357,9 @@
     "rof_siege": 3.0,
     "attack_melee": 8.0,
     "rof_melee": 1.5,
-    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/d/d3/Keshik_de.png/revision/latest/scale-to-width-down/268?cb=20210225023032"
+    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/d/d3/Keshik_de.png/revision/latest/scale-to-width-down/268?cb=20210225023032",
+    "damage_type_ranged": "Ranged",
+    "damage_type_melee": "Hand"
   },
   {
     "id": "klamath_rifleman",
@@ -11111,7 +11453,9 @@
     "rof_siege": 3.0,
     "attack_melee": 6.0,
     "rof_melee": 1.5,
-    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/3/39/Klamath_Rifleman_de.png/revision/latest/scale-to-width-down/268?cb=20210203171927"
+    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/3/39/Klamath_Rifleman_de.png/revision/latest/scale-to-width-down/268?cb=20210203171927",
+    "damage_type_ranged": "Ranged",
+    "damage_type_melee": "Hand"
   },
   {
     "id": "knife_thrower",
@@ -11150,7 +11494,9 @@
     "rof_siege": 3.0,
     "attack_melee": 14.0,
     "rof_melee": 1.5,
-    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/b/b2/Knife_thrower_aoe3de.png/revision/latest/scale-to-width-down/268?cb=20210614230647"
+    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/b/b2/Knife_thrower_aoe3de.png/revision/latest/scale-to-width-down/268?cb=20210614230647",
+    "damage_type_ranged": "Hand",
+    "damage_type_melee": "Hand"
   },
   {
     "id": "knien",
@@ -11191,7 +11537,9 @@
     "rof_siege": 3.0,
     "attack_melee": 21.0,
     "rof_melee": 1.5,
-    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/4/4b/Lakota_axe_rider_aoe3de.png/revision/latest/scale-to-width-down/268?cb=20220712021714"
+    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/4/4b/Lakota_axe_rider_aoe3de.png/revision/latest/scale-to-width-down/268?cb=20220712021714",
+    "damage_type_ranged": "Siege",
+    "damage_type_melee": "Hand"
   },
   {
     "id": "lakota_tokala_soldier",
@@ -11218,7 +11566,9 @@
     "rof_siege": 3.0,
     "attack_melee": 42.0,
     "rof_melee": 1.5,
-    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/3/39/Tokala_soldier_aoe3de.png/revision/latest/scale-to-width-down/268?cb=20210329030000"
+    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/3/39/Tokala_soldier_aoe3de.png/revision/latest/scale-to-width-down/268?cb=20210329030000",
+    "damage_type_ranged": "Siege",
+    "damage_type_melee": "Hand"
   },
   {
     "id": "lakota_war_chief",
@@ -11347,7 +11697,9 @@
     "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/d/d2/Landsknecht_de.png/revision/latest/scale-to-width-down/268?cb=20210206070951",
     "aliases": [
       "景观步兵"
-    ]
+    ],
+    "damage_type_ranged": "Siege",
+    "damage_type_melee": "Hand"
   },
   {
     "id": "landwehr",
@@ -11413,7 +11765,9 @@
     "rof_siege": 3.0,
     "attack_melee": 12.0,
     "rof_melee": 1.5,
-    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/2/22/Germans_landwehr_portrait.jpg/revision/latest/scale-to-width-down/268?cb=20221020192252"
+    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/2/22/Germans_landwehr_portrait.jpg/revision/latest/scale-to-width-down/268?cb=20221020192252",
+    "damage_type_ranged": "Ranged",
+    "damage_type_melee": "Hand"
   },
   {
     "id": "lao_chen",
@@ -11446,7 +11800,9 @@
     "rof_siege": 2.0,
     "attack_melee": 800.0,
     "rof_melee": 1.0,
-    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/8/81/Learicorn_aoe3de.png/revision/latest/scale-to-width-down/268?cb=20210211084933"
+    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/8/81/Learicorn_aoe3de.png/revision/latest/scale-to-width-down/268?cb=20210211084933",
+    "damage_type_ranged": "Siege",
+    "damage_type_melee": "Hand"
   },
   {
     "id": "leather_cannon",
@@ -11498,7 +11854,9 @@
         }
       ]
     },
-    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/6/60/Leather-cannon-icon-aoe3.png/revision/latest/scale-to-width-down/268?cb=20201020232221"
+    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/6/60/Leather-cannon-icon-aoe3.png/revision/latest/scale-to-width-down/268?cb=20201020232221",
+    "aoe_radius": 4,
+    "damage_type_ranged": "Siege"
   },
   {
     "id": "lenape_warrior",
@@ -11584,7 +11942,9 @@
     "rof_siege": 3.0,
     "attack_melee": 15.0,
     "rof_melee": 1.5,
-    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/b/b2/Lenape_warrior_portrait.png/revision/latest/scale-to-width-down/268?cb=20220227050546"
+    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/b/b2/Lenape_warrior_portrait.png/revision/latest/scale-to-width-down/268?cb=20220227050546",
+    "damage_type_ranged": "Ranged",
+    "damage_type_melee": "Hand"
   },
   {
     "id": "leonardos_tank",
@@ -11730,7 +12090,9 @@
     "rof_siege": 3.0,
     "attack_melee": 7.0,
     "rof_melee": 1.5,
-    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/a/a0/Levied_bowman_portrait_aoe3de.png/revision/latest/scale-to-width-down/268?cb=20210814001405"
+    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/a/a0/Levied_bowman_portrait_aoe3de.png/revision/latest/scale-to-width-down/268?cb=20210814001405",
+    "damage_type_ranged": "Ranged",
+    "damage_type_melee": "Hand"
   },
   {
     "id": "levied_gunner",
@@ -11800,7 +12162,9 @@
     "rof_siege": 3.0,
     "attack_melee": 13.0,
     "rof_melee": 1.5,
-    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/4/4b/Levied_gunner_portrait_aoe3de.png/revision/latest/scale-to-width-down/268?cb=20210814002435"
+    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/4/4b/Levied_gunner_portrait_aoe3de.png/revision/latest/scale-to-width-down/268?cb=20210814002435",
+    "damage_type_ranged": "Ranged",
+    "damage_type_melee": "Hand"
   },
   {
     "id": "levied_spearman",
@@ -11852,7 +12216,9 @@
         }
       ]
     },
-    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/a/a3/Levied_spearman_portrait_aoe3de.png/revision/latest/scale-to-width-down/268?cb=20210814002023"
+    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/a/a3/Levied_spearman_portrait_aoe3de.png/revision/latest/scale-to-width-down/268?cb=20210814002023",
+    "damage_type_ranged": "Siege",
+    "damage_type_melee": "Hand"
   },
   {
     "id": "lil_bombard",
@@ -11905,7 +12271,12 @@
         }
       ]
     },
-    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/9/96/Lil_bombard_aoe3de.png/revision/latest/scale-to-width-down/268?cb=20210211081558"
+    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/9/96/Lil_bombard_aoe3de.png/revision/latest/scale-to-width-down/268?cb=20210211081558",
+    "aliases": [
+      "里尔火炮",
+      "里尔",
+      "小炮"
+    ]
   },
   {
     "id": "lifidi_knight",
@@ -11942,7 +12313,9 @@
     "rof_siege": 3.0,
     "attack_melee": 25.0,
     "rof_melee": 1.5,
-    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/f/f9/Lifidi_knight_aoe3de_portrait.png/revision/latest/scale-to-width-down/268?cb=20211006054815"
+    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/f/f9/Lifidi_knight_aoe3de_portrait.png/revision/latest/scale-to-width-down/268?cb=20211006054815",
+    "damage_type_ranged": "Siege",
+    "damage_type_melee": "Hand"
   },
   {
     "id": "light_cannon",
@@ -11997,7 +12370,9 @@
         }
       ]
     },
-    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/7/7e/Light_cannon_de.png/revision/latest/scale-to-width-down/268?cb=20210205080353"
+    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/7/7e/Light_cannon_de.png/revision/latest/scale-to-width-down/268?cb=20210205080353",
+    "aoe_radius": 2,
+    "damage_type_ranged": "Siege"
   },
   {
     "id": "line_infantry",
@@ -12048,7 +12423,9 @@
         }
       ]
     },
-    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/b/bf/Habsburg_line_infantry_portrait.jpg/revision/latest/scale-to-width-down/268?cb=20220526225023"
+    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/b/bf/Habsburg_line_infantry_portrait.jpg/revision/latest/scale-to-width-down/268?cb=20220526225023",
+    "damage_type_ranged": "Ranged",
+    "damage_type_melee": "Hand"
   },
   {
     "id": "lipka_tatar",
@@ -12120,7 +12497,9 @@
     "rof_siege": 3.0,
     "attack_melee": 12.5,
     "rof_melee": 1.25,
-    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/f/fd/Jagiellon_lipka_tatar_portrait.jpg/revision/latest/scale-to-width-down/268?cb=20220526225256"
+    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/f/fd/Jagiellon_lipka_tatar_portrait.jpg/revision/latest/scale-to-width-down/268?cb=20220526225256",
+    "damage_type_ranged": "Ranged",
+    "damage_type_melee": "Hand"
   },
   {
     "id": "lizzies_flagship",
@@ -12194,7 +12573,9 @@
         }
       ]
     },
-    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/2/24/Comanchero_icon_aoe3de.png/revision/latest/scale-to-width-down/268?cb=20210206020749"
+    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/2/24/Comanchero_icon_aoe3de.png/revision/latest/scale-to-width-down/268?cb=20210206020749",
+    "damage_type_ranged": "Siege",
+    "damage_type_melee": "Hand"
   },
   {
     "id": "lombard_wagon",
@@ -12300,7 +12681,9 @@
     "rof_siege": 3.0,
     "attack_melee": 11.0,
     "rof_melee": 1.5,
-    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/9/97/Longbow_aoe3de.png/revision/latest/scale-to-width-down/268?cb=20210205080300"
+    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/9/97/Longbow_aoe3de.png/revision/latest/scale-to-width-down/268?cb=20210205080300",
+    "damage_type_ranged": "Ranged",
+    "damage_type_melee": "Hand"
   },
   {
     "id": "maceman_age_of_empires_iii",
@@ -12364,7 +12747,9 @@
     },
     "attack_melee": 36.0,
     "rof_melee": 2.25,
-    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/6/66/Inca_Maceman_Icon.png/revision/latest/scale-to-width-down/268?cb=20210207130736"
+    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/6/66/Inca_Maceman_Icon.png/revision/latest/scale-to-width-down/268?cb=20210207130736",
+    "damage_type_ranged": "Siege",
+    "damage_type_melee": "Hand"
   },
   {
     "id": "mahout_lancer",
@@ -12423,7 +12808,9 @@
     "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/1/1f/Mahout_de.png/revision/latest/scale-to-width-down/268?cb=20210225192913",
     "aliases": [
       "战象"
-    ]
+    ],
+    "aoe_radius": 3,
+    "damage_type_melee": "Hand"
   },
   {
     "id": "maigadi",
@@ -12471,7 +12858,9 @@
     "rof_siege": 3.0,
     "attack_melee": 36.0,
     "rof_melee": 1.5,
-    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/5/5c/Maigadi_aoe3de_portrait.png/revision/latest/scale-to-width-down/268?cb=20211006054530"
+    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/5/5c/Maigadi_aoe3de_portrait.png/revision/latest/scale-to-width-down/268?cb=20211006054530",
+    "damage_type_ranged": "Ranged",
+    "damage_type_melee": "Hand"
   },
   {
     "id": "mameluke_age_of_empires_iii",
@@ -12512,7 +12901,9 @@
     "rof_siege": 3.0,
     "attack_melee": 34.0,
     "rof_melee": 1.5,
-    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/8/89/Mameluke_aoe3de.png/revision/latest/scale-to-width-down/268?cb=20210206073408"
+    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/8/89/Mameluke_aoe3de.png/revision/latest/scale-to-width-down/268?cb=20210206073408",
+    "damage_type_ranged": "Siege",
+    "damage_type_melee": "Hand"
   },
   {
     "id": "manchu",
@@ -12586,7 +12977,9 @@
     "rof_siege": 3.0,
     "attack_melee": 14.0,
     "rof_melee": 1.5,
-    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/0/08/Manchu_de.png/revision/latest/scale-to-width-down/268?cb=20210206074007"
+    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/0/08/Manchu_de.png/revision/latest/scale-to-width-down/268?cb=20210206074007",
+    "damage_type_ranged": "Ranged",
+    "damage_type_melee": "Hand"
   },
   {
     "id": "mantlet",
@@ -12689,7 +13082,10 @@
     "rof_siege": 3.0,
     "attack_melee": 11.0,
     "rof_melee": 1.5,
-    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/7/7a/Preview_mapuche_bolas_rider_icon.png/revision/latest/scale-to-width-down/268?cb=20210211052836"
+    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/7/7a/Preview_mapuche_bolas_rider_icon.png/revision/latest/scale-to-width-down/268?cb=20210211052836",
+    "aoe_radius": 2,
+    "damage_type_ranged": "Ranged",
+    "damage_type_melee": "Hand"
   },
   {
     "id": "mapuche_ironwood_clubman",
@@ -12735,7 +13131,9 @@
         }
       ]
     },
-    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/3/3d/Mapuche_Ironwood_de.png/revision/latest/scale-to-width-down/268?cb=20210203172038"
+    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/3/3d/Mapuche_Ironwood_de.png/revision/latest/scale-to-width-down/268?cb=20210203172038",
+    "damage_type_ranged": "Siege",
+    "damage_type_melee": "Hand"
   },
   {
     "id": "marathan_catamaran",
@@ -12766,7 +13164,8 @@
     "attack_siege": 40.0,
     "range_siege": 20.0,
     "rof_siege": 2.0,
-    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/b/b3/Catamaran_aoe3de.png/revision/latest/scale-to-width-down/268?cb=20210203112547"
+    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/b/b3/Catamaran_aoe3de.png/revision/latest/scale-to-width-down/268?cb=20210203112547",
+    "damage_type_ranged": "Siege"
   },
   {
     "id": "marathan_dacoit",
@@ -12819,7 +13218,9 @@
         }
       ]
     },
-    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/3/30/Dacoit_aoe3de.png/revision/latest/scale-to-width-down/268?cb=20210206065001"
+    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/3/30/Dacoit_aoe3de.png/revision/latest/scale-to-width-down/268?cb=20210206065001",
+    "damage_type_ranged": "Ranged",
+    "damage_type_melee": "Hand"
   },
   {
     "id": "marathan_thuggee",
@@ -12905,7 +13306,9 @@
     "rof_siege": 3.0,
     "attack_melee": 15.0,
     "rof_melee": 1.5,
-    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/6/6d/Thuggee_aoe3de.png/revision/latest/scale-to-width-down/268?cb=20210206074853"
+    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/6/6d/Thuggee_aoe3de.png/revision/latest/scale-to-width-down/268?cb=20210206074853",
+    "damage_type_ranged": "Ranged",
+    "damage_type_melee": "Hand"
   },
   {
     "id": "maya_revolutionary",
@@ -12964,7 +13367,9 @@
         }
       ]
     },
-    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/d/de/Holcanspear_aoe3de.png/revision/latest/scale-to-width-down/268?cb=20220710044832"
+    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/d/de/Holcanspear_aoe3de.png/revision/latest/scale-to-width-down/268?cb=20220710044832",
+    "damage_type_ranged": "Siege",
+    "damage_type_melee": "Hand"
   },
   {
     "id": "mediocre_bombard",
@@ -12988,7 +13393,9 @@
     "attack_siege": 5.0,
     "range_siege": 28.0,
     "rof_siege": 2.0,
-    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/4/48/Great_bombard_de.png/revision/latest/scale-to-width-down/268?cb=20210206040544"
+    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/4/48/Great_bombard_de.png/revision/latest/scale-to-width-down/268?cb=20210206040544",
+    "aoe_radius": 10,
+    "damage_type_ranged": "Siege"
   },
   {
     "id": "meteor_hammer",
@@ -13029,7 +13436,9 @@
     "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/4/43/Meteor_hammer_de.png/revision/latest/scale-to-width-down/268?cb=20210225023214",
     "aliases": [
       "流星锤"
-    ]
+    ],
+    "damage_type_ranged": "Hand",
+    "damage_type_melee": "Hand"
   },
   {
     "id": "mexico_revolutionary",
@@ -13089,7 +13498,10 @@
     "rof_siege": 6.0,
     "attack_melee": 20.0,
     "rof_melee": 1.5,
-    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/1/1b/Miner_AoE3DE.png/revision/latest/scale-to-width-down/268?cb=20210620221817"
+    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/1/1b/Miner_AoE3DE.png/revision/latest/scale-to-width-down/268?cb=20210620221817",
+    "aoe_radius": 5,
+    "damage_type_ranged": "Siege",
+    "damage_type_melee": "Hand"
   },
   {
     "id": "minuteman",
@@ -13137,7 +13549,9 @@
     "rof_siege": 3.0,
     "attack_melee": 13.0,
     "rof_melee": 1.5,
-    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/7/7f/Us_minuteman_aoe3de.png/revision/latest/scale-to-width-down/268?cb=20210524025716"
+    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/7/7f/Us_minuteman_aoe3de.png/revision/latest/scale-to-width-down/268?cb=20210524025716",
+    "damage_type_ranged": "Ranged",
+    "damage_type_melee": "Hand"
   },
   {
     "id": "missionary_age_of_empires_iii",
@@ -13201,7 +13615,9 @@
     "rof_siege": 3.0,
     "attack_melee": 5.0,
     "rof_melee": 1.5,
-    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/f/ff/Mongol_scout_aoe3de.png/revision/latest/scale-to-width-down/268?cb=20210210125130"
+    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/f/ff/Mongol_scout_aoe3de.png/revision/latest/scale-to-width-down/268?cb=20210210125130",
+    "damage_type_ranged": "Siege",
+    "damage_type_melee": "Hand"
   },
   {
     "id": "monitor",
@@ -13249,7 +13665,9 @@
         }
       ]
     },
-    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/3/34/Monitor_aoe3de.png/revision/latest/scale-to-width-down/268?cb=20210203112829"
+    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/3/34/Monitor_aoe3de.png/revision/latest/scale-to-width-down/268?cb=20210203112829",
+    "aoe_radius": 10,
+    "damage_type_ranged": "Siege"
   },
   {
     "id": "morgans_flagship",
@@ -13403,7 +13821,9 @@
     "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/6/6f/Mortar_de.png/revision/latest/scale-to-width-down/268?cb=20210206040117",
     "aliases": [
       "迫击炮"
-    ]
+    ],
+    "aoe_radius": 4,
+    "damage_type_ranged": "Siege"
   },
   {
     "id": "morutaru",
@@ -13447,7 +13867,9 @@
         }
       ]
     },
-    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/4/44/Morutaru_de.png/revision/latest/scale-to-width-down/268?cb=20210210132943"
+    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/4/44/Morutaru_de.png/revision/latest/scale-to-width-down/268?cb=20210210132943",
+    "aoe_radius": 4,
+    "damage_type_ranged": "Siege"
   },
   {
     "id": "mountain_trooper",
@@ -13533,7 +13955,9 @@
     "rof_siege": 3.0,
     "attack_melee": 6.0,
     "rof_melee": 1.5,
-    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/1/1b/Wittelsbach_mountain_trooper_portrait.jpg/revision/latest/scale-to-width-down/268?cb=20220526230037"
+    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/1/1b/Wittelsbach_mountain_trooper_portrait.jpg/revision/latest/scale-to-width-down/268?cb=20220526230037",
+    "damage_type_ranged": "Ranged",
+    "damage_type_melee": "Hand"
   },
   {
     "id": "mounted_granadero",
@@ -13599,7 +14023,10 @@
     "rof_siege": 3.0,
     "attack_melee": 9.0,
     "rof_melee": 1.5,
-    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/9/9b/Mounted_Granadero_Portrait.png/revision/latest/scale-to-width-down/268?cb=20210429062340"
+    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/9/9b/Mounted_Granadero_Portrait.png/revision/latest/scale-to-width-down/268?cb=20210429062340",
+    "aoe_radius": 2,
+    "damage_type_ranged": "Siege",
+    "damage_type_melee": "Hand"
   },
   {
     "id": "mounted_infantry",
@@ -13654,7 +14081,9 @@
     "rof_siege": 3.0,
     "attack_melee": 8.0,
     "rof_melee": 1.5,
-    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/d/d8/Habsburg_mounted_infantry_portrait.jpg/revision/latest/scale-to-width-down/268?cb=20220526224937"
+    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/d/d8/Habsburg_mounted_infantry_portrait.jpg/revision/latest/scale-to-width-down/268?cb=20220526224937",
+    "damage_type_ranged": "Ranged",
+    "damage_type_melee": "Hand"
   },
   {
     "id": "mounted_rifleman",
@@ -13746,7 +14175,9 @@
     "rof_siege": 3.0,
     "attack_melee": 45.0,
     "rof_melee": 1.5,
-    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/d/d6/Mercenary_mounted_rifleman_portrait.jpg/revision/latest/scale-to-width-down/268?cb=20220526063501"
+    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/d/d6/Mercenary_mounted_rifleman_portrait.jpg/revision/latest/scale-to-width-down/268?cb=20220526063501",
+    "damage_type_ranged": "Ranged",
+    "damage_type_melee": "Hand"
   },
   {
     "id": "muhbir",
@@ -13798,7 +14229,8 @@
         }
       ]
     },
-    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/9/9a/Spy_ottoman_portrait.png/revision/latest/scale-to-width-down/268?cb=20230806033829"
+    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/9/9a/Spy_ottoman_portrait.png/revision/latest/scale-to-width-down/268?cb=20230806033829",
+    "damage_type_melee": "Hand"
   },
   {
     "id": "musket_rider",
@@ -13868,7 +14300,9 @@
     "rof_siege": 3.0,
     "attack_melee": 9.0,
     "rof_melee": 1.5,
-    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/6/65/Musket_rider_de.png/revision/latest/scale-to-width-down/268?cb=20210207125957"
+    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/6/65/Musket_rider_de.png/revision/latest/scale-to-width-down/268?cb=20210207125957",
+    "damage_type_ranged": "Ranged",
+    "damage_type_melee": "Hand"
   },
   {
     "id": "musketeer",
@@ -13924,7 +14358,9 @@
     "aliases": [
       "火枪",
       "枪兵"
-    ]
+    ],
+    "damage_type_ranged": "Ranged",
+    "damage_type_melee": "Hand"
   },
   {
     "id": "naginata_rider_age_of_empires_iii",
@@ -13974,7 +14410,9 @@
         }
       ]
     },
-    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/e/e4/Naginata_de.png/revision/latest/scale-to-width-down/268?cb=20210206032759"
+    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/e/e4/Naginata_de.png/revision/latest/scale-to-width-down/268?cb=20210206032759",
+    "damage_type_ranged": "Siege",
+    "damage_type_melee": "Hand"
   },
   {
     "id": "nanib_sahir",
@@ -14029,7 +14467,9 @@
         }
       ]
     },
-    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/e/ed/Napoleon_gun_icon_aoe3de.png/revision/latest/scale-to-width-down/268?cb=20210508074939"
+    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/e/ed/Napoleon_gun_icon_aoe3de.png/revision/latest/scale-to-width-down/268?cb=20210508074939",
+    "aoe_radius": 3,
+    "damage_type_ranged": "Siege"
   },
   {
     "id": "nathaniel_black",
@@ -14119,7 +14559,9 @@
         }
       ]
     },
-    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/9/9b/Team_native_aoe3de.png/revision/latest?cb=20210203102243"
+    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/9/9b/Team_native_aoe3de.png/revision/latest?cb=20210203102243",
+    "damage_type_ranged": "Siege",
+    "damage_type_melee": "Hand"
   },
   {
     "id": "navajo_rifleman",
@@ -14205,7 +14647,9 @@
     "rof_siege": 3.0,
     "attack_melee": 6.0,
     "rof_melee": 1.5,
-    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/5/58/Navajo_Rifleman_de.png/revision/latest/scale-to-width-down/268?cb=20210211075119"
+    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/5/58/Navajo_Rifleman_de.png/revision/latest/scale-to-width-down/268?cb=20210211075119",
+    "damage_type_ranged": "Ranged",
+    "damage_type_melee": "Hand"
   },
   {
     "id": "neftenya",
@@ -14294,7 +14738,9 @@
     "rof_siege": 3.0,
     "attack_melee": 8.0,
     "rof_melee": 1.5,
-    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/4/46/Neftenya_portrait_aoe3de.png/revision/latest/scale-to-width-down/268?cb=20210806035102"
+    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/4/46/Neftenya_portrait_aoe3de.png/revision/latest/scale-to-width-down/268?cb=20210806035102",
+    "damage_type_ranged": "Ranged",
+    "damage_type_melee": "Hand"
   },
   {
     "id": "ninja_age_of_empires_iii",
@@ -14348,7 +14794,9 @@
         }
       ]
     },
-    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/c/c5/Ninja_de.png/revision/latest/scale-to-width-down/268?cb=20210206065802"
+    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/c/c5/Ninja_de.png/revision/latest/scale-to-width-down/268?cb=20210206065802",
+    "damage_type_ranged": "Siege",
+    "damage_type_melee": "Hand"
   },
   {
     "id": "nizam_fusilier",
@@ -14403,7 +14851,9 @@
         }
       ]
     },
-    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/7/76/Nizam_icon.png/revision/latest/scale-to-width-down/268?cb=20210210142724"
+    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/7/76/Nizam_icon.png/revision/latest/scale-to-width-down/268?cb=20210210142724",
+    "damage_type_ranged": "Siege",
+    "damage_type_melee": "Hand"
   },
   {
     "id": "nobles_hut_travois",
@@ -14472,7 +14922,9 @@
         }
       ]
     },
-    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/4/4d/Nootka_de.png/revision/latest/scale-to-width-down/268?cb=20210211075232"
+    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/4/4d/Nootka_de.png/revision/latest/scale-to-width-down/268?cb=20210211075232",
+    "damage_type_ranged": "Siege",
+    "damage_type_melee": "Hand"
   },
   {
     "id": "nootka_war_chief",
@@ -14520,7 +14972,9 @@
         }
       ]
     },
-    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/8/8e/Nootka_warchief_aoe3de.png/revision/latest/scale-to-width-down/268?cb=20210211223304"
+    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/8/8e/Nootka_warchief_aoe3de.png/revision/latest/scale-to-width-down/268?cb=20210211223304",
+    "damage_type_ranged": "Siege",
+    "damage_type_melee": "Hand"
   },
   {
     "id": "northern_musketeer",
@@ -14581,7 +15035,9 @@
     "rof_siege": 3.0,
     "attack_melee": 12.5,
     "rof_melee": 1.5,
-    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/a/a7/Oldenburg_northern_musketeer_portrait.jpg/revision/latest/scale-to-width-down/268?cb=20220526225433"
+    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/a/a7/Oldenburg_northern_musketeer_portrait.jpg/revision/latest/scale-to-width-down/268?cb=20220526225433",
+    "damage_type_ranged": "Ranged",
+    "damage_type_melee": "Hand"
   },
   {
     "id": "oprichnik",
@@ -14637,7 +15093,9 @@
     "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/4/46/Oprichink_de.png/revision/latest/scale-to-width-down/268?cb=20210206032850",
     "aliases": [
       "沙皇近卫"
-    ]
+    ],
+    "damage_type_ranged": "Siege",
+    "damage_type_melee": "Hand"
   },
   {
     "id": "orchard_rickshaw",
@@ -14692,7 +15150,9 @@
         }
       ]
     },
-    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/f/f2/Order_galley_portrait.png/revision/latest/scale-to-width-down/268?cb=20220710044354"
+    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/f/f2/Order_galley_portrait.png/revision/latest/scale-to-width-down/268?cb=20220710044354",
+    "aoe_radius": 1,
+    "damage_type_ranged": "Siege"
   },
   {
     "id": "ordinance_rifleman",
@@ -14786,7 +15246,9 @@
     "rof_siege": 3.0,
     "attack_melee": 11.2,
     "rof_melee": 1.5,
-    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/6/6e/Ordinance_rifleman_portrait.jpg/revision/latest/scale-to-width-down/268?cb=20231109203155"
+    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/6/6e/Ordinance_rifleman_portrait.jpg/revision/latest/scale-to-width-down/268?cb=20231109203155",
+    "damage_type_ranged": "Ranged",
+    "damage_type_melee": "Hand"
   },
   {
     "id": "organ_gun_age_of_empires_iii",
@@ -14853,7 +15315,9 @@
         }
       ]
     },
-    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/0/0a/Organ_aoe3de.png/revision/latest/scale-to-width-down/268?cb=20210206040218"
+    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/0/0a/Organ_aoe3de.png/revision/latest/scale-to-width-down/268?cb=20210206040218",
+    "aoe_radius": 2,
+    "damage_type_ranged": "Siege"
   },
   {
     "id": "oromo_warrior",
@@ -14889,7 +15353,9 @@
     "rof_siege": 3.0,
     "attack_melee": 30.0,
     "rof_melee": 1.25,
-    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/b/bb/Oromo_warrior_portrait_aoe3de.png/revision/latest/scale-to-width-down/268?cb=20210806033631"
+    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/b/bb/Oromo_warrior_portrait_aoe3de.png/revision/latest/scale-to-width-down/268?cb=20210806033631",
+    "damage_type_ranged": "Ranged",
+    "damage_type_melee": "Hand"
   },
   {
     "id": "otontin_slinger",
@@ -14978,7 +15444,9 @@
     "rof_siege": 3.0,
     "attack_melee": 4.0,
     "rof_melee": 1.5,
-    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/e/eb/Otontin_slinger.png/revision/latest/scale-to-width-down/268?cb=20210206103532"
+    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/e/eb/Otontin_slinger.png/revision/latest/scale-to-width-down/268?cb=20210206103532",
+    "damage_type_ranged": "Ranged",
+    "damage_type_melee": "Hand"
   },
   {
     "id": "owlhoot",
@@ -15067,7 +15535,10 @@
     "rof_siege": 3.0,
     "attack_melee": 12.0,
     "rof_melee": 2.0,
-    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/d/de/Owlhoot_aoe3de.png/revision/latest/scale-to-width-down/268?cb=20210428215515"
+    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/d/de/Owlhoot_aoe3de.png/revision/latest/scale-to-width-down/268?cb=20210428215515",
+    "aoe_radius": 2.5,
+    "damage_type_ranged": "Siege",
+    "damage_type_melee": "Hand"
   },
   {
     "id": "padre",
@@ -15169,7 +15640,9 @@
     "rof_siege": 3.0,
     "attack_melee": 12.0,
     "rof_melee": 1.5,
-    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/2/2a/Mercenary_pandour_portrait.jpg/revision/latest/scale-to-width-down/268?cb=20220526063619"
+    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/2/2a/Mercenary_pandour_portrait.jpg/revision/latest/scale-to-width-down/268?cb=20220526063619",
+    "damage_type_ranged": "Ranged",
+    "damage_type_melee": "Hand"
   },
   {
     "id": "papal_bombard",
@@ -15221,7 +15694,9 @@
         }
       ]
     },
-    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/f/f3/Italians_papal_bombard_portrait.jpg/revision/latest/scale-to-width-down/268?cb=20220526062646"
+    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/f/f3/Italians_papal_bombard_portrait.jpg/revision/latest/scale-to-width-down/268?cb=20220526062646",
+    "aoe_radius": 7,
+    "damage_type_ranged": "Siege"
   },
   {
     "id": "papal_guard",
@@ -15266,7 +15741,10 @@
         }
       ]
     },
-    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/4/4c/Italians_papal_guard_portrait.jpg/revision/latest/scale-to-width-down/268?cb=20220526062724"
+    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/4/4c/Italians_papal_guard_portrait.jpg/revision/latest/scale-to-width-down/268?cb=20220526062724",
+    "aoe_radius": 1,
+    "damage_type_ranged": "Hand",
+    "damage_type_melee": "Hand"
   },
   {
     "id": "papal_lancer",
@@ -15306,7 +15784,10 @@
         }
       ]
     },
-    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/1/1a/Italians_papal_lancer_portrait.jpg/revision/latest/scale-to-width-down/268?cb=20220526062802"
+    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/1/1a/Italians_papal_lancer_portrait.jpg/revision/latest/scale-to-width-down/268?cb=20220526062802",
+    "aoe_radius": 2,
+    "damage_type_ranged": "Hand",
+    "damage_type_melee": "Hand"
   },
   {
     "id": "papal_zouave",
@@ -15340,7 +15821,9 @@
     "rof_siege": 3.0,
     "attack_melee": 20.0,
     "rof_melee": 1.5,
-    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/9/96/Italians_papal_zouave_portrait.jpg/revision/latest/scale-to-width-down/268?cb=20220526062838"
+    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/9/96/Italians_papal_zouave_portrait.jpg/revision/latest/scale-to-width-down/268?cb=20220526062838",
+    "damage_type_ranged": "Ranged",
+    "damage_type_melee": "Hand"
   },
   {
     "id": "pavisier",
@@ -15429,7 +15912,9 @@
     "rof_siege": 3.0,
     "attack_melee": 7.0,
     "rof_melee": 1.5,
-    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/8/88/Italians_pavisier_portrait.jpg/revision/latest/scale-to-width-down/268?cb=20220526062917"
+    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/8/88/Italians_pavisier_portrait.jpg/revision/latest/scale-to-width-down/268?cb=20220526062917",
+    "damage_type_ranged": "Ranged",
+    "damage_type_melee": "Hand"
   },
   {
     "id": "penguin",
@@ -15508,8 +15993,12 @@
     },
     "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/2/2d/Pikeman_aoe3de.png/revision/latest/scale-to-width-down/268?cb=20210206024937",
     "aliases": [
-      "枪兵"
-    ]
+      "枪兵",
+      "长矛兵",
+      "pike"
+    ],
+    "damage_type_ranged": "Siege",
+    "damage_type_melee": "Hand"
   },
   {
     "id": "pirate_age_of_empires_iii",
@@ -15563,7 +16052,9 @@
     "rof_siege": 3.0,
     "attack_melee": 16.0,
     "rof_melee": 1.5,
-    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/0/01/Outlaw_pirate_portrait_aoe3de_updated.jpg/revision/latest/scale-to-width-down/268?cb=20230803032848"
+    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/0/01/Outlaw_pirate_portrait_aoe3de_updated.jpg/revision/latest/scale-to-width-down/268?cb=20230803032848",
+    "damage_type_ranged": "Siege",
+    "damage_type_melee": "Hand"
   },
   {
     "id": "pistolero",
@@ -15616,7 +16107,9 @@
         }
       ]
     },
-    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/0/0e/Pistolero_aoe3de.png/revision/latest/scale-to-width-down/268?cb=20210206021158"
+    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/0/0e/Pistolero_aoe3de.png/revision/latest/scale-to-width-down/268?cb=20210206021158",
+    "damage_type_ranged": "Siege",
+    "damage_type_melee": "Hand"
   },
   {
     "id": "plumed_spearman",
@@ -15668,7 +16161,9 @@
         }
       ]
     },
-    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/0/09/Plumed-spearman-icon-aoe3.png/revision/latest/scale-to-width-down/268?cb=20210203171711"
+    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/0/09/Plumed-spearman-icon-aoe3.png/revision/latest/scale-to-width-down/268?cb=20210203171711",
+    "damage_type_ranged": "Siege",
+    "damage_type_melee": "Hand"
   },
   {
     "id": "poruchik",
@@ -15714,7 +16209,9 @@
         }
       ]
     },
-    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/8/82/Russians_poruchik_portrait_aoe3de.jpg/revision/latest/scale-to-width-down/268?cb=20230803032848"
+    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/8/82/Russians_poruchik_portrait_aoe3de.jpg/revision/latest/scale-to-width-down/268?cb=20230803032848",
+    "damage_type_ranged": "Siege",
+    "damage_type_melee": "Hand"
   },
   {
     "id": "pravar_patel",
@@ -15789,7 +16286,9 @@
         }
       ]
     },
-    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/5/5f/Privateer_aoe3de.png/revision/latest/scale-to-width-down/268?cb=20210802024634"
+    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/5/5f/Privateer_aoe3de.png/revision/latest/scale-to-width-down/268?cb=20210802024634",
+    "aoe_radius": 1,
+    "damage_type_ranged": "Siege"
   },
   {
     "id": "puma_spearman",
@@ -15839,7 +16338,13 @@
         }
       ]
     },
-    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/e/e1/Puma_spearman_de.png/revision/latest/scale-to-width-down/268?cb=20210206103917"
+    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/e/e1/Puma_spearman_de.png/revision/latest/scale-to-width-down/268?cb=20210206103917",
+    "aliases": [
+      "美洲豹枪兵",
+      "美洲狮长枪兵"
+    ],
+    "damage_type_ranged": "Siege",
+    "damage_type_melee": "Hand"
   },
   {
     "id": "qiang_pikeman",
@@ -15885,8 +16390,12 @@
     },
     "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/d/d2/Qiang_pikeman_de.png/revision/latest/scale-to-width-down/268?cb=20210225025409",
     "aliases": [
-      "长枪兵"
-    ]
+      "长枪兵",
+      "中国长枪兵",
+      "中国枪兵"
+    ],
+    "damage_type_ranged": "Siege",
+    "damage_type_melee": "Hand"
   },
   {
     "id": "qizilbash",
@@ -15938,7 +16447,10 @@
     "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/2/2b/Sufi_qizilbash_portrait.jpg/revision/latest/scale-to-width-down/268?cb=20220624214438",
     "aliases": [
       "红头兵"
-    ]
+    ],
+    "aoe_radius": 3,
+    "damage_type_ranged": "Hand",
+    "damage_type_melee": "Hand"
   },
   {
     "id": "quaker_gun",
@@ -15967,7 +16479,9 @@
     "armor_ranged": 0.75,
     "speed": 2.4,
     "los": 26.0,
-    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/7/7d/Quaker_gun_icon.png/revision/latest/scale-to-width-down/268?cb=20210501092822"
+    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/7/7d/Quaker_gun_icon.png/revision/latest/scale-to-width-down/268?cb=20210501092822",
+    "aoe_radius": 4,
+    "damage_type_ranged": "Siege"
   },
   {
     "id": "quechua_bolas_warrior",
@@ -16054,7 +16568,10 @@
     "rof_siege": 3.0,
     "attack_melee": 4.0,
     "rof_melee": 1.5,
-    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/b/be/Inca_bolas_warrior_aoe3de.png/revision/latest/scale-to-width-down/268?cb=20210211074658"
+    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/b/be/Inca_bolas_warrior_aoe3de.png/revision/latest/scale-to-width-down/268?cb=20210211074658",
+    "aoe_radius": 3,
+    "damage_type_ranged": "Siege",
+    "damage_type_melee": "Hand"
   },
   {
     "id": "quechua_huaminca",
@@ -16102,7 +16619,9 @@
         }
       ]
     },
-    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/1/16/Inca_huaminca_aoe3de.png/revision/latest/scale-to-width-down/268?cb=20210211074112"
+    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/1/16/Inca_huaminca_aoe3de.png/revision/latest/scale-to-width-down/268?cb=20210211074112",
+    "damage_type_ranged": "Siege",
+    "damage_type_melee": "Hand"
   },
   {
     "id": "raider_age_of_empires_iii",
@@ -16155,7 +16674,9 @@
         }
       ]
     },
-    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/9/99/Raider_aoe3de_portrait.png/revision/latest/scale-to-width-down/268?cb=20211006054704"
+    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/9/99/Raider_aoe3de_portrait.png/revision/latest/scale-to-width-down/268?cb=20211006054704",
+    "damage_type_ranged": "Siege",
+    "damage_type_melee": "Hand"
   },
   {
     "id": "railroad_worker",
@@ -16232,7 +16753,9 @@
     "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/6/66/Rajput_de.png/revision/latest/scale-to-width-down/268?cb=20210225192507",
     "aliases": [
       "拉杰普特"
-    ]
+    ],
+    "damage_type_ranged": "Siege",
+    "damage_type_melee": "Hand"
   },
   {
     "id": "ram_age_of_empires_iii",
@@ -16360,7 +16883,9 @@
     "rof_siege": 3.0,
     "attack_melee": 9.0,
     "rof_melee": 1.5,
-    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/f/f9/Ranger_portrait.png/revision/latest/scale-to-width-down/268?cb=20220319151301"
+    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/f/f9/Ranger_portrait.png/revision/latest/scale-to-width-down/268?cb=20220319151301",
+    "damage_type_ranged": "Ranged",
+    "damage_type_melee": "Hand"
   },
   {
     "id": "rattan_shield",
@@ -16394,7 +16919,9 @@
     "rof_siege": 3.0,
     "attack_melee": 16.0,
     "rof_melee": 1.5,
-    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/6/69/Ratten_shield_de.png/revision/latest/scale-to-width-down/268?cb=20210211075454"
+    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/6/69/Ratten_shield_de.png/revision/latest/scale-to-width-down/268?cb=20210211075454",
+    "damage_type_ranged": "Siege",
+    "damage_type_melee": "Hand"
   },
   {
     "id": "regent_age_of_empires_iii",
@@ -16417,7 +16944,9 @@
     "rof_siege": 3.0,
     "attack_melee": 10.0,
     "rof_melee": 1.5,
-    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/c/cf/Regent_icon_AoE3DE.png/revision/latest/scale-to-width-down/268?cb=20240303144521"
+    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/c/cf/Regent_icon_AoE3DE.png/revision/latest/scale-to-width-down/268?cb=20240303144521",
+    "damage_type_ranged": "Siege",
+    "damage_type_melee": "Hand"
   },
   {
     "id": "regular",
@@ -16476,7 +17005,10 @@
         }
       ]
     },
-    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/0/0a/Regular_aoe3de.png/revision/latest/scale-to-width-down/268?cb=20210428215520"
+    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/0/0a/Regular_aoe3de.png/revision/latest/scale-to-width-down/268?cb=20210428215520",
+    "aoe_radius": 1,
+    "damage_type_ranged": "Ranged",
+    "damage_type_melee": "Hand"
   },
   {
     "id": "rekrut",
@@ -16527,7 +17059,9 @@
         }
       ]
     },
-    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/6/6a/Russians_rekrut_portrait_aoe3de.jpg/revision/latest/scale-to-width-down/268?cb=20230803032849"
+    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/6/6a/Russians_rekrut_portrait_aoe3de.jpg/revision/latest/scale-to-width-down/268?cb=20230803032849",
+    "damage_type_ranged": "Ranged",
+    "damage_type_melee": "Hand"
   },
   {
     "id": "renegado",
@@ -16614,7 +17148,10 @@
     "rof_siege": 3.0,
     "attack_melee": 12.0,
     "rof_melee": 2.0,
-    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/6/62/Renegado_aoe3de.png/revision/latest/scale-to-width-down/268?cb=20210206020940"
+    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/6/62/Renegado_aoe3de.png/revision/latest/scale-to-width-down/268?cb=20210206020940",
+    "aoe_radius": 2,
+    "damage_type_ranged": "Siege",
+    "damage_type_melee": "Hand"
   },
   {
     "id": "revolutionary",
@@ -16667,7 +17204,10 @@
     "rof_siege": 3.0,
     "attack_melee": 12.0,
     "rof_melee": 1.5,
-    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/c/c7/Colonial_militia_aoe3de.png/revision/latest?cb=20210203102413"
+    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/c/c7/Colonial_militia_aoe3de.png/revision/latest?cb=20210203102413",
+    "aoe_radius": 2,
+    "damage_type_ranged": "Ranged",
+    "damage_type_melee": "Hand"
   },
   {
     "id": "revolutionary_france",
@@ -16766,7 +17306,9 @@
     "rof_siege": 3.0,
     "attack_melee": 10.0,
     "rof_melee": 1.5,
-    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/0/0b/Us_volunteer_icon.png/revision/latest/scale-to-width-down/268?cb=20210211162323"
+    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/0/0b/Us_volunteer_icon.png/revision/latest/scale-to-width-down/268?cb=20210211162323",
+    "damage_type_ranged": "Ranged",
+    "damage_type_melee": "Hand"
   },
   {
     "id": "rice_paddy_rickshaw",
@@ -16878,7 +17420,9 @@
     "rof_siege": 3.0,
     "attack_melee": 11.0,
     "rof_melee": 1.5,
-    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/2/26/Rifle_rider_de.png/revision/latest/scale-to-width-down/268?cb=20220712023856"
+    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/2/26/Rifle_rider_de.png/revision/latest/scale-to-width-down/268?cb=20220712023856",
+    "damage_type_ranged": "Ranged",
+    "damage_type_melee": "Hand"
   },
   {
     "id": "rio_grande",
@@ -16954,7 +17498,9 @@
     "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/4/45/Rocket_de.png/revision/latest/scale-to-width-down/268?cb=20210206040444",
     "aliases": [
       "火箭"
-    ]
+    ],
+    "aoe_radius": 4,
+    "damage_type_ranged": "Siege"
   },
   {
     "id": "rodelero",
@@ -17012,7 +17558,9 @@
     "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/4/4a/Randelero_de.png/revision/latest/scale-to-width-down/268?cb=20210206030341",
     "aliases": [
       "剑盾兵"
-    ]
+    ],
+    "damage_type_ranged": "Siege",
+    "damage_type_melee": "Hand"
   },
   {
     "id": "romania",
@@ -17072,7 +17620,9 @@
         }
       ]
     },
-    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/b/bb/Ronin_de.png/revision/latest/scale-to-width-down/268?cb=20210206074304"
+    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/b/bb/Ronin_de.png/revision/latest/scale-to-width-down/268?cb=20210206074304",
+    "damage_type_ranged": "Siege",
+    "damage_type_melee": "Hand"
   },
   {
     "id": "royal_arquebusier",
@@ -17158,7 +17708,9 @@
     "rof_siege": 3.0,
     "attack_melee": 8.0,
     "rof_melee": 1.5,
-    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/4/40/Vasa_royal_arquebusier_portrait.jpg/revision/latest/scale-to-width-down/268?cb=20220526225758"
+    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/4/40/Vasa_royal_arquebusier_portrait.jpg/revision/latest/scale-to-width-down/268?cb=20220526225758",
+    "damage_type_ranged": "Ranged",
+    "damage_type_melee": "Hand"
   },
   {
     "id": "royal_dragoon",
@@ -17231,7 +17783,10 @@
     "rof_siege": 1.5,
     "attack_melee": 22.0,
     "rof_melee": 1.5,
-    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/2/26/Bourbon_royal_dragoon_portrait.jpg/revision/latest/scale-to-width-down/268?cb=20220526224837"
+    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/2/26/Bourbon_royal_dragoon_portrait.jpg/revision/latest/scale-to-width-down/268?cb=20220526224837",
+    "aoe_radius": 2,
+    "damage_type_ranged": "Ranged",
+    "damage_type_melee": "Hand"
   },
   {
     "id": "royal_horseman",
@@ -17271,7 +17826,10 @@
     "rof_siege": 3.0,
     "attack_melee": 30.0,
     "rof_melee": 1.5,
-    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/8/8c/Mercenary_royal_horseman_portrait.jpg/revision/latest/scale-to-width-down/268?cb=20220526063701"
+    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/8/8c/Mercenary_royal_horseman_portrait.jpg/revision/latest/scale-to-width-down/268?cb=20220526063701",
+    "aoe_radius": 2,
+    "damage_type_ranged": "Siege",
+    "damage_type_melee": "Hand"
   },
   {
     "id": "royal_huntsman",
@@ -17335,7 +17893,9 @@
     "rof_siege": 3.0,
     "attack_melee": 10.0,
     "rof_melee": 1.5,
-    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/8/87/Oldenburg_royal_huntsman_portrait.jpg/revision/latest/scale-to-width-down/268?cb=20220526225457"
+    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/8/87/Oldenburg_royal_huntsman_portrait.jpg/revision/latest/scale-to-width-down/268?cb=20220526225457",
+    "damage_type_ranged": "Ranged",
+    "damage_type_melee": "Hand"
   },
   {
     "id": "royal_musketeer",
@@ -17387,7 +17947,10 @@
         }
       ]
     },
-    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/9/92/Bourbon_royal_musketeer_portrait.jpg/revision/latest/scale-to-width-down/268?cb=20220526224858"
+    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/9/92/Bourbon_royal_musketeer_portrait.jpg/revision/latest/scale-to-width-down/268?cb=20220526224858",
+    "aoe_radius": 2,
+    "damage_type_ranged": "Ranged",
+    "damage_type_melee": "Hand"
   },
   {
     "id": "ruyter",
@@ -17461,7 +18024,9 @@
     "rof_siege": 3.0,
     "attack_melee": 7.0,
     "rof_melee": 1.5,
-    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/c/c1/Ruyter_de.png/revision/latest/scale-to-width-down/268?cb=20210206033258"
+    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/c/c1/Ruyter_de.png/revision/latest/scale-to-width-down/268?cb=20210206033258",
+    "damage_type_ranged": "Ranged",
+    "damage_type_melee": "Hand"
   },
   {
     "id": "sacred_band_infantry",
@@ -17513,7 +18078,9 @@
         }
       ]
     },
-    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/6/60/Phanar_sacred_band_infantry_portrait.jpg/revision/latest/scale-to-width-down/268?cb=20220526225644"
+    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/6/60/Phanar_sacred_band_infantry_portrait.jpg/revision/latest/scale-to-width-down/268?cb=20220526225644",
+    "damage_type_ranged": "Siege",
+    "damage_type_melee": "Hand"
   },
   {
     "id": "sacred_field_rickshaw",
@@ -17626,7 +18193,9 @@
     "rof_siege": 3.0,
     "attack_melee": 8.5,
     "rof_melee": 1.5,
-    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/9/96/Emboscador_portrait.png/revision/latest/scale-to-width-down/268?cb=20211213042028"
+    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/9/96/Emboscador_portrait.png/revision/latest/scale-to-width-down/268?cb=20211213042028",
+    "damage_type_ranged": "Ranged",
+    "damage_type_melee": "Hand"
   },
   {
     "id": "samurai_age_of_empires_iii",
@@ -17676,7 +18245,9 @@
         }
       ]
     },
-    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/7/7a/Samurai_aoe3de.png/revision/latest/scale-to-width-down/268?cb=20210206030449"
+    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/7/7a/Samurai_aoe3de.png/revision/latest/scale-to-width-down/268?cb=20210206030449",
+    "damage_type_ranged": "Siege",
+    "damage_type_melee": "Hand"
   },
   {
     "id": "sansculotte",
@@ -17785,7 +18356,9 @@
     "rof_siege": 3.0,
     "attack_melee": 25.0,
     "rof_melee": 1.5,
-    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/c/c5/Wettin_saxon_cuirassier_portrait.jpg/revision/latest/scale-to-width-down/268?cb=20220526225906"
+    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/c/c5/Wettin_saxon_cuirassier_portrait.jpg/revision/latest/scale-to-width-down/268?cb=20220526225906",
+    "damage_type_ranged": "Siege",
+    "damage_type_melee": "Hand"
   },
   {
     "id": "schiavone",
@@ -17856,7 +18429,9 @@
     "rof_siege": 3.0,
     "attack_melee": 16.0,
     "rof_melee": 1.5,
-    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/5/59/Italians_schiavone_portrait.jpg/revision/latest/scale-to-width-down/268?cb=20220526063006"
+    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/5/59/Italians_schiavone_portrait.jpg/revision/latest/scale-to-width-down/268?cb=20220526063006",
+    "damage_type_ranged": "Ranged",
+    "damage_type_melee": "Hand"
   },
   {
     "id": "sebastopol_mortar",
@@ -17918,7 +18493,9 @@
         }
       ]
     },
-    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/5/59/Sebastopol_mortar_portrait_aoe3de.png/revision/latest/scale-to-width-down/268?cb=20210806035458"
+    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/5/59/Sebastopol_mortar_portrait_aoe3de.png/revision/latest/scale-to-width-down/268?cb=20210806035458",
+    "aoe_radius": 8,
+    "damage_type_ranged": "Siege"
   },
   {
     "id": "seminole_sharktooth_bowman",
@@ -18004,7 +18581,9 @@
     "rof_siege": 3.0,
     "attack_melee": 8.0,
     "rof_melee": 1.5,
-    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/9/9c/Sharktooth_bow_aoe3de.png/revision/latest/scale-to-width-down/268?cb=20210211075625"
+    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/9/9c/Sharktooth_bow_aoe3de.png/revision/latest/scale-to-width-down/268?cb=20210211075625",
+    "damage_type_ranged": "Ranged",
+    "damage_type_melee": "Hand"
   },
   {
     "id": "sennar_horseman",
@@ -18051,7 +18630,9 @@
         }
       ]
     },
-    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/d/dd/Sennar_horseman_aoe3de_portrait.png/revision/latest/scale-to-width-down/268?cb=20211006053204"
+    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/d/dd/Sennar_horseman_aoe3de_portrait.png/revision/latest/scale-to-width-down/268?cb=20211006053204",
+    "damage_type_ranged": "Siege",
+    "damage_type_melee": "Hand"
   },
   {
     "id": "sentinel_age_of_empires_iii",
@@ -18107,7 +18688,10 @@
         }
       ]
     },
-    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/c/c4/Maltese_sentinel_portrait.jpg/revision/latest/scale-to-width-down/268?cb=20220526063326"
+    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/c/c4/Maltese_sentinel_portrait.jpg/revision/latest/scale-to-width-down/268?cb=20220526063326",
+    "aoe_radius": 1,
+    "damage_type_ranged": "Ranged",
+    "damage_type_melee": "Hand"
   },
   {
     "id": "sentry",
@@ -18161,7 +18745,9 @@
         }
       ]
     },
-    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/3/37/Sentry_cn_jp_de.png/revision/latest/scale-to-width-down/268?cb=20210225022441"
+    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/3/37/Sentry_cn_jp_de.png/revision/latest/scale-to-width-down/268?cb=20210225022441",
+    "damage_type_ranged": "Siege",
+    "damage_type_melee": "Hand"
   },
   {
     "id": "sepoy",
@@ -18220,7 +18806,9 @@
     "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/8/81/Sepoy_de.png/revision/latest/scale-to-width-down/268?cb=20210206030536",
     "aliases": [
       "印度步兵"
-    ]
+    ],
+    "damage_type_ranged": "Ranged",
+    "damage_type_melee": "Hand"
   },
   {
     "id": "settler_wagon",
@@ -18322,7 +18910,9 @@
     "armor_ranged": 0.1,
     "speed": 4.5,
     "los": 18.0,
-    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/5/56/Shaolin_master_aoe3de.png/revision/latest/scale-to-width-down/268?cb=20210203100741"
+    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/5/56/Shaolin_master_aoe3de.png/revision/latest/scale-to-width-down/268?cb=20210203100741",
+    "damage_type_ranged": "Ranged",
+    "damage_type_melee": "Hand"
   },
   {
     "id": "sharpshooter",
@@ -18412,7 +19002,9 @@
     "rof_siege": 3.0,
     "attack_melee": 8.0,
     "rof_melee": 1.5,
-    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/b/b5/Sharpshooter_icon_aoe3.png/revision/latest/scale-to-width-down/268?cb=20210424233855"
+    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/b/b5/Sharpshooter_icon_aoe3.png/revision/latest/scale-to-width-down/268?cb=20210424233855",
+    "damage_type_ranged": "Ranged",
+    "damage_type_melee": "Hand"
   },
   {
     "id": "sheriff_billy_holme",
@@ -18463,7 +19055,9 @@
     "rof_siege": 3.0,
     "attack_melee": 8.0,
     "rof_melee": 1.5,
-    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/3/34/Shinobi_aoe3de.png/revision/latest/scale-to-width-down/268?cb=20210615021851"
+    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/3/34/Shinobi_aoe3de.png/revision/latest/scale-to-width-down/268?cb=20210615021851",
+    "damage_type_ranged": "Ranged",
+    "damage_type_melee": "Hand"
   },
   {
     "id": "shock_rider",
@@ -18498,7 +19092,9 @@
     "rof_siege": 3.0,
     "attack_melee": 25.0,
     "rof_melee": 1.5,
-    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/8/88/Jagiellon_shock_rider_portrait.jpg/revision/latest/scale-to-width-down/268?cb=20220526225332"
+    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/8/88/Jagiellon_shock_rider_portrait.jpg/revision/latest/scale-to-width-down/268?cb=20220526225332",
+    "damage_type_ranged": "Siege",
+    "damage_type_melee": "Hand"
   },
   {
     "id": "shotel_warrior_age_of_empires_iii",
@@ -18546,7 +19142,9 @@
     "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/c/c0/Shotel_warrior_aoe3de.png/revision/latest/scale-to-width-down/268?cb=20210211054852",
     "aliases": [
       "肖特尔"
-    ]
+    ],
+    "damage_type_ranged": "Siege",
+    "damage_type_melee": "Hand"
   },
   {
     "id": "shrine_wagon",
@@ -18629,7 +19227,9 @@
         }
       ]
     },
-    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/3/37/Siege_elephant_de.png/revision/latest/scale-to-width-down/268?cb=20210210133240"
+    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/3/37/Siege_elephant_de.png/revision/latest/scale-to-width-down/268?cb=20210210133240",
+    "aoe_radius": 1,
+    "damage_type_ranged": "Siege"
   },
   {
     "id": "sipahi_age_of_empires_iii",
@@ -18662,7 +19262,9 @@
     "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/f/f3/Spahi_de.png/revision/latest/scale-to-width-down/268?cb=20210204142306",
     "aliases": [
       "西帕希"
-    ]
+    ],
+    "damage_type_ranged": "Siege",
+    "damage_type_melee": "Hand"
   },
   {
     "id": "skirmisher_age_of_empires_iii",
@@ -18752,7 +19354,9 @@
     "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/7/75/Skirmisher_portrait_tar_updated.png/revision/latest/scale-to-width-down/268?cb=20211015043044",
     "aliases": [
       "轻步兵"
-    ]
+    ],
+    "damage_type_ranged": "Ranged",
+    "damage_type_melee": "Hand"
   },
   {
     "id": "skull_knight",
@@ -18799,7 +19403,9 @@
         }
       ]
     },
-    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/0/07/Skull_knight_aoe3de.png/revision/latest/scale-to-width-down/268?cb=20210329025407"
+    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/0/07/Skull_knight_aoe3de.png/revision/latest/scale-to-width-down/268?cb=20210329025407",
+    "damage_type_ranged": "Siege",
+    "damage_type_melee": "Hand"
   },
   {
     "id": "sloop",
@@ -18839,7 +19445,9 @@
         }
       ]
     },
-    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/3/36/Sloop_aoe3de.png/revision/latest/scale-to-width-down/268?cb=20210429023053"
+    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/3/36/Sloop_aoe3de.png/revision/latest/scale-to-width-down/268?cb=20210429023053",
+    "aoe_radius": 1,
+    "damage_type_ranged": "Siege"
   },
   {
     "id": "sohei_archer",
@@ -18870,7 +19478,9 @@
     "armor_ranged": 0.1,
     "speed": 4.5,
     "los": 20.0,
-    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/0/07/IkkoIkkiDE.png/revision/latest/scale-to-width-down/268?cb=20210205065933"
+    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/0/07/IkkoIkkiDE.png/revision/latest/scale-to-width-down/268?cb=20210205065933",
+    "damage_type_ranged": "Siege",
+    "damage_type_melee": "Hand"
   },
   {
     "id": "sohei_naginata",
@@ -18918,7 +19528,9 @@
         }
       ]
     },
-    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/0/02/Sohei_aoe3de.png/revision/latest/scale-to-width-down/268?cb=20210211075846"
+    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/0/02/Sohei_aoe3de.png/revision/latest/scale-to-width-down/268?cb=20210211075846",
+    "damage_type_ranged": "Siege",
+    "damage_type_melee": "Hand"
   },
   {
     "id": "soldado",
@@ -18979,7 +19591,10 @@
     "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/6/67/Soldado_portrait.png/revision/latest/scale-to-width-down/268?cb=20211218040155",
     "aliases": [
       "墨西哥士兵"
-    ]
+    ],
+    "aoe_radius": 1,
+    "damage_type_ranged": "Ranged",
+    "damage_type_melee": "Hand"
   },
   {
     "id": "somali_darood_militia",
@@ -19049,7 +19664,9 @@
     "rof_siege": 3.0,
     "attack_melee": 7.0,
     "rof_melee": 1.5,
-    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/2/29/Somali_Darood_Militia_Portrait.png/revision/latest/scale-to-width-down/268?cb=20230909030157"
+    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/2/29/Somali_Darood_Militia_Portrait.png/revision/latest/scale-to-width-down/268?cb=20230909030157",
+    "damage_type_ranged": "Siege",
+    "damage_type_melee": "Hand"
   },
   {
     "id": "somali_issa_warrior",
@@ -19110,7 +19727,9 @@
     "rof_siege": 3.0,
     "attack_melee": 12.0,
     "rof_melee": 1.5,
-    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/1/1c/Somali_Issa_Warrior_Portrait.png/revision/latest/scale-to-width-down/268?cb=20230909030254"
+    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/1/1c/Somali_Issa_Warrior_Portrait.png/revision/latest/scale-to-width-down/268?cb=20230909030254",
+    "damage_type_ranged": "Ranged",
+    "damage_type_melee": "Hand"
   },
   {
     "id": "south_africa",
@@ -19176,7 +19795,9 @@
     "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/0/0e/Sowar_de.png/revision/latest/scale-to-width-down/268?cb=20210207130902",
     "aliases": [
       "骑兵"
-    ]
+    ],
+    "damage_type_ranged": "Siege",
+    "damage_type_melee": "Hand"
   },
   {
     "id": "spearman_age_of_empires_iii",
@@ -19222,7 +19843,10 @@
         }
       ]
     },
-    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/6/67/Spearman_aoe3de.png/revision/latest/scale-to-width-down/268?cb=20210602044345"
+    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/6/67/Spearman_aoe3de.png/revision/latest/scale-to-width-down/268?cb=20210602044345",
+    "aliases": [
+      "矛兵"
+    ]
   },
   {
     "id": "spy_age_of_empires_iii",
@@ -19308,7 +19932,8 @@
     "range_min": 2,
     "range": 12,
     "rof_ranged": 3.0,
-    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/4/49/Spy_aoe3de_portrait_updated.jpg/revision/latest/scale-to-width-down/268?cb=20230803145419"
+    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/4/49/Spy_aoe3de_portrait_updated.jpg/revision/latest/scale-to-width-down/268?cb=20230803145419",
+    "damage_type_melee": "Hand"
   },
   {
     "id": "state_militia",
@@ -19399,7 +20024,9 @@
     "rof_siege": 3.0,
     "attack_melee": 7.0,
     "rof_melee": 1.5,
-    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/9/99/State_militia_aoe3de.png/revision/latest/scale-to-width-down/268?cb=20210428215532"
+    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/9/99/State_militia_aoe3de.png/revision/latest/scale-to-width-down/268?cb=20210428215532",
+    "damage_type_ranged": "Siege",
+    "damage_type_melee": "Hand"
   },
   {
     "id": "steamer",
@@ -19441,7 +20068,9 @@
         }
       ]
     },
-    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/d/d8/Steamer_aoe3de.png/revision/latest/scale-to-width-down/268?cb=20210429023222"
+    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/d/d8/Steamer_aoe3de.png/revision/latest/scale-to-width-down/268?cb=20210429023222",
+    "aoe_radius": 1,
+    "damage_type_ranged": "Siege"
   },
   {
     "id": "steppe_rider",
@@ -19487,7 +20116,9 @@
     "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/7/76/Steppe_rider_de.png/revision/latest/scale-to-width-down/268?cb=20210225023003",
     "aliases": [
       "草原骑"
-    ]
+    ],
+    "damage_type_ranged": "Siege",
+    "damage_type_melee": "Hand"
   },
   {
     "id": "stradiot",
@@ -19523,7 +20154,9 @@
     "rof_siege": 3.0,
     "attack_melee": 56.0,
     "rof_melee": 1.5,
-    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/f/f3/Stradiot_aoe3de.png/revision/latest/scale-to-width-down/268?cb=20210206074440"
+    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/f/f3/Stradiot_aoe3de.png/revision/latest/scale-to-width-down/268?cb=20210206074440",
+    "damage_type_ranged": "Siege",
+    "damage_type_melee": "Hand"
   },
   {
     "id": "strelet",
@@ -19614,7 +20247,9 @@
     "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/c/c3/Strelet_de.png/revision/latest/scale-to-width-down/268?cb=20210206030752",
     "aliases": [
       "射击兵"
-    ]
+    ],
+    "damage_type_ranged": "Ranged",
+    "damage_type_melee": "Hand"
   },
   {
     "id": "sudanese_dervish",
@@ -19685,7 +20320,9 @@
     "rof_siege": 3.0,
     "attack_melee": 9.0,
     "rof_melee": 1.0,
-    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/4/4c/Sudanese_dervish_portrait.png/revision/latest/scale-to-width-down/268?cb=20230909030506"
+    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/4/4c/Sudanese_dervish_portrait.png/revision/latest/scale-to-width-down/268?cb=20230909030506",
+    "damage_type_ranged": "Hand",
+    "damage_type_melee": "Hand"
   },
   {
     "id": "swiss_pikeman",
@@ -19739,7 +20376,12 @@
         }
       ]
     },
-    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/1/14/Swiss_pikeman_aoe3de.png/revision/latest/scale-to-width-down/268?cb=20210206074732"
+    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/1/14/Swiss_pikeman_aoe3de.png/revision/latest/scale-to-width-down/268?cb=20210206074732",
+    "aliases": [
+      "瑞士枪兵"
+    ],
+    "damage_type_ranged": "Siege",
+    "damage_type_melee": "Hand"
   },
   {
     "id": "tashunke_prowler",
@@ -19787,7 +20429,9 @@
     },
     "attack_melee": 15.0,
     "rof_melee": 1.5,
-    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/0/08/Tashunke_prowler_aoe3de_updated.png/revision/latest/scale-to-width-down/268?cb=20220712024245"
+    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/0/08/Tashunke_prowler_aoe3de_updated.png/revision/latest/scale-to-width-down/268?cb=20220712024245",
+    "damage_type_ranged": "Siege",
+    "damage_type_melee": "Hand"
   },
   {
     "id": "tatar_archer",
@@ -19849,7 +20493,9 @@
     "rof_siege": 1.25,
     "attack_melee": 7.0,
     "rof_melee": 1.2,
-    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/8/80/Tatar_archer_portrait_updated.jpg/revision/latest/scale-to-width-down/268?cb=20221021014909"
+    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/8/80/Tatar_archer_portrait_updated.jpg/revision/latest/scale-to-width-down/268?cb=20221021014909",
+    "damage_type_ranged": "Siege",
+    "damage_type_melee": "Hand"
   },
   {
     "id": "tekkousen",
@@ -19891,7 +20537,9 @@
         }
       ]
     },
-    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/c/cf/Tekkousen_aoe3de.png/revision/latest/scale-to-width-down/268?cb=20210203113115"
+    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/c/cf/Tekkousen_aoe3de.png/revision/latest/scale-to-width-down/268?cb=20210203113115",
+    "aoe_radius": 1,
+    "damage_type_ranged": "Siege"
   },
   {
     "id": "tengri_wolf",
@@ -19937,7 +20585,8 @@
         }
       ]
     },
-    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/1/11/Pet_wolf_aoe3de.png/revision/latest/scale-to-width-down/268?cb=20210203103147"
+    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/1/11/Pet_wolf_aoe3de.png/revision/latest/scale-to-width-down/268?cb=20210203103147",
+    "damage_type_melee": "Hand"
   },
   {
     "id": "texas_revolutionary",
@@ -19969,7 +20618,9 @@
     "armor_melee": 0.9,
     "speed": 11.0,
     "los": 20.0,
-    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/a/a0/Monster_truck_red_aoe3de.png/revision/latest/scale-to-width-down/268?cb=20210206062945"
+    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/a/a0/Monster_truck_red_aoe3de.png/revision/latest/scale-to-width-down/268?cb=20210206062945",
+    "aoe_radius": 6,
+    "damage_type_ranged": "Hand"
   },
   {
     "id": "tiger",
@@ -20023,7 +20674,9 @@
         }
       ]
     },
-    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/9/94/Tiger_claw_aoe3de.png/revision/latest/scale-to-width-down/268?cb=20210211075032"
+    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/9/94/Tiger_claw_aoe3de.png/revision/latest/scale-to-width-down/268?cb=20210211075032",
+    "damage_type_ranged": "Siege",
+    "damage_type_melee": "Hand"
   },
   {
     "id": "tlaloc_canoe",
@@ -20057,7 +20710,9 @@
     "attack_siege": 200.0,
     "range_siege": 30.0,
     "rof_siege": 2.0,
-    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/b/b1/Tlaloc_aoe3de.png/revision/latest/scale-to-width-down/268?cb=20210203113031"
+    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/b/b1/Tlaloc_aoe3de.png/revision/latest/scale-to-width-down/268?cb=20210203113031",
+    "aoe_radius": 1,
+    "damage_type_ranged": "Siege"
   },
   {
     "id": "tokala_soldier",
@@ -20110,7 +20765,9 @@
     },
     "attack_melee": 28.0,
     "rof_melee": 1.5,
-    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/c/c6/Tokala_soldier_portrait_updated.jpg/revision/latest/scale-to-width-down/268?cb=20220624214524"
+    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/c/c6/Tokala_soldier_portrait_updated.jpg/revision/latest/scale-to-width-down/268?cb=20220624214524",
+    "damage_type_ranged": "Siege",
+    "damage_type_melee": "Hand"
   },
   {
     "id": "tokugawa_ieyasu",
@@ -20171,7 +20828,9 @@
         }
       ]
     },
-    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/d/d9/Tomahawk_de.png/revision/latest/scale-to-width-down/268?cb=20210206104032"
+    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/d/d9/Tomahawk_de.png/revision/latest/scale-to-width-down/268?cb=20210206104032",
+    "damage_type_ranged": "Siege",
+    "damage_type_melee": "Hand"
   },
   {
     "id": "torii_mototada",
@@ -20213,7 +20872,9 @@
     "rof_siege": 3.0,
     "attack_melee": 27.0,
     "rof_melee": 1.5,
-    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/4/40/Hanover_totenkopf_hussar_portrait.jpg/revision/latest/scale-to-width-down/268?cb=20220526225217"
+    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/4/40/Hanover_totenkopf_hussar_portrait.jpg/revision/latest/scale-to-width-down/268?cb=20220526225217",
+    "damage_type_ranged": "Siege",
+    "damage_type_melee": "Hand"
   },
   {
     "id": "trabant",
@@ -20260,7 +20921,9 @@
         }
       ]
     },
-    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/e/ef/Wettin_trabant_portrait.jpg/revision/latest/scale-to-width-down/268?cb=20220526225933"
+    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/e/ef/Wettin_trabant_portrait.jpg/revision/latest/scale-to-width-down/268?cb=20220526225933",
+    "damage_type_ranged": "Ranged",
+    "damage_type_melee": "Hand"
   },
   {
     "id": "travois",
@@ -20384,7 +21047,9 @@
     "rof_siege": 3.0,
     "attack_melee": 16.0,
     "rof_melee": 1.5,
-    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/a/ac/Tupi_archer_aoe3de.png/revision/latest/scale-to-width-down/268?cb=20210205080828"
+    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/a/ac/Tupi_archer_aoe3de.png/revision/latest/scale-to-width-down/268?cb=20210205080828",
+    "damage_type_ranged": "Ranged",
+    "damage_type_melee": "Hand"
   },
   {
     "id": "uhlan",
@@ -20424,7 +21089,9 @@
     "rof_siege": 3.0,
     "attack_melee": 35.0,
     "rof_melee": 1.5,
-    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/c/c4/Uhlan_portrait_aoe3de_updated.png/revision/latest/scale-to-width-down/268?cb=20210922030634"
+    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/c/c4/Uhlan_portrait_aoe3de_updated.png/revision/latest/scale-to-width-down/268?cb=20210922030634",
+    "damage_type_ranged": "Siege",
+    "damage_type_melee": "Hand"
   },
   {
     "id": "united_states_revolutionary",
@@ -20493,7 +21160,8 @@
         }
       ]
     },
-    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/e/ef/Urumi_de.png/revision/latest/scale-to-width-down/268?cb=20210210135713"
+    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/e/ef/Urumi_de.png/revision/latest/scale-to-width-down/268?cb=20210210135713",
+    "damage_type_ranged": "Siege"
   },
   {
     "id": "village_rickshaw",
@@ -20645,7 +21313,9 @@
     "attack_siege": 100.0,
     "range_siege": 25.0,
     "rof_siege": 3.0,
-    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/7/75/War_canoe_aoe3de.png/revision/latest/scale-to-width-down/268?cb=20210203113223"
+    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/7/75/War_canoe_aoe3de.png/revision/latest/scale-to-width-down/268?cb=20210203113223",
+    "aoe_radius": 1,
+    "damage_type_ranged": "Siege"
   },
   {
     "id": "war_dhow",
@@ -20682,7 +21352,9 @@
         }
       ]
     },
-    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/2/26/War_dhow_portrait_aoe3de.png/revision/latest/scale-to-width-down/268?cb=20210814005526"
+    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/2/26/War_dhow_portrait_aoe3de.png/revision/latest/scale-to-width-down/268?cb=20210814005526",
+    "aoe_radius": 1,
+    "damage_type_ranged": "Siege"
   },
   {
     "id": "war_elephant_age_of_empires_iii",
@@ -20729,7 +21401,9 @@
         }
       ]
     },
-    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/0/0f/War_elephant_aoe3de.png/revision/latest/scale-to-width-down/268?cb=20210205080615"
+    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/0/0f/War_elephant_aoe3de.png/revision/latest/scale-to-width-down/268?cb=20210205080615",
+    "aoe_radius": 3,
+    "damage_type_melee": "Hand"
   },
   {
     "id": "war_hut_travois",
@@ -20784,7 +21458,9 @@
         }
       ]
     },
-    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/9/96/War_junk_aoe3de.png/revision/latest/scale-to-width-down/268?cb=20210203113653"
+    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/9/96/War_junk_aoe3de.png/revision/latest/scale-to-width-down/268?cb=20210203113653",
+    "aoe_radius": 1,
+    "damage_type_ranged": "Siege"
   },
   {
     "id": "war_wagon_age_of_empires_iii",
@@ -20897,7 +21573,9 @@
     "rof_siege": 3.0,
     "attack_melee": 13.0,
     "rof_melee": 1.5,
-    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/5/53/Warrior_de.png/revision/latest/scale-to-width-down/268?cb=20210225023810"
+    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/5/53/Warrior_de.png/revision/latest/scale-to-width-down/268?cb=20210225023810",
+    "damage_type_ranged": "Ranged",
+    "damage_type_melee": "Hand"
   },
   {
     "id": "warrior_priest_age_of_empires_iii",
@@ -20970,7 +21648,10 @@
     "rof_siege": 3.0,
     "attack_melee": 27.5,
     "rof_melee": 1.5,
-    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/7/79/Vasa_winged_hussar_portrait.jpg/revision/latest/scale-to-width-down/268?cb=20220526225829"
+    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/7/79/Vasa_winged_hussar_portrait.jpg/revision/latest/scale-to-width-down/268?cb=20220526225829",
+    "aoe_radius": 1,
+    "damage_type_ranged": "Hand",
+    "damage_type_melee": "Hand"
   },
   {
     "id": "wokou_horseman",
@@ -21028,7 +21709,9 @@
     "rof_siege": 1.5,
     "attack_melee": 12.0,
     "rof_melee": 1.5,
-    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/2/22/Wokou_horseman_aoe3de.png/revision/latest/scale-to-width-down/268?cb=20210206075159"
+    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/2/22/Wokou_horseman_aoe3de.png/revision/latest/scale-to-width-down/268?cb=20210206075159",
+    "damage_type_ranged": "Ranged",
+    "damage_type_melee": "Hand"
   },
   {
     "id": "wokou_junk",
@@ -21071,7 +21754,9 @@
         }
       ]
     },
-    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/2/2d/Wokou_junk_aoe3de.png/revision/latest/scale-to-width-down/268?cb=20210203113741"
+    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/2/2d/Wokou_junk_aoe3de.png/revision/latest/scale-to-width-down/268?cb=20210203113741",
+    "aoe_radius": 1,
+    "damage_type_ranged": "Siege"
   },
   {
     "id": "wokou_monk",
@@ -21166,7 +21851,9 @@
     "rof_siege": 3.0,
     "attack_melee": 6.0,
     "rof_melee": 1.5,
-    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/3/31/Blind_monk_aoe3de.png/revision/latest/scale-to-width-down/268?cb=20210206094416"
+    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/3/31/Blind_monk_aoe3de.png/revision/latest/scale-to-width-down/268?cb=20210206094416",
+    "damage_type_ranged": "Ranged",
+    "damage_type_melee": "Hand"
   },
   {
     "id": "wokou_pirate",
@@ -21210,7 +21897,9 @@
         }
       ]
     },
-    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/e/e8/Wokou_pirate_aoe3de.png/revision/latest/scale-to-width-down/268?cb=20210206094949"
+    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/e/e8/Wokou_pirate_aoe3de.png/revision/latest/scale-to-width-down/268?cb=20210206094949",
+    "damage_type_ranged": "Siege",
+    "damage_type_melee": "Hand"
   },
   {
     "id": "wokou_ronin",
@@ -21257,7 +21946,9 @@
         }
       ]
     },
-    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/2/28/Wayward_ronin_aoe3de.png/revision/latest/scale-to-width-down/268?cb=20250125170839"
+    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/2/28/Wayward_ronin_aoe3de.png/revision/latest/scale-to-width-down/268?cb=20250125170839",
+    "damage_type_ranged": "Siege",
+    "damage_type_melee": "Hand"
   },
   {
     "id": "xebec",
@@ -21296,7 +21987,9 @@
         }
       ]
     },
-    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/9/9c/Xebec_portrait_aoe3de.png/revision/latest/scale-to-width-down/268?cb=20210829235955"
+    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/9/9c/Xebec_portrait_aoe3de.png/revision/latest/scale-to-width-down/268?cb=20210829235955",
+    "aoe_radius": 1,
+    "damage_type_ranged": "Siege"
   },
   {
     "id": "yabusame",
@@ -21426,7 +22119,9 @@
         }
       ]
     },
-    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/3/38/Yamabushi_aoe3de.png/revision/latest/scale-to-width-down/268?cb=20210222052223"
+    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/3/38/Yamabushi_aoe3de.png/revision/latest/scale-to-width-down/268?cb=20210222052223",
+    "damage_type_ranged": "Siege",
+    "damage_type_melee": "Hand"
   },
   {
     "id": "yojimbo",
@@ -21496,7 +22191,9 @@
     "rof_siege": 3.0,
     "attack_melee": 35.0,
     "rof_melee": 1.5,
-    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/7/71/Yojimbo_aoe3de.png/revision/latest/scale-to-width-down/268?cb=20210206095747"
+    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/7/71/Yojimbo_aoe3de.png/revision/latest/scale-to-width-down/268?cb=20210206095747",
+    "damage_type_ranged": "Ranged",
+    "damage_type_melee": "Hand"
   },
   {
     "id": "yoruba_eso_rider",
@@ -21552,7 +22249,9 @@
         }
       ]
     },
-    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/a/a5/Yoruba_Eso_Rider_Portrait.png/revision/latest/scale-to-width-down/268?cb=20230909030652"
+    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/a/a5/Yoruba_Eso_Rider_Portrait.png/revision/latest/scale-to-width-down/268?cb=20230909030652",
+    "damage_type_ranged": "Siege",
+    "damage_type_melee": "Hand"
   },
   {
     "id": "yoruba_oyo_legionary",
@@ -21603,7 +22302,9 @@
         }
       ]
     },
-    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/9/90/Yoruba_legionary_portrait.png/revision/latest/scale-to-width-down/268?cb=20230909030633"
+    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/9/90/Yoruba_legionary_portrait.png/revision/latest/scale-to-width-down/268?cb=20230909030633",
+    "damage_type_ranged": "Ranged",
+    "damage_type_melee": "Hand"
   },
   {
     "id": "yucatn_revolutionary",
@@ -21708,7 +22409,9 @@
     "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/0/0e/Yumi_archer_de.png/revision/latest/scale-to-width-down/268?cb=20210206030903",
     "aliases": [
       "弓手"
-    ]
+    ],
+    "damage_type_ranged": "Ranged",
+    "damage_type_melee": "Hand"
   },
   {
     "id": "yrk",
@@ -21846,7 +22549,9 @@
     "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/4/4b/Zamburak_de.png/revision/latest/scale-to-width-down/268?cb=20210207130959",
     "aliases": [
       "骆驼"
-    ]
+    ],
+    "damage_type_ranged": "Ranged",
+    "damage_type_melee": "Hand"
   },
   {
     "id": "zapotec_lightning_warrior",
@@ -21896,7 +22601,9 @@
         }
       ]
     },
-    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/7/76/Zapotec_lightning_warrior_portrait_aoe3de_updated.png/revision/latest/scale-to-width-down/268?cb=20211116052450"
+    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/7/76/Zapotec_lightning_warrior_portrait_aoe3de_updated.png/revision/latest/scale-to-width-down/268?cb=20211116052450",
+    "damage_type_ranged": "Siege",
+    "damage_type_melee": "Hand"
   },
   {
     "id": "zenata_rider",
@@ -21972,7 +22679,9 @@
     "rof_siege": 3.0,
     "attack_melee": 14.0,
     "rof_melee": 1.5,
-    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/9/91/Zenata_rider_aoe3de_portrait.png/revision/latest/scale-to-width-down/268?cb=20211006053315"
+    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/9/91/Zenata_rider_aoe3de_portrait.png/revision/latest/scale-to-width-down/268?cb=20211006053315",
+    "damage_type_ranged": "Ranged",
+    "damage_type_melee": "Hand"
   },
   {
     "id": "zouave",
@@ -22011,6 +22720,8 @@
     "rof_siege": 3.0,
     "attack_melee": 23.0,
     "rof_melee": 1.5,
-    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/8/87/Zouave_icon_aoe3de.png/revision/latest/scale-to-width-down/268?cb=20210514030256"
+    "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/8/87/Zouave_icon_aoe3de.png/revision/latest/scale-to-width-down/268?cb=20210514030256",
+    "damage_type_ranged": "Ranged",
+    "damage_type_melee": "Hand"
   }
 ]

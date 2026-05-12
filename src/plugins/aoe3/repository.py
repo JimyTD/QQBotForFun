@@ -57,12 +57,13 @@ class UnitRepo:
         return self._by_id.get(uid)
 
     def search(self, query: str, *, limit: int = 5) -> list[Unit]:
-        """中英文名 + 别名搜索。优先精确 → 前缀 → 包含 → 模糊兜底。"""
+        """中英文名 + 别名搜索。优先级：name精确 > alias精确 > 前缀 > 包含 > 模糊。"""
         q = query.strip().lower()
         if not q:
             return []
 
-        exact: list[Unit] = []
+        exact_name: list[Unit] = []   # name / name_en 精确
+        exact_alias: list[Unit] = []  # alias 精确
         prefix: list[Unit] = []
         contains: list[Unit] = []
 
@@ -71,9 +72,12 @@ class UnitRepo:
             name_en_lower = u.name_en.lower()
             alias_lower = [a.lower() for a in u.aliases]
 
-            # 精确匹配（name / name_en / 任意alias）
-            if name_lower == q or name_en_lower == q or q in alias_lower:
-                exact.append(u)
+            # name / name_en 精确匹配（最高优先级）
+            if name_lower == q or name_en_lower == q:
+                exact_name.append(u)
+            # alias 精确匹配
+            elif q in alias_lower:
+                exact_alias.append(u)
             # 前缀匹配
             elif (name_lower.startswith(q) or name_en_lower.startswith(q)
                   or any(a.startswith(q) for a in alias_lower)):
@@ -83,7 +87,7 @@ class UnitRepo:
                   or any(q in a for a in alias_lower)):
                 contains.append(u)
 
-        results = exact + prefix + contains
+        results = exact_name + exact_alias + prefix + contains
         if results:
             return results[:limit]
 

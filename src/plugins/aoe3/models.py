@@ -64,6 +64,11 @@ class Unit:
     rof_siege: float = 0.0
     multipliers_siege: list[Multiplier] = field(default_factory=list)
 
+    # AOE / 伤害类型（从 aoe3explorer 补充）
+    aoe_radius: int = 0
+    damage_type_ranged: str = ""  # "Ranged" / "Siege" / "Hand"
+    damage_type_melee: str = ""   # "Hand" / 其他
+
     # 杂项
     internal_name: str = ""
 
@@ -139,5 +144,8 @@ class Unit:
             multipliers_siege=_parse_mults(
                 mults.get("siege") if isinstance(mults, dict) else None
             ),
+            aoe_radius=d.get("aoe_radius", 0),
+            damage_type_ranged=d.get("damage_type_ranged", ""),
+            damage_type_melee=d.get("damage_type_melee", ""),
             internal_name=d.get("internal_name", ""),
         )
