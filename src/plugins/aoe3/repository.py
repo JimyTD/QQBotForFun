@@ -5,12 +5,14 @@
 
 from __future__ import annotations
 
+import difflib
 import json
 import random
 import re
 from pathlib import Path
 from typing import Sequence
 
+from .i18n import reverse_lookup, t
 from .models import Unit
 
 _ROOT = Path(__file__).resolve().parent.parent.parent.parent  # project root
@@ -30,6 +32,15 @@ class UnitRepo:
         self._units = [Unit.from_dict(d) for d in data]
         self._by_id = {u.id: u for u in self._units}
 
+        # 预构建搜索用的名称池（用于模糊匹配兜底）
+        self._all_names: list[str] = []
+        self._name_to_unit: dict[str, Unit] = {}
+        for u in self._units:
+            for name in [u.name.lower(), u.name_en.lower()] + [a.lower() for a in u.aliases]:
+                if name and name not in self._name_to_unit:
+                    self._all_names.append(name)
+                    self._name_to_unit[name] = u
+
     @classmethod
     def get(cls) -> UnitRepo:
         if cls._instance is None:
@@ -46,7 +57,7 @@ class UnitRepo:
         return self._by_id.get(uid)
 
     def search(self, query: str, *, limit: int = 5) -> list[Unit]:
-        """中英文名 + 别名模糊搜索。优先精确匹配，然后前缀，最后包含。"""
+        """中英文名 + 别名搜索。优先精确 → 前缀 → 包含 → 模糊兜底。"""
         q = query.strip().lower()
         if not q:
             return []
@@ -73,7 +84,43 @@ class UnitRepo:
                 contains.append(u)
 
         results = exact + prefix + contains
-        return results[:limit]
+        if results:
+            return results[:limit]
+
+        # ── 模糊兜底：编辑距离匹配 ──
+        # 用 difflib 找最接近的名称
+        close_names = difflib.get_close_matches(
+            q, self._all_names, n=limit, cutoff=0.5
+        )
+        if close_names:
+            # 去重（不同名称可能指向同一 unit）
+            seen_ids: set[str] = set()
+            fuzzy_results: list[Unit] = []
+            for name in close_names:
+                u = self._name_to_unit[name]
+                if u.id not in seen_ids:
+                    seen_ids.add(u.id)
+                    fuzzy_results.append(u)
+            return fuzzy_results[:limit]
+
+        return []
+
+    def search_is_fuzzy(self, query: str) -> bool:
+        """判断搜索结果是否来自模糊匹配（用于提示用户）。"""
+        q = query.strip().lower()
+        if not q:
+            return False
+        for u in self._units:
+            name_lower = u.name.lower()
+            name_en_lower = u.name_en.lower()
+            alias_lower = [a.lower() for a in u.aliases]
+            if (name_lower == q or name_en_lower == q or q in alias_lower
+                    or name_lower.startswith(q) or name_en_lower.startswith(q)
+                    or any(a.startswith(q) for a in alias_lower)
+                    or q in name_lower or q in name_en_lower
+                    or any(q in a for a in alias_lower)):
+                return False
+        return True
 
     # ------ 高级查询 ------
 
@@ -81,21 +128,20 @@ class UnitRepo:
         self, target_type: str, *, min_mult: float = 1.5
     ) -> list[tuple[Unit, str, float]]:
         """找出克制某类型的兵种。
-        
+
         返回 (unit, attack_type, multiplier_value) 列表，按倍率降序。
-        target_type 支持模糊匹配（如 "骑兵" 匹配 "Cavalry"）。
+        target_type 支持中文（通过 i18n 反查）和英文。
         """
-        # 类型名映射（中→英关键词）
-        zh_to_en = {
-            "骑兵": "cavalry", "步兵": "infantry", "炮兵": "artillery",
-            "重步兵": "heavy infantry", "轻步兵": "light infantry",
-            "重骑兵": "heavy cavalry", "轻骑兵": "light cavalry",
-            "弓兵": "archer", "火枪": "musket", "船": "ship",
-            "冲击步兵": "shock infantry", "攻城": "siege",
-            "村民": "villager", "雇佣兵": "mercenary",
-        }
         q = target_type.strip().lower()
-        q_en = zh_to_en.get(q, q)
+
+        # 利用 i18n 反向表：中文→英文
+        q_en = reverse_lookup("multiplier_vs", q)
+        if not q_en:
+            q_en = reverse_lookup("type", q)
+        if not q_en:
+            q_en = q  # fallback 原文
+
+        q_en_lower = q_en.lower()
 
         results: list[tuple[Unit, str, float]] = []
         for u in self._units:
@@ -105,7 +151,8 @@ class UnitRepo:
                 ("siege", u.multipliers_siege),
             ]:
                 for m in mults:
-                    if q_en in m.vs.lower() or q in m.vs.lower():
+                    vs_lower = m.vs.lower()
+                    if q_en_lower in vs_lower or q in vs_lower:
                         if m.value >= min_mult:
                             results.append((u, atk_type, m.value))
 
@@ -113,26 +160,19 @@ class UnitRepo:
         return results
 
     def list_by_civ(self, civ: str) -> list[Unit]:
-        """按文明名查找（模糊匹配）。"""
+        """按文明名查找（支持中文，通过 i18n 反查）。"""
         q = civ.strip().lower()
-        # 中→英映射
-        civ_map = {
-            "英国": "british", "法国": "french", "德国": "germans",
-            "俄罗斯": "russians", "西班牙": "spanish", "葡萄牙": "portuguese",
-            "荷兰": "dutch", "奥斯曼": "ottomans", "瑞典": "swedes",
-            "马耳他": "maltese", "意大利": "italians", "美国": "united states",
-            "墨西哥": "mexicans", "日本": "japanese", "中国": "chinese",
-            "印度": "indians", "阿兹特克": "aztecs",
-            "易洛魁": "haudenosaunee", "豪德诺索尼": "haudenosaunee",
-            "拉科塔": "lakota", "印加": "inca",
-            "埃塞俄比亚": "ethiopians", "豪萨": "hausa",
-        }
-        q_en = civ_map.get(q, q)
+
+        # 利用 i18n 反向表
+        q_en = reverse_lookup("civs", q)
+        if not q_en:
+            q_en = q
+        q_en_lower = q_en.lower()
 
         results = []
         for u in self._units:
             for c in u.civs:
-                if q_en in c.lower() or q in c.lower():
+                if q_en_lower in c.lower() or q in c.lower():
                     results.append(u)
                     break
         return results

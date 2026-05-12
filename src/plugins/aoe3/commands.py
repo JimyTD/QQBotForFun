@@ -80,6 +80,7 @@ async def _handle_aoe3(bot: Bot, event: GroupMessageEvent) -> None:
         await aoe3_cmd.finish(f"未找到「{text}」相关兵种。")
 
     unit = results[0]
+    is_fuzzy = repo.search_is_fuzzy(text)
 
     # 发 icon + 文字卡片
     # NapCat 和 Bot 容器文件系统隔离，图片必须用 base64 发送
@@ -90,7 +91,12 @@ async def _handle_aoe3(bot: Bot, event: GroupMessageEvent) -> None:
     if icon_path:
         b64 = base64.b64encode(icon_path.read_bytes()).decode()
         msg_parts.append(MessageSegment.image(f"base64://{b64}"))
-    msg_parts.append(MessageSegment.text(render_unit_card(unit)))
+
+    card_text = render_unit_card(unit)
+    if is_fuzzy:
+        name = unit.name if unit.name != unit.name_en else unit.name_en
+        card_text = f"💡 未精确匹配「{text}」，为你找到最接近的：{name}\n\n" + card_text
+    msg_parts.append(MessageSegment.text(card_text))
 
     await bot.send(event, sum(msg_parts[1:], msg_parts[0]))
 

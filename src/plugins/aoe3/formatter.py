@@ -2,14 +2,15 @@
 
 from __future__ import annotations
 
+from .i18n import t, t_age, t_list, t_mult_vs
 from .models import Multiplier, Unit
 
 
 def _fmt_mult(mults: list[Multiplier]) -> str:
-    """格式化克制倍率列表。"""
+    """格式化克制倍率列表（已汉化）。"""
     if not mults:
         return ""
-    parts = [f"{m.vs} x{m.value:g}" for m in mults]
+    parts = [f"{t_mult_vs(m.vs)} x{m.value:g}" for m in mults]
     return "  → " + " | ".join(parts)
 
 
@@ -21,6 +22,11 @@ def _fmt_resist(unit: Unit) -> str:
     if unit.armor_ranged:
         parts.append(f"{unit.armor_ranged:.0%}远程")
     return " ".join(parts) if parts else "无"
+
+
+def _unit_display_name(u: Unit) -> str:
+    """获取展示用名称。"""
+    return u.name if u.name != u.name_en else u.name_en
 
 
 def render_unit_card(unit: Unit) -> str:
@@ -37,9 +43,11 @@ def render_unit_card(unit: Unit) -> str:
     # 基本信息
     info_parts = []
     if unit.age:
-        info_parts.append(f"时代：{unit.age}")
+        lines.append(f"时代：{t_age(unit.age)}")
     if unit.pop:
         info_parts.append(f"人口：{unit.pop}")
+    if unit.train_time:
+        info_parts.append(f"训练：{unit.train_time}s")
     if info_parts:
         lines.append(" | ".join(info_parts))
 
@@ -47,7 +55,7 @@ def render_unit_card(unit: Unit) -> str:
         lines.append(f"费用：{unit.cost_str}")
 
     if unit.trained_at:
-        lines.append(f"训练于：{' / '.join(unit.trained_at)}")
+        lines.append(f"训练于：{' / '.join(t_list('trained_at', unit.trained_at))}")
 
     # 基础属性
     lines.append("")
@@ -66,7 +74,7 @@ def render_unit_card(unit: Unit) -> str:
     # 远程攻击
     if unit.attack_ranged:
         lines.append("")
-        lines.append("⚔️ 远程攻击")
+        lines.append("🏹 远程攻击")
         atk_parts = [f"  {unit.attack_ranged:g}伤害"]
         if unit.range:
             rng = f"{unit.range_min:g}-{unit.range:g}" if unit.range_min else f"{unit.range:g}"
@@ -107,26 +115,52 @@ def render_unit_card(unit: Unit) -> str:
     # 类型 + 文明
     if unit.type:
         lines.append("")
-        lines.append(f"📋 类型：{unit.type_str}")
+        lines.append(f"📋 类型：{' / '.join(t_list('type', unit.type))}")
     if unit.civs:
-        lines.append(f"文明：{'、'.join(unit.civs)}")
+        lines.append(f"文明：{'、'.join(t_list('civs', unit.civs))}")
 
     return "\n".join(lines)
 
 
 def render_unit_brief(unit: Unit) -> str:
     """渲染简短单行摘要（用于列表展示）。"""
-    name = unit.name if unit.name != unit.name_en else unit.name_en
+    name = _unit_display_name(unit)
     atk = unit.attack_ranged or unit.attack_melee or unit.attack_siege or 0
     return f"{name} | HP {unit.hp} | ATK {atk:g} | {unit.cost_str}"
 
 
+def _fmt_compare_mults(mults_a: list[Multiplier], mults_b: list[Multiplier]) -> list[str]:
+    """格式化对比视图中的倍率信息。合并双方的克制目标，左右对比展示。"""
+    if not mults_a and not mults_b:
+        return []
+
+    # 收集所有 vs 目标，保持出现顺序
+    seen: set[str] = set()
+    all_vs: list[str] = []
+    for m in mults_a + mults_b:
+        if m.vs not in seen:
+            seen.add(m.vs)
+            all_vs.append(m.vs)
+
+    map_a = {m.vs: m.value for m in mults_a}
+    map_b = {m.vs: m.value for m in mults_b}
+
+    lines: list[str] = []
+    for vs in all_vs:
+        va = f"x{map_a[vs]:g}" if vs in map_a else "-"
+        vb = f"x{map_b[vs]:g}" if vs in map_b else "-"
+        vs_zh = t_mult_vs(vs)
+        lines.append(f"  {vs_zh}: {va}  │  {vb}")
+
+    return lines
+
+
 def render_compare(a: Unit, b: Unit) -> str:
-    """渲染两个单位的左右对比卡片。"""
+    """渲染两个单位的左右对比卡片（含倍率）。"""
     lines: list[str] = []
 
     def _n(u: Unit) -> str:
-        return u.name if u.name != u.name_en else u.name_en
+        return _unit_display_name(u)
 
     lines.append("⚔️ 兵种对比")
     lines.append("━" * 20)
@@ -136,23 +170,57 @@ def render_compare(a: Unit, b: Unit) -> str:
     def _row(label: str, va: str, vb: str) -> str:
         return f"{label}  {va}  │  {vb}"
 
+    # ── 基础属性 ──
     lines.append(_row("HP", str(a.hp), str(b.hp)))
     lines.append(_row("费用", a.cost_str, b.cost_str))
     lines.append(_row("人口", str(a.pop), str(b.pop)))
     lines.append(_row("速度", f"{a.speed:g}", f"{b.speed:g}"))
-    lines.append("")
-
-    if a.attack_ranged or b.attack_ranged:
-        lines.append(_row("远程攻击", f"{a.attack_ranged:g}", f"{b.attack_ranged:g}"))
-        lines.append(_row("射程", f"{a.range:g}", f"{b.range:g}"))
-    if a.attack_melee or b.attack_melee:
-        lines.append(_row("近战攻击", f"{a.attack_melee:g}", f"{b.attack_melee:g}"))
-    if a.attack_siege or b.attack_siege:
-        lines.append(_row("攻城攻击", f"{a.attack_siege:g}", f"{b.attack_siege:g}"))
-    lines.append("")
-
     lines.append(_row("近战抗性", f"{a.armor_melee:.0%}", f"{b.armor_melee:.0%}"))
     lines.append(_row("远程抗性", f"{a.armor_ranged:.0%}", f"{b.armor_ranged:.0%}"))
+
+    # ── 远程攻击 ──
+    if a.attack_ranged or b.attack_ranged:
+        lines.append("")
+        lines.append("🏹 远程攻击")
+        lines.append(_row("  伤害", f"{a.attack_ranged:g}", f"{b.attack_ranged:g}"))
+        lines.append(_row("  射程", f"{a.range:g}", f"{b.range:g}"))
+        if a.rof_ranged or b.rof_ranged:
+            lines.append(_row("  射速", f"{a.rof_ranged:g}s", f"{b.rof_ranged:g}s"))
+        mult_lines = _fmt_compare_mults(a.multipliers_ranged, b.multipliers_ranged)
+        if mult_lines:
+            lines.append("  克制倍率:")
+            lines.extend(mult_lines)
+
+    # ── 近战攻击 ──
+    if a.attack_melee or b.attack_melee:
+        lines.append("")
+        lines.append("⚔️ 近战攻击")
+        lines.append(_row("  伤害", f"{a.attack_melee:g}", f"{b.attack_melee:g}"))
+        if a.rof_melee or b.rof_melee:
+            lines.append(_row("  射速", f"{a.rof_melee:g}s", f"{b.rof_melee:g}s"))
+        mult_lines = _fmt_compare_mults(a.multipliers_melee, b.multipliers_melee)
+        if mult_lines:
+            lines.append("  克制倍率:")
+            lines.extend(mult_lines)
+
+    # ── 攻城攻击 ──
+    if a.attack_siege or b.attack_siege:
+        lines.append("")
+        lines.append("💣 攻城攻击")
+        lines.append(_row("  伤害", f"{a.attack_siege:g}", f"{b.attack_siege:g}"))
+        if a.range_siege or b.range_siege:
+            lines.append(_row("  射程", f"{a.range_siege:g}", f"{b.range_siege:g}"))
+        mult_lines = _fmt_compare_mults(a.multipliers_siege, b.multipliers_siege)
+        if mult_lines:
+            lines.append("  克制倍率:")
+            lines.extend(mult_lines)
+
+    # ── 类型 ──
+    lines.append("")
+    type_a = " / ".join(t_list("type", a.type)) if a.type else "-"
+    type_b = " / ".join(t_list("type", b.type)) if b.type else "-"
+    lines.append(f"类型A: {type_a}")
+    lines.append(f"类型B: {type_b}")
 
     return "\n".join(lines)
 
@@ -168,7 +236,7 @@ def render_counter_list(
     lines = [f"⚔️ 克制「{target}」的兵种 (倍率 ≥ 1.5x)", "━" * 30]
 
     for unit, atk_type, value in results[:limit]:
-        name = unit.name if unit.name != unit.name_en else unit.name_en
+        name = _unit_display_name(unit)
         atk_zh = atk_type_zh.get(atk_type, atk_type)
         lines.append(f"  {name:<15} │ {atk_zh} x{value:g}")
 
@@ -179,18 +247,18 @@ def render_counter_list(
 
 
 def render_civ_units(units: list[Unit], civ: str) -> str:
-    """渲染文明兵种列表（按类型分组）。"""
+    """渲染文明兵种列表。"""
     if not units:
         return f"未找到「{civ}」的兵种。"
 
-    # 按是否可训练分组
     trainable = [u for u in units if u.is_trainable]
 
     lines = [f"🏰 {civ} 可用兵种 ({len(trainable)} 个)", "━" * 30]
 
     for u in trainable:
-        name = u.name if u.name != u.name_en else u.name_en
+        name = _unit_display_name(u)
         atk = u.attack_ranged or u.attack_melee or u.attack_siege or 0
-        lines.append(f"  {name:<15} │ {u.age or '?'} │ HP {u.hp} ATK {atk:g}")
+        age_zh = t_age(u.age) if u.age else "?"
+        lines.append(f"  {name:<15} │ {age_zh} │ HP {u.hp} ATK {atk:g}")
 
     return "\n".join(lines)

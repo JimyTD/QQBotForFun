@@ -101,6 +101,11 @@ class AoE3CLIAdapter:
                 continue
 
             unit = results[0]
+            is_fuzzy = repo.search_is_fuzzy(text)
+
+            if is_fuzzy:
+                name = unit.name if unit.name != unit.name_en else unit.name_en
+                info(f"未精确匹配「{text}」，为你找到最接近的：{name}")
 
             # icon 路径
             icon_path = repo.get_icon_path(unit)
