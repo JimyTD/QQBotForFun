@@ -8578,6 +8578,90 @@
     "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/e/e1/Aoe_3_DE_Lakotachief.png/revision/latest/scale-to-width-down/268?cb=20240604175322"
   },
   {
+    "id": "grenadier_age_of_empires_iii",
+    "name_en": "Grenadier (Age of Empires III)",
+    "name": "掷弹兵",
+    "wiki_url": "https://ageofempires.fandom.com/wiki/Grenadier_(Age_of_Empires_III)",
+    "type": [
+      "Infantry",
+      "Heavy infantry",
+      "Ranged infantry",
+      "Grenade trooper",
+      "Siege trooper"
+    ],
+    "civs": [
+      "British",
+      "Ottomans",
+      "Russians",
+      "Swedes"
+    ],
+    "age": "Industrial Age",
+    "trained_at": [
+      "Barracks",
+      "Fort",
+      "Galleon",
+      "American Citadel"
+    ],
+    "cost": {
+      "food": 120,
+      "gold": 60
+    },
+    "pop": 2,
+    "train_time": 40,
+    "hp": 200,
+    "armor_ranged": 0.5,
+    "speed": 4.0,
+    "los": 15.0,
+    "attack_ranged": 16.0,
+    "range": 12.0,
+    "range_min": 2.0,
+    "rof_ranged": 3.0,
+    "multipliers": {
+      "ranged": [
+        {
+          "vs": "Cavalry",
+          "value": 0.4
+        },
+        {
+          "vs": "Shock infantry",
+          "value": 0.4
+        },
+        {
+          "vs": "Artillery",
+          "value": 0.5
+        },
+        {
+          "vs": "Ship",
+          "value": 0.5
+        }
+      ],
+      "melee": [
+        {
+          "vs": "Cavalry",
+          "value": 0.25
+        },
+        {
+          "vs": "Shock infantry",
+          "value": 0.15
+        }
+      ]
+    },
+    "attack_melee": 24.0,
+    "rof_melee": 1.5,
+    "attack_siege": 41.0,
+    "range_siege": 12.0,
+    "rof_siege": 3.0,
+    "aoe_radius": 3,
+    "damage_type_ranged": "Siege",
+    "damage_type_melee": "Hand",
+    "aliases": [
+      "掷弹",
+      "手雷兵"
+    ],
+    "icon_url": "",
+    "internal_name": "Grenadier"
+  },
+  {
     "id": "greta",
     "name_en": "Greta",
     "name": "Greta",
