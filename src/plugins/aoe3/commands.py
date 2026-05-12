@@ -6,6 +6,7 @@ from pathlib import Path
 
 from nonebot import on_command
 from nonebot.adapters.onebot.v11 import Bot, GroupMessageEvent, MessageSegment
+from nonebot.rule import to_me
 
 from .formatter import (
     render_civ_units,
@@ -17,7 +18,7 @@ from .repository import UnitRepo
 
 # ── 主命令 ──────────────────────────────────────────────
 
-aoe3_cmd = on_command("aoe3", aliases={"帝国3", "aoe"}, priority=10, block=True)
+aoe3_cmd = on_command("aoe3", aliases={"帝国3", "aoe"}, rule=to_me(), priority=3, block=True)
 
 
 @aoe3_cmd.handle()
