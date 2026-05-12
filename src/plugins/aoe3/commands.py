@@ -82,10 +82,14 @@ async def _handle_aoe3(bot: Bot, event: GroupMessageEvent) -> None:
     unit = results[0]
 
     # 发 icon + 文字卡片
+    # NapCat 和 Bot 容器文件系统隔离，图片必须用 base64 发送
+    import base64
+
     msg_parts = []
     icon_path = repo.get_icon_path(unit)
     if icon_path:
-        msg_parts.append(MessageSegment.image(icon_path))
+        b64 = base64.b64encode(icon_path.read_bytes()).decode()
+        msg_parts.append(MessageSegment.image(f"base64://{b64}"))
     msg_parts.append(MessageSegment.text(render_unit_card(unit)))
 
     await bot.send(event, sum(msg_parts[1:], msg_parts[0]))
