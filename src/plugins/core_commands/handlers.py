@@ -51,6 +51,10 @@ HELP_TEXT = render.text_card(
         "🍱 @我 吃什么      今天吃什么",
         "🃏 @我 查卡 卡名    游戏王卡片查询",
         "🃏 @我 随机卡       随机一张游戏王卡",
+        "🏰 @我 aoe3 兵种名  帝国时代3兵种查询",
+        "🏰 @我 aoe3 对比 A B 兵种对比",
+        "🏰 @我 aoe3 克制 类型 克制查询",
+        "🏰 @我 aoe3 文明 名称 文明兵种",
         "🔍 @我 查资料 问题  联网搜索+AI回答",
         "🏓 @我 测试        测试是否在线",
     ],
@@ -113,6 +117,14 @@ async def _(matcher: Matcher, event: MessageEvent) -> None:
             name="游戏王查卡",
             subtitle="查卡片信息 · 小工具",
             command="@我 查卡 卡名",
+        )
+    )
+    items.append(
+        MenuItem(
+            emoji="🏰",
+            name="帝国时代3百科",
+            subtitle="AoE3 兵种查询/对比/克制 · 小工具",
+            command="@我 aoe3 兵种名",
         )
     )
 

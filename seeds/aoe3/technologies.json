@@ -1,0 +1,4258 @@
+[
+  {
+    "id": "1st_pennsylvania_rifles",
+    "name_en": "1st Pennsylvania Rifles",
+    "wiki_url": "https://ageofempires.fandom.com/wiki/1st_Pennsylvania_Rifles",
+    "civs": [
+      "United States"
+    ],
+    "age": "Commerce Age",
+    "building": [
+      "Meeting House"
+    ],
+    "train_time": 15,
+    "effect": "Delivers 5\nSharpshooters",
+    "cost": {
+      "food": 625
+    }
+  },
+  {
+    "id": "2_great_bombards",
+    "name_en": "2 Great Bombards",
+    "wiki_url": "https://ageofempires.fandom.com/wiki/2_Great_Bombards",
+    "civs": [
+      "Indians"
+    ],
+    "age": "Industrial Age",
+    "building": [
+      "Consulate"
+    ],
+    "train_time": 30,
+    "effect": "Delivers 2\nConsulate Great Bombards",
+    "cost": {
+      "export": 850
+    }
+  },
+  {
+    "id": "2_surgeons",
+    "name_en": "2 Surgeons",
+    "wiki_url": "https://ageofempires.fandom.com/wiki/2_Surgeons",
+    "civs": [
+      "Chinese",
+      "Indians"
+    ],
+    "age": "Commerce Age",
+    "building": [
+      "Consulate"
+    ],
+    "train_time": 30,
+    "effect": "Delivers 2\nSurgeons",
+    "cost": {
+      "export": 250
+    }
+  },
+  {
+    "id": "4_settlers",
+    "name_en": "4 Settlers",
+    "wiki_url": "https://ageofempires.fandom.com/wiki/4_Settlers",
+    "civs": [
+      "Indians"
+    ],
+    "age": "Commerce Age",
+    "building": [
+      "Consulate"
+    ],
+    "train_time": 30,
+    "effect": "Delivers 4\nHindu Villagers\n*\nHindu Villager train limit +4",
+    "cost": {
+      "export": 300
+    }
+  },
+  {
+    "id": "4_spies",
+    "name_en": "4 Spies",
+    "wiki_url": "https://ageofempires.fandom.com/wiki/4_Spies",
+    "civs": [
+      "Chinese",
+      "Indians"
+    ],
+    "age": "Commerce Age",
+    "building": [
+      "Consulate"
+    ],
+    "train_time": 30,
+    "effect": "Delivers 4\nSpies",
+    "cost": {
+      "export": 300
+    }
+  },
+  {
+    "id": "5_petards",
+    "name_en": "5 Petards",
+    "wiki_url": "https://ageofempires.fandom.com/wiki/5_Petards",
+    "civs": [
+      "Chinese",
+      "Indians"
+    ],
+    "age": "Fortress Age",
+    "building": [
+      "Consulate"
+    ],
+    "train_time": 30,
+    "effect": "Delivers 5\nPetards",
+    "cost": {
+      "export": 450
+    }
+  },
+  {
+    "id": "6_azaps",
+    "name_en": "6 Azaps",
+    "wiki_url": "https://ageofempires.fandom.com/wiki/6_Azaps",
+    "civs": [
+      "Indians"
+    ],
+    "age": "Commerce Age",
+    "building": [
+      "Consulate"
+    ],
+    "train_time": 30,
+    "effect": "Delivers\n6\nBaghdad Azaps\n*",
+    "cost": {
+      "export": 200
+    }
+  },
+  {
+    "id": "acts_of_union",
+    "name_en": "Acts of Union",
+    "wiki_url": "https://ageofempires.fandom.com/wiki/Acts_of_Union",
+    "age": "Industrial Age",
+    "building": [
+      "Trading Post",
+      "Tambo",
+      "House of Hanover"
+    ],
+    "train_time": 30,
+    "effect": "Drummers\nget the \"Inspiring Flag\" ability that spawns a\nHarquebusier\n,\nHighlander\n, and\nIrish Brigadier",
+    "cost": {
+      "food": 400,
+      "wood": 400,
+      "gold": 400
+    }
+  },
+  {
+    "id": "akan_asafo",
+    "name_en": "Akan Asafo",
+    "wiki_url": "https://ageofempires.fandom.com/wiki/Akan_Asafo",
+    "age": "Exploration Age",
+    "building": [
+      "Trading Post",
+      "Tambo",
+      "Akan"
+    ],
+    "train_time": 60,
+    "effect": "Delivers 1\nAkan Tufohen",
+    "cost": {
+      "food": 200,
+      "wood": 200,
+      "gold": 200
+    }
+  },
+  {
+    "id": "akan_cocoa_beans",
+    "name_en": "Akan Cocoa Beans",
+    "wiki_url": "https://ageofempires.fandom.com/wiki/Akan_Cocoa_Beans",
+    "age": "Exploration Age",
+    "building": [
+      "Trading Post",
+      "Tambo",
+      "Akan"
+    ],
+    "train_time": 30,
+    "effect": "Villager\ngather work rate for\nBerry Bush\n+30%, for\nCherry Orchard\n,\nMill\n,\nFarm\n,\nRice Paddy\n(food),\nField\n(food), and\nHacienda\n(food) +10%",
+    "cost": {
+      "wood": 175,
+      "gold": 175
+    }
+  },
+  {
+    "id": "akan_fontomfrom",
+    "name_en": "Akan Fontomfrom",
+    "wiki_url": "https://ageofempires.fandom.com/wiki/Akan_Fontomfrom",
+    "age": "Exploration Age",
+    "building": [
+      "Trading Post",
+      "Tambo",
+      "Akan"
+    ],
+    "train_time": 30,
+    "effect": "Infantry\ntrain time -20%, speed +5%\nAkan Tufohen\nrespawn time -20%\nOld Han Army\nand\nTerritorial Army\ntrain time -20%\nStandard Army\n,\nMing Army\n,\nBlack Flag Army\n, and\nImperial Army\ntrain time -10%\nSkull Knight\nand\nWarrior Priest\ntrain time -5% instead",
+    "cost": {
+      "wood": 250,
+      "gold": 250
+    }
+  },
+  {
+    "id": "akan_gold_economy",
+    "name_en": "Akan Gold Economy",
+    "wiki_url": "https://ageofempires.fandom.com/wiki/Akan_Gold_Economy",
+    "age": "Exploration Age",
+    "building": [
+      "Trading Post",
+      "Tambo",
+      "Akan",
+      "University",
+      "Hausa",
+      "Alliance"
+    ],
+    "train_time": 30,
+    "effect": "Delivers 1\nGold Prospector Wagon\nVillager\ngather work rate for mine,\nTribal Marketplace\n, and\nMountain Monastery\n+10%\nAbun\ngather work rate for Mountain Monastery +10%",
+    "cost": {
+      "food": 325,
+      "wood": 325,
+      "influence": 585
+    }
+  },
+  {
+    "id": "akan_palm_oil_exports",
+    "name_en": "Akan Palm Oil Exports",
+    "wiki_url": "https://ageofempires.fandom.com/wiki/Akan_Palm_Oil_Exports",
+    "age": "Exploration Age",
+    "building": [
+      "Trading Post",
+      "Tambo",
+      "Akan",
+      "University",
+      "Hausa",
+      "Alliance"
+    ],
+    "train_time": 5,
+    "effect": "Exchanges current\nfood\nfor 0.5x amount of\nwood\nand\ncoin",
+    "cost": {
+      "food": 50,
+      "wood": 50,
+      "influence": 90
+    }
+  },
+  {
+    "id": "amalgamation",
+    "name_en": "Amalgamation",
+    "wiki_url": "https://ageofempires.fandom.com/wiki/Amalgamation",
+    "civs": [
+      "AfricansEuropeansFederal Americans"
+    ],
+    "age": "Commerce Age",
+    "building": [
+      "Market",
+      "Livestock Market"
+    ],
+    "train_time": 30,
+    "effect": "Villager\ngather work rate for\nmine\nand\nMountain Monastery\n+20%",
+    "cost": {
+      "food": 200,
+      "wood": 200
+    }
+  },
+  {
+    "id": "american_patriots",
+    "name_en": "American Patriots",
+    "wiki_url": "https://ageofempires.fandom.com/wiki/American_Patriots",
+    "civs": [
+      "United States",
+      "Act III: Steel"
+    ],
+    "age": "Fortress Age",
+    "building": [
+      "Church"
+    ],
+    "train_time": 15,
+    "effect": "Delivers 16\nMilitiamen"
+  },
+  {
+    "id": "apache_cactus_use",
+    "name_en": "Apache Cactus Use",
+    "wiki_url": "https://ageofempires.fandom.com/wiki/Apache_Cactus_Use",
+    "age": "Exploration Age",
+    "building": [
+      "Trading Post",
+      "Tambo",
+      "Apache"
+    ],
+    "train_time": 10,
+    "effect": "Villager\nhit points\nand speed +15%\nUnit affected by villager upgrades\nhit points and speed +5%",
+    "cost": {
+      "wood": 150,
+      "gold": 100
+    }
+  },
+  {
+    "id": "apache_endurance",
+    "name_en": "Apache Endurance",
+    "wiki_url": "https://ageofempires.fandom.com/wiki/Apache_Endurance",
+    "age": "Exploration Age",
+    "building": [
+      "Trading Post",
+      "Tambo",
+      "Apache"
+    ],
+    "train_time": 10,
+    "effect": "Land military speed +5%",
+    "cost": {
+      "wood": 300,
+      "gold": 300
+    }
+  },
+  {
+    "id": "apache_raiders",
+    "name_en": "Apache Raiders",
+    "wiki_url": "https://ageofempires.fandom.com/wiki/Apache_Raiders",
+    "age": "Fortress Age",
+    "building": [
+      "Trading Post",
+      "Tambo",
+      "Apache"
+    ],
+    "train_time": 10,
+    "effect": "Apache Cavalry\nbonus damage\nagainst\nvillagers\n+1.0",
+    "cost": {
+      "wood": 150,
+      "gold": 150
+    }
+  },
+  {
+    "id": "arewa",
+    "name_en": "Arewa",
+    "wiki_url": "https://ageofempires.fandom.com/wiki/Arewa",
+    "civs": [
+      "Hausa"
+    ],
+    "age": "Commerce Age",
+    "building": [
+      "University"
+    ],
+    "train_time": 5,
+    "effect": "Enables\nHausa Builders\nto build\nWatch Towers",
+    "cost": {
+      "influence": 250
+    }
+  },
+  {
+    "id": "argan_tree_planting",
+    "name_en": "Argan Tree Planting",
+    "wiki_url": "https://ageofempires.fandom.com/wiki/Argan_Tree_Planting",
+    "civs": [
+      "Hausa"
+    ],
+    "age": "Commerce Age",
+    "building": [
+      "University"
+    ],
+    "train_time": 5,
+    "effect": "Delivers 1\nGoat\ncarrying an additional 70\nfood\nwith every future\nHome City\nshipment",
+    "cost": {
+      "influence": 250
+    }
+  },
+  {
+    "id": "ark_of_the_covenant",
+    "name_en": "Ark of the Covenant",
+    "wiki_url": "https://ageofempires.fandom.com/wiki/Ark_of_the_Covenant",
+    "civs": [
+      "Ethiopians"
+    ],
+    "age": "Commerce Age",
+    "building": [
+      "Mountain Monastery"
+    ],
+    "train_time": 40,
+    "effect": "Mountain Monastery\nhit points\n+100%\nMountain Monasteries auto gather\ncoin\n/\ninfluence\nwithout building on the mine",
+    "cost": {
+      "influence": 2
+    }
+  },
+  {
+    "id": "arma_garrisons",
+    "name_en": "Arma Garrisons",
+    "wiki_url": "https://ageofempires.fandom.com/wiki/Arma_Garrisons",
+    "civs": [
+      "Hausa"
+    ],
+    "age": "Commerce Age",
+    "building": [
+      "University"
+    ],
+    "train_time": 5,
+    "effect": "Delivers 1\nWatch Tower Builder\nEnables\nCorsair Marksmen\nto be trained at\nWatch Towers",
+    "cost": {
+      "influence": 300
+    }
+  },
+  {
+    "id": "armatoloi",
+    "name_en": "Armatoloi",
+    "wiki_url": "https://ageofempires.fandom.com/wiki/Armatoloi",
+    "age": "Exploration Age",
+    "building": [
+      "Trading Post",
+      "Tambo",
+      "House of Phanar"
+    ],
+    "train_time": 30,
+    "effect": "Ranged infantry\ndamage +5%;\nEvzone\ndamage +15% instead",
+    "cost": {
+      "wood": 200,
+      "gold": 200
+    }
+  },
+  {
+    "id": "army_of_the_pure",
+    "name_en": "Army of the Pure",
+    "wiki_url": "https://ageofempires.fandom.com/wiki/Army_of_the_Pure",
+    "age": "Exploration Age",
+    "building": [
+      "Trading Post",
+      "Tambo",
+      "Udasi Temple"
+    ],
+    "train_time": 10,
+    "effect": "Chakram Thrower\nLine of Sight\n, ranged\nand siege attack\nrange\n+2",
+    "cost": {
+      "wood": 125,
+      "gold": 125
+    }
+  },
+  {
+    "id": "arsenal_wagon_technology",
+    "name_en": "Arsenal Wagon (technology)",
+    "wiki_url": "https://ageofempires.fandom.com/wiki/Arsenal_Wagon_(technology)",
+    "civs": [
+      "Japanese"
+    ],
+    "age": "Fortress Age",
+    "building": [
+      "Consulate"
+    ],
+    "train_time": 30,
+    "effect": "Delivers 1\nArsenal Wagon",
+    "cost": {
+      "export": 300
+    }
+  },
+  {
+    "id": "artificial_fertilizer",
+    "name_en": "Artificial Fertilizer",
+    "wiki_url": "https://ageofempires.fandom.com/wiki/Artificial_Fertilizer",
+    "civs": [
+      "EuropeansFederal Americans"
+    ],
+    "age": "Fortress Age",
+    "building": [
+      "Mill",
+      "Hacienda"
+    ],
+    "train_time": 30,
+    "effect": "Villager\ngather work rate for\nMill\n,\nFarm\n,\nRice Paddy\n(food),\nField\n(food), and\nHacienda\n(food) +30%; Hacienda auto gather food work rate for food +30%",
+    "cost": {
+      "wood": 335,
+      "gold": 335
+    }
+  },
+  {
+    "id": "athos_monasteries",
+    "name_en": "Athos Monasteries",
+    "wiki_url": "https://ageofempires.fandom.com/wiki/Athos_Monasteries",
+    "age": "Exploration Age",
+    "building": [
+      "Trading Post",
+      "Tambo",
+      "House of Phanar"
+    ],
+    "train_time": 30,
+    "effect": "Delivers 2\nAthos Monastery Wagons\nEnables\nPriests\n,\nImams\n,\nHealers\n,\nWarrior Priests\n,\nAbuns\n,\nPriestesses\n, and\nGriots\nto be trained at\nAthos Monasteries\nEnables\nCatharsis\n,\nPhanarion\n, and\nFiliki Eteria",
+    "cost": {
+      "wood": 340
+    }
+  },
+  {
+    "id": "austrohungarian_empire",
+    "name_en": "Austro-Hungarian Empire",
+    "wiki_url": "https://ageofempires.fandom.com/wiki/Austro-Hungarian_Empire",
+    "age": "Industrial Age",
+    "building": [
+      "Trading Post",
+      "Tambo",
+      "Inca"
+    ],
+    "train_time": 30,
+    "effect": "The \"Radetzky March\" ability now also spawns\nHungarian Grenadiers",
+    "cost": {
+      "food": 375,
+      "gold": 375
+    }
+  },
+  {
+    "id": "aztec_chinampa",
+    "name_en": "Aztec Chinampa",
+    "wiki_url": "https://ageofempires.fandom.com/wiki/Aztec_Chinampa",
+    "age": "Exploration Age",
+    "building": [
+      "Trading Post",
+      "Tambo",
+      "Aztec"
+    ],
+    "train_time": 10,
+    "effect": "Villager\ngather work rate for\nMill\n,\nFarm\n,\nRice Paddy\n(food),\nField\n(food), and\nHacienda\n(food)\n+5%\nFishing boat\ngather work rate for\nfish\nand\nwhale\n+5%\nHacienda auto gather food work rate for food +5%",
+    "cost": {
+      "wood": 175,
+      "gold": 175
+    }
+  },
+  {
+    "id": "aztec_chocolate_recipes",
+    "name_en": "Aztec Chocolate Recipes",
+    "wiki_url": "https://ageofempires.fandom.com/wiki/Aztec_Chocolate_Recipes",
+    "age": "Exploration Age",
+    "building": [
+      "Trading Post",
+      "Tambo",
+      "Aztec",
+      "Native Embassy",
+      "Mexicans"
+    ],
+    "train_time": 10,
+    "effect": "Delivers 1\nChests of Coin\n(100\ncoin\n) for every\n2\nminutes of game time, up to 30 minutes",
+    "cost": {
+      "wood": 225,
+      "gold": 225
+    }
+  },
+  {
+    "id": "aztec_garland_wars",
+    "name_en": "Aztec Garland Wars",
+    "wiki_url": "https://ageofempires.fandom.com/wiki/Aztec_Garland_Wars",
+    "age": "Industrial Age",
+    "building": [
+      "Trading Post",
+      "Tambo",
+      "Aztec"
+    ],
+    "train_time": 10,
+    "effect": "Upgrades\nAztec Eagle Warriors\nand\nAztec Jaguar Warriors\nto Garland (+30%\nhit points\n)",
+    "cost": {
+      "wood": 600,
+      "gold": 600
+    }
+  },
+  {
+    "id": "aztec_initiation",
+    "name_en": "Aztec Initiation",
+    "wiki_url": "https://ageofempires.fandom.com/wiki/Aztec_Initiation",
+    "age": "Exploration Age",
+    "building": [
+      "Trading Post",
+      "Tambo",
+      "Aztec",
+      "Native Embassy",
+      "Mexicans"
+    ],
+    "train_time": 10,
+    "effect": "Hero\nhit points\nand damage +100%",
+    "cost": {
+      "wood": 200,
+      "gold": 200
+    }
+  },
+  {
+    "id": "aztec_raiding_party",
+    "name_en": "Aztec Raiding Party",
+    "wiki_url": "https://ageofempires.fandom.com/wiki/Aztec_Raiding_Party",
+    "civs": [
+      "Aztecs",
+      "Mexicans"
+    ],
+    "age": "Fortress Age",
+    "building": [
+      "Town Center"
+    ],
+    "train_time": 10,
+    "effect": "Delivers\n8\nJaguar Prowl Knights\n(for the Aztecs)\nDelivers 8\nAztec Jaguar Warriors\n(for the Mexicans)",
+    "cost": {
+      "food": 400,
+      "gold": 400
+    }
+  },
+  {
+    "id": "aztec_scouting_party",
+    "name_en": "Aztec Scouting Party",
+    "wiki_url": "https://ageofempires.fandom.com/wiki/Aztec_Scouting_Party",
+    "civs": [
+      "Aztecs",
+      "Mexicans"
+    ],
+    "age": "Commerce Age",
+    "building": [
+      "Town Center"
+    ],
+    "train_time": 10,
+    "effect": "Delivers\n4\nJaguar Prowl Knights\n(for the Aztecs)\nDelivers 4\nAztec Jaguar Warriors\n(for the Mexicans)",
+    "cost": {
+      "food": 400
+    }
+  },
+  {
+    "id": "aztec_war_party",
+    "name_en": "Aztec War Party",
+    "wiki_url": "https://ageofempires.fandom.com/wiki/Aztec_War_Party",
+    "civs": [
+      "Aztecs",
+      "Mexicans"
+    ],
+    "age": "Fortress Age",
+    "building": [
+      "Town Center"
+    ],
+    "train_time": 10,
+    "effect": "Delivers 12\nJaguar Prowl Knights\n(for the Aztecs)\nDelivers 12\nAztec Jaguar Warriors\n(for the Mexicans)",
+    "cost": {
+      "food": 400,
+      "wood": 400,
+      "gold": 400
+    }
+  },
+  {
+    "id": "bank_wagon_shipment",
+    "name_en": "Bank Wagon (shipment)",
+    "wiki_url": "https://ageofempires.fandom.com/wiki/Bank_Wagon_(shipment)",
+    "civs": [
+      "Japanese"
+    ],
+    "age": "Commerce Age",
+    "building": [
+      "Consulate"
+    ],
+    "train_time": 30,
+    "effect": "Delivers 1\nBank Wagon",
+    "cost": {
+      "export": 450
+    }
+  },
+  {
+    "id": "banza_bakwai",
+    "name_en": "Banza Bakwai",
+    "wiki_url": "https://ageofempires.fandom.com/wiki/Banza_Bakwai",
+    "civs": [
+      "Hausa"
+    ],
+    "age": "Commerce Age",
+    "building": [
+      "University"
+    ],
+    "train_time": 5,
+    "effect": "Delivers 3\nKingdom Builders\nUniversity\nbuild limit +3",
+    "cost": {
+      "influence": 3
+    }
+  },
+  {
+    "id": "barometz",
+    "name_en": "Barometz",
+    "wiki_url": "https://ageofempires.fandom.com/wiki/Barometz",
+    "civs": [
+      "Aztecs"
+    ],
+    "age": "Commerce Age",
+    "building": [
+      "War Hut"
+    ],
+    "train_time": 10,
+    "effect": "Delivers 1\nPuma Spearman\nfor every 2 minutes of game time, up to 30 minutes",
+    "cost": {
+      "gold": 750
+    }
+  },
+  {
+    "id": "battle_anger",
+    "name_en": "Battle Anger",
+    "wiki_url": "https://ageofempires.fandom.com/wiki/Battle_Anger",
+    "civs": [
+      "Lakota"
+    ],
+    "age": "Commerce Age",
+    "building": [
+      "Community Plaza"
+    ],
+    "train_time": 10,
+    "effect": "Lakota War Chief\nbonus damage\nagainst\nartillery\n+500%\nAxe Rider\n,\nBow Rider\n,\nRifle Rider\n,\nTashunke Prowler\n, and\nTokala Soldier\nbonus damage against artillery +100%",
+    "cost": {
+      "wood": 350,
+      "gold": 1
+    }
+  },
+  {
+    "id": "bayajidda_epic",
+    "name_en": "Bayajidda Epic",
+    "wiki_url": "https://ageofempires.fandom.com/wiki/Bayajidda_Epic",
+    "civs": [
+      "Hausa"
+    ],
+    "age": "Commerce Age",
+    "building": [
+      "University"
+    ],
+    "train_time": 30,
+    "effect": "Delivers 1 additional\nEmir\nBuilding\nbuild bounty changed from\nexperience\nto\ninfluence",
+    "cost": {
+      "influence": 750
+    }
+  },
+  {
+    "id": "berber_dynasties",
+    "name_en": "Berber Dynasties",
+    "wiki_url": "https://ageofempires.fandom.com/wiki/Berber_Dynasties",
+    "age": "Exploration Age",
+    "building": [
+      "Trading Post",
+      "Tambo",
+      "Berber"
+    ],
+    "train_time": 60,
+    "effect": "Delivers the\nBerber Sultan\nEnables Berber Sultan,\nTavern\n/\nMercenary Camps\n,\nMonastery\n,\nSaloon\n, and\nPalaces\nto train\nBarbary Corsairs\nand\nZenata Riders",
+    "cost": {
+      "food": 250,
+      "wood": 250,
+      "gold": 250
+    }
+  },
+  {
+    "id": "berber_fantasia",
+    "name_en": "Berber Fantasia",
+    "wiki_url": "https://ageofempires.fandom.com/wiki/Berber_Fantasia",
+    "age": "Exploration Age",
+    "building": [
+      "Trading Post",
+      "Tambo",
+      "Berber"
+    ],
+    "train_time": 50,
+    "effect": "Berber Camel Rider\nand\nBerber Sultan\nLine of Sight\n+5;\nZenata Rider\nLine of Sight +3\nBerber Camel Riders, Zenata Riders, and Berber Sultan get Musket Attack",
+    "cost": {
+      "food": 200,
+      "wood": 200,
+      "gold": 200
+    }
+  },
+  {
+    "id": "berber_ghorfas",
+    "name_en": "Berber Ghorfas",
+    "wiki_url": "https://ageofempires.fandom.com/wiki/Berber_Ghorfas",
+    "age": "Exploration Age",
+    "building": [
+      "Trading Post",
+      "Tambo",
+      "Berber",
+      "University",
+      "Hausa",
+      "Alliance"
+    ],
+    "train_time": 50,
+    "effect": "Enemy military units in an\nArea of Effect\nof 9.5 around\nMills\n,\nEstates\n,\nFarms\n, and\nRice Paddies\n, an Area of Effect of 5 around\nFields\n, and an Area of Effect of 12 around\nHaciendas\nhave their speed reduced by 30%",
+    "cost": {
+      "food": 150,
+      "wood": 250,
+      "gold": 250,
+      "influence": 620
+    }
+  },
+  {
+    "id": "berber_kings_of_the_desert",
+    "name_en": "Berber Kings of the Desert",
+    "wiki_url": "https://ageofempires.fandom.com/wiki/Berber_Kings_of_the_Desert",
+    "age": "Exploration Age",
+    "building": [
+      "Trading Post",
+      "Tambo",
+      "Berber",
+      "University",
+      "Hausa",
+      "Alliance"
+    ],
+    "train_time": 30,
+    "effect": "Land villager\nhit points +35%\nSets\nBerber Nomad\nbonus damage\nagainst\ncavalry\nto 5.0x, against\nshock infantry\nto 3.4x",
+    "cost": {
+      "wood": 200,
+      "gold": 200,
+      "influence": 400
+    }
+  },
+  {
+    "id": "berber_salt_caravans",
+    "name_en": "Berber Salt Caravans",
+    "wiki_url": "https://ageofempires.fandom.com/wiki/Berber_Salt_Caravans",
+    "age": "Exploration Age",
+    "building": [
+      "Trading Post",
+      "Tambo",
+      "Berber"
+    ],
+    "train_time": 40,
+    "effect": "Gives a trickle of\ncoin\nbased on total\nfood\nand\nwood\n(0.001\ncoin\nper food + wood; min. 1\ncoin\n, max. 4\ncoin\n)",
+    "cost": {
+      "food": 150,
+      "wood": 150,
+      "gold": 150
+    }
+  },
+  {
+    "id": "besteiros",
+    "name_en": "Besteiros",
+    "wiki_url": "https://ageofempires.fandom.com/wiki/Besteiros",
+    "civs": [
+      "Portuguese"
+    ],
+    "age": "Fortress Age",
+    "building": [
+      "Church"
+    ],
+    "train_time": 15,
+    "effect": "Delivers 22 Besteiros (\nCrossbowmen\n)\nGrants Veteran and Guard Crossbowmen",
+    "cost": {
+      "wood": 2
+    }
+  },
+  {
+    "id": "bill_of_rights",
+    "name_en": "Bill of Rights",
+    "wiki_url": "https://ageofempires.fandom.com/wiki/Bill_of_Rights",
+    "civs": [
+      "United States"
+    ],
+    "age": "Commerce Age",
+    "building": [
+      "Meeting House"
+    ],
+    "train_time": 5,
+    "effect": "Delivers 1\nLarge Collection of Books\n(500\nXP\n) for every 10 minutes of the game time (up to 30 minutes)",
+    "cost": {
+      "gold": 750
+    }
+  },
+  {
+    "id": "blackwood_trade",
+    "name_en": "Blackwood Trade",
+    "wiki_url": "https://ageofempires.fandom.com/wiki/Blackwood_Trade",
+    "civs": [
+      "Africans"
+    ],
+    "age": "Fortress Age",
+    "building": [
+      "Livestock Market"
+    ],
+    "train_time": 30,
+    "effect": "Villager\ngather work rate for\ntree\nand\nMango Grove\n+20%",
+    "cost": {
+      "food": 200,
+      "gold": 300
+    }
+  },
+  {
+    "id": "blanket_filters",
+    "name_en": "Blanket Filters",
+    "wiki_url": "https://ageofempires.fandom.com/wiki/Blanket_Filters",
+    "civs": [
+      "Ethiopians"
+    ],
+    "age": "Exploration Age",
+    "building": [
+      "Asian Market"
+    ],
+    "train_time": 15,
+    "effect": "Villager\ngather work rate for\nmine\nand\nMountain Monastery\n+5%",
+    "cost": {
+      "food": 40,
+      "wood": 40
+    }
+  },
+  {
+    "id": "blockade",
+    "name_en": "Blockade",
+    "wiki_url": "https://ageofempires.fandom.com/wiki/Blockade",
+    "civs": [
+      "All"
+    ],
+    "age": "Imperial Age",
+    "building": [
+      "Capitol",
+      "Mexicans",
+      "Town Center",
+      "State Capitol",
+      "United States"
+    ],
+    "train_time": 1,
+    "effect": "Enemies cannot receive\nHome City\nshipments",
+    "cost": {
+      "gold": 100
+    }
+  },
+  {
+    "id": "blockhouse_wagon_shipment",
+    "name_en": "Blockhouse Wagon (shipment)",
+    "wiki_url": "https://ageofempires.fandom.com/wiki/Blockhouse_Wagon_(shipment)",
+    "civs": [
+      "Chinese",
+      "Indians",
+      "Act III: India"
+    ],
+    "age": "Exploration Age*",
+    "building": [
+      "Consulate"
+    ],
+    "train_time": 5,
+    "effect": "Delivers 1\nBlockhouse Wagon\nEnables\nvillagers\nto build\nBlockhouses",
+    "cost": {
+      "export": 250
+    }
+  },
+  {
+    "id": "blue_guards",
+    "name_en": "Blue Guards",
+    "wiki_url": "https://ageofempires.fandom.com/wiki/Blue_Guards",
+    "civs": [
+      "Dutch"
+    ],
+    "age": "Industrial Age",
+    "building": [
+      "Church"
+    ],
+    "train_time": 15,
+    "effect": "Delivers 30 Blue Guards (Guard\nMusketeers\n)",
+    "cost": {
+      "gold": 2
+    }
+  },
+  {
+    "id": "blue_nile_ties",
+    "name_en": "Blue Nile Ties",
+    "wiki_url": "https://ageofempires.fandom.com/wiki/Blue_Nile_Ties",
+    "civs": [
+      "Ethiopians"
+    ],
+    "age": "Imperial Age",
+    "building": [
+      "Mountain Monastery"
+    ],
+    "train_time": 30,
+    "effect": "Mercenary\ncost and train time -15%",
+    "cost": {
+      "influence": 500
+    }
+  },
+  {
+    "id": "blunderbuss",
+    "name_en": "Blunderbuss",
+    "wiki_url": "https://ageofempires.fandom.com/wiki/Blunderbuss",
+    "civs": [
+      "Europeans"
+    ],
+    "age": "Exploration Age",
+    "building": [
+      "Market"
+    ],
+    "train_time": 20,
+    "effect": "Villager\ndamage +3,\nLine of Sight\nand ranged attack range +4;\nbonus damage\nagainst\nhunted animals\nis reduced to 2.0x (for\nCoureur des Bois\nand\nCree Coureur des Bois\nto 1.5x instead)\nUnit affected by villager upgrades\ndamage +2, Line of Sight and ranged attack range +1",
+    "cost": {
+      "food": 75
+    }
+  },
+  {
+    "id": "bonepipe_armor",
+    "name_en": "Bonepipe Armor",
+    "wiki_url": "https://ageofempires.fandom.com/wiki/Bonepipe_Armor",
+    "civs": [
+      "Lakota"
+    ],
+    "age": "Commerce Age",
+    "building": [
+      "Corral"
+    ],
+    "train_time": 10,
+    "effect": "Lakota War Chief\n,\nWarrior\n,\nCetan Bowman\n,\nClub Warrior\n,\nWakina Rifle\n,\nAxe Rider\n,\nBow Rider\n,\nRifle Rider\n,\nTashunke Prowler\n, and\nTokala Soldier\nsiege\nresistance\n+10%",
+    "cost": {
+      "wood": 500,
+      "gold": 250
+    }
+  },
+  {
+    "id": "book_of_axum",
+    "name_en": "Book of Axum",
+    "wiki_url": "https://ageofempires.fandom.com/wiki/Book_of_Axum",
+    "civs": [
+      "Ethiopians"
+    ],
+    "age": "Commerce Age",
+    "building": [
+      "Mountain Monastery"
+    ],
+    "train_time": 30,
+    "effect": "Abun\ntrain limit,\nLine of Sight\n, and healing range +5, but may no longer gather from Mountain Monasteries",
+    "cost": {
+      "influence": 500
+    }
+  },
+  {
+    "id": "bookkeeping",
+    "name_en": "Bookkeeping",
+    "wiki_url": "https://ageofempires.fandom.com/wiki/Bookkeeping",
+    "civs": [
+      "EuropeansFederal Americans"
+    ],
+    "age": "Fortress Age",
+    "building": [
+      "Estate",
+      "Hacienda"
+    ],
+    "train_time": 30,
+    "effect": "Villager\ngather work rate for\nEstate\n,\nRice Paddy\n(\ncoin\n),\nField\n(coin), and\nHacienda\n(coin) +10%; Hacienda auto gather work rate for coin +10%",
+    "cost": {
+      "food": 300,
+      "wood": 300
+    }
+  },
+  {
+    "id": "bourbon_reforms",
+    "name_en": "Bourbon Reforms",
+    "wiki_url": "https://ageofempires.fandom.com/wiki/Bourbon_Reforms",
+    "age": "Exploration Age",
+    "building": [
+      "Trading Post",
+      "Tambo",
+      "House of Bourbon",
+      "Royal Embassy",
+      "French"
+    ],
+    "train_time": 10,
+    "effect": "Grants 20% of resources spent on technologies as XP and 60, 140, 200 and 320\nXP\nfor each\nExploration Age\n,\nCommerce Age\n,\nFortress Age\n, and\nIndustrial Age\nshipment sent respectively,\nup to 2,000 XP",
+    "cost": {
+      "food": 300,
+      "wood": 300,
+      "gold": 300
+    }
+  },
+  {
+    "id": "brigadier_general",
+    "name_en": "Brigadier General",
+    "wiki_url": "https://ageofempires.fandom.com/wiki/Brigadier_General",
+    "civs": [
+      "Federal Americans"
+    ],
+    "age": "Imperial Age",
+    "building": [
+      "State Capitol",
+      "United States",
+      "Capitol",
+      "Mexicans"
+    ],
+    "train_time": 30,
+    "effect": "General\nhit points +1,000, damage +100%",
+    "cost": {
+      "food": 1
+    }
+  },
+  {
+    "id": "british_army",
+    "name_en": "British Army",
+    "wiki_url": "https://ageofempires.fandom.com/wiki/British_Army",
+    "civs": [
+      "Hausa"
+    ],
+    "age": "Imperial Age",
+    "building": [
+      "University"
+    ],
+    "train_time": 15,
+    "effect": "Delivers 17\nRedcoat Musketeers\nand 3 Imperial\nRockets",
+    "cost": {
+      "influence": 3
+    }
+  },
+  {
+    "id": "british_artillery_engineers",
+    "name_en": "British Artillery Engineers",
+    "wiki_url": "https://ageofempires.fandom.com/wiki/British_Artillery_Engineers",
+    "civs": [
+      "Hausa"
+    ],
+    "age": "Imperial Age",
+    "building": [
+      "University"
+    ],
+    "train_time": 15,
+    "effect": "Enables\nHeavy Cannons\nto be trained at\nPalaces\nfor 800\ninfluence",
+    "cost": {
+      "influence": 1
+    }
+  },
+  {
+    "id": "british_brigade",
+    "name_en": "British Brigade",
+    "wiki_url": "https://ageofempires.fandom.com/wiki/British_Brigade",
+    "civs": [
+      "Chinese",
+      "Indians"
+    ],
+    "age": "Imperial Age",
+    "building": [
+      "Consulate"
+    ],
+    "train_time": 90,
+    "effect": "Delivers 16\nRoger's Rangers\n*\nand 5\nFalconets",
+    "cost": {
+      "export": 2
+    }
+  },
+  {
+    "id": "bullionism",
+    "name_en": "Bullionism",
+    "wiki_url": "https://ageofempires.fandom.com/wiki/Bullionism",
+    "civs": [
+      "Japanese"
+    ],
+    "age": "Fortress Age",
+    "building": [
+      "Consulate"
+    ],
+    "train_time": 30,
+    "effect": "Adds 1,500\nXP\nto inventory",
+    "cost": {
+      "export": 700
+    }
+  },
+  {
+    "id": "bushido_principles",
+    "name_en": "Bushido Principles",
+    "wiki_url": "https://ageofempires.fandom.com/wiki/Bushido_Principles",
+    "civs": [
+      "Japanese"
+    ],
+    "age": "Commerce Age",
+    "building": [
+      "Consulate"
+    ],
+    "train_time": 30,
+    "effect": "Sets unit block train limit to 10",
+    "cost": {
+      "export": 300
+    }
+  },
+  {
+    "id": "byzantine_legacy",
+    "name_en": "Byzantine Legacy",
+    "wiki_url": "https://ageofempires.fandom.com/wiki/Byzantine_Legacy",
+    "age": "Exploration Age",
+    "building": [
+      "Trading Post",
+      "Tambo",
+      "House of Phanar"
+    ],
+    "train_time": 30,
+    "effect": "Building\nand\nship\nhit points\n+15%",
+    "cost": {
+      "wood": 125,
+      "gold": 125
+    }
+  },
+  {
+    "id": "cadets",
+    "name_en": "Cadets",
+    "wiki_url": "https://ageofempires.fandom.com/wiki/Cadets",
+    "civs": [
+      "Federal Americans"
+    ],
+    "age": "Industrial Age",
+    "building": [
+      "State Capitol",
+      "United States",
+      "Capitol",
+      "Mexicans"
+    ],
+    "train_time": 30,
+    "effect": "General\nhit points +1,000",
+    "cost": {
+      "food": 1
+    }
+  },
+  {
+    "id": "cannery",
+    "name_en": "Cannery",
+    "wiki_url": "https://ageofempires.fandom.com/wiki/Cannery",
+    "civs": [
+      "All"
+    ],
+    "age": "Industrial Age",
+    "building": [
+      "Factory"
+    ],
+    "train_time": 30,
+    "effect": "Factory auto gather work rate for\nfood\n+30%",
+    "cost": {
+      "wood": 250,
+      "gold": 250
+    }
+  },
+  {
+    "id": "carabinieri",
+    "name_en": "Carabinieri",
+    "wiki_url": "https://ageofempires.fandom.com/wiki/Carabinieri",
+    "civs": [
+      "Italians"
+    ],
+    "age": "Fortress Age*",
+    "building": [
+      "Basilica"
+    ],
+    "train_time": 15,
+    "effect": "Delivers\n10\nCarabinieri (Veteran\nCarbine Cavalry\n)\nTransforms all\nDragoons\ninto Carabinieri\nCarabinieri ranged attack\nbonus damage\nagainst\noutlaw\nand\nmercenary\n+0.5\nRanged cavalry\nranged attack\nRate of Fire\n-10%, train time -10%",
+    "cost": {
+      "wood": 2
+    }
+  },
+  {
+    "id": "carib_ambush_party",
+    "name_en": "Carib Ambush Party",
+    "wiki_url": "https://ageofempires.fandom.com/wiki/Carib_Ambush_Party",
+    "age": "Commerce Age",
+    "building": [
+      "Trading Post",
+      "Tambo",
+      "Carib"
+    ],
+    "train_time": 10,
+    "effect": "Enables\nheroes\nto train\nCarib Ambushers",
+    "cost": {
+      "wood": 200,
+      "gold": 200
+    }
+  },
+  {
+    "id": "carib_ceremonial_feast",
+    "name_en": "Carib Ceremonial Feast",
+    "wiki_url": "https://ageofempires.fandom.com/wiki/Carib_Ceremonial_Feast",
+    "age": "Industrial Age",
+    "building": [
+      "Trading Post",
+      "Tambo",
+      "Carib"
+    ],
+    "train_time": 10,
+    "effect": "Upgrades\nCarib Blowgunners\nand\nCarib Ambushers\nto Feast Warriors (+50%\nhit points\n)",
+    "cost": {
+      "wood": 400,
+      "gold": 400
+    }
+  },
+  {
+    "id": "carib_garifuna_drums",
+    "name_en": "Carib Garifuna Drums",
+    "wiki_url": "https://ageofempires.fandom.com/wiki/Carib_Garifuna_Drums",
+    "age": "Exploration Age",
+    "building": [
+      "Trading Post",
+      "Tambo",
+      "Carib"
+    ],
+    "train_time": 10,
+    "effect": "Archer\nbonus damage\nagainst\nvillagers\n+1.0",
+    "cost": {
+      "food": 150,
+      "gold": 150
+    }
+  },
+  {
+    "id": "carib_kasiri_beer",
+    "name_en": "Carib Kasiri Beer",
+    "wiki_url": "https://ageofempires.fandom.com/wiki/Carib_Kasiri_Beer",
+    "age": "Exploration Age",
+    "building": [
+      "Trading Post",
+      "Tambo",
+      "Carib"
+    ],
+    "train_time": 60,
+    "effect": "Hand infantry\nand\narcher\ndamage +10%\nCarib Blowgunners\n' and\nCarib Ambushers\n' ranged attack inflicts poison damage\nPoison lasts 6 seconds",
+    "cost": {
+      "food": 250,
+      "gold": 250
+    }
+  },
+  {
+    "id": "cash_crops",
+    "name_en": "Cash Crops",
+    "wiki_url": "https://ageofempires.fandom.com/wiki/Cash_Crops",
+    "civs": [
+      "Africans"
+    ],
+    "age": "Industrial Age",
+    "building": [
+      "Granary"
+    ],
+    "train_time": 30,
+    "effect": "Villager\ngather work rate for\nField\n(\ncoin\n) +30%",
+    "cost": {
+      "wood": 1
+    }
+  },
+  {
+    "id": "catharsis",
+    "name_en": "Catharsis",
+    "wiki_url": "https://ageofempires.fandom.com/wiki/Catharsis",
+    "age": "Exploration Age",
+    "building": [
+      "Athos Monastery"
+    ],
+    "train_time": 30,
+    "effect": "Grants a trickle of 2.5\nXP\nwhile the player's units have not been damaged in the last 30 seconds",
+    "cost": {
+      "gold": 250
+    }
+  },
+  {
+    "id": "cavalry_cuirass",
+    "name_en": "Cavalry Cuirass",
+    "wiki_url": "https://ageofempires.fandom.com/wiki/Cavalry_Cuirass",
+    "civs": [
+      "Haudenosaunee",
+      "Japanese",
+      "Lakota"
+    ],
+    "age": "Commerce Age",
+    "building": [
+      "Arsenal",
+      "Longhouse",
+      "Teepee"
+    ],
+    "train_time": 30,
+    "effect": "Heavy cavalry\nhit points\n+10%",
+    "cost": {
+      "wood": 0,
+      "gold": 300,
+      "influence": 300
+    }
+  },
+  {
+    "id": "cherokee_basket_weaving",
+    "name_en": "Cherokee Basket Weaving",
+    "wiki_url": "https://ageofempires.fandom.com/wiki/Cherokee_Basket_Weaving",
+    "age": "Exploration Age",
+    "building": [
+      "Trading Post",
+      "Tambo",
+      "Cherokee"
+    ],
+    "train_time": 10,
+    "effect": "Amalgamation\n,\nArtificial Fertilizer\n,\nBookkeeping\n,\nSteel Traps\n,\nSeed Drill\n,\nPlacer Mines\n,\nRefineries\n,\nLong Lines\n,\nHomesteading\n,\nHunting Dogs\n,\nGill Nets\n,\nSelective Breeding\n,\nEarth Ceremony\n,\nEarth Gift Ceremony\n,\nRice Markets\n,\nDike-Controlled Canals\n,\nRice Trade\n,\nIrrigation Channels\n,\nRice Surplus\n,\nPaddy Threshing\n,\nImperial Bureaucracy\n,\nCivil Servants\n,\nFlume and Ditching\n,\nBlanket Filters\n,\nYozakura Lanterns\n,\nHanami Parties\n,\nProfessional Hunters\n,\nHunting Eagles\n,\nGreen Corn Ceremony\n,\nHarvest Ceremony\n,\nGreat Feast\n,\nVillage Dogs\n,\nSnares\n, and\nGold Purification\ncost no\nwood\n;\nSubsistence Farming\n,\nSwing Plow\n,\nVegetable Carbon\n,\nCrop Rotation\n,\nNew World Crops\n,\nCash Crops\ncost -50%\nwood",
+    "cost": {
+      "food": 100,
+      "gold": 100
+    }
+  },
+  {
+    "id": "cherokee_war_dance",
+    "name_en": "Cherokee War Dance",
+    "wiki_url": "https://ageofempires.fandom.com/wiki/Cherokee_War_Dance",
+    "age": "Exploration Age",
+    "building": [
+      "Trading Post",
+      "Tambo",
+      "Cherokee"
+    ],
+    "train_time": 60,
+    "effect": "Native warrior\nspeed +20%",
+    "cost": {
+      "wood": 200,
+      "gold": 200
+    }
+  },
+  {
+    "id": "cheyenne_fury",
+    "name_en": "Cheyenne Fury",
+    "wiki_url": "https://ageofempires.fandom.com/wiki/Cheyenne_Fury",
+    "age": "Exploration Age",
+    "building": [
+      "Trading Post",
+      "Tambo",
+      "Cheyenne"
+    ],
+    "train_time": 10,
+    "effect": "Cheyenne Rider\nbonus damage\nagainst\ncavalry\n+1.0\n, against\nshock infantry\n+0.8",
+    "cost": {
+      "wood": 350,
+      "gold": 350
+    }
+  },
+  {
+    "id": "cheyenne_horse_trading",
+    "name_en": "Cheyenne Horse Trading",
+    "wiki_url": "https://ageofempires.fandom.com/wiki/Cheyenne_Horse_Trading",
+    "age": "Exploration Age",
+    "building": [
+      "Trading Post",
+      "Tambo",
+      "Cheyenne"
+    ],
+    "train_time": 10,
+    "effect": "Cavalry\n(except\nTokala Soldiers\n),\nshock infantry\n,\nForbidden Army\n, and\nMongolian Army\ntrain time\n-40%\nStandard Army\n,\nBlack Flag Army\n,\nMing Army\n, and\nImperial Army\ntrain time\n-20%",
+    "cost": {
+      "wood": 250,
+      "gold": 250
+    }
+  },
+  {
+    "id": "cheyenne_hunting_grounds",
+    "name_en": "Cheyenne Hunting Grounds",
+    "wiki_url": "https://ageofempires.fandom.com/wiki/Cheyenne_Hunting_Grounds",
+    "age": "Exploration Age",
+    "building": [
+      "Trading Post",
+      "Tambo",
+      "Cheyenne"
+    ],
+    "train_time": 10,
+    "effect": "Delivers 12\nBison",
+    "cost": {
+      "wood": 175,
+      "gold": 175
+    }
+  },
+  {
+    "id": "chouannerie",
+    "name_en": "Chouannerie",
+    "wiki_url": "https://ageofempires.fandom.com/wiki/Chouannerie",
+    "age": "Exploration Age",
+    "building": [
+      "Trading Post",
+      "Tambo",
+      "House of Bourbon"
+    ],
+    "train_time": 15,
+    "effect": "Villager\nbonus damage\nagainst\ninfantry\n+1.0x;\nCoureur des Bois\nand\nCree Coureur des Bois\nbonus damage +0.66x instead",
+    "cost": {
+      "food": 275
+    }
+  },
+  {
+    "id": "christian_schools",
+    "name_en": "Christian Schools",
+    "wiki_url": "https://ageofempires.fandom.com/wiki/Christian_Schools",
+    "age": "Exploration Age*",
+    "building": [
+      "Trading Post",
+      "Tambo",
+      "Jesuit Mission",
+      "Mountain Monastery",
+      "Ethiopians",
+      "Jesuit",
+      "Alliance"
+    ],
+    "train_time": 10,
+    "effect": "Land villager\n*\ntrain time -15%",
+    "cost": {
+      "wood": 100,
+      "gold": 100,
+      "influence": 200
+    }
+  },
+  {
+    "id": "church_organs",
+    "name_en": "Church Organs",
+    "wiki_url": "https://ageofempires.fandom.com/wiki/Church_Organs",
+    "civs": [
+      "Ethiopians"
+    ],
+    "age": "Fortress Age",
+    "building": [
+      "Mountain Monastery"
+    ],
+    "train_time": 40,
+    "effect": "Delivers 1\nOrgan Gun\nfor each\nMountain Monastery\npresent on the map",
+    "cost": {
+      "influence": 1
+    }
+  },
+  {
+    "id": "church_wagon_shipment",
+    "name_en": "Church Wagon (shipment)",
+    "wiki_url": "https://ageofempires.fandom.com/wiki/Church_Wagon_(shipment)",
+    "civs": [
+      "Japanese"
+    ],
+    "age": "Commerce Age",
+    "building": [
+      "Consulate"
+    ],
+    "train_time": 30,
+    "effect": "Delivers 1\nChurch Wagon",
+    "cost": {
+      "export": 150
+    }
+  },
+  {
+    "id": "cinteotl_worship",
+    "name_en": "Cinteotl Worship",
+    "wiki_url": "https://ageofempires.fandom.com/wiki/Cinteotl_Worship",
+    "civs": [
+      "Aztecs"
+    ],
+    "age": "Fortress Age",
+    "building": [
+      "Farm"
+    ],
+    "train_time": 10,
+    "effect": "Delivers 1\nEagle Runner Knight\nfor every 2 minutes of game time, up to 30 minutes",
+    "cost": {
+      "food": 600,
+      "wood": 500
+    }
+  },
+  {
+    "id": "cipactli_worship",
+    "name_en": "Cipactli Worship",
+    "wiki_url": "https://ageofempires.fandom.com/wiki/Cipactli_Worship",
+    "civs": [
+      "Aztecs"
+    ],
+    "age": "Commerce Age*",
+    "building": [
+      "Dock"
+    ],
+    "train_time": 10,
+    "effect": "Delivers 4\nTlaloc Canoes\nWar ship\nhit points and damage +10%",
+    "cost": {
+      "food": 2,
+      "gold": 500
+    }
+  },
+  {
+    "id": "circular_saw",
+    "name_en": "Circular Saw",
+    "wiki_url": "https://ageofempires.fandom.com/wiki/Circular_Saw",
+    "civs": [
+      "EuropeansFederal Americans"
+    ],
+    "age": "Fortress Age",
+    "building": [
+      "Market"
+    ],
+    "train_time": 30,
+    "effect": "Villager\ngather work rate for\ntree\nand\nMango Grove\n+30%",
+    "cost": {
+      "food": 240,
+      "gold": 480
+    }
+  },
+  {
+    "id": "civil_servants",
+    "name_en": "Civil Servants",
+    "wiki_url": "https://ageofempires.fandom.com/wiki/Civil_Servants",
+    "civs": [
+      "Asians"
+    ],
+    "age": "Exploration Age",
+    "building": [
+      "Asian Market"
+    ],
+    "train_time": 30,
+    "effect": "Villager\ngather work rate for\nhunted animals\n,\nBerry Bush\n,\nCherry Orchard\n,\nherded animals\n,\ntree\n,\nMango Grove\n,\nmine\n, and\nMountain Monastery\n+5%",
+    "cost": {
+      "food": 50,
+      "wood": 50,
+      "gold": 50
+    }
+  },
+  {
+    "id": "clan_offerings",
+    "name_en": "Clan Offerings",
+    "wiki_url": "https://ageofempires.fandom.com/wiki/Clan_Offerings",
+    "civs": [
+      "Japanese"
+    ],
+    "age": "Commerce Age",
+    "building": [
+      "Consulate"
+    ],
+    "train_time": 30,
+    "effect": "A\nSamurai\nmusters at every\nCastle",
+    "cost": {
+      "export": 400
+    }
+  },
+  {
+    "id": "clenched_fist",
+    "name_en": "Clenched Fist",
+    "wiki_url": "https://ageofempires.fandom.com/wiki/Clenched_Fist",
+    "age": "Exploration Age",
+    "building": [
+      "Trading Post",
+      "Tambo",
+      "Shaolin Temple"
+    ],
+    "train_time": 10,
+    "effect": "Ranged infantry\nall melee attack damage +25%;\nCarolean\nand\nhand skirmisher\n(except\nUrumi Swordsmen\n) all melee attack damage +10% instead",
+    "cost": {
+      "wood": 200,
+      "gold": 200
+    }
+  },
+  {
+    "id": "coatlicue_worship",
+    "name_en": "Coatlicue Worship",
+    "wiki_url": "https://ageofempires.fandom.com/wiki/Coatlicue_Worship",
+    "civs": [
+      "Aztecs"
+    ],
+    "age": "Commerce Age",
+    "building": [
+      "Aztec House"
+    ],
+    "train_time": 10,
+    "effect": "Delivers 1\nOtontin Slinger\nfor every 2 minutes of game time, up to 30 minutes",
+    "cost": {
+      "gold": 500
+    }
+  },
+  {
+    "id": "coca_cultivation",
+    "name_en": "Coca Cultivation",
+    "wiki_url": "https://ageofempires.fandom.com/wiki/Coca_Cultivation",
+    "civs": [
+      "Inca"
+    ],
+    "age": "Industrial Age",
+    "building": [
+      "Estate"
+    ],
+    "train_time": 10,
+    "effect": "Estates\nauto gather\n0.8\ncoin\n/s",
+    "cost": {
+      "food": 500,
+      "wood": 500,
+      "gold": 500
+    }
+  },
+  {
+    "id": "code_napoleon",
+    "name_en": "Code Napoleon",
+    "wiki_url": "https://ageofempires.fandom.com/wiki/Code_Napoleon",
+    "civs": [
+      "French"
+    ],
+    "age": "Commerce Age",
+    "building": [
+      "Church"
+    ],
+    "train_time": 15,
+    "effect": "Villager\ngather work rate for all\nresources\n+10%\nBuilding\ncost\n+25%"
+  },
+  {
+    "id": "coffee_trade",
+    "name_en": "Coffee Trade",
+    "wiki_url": "https://ageofempires.fandom.com/wiki/Coffee_Trade",
+    "civs": [
+      "Dutch"
+    ],
+    "age": "Commerce Age",
+    "building": [
+      "Church"
+    ],
+    "train_time": 15,
+    "effect": "Bank\nbuild limit +2\nBank\nhit points\n-20%"
+  },
+  {
+    "id": "coin_crates",
+    "name_en": "Coin Crates",
+    "wiki_url": "https://ageofempires.fandom.com/wiki/Coin_Crates",
+    "civs": [
+      "Chinese",
+      "Indians"
+    ],
+    "age": "Fortress Age*",
+    "building": [
+      "Consulate"
+    ],
+    "train_time": 30,
+    "effect": "Delivers 1\nHuge Chests of Coin\nand 1 Chests of Coin (\n600\ncoin\n)",
+    "cost": {
+      "export": 350
+    }
+  },
+  {
+    "id": "coin_trickle",
+    "name_en": "Coin Trickle",
+    "wiki_url": "https://ageofempires.fandom.com/wiki/Coin_Trickle",
+    "civs": [
+      "Chinese"
+    ],
+    "age": "Fortress Age",
+    "building": [
+      "Consulate"
+    ],
+    "train_time": 30,
+    "effect": "Adds\n1.65\nto\ncoin\ntrickle rate",
+    "cost": {
+      "export": 250
+    }
+  },
+  {
+    "id": "collective_economy",
+    "name_en": "Collective Economy",
+    "wiki_url": "https://ageofempires.fandom.com/wiki/Collective_Economy",
+    "civs": [
+      "Asians"
+    ],
+    "age": "Imperial Age",
+    "building": [
+      "Rice Paddy"
+    ],
+    "train_time": 30,
+    "effect": "Villager\ngather work rate for\nmine\n,\nMountain Monastery\n,\nEstate\n,\nRice Paddy\n(coin),\nField\n(coin), and\nHacienda\n(coin) +50%; Hacienda auto gather coin work rate for coin +50%\nFishing boat\ngather work rate for\nwhale\n+50%",
+    "cost": {
+      "food": 1,
+      "wood": 1
+    }
+  },
+  {
+    "id": "comanche_horse_breeding",
+    "name_en": "Comanche Horse Breeding",
+    "wiki_url": "https://ageofempires.fandom.com/wiki/Comanche_Horse_Breeding",
+    "age": "Exploration Age",
+    "building": [
+      "Trading Post",
+      "Tambo",
+      "Comanche"
+    ],
+    "train_time": 10,
+    "effect": "Cavalry\nand\nshock infantry\nhit points\n+10%",
+    "cost": {
+      "food": 150,
+      "gold": 150
+    }
+  },
+  {
+    "id": "comanche_mustangs",
+    "name_en": "Comanche Mustangs",
+    "wiki_url": "https://ageofempires.fandom.com/wiki/Comanche_Mustangs",
+    "age": "Exploration Age",
+    "building": [
+      "Trading Post",
+      "Tambo",
+      "Comanche"
+    ],
+    "train_time": 60,
+    "effect": "Cavalry\nand\nshock infantry\nspeed\n+5%",
+    "cost": {
+      "wood": 200,
+      "gold": 200
+    }
+  },
+  {
+    "id": "comanche_trade_language",
+    "name_en": "Comanche Trade Language",
+    "wiki_url": "https://ageofempires.fandom.com/wiki/Comanche_Trade_Language",
+    "age": "Exploration Age",
+    "building": [
+      "Trading Post",
+      "Tambo",
+      "Comanche"
+    ],
+    "train_time": 60,
+    "effect": "Technology and\nWonder\ncoin\ncost -10%",
+    "cost": {
+      "food": 100,
+      "gold": 100
+    }
+  },
+  {
+    "id": "compunction",
+    "name_en": "Compunction",
+    "wiki_url": "https://ageofempires.fandom.com/wiki/Compunction",
+    "civs": [
+      "Asians"
+    ],
+    "age": "Fortress Age*",
+    "building": [
+      "Monastery"
+    ],
+    "train_time": 30,
+    "effect": "Outlaw\nhit points\nand damage\n+20%\n, train time\n-50%\nOutlaw and\ntreasure guardian\nhit points and damage +30% in the\nIndustrial Age\n, +50% in the\nImperial Age",
+    "cost": {
+      "food": 250,
+      "wood": 250
+    }
+  },
+  {
+    "id": "congress_of_vienna",
+    "name_en": "Congress of Vienna",
+    "wiki_url": "https://ageofempires.fandom.com/wiki/Congress_of_Vienna",
+    "age": "Commerce Age",
+    "building": [
+      "Trading Post",
+      "Tambo",
+      "Inca"
+    ],
+    "train_time": 30,
+    "effect": "Adds +1 shipment to inventory",
+    "cost": {
+      "food": 250,
+      "wood": 250,
+      "gold": 250
+    }
+  },
+  {
+    "id": "conscription_age_of_empires_iii",
+    "name_en": "Conscription (Age of Empires III)",
+    "wiki_url": "https://ageofempires.fandom.com/wiki/Conscription_(Age_of_Empires_III)",
+    "civs": [
+      "United States"
+    ],
+    "age": "Exploration Age",
+    "building": [
+      "Town Center",
+      "Outpost",
+      "Blockhouse",
+      "Fort"
+    ],
+    "train_time": 5,
+    "effect": "Spawns 15\nMilitiamen\n/16\nMinutemen\n/12\nBashibozuks",
+    "cost": {
+      "food": 400,
+      "gold": 400
+    }
+  },
+  {
+    "id": "cooperation",
+    "name_en": "Cooperation",
+    "wiki_url": "https://ageofempires.fandom.com/wiki/Cooperation",
+    "civs": [
+      "Haudenosaunee",
+      "Lakota"
+    ],
+    "age": "Exploration Age",
+    "building": [
+      "Tribal Marketplace"
+    ],
+    "effect": "Villagers\nauto gather\n0.03\nXP\nwhile doing any task\nHome City Card\ncoin\ncost\n-25%",
+    "cost": {
+      "food": 250,
+      "wood": 250
+    }
+  },
+  {
+    "id": "corselet",
+    "name_en": "Corselet",
+    "wiki_url": "https://ageofempires.fandom.com/wiki/Corselet",
+    "civs": [
+      "Spanish",
+      "Knights of St. John",
+      "Act I: Blood"
+    ],
+    "age": "Commerce Age",
+    "building": [
+      "Church"
+    ],
+    "train_time": 15,
+    "effect": "Heavy infantry\nhit points\n+25%, but speed -15%"
+  },
+  {
+    "id": "counter_infantry_rifling",
+    "name_en": "Counter Infantry Rifling",
+    "wiki_url": "https://ageofempires.fandom.com/wiki/Counter_Infantry_Rifling",
+    "civs": [
+      "Haudenosaunee",
+      "Lakota"
+    ],
+    "age": "Commerce Age",
+    "building": [
+      "Arsenal",
+      "Longhouse",
+      "Teepee"
+    ],
+    "train_time": 30,
+    "effect": "Rifle infantry\nranged and hand attack\nbonus damage\nagainst\nheavy infantry\n+1.0x\nCounter-skirmishers\nranged and hand attack bonus damage against\nlight infantry\n+1.0x\nFire Thrower\ngrenade and flame attack bonus damage against heavy infantry +0.75x, rocket attack bonus damage against\ninfantry\n+0.75x",
+    "cost": {
+      "wood": 200,
+      "gold": 200,
+      "influence": 400
+    }
+  },
+  {
+    "id": "cow_loans",
+    "name_en": "Cow Loans",
+    "wiki_url": "https://ageofempires.fandom.com/wiki/Cow_Loans",
+    "civs": [
+      "Africans"
+    ],
+    "age": "Fortress Age",
+    "building": [
+      "Livestock Market"
+    ],
+    "train_time": 30,
+    "effect": "Fattened\nherded animals\nsold at Livestock Markets spawns an unfattened one",
+    "cost": {
+      "wood": 300,
+      "gold": 300
+    }
+  },
+  {
+    "id": "cree_kinship",
+    "name_en": "Cree Kinship",
+    "wiki_url": "https://ageofempires.fandom.com/wiki/Cree_Kinship",
+    "age": "Exploration Age",
+    "building": [
+      "Trading Post",
+      "Tambo",
+      "Cree"
+    ],
+    "train_time": 60,
+    "effect": "Native warrior\nand\nCree Coureur des Bois\ntrain time -45%",
+    "cost": {
+      "food": 0,
+      "wood": 125,
+      "gold": 125
+    }
+  },
+  {
+    "id": "cree_tanning",
+    "name_en": "Cree Tanning",
+    "wiki_url": "https://ageofempires.fandom.com/wiki/Cree_Tanning",
+    "age": "Exploration Age",
+    "building": [
+      "Trading Post",
+      "Tambo",
+      "Cree"
+    ],
+    "train_time": 30,
+    "effect": "Infantry\n,\ncavalry\n, and\nshock infantry\nhit points\n+5%",
+    "cost": {
+      "food": 100,
+      "gold": 100
+    }
+  },
+  {
+    "id": "cree_textile_craftsmanship",
+    "name_en": "Cree Textile Craftsmanship",
+    "wiki_url": "https://ageofempires.fandom.com/wiki/Cree_Textile_Craftsmanship",
+    "age": "Exploration Age",
+    "building": [
+      "Trading Post",
+      "Tambo",
+      "Cree"
+    ],
+    "train_time": 30,
+    "effect": "Building\nand\nconstruction wagon\ncost\n-10%\nBuilding (except\nwonders\n)\nbuild time -25%",
+    "cost": {
+      "wood": 125,
+      "gold": 125
+    }
+  },
+  {
+    "id": "crop_rotation_age_of_empires_iii",
+    "name_en": "Crop Rotation (Age of Empires III)",
+    "wiki_url": "https://ageofempires.fandom.com/wiki/Crop_Rotation_(Age_of_Empires_III)",
+    "civs": [
+      "Africans"
+    ],
+    "age": "Commerce Age",
+    "building": [
+      "Granary"
+    ],
+    "train_time": 30,
+    "effect": "Villager\ngather work rate for\nField\n(\ncoin\n) +10%",
+    "cost": {
+      "wood": 300
+    }
+  },
+  {
+    "id": "crown_lands",
+    "name_en": "Crown Lands",
+    "wiki_url": "https://ageofempires.fandom.com/wiki/Crown_Lands",
+    "age": "Commerce Age",
+    "building": [
+      "Trading Post",
+      "Tambo",
+      "Inca"
+    ],
+    "train_time": 30,
+    "effect": "Adds +20\nXP\nto inventory for each\nbuilding\npresent on the map (up to 10,000 XP)",
+    "cost": {
+      "gold": 300
+    }
+  },
+  {
+    "id": "crusader_knights",
+    "name_en": "Crusader Knights",
+    "wiki_url": "https://ageofempires.fandom.com/wiki/Crusader_Knights",
+    "civs": [
+      "Maltese"
+    ],
+    "age": "Commerce Age",
+    "building": [
+      "Church"
+    ],
+    "train_time": 15,
+    "effect": "Sentinels\nare stronger near enemy buildings, especially fortifications\nHospitallers\nare faster near enemy buildings",
+    "cost": {
+      "wood": 250
+    }
+  },
+  {
+    "id": "customized_merc_weapons",
+    "name_en": "Customized Merc Weapons",
+    "wiki_url": "https://ageofempires.fandom.com/wiki/Customized_Merc_Weapons",
+    "civs": [
+      "John Black's Mercenaries",
+      "Act II: Ice"
+    ],
+    "age": "Fortress Age",
+    "building": [
+      "Church"
+    ],
+    "train_time": 15,
+    "effect": "Mercenary\ndamage +30%\nBuilding\ncost +30%"
+  },
+  {
+    "id": "deforestation",
+    "name_en": "Deforestation",
+    "wiki_url": "https://ageofempires.fandom.com/wiki/Deforestation",
+    "civs": [
+      "Mexicans"
+    ],
+    "age": "Imperial Age",
+    "building": [
+      "Capitol",
+      "Market",
+      "Town Center",
+      "Maya"
+    ],
+    "train_time": 30,
+    "effect": "Villager\ngather work rate for\ntree\nand\nMango Grove\n+50%",
+    "cost": {
+      "food": 1,
+      "gold": 1
+    }
+  },
+  {
+    "id": "dikecontrolled_canals",
+    "name_en": "Dike-Controlled Canals",
+    "wiki_url": "https://ageofempires.fandom.com/wiki/Dike-Controlled_Canals",
+    "civs": [
+      "Asians"
+    ],
+    "age": "Fortress Age",
+    "building": [
+      "Rice Paddy"
+    ],
+    "train_time": 30,
+    "effect": "Villager\ngather work rate for\nMill\n,\nFarm\n,\nRice Paddy\n(food),\nField\n(food), and\nHacienda\n(food) +15%; Hacienda auto gather food work rate for food +15%",
+    "cost": {
+      "wood": 150,
+      "gold": 150
+    }
+  },
+  {
+    "id": "dim_mak",
+    "name_en": "Dim Mak",
+    "wiki_url": "https://ageofempires.fandom.com/wiki/Dim_Mak",
+    "age": "Exploration Age",
+    "building": [
+      "Trading Post",
+      "Tambo",
+      "Shaolin Temple"
+    ],
+    "train_time": 10,
+    "effect": "Rattan Shield\ndamage +50%",
+    "cost": {
+      "wood": 300,
+      "gold": 300
+    }
+  },
+  {
+    "id": "ducal_berg_lancers",
+    "name_en": "Ducal Berg Lancers",
+    "wiki_url": "https://ageofempires.fandom.com/wiki/Ducal_Berg_Lancers",
+    "age": "Fortress Age",
+    "building": [
+      "Trading Post",
+      "Tambo",
+      "Inca"
+    ],
+    "train_time": 30,
+    "effect": "Delivers 5\nChevaulegers\n; Chevauleger\nbonus damage\nagainst\ninfantry\n+0.25x",
+    "cost": {
+      "food": 500,
+      "gold": 500
+    }
+  },
+  {
+    "id": "dutch_brigade",
+    "name_en": "Dutch Brigade",
+    "wiki_url": "https://ageofempires.fandom.com/wiki/Dutch_Brigade",
+    "civs": [
+      "Japanese"
+    ],
+    "age": "Imperial Age",
+    "building": [
+      "Consulate"
+    ],
+    "train_time": 90,
+    "effect": "Delivers 28\nBlue Guards\nand 4\nMortars",
+    "cost": {
+      "export": 2
+    }
+  },
+  {
+    "id": "da_de_muertos",
+    "name_en": "Día de Muertos",
+    "wiki_url": "https://ageofempires.fandom.com/wiki/Día_de_Muertos",
+    "civs": [
+      "Mexicans",
+      "Peru"
+    ],
+    "age": "Commerce Age",
+    "building": [
+      "Cathedral"
+    ],
+    "train_time": 30,
+    "effect": "Grants 5\nXP\nfor every unit lost so far"
+  },
+  {
+    "id": "earth_ceremony",
+    "name_en": "Earth Ceremony",
+    "wiki_url": "https://ageofempires.fandom.com/wiki/Earth_Ceremony",
+    "civs": [
+      "Native Americans"
+    ],
+    "age": "Commerce Age*",
+    "building": [
+      "Estate"
+    ],
+    "train_time": 30,
+    "effect": "Villager\ngather work rate for\nmine\n,\nMountain Monastery\n,\nEstate\n,\nRice Paddy\n(\ncoin\n),\nField\n(coin), and\nHacienda\n(coin) +10%; Hacienda auto gather work rate for coin +10%",
+    "cost": {
+      "food": 185,
+      "wood": 150
+    }
+  },
+  {
+    "id": "earth_gift_ceremony",
+    "name_en": "Earth Gift Ceremony",
+    "wiki_url": "https://ageofempires.fandom.com/wiki/Earth_Gift_Ceremony",
+    "civs": [
+      "Native Americans"
+    ],
+    "age": "Fortress Age",
+    "building": [
+      "Estate"
+    ],
+    "train_time": 30,
+    "effect": "Villager\ngather work rate for\nmine\n,\nMountain Monastery\n,\nEstate\n,\nRice Paddy\n(\ncoin\n),\nField\n(coin), and\nHacienda\n(coin) +20%; Hacienda auto gather work rate for coin +20%",
+    "cost": {
+      "food": 380,
+      "wood": 320
+    }
+  },
+  {
+    "id": "eastern_medicine",
+    "name_en": "Eastern Medicine",
+    "wiki_url": "https://ageofempires.fandom.com/wiki/Eastern_Medicine",
+    "civs": [
+      "Ethiopians"
+    ],
+    "age": "Exploration Age",
+    "building": [
+      "Asian Market"
+    ],
+    "train_time": 30,
+    "effect": "Villager\nhit points +35%, damage +3,\nLine of Sight\nand ranged attack range +4\nUnit affected by villager upgrades\nhit points +10%, damage +1, Line of Sight +2",
+    "cost": {
+      "food": 120
+    }
+  },
+  {
+    "id": "ebony_exports",
+    "name_en": "Ebony Exports",
+    "wiki_url": "https://ageofempires.fandom.com/wiki/Ebony_Exports",
+    "civs": [
+      "Africans"
+    ],
+    "age": "Imperial Age",
+    "building": [
+      "Livestock Market"
+    ],
+    "train_time": 30,
+    "effect": "Villager\ngather work rate for\ntree\nand\nMango Grove\n+30%",
+    "cost": {
+      "food": 1,
+      "gold": 1
+    }
+  },
+  {
+    "id": "encomienda_manor",
+    "name_en": "Encomienda Manor",
+    "wiki_url": "https://ageofempires.fandom.com/wiki/Encomienda_Manor",
+    "civs": [
+      "Portuguese"
+    ],
+    "age": "Commerce Age",
+    "building": [
+      "Church"
+    ],
+    "train_time": 15,
+    "effect": "Villager\ngather work rate for\nMill\nand\nFarm\n+20%, but gather work rate for other resources -5%"
+  },
+  {
+    "id": "excessive_taxation",
+    "name_en": "Excessive Taxation",
+    "wiki_url": "https://ageofempires.fandom.com/wiki/Excessive_Taxation",
+    "civs": [
+      "Mexicans"
+    ],
+    "age": "Imperial Age",
+    "building": [
+      "Capitol"
+    ],
+    "train_time": 30,
+    "effect": "Villager\ngather work rate for\nmine\n,\nMountain Monastery\n,\nEstate\n,\nRice Paddy\n(coin),\nField\n(coin), and\nHacienda\n(coin) +50%\nFishing boat\ngather work rate for\nwhale\n+50%\nHacienda auto gather work rate for coin +50%\nBank\nbuild limit +2",
+    "cost": {
+      "food": 1,
+      "wood": 1
+    }
+  },
+  {
+    "id": "excessive_tribute",
+    "name_en": "Excessive Tribute",
+    "wiki_url": "https://ageofempires.fandom.com/wiki/Excessive_Tribute",
+    "civs": [
+      "Native Americans"
+    ],
+    "age": "Imperial Age",
+    "building": [
+      "Estate"
+    ],
+    "train_time": 30,
+    "effect": "Villager\ngather work rate for\nmine\n,\nMountain Monastery\n,\nEstate\n,\nRice Paddy\n(\ncoin\n),\nField\n(coin), and\nHacienda\n(coin) +50%; Hacienda auto gather work rate for coin +50%\nFishing boat\ngather work rate for\nwhale\n+50%",
+    "cost": {
+      "food": 1,
+      "wood": 1
+    }
+  },
+  {
+    "id": "expeditionary_fleet",
+    "name_en": "Expeditionary Fleet",
+    "wiki_url": "https://ageofempires.fandom.com/wiki/Expeditionary_Fleet",
+    "civs": [
+      "Indians",
+      "Japanese"
+    ],
+    "age": "Industrial Age",
+    "building": [
+      "Consulate"
+    ],
+    "train_time": 30,
+    "effect": "Delivers 1\nIronclad",
+    "cost": {
+      "export": 700
+    }
+  },
+  {
+    "id": "exploration_fleet",
+    "name_en": "Exploration Fleet",
+    "wiki_url": "https://ageofempires.fandom.com/wiki/Exploration_Fleet",
+    "civs": [
+      "Indians",
+      "Japanese"
+    ],
+    "age": "Fortress Age",
+    "building": [
+      "Consulate"
+    ],
+    "train_time": 30,
+    "effect": "Delivers 1\nCaravel\nwith 3\nPetards\nin it",
+    "cost": {
+      "export": 425
+    }
+  },
+  {
+    "id": "factory_wagon_shipment",
+    "name_en": "Factory Wagon (shipment)",
+    "wiki_url": "https://ageofempires.fandom.com/wiki/Factory_Wagon_(shipment)",
+    "civs": [
+      "Chinese",
+      "Indians",
+      "Act III: India"
+    ],
+    "age": "Industrial Age",
+    "building": [
+      "Consulate"
+    ],
+    "train_time": 30,
+    "effect": "Delivers 1\nFactory Wagon",
+    "cost": {
+      "export": 800
+    }
+  },
+  {
+    "id": "fasting",
+    "name_en": "Fasting",
+    "wiki_url": "https://ageofempires.fandom.com/wiki/Fasting",
+    "age": "Exploration Age",
+    "building": [
+      "Trading Post",
+      "Tambo",
+      "Sufi Mosque"
+    ],
+    "train_time": 10,
+    "effect": "Villager\nhit points -40%\nVillager\n,\nfishing boat\n, and\nAbun\ngather work rate +10%;\nHacienda\nauto gather work rate for food and coin +10%",
+    "cost": {
+      "wood": 200,
+      "gold": 200
+    }
+  },
+  {
+    "id": "filiki_eteria",
+    "name_en": "Filiki Eteria",
+    "wiki_url": "https://ageofempires.fandom.com/wiki/Filiki_Eteria",
+    "age": "Exploration Age",
+    "building": [
+      "Athos Monastery"
+    ],
+    "train_time": 30,
+    "effect": "Hero\nunits now spawn 2\nEvzones\n(1 for a certain few) after being knocked out",
+    "cost": {
+      "gold": 800
+    }
+  },
+  {
+    "id": "fishing_fleet",
+    "name_en": "Fishing Fleet",
+    "wiki_url": "https://ageofempires.fandom.com/wiki/Fishing_Fleet",
+    "civs": [
+      "Indians",
+      "Japanese"
+    ],
+    "age": "Commerce Age",
+    "building": [
+      "Consulate"
+    ],
+    "train_time": 30,
+    "effect": "Delivers 3\nFishing Boats",
+    "cost": {
+      "export": 250
+    }
+  },
+  {
+    "id": "flaming_arrows_age_of_empires_iii",
+    "name_en": "Flaming Arrows (Age of Empires III)",
+    "wiki_url": "https://ageofempires.fandom.com/wiki/Flaming_Arrows_(Age_of_Empires_III)",
+    "civs": [
+      "Lakota"
+    ],
+    "age": "Commerce Age",
+    "building": [
+      "Dock"
+    ],
+    "train_time": 10,
+    "effect": "War ship\ndamage\n+30%",
+    "cost": {
+      "food": 0,
+      "wood": 100,
+      "gold": 400
+    }
+  },
+  {
+    "id": "flint_lock",
+    "name_en": "Flint Lock",
+    "wiki_url": "https://ageofempires.fandom.com/wiki/Flint_Lock",
+    "civs": [
+      "Japanese"
+    ],
+    "age": "Commerce Age",
+    "building": [
+      "Arsenal",
+      "Golden Pavilion"
+    ],
+    "train_time": 30,
+    "effect": "Gunpowder trooper\nhit points\n+10%\nPirate\nhit points +10% (with the \"Letter of Marque\"\nHome City Card\n)",
+    "cost": {
+      "wood": 200,
+      "gold": 250
+    }
+  },
+  {
+    "id": "flume_and_ditching",
+    "name_en": "Flume and Ditching",
+    "wiki_url": "https://ageofempires.fandom.com/wiki/Flume_and_Ditching",
+    "civs": [
+      "Ethiopians"
+    ],
+    "age": "Commerce Age",
+    "building": [
+      "Asian Market"
+    ],
+    "train_time": 15,
+    "effect": "Villager\ngather work rate for\nmine\nand\nMountain Monastery\n+10%",
+    "cost": {
+      "food": 100,
+      "wood": 100
+    }
+  },
+  {
+    "id": "flying_buttress",
+    "name_en": "Flying Buttress",
+    "wiki_url": "https://ageofempires.fandom.com/wiki/Flying_Buttress",
+    "age": "Exploration Age",
+    "building": [
+      "Trading Post",
+      "Tambo",
+      "Jesuit Mission",
+      "Native Embassy",
+      "Mexicans"
+    ],
+    "train_time": 10,
+    "effect": "Building\nhit points\n+20%",
+    "cost": {
+      "wood": 250,
+      "gold": 250
+    }
+  },
+  {
+    "id": "folk_heroes",
+    "name_en": "Folk Heroes",
+    "wiki_url": "https://ageofempires.fandom.com/wiki/Folk_Heroes",
+    "civs": [
+      "Europeans"
+    ],
+    "age": "Fortress Age",
+    "building": [
+      "Tavern",
+      "Lombard"
+    ],
+    "train_time": 30,
+    "effect": "Outlaw\nhit points\nand damage +20%, train time -50%\nOutlaw and\ntreasure guardian\nhit points and damage +30% in the\nIndustrial Age\n, +50% in the\nImperial Age",
+    "cost": {
+      "food": 250,
+      "wood": 250
+    }
+  },
+  {
+    "id": "folwarks",
+    "name_en": "Folwarks",
+    "wiki_url": "https://ageofempires.fandom.com/wiki/Folwarks",
+    "age": "Commerce Age",
+    "building": [
+      "Trading Post",
+      "Tambo",
+      "House of Jagiellon"
+    ],
+    "train_time": 30,
+    "effect": "Grants\n15%\nof the cost of each farming building constructed as food and/or coin, retroactively",
+    "cost": {
+      "wood": 135
+    }
+  },
+  {
+    "id": "food_crates",
+    "name_en": "Food Crates",
+    "wiki_url": "https://ageofempires.fandom.com/wiki/Food_Crates",
+    "civs": [
+      "Chinese",
+      "Indians"
+    ],
+    "age": "Exploration Age*",
+    "building": [
+      "Consulate"
+    ],
+    "train_time": 30,
+    "effect": "Delivers 4\nCrates of Food\n(\n400\nfood\n)",
+    "cost": {
+      "export": 150
+    }
+  },
+  {
+    "id": "food_trickle",
+    "name_en": "Food Trickle",
+    "wiki_url": "https://ageofempires.fandom.com/wiki/Food_Trickle",
+    "civs": [
+      "Chinese"
+    ],
+    "age": "Exploration Age",
+    "building": [
+      "Consulate"
+    ],
+    "train_time": 30,
+    "effect": "Adds 1.5 to\nfood\ntrickle rate",
+    "cost": {
+      "export": 250
+    }
+  },
+  {
+    "id": "forest_people_ceremony",
+    "name_en": "Forest People Ceremony",
+    "wiki_url": "https://ageofempires.fandom.com/wiki/Forest_People_Ceremony",
+    "civs": [
+      "Native Americans"
+    ],
+    "age": "Commerce Age",
+    "building": [
+      "Market"
+    ],
+    "train_time": 30,
+    "effect": "Villager\ngather work rate for\ntree\nand\nMango Grove\n+20%",
+    "cost": {
+      "food": 150,
+      "gold": 235
+    }
+  },
+  {
+    "id": "forest_spirit_ceremony",
+    "name_en": "Forest Spirit Ceremony",
+    "wiki_url": "https://ageofempires.fandom.com/wiki/Forest_Spirit_Ceremony",
+    "civs": [
+      "Native Americans"
+    ],
+    "age": "Fortress Age",
+    "building": [
+      "Market"
+    ],
+    "train_time": 30,
+    "effect": "Villager\ngather work rate for\ntree\nand\nMango Grove\n+20%",
+    "cost": {
+      "food": 250,
+      "gold": 400
+    }
+  },
+  {
+    "id": "fort_wagon_shipment",
+    "name_en": "Fort Wagon (shipment)",
+    "wiki_url": "https://ageofempires.fandom.com/wiki/Fort_Wagon_(shipment)",
+    "civs": [
+      "Chinese",
+      "Indians",
+      "Act III: India"
+    ],
+    "age": "Fortress Age",
+    "building": [
+      "Consulate"
+    ],
+    "train_time": 30,
+    "effect": "Delivers 1\nFort Wagon",
+    "cost": {
+      "export": 600
+    }
+  },
+  {
+    "id": "founder",
+    "name_en": "Founder",
+    "wiki_url": "https://ageofempires.fandom.com/wiki/Founder",
+    "civs": [
+      "Aztecs"
+    ],
+    "age": "Exploration Age",
+    "building": [
+      "Community Plaza"
+    ],
+    "train_time": 10,
+    "effect": "Aztec War Chief\naura triples\nXP\nkill bounty",
+    "cost": {
+      "food": 100,
+      "wood": 100,
+      "gold": 100
+    }
+  },
+  {
+    "id": "french_brigade",
+    "name_en": "French Brigade",
+    "wiki_url": "https://ageofempires.fandom.com/wiki/French_Brigade",
+    "civs": [
+      "Chinese",
+      "Indians"
+    ],
+    "age": "Imperial Age",
+    "building": [
+      "Consulate"
+    ],
+    "train_time": 90,
+    "effect": "Delivers 15\nGendarmes",
+    "cost": {
+      "export": 2
+    }
+  },
+  {
+    "id": "frontiersmen",
+    "name_en": "Frontiersmen",
+    "wiki_url": "https://ageofempires.fandom.com/wiki/Frontiersmen",
+    "civs": [
+      "Federal Americans"
+    ],
+    "age": "Exploration Age",
+    "building": [
+      "Market"
+    ],
+    "train_time": 20,
+    "effect": "Villager\nhit points +35%,\nLine of Sight\nand ranged attack range +6\nUnit affected by villager upgrades\nhit points +10%, Line of Sight +2, ranged attack range +1",
+    "cost": {
+      "food": 115
+    }
+  },
+  {
+    "id": "fulani_migrations",
+    "name_en": "Fulani Migrations",
+    "wiki_url": "https://ageofempires.fandom.com/wiki/Fulani_Migrations",
+    "civs": [
+      "Hausa"
+    ],
+    "age": "Fortress Age",
+    "building": [
+      "University"
+    ],
+    "train_time": 30,
+    "effect": "Fulani Archer\nLine of Sight\n+2, can slowly gather\nwood\nfrom\ntrees\nand gets long range attack",
+    "cost": {
+      "influence": 1
+    }
+  },
+  {
+    "id": "fur_dressing",
+    "name_en": "Fur Dressing",
+    "wiki_url": "https://ageofempires.fandom.com/wiki/Fur_Dressing",
+    "civs": [
+      "Haudenosaunee",
+      "Lakota"
+    ],
+    "age": "Exploration Age",
+    "building": [
+      "Market",
+      "Tribal Marketplace"
+    ],
+    "train_time": 30,
+    "effect": "Villager\ngather work rate for Tribal Marketplace and\nMountain Monastery\n+10%",
+    "cost": {
+      "food": 75,
+      "wood": 125
+    }
+  },
+  {
+    "id": "gadaa_system",
+    "name_en": "Gadaa System",
+    "wiki_url": "https://ageofempires.fandom.com/wiki/Gadaa_System",
+    "civs": [
+      "Ethiopians"
+    ],
+    "age": "Industrial Age",
+    "building": [
+      "Mountain Monastery"
+    ],
+    "train_time": 20,
+    "effect": "Unit\nhit points and damage +5%\nVillager\nand\nAbun\ngather work rate +5%\nMountain Monastery\nauto gather work rate +5%",
+    "cost": {
+      "influence": 500
+    }
+  },
+  {
+    "id": "galata_tower_district",
+    "name_en": "Galata Tower District",
+    "wiki_url": "https://ageofempires.fandom.com/wiki/Galata_Tower_District",
+    "civs": [
+      "Ottomans"
+    ],
+    "age": "Commerce Age",
+    "building": [
+      "Mosque"
+    ],
+    "train_time": 15,
+    "effect": "Yörük\ntrain limit +20",
+    "cost": {
+      "gold": 100
+    }
+  },
+  {
+    "id": "gang_saw",
+    "name_en": "Gang Saw",
+    "wiki_url": "https://ageofempires.fandom.com/wiki/Gang_Saw",
+    "civs": [
+      "EuropeansFederal Americans"
+    ],
+    "age": "Exploration Age",
+    "building": [
+      "Market"
+    ],
+    "train_time": 20,
+    "effect": "Villager\ngather work rate for\ntree\nand\nMango Grove\n+10%",
+    "cost": {
+      "food": 100
+    }
+  },
+  {
+    "id": "gerewol_festival",
+    "name_en": "Gerewol Festival",
+    "wiki_url": "https://ageofempires.fandom.com/wiki/Gerewol_Festival",
+    "civs": [
+      "Hausa"
+    ],
+    "age": "Fortress Age",
+    "building": [
+      "University"
+    ],
+    "train_time": 5,
+    "effect": "Land villager\ntrain bounty changes from\nexperience\nto\ninfluence",
+    "cost": {
+      "influence": 75
+    }
+  },
+  {
+    "id": "german_brigade",
+    "name_en": "German Brigade",
+    "wiki_url": "https://ageofempires.fandom.com/wiki/German_Brigade",
+    "civs": [
+      "Chinese"
+    ],
+    "age": "Imperial Age",
+    "building": [
+      "Consulate"
+    ],
+    "train_time": 90,
+    "effect": "Delivers 19\nPrussian Needle Gunners\nand 15\nPrussian Uhlans",
+    "cost": {
+      "export": 2
+    }
+  },
+  {
+    "id": "gill_nets",
+    "name_en": "Gill Nets",
+    "wiki_url": "https://ageofempires.fandom.com/wiki/Gill_Nets",
+    "civs": [
+      "All"
+    ],
+    "age": "Exploration Age",
+    "building": [
+      "Dock",
+      "Port"
+    ],
+    "train_time": 30,
+    "effect": "Fishing boat\ngather work rate for\nfish\nand\nwhale\n+15%",
+    "cost": {
+      "wood": 90,
+      "gold": 90
+    }
+  },
+  {
+    "id": "goa_followership",
+    "name_en": "Goa Followership",
+    "wiki_url": "https://ageofempires.fandom.com/wiki/Goa_Followership",
+    "civs": [
+      "Ethiopians"
+    ],
+    "age": "Fortress Age",
+    "building": [
+      "Mountain Monastery"
+    ],
+    "train_time": 5,
+    "effect": "Delivers 1\nVillager\nwith every future\nHome City\nshipments",
+    "cost": {
+      "influence": 500
+    }
+  },
+  {
+    "id": "gold_purification",
+    "name_en": "Gold Purification",
+    "wiki_url": "https://ageofempires.fandom.com/wiki/Gold_Purification",
+    "civs": [
+      "Africans"
+    ],
+    "age": "Industrial Age",
+    "building": [
+      "Livestock Market"
+    ],
+    "train_time": 30,
+    "effect": "Villager\ngather work rate for\nmine\n+30%",
+    "cost": {
+      "food": 300,
+      "wood": 300
+    }
+  },
+  {
+    "id": "golden_liberty",
+    "name_en": "Golden Liberty",
+    "wiki_url": "https://ageofempires.fandom.com/wiki/Golden_Liberty",
+    "age": "Exploration Age",
+    "building": [
+      "Trading Post",
+      "Tambo",
+      "House of Vasa"
+    ],
+    "train_time": 30,
+    "effect": "Unit\ncoin\ncost -5%",
+    "cost": {
+      "food": 200,
+      "wood": 200
+    }
+  },
+  {
+    "id": "good_will_agreements",
+    "name_en": "Good Will Agreements",
+    "wiki_url": "https://ageofempires.fandom.com/wiki/Good_Will_Agreements",
+    "civs": [
+      "Ethiopians"
+    ],
+    "age": "Fortress Age",
+    "building": [
+      "Mountain Monastery"
+    ],
+    "train_time": 30,
+    "effect": "Mahout Lancer\nand\nHowdah\ncost -15%, -1\npopulation",
+    "cost": {
+      "influence": 1
+    }
+  },
+  {
+    "id": "grand_bazaar_age_of_empires_iii",
+    "name_en": "Grand Bazaar (Age of Empires III)",
+    "wiki_url": "https://ageofempires.fandom.com/wiki/Grand_Bazaar_(Age_of_Empires_III)",
+    "civs": [
+      "Ottomans"
+    ],
+    "age": "Fortress Age*",
+    "building": [
+      "Mosque"
+    ],
+    "train_time": 15,
+    "effect": "Yörük\nspawn time -8 seconds",
+    "cost": {
+      "wood": 300
+    }
+  },
+  {
+    "id": "grand_encampment",
+    "name_en": "Grand Encampment",
+    "wiki_url": "https://ageofempires.fandom.com/wiki/Grand_Encampment",
+    "civs": [
+      "United States",
+      "Act III: Steel"
+    ],
+    "age": "Commerce Age",
+    "building": [
+      "Church"
+    ],
+    "train_time": 15,
+    "effect": "Infantry\nhit points\n+25%, but speed -25%"
+  },
+  {
+    "id": "great_coat",
+    "name_en": "Great Coat",
+    "wiki_url": "https://ageofempires.fandom.com/wiki/Great_Coat",
+    "civs": [
+      "Europeans"
+    ],
+    "age": "Exploration Age",
+    "building": [
+      "Market"
+    ],
+    "train_time": 20,
+    "effect": "Villager\nhit points +35%\nUnit affected by villager upgrades\nhit points +10%",
+    "cost": {
+      "food": 75
+    }
+  },
+  {
+    "id": "great_feast",
+    "name_en": "Great Feast",
+    "wiki_url": "https://ageofempires.fandom.com/wiki/Great_Feast",
+    "civs": [
+      "Native Americans"
+    ],
+    "age": "Exploration Age*",
+    "building": [
+      "Farm"
+    ],
+    "train_time": 30,
+    "effect": "Villager\ngather work rate for\nhunted animals\n,\nBerry Bush\n,\nCherry Orchard\n,\nMill\n,\nFarm\n,\nRice Paddy\n(food),\nField\n(food), and\nHacienda\n(food) +10%; Hacienda auto gather food work rate for food +10%",
+    "cost": {
+      "wood": 100,
+      "gold": 75
+    }
+  },
+  {
+    "id": "greek_shipyards",
+    "name_en": "Greek Shipyards",
+    "wiki_url": "https://ageofempires.fandom.com/wiki/Greek_Shipyards",
+    "age": "Exploration Age",
+    "building": [
+      "Trading Post",
+      "Tambo",
+      "House of Phanar"
+    ],
+    "train_time": 30,
+    "effect": "Dock\nand\nPort\ntraining and research work rate +40%\nBattleship\nbuild limit +1",
+    "cost": {
+      "wood": 300,
+      "gold": 300
+    }
+  },
+  {
+    "id": "green_corn_ceremony",
+    "name_en": "Green Corn Ceremony",
+    "wiki_url": "https://ageofempires.fandom.com/wiki/Green_Corn_Ceremony",
+    "civs": [
+      "Native Americans"
+    ],
+    "age": "Fortress Age",
+    "building": [
+      "Farm"
+    ],
+    "train_time": 30,
+    "effect": "Villager\ngather work rate for\nhunted animals\n,\nBerry Bush\n,\nCherry Orchard\n,\nMill\n,\nFarm\n,\nRice Paddy\n(food),\nField\n(food), and\nHacienda\n(food) +20%; Hacienda auto gather food work rate for food +20%",
+    "cost": {
+      "wood": 350,
+      "gold": 175
+    }
+  },
+  {
+    "id": "gun_running",
+    "name_en": "Gun Running",
+    "wiki_url": "https://ageofempires.fandom.com/wiki/Gun_Running",
+    "civs": [
+      "Native Americans"
+    ],
+    "age": "Commerce Age",
+    "building": [
+      "Native Embassy"
+    ],
+    "train_time": 10,
+    "effect": "Enables\nPistoleros\n,\nComancheros\n,\nRenegados\n,\nCaptured Mortars\n, and\nWild West\nat\nNative Embassies",
+    "cost": {
+      "gold": 700
+    }
+  },
+  {
+    "id": "gun_trade",
+    "name_en": "Gun Trade",
+    "wiki_url": "https://ageofempires.fandom.com/wiki/Gun_Trade",
+    "civs": [
+      "Lakota"
+    ],
+    "age": "Exploration Age",
+    "building": [
+      "Estate"
+    ],
+    "train_time": 10,
+    "effect": "Wakina Rifle\nand\nRifle Rider\ndamage\n+15%",
+    "cost": {
+      "wood": 250
+    }
+  },
+  {
+    "id": "gunners_quadrant",
+    "name_en": "Gunner's Quadrant",
+    "wiki_url": "https://ageofempires.fandom.com/wiki/Gunner's_Quadrant",
+    "civs": [
+      "Japanese"
+    ],
+    "age": "Commerce Age",
+    "building": [
+      "Arsenal"
+    ],
+    "train_time": 30,
+    "effect": "Artillery\nLine of Sight\n+6",
+    "cost": {
+      "food": 100,
+      "gold": 100,
+      "influence": 180
+    }
+  },
+  {
+    "id": "gustavian_guards",
+    "name_en": "Gustavian Guards",
+    "wiki_url": "https://ageofempires.fandom.com/wiki/Gustavian_Guards",
+    "civs": [
+      "Swedes"
+    ],
+    "age": "Commerce Age",
+    "building": [
+      "Church"
+    ],
+    "train_time": 15,
+    "effect": "Delivers 16 Gustavian Guards (Veteran\nHalberdiers\n)\nHalberdier\nresistance\n+5%, speed +0.25",
+    "cost": {
+      "food": 1
+    }
+  },
+  {
+    "id": "hanami_parties",
+    "name_en": "Hanami Parties",
+    "wiki_url": "https://ageofempires.fandom.com/wiki/Hanami_Parties",
+    "civs": [
+      "Japanese"
+    ],
+    "age": "Exploration Age",
+    "building": [
+      "Asian Market"
+    ],
+    "train_time": 10,
+    "effect": "Villager\ngather work rate for\nBerry Bush\nand\nCherry Orchard\n+5%",
+    "cost": {
+      "wood": 25,
+      "gold": 25
+    }
+  },
+  {
+    "id": "hanseatic_league",
+    "name_en": "Hanseatic League",
+    "wiki_url": "https://ageofempires.fandom.com/wiki/Hanseatic_League",
+    "age": "Exploration Age",
+    "building": [
+      "Trading Post",
+      "Tambo",
+      "House of Vasa"
+    ],
+    "train_time": 10,
+    "effect": "Delivers 4\nTorp Wagons",
+    "cost": {
+      "food": 250,
+      "wood": 300
+    }
+  },
+  {
+    "id": "hardened_iron_axes",
+    "name_en": "Hardened Iron Axes",
+    "wiki_url": "https://ageofempires.fandom.com/wiki/Hardened_Iron_Axes",
+    "civs": [
+      "Africans"
+    ],
+    "age": "Exploration Age",
+    "building": [
+      "Livestock Market"
+    ],
+    "train_time": 30,
+    "effect": "Villager\ngather work rate for\ntree\nand\nMango Grove\n+5%",
+    "cost": {
+      "food": 50
+    }
+  },
+  {
+    "id": "harvest_ceremony_technology",
+    "name_en": "Harvest Ceremony (technology)",
+    "wiki_url": "https://ageofempires.fandom.com/wiki/Harvest_Ceremony_(technology)",
+    "civs": [
+      "Native Americans"
+    ],
+    "age": "Commerce Age",
+    "building": [
+      "Farm"
+    ],
+    "train_time": 30,
+    "effect": "Villager\ngather work rate for\nhunted animals\n,\nBerry Bush\n,\nCherry Orchard\n,\nMill\n,\nFarm\n,\nRice Paddy\n(food),\nField\n(food), and\nHacienda\n(food) +15%; Hacienda auto gather food work rate for food +15%",
+    "cost": {
+      "wood": 225,
+      "gold": 125
+    }
+  },
+  {
+    "id": "haudenosaunee_lacrosse",
+    "name_en": "Haudenosaunee Lacrosse",
+    "wiki_url": "https://ageofempires.fandom.com/wiki/Haudenosaunee_Lacrosse",
+    "age": "Exploration Age",
+    "building": [
+      "Trading Post",
+      "Tambo",
+      "Haudenosaunee"
+    ],
+    "train_time": 60,
+    "effect": "Ranged infantry\ndamage +10%",
+    "cost": {
+      "wood": 250,
+      "gold": 250
+    }
+  },
+  {
+    "id": "haudenosaunee_league",
+    "name_en": "Haudenosaunee League",
+    "wiki_url": "https://ageofempires.fandom.com/wiki/Haudenosaunee_League",
+    "age": "Exploration Age",
+    "building": [
+      "Trading Post",
+      "Tambo",
+      "Haudenosaunee"
+    ],
+    "train_time": 10,
+    "effect": "Enables\nHaudenosaunee Tomahawks\nand\nHaudenosaunee Mantlets\nto be trained at\nbarracks\n,\nForts\n,\nStrongholds\n, and\nAgra Fort",
+    "cost": {
+      "wood": 75,
+      "gold": 75
+    }
+  },
+  {
+    "id": "haudenosaunee_morning_wars",
+    "name_en": "Haudenosaunee Morning Wars",
+    "wiki_url": "https://ageofempires.fandom.com/wiki/Haudenosaunee_Morning_Wars",
+    "age": "Exploration Age",
+    "building": [
+      "Trading Post",
+      "Tambo",
+      "Haudenosaunee"
+    ],
+    "train_time": 60,
+    "effect": "Delivers 1\nHaudenosaunee Mantlet\nfor every 2 minutes of game time, up to 30 minutes",
+    "cost": {
+      "wood": 400,
+      "gold": 400
+    }
+  },
+  {
+    "id": "haudenosaunee_raiding_party",
+    "name_en": "Haudenosaunee Raiding Party",
+    "wiki_url": "https://ageofempires.fandom.com/wiki/Haudenosaunee_Raiding_Party",
+    "civs": [
+      "Haudenosaunee"
+    ],
+    "age": "Fortress Age",
+    "building": [
+      "Town Center"
+    ],
+    "train_time": 10,
+    "effect": "Delivers 10\nTomahawks",
+    "cost": {
+      "food": 500,
+      "gold": 500
+    }
+  },
+  {
+    "id": "haudenosaunee_scouting_party",
+    "name_en": "Haudenosaunee Scouting Party",
+    "wiki_url": "https://ageofempires.fandom.com/wiki/Haudenosaunee_Scouting_Party",
+    "civs": [
+      "Haudenosaunee"
+    ],
+    "age": "Commerce Age",
+    "building": [
+      "Town Center"
+    ],
+    "train_time": 10,
+    "effect": "Delivers 5\nTomahawks",
+    "cost": {
+      "food": 500
+    }
+  },
+  {
+    "id": "haudenosaunee_war_party",
+    "name_en": "Haudenosaunee War Party",
+    "wiki_url": "https://ageofempires.fandom.com/wiki/Haudenosaunee_War_Party",
+    "civs": [
+      "Haudenosaunee"
+    ],
+    "age": "Fortress Age",
+    "building": [
+      "Town Center"
+    ],
+    "train_time": 10,
+    "effect": "Delivers 15\nTomahawks",
+    "cost": {
+      "food": 500,
+      "wood": 500,
+      "gold": 500
+    }
+  },
+  {
+    "id": "hausa_bakwai",
+    "name_en": "Hausa Bakwai",
+    "wiki_url": "https://ageofempires.fandom.com/wiki/Hausa_Bakwai",
+    "civs": [
+      "Hausa"
+    ],
+    "age": "Commerce Age",
+    "building": [
+      "University"
+    ],
+    "train_time": 30,
+    "effect": "Town Center\nbuild limit +3",
+    "cost": {
+      "influence": 500
+    }
+  },
+  {
+    "id": "heated_shot_age_of_empires_iii",
+    "name_en": "Heated Shot (Age of Empires III)",
+    "wiki_url": "https://ageofempires.fandom.com/wiki/Heated_Shot_(Age_of_Empires_III)",
+    "civs": [
+      "Japanese",
+      "Haudenosaunee"
+    ],
+    "age": "Commerce Age",
+    "building": [
+      "Arsenal",
+      "Longhouse"
+    ],
+    "train_time": 30,
+    "effect": "Artillery\nbombard attack\nbonus damage\nagainst\nships\n+50%\nBuilding\nanti-ship attack bonus damage against ships +50%",
+    "cost": {
+      "food": 150,
+      "wood": 150,
+      "influence": 270
+    }
+  },
+  {
+    "id": "high_crusade",
+    "name_en": "High Crusade",
+    "wiki_url": "https://ageofempires.fandom.com/wiki/High_Crusade",
+    "civs": [
+      "Knights of St. John",
+      "Act I: Blood"
+    ],
+    "age": "Fortress Age",
+    "building": [
+      "Church"
+    ],
+    "train_time": 15,
+    "effect": "Delivers 8\nHoop Throwers\nHoop Thrower\nhit points\n, grenade and hand attack damage +20%\nMilitary hit points -5%"
+  },
+  {
+    "id": "holy_mass",
+    "name_en": "Holy Mass",
+    "wiki_url": "https://ageofempires.fandom.com/wiki/Holy_Mass",
+    "civs": [
+      "Mexicans"
+    ],
+    "age": "Commerce Age",
+    "building": [
+      "Cathedral"
+    ],
+    "train_time": 5,
+    "effect": "Delivers 1\nLarge Collection of Books\n(500\nXP\n) for every 10 minutes of game time, up to 30 minutes",
+    "cost": {
+      "gold": 750
+    }
+  },
+  {
+    "id": "homesteading",
+    "name_en": "Homesteading",
+    "wiki_url": "https://ageofempires.fandom.com/wiki/Homesteading",
+    "civs": [
+      "EuropeansFederal Americans"
+    ],
+    "age": "Industrial Age",
+    "building": [
+      "Estate",
+      "Hacienda"
+    ],
+    "train_time": 30,
+    "effect": "Villager\ngather work rate for\nEstate\n,\nRice Paddy\n(\ncoin\n),\nField\n(coin), and\nHacienda\n(coin) +20%; Hacienda auto gather work rate for coin +20%",
+    "cost": {
+      "food": 400,
+      "wood": 400
+    }
+  },
+  {
+    "id": "horse_secrets",
+    "name_en": "Horse Secrets",
+    "wiki_url": "https://ageofempires.fandom.com/wiki/Horse_Secrets",
+    "civs": [
+      "Haudenosaunee"
+    ],
+    "age": "Commerce Age",
+    "building": [
+      "Corral"
+    ],
+    "train_time": 10,
+    "effect": "Cavalry\ntrain time -35%\n, speed +10%",
+    "cost": {
+      "wood": 400,
+      "gold": 400
+    }
+  },
+  {
+    "id": "horsemanship",
+    "name_en": "Horsemanship",
+    "wiki_url": "https://ageofempires.fandom.com/wiki/Horsemanship",
+    "civs": [
+      "Lakota"
+    ],
+    "age": "Exploration Age",
+    "building": [
+      "Farm"
+    ],
+    "train_time": 10,
+    "effect": "Cavalry\ntrain time -33%,\nbonus damage\nagainst\nWalls\n+1.0",
+    "cost": {
+      "gold": 500
+    }
+  },
+  {
+    "id": "hualcana",
+    "name_en": "Hualcana",
+    "wiki_url": "https://ageofempires.fandom.com/wiki/Hualcana",
+    "civs": [
+      "Inca"
+    ],
+    "age": "Fortress Age",
+    "building": [
+      "War Hut"
+    ],
+    "train_time": 10,
+    "effect": "Infantry\nand\nshock infantry\nresistance\n+5%",
+    "cost": {
+      "wood": 50,
+      "gold": 500
+    }
+  },
+  {
+    "id": "hunting_dogs_age_of_empires_iii",
+    "name_en": "Hunting Dogs (Age of Empires III)",
+    "wiki_url": "https://ageofempires.fandom.com/wiki/Hunting_Dogs_(Age_of_Empires_III)",
+    "civs": [
+      "EuropeansFederal AmericansNative Americans"
+    ],
+    "age": "Exploration Age",
+    "building": [
+      "Market"
+    ],
+    "train_time": 20,
+    "effect": "Villager\ngather work rate for\nhunted animals\n+10%",
+    "cost": {
+      "wood": 50,
+      "gold": 50
+    }
+  },
+  {
+    "id": "hunting_eagles",
+    "name_en": "Hunting Eagles",
+    "wiki_url": "https://ageofempires.fandom.com/wiki/Hunting_Eagles",
+    "civs": [
+      "Chinese",
+      "Indians",
+      "Ethiopians"
+    ],
+    "age": "Exploration Age",
+    "building": [
+      "Asian Market"
+    ],
+    "train_time": 10,
+    "effect": "Villager\ngather work rate for\nhunted animals\n+5%",
+    "cost": {
+      "wood": 25,
+      "gold": 25
+    }
+  },
+  {
+    "id": "hunting_expeditions",
+    "name_en": "Hunting Expeditions",
+    "wiki_url": "https://ageofempires.fandom.com/wiki/Hunting_Expeditions",
+    "age": "Exploration Age",
+    "building": [
+      "Trading Post",
+      "Tambo",
+      "House of Oldenburg"
+    ],
+    "train_time": 30,
+    "effect": "Villagers\nand\nFishing Boats\n/\nFishing Canoes\nauto gather 10% of food gather rate as coin while gathering food from\nhunted animals\nor\nfish",
+    "cost": {
+      "food": 300,
+      "wood": 300
+    }
+  },
+  {
+    "id": "huron_fish_wedding",
+    "name_en": "Huron Fish Wedding",
+    "wiki_url": "https://ageofempires.fandom.com/wiki/Huron_Fish_Wedding",
+    "age": "Exploration Age",
+    "building": [
+      "Trading Post",
+      "Tambo",
+      "Huron"
+    ],
+    "train_time": 10,
+    "effect": "Fishing boat\ngather work rate for\nfish\nand\nwhale\n+15%",
+    "cost": {
+      "wood": 75,
+      "gold": 75
+    }
+  },
+  {
+    "id": "huron_sun_ceremony",
+    "name_en": "Huron Sun Ceremony",
+    "wiki_url": "https://ageofempires.fandom.com/wiki/Huron_Sun_Ceremony",
+    "age": "Exploration Age",
+    "building": [
+      "Trading Post",
+      "Tambo",
+      "Huron"
+    ],
+    "train_time": 60,
+    "effect": "Huron Mantlet\ntrain limit +200%",
+    "cost": {
+      "wood": 225,
+      "gold": 225
+    }
+  },
+  {
+    "id": "huron_trade_dominance",
+    "name_en": "Huron Trade Dominance",
+    "wiki_url": "https://ageofempires.fandom.com/wiki/Huron_Trade_Dominance",
+    "age": "Exploration Age",
+    "building": [
+      "Trading Post",
+      "Tambo",
+      "Huron"
+    ],
+    "train_time": 60,
+    "effect": "Delivers 1\nHuron Mantlet\nfor every 2 minutes of game time, up to 30 minutes",
+    "cost": {
+      "wood": 400,
+      "gold": 400
+    }
+  },
+  {
+    "id": "immigrants",
+    "name_en": "Immigrants",
+    "wiki_url": "https://ageofempires.fandom.com/wiki/Immigrants",
+    "civs": [
+      "Lakota",
+      "Mexicans"
+    ],
+    "age": "Industrial Age",
+    "building": [
+      "Town Center",
+      "Capitol"
+    ],
+    "train_time": 30,
+    "effect": "Supports 100\npopulation\nUnit train time -10%, spawn time -5%\n(does not stack with the\nImperial Age\ntrain time bonus)",
+    "cost": {
+      "gold": 2
+    }
+  },
+  {
+    "id": "imperial_bureaucracy",
+    "name_en": "Imperial Bureaucracy",
+    "wiki_url": "https://ageofempires.fandom.com/wiki/Imperial_Bureaucracy",
+    "civs": [
+      "Asians"
+    ],
+    "age": "Commerce Age",
+    "building": [
+      "Asian Market"
+    ],
+    "train_time": 30,
+    "effect": "Villager\ngather work rate for\nhunted animals\n,\nBerry Bush\n,\nCherry Orchard\n,\nherded animals\n,\ntree\n,\nMango Grove\n,\nmine\n, and\nMountain Monastery\n+10%",
+    "cost": {
+      "food": 150,
+      "wood": 150,
+      "gold": 150
+    }
+  },
+  {
+    "id": "imported_cannons",
+    "name_en": "Imported Cannons",
+    "wiki_url": "https://ageofempires.fandom.com/wiki/Imported_Cannons",
+    "civs": [
+      "Africans"
+    ],
+    "age": "Fortress Age",
+    "building": [
+      "Palace"
+    ],
+    "train_time": 20,
+    "effect": "Enables\nFalconets\n,\nCulverins\n, and\nMortars\nto be trained at\nPalaces\nfor\ninfluence",
+    "cost": {
+      "influence": 150
+    }
+  },
+  {
+    "id": "improved_cannon_trade",
+    "name_en": "Improved Cannon Trade",
+    "wiki_url": "https://ageofempires.fandom.com/wiki/Improved_Cannon_Trade",
+    "civs": [
+      "Africans"
+    ],
+    "age": "Industrial Age",
+    "building": [
+      "Town Center",
+      "Palace"
+    ],
+    "train_time": 20,
+    "effect": "Falconets\n,\nCulverins\n,\nMortars\n,\nNapoleon Guns\n,\nLi'l Bombards\n,\nGatling Camels\n,\nHeavy Cannons\n, and\nSebastopol Mortars\ncosts are split into\ninfluence\nand\ncoin",
+    "cost": {
+      "influence": 250
+    }
+  },
+  {
+    "id": "inca_raiding_party",
+    "name_en": "Inca Raiding Party",
+    "wiki_url": "https://ageofempires.fandom.com/wiki/Inca_Raiding_Party",
+    "civs": [
+      "Inca"
+    ],
+    "age": "Fortress Age",
+    "building": [
+      "Town Center"
+    ],
+    "train_time": 10,
+    "effect": "Delivers 12\nPlumed Spearmen",
+    "cost": {
+      "food": 600,
+      "gold": 600
+    }
+  },
+  {
+    "id": "inca_scouting_party",
+    "name_en": "Inca Scouting Party",
+    "wiki_url": "https://ageofempires.fandom.com/wiki/Inca_Scouting_Party",
+    "civs": [
+      "Inca"
+    ],
+    "age": "Commerce Age",
+    "building": [
+      "Town Center"
+    ],
+    "train_time": 10,
+    "effect": "Delivers 5\nPlumed Spearmen",
+    "cost": {
+      "food": 600
+    }
+  },
+  {
+    "id": "inca_war_party",
+    "name_en": "Inca War Party",
+    "wiki_url": "https://ageofempires.fandom.com/wiki/Inca_War_Party",
+    "civs": [
+      "Inca"
+    ],
+    "age": "Industrial Age",
+    "building": [
+      "Town Center"
+    ],
+    "train_time": 10,
+    "effect": "Ships 20\nPlumed Spearmen",
+    "cost": {
+      "food": 600,
+      "wood": 600,
+      "gold": 600
+    }
+  },
+  {
+    "id": "incendiary_grenades",
+    "name_en": "Incendiary Grenades",
+    "wiki_url": "https://ageofempires.fandom.com/wiki/Incendiary_Grenades",
+    "civs": [
+      "British",
+      "Dutch",
+      "French",
+      "Maltese",
+      "Mexicans",
+      "Ottomans",
+      "Russians",
+      "Swedes",
+      "United States"
+    ],
+    "age": "Commerce Age*",
+    "building": [
+      "Arsenal"
+    ],
+    "train_time": 30,
+    "effect": "Grenade trooper\n*\nsiege attack\nbonus damage\nagainst\nbuildings\n+15%\n, ranged attack\nArea of Effect\n+1;\nGrenadier\nand\nHumbaraci\nmortar attack Area of Effect +0.5;\nSoldado\nand\nGiant Grenadier\nranged attack Area of Effect +0.5 instead\nRevolutionary\nsiege attack bonus damage against buildings +15%, grenade attack Area of Effect +1 (with the \"Peruvian Guard\"\nHome City Card\n)",
+    "cost": {
+      "wood": 400,
+      "gold": 300
+    }
+  },
+  {
+    "id": "indian_friendship",
+    "name_en": "Indian Friendship",
+    "wiki_url": "https://ageofempires.fandom.com/wiki/Indian_Friendship",
+    "civs": [
+      "John Black's Mercenaries",
+      "Act II: Ice"
+    ],
+    "age": "Fortress Age",
+    "building": [
+      "Church"
+    ],
+    "train_time": 15,
+    "effect": "Native warrior\nhit points\n+25%",
+    "cost": {
+      "wood": 1
+    }
+  },
+  {
+    "id": "infantry_breastplate",
+    "name_en": "Infantry Breastplate",
+    "wiki_url": "https://ageofempires.fandom.com/wiki/Infantry_Breastplate",
+    "civs": [
+      "Haudenosaunee",
+      "Japanese",
+      "Lakota"
+    ],
+    "age": "Commerce Age",
+    "building": [
+      "Arsenal",
+      "Longhouse",
+      "Teepee"
+    ],
+    "train_time": 30,
+    "effect": "Hand infantry\nand\nfoot archer\nhit points\n+10%",
+    "cost": {
+      "wood": 100,
+      "gold": 100,
+      "influence": 200
+    }
+  },
+  {
+    "id": "inti_festival",
+    "name_en": "Inti Festival",
+    "wiki_url": "https://ageofempires.fandom.com/wiki/Inti_Festival",
+    "civs": [
+      "Inca"
+    ],
+    "age": "Exploration Age",
+    "building": [
+      "Market"
+    ],
+    "train_time": 10,
+    "effect": "Adds +1\nshipment\nto inventory",
+    "cost": {
+      "gold": 1
+    }
+  },
+  {
+    "id": "iowa_farmlands",
+    "name_en": "Iowa Farmlands",
+    "wiki_url": "https://ageofempires.fandom.com/wiki/Iowa_Farmlands",
+    "civs": [
+      "United States"
+    ],
+    "age": "Imperial Age",
+    "building": [
+      "State Capitol"
+    ],
+    "train_time": 30,
+    "effect": "Villager\ngather work rate for\nMill\n,\nFarm\n,\nRice Paddy\n(\nfood\n),\nField\n(food), and\nHacienda\n(food) +40%\nHacienda auto gather work rate for food +40%",
+    "cost": {
+      "wood": 1,
+      "gold": 1
+    }
+  },
+  {
+    "id": "irreechaa",
+    "name_en": "Irreechaa",
+    "wiki_url": "https://ageofempires.fandom.com/wiki/Irreechaa",
+    "civs": [
+      "Ethiopians"
+    ],
+    "age": "Industrial Age",
+    "building": [
+      "Mountain Monastery"
+    ],
+    "train_time": 20,
+    "effect": "Fields\ngrant 10\ninfluence\nwhen built",
+    "cost": {
+      "influence": 75
+    }
+  },
+  {
+    "id": "irrigation_channels",
+    "name_en": "Irrigation Channels",
+    "wiki_url": "https://ageofempires.fandom.com/wiki/Irrigation_Channels",
+    "civs": [
+      "Asians"
+    ],
+    "age": "Fortress Age",
+    "building": [
+      "Rice Paddy"
+    ],
+    "train_time": 30,
+    "effect": "Villager\ngather work rate for\nMill\n,\nFarm\n,\nRice Paddy\n(food),\nField\n(food), and\nHacienda\n(food) +15%; Hacienda auto gather food work rate for food +15%",
+    "cost": {
+      "wood": 150,
+      "gold": 150
+    }
+  },
+  {
+    "id": "jagiellonian_legacy",
+    "name_en": "Jagiellonian Legacy",
+    "wiki_url": "https://ageofempires.fandom.com/wiki/Jagiellonian_Legacy",
+    "age": "Fortress Age",
+    "building": [
+      "Trading Post",
+      "Tambo",
+      "House of Jagiellon"
+    ],
+    "train_time": 60,
+    "effect": "Grants all units and resources received from\nAge\nup researches again",
+    "cost": {
+      "food": 200,
+      "wood": 200,
+      "gold": 200
+    }
+  },
+  {
+    "id": "kalthoff_repeaters",
+    "name_en": "Kalthoff Repeaters",
+    "wiki_url": "https://ageofempires.fandom.com/wiki/Kalthoff_Repeaters",
+    "age": "Fortress Age",
+    "building": [
+      "Trading Post",
+      "Tambo",
+      "House of Oldenburg"
+    ],
+    "train_time": 30,
+    "effect": "Light infantry\nand\ncounter skirmisher\nbonus damage\nagainst light infantry +0.1x,\nRoyal Huntsman\nand Royal Hunter bonus damage +0.5x instead",
+    "cost": {
+      "wood": 175,
+      "gold": 175
+    }
+  },
+  {
+    "id": "kamidana",
+    "name_en": "Kamidana",
+    "wiki_url": "https://ageofempires.fandom.com/wiki/Kamidana",
+    "civs": [
+      "Japanese"
+    ],
+    "age": "Industrial Age",
+    "building": [
+      "Dojo"
+    ],
+    "train_time": 30,
+    "effect": "Dojo unit spawn time -\n20%",
+    "cost": {
+      "food": 300,
+      "gold": 300
+    }
+  },
+  {
+    "id": "kano_chronicle",
+    "name_en": "Kano Chronicle",
+    "wiki_url": "https://ageofempires.fandom.com/wiki/Kano_Chronicle",
+    "civs": [
+      "Hausa"
+    ],
+    "age": "Commerce Age",
+    "building": [
+      "University"
+    ],
+    "train_time": 5,
+    "effect": "Delivers 1 Hausa Builder with every future\nHome City\nshipments",
+    "cost": {
+      "influence": 600
+    }
+  },
+  {
+    "id": "kebele_chitet",
+    "name_en": "Kebele Chitet",
+    "wiki_url": "https://ageofempires.fandom.com/wiki/Kebele_Chitet",
+    "civs": [
+      "Ethiopians"
+    ],
+    "age": "Exploration Age",
+    "building": [
+      "Town Center"
+    ],
+    "train_time": 5,
+    "effect": "Spawns 4\nLevied Spearmen",
+    "cost": {
+      "food": 80,
+      "gold": 80
+    }
+  },
+  {
+    "id": "kebra_nagast",
+    "name_en": "Kebra Nagast",
+    "wiki_url": "https://ageofempires.fandom.com/wiki/Kebra_Nagast",
+    "civs": [
+      "Ethiopians"
+    ],
+    "age": "Exploration Age",
+    "building": [
+      "Mountain Monastery"
+    ],
+    "train_time": 10,
+    "effect": "Next\nAlliance\nAge\nup time -50 seconds",
+    "cost": {
+      "influence": 450
+    }
+  },
+  {
+    "id": "klamath_huckleberry_feast",
+    "name_en": "Klamath Huckleberry Feast",
+    "wiki_url": "https://ageofempires.fandom.com/wiki/Klamath_Huckleberry_Feast",
+    "age": "Commerce Age",
+    "building": [
+      "Trading Post",
+      "Tambo",
+      "Klamath"
+    ],
+    "train_time": 10,
+    "effect": "Delivers 1\nCrates of Food\nand 1 Tiny Crate of Food\n(\n150\nfood\n) for every 3 minutes of game time, up to 30 minutes",
+    "cost": {
+      "wood": 150,
+      "gold": 150
+    }
+  },
+  {
+    "id": "klamath_strategy",
+    "name_en": "Klamath Strategy",
+    "wiki_url": "https://ageofempires.fandom.com/wiki/Klamath_Strategy",
+    "age": "Fortress Age",
+    "building": [
+      "Trading Post",
+      "Tambo",
+      "Klamath"
+    ],
+    "train_time": 10,
+    "effect": "Klamath Rifleman\ndamage +25%",
+    "cost": {
+      "wood": 200,
+      "gold": 150
+    }
+  },
+  {
+    "id": "klamath_work_ethos",
+    "name_en": "Klamath Work Ethos",
+    "wiki_url": "https://ageofempires.fandom.com/wiki/Klamath_Work_Ethos",
+    "age": "Exploration Age",
+    "building": [
+      "Trading Post",
+      "Tambo",
+      "Klamath"
+    ],
+    "train_time": 15,
+    "effect": "Villager\n,\nfishing boat\n, and\nKlamath Rifleman\ngather work rate +5%",
+    "cost": {
+      "food": 100,
+      "wood": 100,
+      "gold": 100
+    }
+  },
+  {
+    "id": "knighthood",
+    "name_en": "Knighthood",
+    "wiki_url": "https://ageofempires.fandom.com/wiki/Knighthood",
+    "civs": [
+      "Europeans"
+    ],
+    "age": "Imperial Age",
+    "building": [
+      "Capitol"
+    ],
+    "train_time": 30,
+    "effect": "Hero\nhit points +1,000",
+    "cost": {
+      "food": 1
+    }
+  },
+  {
+    "id": "knights_of_the_hospital",
+    "name_en": "Knights of the Hospital",
+    "wiki_url": "https://ageofempires.fandom.com/wiki/Knights_of_the_Hospital",
+    "civs": [
+      "Maltese"
+    ],
+    "age": "Fortress Age",
+    "building": [
+      "Church"
+    ],
+    "train_time": 15,
+    "effect": "Delivers 1\nHospitaller\nfor each\nHospital\npresent on the map (up to 25)\nEnables Hospitallers to build Hospitals",
+    "cost": {
+      "wood": 1
+    }
+  },
+  {
+    "id": "koncerz",
+    "name_en": "Koncerz",
+    "wiki_url": "https://ageofempires.fandom.com/wiki/Koncerz",
+    "age": "Fortress Age",
+    "building": [
+      "Trading Post",
+      "Tambo",
+      "House of Vasa"
+    ],
+    "train_time": 30,
+    "effect": "Delivers 5\nWinged Hussars\nWinged Hussar Lance Charge range +2,\nArea of Effect\n+1",
+    "cost": {
+      "food": 1,
+      "gold": 1
+    }
+  },
+  {
+    "id": "koprulu_viziers",
+    "name_en": "Koprulu Viziers",
+    "wiki_url": "https://ageofempires.fandom.com/wiki/Koprulu_Viziers",
+    "civs": [
+      "Ottomans"
+    ],
+    "age": "Commerce Age*",
+    "building": [
+      "Mosque"
+    ],
+    "train_time": 15,
+    "effect": "Yörük\nspawn time\n-6\nseconds",
+    "cost": {
+      "wood": 150
+    }
+  },
+  {
+    "id": "kumis",
+    "name_en": "Kumis",
+    "wiki_url": "https://ageofempires.fandom.com/wiki/Kumis",
+    "age": "Exploration Age",
+    "building": [
+      "Trading Post",
+      "Tambo",
+      "Tengri Shrine"
+    ],
+    "train_time": 10,
+    "effect": "Delivers 1\nYak\ncarrying additional 150\nfood\nfor every 3 minutes of game time, up to 30 minutes",
+    "cost": {
+      "wood": 150,
+      "gold": 150
+    }
+  },
+  {
+    "id": "knigstein",
+    "name_en": "Königstein",
+    "wiki_url": "https://ageofempires.fandom.com/wiki/Königstein",
+    "age": "Commerce Age",
+    "building": [
+      "Trading Post",
+      "Tambo",
+      "House of Wettin"
+    ],
+    "train_time": 60,
+    "effect": "Delivers 1\nFort Wagon\n;\nFort\nbuild limit +1; enables Forts to be built in the\nCommerce Age\n; enables\nRevetment\nand\nStar Fort\nto be researched\nDelivers 1\nBattery Tower Wagon\nfor every 10 minutes of game time, up to 30 minutes",
+    "cost": {
+      "wood": 600,
+      "gold": 600
+    }
+  },
+  {
+    "id": "lacrosse",
+    "name_en": "Lacrosse",
+    "wiki_url": "https://ageofempires.fandom.com/wiki/Lacrosse",
+    "civs": [
+      "Haudenosaunee"
+    ],
+    "age": "Commerce Age",
+    "building": [
+      "War Hut"
+    ],
+    "train_time": 10,
+    "effect": "Tomahawk\n,\nAenna\n, and\nForest Prowler\nLine of Sight\nand ranged attack range +2",
+    "cost": {
+      "wood": 600,
+      "gold": 600
+    }
+  },
+  {
+    "id": "lakota_horse_trading",
+    "name_en": "Lakota Horse Trading",
+    "wiki_url": "https://ageofempires.fandom.com/wiki/Lakota_Horse_Trading",
+    "age": "Exploration Age",
+    "building": [
+      "Trading Post",
+      "Tambo",
+      "Lakota"
+    ],
+    "train_time": 10,
+    "effect": "Cavalry\n,\nshock infantry\n,\nForbidden Army\n, and\nMongolian Army\ntrain time -25%\nStandard Army\n,\nBlack Flag Army\n,\nMing Army\n, and\nImperial Army\ntrain time -12.5%",
+    "cost": {
+      "wood": 250,
+      "gold": 250
+    }
+  },
+  {
+    "id": "lakota_hunting_grounds",
+    "name_en": "Lakota Hunting Grounds",
+    "wiki_url": "https://ageofempires.fandom.com/wiki/Lakota_Hunting_Grounds",
+    "age": "Exploration Age",
+    "building": [
+      "Trading Post",
+      "Tambo",
+      "Lakota"
+    ],
+    "train_time": 10,
+    "effect": "Delivers 12\nBison",
+    "cost": {
+      "wood": 150,
+      "gold": 150
+    }
+  },
+  {
+    "id": "lakota_lands",
+    "name_en": "Lakota Lands",
+    "wiki_url": "https://ageofempires.fandom.com/wiki/Lakota_Lands",
+    "civs": [
+      "Lakota"
+    ],
+    "age": "Exploration Age",
+    "building": [
+      "Teepee"
+    ],
+    "train_time": 10,
+    "effect": "Teepee\nLine of Sight\nand effect range +40 and now also improve units' speed by 10%, or 7.9% for\nvillagers",
+    "cost": {
+      "food": 250,
+      "wood": 250,
+      "gold": 250
+    }
+  },
+  {
+    "id": "lakota_tokala_soldiers",
+    "name_en": "Lakota Tokala Soldiers",
+    "wiki_url": "https://ageofempires.fandom.com/wiki/Lakota_Tokala_Soldiers",
+    "civs": [
+      "Lakota"
+    ],
+    "age": "Commerce Age",
+    "building": [
+      "Town Center"
+    ],
+    "train_time": 10,
+    "effect": "Delivers 1\nTokala Soldier\nfor every 3 minutes of game time, up to 30 minutes",
+    "cost": {
+      "food": 1
+    }
+  },
+  {
+    "id": "lakota_tokala_soldiers_minor_native",
+    "name_en": "Lakota Tokala Soldiers (minor native)",
+    "wiki_url": "https://ageofempires.fandom.com/wiki/Lakota_Tokala_Soldiers_(minor_native)",
+    "age": "Exploration Age",
+    "building": [
+      "Trading Post",
+      "Tambo",
+      "Lakota"
+    ],
+    "train_time": 10,
+    "effect": "Delivers 1\nLakota Tokala Soldier\nfor every 3 minutes of the game time, up to 30 minutes",
+    "cost": {
+      "wood": 500,
+      "gold": 500
+    }
+  },
+  {
+    "id": "large_scale_agriculture",
+    "name_en": "Large Scale Agriculture",
+    "wiki_url": "https://ageofempires.fandom.com/wiki/Large_Scale_Agriculture",
+    "civs": [
+      "Mexicans"
+    ],
+    "age": "Imperial Age",
+    "building": [
+      "Capitol",
+      "Town Center",
+      "Maya"
+    ],
+    "train_time": 30,
+    "effect": "Villager\ngather work rate for\nMill\n,\nFarm\n,\nRice Paddy\n(food),\nField\n(food), and\nHacienda\n(food) +50%\nHacienda auto gather work rate for food +50%",
+    "cost": {
+      "wood": 1,
+      "gold": 1
+    }
+  },
+  {
+    "id": "large_scale_farming",
+    "name_en": "Large Scale Farming",
+    "wiki_url": "https://ageofempires.fandom.com/wiki/Large_Scale_Farming",
+    "civs": [
+      "Africans"
+    ],
+    "age": "Imperial Age",
+    "building": [
+      "Granary"
+    ],
+    "train_time": 30,
+    "effect": "Villager\nbuild work rate and gather work rate for\nField\n+35%\nFishing boat\ngather work rate for\nwhale\n+35%",
+    "cost": {
+      "food": 1,
+      "wood": 1,
+      "gold": 1
+    }
+  },
+  {
+    "id": "league_of_armed_neutrality",
+    "name_en": "League of Armed Neutrality",
+    "wiki_url": "https://ageofempires.fandom.com/wiki/League_of_Armed_Neutrality",
+    "age": "Commerce Age",
+    "building": [
+      "Trading Post",
+      "Tambo",
+      "House of Oldenburg"
+    ],
+    "train_time": 30,
+    "effect": "Fully replaces\nRoyal Huntsmen\nwith\nRoyal Hunters\nat Trading Posts, Native Embassies, and on the map",
+    "cost": {
+      "wood": 300,
+      "gold": 300
+    }
+  },
+  {
+    "id": "legendary_native_warriors",
+    "name_en": "Legendary Native Warriors",
+    "wiki_url": "https://ageofempires.fandom.com/wiki/Legendary_Native_Warriors",
+    "civs": [
+      "All"
+    ],
+    "age": "Imperial Age",
+    "building": [
+      "Capitol",
+      "Mexicans",
+      "Town Center",
+      "Maya",
+      "State Capitol",
+      "United States"
+    ],
+    "train_time": 30,
+    "effect": "Upgrades\nnative warriors\nto Legendary/Exalted/Imperial (hit points and damage +50%)\nSomali Darood Militia\nranged attack range +2",
+    "cost": {
+      "food": 1,
+      "wood": 1
+    }
+  },
+  {
+    "id": "leipzig_trade_fair",
+    "name_en": "Leipzig Trade Fair",
+    "wiki_url": "https://ageofempires.fandom.com/wiki/Leipzig_Trade_Fair",
+    "age": "Exploration Age",
+    "building": [
+      "Trading Post",
+      "Tambo",
+      "House of Wettin"
+    ],
+    "train_time": 30,
+    "effect": "Resets the\nMarket\nbuy and sell rates",
+    "cost": {
+      "food": 100,
+      "wood": 100,
+      "gold": 100
+    }
+  },
+  {
+    "id": "lenape_ceremony",
+    "name_en": "Lenape Ceremony",
+    "wiki_url": "https://ageofempires.fandom.com/wiki/Lenape_Ceremony",
+    "age": "Exploration Age",
+    "building": [
+      "Trading Post",
+      "Tambo",
+      "Lenape"
+    ],
+    "train_time": 60,
+    "effect": "Lenape Warrior\ntrain limit +10",
+    "cost": {
+      "wood": 200,
+      "gold": 200
+    }
+  },
+  {
+    "id": "lenape_clans",
+    "name_en": "Lenape Clans",
+    "wiki_url": "https://ageofempires.fandom.com/wiki/Lenape_Clans",
+    "age": "Exploration Age",
+    "building": [
+      "Trading Post",
+      "Tambo",
+      "Lenape"
+    ],
+    "train_time": 10,
+    "effect": "Lenape Warrior\nWar Cry ability cooldown -15%",
+    "cost": {
+      "wood": 400,
+      "gold": 400
+    }
+  },
+  {
+    "id": "lenape_three_sisters",
+    "name_en": "Lenape Three Sisters",
+    "wiki_url": "https://ageofempires.fandom.com/wiki/Lenape_Three_Sisters",
+    "age": "Exploration Age",
+    "building": [
+      "Trading Post",
+      "Tambo",
+      "Lenape"
+    ],
+    "train_time": 60,
+    "effect": "Villager\ngather work rate for\nMill\n,\nFarm\n,\nRice Paddy\n(food),\nField\n(food), and\nHacienda\n(food) +30%\nHacienda auto gather food work rate for food +30%",
+    "cost": {
+      "wood": 400,
+      "gold": 200
+    }
+  },
+  {
+    "id": "levy_age_of_empires_iii",
+    "name_en": "Levy (Age of Empires III)",
+    "wiki_url": "https://ageofempires.fandom.com/wiki/Levy_(Age_of_Empires_III)",
+    "civs": [
+      "EuropeansFederal Americans"
+    ],
+    "age": "Exploration Age",
+    "building": [
+      "Town Center",
+      "Outpost",
+      "United States",
+      "Blockhouse",
+      "Fort"
+    ],
+    "train_time": 5,
+    "effect": "Spawns 6\nMilitiamen\n/\nMinutemen\n/\nBashibozuks",
+    "cost": {
+      "food": 150,
+      "gold": 150
+    }
+  },
+  {
+    "id": "lifeguard_jaegers",
+    "name_en": "Lifeguard Jaegers",
+    "wiki_url": "https://ageofempires.fandom.com/wiki/Lifeguard_Jaegers",
+    "civs": [
+      "Russians"
+    ],
+    "age": "Industrial Age",
+    "building": [
+      "Church"
+    ],
+    "train_time": 15,
+    "effect": "Delivers\n23 Counter Jaegers\n(\nSchiavoni\nwith 1.5x\nbonus damage\nagainst\nlight ranged cavalry\n)\nReplaces\nOprichniks\nfrom\nHome City\nshipments with Counter Jaegers",
+    "cost": {
+      "gold": 2
+    }
+  },
+  {
+    "id": "livestock_pen_wagon_shipment",
+    "name_en": "Livestock Pen Wagon (shipment)",
+    "wiki_url": "https://ageofempires.fandom.com/wiki/Livestock_Pen_Wagon_(shipment)",
+    "civs": [
+      "Japanese"
+    ],
+    "age": "Industrial Age",
+    "building": [
+      "Consulate"
+    ],
+    "train_time": 30,
+    "effect": "Delivers 1\nLivestock Pen Wagon",
+    "cost": {
+      "export": 900
+    }
+  },
+  {
+    "id": "log_flume",
+    "name_en": "Log Flume",
+    "wiki_url": "https://ageofempires.fandom.com/wiki/Log_Flume",
+    "civs": [
+      "EuropeansFederal Americans"
+    ],
+    "age": "Commerce Age",
+    "building": [
+      "Market"
+    ],
+    "train_time": 30,
+    "effect": "Villager\ngather work rate for\ntree\nand\nMango Grove\n+20%",
+    "cost": {
+      "food": 150,
+      "gold": 250
+    }
+  }
+]

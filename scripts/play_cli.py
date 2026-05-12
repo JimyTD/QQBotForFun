@@ -62,6 +62,7 @@ from cli_adapters.trivia import TriviaCLIAdapter  # noqa: E402
 from cli_adapters.food import FoodCLIAdapter  # noqa: E402
 from cli_adapters.web_search import WebSearchCLIAdapter  # noqa: E402
 from cli_adapters.yugioh_card import YugiohCardCLIAdapter  # noqa: E402
+from cli_adapters.aoe3 import AoE3CLIAdapter  # noqa: E402
 
 
 # ============ 已注册的 CLI 游戏 ============
@@ -72,7 +73,7 @@ ADAPTERS: dict[str, type[GameCLIAdapter]] = {
     "food": FoodCLIAdapter,
     "ask_ai": WebSearchCLIAdapter,
     "yugioh_card": YugiohCardCLIAdapter,
-    # "new_game": NewGameCLIAdapter,   # 未来新增
+    "aoe3": AoE3CLIAdapter,
 }
 
 
