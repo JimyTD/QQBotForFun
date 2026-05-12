@@ -9,7 +9,7 @@
 | 实例 ID | lhins-hwnz7rcz |
 | 地域 | ap-guangzhou |
 | 服务器 IP | 106.55.228.236 |
-| 项目路径 | `/root/QQBotForFun_20260512160246` |
+| 项目路径 | `/root/QQBotForFun_20260512170951` |
 | Bot QQ 号 | 3959381140 |
 | NapCat WebUI | http://106.55.228.236:6099 |
 | OneBot Token | `qqbot_fun_token_2026` |
