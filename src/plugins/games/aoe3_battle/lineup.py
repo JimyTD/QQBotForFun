@@ -338,8 +338,8 @@ def format_vs_banner(lineup: MatchLineup) -> str:
         title,
         f"{red_str}  VS  {blue_str}",
         "━━━━━━━━━━━━━━━━━━━━━━━━",
-        "押注1 → 红方 | 押注2 → 蓝方",
-        "入场券 5 金币 · 发\"开战\"直接开打",
+        "@ 1 押红方 | @ 2 押蓝方",
+        "入场券 5 金币 · @ 开战 直接开打",
     ]
     return "\n".join(lines)
 

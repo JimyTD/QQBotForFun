@@ -28,6 +28,7 @@ async def _launch_game(
     initiator_id: int,
     game_id: str,
     mode_id: str,
+    extra_config: dict | None = None,
 ) -> None:
     """通用开局辅助：检查冲突 → 调 create_and_start。"""
     runner = game_base.get_runner_by_group(group_id)
@@ -38,13 +39,17 @@ async def _launch_game(
         )
         return
 
+    config = {"mode": mode_id} if mode_id else {}
+    if extra_config:
+        config.update(extra_config)
+
     try:
         await game_base.create_and_start(
             game_id,
             group_id=group_id,
             host_id=initiator_id,
             players=[],
-            config={"mode": mode_id} if mode_id else {},
+            config=config,
         )
     except GameAlreadyRunningError as e:
         await matcher.finish(f"⚠️ {e}")
@@ -111,8 +116,18 @@ async def _(matcher: Matcher, event: GroupMessageEvent, args: Message = CommandA
     arg_text = args.extract_plain_text().strip()
 
     mode_id = "bet"  # 默认押注模式
-    if arg_text in ("单挑", "1v1", "duel"):
-        mode_id = "duel"
+    budget = None     # None = 使用默认值
+
+    # 解析参数：可以是模式（单挑/1v1/duel）或资源数字
+    for part in arg_text.split():
+        if part in ("单挑", "1v1", "duel"):
+            mode_id = "duel"
+        elif part.isdigit():
+            budget = int(part)
+
+    config = {"mode": mode_id}
+    if budget is not None:
+        config["budget"] = budget
 
     await _launch_game(
         matcher,
@@ -120,6 +135,7 @@ async def _(matcher: Matcher, event: GroupMessageEvent, args: Message = CommandA
         initiator_id=int(event.user_id),
         game_id="aoe3_battle",
         mode_id=mode_id,
+        extra_config=config,
     )
 
 

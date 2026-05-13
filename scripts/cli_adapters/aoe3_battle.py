@@ -98,7 +98,7 @@ class AoE3BattleCLIAdapter:
         # 2. 模拟押注阶段
         bets: dict[str, str] = {}  # player_name -> "red" | "blue"
         print(f"\n{C.YEL}━━━ 押注阶段 ━━━{C.R}")
-        print(f"{C.DIM}输入 押注1（红方）/ 押注2（蓝方）/ 开战（跳过押注）{C.R}")
+        print(f"{C.DIM}输入 1（红方）/ 2（蓝方）/ 开战（跳过押注）{C.R}")
 
         while True:
             text = prompt("押注> ").strip()
@@ -111,21 +111,21 @@ class AoE3BattleCLIAdapter:
             if low in ("quit", "exit", "q", "退出"):
                 info("已退出")
                 return
-            if low == "押注1":
+            if low in ("1", "押1", "押注1"):
                 if "CLI玩家" in bets:
                     print(f"{C.DIM}你已经押过了（锁死第一笔）{C.R}")
                 else:
                     bets["CLI玩家"] = "red"
                     print(f"{C.RED}✅ 你押了 🔴 红方{C.R}")
                 continue
-            if low == "押注2":
+            if low in ("2", "押2", "押注2"):
                 if "CLI玩家" in bets:
                     print(f"{C.DIM}你已经押过了（锁死第一笔）{C.R}")
                 else:
                     bets["CLI玩家"] = "blue"
                     print(f"{C.BLUE}✅ 你押了 🔵 蓝方{C.R}")
                 continue
-            print(f"{C.DIM}无效输入。押注1 / 押注2 / 开战{C.R}")
+            print(f"{C.DIM}无效输入。1 / 2 / 开战{C.R}")
 
         # 3. 跑模拟
         print(f"\n{C.DIM}战斗模拟中...{C.R}")

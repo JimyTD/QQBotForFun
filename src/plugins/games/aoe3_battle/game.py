@@ -43,6 +43,9 @@ logger = logging.getLogger("aoe3_battle.game")
 ENTRY_FEE = 5                # 入场券（金币）
 PARTICIPATION_REWARD = 1     # 参与奖（金币）
 BROADCAST_SLEEP = 2.0        # 播报间隔（秒）
+BUDGET_MIN = 1000            # 自定义资源下限
+BUDGET_MAX = 5000            # 自定义资源上限
+BUDGET_DEFAULT = 1000        # 默认资源
 
 
 # =====================================================================
@@ -81,13 +84,16 @@ class AoE3BattleGame(GameBase):
     async def on_create(self, ctx: GameContext) -> None:
         """开局：生成阵容，初始化状态。"""
         mode_id = (ctx.config or {}).get("mode", "bet")
+        budget = (ctx.config or {}).get("budget", BUDGET_DEFAULT)
+        budget = max(BUDGET_MIN, min(BUDGET_MAX, int(budget)))
+
         repo = UnitRepo.get()
         rng = random.Random()
 
         if mode_id == "duel":
             match = generate_duel_lineup(repo, rng=rng)
         else:
-            match = generate_bet_lineup(repo, rng=rng)
+            match = generate_bet_lineup(repo, rng=rng, budget=budget)
 
         # 序列化阵容到 state（供持久化）
         ctx.state.update(
