@@ -11,8 +11,9 @@ from __future__ import annotations
 import random
 
 from nonebot import on_command
-from nonebot.adapters.onebot.v11 import GroupMessageEvent
+from nonebot.adapters.onebot.v11 import GroupMessageEvent, Message
 from nonebot.matcher import Matcher
+from nonebot.params import CommandArg
 from nonebot.rule import to_me
 
 from core import game_base
@@ -91,6 +92,33 @@ async def _(matcher: Matcher, event: GroupMessageEvent) -> None:
         group_id=int(event.group_id),
         initiator_id=int(event.user_id),
         game_id="trivia",
+        mode_id=mode_id,
+    )
+
+
+# -------------------- 快捷开局：斗蛐蛐 --------------------
+_quick_battle = on_command(
+    "斗蛐蛐",
+    aliases={"aoe3_battle"},
+    rule=to_me(),
+    priority=3,
+    block=True,
+)
+
+@_quick_battle.handle()
+async def _(matcher: Matcher, event: GroupMessageEvent, args: Message = CommandArg()) -> None:
+    # 获取指令后的参数文本
+    arg_text = args.extract_plain_text().strip()
+
+    mode_id = "bet"  # 默认押注模式
+    if arg_text in ("单挑", "1v1", "duel"):
+        mode_id = "duel"
+
+    await _launch_game(
+        matcher,
+        group_id=int(event.group_id),
+        initiator_id=int(event.user_id),
+        game_id="aoe3_battle",
         mode_id=mode_id,
     )
 

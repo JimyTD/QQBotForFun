@@ -189,7 +189,10 @@ def register_game(cls: T) -> T:
     gid = cls.id
     if not gid:
         raise ValueError(f"{cls.__name__}.id must be set")
-    if gid in _registry and _registry[gid] is not cls:
+    if gid in _registry:
+        # 容忍因双路径导入(src.plugins.* vs plugins.*)导致的同一类被注册两次
+        if _registry[gid].__name__ == cls.__name__:
+            return cls  # type: ignore[return-value]
         raise ValueError(f"game id '{gid}' already registered by {_registry[gid]}")
     _registry[gid] = cls
     logger.info(f"[game] registered '{gid}' -> {cls.__name__} v{cls.version}")

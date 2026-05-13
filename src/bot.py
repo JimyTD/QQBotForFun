@@ -22,6 +22,34 @@ for p in (str(_SRC), str(_ROOT)):
     if p not in sys.path:
         sys.path.insert(0, p)
 
+# ── 双路径防御 ──────────────────────────────────────────────
+# NoneBot 以 "src.plugins.*" 加载插件，而插件内 `from core import X`
+# 解析为 "core.X"。若 Python 同时存在 "src.core.X"（通过包路径），
+# 两条路径各自创建独立模块实例 → 全局单例(_runners 等) 被分裂。
+# 修复：安装 import hook，让 src.core.* 永远指向 core.* 的同一模块。
+import importlib as _il
+
+
+class _CoreAliasHook:
+    """Import hook：任何 `src.core.*` 的 import 都重定向到 `core.*`。"""
+
+    def find_module(self, fullname: str, path=None):  # noqa: ANN001
+        if fullname == "src.core" or fullname.startswith("src.core."):
+            return self
+        return None
+
+    def load_module(self, fullname: str):  # noqa: ANN201
+        if fullname in sys.modules:
+            return sys.modules[fullname]
+        # 去掉 "src." 前缀，用 core.* 路径加载
+        real_name = fullname[4:]  # "src.core.X" -> "core.X"
+        real_mod = _il.import_module(real_name)
+        sys.modules[fullname] = real_mod
+        return real_mod
+
+
+sys.meta_path.insert(0, _CoreAliasHook())
+
 from src.settings import get_settings  # noqa: E402
 
 
@@ -56,12 +84,13 @@ def _load_plugins() -> None:
     nonebot.load_plugin("src.plugins.admin")
     nonebot.load_plugin("src.plugins.games.turtle_soup")
     nonebot.load_plugin("src.plugins.games.trivia")
+    nonebot.load_plugin("src.plugins.aoe3")  # 须在 aoe3_battle 之前
+    nonebot.load_plugin("src.plugins.games.aoe3_battle")
     # 小工具（tools/）—— 独立拔插式小功能
     nonebot.load_plugin("src.plugins.tools.food")
     nonebot.load_plugin("src.plugins.tools.ask_ai")
     nonebot.load_plugin("src.plugins.tools.reminder")
     nonebot.load_plugin("src.plugins.tools.yugioh_card")
-    nonebot.load_plugin("src.plugins.aoe3")
 
 
 def _register_lifecycle() -> None:
