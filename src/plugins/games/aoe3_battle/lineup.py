@@ -32,6 +32,28 @@ LCM_BUDGET_TOLERANCE = 0.3   # ±30%
 # 抽兵最大重试次数
 MAX_DRAW_RETRIES = 20
 
+# 黑名单：按兵种 id 排除（两种模式统一生效）
+# 发现数据异常、表现极端、或不适合斗蛐蛐的兵种直接加 id
+BLACKLIST: set[str] = {
+    # 作弊单位（Cheat unit）— 数据完全离谱
+    "mediocre_bombard",          # 普通射石炮，攻击力 5000，cost 16
+    "the_tommynator",            # The Tommynator，攻击力 1200，speed 11
+    "learicorn",                 # 独角兽，近战 800
+    "leonardos_tank",            # Leonardo's Tank，HP=3
+
+    # 火船 — ROF=0，无限 DPS（自爆单位无法模拟）
+    "fire_junk",                 # 火船，ROF=0
+    "fire_ship_age_of_empires_iii",  # 火船，ROF=0
+
+    # 假炮 — 攻击力 500，cost 100，严重超模
+    "quaker_gun",                # 假炮
+
+    # HP 数据异常（wiki 爬虫缺失，详见 docs/aoe3-data-errata.md）
+    "elmetto",                   # 钢盔骑兵，HP=1（应为 ~320）
+    "mameluke_age_of_empires_iii",   # 马穆鲁克，HP=1（应为 ~230）
+    "sennar_horseman",           # 森纳尔骑兵，HP=1（应为 ~320）
+}
+
 
 # =====================================================================
 # 阵容数据
@@ -124,34 +146,45 @@ def _is_pet(unit: Unit) -> bool:
     return "pet" in type_lower or "guardian" in type_lower
 
 
+def _is_ship(unit: Unit) -> bool:
+    """判断是否为船只。"""
+    return "Ship" in unit.type
+
+
 def get_bet_pool(repo: UnitRepo) -> list[Unit]:
     """押注模式兵种池。
 
     规则（§2.2.2）：
-    - is_trainable=True 且 cost > 0
-    - 保留战舰、雇佣兵
-    - 排除建筑马车、英雄、宠物
+    - cost > 0 且 has_attack 且 hp > 0
+    - 保留雇佣兵、英雄、宠物
+    - 排除建筑马车、船只
+    - 排除黑名单中的兵种
     """
     pool = []
+    blacklisted = 0
     for u in repo.all_units:
         # 必须有费用和攻击力
         if not u.cost or not u.has_attack:
             continue
-        # 排除英雄
-        if _is_hero(u):
-            continue
-        # 排除宠物
-        if _is_pet(u):
-            continue
         # 排除建筑
         if _is_building(u):
+            continue
+        # 排除船只
+        if _is_ship(u):
             continue
         # 必须有 HP
         if u.hp <= 0:
             continue
+        # 黑名单
+        if u.id in BLACKLIST:
+            blacklisted += 1
+            continue
         pool.append(u)
 
-    logger.info("押注模式兵种池：%d 个兵种（总 %d）", len(pool), len(repo.all_units))
+    logger.info(
+        "押注模式兵种池：%d 个兵种（总 %d，黑名单排除 %d）",
+        len(pool), len(repo.all_units), blacklisted,
+    )
     return pool
 
 
@@ -160,19 +193,30 @@ def get_duel_pool(repo: UnitRepo) -> list[Unit]:
 
     规则（§2.3）：
     - 所有有攻击力的兵种（含英雄、特殊单位、雇佣兵、村民、宠物）
-    - 排除建筑
+    - 排除建筑、船只
+    - 排除黑名单中的兵种
     """
     pool = []
+    blacklisted = 0
     for u in repo.all_units:
         if not u.has_attack:
             continue
         if _is_building(u):
             continue
+        if _is_ship(u):
+            continue
         if u.hp <= 0:
+            continue
+        # 黑名单
+        if u.id in BLACKLIST:
+            blacklisted += 1
             continue
         pool.append(u)
 
-    logger.info("单挑模式兵种池：%d 个兵种（总 %d）", len(pool), len(repo.all_units))
+    logger.info(
+        "单挑模式兵种池：%d 个兵种（总 %d，黑名单排除 %d）",
+        len(pool), len(repo.all_units), blacklisted,
+    )
     return pool
 
 
