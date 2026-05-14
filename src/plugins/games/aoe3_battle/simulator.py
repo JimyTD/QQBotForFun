@@ -24,11 +24,16 @@ logger = logging.getLogger("aoe3_battle.simulator")
 # =====================================================================
 TICK_INTERVAL = 0.1          # 秒/tick
 MAX_TICKS = 600              # 最大 tick 数（60 秒）
-FIELD_LENGTH = 30.0          # 场地长度
+FIELD_LENGTH = 30.0          # 中间空地长度（双方阵地在两侧展开）
 MELEE_RANGE = 1.5            # 近战射程
 CLOSE_RANGE_PENALTY = 0.5    # 贴脸惩罚伤害系数
 DEFAULT_ROF_RANGED = 3.0     # 远程 ROF 缺失默认值
 DEFAULT_ROF_MELEE = 1.5      # 近战 ROF 缺失默认值
+
+# ---- 阵型排布参数 ----
+ROW_SPACING = 1.5            # 排间距
+ROW_CAPACITY = 8             # 每排站多少人
+FORMATION_MAX_DEPTH = 12.0   # 阵地最大纵深
 
 
 # =====================================================================
@@ -145,6 +150,158 @@ def _create_soldier(
 
 
 # =====================================================================
+# 阵型排布
+# =====================================================================
+def _compute_formation(
+    army: list["ArmySlot"],
+    side: "Side",
+    field_length: float = FIELD_LENGTH,
+    row_spacing: float = ROW_SPACING,
+    row_capacity: int = ROW_CAPACITY,
+    max_depth: float = FORMATION_MAX_DEPTH,
+) -> list[tuple[Unit, float]]:
+    """为一方军队计算阵型排布，返回 [(unit, pos), ...] 列表。
+
+    规则：
+    - 近战在前排，远程在后排（按 unit.range 排序）
+    - 同一兵种分配到连续的排，每排最多 row_capacity 人
+    - 排间距 row_spacing，总深度不超过 max_depth
+    - 红方从 pos=0 往负方向展开（前排=0，后排=-depth）
+    - 蓝方从 pos=field_length 往正方向展开（前排=field_length，后排=+depth）
+    """
+    # 1. 按 range 排序兵种：range 小的（近战）在前排
+    sorted_slots: list[ArmySlot] = sorted(
+        army, key=lambda s: (s.unit.range, -s.unit.speed),
+    )
+
+    # 2. 把每个兵种拆成若干排
+    #    row = [(unit, count_in_this_row), ...]
+    rows: list[list[tuple[Unit, int]]] = []
+    current_row: list[tuple[Unit, int]] = []
+    current_row_size = 0
+
+    for slot in sorted_slots:
+        remaining = slot.count
+        while remaining > 0:
+            space = row_capacity - current_row_size
+            if space <= 0:
+                # 当前排满了，开新排
+                rows.append(current_row)
+                current_row = []
+                current_row_size = 0
+                space = row_capacity
+
+            take = min(remaining, space)
+            current_row.append((slot.unit, take))
+            current_row_size += take
+            remaining -= take
+
+    if current_row:
+        rows.append(current_row)
+
+    # 3. 如果排数 × 排间距 > max_depth，压缩 row_spacing
+    num_rows = len(rows)
+    actual_spacing = row_spacing
+    if num_rows > 1:
+        needed = (num_rows - 1) * row_spacing
+        if needed > max_depth:
+            actual_spacing = max_depth / (num_rows - 1)
+
+    # 4. 计算每排的位置
+    result: list[tuple[Unit, float]] = []
+    for row_idx, row in enumerate(rows):
+        depth_offset = row_idx * actual_spacing
+
+        if side == Side.RED:
+            # 红方：前排 pos=0，后排往负方向
+            row_pos = -depth_offset
+        else:
+            # 蓝方：前排 pos=field_length，后排往正方向
+            row_pos = field_length + depth_offset
+
+        for unit, count in row:
+            for _ in range(count):
+                result.append((unit, row_pos))
+
+    return result
+
+
+@dataclass
+class FormationRow:
+    """阵型中的一排。"""
+    row_index: int                       # 第几排（0=前排）
+    pos: float                           # 该排的位置
+    slots: list[tuple[Unit, int]]        # [(兵种, 该排人数), ...]
+    total: int                           # 该排总人数
+
+    @property
+    def label(self) -> str:
+        """该排的简短描述，如 '火枪手×8' 或 '火枪手×5+弓手×3'。"""
+        parts = []
+        for unit, count in self.slots:
+            name = unit.name or unit.name_en
+            parts.append(f"{name}×{count}")
+        return "+".join(parts)
+
+
+def compute_formation_rows(
+    army: list["ArmySlot"],
+    side: "Side",
+    field_length: float = FIELD_LENGTH,
+    row_spacing: float = ROW_SPACING,
+    row_capacity: int = ROW_CAPACITY,
+    max_depth: float = FORMATION_MAX_DEPTH,
+) -> list[FormationRow]:
+    """计算阵型排布，返回行结构列表（前排在前）。供面板渲染使用。"""
+    sorted_slots: list[ArmySlot] = sorted(
+        army, key=lambda s: (s.unit.range, -s.unit.speed),
+    )
+
+    rows_raw: list[list[tuple[Unit, int]]] = []
+    current_row: list[tuple[Unit, int]] = []
+    current_row_size = 0
+
+    for slot in sorted_slots:
+        remaining = slot.count
+        while remaining > 0:
+            space = row_capacity - current_row_size
+            if space <= 0:
+                rows_raw.append(current_row)
+                current_row = []
+                current_row_size = 0
+                space = row_capacity
+            take = min(remaining, space)
+            current_row.append((slot.unit, take))
+            current_row_size += take
+            remaining -= take
+    if current_row:
+        rows_raw.append(current_row)
+
+    num_rows = len(rows_raw)
+    actual_spacing = row_spacing
+    if num_rows > 1:
+        needed = (num_rows - 1) * row_spacing
+        if needed > max_depth:
+            actual_spacing = max_depth / (num_rows - 1)
+
+    result: list[FormationRow] = []
+    for row_idx, row in enumerate(rows_raw):
+        depth_offset = row_idx * actual_spacing
+        if side == Side.RED:
+            row_pos = -depth_offset
+        else:
+            row_pos = field_length + depth_offset
+        total = sum(c for _, c in row)
+        result.append(FormationRow(
+            row_index=row_idx,
+            pos=round(row_pos, 1),
+            slots=row,
+            total=total,
+        ))
+    return result
+
+
+# =====================================================================
 # 模拟器
 # =====================================================================
 @dataclass
@@ -210,6 +367,9 @@ class BattleSimulator:
         max_ticks: int = MAX_TICKS,
         seed: int | None = None,
         duel_mode: bool = False,
+        row_spacing: float = ROW_SPACING,
+        row_capacity: int = ROW_CAPACITY,
+        formation_max_depth: float = FORMATION_MAX_DEPTH,
     ) -> None:
         # 支持两种调用方式：
         # 1. 旧式：BattleSimulator(red_unit, red_count, blue_unit, blue_count)
@@ -233,6 +393,11 @@ class BattleSimulator:
         self.field_length = field_length
         self.max_ticks = max_ticks
 
+        # 阵型参数
+        self._row_spacing = row_spacing
+        self._row_capacity = row_capacity
+        self._formation_max_depth = formation_max_depth
+
         self._rng = random.Random(seed)
         self._events: list[BattleEvent] = []
         self._tick = 0
@@ -244,26 +409,25 @@ class BattleSimulator:
 
     # ---- 初始化 ----
     def _init_soldiers(self) -> None:
-        """创建所有士兵个体（支持多兵种）。"""
-        for slot in self.red_army:
-            for _ in range(slot.count):
-                s = _create_soldier(self._next_id, Side.RED, slot.unit, 0.0)
-                self._next_id += 1
-                self._soldiers.append(s)
-                self._soldier_map[s.id] = s
-                logger.debug(
-                    "初始化 %s #%d side=%s hp=%.0f pos=%.1f "
-                    "ranged_atk=%.1f range=%.1f melee_atk=%.1f",
-                    s.name, s.id, s.side.value, s.hp, s.pos,
-                    s.effective_ranged_attack, s.effective_ranged_range,
-                    s.unit.attack_melee,
-                )
+        """创建所有士兵个体，按阵型排布。
 
-        for slot in self.blue_army:
-            for _ in range(slot.count):
-                s = _create_soldier(
-                    self._next_id, Side.BLUE, slot.unit, self.field_length
-                )
+        近战在前排，远程在后排，每排 row_capacity 人。
+        红方从 pos=0 往负方向展开，蓝方从 pos=field_length 往正方向展开。
+        """
+        for side, army in [
+            (Side.RED, self.red_army),
+            (Side.BLUE, self.blue_army),
+        ]:
+            formation = _compute_formation(
+                army,
+                side,
+                field_length=self.field_length,
+                row_spacing=self._row_spacing,
+                row_capacity=self._row_capacity,
+                max_depth=self._formation_max_depth,
+            )
+            for unit, pos in formation:
+                s = _create_soldier(self._next_id, side, unit, pos)
                 self._next_id += 1
                 self._soldiers.append(s)
                 self._soldier_map[s.id] = s
@@ -330,8 +494,10 @@ class BattleSimulator:
             old_pos = s.pos
             s.pos += direction * move_dist
 
-            # 不超过场地边界
-            s.pos = max(0.0, min(self.field_length, s.pos))
+            # 不超过场地边界（含阵地纵深）
+            min_bound = -self._formation_max_depth
+            max_bound = self.field_length + self._formation_max_depth
+            s.pos = max(min_bound, min(max_bound, s.pos))
 
             if abs(s.pos - old_pos) > 0.001:
                 logger.debug(
@@ -618,6 +784,8 @@ class BattleSimulator:
                 "killer_id": attacker.id,
                 "killer_name": attacker.name,
                 "killer_side": attacker.side.value,
+                "killer_unit_type": attacker.unit.type,
+                "killer_has_ranged": attacker.has_ranged,
                 "remaining": side_alive,
                 "total": side_total,
                 "overkill": round(-target.hp + damage - old_hp, 1) if old_hp > 0 else 0,
@@ -803,6 +971,8 @@ class BattleSimulator:
             "red_count": self.red_count,
             "blue_count": self.blue_count,
             "field_length": self.field_length,
+            "row_spacing": self._row_spacing,
+            "row_capacity": self._row_capacity,
         })
 
         winner: Side | None = None

@@ -22,6 +22,17 @@ from .simulator import (
     Side,
     TICK_INTERVAL,
 )
+from .phrases import (
+    ACTION_WORDS,
+    FIRST_KILL_VERBS,
+    MASS_CASUALTY_VERBS,
+    FINISH_VERBS,
+    HALF_DEAD_TEMPLATES,
+    SKIRMISH_TEMPLATES,
+    FILLER_APPROACHING,
+    FILLER_FIGHTING,
+    FILLER_STALEMATE,
+)
 
 # =====================================================================
 # 常量
@@ -31,42 +42,48 @@ WINDOW_TICKS = int(WINDOW_SECONDS / TICK_INTERVAL)  # 20 ticks
 MASS_CASUALTY_THRESHOLD = 4  # 重大伤亡阈值
 
 # =====================================================================
-# 动态选词（§8.5）
+# 兵种大类分类（标签优先 + 攻击方式兜底）
 # =====================================================================
-ACTION_WORDS: dict[str, list[str]] = {
-    "1": ["开火", "击中", "点掉一个"],
-    "2-3": ["齐射", "一轮射击", "连发"],
-    "4+": ["集火屠戮", "致命齐射", "一波带走"],
-}
+def _classify_unit(unit_type: list[str], has_ranged: bool = False) -> str:
+    """根据兵种标签判断大类，用于选词。
 
-# 沉默期填充话术（§8.4）
-FILLER_APPROACHING = [
-    "⏳ 双方仍在接近，剑拔弩张...",
-    "⏳ 战鼓未响，杀机已生",
-    "⏳ 红蓝双方逐渐靠近射程",
-]
-
-FILLER_FIGHTING = [
-    "⏳ 双方激烈交火，暂无伤亡",
-    "⏳ 装甲互啃，子弹打在肉身上像挠痒...",
-    "⏳ 互相伤害中，HP 缓慢下降",
-    "⏳ 重甲单位的较量，比的就是耐心",
-]
-
-FILLER_STALEMATE = [
-    "⏳ 双方都已残血，下一击可能就是终结",
-    "⏳ 鏖战至此，胜负只在一念之间",
-]
+    优先级：artillery > ship > cavalry > 攻击方式兜底(ranged/melee)
+    """
+    type_set = set(unit_type)
+    if "Artillery" in type_set or "Siege trooper" in type_set:
+        return "artillery"
+    if "Ship" in type_set or "War ship" in type_set:
+        return "ship"
+    # 所有骑兵相关标签
+    cavalry_tags = {
+        "Cavalry", "Hand cavalry", "Ranged cavalry",
+        "Light ranged cavalry", "Gunpowder cavalry",
+        "Heavy cavalry", "Lance cavalry", "Ranged heavy cavalry",
+    }
+    if type_set & cavalry_tags:
+        return "cavalry"
+    # 兜底：看攻击方式
+    if has_ranged:
+        return "ranged"
+    return "melee"
 
 
-def _pick_action_word(kill_count: int, rng: random.Random) -> str:
-    """按死亡数选动词。"""
+# 话术常量已外置到 phrases.py，通过 import 引入
+
+
+def _pick_action_word(
+    kill_count: int,
+    rng: random.Random,
+    unit_class: str = "ranged",
+) -> str:
+    """按死亡数 + 兵种大类选动词。"""
+    words = ACTION_WORDS.get(unit_class, ACTION_WORDS["ranged"])
     if kill_count <= 1:
-        return rng.choice(ACTION_WORDS["1"])
+        return rng.choice(words["1"])
     elif kill_count <= 3:
-        return rng.choice(ACTION_WORDS["2-3"])
+        return rng.choice(words["2-3"])
     else:
-        return rng.choice(ACTION_WORDS["4+"])
+        return rng.choice(words["4+"])
 
 
 def _side_emoji(side: str) -> str:
@@ -163,10 +180,17 @@ class Broadcaster:
                 d = deaths[0]
                 killer_emoji = _side_emoji(d.data["killer_side"])
                 victim_emoji = _side_emoji(d.data["side"])
+                killer_class = _classify_unit(
+                    d.data.get("killer_unit_type", []),
+                    d.data.get("killer_has_ranged", False),
+                )
+                first_kill_verb = self._rng.choice(
+                    FIRST_KILL_VERBS.get(killer_class, FIRST_KILL_VERBS["ranged"])
+                )
                 self._segments.append(BroadcastSegment(
                     text=(
                         f"🩸 第 {d.time:.1f}s，"
-                        f"{killer_emoji} {d.data['killer_name']}率先溅血，"
+                        f"{killer_emoji} {d.data['killer_name']}{first_kill_verb}，"
                         f"{victim_emoji} {d.data['soldier_name']} -1"
                     ),
                     is_key_event=True,
@@ -185,16 +209,18 @@ class Broadcaster:
                 if remaining <= total / 2:
                     if side == "red" and not half_red_emitted:
                         half_red_emitted = True
+                        tpl = self._rng.choice(HALF_DEAD_TEMPLATES)
                         self._segments.append(BroadcastSegment(
-                            text=f"⚠️ 🔴 已损失过半（剩 {remaining}/{total}），战况告急",
+                            text=tpl.format(emoji="🔴", remaining=remaining, total=total),
                             is_key_event=True,
                             time_start=window_start,
                             time_end=window_end,
                         ))
                     elif side == "blue" and not half_blue_emitted:
                         half_blue_emitted = True
+                        tpl = self._rng.choice(HALF_DEAD_TEMPLATES)
                         self._segments.append(BroadcastSegment(
-                            text=f"⚠️ 🔵 已损失过半（剩 {remaining}/{total}），战况告急",
+                            text=tpl.format(emoji="🔵", remaining=remaining, total=total),
                             is_key_event=True,
                             time_start=window_start,
                             time_end=window_end,
@@ -276,10 +302,17 @@ class Broadcaster:
 
             if last_death and last_death.data["side"] == loser_side:
                 killer_name = last_death.data["killer_name"]
+                killer_class = _classify_unit(
+                    last_death.data.get("killer_unit_type", []),
+                    last_death.data.get("killer_has_ranged", False),
+                )
+                finish_verb = self._rng.choice(
+                    FINISH_VERBS.get(killer_class, FINISH_VERBS["ranged"])
+                )
                 self._segments.append(BroadcastSegment(
                     text=(
                         f"☠️ 第 {last_death.time:.1f}s，"
-                        f"{winner_emoji} {killer_name}踏平最后一名敌兵"
+                        f"{winner_emoji} {killer_name}{finish_verb}"
                     ),
                     is_key_event=True,
                     time_start=end_event.time,
@@ -319,11 +352,18 @@ class Broadcaster:
                         d0 = killer_deaths[0]
                         killer_emoji = _side_emoji(d0.data["killer_side"])
                         victim_emoji = _side_emoji(d0.data["side"])
+                        killer_class = _classify_unit(
+                            d0.data.get("killer_unit_type", []),
+                            d0.data.get("killer_has_ranged", False),
+                        )
+                        mass_verb = self._rng.choice(
+                            MASS_CASUALTY_VERBS.get(killer_class, MASS_CASUALTY_VERBS["ranged"])
+                        )
                         self._segments.append(BroadcastSegment(
                             text=(
                                 f"💥 第 {d0.time:.1f}s，"
                                 f"{killer_emoji} {d0.data['killer_name']}"
-                                f"一炮带走 "
+                                f"{mass_verb} "
                                 f"{victim_emoji} {d0.data['soldier_name']} ×{len(killer_deaths)}！"
                             ),
                             is_key_event=True,
@@ -351,12 +391,17 @@ class Broadcaster:
                 parts.append(f"🔴 -{len(red_deaths)}")
             if blue_deaths:
                 parts.append(f"🔵 -{len(blue_deaths)}")
-            lines.append(f"🔥 拉锯：{' / '.join(parts)}")
+            prefix = self._rng.choice(SKIRMISH_TEMPLATES)
+            lines.append(f"{prefix}{' / '.join(parts)}")
         else:
             # 标准片段
             # 蓝方造成的红方死亡
             if red_deaths:
-                action = _pick_action_word(len(red_deaths), self._rng)
+                killer_class = _classify_unit(
+                    red_deaths[0].data.get("killer_unit_type", []),
+                    red_deaths[0].data.get("killer_has_ranged", False),
+                )
+                action = _pick_action_word(len(red_deaths), self._rng, killer_class)
                 # 找出攻击者兵种名
                 killer_name = red_deaths[0].data.get("killer_name", "?")
                 lines.append(
@@ -367,7 +412,11 @@ class Broadcaster:
                 )
             # 红方造成的蓝方死亡
             if blue_deaths:
-                action = _pick_action_word(len(blue_deaths), self._rng)
+                killer_class = _classify_unit(
+                    blue_deaths[0].data.get("killer_unit_type", []),
+                    blue_deaths[0].data.get("killer_has_ranged", False),
+                )
+                action = _pick_action_word(len(blue_deaths), self._rng, killer_class)
                 killer_name = blue_deaths[0].data.get("killer_name", "?")
                 lines.append(
                     f"🔴 {killer_name}{action}，"

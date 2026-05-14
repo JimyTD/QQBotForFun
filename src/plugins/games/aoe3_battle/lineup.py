@@ -571,3 +571,87 @@ def format_matchup_panel(lineup: MatchLineup) -> str:
     parts.append("")
     parts.append(format_vs_banner(lineup))
     return "\n".join(parts)
+
+
+def _unit_emoji(unit) -> str:
+    """根据兵种类型返回对应 emoji。"""
+    tags = set(unit.type) if unit.type else set()
+    # 按优先级匹配
+    if tags & {"Ship", "War ship", "Fishing boat", "Recruiting ship"}:
+        return "⛵"
+    if tags & {"Artillery", "Siege trooper", "Artillery trooper"}:
+        return "💣"
+    if tags & {"Elephant"}:
+        return "🐘"
+    if tags & {"Camel"}:
+        return "🐫"
+    if tags & {"Cavalry", "Heavy cavalry", "Hand cavalry", "Ranged cavalry",
+               "Light ranged cavalry", "Gunpowder cavalry", "Lance cavalry",
+               "Ranged heavy cavalry"}:
+        return "🐴"
+    if tags & {"Archer", "Foot archer"}:
+        return "🏹"
+    if tags & {"Gunpowder trooper", "Gunpowder unit", "Musket infantry",
+               "Rifle infantry"}:
+        return "🔫"
+    if tags & {"Pikeman"}:
+        return "🗡️"
+    if tags & {"Monk", "Healing unit"}:
+        return "✝️"
+    if tags & {"Hero"}:
+        return "👑"
+    if tags & {"Pet"}:
+        return "🐾"
+    if tags & {"Mercenary", "Outlaw", "MercType1", "MercType2"}:
+        return "💰"
+    if tags & {"Villager"}:
+        return "👷"
+    if tags & {"Infantry", "Hand infantry", "Heavy infantry", "Light infantry",
+               "Shock infantry", "Hand shock infantry", "Ranged infantry",
+               "Ranged shock infantry", "Grenade trooper", "Counter-skirmisher",
+               "Hand skirmisher", "Archaic infantry", "Native warrior"}:
+        return "⚔️"
+    return "■"
+
+
+def format_formation_panel(lineup: MatchLineup) -> str:
+    """生成双方阵型排布面板文本（群聊开战前发送）。"""
+    from .simulator import (
+        ArmySlot as SimSlot,
+        FormationRow,
+        Side,
+        compute_formation_rows,
+    )
+
+    def _side_text(
+        side_lineup: Lineup,
+        side: Side,
+        emoji: str,
+        label: str,
+    ) -> str:
+        sim_army = [SimSlot(s.unit, s.count) for s in side_lineup.slots]
+        rows: list[FormationRow] = compute_formation_rows(sim_army, side)
+
+        lines: list[str] = []
+        lines.append(f"{emoji} {label}阵型（{side_lineup.total_count}人，{len(rows)}排）")
+
+        for row in rows:
+            # 按兵种类型用不同 emoji
+            icons = ""
+            for unit, count in row.slots:
+                icons += _unit_emoji(unit) * count
+            tag = "前排" if row.row_index == 0 else (
+                "后排" if row.row_index == len(rows) - 1 and len(rows) > 1
+                else ""
+            )
+            desc = row.label
+            tag_str = f" ← {tag}" if tag else ""
+            lines.append(f"  {row.row_index + 1}排 [{icons}] {desc}{tag_str}")
+
+        return "\n".join(lines)
+
+    red_text = _side_text(lineup.red, Side.RED, "🔴", "红方")
+    blue_text = _side_text(lineup.blue, Side.BLUE, "🔵", "蓝方")
+
+    gap = "      ─── 空地 ───"
+    return f"{red_text}\n{gap}\n{blue_text}"

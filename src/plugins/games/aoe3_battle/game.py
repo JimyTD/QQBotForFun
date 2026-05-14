@@ -31,6 +31,7 @@ from .lineup import (
     Lineup,
     MatchLineup,
     UnitSlot,
+    format_formation_panel,
     format_matchup_panel,
     format_side_panel,
     format_vs_banner,
@@ -109,24 +110,51 @@ def _dump_battle_log(
             "blue_alive": len(result.blue_alive),
         }
 
-        # ── 精简版独有：士兵终态 & 击杀链 ──
+        # ── 精简版独有：按兵种汇总 & 击杀链 ──
         all_soldiers = (
             result.red_alive + result.red_dead
             + result.blue_alive + result.blue_dead
         )
 
-        # 每个士兵的终态统计
-        soldier_stats = []
-        for s in sorted(all_soldiers, key=lambda x: x.id):
-            soldier_stats.append({
-                "id": s.id,
-                "name": s.unit.name,
-                "side": s.side.value,
-                "alive": s.alive,
-                "hp": round(s.hp, 1) if s.alive else 0,
-                "damage": round(s.total_damage_dealt, 1),
-                "kills": s.kills,
+        # 按（side, unit_name）汇总统计
+        from collections import defaultdict
+        _agg: dict[tuple[str, str], dict] = defaultdict(
+            lambda: {"count": 0, "alive": 0, "total_dmg": 0.0, "total_kills": 0}
+        )
+        for s in all_soldiers:
+            key = (s.side.value, s.unit.name)
+            _agg[key]["count"] += 1
+            if s.alive:
+                _agg[key]["alive"] += 1
+            _agg[key]["total_dmg"] += s.total_damage_dealt
+            _agg[key]["total_kills"] += s.kills
+
+        unit_summary = []
+        for (side, name), v in sorted(_agg.items()):
+            unit_summary.append({
+                "side": side,
+                "name": name,
+                "count": v["count"],
+                "alive": v["alive"],
+                "total_dmg": round(v["total_dmg"], 1),
+                "total_kills": v["total_kills"],
+                "avg_dmg": round(v["total_dmg"] / v["count"], 1),
             })
+
+        # Top 3 个体（按综合分排序，仅供参考）
+        top3 = sorted(
+            all_soldiers,
+            key=lambda s: s.total_damage_dealt * 0.5 + s.kills * 50,
+            reverse=True,
+        )[:3]
+        top_individuals = [
+            {
+                "id": s.id, "name": s.unit.name, "side": s.side.value,
+                "damage": round(s.total_damage_dealt, 1), "kills": s.kills,
+                "alive": s.alive,
+            }
+            for s in top3
+        ]
 
         # 击杀链：从事件流中提取 DEATH 事件
         from .simulator import EventType
@@ -135,7 +163,7 @@ def _dump_battle_log(
             if e.event_type == EventType.DEATH:
                 kill_chain.append({
                     "t": round(e.time, 1),
-                    "victim": e.data.get("name", "?"),
+                    "victim": e.data.get("soldier_name", "?"),
                     "victim_id": e.data.get("soldier_id"),
                     "victim_side": e.data.get("side"),
                     "killer": e.data.get("killer_name", "?"),
@@ -170,12 +198,13 @@ def _dump_battle_log(
             "mvp": mvp_data,
         }
 
-        # ── 写精简版（~5KB，可远程 cat）──
+        # ── 写精简版（远程 cat 用，目标 <4KB）──
         summary = {
             **header,
             "event_counts": event_counts,
+            "unit_summary": unit_summary,
+            "top3": top_individuals,
             "kill_chain": kill_chain,
-            "soldiers": soldier_stats,
         }
         summary_path = BATTLE_LOG_DIR / f"{base_name}.json"
         summary_path.write_text(
@@ -331,6 +360,11 @@ class AoE3BattleGame(GameBase):
         # ── 发 VS 总览 + 押注提示 ──
         vs_text = format_vs_banner(match)
         await session.broadcast(ctx.group_id, vs_text)
+
+        # ── 发阵型面板（非单挑模式且人数 > 2 时才有意义）──
+        if mode != "duel" and match.red.total_count + match.blue.total_count > 2:
+            formation_text = format_formation_panel(match)
+            await session.broadcast(ctx.group_id, formation_text)
 
         logger.info(
             "[aoe3_battle] 对局 %s 开始，模式=%s 🔴 %s vs 🔵 %s",
