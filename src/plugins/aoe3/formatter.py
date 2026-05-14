@@ -85,8 +85,8 @@ def render_unit_card(unit: Unit) -> str:
             atk_parts.append(f"射程{rng}")
         if unit.rof_ranged:
             atk_parts.append(f"射速{unit.rof_ranged:g}s")
-        if unit.aoe_radius and unit.attack_ranged:
-            atk_parts.append(f"AOE{unit.aoe_radius}")
+        if unit.aoe_radius_ranged:
+            atk_parts.append(f"AOE{unit.aoe_radius_ranged}")
         lines.append(" | ".join(atk_parts))
         mult_str = _fmt_mult(unit.multipliers_ranged)
         if mult_str:
@@ -99,6 +99,8 @@ def render_unit_card(unit: Unit) -> str:
         atk_parts = [f"  {unit.attack_melee:g}伤害"]
         if unit.rof_melee:
             atk_parts.append(f"射速{unit.rof_melee:g}s")
+        if unit.aoe_radius_melee:
+            atk_parts.append(f"AOE{unit.aoe_radius_melee}")
         lines.append(" | ".join(atk_parts))
         mult_str = _fmt_mult(unit.multipliers_melee)
         if mult_str:
@@ -113,9 +115,8 @@ def render_unit_card(unit: Unit) -> str:
             atk_parts.append(f"射程{unit.range_siege:g}")
         if unit.rof_siege:
             atk_parts.append(f"射速{unit.rof_siege:g}s")
-        if unit.aoe_radius and not unit.attack_ranged:
-            # 纯攻城兵种的 AOE 显示在这里
-            atk_parts.append(f"AOE{unit.aoe_radius}")
+        if unit.aoe_radius_siege:
+            atk_parts.append(f"AOE{unit.aoe_radius_siege}")
         lines.append(" | ".join(atk_parts))
         mult_str = _fmt_mult(unit.multipliers_siege)
         if mult_str:
@@ -202,8 +203,8 @@ def render_compare(a: Unit, b: Unit) -> str:
         lines.append(_row("  射程", f"{a.range:g}", f"{b.range:g}"))
         if a.rof_ranged or b.rof_ranged:
             lines.append(_row("  射速", f"{a.rof_ranged:g}s", f"{b.rof_ranged:g}s"))
-        if a.aoe_radius or b.aoe_radius:
-            lines.append(_row("  AOE", str(a.aoe_radius or "-"), str(b.aoe_radius or "-")))
+        if a.aoe_radius_ranged or b.aoe_radius_ranged:
+            lines.append(_row("  AOE", str(a.aoe_radius_ranged or "-"), str(b.aoe_radius_ranged or "-")))
         mult_lines = _fmt_compare_mults(a.multipliers_ranged, b.multipliers_ranged)
         if mult_lines:
             lines.append("  克制倍率:")
@@ -216,6 +217,8 @@ def render_compare(a: Unit, b: Unit) -> str:
         lines.append(_row("  伤害", f"{a.attack_melee:g}", f"{b.attack_melee:g}"))
         if a.rof_melee or b.rof_melee:
             lines.append(_row("  射速", f"{a.rof_melee:g}s", f"{b.rof_melee:g}s"))
+        if a.aoe_radius_melee or b.aoe_radius_melee:
+            lines.append(_row("  AOE", str(a.aoe_radius_melee or "-"), str(b.aoe_radius_melee or "-")))
         mult_lines = _fmt_compare_mults(a.multipliers_melee, b.multipliers_melee)
         if mult_lines:
             lines.append("  克制倍率:")
@@ -228,10 +231,8 @@ def render_compare(a: Unit, b: Unit) -> str:
         lines.append(_row("  伤害", f"{a.attack_siege:g}", f"{b.attack_siege:g}"))
         if a.range_siege or b.range_siege:
             lines.append(_row("  射程", f"{a.range_siege:g}", f"{b.range_siege:g}"))
-        if (a.aoe_radius and not a.attack_ranged) or (b.aoe_radius and not b.attack_ranged):
-            aoe_a = str(a.aoe_radius) if (a.aoe_radius and not a.attack_ranged) else "-"
-            aoe_b = str(b.aoe_radius) if (b.aoe_radius and not b.attack_ranged) else "-"
-            lines.append(_row("  AOE", aoe_a, aoe_b))
+        if a.aoe_radius_siege or b.aoe_radius_siege:
+            lines.append(_row("  AOE", str(a.aoe_radius_siege or "-"), str(b.aoe_radius_siege or "-")))
         mult_lines = _fmt_compare_mults(a.multipliers_siege, b.multipliers_siege)
         if mult_lines:
             lines.append("  克制倍率:")
