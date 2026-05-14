@@ -94,11 +94,18 @@ def print_events(result: BattleResult, *, verbose: bool = False) -> None:
         t = f"[{ev.time:5.1f}s]"
 
         if ev.event_type == EventType.BATTLE_START:
+            # 兼容新旧事件格式
+            if "red_army" in d:
+                red_desc = " + ".join(f"{s['name']}×{s['count']}" for s in d["red_army"])
+                blue_desc = " + ".join(f"{s['name']}×{s['count']}" for s in d["blue_army"])
+            else:
+                red_desc = f"{d['red_unit']} ×{d['red_count']}"
+                blue_desc = f"{d['blue_unit']} ×{d['blue_count']}"
             print(
                 f"\n{C.B}⚔️  {t} 战斗开始！"
-                f" {C.RED}{d['red_unit']} ×{d['red_count']}{C.R}"
+                f" {C.RED}{red_desc}{C.R}"
                 f" vs"
-                f" {C.BLUE}{d['blue_unit']} ×{d['blue_count']}{C.R}"
+                f" {C.BLUE}{blue_desc}{C.R}"
             )
 
         elif ev.event_type == EventType.DEATH:
@@ -165,7 +172,7 @@ def print_events(result: BattleResult, *, verbose: bool = False) -> None:
 # 战报打印
 # =====================================================================
 def print_report(result: BattleResult) -> None:
-    """打印最终战报。"""
+    """打印最终战报（支持多兵种）。"""
     print(f"\n{C.B}{C.CYAN}{'━' * 60}{C.R}")
     print(f"{C.B}{C.CYAN}  最终战报{C.R}")
     print(f"{C.CYAN}{'━' * 60}{C.R}")
@@ -184,11 +191,11 @@ def print_report(result: BattleResult) -> None:
     print(f"  战斗时长: {result.duration:.1f}s ({result.ticks} ticks)")
     print()
 
-    # 双方统计
-    for side, unit, count, alive, dead, color, emoji in [
-        (Side.RED, result.red_unit, result.red_count,
+    # 双方统计（支持多兵种）
+    for side, army, count, alive, dead, color, emoji in [
+        (Side.RED, result.red_army, result.red_count,
          result.red_alive, result.red_dead, C.RED, "🔴"),
-        (Side.BLUE, result.blue_unit, result.blue_count,
+        (Side.BLUE, result.blue_army, result.blue_count,
          result.blue_alive, result.blue_dead, C.BLUE, "🔵"),
     ]:
         total_dmg = sum(s.total_damage_dealt for s in alive) + sum(
@@ -196,20 +203,37 @@ def print_report(result: BattleResult) -> None:
         )
         total_kills = sum(s.kills for s in alive) + sum(s.kills for s in dead)
 
+        # 阵容描述
+        if len(army) > 1:
+            army_desc = " + ".join(f"{s.unit.name}×{s.count}" for s in army)
+        else:
+            army_desc = f"{army[0].unit.name} ×{army[0].count}"
+
         print(
-            f"  {color}{C.B}{emoji} {unit.name} ×{count}{C.R}"
+            f"  {color}{C.B}{emoji} [{army_desc}]{C.R}"
             f"  存活: {len(alive)}/{count}"
             f"  击杀: {total_kills}"
             f"  总伤害: {total_dmg:.0f}"
         )
 
-        # 存活单位 HP
-        if alive:
-            hp_list = ", ".join(
-                f"#{s.id}({s.hp:.0f}/{s.max_hp:.0f})" for s in alive[:5]
-            )
-            extra = f" +{len(alive)-5}..." if len(alive) > 5 else ""
-            print(f"    存活详情: {hp_list}{extra}")
+        # 按兵种统计存活
+        for slot in army:
+            alive_of_type = [s for s in alive if s.unit.id == slot.unit.id]
+            dead_of_type = slot.count - len(alive_of_type)
+            if len(alive_of_type) == 0:
+                print(f"    {slot.unit.name} ×{slot.count} → 0")
+            elif len(alive_of_type) == 1 and dead_of_type > 0:
+                s = alive_of_type[0]
+                print(
+                    f"    {slot.unit.name} ×{len(alive_of_type)}"
+                    f"（损失 {dead_of_type}/{slot.count}，"
+                    f"HP {s.hp:.0f}/{s.max_hp:.0f}）"
+                )
+            else:
+                print(
+                    f"    {slot.unit.name} ×{len(alive_of_type)}"
+                    f"（损失 {dead_of_type}/{slot.count}）"
+                )
 
     # MVP
     print(f"\n  {C.B}🏅 MVP{C.R}")
@@ -442,11 +466,10 @@ def main() -> None:
         panel = format_matchup_panel(match)
         print(f"\n{C.B}{panel}{C.R}")
         print()
-        show_unit_brief(match.red.unit, f"{C.RED}🔴 红方{C.R}")
-        show_unit_brief(match.blue.unit, f"{C.BLUE}🔵 蓝方{C.R}")
-
-        red_unit, red_count = match.red.unit, match.red.count
-        blue_unit, blue_count = match.blue.unit, match.blue.count
+        for slot in match.red.slots:
+            show_unit_brief(slot.unit, f"{C.RED}🔴 红方{C.R}")
+        for slot in match.blue.slots:
+            show_unit_brief(slot.unit, f"{C.BLUE}🔵 蓝方{C.R}")
 
     elif args.red and args.blue:
         # 参数式
@@ -468,9 +491,21 @@ def main() -> None:
 
     # 跑模拟
     print(f"\n{C.DIM}模拟中...{C.R}")
-    sim = BattleSimulator(
-        red_unit, red_count, blue_unit, blue_count, seed=args.seed
-    )
+    is_duel = args.duel
+    if args.random or args.duel:
+        # 随机阵容模式：始终用新式接口（支持多兵种）
+        sim = BattleSimulator(
+            red_army=[(s.unit, s.count) for s in match.red.slots],
+            blue_army=[(s.unit, s.count) for s in match.blue.slots],
+            seed=args.seed,
+            duel_mode=is_duel,
+        )
+    else:
+        sim = BattleSimulator(
+            red_unit, red_count, blue_unit, blue_count,
+            seed=args.seed,
+            duel_mode=is_duel,
+        )
     result = sim.run()
 
     # 输出事件流

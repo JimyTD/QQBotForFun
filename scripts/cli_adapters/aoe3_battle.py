@@ -57,6 +57,7 @@ class AoE3BattleCLIAdapter:
     def __init__(self, *, debug: bool = False) -> None:
         self._debug = debug
         self._mode_id = "bet"
+        self._budget = 3000
         self._repo: UnitRepo | None = None
         self._match: MatchLineup | None = None
         self._result: BattleResult | None = None
@@ -66,12 +67,19 @@ class AoE3BattleCLIAdapter:
         self._repo = UnitRepo.get()
         info(f"已加载 {len(self._repo.all_units)} 个兵种数据")
 
+        # 押注模式支持自定义预算
+        if mode_id == "bet":
+            budget_str = prompt("资源预算（直接回车默认 3000，范围 1000~10000）> ").strip()
+            if budget_str.isdigit():
+                self._budget = max(1000, min(10000, int(budget_str)))
+            info(f"本局资源预算：{self._budget}")
+
         # 生成阵容
         rng = random.Random()
         if mode_id == "duel":
             self._match = generate_duel_lineup(self._repo, rng=rng)
         else:
-            self._match = generate_bet_lineup(self._repo, rng=rng)
+            self._match = generate_bet_lineup(self._repo, rng=rng, budget=self._budget)
 
     async def play(self) -> None:
         assert self._match is not None
@@ -129,9 +137,11 @@ class AoE3BattleCLIAdapter:
 
         # 3. 跑模拟
         print(f"\n{C.DIM}战斗模拟中...{C.R}")
+        is_duel = self._mode_id == "duel"
         sim = BattleSimulator(
-            match.red.unit, match.red.count,
-            match.blue.unit, match.blue.count,
+            red_army=[(s.unit, s.count) for s in match.red.slots],
+            blue_army=[(s.unit, s.count) for s in match.blue.slots],
+            duel_mode=is_duel,
         )
         result = sim.run()
         self._result = result

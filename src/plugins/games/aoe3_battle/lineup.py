@@ -8,8 +8,9 @@
 from __future__ import annotations
 
 import logging
+import math
 import random
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import Sequence
 
 from src.plugins.aoe3.models import Unit
@@ -20,24 +21,78 @@ logger = logging.getLogger("aoe3_battle.lineup")
 # =====================================================================
 # 常量
 # =====================================================================
-BUDGET = 1000                # 资源预算
+BUDGET = 3000                # 默认资源预算（与 game.py BUDGET_DEFAULT 一致）
+
+# 兵种数量权重（§2.2.3）
+SLOT_WEIGHTS = [45, 35, 20]  # 1种45%, 2种35%, 3种20%
+
+# LCM 预算浮动范围（§2.2.4）
+LCM_BUDGET_TOLERANCE = 0.3   # ±30%
+
+# 抽兵最大重试次数
+MAX_DRAW_RETRIES = 20
 
 
 # =====================================================================
 # 阵容数据
 # =====================================================================
 @dataclass
-class Lineup:
-    """一方的阵容。"""
+class UnitSlot:
+    """阵容中的一个兵种槽位。"""
     unit: Unit
     count: int
-    total_cost: int            # 实际总资源
-    pop: int                   # 总人口
 
     @property
     def unit_cost(self) -> int:
         """单个单位的资源消耗。"""
         return sum(self.unit.cost.values())
+
+    @property
+    def total_cost(self) -> int:
+        """该槽位的总资源消耗。"""
+        return self.unit_cost * self.count
+
+
+@dataclass
+class Lineup:
+    """一方的阵容（支持多兵种）。"""
+    slots: list[UnitSlot]
+
+    @property
+    def total_cost(self) -> int:
+        """总资源消耗。"""
+        return sum(s.total_cost for s in self.slots)
+
+    @property
+    def total_pop(self) -> int:
+        """总人口。"""
+        return sum(s.unit.pop * s.count for s in self.slots)
+
+    @property
+    def total_count(self) -> int:
+        """总个体数。"""
+        return sum(s.count for s in self.slots)
+
+    # ---- 向后兼容：单兵种场景的便捷属性 ----
+    @property
+    def unit(self) -> Unit:
+        """第一个（或唯一）兵种。"""
+        return self.slots[0].unit
+
+    @property
+    def count(self) -> int:
+        """第一个（或唯一）兵种的数量。"""
+        return self.slots[0].count
+
+    @property
+    def pop(self) -> int:
+        """总人口（兼容旧接口）。"""
+        return self.total_pop
+
+    @property
+    def is_multi(self) -> bool:
+        """是否为多兵种阵容。"""
+        return len(self.slots) > 1
 
 
 @dataclass
@@ -122,15 +177,146 @@ def get_duel_pool(repo: UnitRepo) -> list[Unit]:
 
 
 # =====================================================================
+# 资源分配算法
+# =====================================================================
+
+def _unit_cost(unit: Unit) -> int:
+    """获取单位总资源消耗。"""
+    return sum(unit.cost.values())
+
+
+def approx_lcm_budget(cost_a: int, cost_b: int, base_budget: int) -> int:
+    """近似 LCM 算法（§2.2.4）：让双方资源尽量相等。
+
+    返回调整后的预算（双方共用）。
+    """
+    ca = max(1, round(cost_a))
+    cb = max(1, round(cost_b))
+
+    lcm_val = abs(ca * cb) // math.gcd(ca, cb)
+
+    # LCM 太大 → 退化为基础预算
+    if lcm_val > base_budget * (1 + LCM_BUDGET_TOLERANCE):
+        return base_budget
+
+    # 取最接近 base_budget 的 LCM 倍数
+    n = round(base_budget / lcm_val)
+    n = max(1, n)
+    actual = n * lcm_val
+
+    # clamp 到 ±30% 范围
+    lo = int(base_budget * (1 - LCM_BUDGET_TOLERANCE))
+    hi = int(base_budget * (1 + LCM_BUDGET_TOLERANCE))
+    actual = max(lo, min(hi, actual))
+
+    return actual
+
+
+def greedy_fill(budget: int, unit_costs: list[int]) -> list[int]:
+    """贪心填充三步法（§2.2.3）：多兵种资源分配。
+
+    输入：总预算 budget，兵种 cost 列表
+    输出：每个兵种的数量列表
+    """
+    n = len(unit_costs)
+    if n == 0:
+        return []
+
+    # Step 1 — 保底：每种兵各 1 个
+    counts = [1] * n
+    remaining = budget - sum(unit_costs)
+    if remaining < 0:
+        # 保底就超预算（不应该发生，抽兵约束应拦截）
+        logger.warning("贪心填充：保底超预算！budget=%d, costs=%s", budget, unit_costs)
+        return counts
+
+    # Step 2 — 均分：剩余预算均分给每个兵种
+    per_budget = remaining // n
+    for i in range(n):
+        extra = per_budget // unit_costs[i]
+        counts[i] += extra
+
+    # Step 3 — 贪心零头：最后的零头逐个加最便宜的兵
+    remaining = budget - sum(c * cost for c, cost in zip(counts, unit_costs))
+    while remaining > 0:
+        best = None
+        for i in range(n):
+            if unit_costs[i] <= remaining:
+                if best is None or unit_costs[i] < unit_costs[best]:
+                    best = i
+        if best is None:
+            break
+        counts[best] += 1
+        remaining -= unit_costs[best]
+
+    return counts
+
+
+# =====================================================================
 # 阵容生成
 # =====================================================================
-def _calc_count(unit: Unit, budget: int) -> int:
-    """计算兵种数量 = round(预算 / 单位资源)，最少 1。"""
-    unit_cost = sum(unit.cost.values())
-    if unit_cost <= 0:
-        return 1
-    count = round(budget / unit_cost)
-    return max(1, count)
+
+def _draw_units(
+    pool: list[Unit],
+    slot_count: int,
+    budget: int,
+    rng: random.Random,
+) -> list[Unit] | None:
+    """从池中抽取 slot_count 个不同兵种，满足抽兵约束。
+
+    抽兵约束：各出 1 个的总 cost ≤ 预算。
+    返回 None 表示重试次数耗尽。
+    """
+    for _ in range(MAX_DRAW_RETRIES):
+        chosen = rng.sample(pool, min(slot_count, len(pool)))
+        total_min_cost = sum(_unit_cost(u) for u in chosen)
+        if total_min_cost <= budget:
+            return chosen
+    return None
+
+
+def _generate_side_lineup(
+    pool: list[Unit],
+    budget: int,
+    rng: random.Random,
+) -> Lineup:
+    """为一方生成阵容（支持 1~3 兵种）。"""
+    # 抽兵种数
+    slot_count = rng.choices([1, 2, 3], weights=SLOT_WEIGHTS, k=1)[0]
+
+    # 确保池子够大
+    slot_count = min(slot_count, len(pool))
+
+    # 抽兵种（带约束）
+    chosen = _draw_units(pool, slot_count, budget, rng)
+    if chosen is None:
+        # 约束满足不了，降级到 1 个兵种
+        logger.warning("抽兵约束多次失败，降级为单兵种。budget=%d", budget)
+        chosen = [rng.choice(pool)]
+
+    # 分配数量
+    costs = [_unit_cost(u) for u in chosen]
+
+    if len(chosen) == 1:
+        # 单兵种：简单除法
+        count = max(1, budget // costs[0])
+        slots = [UnitSlot(unit=chosen[0], count=count)]
+    else:
+        # 多兵种：贪心填充
+        counts = greedy_fill(budget, costs)
+        slots = [UnitSlot(unit=u, count=c) for u, c in zip(chosen, counts)]
+
+    lineup = Lineup(slots=slots)
+
+    logger.info(
+        "阵容生成：%d 兵种，总花费 %d/%d (浪费 %d)，总人数 %d",
+        len(slots), lineup.total_cost, budget,
+        budget - lineup.total_cost, lineup.total_count,
+    )
+    for s in slots:
+        logger.debug("  %s ×%d (cost=%d, 小计=%d)", s.unit.name, s.count, s.unit_cost, s.total_cost)
+
+    return lineup
 
 
 def generate_bet_lineup(
@@ -139,12 +325,12 @@ def generate_bet_lineup(
     budget: int = BUDGET,
     rng: random.Random | None = None,
 ) -> MatchLineup:
-    """生成押注模式阵容。
+    """生成押注模式阵容（v2 复合阵容）。
 
-    规则（§2.2.1）：
-    - 红蓝各随机抽 1 个兵种
-    - 数量按资源预算算
-    - 不强制重抽，随机到什么就用什么
+    规则（§2.2.3）：
+    - 红蓝双方各独立生成 1~3 个兵种的阵容
+    - 单兵种 vs 单兵种时使用 LCM 算法平衡资源
+    - 多兵种时使用贪心填充
     """
     if rng is None:
         rng = random.Random()
@@ -153,37 +339,42 @@ def generate_bet_lineup(
     if len(pool) < 2:
         raise ValueError(f"兵种池不足：仅 {len(pool)} 个兵种")
 
-    # 随机抽两个不同兵种
-    red_unit, blue_unit = rng.sample(pool, 2)
+    # 红蓝双方独立生成
+    red = _generate_side_lineup(pool, budget, rng)
+    blue = _generate_side_lineup(pool, budget, rng)
 
-    red_count = _calc_count(red_unit, budget)
-    blue_count = _calc_count(blue_unit, budget)
+    # 如果双方都是单兵种，使用 LCM 算法平衡资源
+    if not red.is_multi and not blue.is_multi:
+        cost_a = red.slots[0].unit_cost
+        cost_b = blue.slots[0].unit_cost
+        lcm_budget = approx_lcm_budget(cost_a, cost_b, budget)
 
-    red_cost = sum(red_unit.cost.values()) * red_count
-    blue_cost = sum(blue_unit.cost.values()) * blue_count
+        red.slots[0] = UnitSlot(
+            unit=red.slots[0].unit,
+            count=max(1, lcm_budget // cost_a),
+        )
+        blue.slots[0] = UnitSlot(
+            unit=blue.slots[0].unit,
+            count=max(1, lcm_budget // cost_b),
+        )
+
+        logger.info(
+            "LCM 平衡：预算 %d → %d，🔴 %s ×%d (%d) vs 🔵 %s ×%d (%d) 差=%d",
+            budget, lcm_budget,
+            red.unit.name, red.count, red.total_cost,
+            blue.unit.name, blue.count, blue.total_cost,
+            abs(red.total_cost - blue.total_cost),
+        )
 
     logger.info(
-        "押注阵容生成：🔴 %s ×%d (cost=%d) vs 🔵 %s ×%d (cost=%d) 差异=%d",
-        red_unit.name, red_count, red_cost,
-        blue_unit.name, blue_count, blue_cost,
-        abs(red_cost - blue_cost),
+        "押注阵容最终：🔴 %s (cost=%d, pop=%d) vs 🔵 %s (cost=%d, pop=%d)",
+        " + ".join(f"{s.unit.name}×{s.count}" for s in red.slots),
+        red.total_cost, red.total_pop,
+        " + ".join(f"{s.unit.name}×{s.count}" for s in blue.slots),
+        blue.total_cost, blue.total_pop,
     )
 
-    return MatchLineup(
-        red=Lineup(
-            unit=red_unit,
-            count=red_count,
-            total_cost=red_cost,
-            pop=red_unit.pop * red_count,
-        ),
-        blue=Lineup(
-            unit=blue_unit,
-            count=blue_count,
-            total_cost=blue_cost,
-            pop=blue_unit.pop * blue_count,
-        ),
-        mode="bet",
-    )
+    return MatchLineup(red=red, blue=blue, mode="bet")
 
 
 def generate_duel_lineup(
@@ -206,9 +397,6 @@ def generate_duel_lineup(
 
     red_unit, blue_unit = rng.sample(pool, 2)
 
-    red_cost = sum(red_unit.cost.values()) if red_unit.cost else 0
-    blue_cost = sum(blue_unit.cost.values()) if blue_unit.cost else 0
-
     logger.info(
         "单挑阵容生成：🔴 %s (HP=%d) vs 🔵 %s (HP=%d)",
         red_unit.name, red_unit.hp,
@@ -216,18 +404,8 @@ def generate_duel_lineup(
     )
 
     return MatchLineup(
-        red=Lineup(
-            unit=red_unit,
-            count=1,
-            total_cost=red_cost,
-            pop=red_unit.pop,
-        ),
-        blue=Lineup(
-            unit=blue_unit,
-            count=1,
-            total_cost=blue_cost,
-            pop=blue_unit.pop,
-        ),
+        red=Lineup(slots=[UnitSlot(unit=red_unit, count=1)]),
+        blue=Lineup(slots=[UnitSlot(unit=blue_unit, count=1)]),
         mode="duel",
     )
 
@@ -286,6 +464,7 @@ def _type_str_zh(u: Unit) -> str:
     return " / ".join(types_zh) if types_zh else "未知"
 
 
+
 def format_side_panel(
     lineup: Lineup, side: str, mode: str
 ) -> str:
@@ -293,28 +472,47 @@ def format_side_panel(
 
     side: "red" | "blue"
     """
-    u = lineup.unit
     emoji = "🔴" if side == "red" else "🔵"
     label = "1号" if side == "red" else "2号"
 
+    lines: list[str] = []
+
     if mode == "duel":
-        header = f"{emoji} {label} · {u.name}"
-    else:
-        header = f"{emoji} {label} · {u.name} ×{lineup.count}"
+        # 单挑模式：简洁
+        lines.append(f"{emoji} {label} · {lineup.unit.name}")
+        u = lineup.unit
+        lines.append(f"类型：{_type_str_zh(u)}")
+        lines.append(f"❤️{u.hp} 🦶{u.speed}")
+        lines.append(f"⚔️ {_atk_summary(u)}")
+        _append_extras(lines, u)
 
-    lines = [header]
-    lines.append(f"类型：{_type_str_zh(u)}")
-
-    # 核心属性一行
-    stat_parts = [f"❤️{u.hp}", f"🦶{u.speed}"]
-    if mode != "duel":
+    elif not lineup.is_multi:
+        # 单兵种押注模式：紧凑
+        lines.append(f"{emoji} {label} · {lineup.unit.name} ×{lineup.count}")
+        u = lineup.unit
+        lines.append(f"类型：{_type_str_zh(u)}")
         lines.append(f"💰总资源 {lineup.total_cost}")
-    lines.append(" ".join(stat_parts))
+        lines.append(f"❤️{u.hp} 🦶{u.speed}")
+        lines.append(f"⚔️ {_atk_summary(u)}")
+        _append_extras(lines, u)
 
-    # 攻击
-    lines.append(f"⚔️ {_atk_summary(u)}")
+    else:
+        # 多兵种押注模式：每个兵种一段
+        lines.append(f"{emoji} {label}（总资源 {lineup.total_cost}，人口 {lineup.total_pop}）")
+        for slot in lineup.slots:
+            u = slot.unit
+            lines.append(f"  {'─' * 20}")
+            lines.append(f"  {u.name} ×{slot.count}")
+            lines.append(f"  类型：{_type_str_zh(u)}")
+            lines.append(f"  ❤️{u.hp} 🦶{u.speed}")
+            lines.append(f"  ⚔️ {_atk_summary(u)}")
+            _append_extras(lines, u, indent="  ")
 
-    # 抗性 + AOE
+    return "\n".join(lines)
+
+
+def _append_extras(lines: list[str], u: Unit, indent: str = "") -> None:
+    """追加抗性 + AOE 信息行。"""
     extras = []
     armor = _armor_str(u)
     if armor:
@@ -331,9 +529,7 @@ def format_side_panel(
     elif u.aoe_radius:
         extras.append(f"💥AOE{u.aoe_radius}")
     if extras:
-        lines.append(" ".join(extras))
-
-    return "\n".join(lines)
+        lines.append(f"{indent}{' '.join(extras)}")
 
 
 def format_vs_banner(lineup: MatchLineup) -> str:
@@ -345,6 +541,12 @@ def format_vs_banner(lineup: MatchLineup) -> str:
         title = "⚔️ 帝国3斗蛐蛐 · 单挑"
         red_str = f"🔴 {r.unit.name}"
         blue_str = f"🔵 {b.unit.name}"
+    elif r.is_multi or b.is_multi:
+        title = "⚔️ 帝国3斗蛐蛐"
+        red_parts = "+".join(f"{s.count}{s.unit.name}" for s in r.slots)
+        blue_parts = "+".join(f"{s.count}{s.unit.name}" for s in b.slots)
+        red_str = f"🔴 [{red_parts}]"
+        blue_str = f"🔵 [{blue_parts}]"
     else:
         title = "⚔️ 帝国3斗蛐蛐"
         red_str = f"🔴 {r.unit.name} ×{r.count}"

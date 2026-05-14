@@ -48,7 +48,7 @@
 
 ### 2.1 资源预算（押注模式）
 
-- 基础预算：**1000 资源**（默认，可通过 `@机器人 斗蛐蛐 2000` 自定义，范围 1000~5000）
+- 基础预算：**3000 资源**（默认，可通过 `@机器人 斗蛐蛐 2000` 自定义，范围 1000~10000）
 - 食物、木材、金币**价值一致**，单位总资源 = food + wood + gold
 - 具体数量计算见 §2.2.1（v1 单兵种）和 §2.2.3（v2 复合阵容）
 
@@ -63,12 +63,12 @@
 
 #### 2.2.2 兵种池（押注模式）
 
-- 基础池：`is_trainable=True` 且 `cost > 0`
+- 基础池：有费用（`cost > 0`）且有攻击力（`has_attack=True`）且有 HP（`hp > 0`）的兵种
 - **保留：战舰**（船只可参与押注模式，能在一维场地上射程压制，趣味性高）
 - **保留：雇佣兵**（群友最爱）
 - 排除：建筑马车、英雄、宠物
 
-#### 2.2.3 v2 复合阵容（待实现）
+#### 2.2.3 v2 复合阵容（已实现）
 
 每方可出 **1~3 个兵种**，系统随机抽取 + 自动分配数量。红蓝双方**独立生成**（兵种数可以不同）。
 
@@ -419,34 +419,82 @@ AOE3 有三种伤害类型，每种只被对应的抗性减免：
 - 兵种实际有 AOE 但字段缺失 → **数据 bug**，列入 §四数据缺失清单修复
 - 模拟器**不做兜底猜测**（不能“看到是炮就猜 aoe=3”，数据是什么就是什么）
 
-### 3.9 攻城攻击在斗蛐蛐中的处理
+### 3.9 攻击分类（merge 脚本核心逻辑）
 
-**斗蛐蛐没有建筑，但攻城攻击是许多兵种的主要输出手段。**
+**数据源**：`units_aoe_supplement.json` 中每个兵种的 `attacks` 数组，每条包含
+`name / damage / damage_type / max_range / rof / aoe_radius / bonuses`。
 
-处理规则：
-- **只有攻城攻击的兵种**（鹰炮、臼炮等 30 个）：
-  - `attack_siege` → 视为其远程攻击值
-  - `range_siege` → 视为远程射程
-  - `rof_siege` → 视为远程 ROF
-  - `multipliers.siege` → 视为远程倍率
-  - 伤害类型 = **攻城伤害**（吃 armor_siege，绝大多数兵种无此抗性 → 0%减免）
-- **同时有远程+攻城的兵种**（如火枪手）：
-  - 远程作战时使用 `attack_ranged`（远程伤害类型）
-  - 忽略 `attack_siege`（那是打建筑用的）
-- **同时有近战+攻城但无远程的兵种**（如某些攻城步兵）：
-  - 近战距离使用 `attack_melee`
-  - 远距离使用 `attack_siege` 作为远程攻击（如果有 range_siege）
+**分类规则**（由 `scripts/crawler/aoe3_merge_supplement.py :: _classify_attack` 实现）：
+
+#### 第一步：过滤拆建筑攻击（ignore）
+
+攻击名匹配以下任一条件 → **直接忽略**，不参与后续分类：
+- 名称完全等于 `"Siege Attack"`（通用拆建筑攻击，几乎所有兵种都有）
+- 名称包含 `"Building"`（如 `"Cover Building Attack"`）
+- 名称包含 `"Chop"` / `"Gather"`（砍伐/采集）
+
+> 为什么？这些攻击是用来打建筑/采集资源的，斗蛐蛐没有建筑，不需要。
+> **关键辨别**：`"Siege Attack"` ≠ damage_type 为 Siege 的攻击。
+> 鹰炮的 `"Cannon Attack"` damage_type=Siege 但不是 "Siege Attack"，是真正的远程炮击。
+
+#### 第二步：按射程分 ranged / melee
+
+过滤后的攻击按 `max_range` 分类：
+- `max_range > 2` → **ranged**（远程）
+- `max_range ≤ 2` → **melee**（近战）
+
+#### 第三步：选最佳攻击
+
+每个类别选伤害最高的一条，同时跳过姿态变体（Defend/Stagger/Volley，选伤害最高即可）。
+
+#### 第四步：攻城兵种兜底
+
+如果一个兵种过滤后 ranged 和 melee 都为空（所有攻击都被第一步忽略了），
+说明该兵种只有拆建筑攻击（如缴获臼炮 `captured_mortar`）→ **从被忽略的攻击中
+提升 max_range 最大的那条为 ranged**。
+
+#### 示例
+
+| 兵种 | 原始 attacks | 分类结果 |
+|------|-------------|---------|
+| 鹰炮 falconet | `Cannon Attack` (range=26, Siege), `Bombard Attack` (range=13, Siege), `Case Shot Attack` (range=13, Siege) | ranged=`Cannon Attack` (100), 无 melee |
+| 门徒 disciple | `Siege Attack` (range=6, Siege), `Cover Building Attack`, `Melee Attack` (range=1.75, Hand) | `Siege Attack` 和 `Building` 被忽略 → melee=`Melee Attack` (6) |
+| 火枪手 musketeer | `Ranged Attack` (range=12, Ranged), `Siege Attack` (range=6), 各种 Hand 近战 | ranged=`Ranged Attack` (23), melee=最高 Hand 近战 |
+| 缴获臼炮 captured_mortar | 只有 `Siege Attack` 系列 | 第一步全部忽略 → 第四步兜底提升为 ranged |
+
+#### 写入 units.json 的字段
+
+merge 脚本根据分类结果**覆写** units.json 中的攻击字段：
+
+```
+attack_ranged  = ranged 攻击的 damage（若有）
+attack_melee   = melee 攻击的 damage（若有）
+range          = ranged 攻击的 max_range
+range_min      = ranged 攻击的 min_range
+rof_ranged     = ranged 攻击的 rof
+rof_melee      = melee 攻击的 rof
+damage_type_ranged = ranged 攻击的 damage_type
+damage_type_melee  = melee 攻击的 damage_type
+aoe_radius_ranged  = ranged 攻击的 aoe_radius
+aoe_radius_melee   = melee 攻击的 aoe_radius
+multipliers_ranged = ranged 攻击的 bonuses
+multipliers_melee  = melee 攻击的 bonuses
+```
+
+不再有 `attack_siege` / `range_siege` / `rof_siege` 作为独立字段——
+攻城类远程炮击统一写入 `attack_ranged` + `damage_type_ranged=Siege`。
+
+#### simulator 侧
+
+- **移除 `has_siege_as_ranged` hack**：不再需要 simulator 判断"无远程但有攻城"
+- 所有兵种的攻击能力直接从 `attack_ranged` / `attack_melee` 读取
+- `damage_type_ranged` / `damage_type_melee` 决定吃哪种护甲（Siege→armor_siege, Hand→armor_melee, Ranged→armor_ranged）
 
 ---
 
 ## 四、数据缺失清单
 
-| 字段 | 说明 | 影响 | 优先级 | 来源 |
-|------|------|------|--------|------|
-| `aoe_radius` | AOE 溅射半径 | 炮兵/掷弹兵核心机制 | **P0** | aoe3explorer.com |
-| `damage_cap` | 溅射伤害上限 | AOE 伤害计算 | P0 | aoe3explorer.com（通常 = 基础攻击×2） |
-| `damage_type` | 每种攻击的伤害类型 | Abus Gunner 等特殊兵种精确计算 | P1 | aoe3explorer.com |
-| 普通 Grenadier | 数据库缺兵种 | 爬虫遗漏 | P1 | fandom wiki 重爬 |
+> ✅ **全部已解决**（2026-05-14）：`aoe_radius`、`damage_cap`、`damage_type` 已通过 `aoe3_aoe_supplement.py` 爬虫补充；Grenadier 已补入数据库。
 
 ---
 
@@ -734,15 +782,13 @@ AOE3 有三种伤害类型，每种只被对应的抗性减免：
 - ❌ 不实现弹幕风格（"前方高能" "OMG"）
 - ❌ 不实现纯文本 ASCII 战场图（与一维场地冲突，且观感差）
 - ❌ 不实现解说 NPC 人格（如"老王战报"），保持机器人客观语气
-- ❌ 不实现历史战绩排行（首期不做，后续视情况）
+- ❌ 不实现历史战绩排行
 
 ---
 
 ## 九、待讨论
 
-- [ ] AOE 数据补充：写 aoe3explorer.com 爬虫 or 手动维护？
-- [x] ~~v2 复合阵容的具体平衡算法~~ → 已封板，见 §2.2.3~§2.2.5
-- [ ] 沉默期填充话术池的最终扩充（首期按 §8.4 列表跑，发现重复率高再扩）
+> 无待讨论项。历史条目已清理（2026-05-14）。
 
 ## 十、已决议（本轮讨论封板）
 
@@ -785,7 +831,7 @@ AOE3 有三种伤害类型，每种只被对应的抗性减免：
 - ✅ **VS 面板增强**：开局发 3 条消息（红方图片+详情、蓝方图片+详情、VS 总览+押注提示），每方展示兵种 icon、中文类型、HP/速度/攻击详情/抗性/AOE
 - ✅ **战报残余血量**：存活方仅剩 1 个单位时显示残余 HP（单挑模式尤其有用）
 - ✅ **押注交互简化**：`@机器人 1` 押红方、`@机器人 2` 押蓝方（兼容 `押1`/`押注1`），面板提示更简洁
-- ✅ **自定义资源预算**：`@机器人 斗蛐蛐 2000` 设定本局总资源（范围 1000~5000，默认 1000），单挑模式不受影响
+- ✅ **自定义资源预算**：`@机器人 斗蛐蛐 2000` 设定本局总资源（范围 1000~10000，默认 3000），单挑模式不受影响
 - ✅ **双路径导入修复**：aoe3_battle 内所有 `from plugins.xxx` 改为 `from src.plugins.xxx`（根治指令双重执行、双重扣费、无法开新局等致命 bug）
 - ✅ **on_end 不 cancel battle_task**：避免 CancelledError 打断 runner.end() 的 finally 块导致 _runner_by_group 未清理
 - ✅ **bot.py 加载顺序**：`aoe3` 在 `aoe3_battle` 之前加载（依赖关系）

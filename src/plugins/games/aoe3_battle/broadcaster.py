@@ -224,11 +224,23 @@ class Broadcaster:
     def _emit_battle_start(self, events: list[BattleEvent]) -> None:
         """开战播报。"""
         r = self.result
+
+        # 多兵种时显示详细阵容
+        if len(r.red_army) > 1:
+            red_desc = " + ".join(f"{s.count}{s.unit.name}" for s in r.red_army)
+        else:
+            red_desc = f"{r.red_count} {r.red_unit.name}"
+
+        if len(r.blue_army) > 1:
+            blue_desc = " + ".join(f"{s.count}{s.unit.name}" for s in r.blue_army)
+        else:
+            blue_desc = f"{r.blue_count} {r.blue_unit.name}"
+
         self._segments.append(BroadcastSegment(
             text=(
                 f"⚔️ 战斗打响！"
-                f"🔴 [{r.red_count} {r.red_unit.name}] vs "
-                f"🔵 [{r.blue_count} {r.blue_unit.name}]"
+                f"🔴 [{red_desc}] vs "
+                f"🔵 [{blue_desc}]"
             ),
             is_key_event=True,
             time_start=0,
@@ -400,9 +412,13 @@ class Broadcaster:
         if not has_attacks:
             phase = BattlePhase.APPROACHING.value
         else:
-            # 简化判断：看是否有死亡事件来判断僵持
-            # 实际应该看 HP 比例，但这里用简化逻辑
-            phase = BattlePhase.FIGHTING.value
+            # 用存活人数比例近似判断僵持（§8.4：双方剩余 < 30% 为僵持期）
+            red_pct = self._red_remaining / self.result.red_count if self.result.red_count else 0
+            blue_pct = self._blue_remaining / self.result.blue_count if self.result.blue_count else 0
+            if red_pct < 0.3 and blue_pct < 0.3:
+                phase = BattlePhase.STALEMATE.value
+            else:
+                phase = BattlePhase.FIGHTING.value
 
         pool = self._filler_pools.get(phase, FILLER_FIGHTING)
         if not pool:
@@ -453,46 +469,61 @@ def format_battle_report(result: BattleResult) -> str:
     red_alive_count = len(result.red_alive)
     if red_alive_count == 0:
         lines.append("🔴 红方 全军覆没")
-        lines.append(f"  · {result.red_unit.name} ×{result.red_count} → 0")
+        for slot in result.red_army:
+            lines.append(f"  · {slot.unit.name} ×{slot.count} → 0")
     else:
         lost = result.red_count - red_alive_count
         if lost == 0:
             lines.append("🔴 红方 零伤亡")
         else:
             lines.append("🔴 红方 残兵")
-        hp_info = ""
-        if red_alive_count == 1:
-            s = result.red_alive[0]
-            hp_info = f"  残余血量 {s.hp:.0f}/{s.max_hp:.0f}"
-        lines.append(
-            f"  · {result.red_unit.name} ×{red_alive_count}"
-            f"（损失 {lost}/{result.red_count}）"
-        )
-        if hp_info:
-            lines.append(hp_info)
+        # 按兵种统计存活
+        for slot in result.red_army:
+            alive_of_type = [s for s in result.red_alive if s.unit.id == slot.unit.id]
+            dead_of_type = slot.count - len(alive_of_type)
+            if len(alive_of_type) == 0:
+                lines.append(f"  · {slot.unit.name} ×{slot.count} → 0")
+            elif len(alive_of_type) == 1 and dead_of_type > 0:
+                s = alive_of_type[0]
+                lines.append(
+                    f"  · {slot.unit.name} ×{len(alive_of_type)}"
+                    f"（损失 {dead_of_type}/{slot.count}，HP {s.hp:.0f}/{s.max_hp:.0f}）"
+                )
+            else:
+                lines.append(
+                    f"  · {slot.unit.name} ×{len(alive_of_type)}"
+                    f"（损失 {dead_of_type}/{slot.count}）"
+                )
     lines.append("")
 
     # 蓝方
     blue_alive_count = len(result.blue_alive)
     if blue_alive_count == 0:
         lines.append("🔵 蓝方 全军覆没")
-        lines.append(f"  · {result.blue_unit.name} ×{result.blue_count} → 0")
+        for slot in result.blue_army:
+            lines.append(f"  · {slot.unit.name} ×{slot.count} → 0")
     else:
         lost = result.blue_count - blue_alive_count
         if lost == 0:
             lines.append("🔵 蓝方 零伤亡")
         else:
             lines.append("🔵 蓝方 残兵")
-        hp_info = ""
-        if blue_alive_count == 1:
-            s = result.blue_alive[0]
-            hp_info = f"  残余血量 {s.hp:.0f}/{s.max_hp:.0f}"
-        lines.append(
-            f"  · {result.blue_unit.name} ×{blue_alive_count}"
-            f"（损失 {lost}/{result.blue_count}）"
-        )
-        if hp_info:
-            lines.append(hp_info)
+        for slot in result.blue_army:
+            alive_of_type = [s for s in result.blue_alive if s.unit.id == slot.unit.id]
+            dead_of_type = slot.count - len(alive_of_type)
+            if len(alive_of_type) == 0:
+                lines.append(f"  · {slot.unit.name} ×{slot.count} → 0")
+            elif len(alive_of_type) == 1 and dead_of_type > 0:
+                s = alive_of_type[0]
+                lines.append(
+                    f"  · {slot.unit.name} ×{len(alive_of_type)}"
+                    f"（损失 {dead_of_type}/{slot.count}，HP {s.hp:.0f}/{s.max_hp:.0f}）"
+                )
+            else:
+                lines.append(
+                    f"  · {slot.unit.name} ×{len(alive_of_type)}"
+                    f"（损失 {dead_of_type}/{slot.count}）"
+                )
     lines.append("")
 
     # MVP（仅胜方评选）

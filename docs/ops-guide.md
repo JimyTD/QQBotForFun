@@ -162,7 +162,55 @@ NapCat 不会受影响，**不需要重新扫码**。
 
 ---
 
-## 五、关键注意事项
+## 五、查看战斗日志
+
+斗蛐蛐每局对战会在 `logs/aoe3_battle/` 写入两个文件：
+
+| 文件 | 大小 | 用途 |
+|------|------|------|
+| `{ts}_{sid}.json` | ~5KB | **精简版**：阵容、结果、击杀链、每个士兵终态统计。可远程 `cat` |
+| `{ts}_{sid}.full.json` | ~300KB | **完整版**：含全部事件流（每次攻击/移动/AOE），需 `scp` 下来看 |
+
+保留最近 5 局（10 个文件）。
+
+### 查看最近对战列表
+
+```bash
+ls -lht logs/aoe3_battle/*.json | grep -v full | head -5
+```
+
+### 远程查看精简日志（推荐）
+
+```bash
+cat logs/aoe3_battle/<最新的不含full的.json>
+```
+
+精简日志包含：
+- 阵容（兵种/数量/费用）
+- 结果（胜方/时长/存活数）
+- **击杀链**（谁在几秒杀了谁，按时间排序）
+- **每个士兵终态**（存活/伤害/击杀数）
+- 事件类型统计（ATTACK/DEATH/AOE_SPLASH 各多少次）
+
+### 下载完整日志（本地分析）
+
+```bash
+scp root@106.55.228.236:/root/QQBotForFun_20260512170951/logs/aoe3_battle/*.full.json ./
+```
+
+### CodeBuddy 获取日志的标准方式
+
+直接用 Lighthouse execute_command（不需要先查地域/实例）：
+
+```
+Region: ap-guangzhou
+InstanceId: lhins-hwnz7rcz
+Command: cd /root/<项目路径> && cat logs/aoe3_battle/$(ls -t logs/aoe3_battle/*.json | grep -v full | head -1)
+```
+
+---
+
+## 六、关键注意事项
 
 - **NapCat 和 Bot 是两个独立容器**，文件系统隔离。Bot 容器里的文件 NapCat 读不到（图片要用 base64 发送）。
 - **NapCat 每次重启都需要重新扫码**，且重启后 WebSocket 配置可能被重置为空，需要重新写入。
@@ -171,7 +219,7 @@ NapCat 不会受影响，**不需要重新扫码**。
 
 ---
 
-## 六、数据卷规范（重要）
+## 七、数据卷规范（重要）
 
 docker-compose.yml 使用**固定名称的外部卷**（`external: true`），确保无论项目目录怎么变，数据永远在同一个卷里。
 

@@ -28,14 +28,16 @@ from .broadcaster import (
     format_battle_report,
 )
 from .lineup import (
+    Lineup,
     MatchLineup,
+    UnitSlot,
     format_matchup_panel,
     format_side_panel,
     format_vs_banner,
     generate_bet_lineup,
     generate_duel_lineup,
 )
-from .simulator import BattleResult, BattleSimulator, Side
+from .simulator import ArmySlot, BattleResult, BattleSimulator, Side
 
 logger = logging.getLogger("aoe3_battle.game")
 
@@ -48,8 +50,8 @@ BROADCAST_SLEEP = 2.0        # 播报间隔（秒）
 BUDGET_MIN = 1000            # 自定义资源下限
 BUDGET_MAX = 10000           # 自定义资源上限
 BUDGET_DEFAULT = 3000        # 默认资源
-BATTLE_LOG_DIR = Path(__file__).resolve().parent.parent.parent.parent / "logs" / "aoe3_battle"
-BATTLE_LOG_KEEP = 5          # 保留最近 N 局日志
+BATTLE_LOG_DIR = Path(__file__).resolve().parents[4] / "logs" / "aoe3_battle"
+BATTLE_LOG_KEEP = 5          # 保留最近 N 局（精简+完整各算一个文件）
 
 
 def _dump_battle_log(
@@ -57,60 +59,133 @@ def _dump_battle_log(
     match: MatchLineup,
     result: "BattleResult",
 ) -> None:
-    """将战斗事件流写入日志文件，保留最近 BATTLE_LOG_KEEP 局。"""
+    """写出两份日志：精简版（可远程 cat）+ 完整版（本地 debug）。
+
+    精简版（*.json）~5KB：阵容、结果、每个士兵终态统计、击杀链。
+    完整版（*.full.json）~300KB+：包含全部事件流，scp 下来离线分析。
+    """
     try:
         BATTLE_LOG_DIR.mkdir(parents=True, exist_ok=True)
 
         from datetime import datetime
         ts = datetime.now().strftime("%Y%m%d_%H%M%S")
-        filename = f"{ts}_{session_id}.json"
+        base_name = f"{ts}_{session_id}"
 
-        # 构建日志内容
-        log_data = {
+        # ── 公共：阵容序列化 ──
+        def _serialize_side(lineup) -> dict:
+            slots = []
+            for s in lineup.slots:
+                u = s.unit
+                slots.append({
+                    "unit_id": u.id,
+                    "unit_name": u.name,
+                    "count": s.count,
+                    "unit_cost": s.unit_cost,
+                    "hp": u.hp,
+                    "attack_ranged": u.attack_ranged,
+                    "attack_melee": u.attack_melee,
+                    "attack_siege": u.attack_siege,
+                    "armor_ranged": u.armor_ranged,
+                    "armor_melee": u.armor_melee,
+                    "speed": u.speed,
+                    "range": u.range,
+                    "range_min": u.range_min,
+                    "aoe_radius": u.aoe_radius,
+                })
+            return {
+                "slots": slots,
+                "total_cost": lineup.total_cost,
+                "total_count": lineup.total_count,
+                "total_pop": lineup.total_pop,
+            }
+
+        # ── 公共：结果 ──
+        result_data: dict = {
+            "winner": result.winner.value if result.winner else None,
+            "duration": round(result.duration, 2),
+            "ticks": result.ticks,
+            "timeout": result.timeout,
+            "red_alive": len(result.red_alive),
+            "blue_alive": len(result.blue_alive),
+        }
+
+        # ── 精简版独有：士兵终态 & 击杀链 ──
+        all_soldiers = (
+            result.red_alive + result.red_dead
+            + result.blue_alive + result.blue_dead
+        )
+
+        # 每个士兵的终态统计
+        soldier_stats = []
+        for s in sorted(all_soldiers, key=lambda x: x.id):
+            soldier_stats.append({
+                "id": s.id,
+                "name": s.unit.name,
+                "side": s.side.value,
+                "alive": s.alive,
+                "hp": round(s.hp, 1) if s.alive else 0,
+                "damage": round(s.total_damage_dealt, 1),
+                "kills": s.kills,
+            })
+
+        # 击杀链：从事件流中提取 DEATH 事件
+        from .simulator import EventType
+        kill_chain = []
+        for e in result.events:
+            if e.event_type == EventType.DEATH:
+                kill_chain.append({
+                    "t": round(e.time, 1),
+                    "victim": e.data.get("name", "?"),
+                    "victim_id": e.data.get("soldier_id"),
+                    "victim_side": e.data.get("side"),
+                    "killer": e.data.get("killer_name", "?"),
+                    "killer_id": e.data.get("killer_id"),
+                    "remaining": e.data.get("remaining"),
+                })
+
+        # MVP
+        mvp_data = None
+        if all_soldiers:
+            mvp = max(all_soldiers, key=lambda s: s.total_damage_dealt * 0.5 + s.kills * 50)
+            mvp_data = {
+                "id": mvp.id,
+                "name": mvp.unit.name,
+                "side": mvp.side.value,
+                "damage": round(mvp.total_damage_dealt, 1),
+                "kills": mvp.kills,
+            }
+
+        # 事件类型统计
+        event_counts: dict[str, int] = {}
+        for e in result.events:
+            event_counts[e.event_type.value] = event_counts.get(e.event_type.value, 0) + 1
+
+        header = {
             "session_id": session_id,
             "timestamp": ts,
             "mode": match.mode,
-            "red": {
-                "unit_id": match.red.unit.id,
-                "unit_name": match.red.unit.name,
-                "count": match.red.count,
-                "total_cost": match.red.total_cost,
-                "hp": match.red.unit.hp,
-                "attack_ranged": match.red.unit.attack_ranged,
-                "attack_melee": match.red.unit.attack_melee,
-                "attack_siege": match.red.unit.attack_siege,
-                "armor_ranged": match.red.unit.armor_ranged,
-                "armor_melee": match.red.unit.armor_melee,
-                "speed": match.red.unit.speed,
-                "range": match.red.unit.range,
-                "range_min": match.red.unit.range_min,
-                "aoe_radius": match.red.unit.aoe_radius,
-            },
-            "blue": {
-                "unit_id": match.blue.unit.id,
-                "unit_name": match.blue.unit.name,
-                "count": match.blue.count,
-                "total_cost": match.blue.total_cost,
-                "hp": match.blue.unit.hp,
-                "attack_ranged": match.blue.unit.attack_ranged,
-                "attack_melee": match.blue.unit.attack_melee,
-                "attack_siege": match.blue.unit.attack_siege,
-                "armor_ranged": match.blue.unit.armor_ranged,
-                "armor_melee": match.blue.unit.armor_melee,
-                "speed": match.blue.unit.speed,
-                "range": match.blue.unit.range,
-                "range_min": match.blue.unit.range_min,
-                "aoe_radius": match.blue.unit.aoe_radius,
-            },
-            "result": {
-                "winner": result.winner.value if result.winner else None,
-                "duration": round(result.duration, 2),
-                "ticks": result.ticks,
-                "timeout": result.timeout,
-                "red_alive": len(result.red_alive),
-                "blue_alive": len(result.blue_alive),
-                "mvp": None,
-            },
+            "red": _serialize_side(match.red),
+            "blue": _serialize_side(match.blue),
+            "result": result_data,
+            "mvp": mvp_data,
+        }
+
+        # ── 写精简版（~5KB，可远程 cat）──
+        summary = {
+            **header,
+            "event_counts": event_counts,
+            "kill_chain": kill_chain,
+            "soldiers": soldier_stats,
+        }
+        summary_path = BATTLE_LOG_DIR / f"{base_name}.json"
+        summary_path.write_text(
+            json.dumps(summary, ensure_ascii=False, indent=2),
+            encoding="utf-8",
+        )
+
+        # ── 写完整版（含全部事件流，本地 debug 用）──
+        full_log = {
+            **header,
             "events": [
                 {
                     "time": round(e.time, 2),
@@ -120,32 +195,29 @@ def _dump_battle_log(
                 for e in result.events
             ],
         }
+        full_path = BATTLE_LOG_DIR / f"{base_name}.full.json"
+        full_path.write_text(
+            json.dumps(full_log, ensure_ascii=False, indent=2),
+            encoding="utf-8",
+        )
 
-        # MVP
-        all_soldiers = result.red_alive + result.red_dead + result.blue_alive + result.blue_dead
-        if all_soldiers:
-            mvp = max(all_soldiers, key=lambda s: s.total_damage_dealt * 0.5 + s.kills * 50)
-            log_data["result"]["mvp"] = {
-                "id": mvp.id,
-                "name": mvp.unit.name,
-                "side": mvp.side.value,
-                "damage": round(mvp.total_damage_dealt, 1),
-                "kills": mvp.kills,
-            }
+        logger.info(
+            "[aoe3_battle] 战斗日志已写入 %s (%.1fKB) + %s (%.1fKB)",
+            summary_path.name,
+            summary_path.stat().st_size / 1024,
+            full_path.name,
+            full_path.stat().st_size / 1024,
+        )
 
-        filepath = BATTLE_LOG_DIR / filename
-        filepath.write_text(json.dumps(log_data, ensure_ascii=False, indent=2), encoding="utf-8")
-        logger.info("[aoe3_battle] 战斗日志已写入 %s", filepath.name)
-
-        # 轮转：保留最近 N 局
+        # 轮转：按 mtime 保留最近 N 局（精简+完整一起算）
         logs = sorted(BATTLE_LOG_DIR.glob("*.json"), key=lambda p: p.stat().st_mtime)
-        while len(logs) > BATTLE_LOG_KEEP:
+        while len(logs) > BATTLE_LOG_KEEP * 2:
             old = logs.pop(0)
             old.unlink()
             logger.debug("[aoe3_battle] 清理旧战斗日志 %s", old.name)
 
     except Exception as e:  # noqa: BLE001
-        logger.warning("[aoe3_battle] dump 战斗日志失败: %s", e)
+        logger.warning("[aoe3_battle] dump 战斗日志失败: %s", e, exc_info=True)
 
 
 # =====================================================================
@@ -200,19 +272,23 @@ class AoE3BattleGame(GameBase):
             mode=mode_id,
             phase="betting",          # betting → fighting → ended
             # 阵容信息（序列化为可 JSON 的格式）
+            red_army=[{"unit_id": s.unit.id, "unit_name": s.unit.name, "count": s.count}
+                      for s in match.red.slots],
+            red_total_cost=match.red.total_cost,
+            red_pop=match.red.total_pop,
+            red_count=match.red.total_count,
+            blue_army=[{"unit_id": s.unit.id, "unit_name": s.unit.name, "count": s.count}
+                       for s in match.blue.slots],
+            blue_total_cost=match.blue.total_cost,
+            blue_pop=match.blue.total_pop,
+            blue_count=match.blue.total_count,
+            # 向后兼容：保留首个兵种信息
             red_unit_id=match.red.unit.id,
             red_unit_name=match.red.unit.name,
-            red_count=match.red.count,
-            red_total_cost=match.red.total_cost,
-            red_pop=match.red.pop,
             blue_unit_id=match.blue.unit.id,
             blue_unit_name=match.blue.unit.name,
-            blue_count=match.blue.count,
-            blue_total_cost=match.blue.total_cost,
-            blue_pop=match.blue.pop,
             # 押注记录：{str(qq_id): "red"|"blue"}
             bets={},
-            # 缓存 MatchLineup 对象（不持久化，仅运行时用）
         )
 
         # 运行时缓存（不进 state）
@@ -232,20 +308,23 @@ class AoE3BattleGame(GameBase):
         # ── 发红方（图片 + 详情）──
         red_text = format_side_panel(match.red, "red", mode)
         red_msg = Message()
-        icon_path = _UnitRepo.get().get_icon_path(match.red.unit)
-        if icon_path:
-            b64 = base64.b64encode(icon_path.read_bytes()).decode()
-            red_msg.append(MessageSegment.image(f"base64://{b64}"))
+        # 多兵种时发多张 icon
+        for slot in match.red.slots:
+            icon_path = _UnitRepo.get().get_icon_path(slot.unit)
+            if icon_path:
+                b64 = base64.b64encode(icon_path.read_bytes()).decode()
+                red_msg.append(MessageSegment.image(f"base64://{b64}"))
         red_msg.append(MessageSegment.text(red_text))
         await session.broadcast(ctx.group_id, red_msg)
 
         # ── 发蓝方（图片 + 详情）──
         blue_text = format_side_panel(match.blue, "blue", mode)
         blue_msg = Message()
-        icon_path = _UnitRepo.get().get_icon_path(match.blue.unit)
-        if icon_path:
-            b64 = base64.b64encode(icon_path.read_bytes()).decode()
-            blue_msg.append(MessageSegment.image(f"base64://{b64}"))
+        for slot in match.blue.slots:
+            icon_path = _UnitRepo.get().get_icon_path(slot.unit)
+            if icon_path:
+                b64 = base64.b64encode(icon_path.read_bytes()).decode()
+                blue_msg.append(MessageSegment.image(f"base64://{b64}"))
         blue_msg.append(MessageSegment.text(blue_text))
         await session.broadcast(ctx.group_id, blue_msg)
 
@@ -254,10 +333,10 @@ class AoE3BattleGame(GameBase):
         await session.broadcast(ctx.group_id, vs_text)
 
         logger.info(
-            "[aoe3_battle] 对局 %s 开始，模式=%s 🔴 %s ×%d vs 🔵 %s ×%d",
+            "[aoe3_battle] 对局 %s 开始，模式=%s 🔴 %s vs 🔵 %s",
             ctx.session_id, ctx.state["mode"],
-            ctx.state["red_unit_name"], ctx.state["red_count"],
-            ctx.state["blue_unit_name"], ctx.state["blue_count"],
+            " + ".join(f"{s['unit_name']}×{s['count']}" for s in ctx.state["red_army"]),
+            " + ".join(f"{s['unit_name']}×{s['count']}" for s in ctx.state["blue_army"]),
         )
 
     async def on_player_action(
@@ -400,9 +479,11 @@ class AoE3BattleGame(GameBase):
             match = self._match
 
             # 1. 跑模拟
+            is_duel = ctx.state.get("mode") == "duel"
             sim = BattleSimulator(
-                match.red.unit, match.red.count,
-                match.blue.unit, match.blue.count,
+                red_army=[(s.unit, s.count) for s in match.red.slots],
+                blue_army=[(s.unit, s.count) for s in match.blue.slots],
+                duel_mode=is_duel,
             )
             result = sim.run()
 

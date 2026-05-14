@@ -52,7 +52,6 @@ class Side(str, Enum):
 class AttackMode(str, Enum):
     RANGED = "ranged"
     MELEE = "melee"
-    SIEGE = "siege"              # 仅攻城兵种当远程用
     RANGED_PENALIZED = "ranged_penalized"  # 贴脸惩罚
 
 
@@ -100,10 +99,8 @@ class Soldier:
     # ---- 兵种能力缓存（初始化时从 Unit 提取）----
     has_ranged: bool = False     # 有远程攻击
     has_melee: bool = False      # 有近战攻击
-    has_siege_only: bool = False # 仅有攻城攻击（当远程用）
-    has_siege_as_ranged: bool = False  # 有攻城但无远程（当远程用）
 
-    # 实际使用的远程参数（可能来自 attack_siege）
+    # 实际使用的远程参数
     effective_ranged_attack: float = 0.0
     effective_ranged_range: float = 0.0
     effective_ranged_rof: float = 0.0
@@ -134,28 +131,15 @@ def _create_soldier(
     # ---- 解析攻击能力 ----
     has_ranged = unit.attack_ranged > 0 and unit.range > 0
     has_melee = unit.attack_melee > 0
-    has_siege = unit.attack_siege > 0
 
     s.has_ranged = has_ranged
     s.has_melee = has_melee
 
     if has_ranged:
-        # 有远程攻击 → 用远程参数
         s.effective_ranged_attack = unit.attack_ranged
         s.effective_ranged_range = unit.range
         s.effective_ranged_rof = unit.rof_ranged if unit.rof_ranged > 0 else DEFAULT_ROF_RANGED
         s.effective_ranged_range_min = unit.range_min
-    elif has_siege and not has_ranged:
-        # 无远程但有攻城 → 攻城当远程用（§3.9）
-        s.has_siege_as_ranged = True
-        s.has_siege_only = not has_melee
-        s.effective_ranged_attack = unit.attack_siege
-        s.effective_ranged_range = unit.range_siege if unit.range_siege > 0 else 6.0
-        s.effective_ranged_rof = unit.rof_siege if unit.rof_siege > 0 else DEFAULT_ROF_RANGED
-        s.effective_ranged_range_min = 0.0  # 攻城无最小射程
-
-    can_ranged = has_ranged or s.has_siege_as_ranged
-    s.has_ranged = can_ranged  # 统一标记"能远程"
 
     return s
 
@@ -163,6 +147,13 @@ def _create_soldier(
 # =====================================================================
 # 模拟器
 # =====================================================================
+@dataclass
+class ArmySlot:
+    """阵容中的一个兵种槽位（模拟器侧）。"""
+    unit: Unit
+    count: int
+
+
 @dataclass
 class BattleResult:
     """模拟结果。"""
@@ -174,36 +165,71 @@ class BattleResult:
     blue_alive: list[Soldier]
     red_dead: list[Soldier]
     blue_dead: list[Soldier]
-    red_unit: Unit
-    blue_unit: Unit
-    red_count: int               # 初始数量
+    # 多兵种阵容信息
+    red_army: list[ArmySlot]
+    blue_army: list[ArmySlot]
+    red_count: int               # 初始总个体数
     blue_count: int
     timeout: bool = False
+
+    # ---- 向后兼容：单兵种场景 ----
+    @property
+    def red_unit(self) -> Unit:
+        return self.red_army[0].unit
+
+    @property
+    def blue_unit(self) -> Unit:
+        return self.blue_army[0].unit
 
 
 class BattleSimulator:
     """一维对冲战斗模拟器。
 
-    用法：
+    用法（多兵种）：
+        sim = BattleSimulator(
+            red_army=[(unit_a, 5), (unit_b, 3)],
+            blue_army=[(unit_c, 10)],
+        )
+        result = sim.run()
+
+    用法（单兵种，向后兼容）：
         sim = BattleSimulator(red_unit, red_count, blue_unit, blue_count)
         result = sim.run()
     """
 
     def __init__(
         self,
-        red_unit: Unit,
-        red_count: int,
-        blue_unit: Unit,
-        blue_count: int,
+        red_unit: Unit | None = None,
+        red_count: int = 0,
+        blue_unit: Unit | None = None,
+        blue_count: int = 0,
         *,
+        red_army: list[tuple[Unit, int]] | None = None,
+        blue_army: list[tuple[Unit, int]] | None = None,
         field_length: float = FIELD_LENGTH,
         max_ticks: int = MAX_TICKS,
         seed: int | None = None,
+        duel_mode: bool = False,
     ) -> None:
-        self.red_unit = red_unit
-        self.blue_unit = blue_unit
-        self.red_count = red_count
-        self.blue_count = blue_count
+        # 支持两种调用方式：
+        # 1. 旧式：BattleSimulator(red_unit, red_count, blue_unit, blue_count)
+        # 2. 新式：BattleSimulator(red_army=[...], blue_army=[...])
+        if red_army is not None:
+            self.red_army = [ArmySlot(u, c) for u, c in red_army]
+        elif red_unit is not None:
+            self.red_army = [ArmySlot(red_unit, red_count)]
+        else:
+            raise ValueError("必须提供 red_unit 或 red_army")
+
+        if blue_army is not None:
+            self.blue_army = [ArmySlot(u, c) for u, c in blue_army]
+        elif blue_unit is not None:
+            self.blue_army = [ArmySlot(blue_unit, blue_count)]
+        else:
+            raise ValueError("必须提供 blue_unit 或 blue_army")
+
+        self.red_count = sum(s.count for s in self.red_army)
+        self.blue_count = sum(s.count for s in self.blue_army)
         self.field_length = field_length
         self.max_ticks = max_ticks
 
@@ -214,37 +240,40 @@ class BattleSimulator:
         self._soldier_map: dict[int, Soldier] = {}
         self._next_id = 1
         self._any_attack_happened = False  # 是否发生过攻击（判断阶段用）
+        self._duel_mode = duel_mode          # 单挑模式超时判平局
 
     # ---- 初始化 ----
     def _init_soldiers(self) -> None:
-        """创建所有士兵个体。"""
-        for i in range(self.red_count):
-            s = _create_soldier(self._next_id, Side.RED, self.red_unit, 0.0)
-            self._next_id += 1
-            self._soldiers.append(s)
-            self._soldier_map[s.id] = s
-            logger.debug(
-                "初始化 %s #%d side=%s hp=%.0f pos=%.1f "
-                "ranged_atk=%.1f range=%.1f melee_atk=%.1f",
-                s.name, s.id, s.side.value, s.hp, s.pos,
-                s.effective_ranged_attack, s.effective_ranged_range,
-                s.unit.attack_melee,
-            )
+        """创建所有士兵个体（支持多兵种）。"""
+        for slot in self.red_army:
+            for _ in range(slot.count):
+                s = _create_soldier(self._next_id, Side.RED, slot.unit, 0.0)
+                self._next_id += 1
+                self._soldiers.append(s)
+                self._soldier_map[s.id] = s
+                logger.debug(
+                    "初始化 %s #%d side=%s hp=%.0f pos=%.1f "
+                    "ranged_atk=%.1f range=%.1f melee_atk=%.1f",
+                    s.name, s.id, s.side.value, s.hp, s.pos,
+                    s.effective_ranged_attack, s.effective_ranged_range,
+                    s.unit.attack_melee,
+                )
 
-        for i in range(self.blue_count):
-            s = _create_soldier(
-                self._next_id, Side.BLUE, self.blue_unit, self.field_length
-            )
-            self._next_id += 1
-            self._soldiers.append(s)
-            self._soldier_map[s.id] = s
-            logger.debug(
-                "初始化 %s #%d side=%s hp=%.0f pos=%.1f "
-                "ranged_atk=%.1f range=%.1f melee_atk=%.1f",
-                s.name, s.id, s.side.value, s.hp, s.pos,
-                s.effective_ranged_attack, s.effective_ranged_range,
-                s.unit.attack_melee,
-            )
+        for slot in self.blue_army:
+            for _ in range(slot.count):
+                s = _create_soldier(
+                    self._next_id, Side.BLUE, slot.unit, self.field_length
+                )
+                self._next_id += 1
+                self._soldiers.append(s)
+                self._soldier_map[s.id] = s
+                logger.debug(
+                    "初始化 %s #%d side=%s hp=%.0f pos=%.1f "
+                    "ranged_atk=%.1f range=%.1f melee_atk=%.1f",
+                    s.name, s.id, s.side.value, s.hp, s.pos,
+                    s.effective_ranged_attack, s.effective_ranged_range,
+                    s.unit.attack_melee,
+                )
 
     def _alive(self, side: Side | None = None) -> list[Soldier]:
         """返回存活士兵列表。"""
@@ -435,25 +464,20 @@ class BattleSimulator:
             if dtype == "Ranged":
                 armor = target.unit.armor_ranged
             elif dtype == "Siege":
-                armor = getattr(target.unit, "armor_siege", 0.0)
+                armor = target.unit.armor_siege
             else:
                 armor = target.unit.armor_melee
         elif mode in (AttackMode.RANGED, AttackMode.RANGED_PENALIZED):
-            if attacker.has_siege_as_ranged:
-                base_atk = attacker.unit.attack_siege
-                multipliers = attacker.unit.multipliers_siege
-                armor = getattr(target.unit, "armor_siege", 0.0)
+            base_atk = attacker.unit.attack_ranged
+            multipliers = attacker.unit.multipliers_ranged
+            # 根据 damage_type_ranged 选护甲
+            dtype = attacker.unit.damage_type_ranged
+            if dtype == "Siege":
+                armor = target.unit.armor_siege
+            elif dtype == "Hand":
+                armor = target.unit.armor_melee
             else:
-                base_atk = attacker.unit.attack_ranged
-                multipliers = attacker.unit.multipliers_ranged
-                # 远程伤害类型可能是 Siege（炮兵）或 Hand → 选对应护甲
-                dtype = attacker.unit.damage_type_ranged
-                if dtype == "Siege":
-                    armor = getattr(target.unit, "armor_siege", 0.0)
-                elif dtype == "Hand":
-                    armor = target.unit.armor_melee
-                else:
-                    armor = target.unit.armor_ranged
+                armor = target.unit.armor_ranged
         else:
             return 0.0
 
@@ -537,8 +561,6 @@ class BattleSimulator:
             # AOE 溅射：按当前攻击模式取对应的 AOE 半径
             if mode == AttackMode.MELEE:
                 aoe = s.unit.aoe_radius_melee
-            elif mode in (AttackMode.SIEGE,):
-                aoe = s.unit.aoe_radius_siege or s.unit.aoe_radius_ranged
             else:
                 aoe = s.unit.aoe_radius_ranged
             if aoe > 0:
@@ -627,10 +649,7 @@ class BattleSimulator:
         max_splash = round(aoe_radius)
 
         # 基础攻击力（用于 DamageCap）
-        if attacker.has_siege_as_ranged:
-            base_atk = attacker.unit.attack_siege
-        else:
-            base_atk = attacker.unit.attack_ranged
+        base_atk = attacker.unit.attack_ranged
         damage_cap = base_atk * 2.0
 
         # 筛选溅射候选：与主目标距离 ≤ aoe_radius 的存活敌方（排除主目标）
@@ -662,23 +681,20 @@ class BattleSimulator:
 
         for t in splash_targets:
             # 溅射伤害也应用倍率和抗性（根据 damage_type 选护甲）
-            if attacker.has_siege_as_ranged:
-                multipliers = attacker.unit.multipliers_siege
-                armor = getattr(t.unit, "armor_siege", 0.0)
-            elif mode == AttackMode.MELEE:
+            if mode == AttackMode.MELEE:
                 multipliers = attacker.unit.multipliers_melee
                 dtype = attacker.unit.damage_type_melee
                 if dtype == "Ranged":
                     armor = t.unit.armor_ranged
                 elif dtype == "Siege":
-                    armor = getattr(t.unit, "armor_siege", 0.0)
+                    armor = t.unit.armor_siege
                 else:
                     armor = t.unit.armor_melee
             else:
                 multipliers = attacker.unit.multipliers_ranged
                 dtype = attacker.unit.damage_type_ranged
                 if dtype == "Siege":
-                    armor = getattr(t.unit, "armor_siege", 0.0)
+                    armor = t.unit.armor_siege
                 elif dtype == "Hand":
                     armor = t.unit.armor_melee
                 else:
@@ -723,7 +739,10 @@ class BattleSimulator:
         return None  # 战斗继续
 
     def _timeout_winner(self) -> Side | None:
-        """超时判胜：按剩余单位总资源价值。"""
+        """超时判胜：单挑模式判平局，押注模式按剩余单位总资源价值。"""
+        if self._duel_mode:
+            logger.info("超时判胜：单挑模式 → 平局")
+            return None
         red_value = sum(
             sum(s.unit.cost.values()) for s in self._alive(Side.RED)
         )
@@ -767,22 +786,22 @@ class BattleSimulator:
     # ---- 主循环 ----
     def run(self) -> BattleResult:
         """执行完整模拟，返回结果。"""
+        red_desc = " + ".join(f"{s.unit.name}×{s.count}" for s in self.red_army)
+        blue_desc = " + ".join(f"{s.unit.name}×{s.count}" for s in self.blue_army)
         logger.info(
-            "=== 战斗开始 === 红方: %s ×%d vs 蓝方: %s ×%d 场地=%d tick间隔=%.1f 最大tick=%d",
-            self.red_unit.name, self.red_count,
-            self.blue_unit.name, self.blue_count,
+            "=== 战斗开始 === 红方: [%s] (%d个) vs 蓝方: [%s] (%d个) 场地=%d tick间隔=%.1f 最大tick=%d",
+            red_desc, self.red_count,
+            blue_desc, self.blue_count,
             self.field_length, TICK_INTERVAL, self.max_ticks,
         )
 
         self._init_soldiers()
 
         self._emit(EventType.BATTLE_START, {
-            "red_unit": self.red_unit.name,
+            "red_army": [{"name": s.unit.name, "count": s.count, "hp": s.unit.hp} for s in self.red_army],
+            "blue_army": [{"name": s.unit.name, "count": s.count, "hp": s.unit.hp} for s in self.blue_army],
             "red_count": self.red_count,
-            "red_hp": self.red_unit.hp,
-            "blue_unit": self.blue_unit.name,
             "blue_count": self.blue_count,
-            "blue_hp": self.blue_unit.hp,
             "field_length": self.field_length,
         })
 
@@ -850,8 +869,8 @@ class BattleSimulator:
             blue_alive=self._alive(Side.BLUE),
             red_dead=[s for s in self._soldiers if not s.alive and s.side == Side.RED],
             blue_dead=[s for s in self._soldiers if not s.alive and s.side == Side.BLUE],
-            red_unit=self.red_unit,
-            blue_unit=self.blue_unit,
+            red_army=list(self.red_army),
+            blue_army=list(self.blue_army),
             red_count=self.red_count,
             blue_count=self.blue_count,
             timeout=timeout,

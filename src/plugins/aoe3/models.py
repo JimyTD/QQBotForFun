@@ -45,6 +45,7 @@ class Unit:
     los: float = 0.0
     armor_melee: float = 0.0
     armor_ranged: float = 0.0
+    armor_siege: float = 0.0        # 攻城抗性（极少见）
 
     # 远程攻击
     attack_ranged: float = 0.0
@@ -129,6 +130,7 @@ class Unit:
             los=d.get("los", 0.0),
             armor_melee=d.get("armor_melee", 0.0),
             armor_ranged=d.get("armor_ranged", 0.0),
+            armor_siege=d.get("armor_siege", 0.0),
             attack_ranged=d.get("attack_ranged", 0.0),
             range=d.get("range", 0.0),
             range_min=d.get("range_min", 0.0),
