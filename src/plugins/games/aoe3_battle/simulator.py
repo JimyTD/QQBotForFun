@@ -430,17 +430,30 @@ class BattleSimulator:
         if mode == AttackMode.MELEE:
             base_atk = attacker.unit.attack_melee
             multipliers = attacker.unit.multipliers_melee
-            armor = target.unit.armor_melee
+            # 近战伤害类型通常是 Hand → 吃近战护甲
+            dtype = attacker.unit.damage_type_melee
+            if dtype == "Ranged":
+                armor = target.unit.armor_ranged
+            elif dtype == "Siege":
+                armor = getattr(target.unit, "armor_siege", 0.0)
+            else:
+                armor = target.unit.armor_melee
         elif mode in (AttackMode.RANGED, AttackMode.RANGED_PENALIZED):
             if attacker.has_siege_as_ranged:
                 base_atk = attacker.unit.attack_siege
                 multipliers = attacker.unit.multipliers_siege
-                # 攻城伤害吃攻城抗性（几乎没人有）
                 armor = getattr(target.unit, "armor_siege", 0.0)
             else:
                 base_atk = attacker.unit.attack_ranged
                 multipliers = attacker.unit.multipliers_ranged
-                armor = target.unit.armor_ranged
+                # 远程伤害类型可能是 Siege（炮兵）或 Hand → 选对应护甲
+                dtype = attacker.unit.damage_type_ranged
+                if dtype == "Siege":
+                    armor = getattr(target.unit, "armor_siege", 0.0)
+                elif dtype == "Hand":
+                    armor = target.unit.armor_melee
+                else:
+                    armor = target.unit.armor_ranged
         else:
             return 0.0
 
@@ -648,13 +661,28 @@ class BattleSimulator:
         )
 
         for t in splash_targets:
-            # 溅射伤害也应用倍率和抗性
+            # 溅射伤害也应用倍率和抗性（根据 damage_type 选护甲）
             if attacker.has_siege_as_ranged:
                 multipliers = attacker.unit.multipliers_siege
                 armor = getattr(t.unit, "armor_siege", 0.0)
+            elif mode == AttackMode.MELEE:
+                multipliers = attacker.unit.multipliers_melee
+                dtype = attacker.unit.damage_type_melee
+                if dtype == "Ranged":
+                    armor = t.unit.armor_ranged
+                elif dtype == "Siege":
+                    armor = getattr(t.unit, "armor_siege", 0.0)
+                else:
+                    armor = t.unit.armor_melee
             else:
                 multipliers = attacker.unit.multipliers_ranged
-                armor = t.unit.armor_ranged
+                dtype = attacker.unit.damage_type_ranged
+                if dtype == "Siege":
+                    armor = getattr(t.unit, "armor_siege", 0.0)
+                elif dtype == "Hand":
+                    armor = t.unit.armor_melee
+                else:
+                    armor = t.unit.armor_ranged
 
             mult = self._calc_multiplier(multipliers, t)
             final_splash = max(1.0, splash_dmg_each * mult * (1.0 - armor))

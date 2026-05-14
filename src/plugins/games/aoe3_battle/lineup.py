@@ -239,13 +239,21 @@ def generate_duel_lineup(
 def _atk_summary(u: Unit) -> str:
     """一行压缩攻击信息。"""
     parts = []
+    _dtype_label = {"Siege": "攻城伤害", "Hand": "近战伤害"}
+
     if u.attack_ranged:
         rng_str = f"射程{u.range}"
         if u.range_min:
             rng_str = f"射程{u.range_min}-{u.range}"
-        parts.append(f"远程{u.attack_ranged:.0f}({rng_str}, {u.rof_ranged}s)")
+        dtype_tag = ""
+        if u.damage_type_ranged and u.damage_type_ranged != "Ranged":
+            dtype_tag = f",{_dtype_label.get(u.damage_type_ranged, u.damage_type_ranged)}"
+        parts.append(f"远程{u.attack_ranged:.0f}({rng_str}, {u.rof_ranged}s{dtype_tag})")
     if u.attack_melee:
-        parts.append(f"近战{u.attack_melee:.0f}({u.rof_melee}s)")
+        dtype_tag = ""
+        if u.damage_type_melee and u.damage_type_melee != "Hand":
+            dtype_tag = f",{_dtype_label.get(u.damage_type_melee, u.damage_type_melee)}"
+        parts.append(f"近战{u.attack_melee:.0f}({u.rof_melee}s{dtype_tag})")
     if u.attack_siege and not u.attack_ranged:
         parts.append(f"攻城{u.attack_siege:.0f}")
     return " | ".join(parts) if parts else "无攻击"
