@@ -127,3 +127,24 @@ FILLER_STALEMATE: list[str] = [
     "⏳ 双方都在苟延残喘",
     "⏳ 血线见底，悬念拉满",
 ]
+
+# =====================================================================
+# 首次攻击模式播报话术（按攻击模式分组）
+# 每种攻击模式首次出现时触发，让群友感知战斗阶段变化
+# =====================================================================
+FIRST_ATTACK_MODE_TEMPLATES: dict[str, list[str]] = {
+    # 首次远程交火（进入射程，开始对射）
+    "ranged": [
+        "🔔 第 {time:.1f}s，{attacker_emoji} {attacker_name}率先开火，远程交火开始！",
+        "🔔 第 {time:.1f}s，进入射程！{attacker_emoji} {attacker_name}打出第一发，战斗正式打响！",
+        "🔔 第 {time:.1f}s，{attacker_emoji} {attacker_name}开火了！双方进入射程，远程对射开始！",
+        "🔔 第 {time:.1f}s，枪声响起！{attacker_emoji} {attacker_name}率先射击，交火开始！",
+    ],
+    # 首次近战肉搏（贴脸，开始白刃战）
+    "melee": [
+        "⚔️ 第 {time:.1f}s，{attacker_emoji} {attacker_name}贴脸了！近战肉搏开始！",
+        "⚔️ 第 {time:.1f}s，{attacker_emoji} {attacker_name}冲入敌阵，白刃战开始！",
+        "⚔️ 第 {time:.1f}s，短兵相接！{attacker_emoji} {attacker_name}率先挥刀，近身厮杀开始！",
+        "⚔️ 第 {time:.1f}s，{attacker_emoji} {attacker_name}近身了！刀刀见血的肉搏战开始！",
+    ],
+}

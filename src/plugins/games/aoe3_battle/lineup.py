@@ -623,35 +623,42 @@ def format_formation_panel(lineup: MatchLineup) -> str:
         compute_formation_rows,
     )
 
+    def _format_row(row: FormationRow, num_rows: int) -> str:
+        icons = ""
+        for unit, count in row.slots:
+            icons += _unit_emoji(unit) * count
+        tag = "前排" if row.row_index == 0 else (
+            "后排" if row.row_index == num_rows - 1 and num_rows > 2
+            else ""
+        )
+        desc = row.label
+        tag_str = f" ← {tag}" if tag else ""
+        return f"  {row.row_index + 1}排 [{icons}] {desc}{tag_str}"
+
     def _side_text(
         side_lineup: Lineup,
         side: Side,
         emoji: str,
         label: str,
+        reverse: bool = False,
     ) -> str:
         sim_army = [SimSlot(s.unit, s.count) for s in side_lineup.slots]
         rows: list[FormationRow] = compute_formation_rows(sim_army, side)
+        num_rows = len(rows)
 
         lines: list[str] = []
-        lines.append(f"{emoji} {label}阵型（{side_lineup.total_count}人，{len(rows)}排）")
+        lines.append(f"{emoji} {label}阵型（{side_lineup.total_count}人，{num_rows}排）")
 
-        for row in rows:
-            # 按兵种类型用不同 emoji
-            icons = ""
-            for unit, count in row.slots:
-                icons += _unit_emoji(unit) * count
-            tag = "前排" if row.row_index == 0 else (
-                "后排" if row.row_index == len(rows) - 1 and len(rows) > 1
-                else ""
-            )
-            desc = row.label
-            tag_str = f" ← {tag}" if tag else ""
-            lines.append(f"  {row.row_index + 1}排 [{icons}] {desc}{tag_str}")
+        display_rows = list(reversed(rows)) if reverse else rows
+        for row in display_rows:
+            lines.append(_format_row(row, num_rows))
 
         return "\n".join(lines)
 
-    red_text = _side_text(lineup.red, Side.RED, "🔴", "红方")
-    blue_text = _side_text(lineup.blue, Side.BLUE, "🔵", "蓝方")
+    # 红方倒序（后排在上，前排靠近空地）
+    # 蓝方正序（前排靠近空地，后排在下）
+    red_text = _side_text(lineup.red, Side.RED, "🔴", "红方", reverse=True)
+    blue_text = _side_text(lineup.blue, Side.BLUE, "🔵", "蓝方", reverse=False)
 
     gap = "      ─── 空地 ───"
     return f"{red_text}\n{gap}\n{blue_text}"

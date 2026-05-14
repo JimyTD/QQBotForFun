@@ -32,6 +32,7 @@ from .phrases import (
     FILLER_APPROACHING,
     FILLER_FIGHTING,
     FILLER_STALEMATE,
+    FIRST_ATTACK_MODE_TEMPLATES,
 )
 
 # =====================================================================
@@ -134,6 +135,9 @@ class Broadcaster:
             BattlePhase.STALEMATE.value: list(FILLER_STALEMATE),
         }
 
+        # 已出现的攻击模式（用于首次攻击模式播报）
+        self._seen_attack_modes: set[str] = set()
+
     def generate(self) -> list[BroadcastSegment]:
         """生成完整播报序列。"""
         self._segments = []
@@ -173,6 +177,32 @@ class Broadcaster:
             self._blue_remaining -= len(blue_deaths)
 
             # ---- 关键节点 ----
+
+            # 首次攻击模式播报（每种新攻击属性首次出现时触发）
+            window_attacks = [
+                e for e in window_events
+                if e.event_type == EventType.ATTACK and not e.data.get("is_splash")
+            ]
+            for atk in window_attacks:
+                mode = atk.data["mode"]
+                # ranged_penalized 归入 melee（都是贴脸状态）
+                effective_mode = "melee" if mode == "ranged_penalized" else mode
+                if effective_mode not in self._seen_attack_modes:
+                    self._seen_attack_modes.add(effective_mode)
+                    templates = FIRST_ATTACK_MODE_TEMPLATES.get(effective_mode)
+                    if templates:
+                        atk_emoji = _side_emoji(atk.data["attacker_side"])
+                        self._segments.append(BroadcastSegment(
+                            text=self._rng.choice(templates).format(
+                                time=atk.time,
+                                attacker_emoji=atk_emoji,
+                                attacker_name=atk.data["attacker_name"],
+                            ),
+                            is_key_event=True,
+                            time_start=window_start,
+                            time_end=window_end,
+                        ))
+                    break  # 每个窗口最多触发一条攻击模式播报
 
             # 首杀
             if deaths and not first_death_emitted:

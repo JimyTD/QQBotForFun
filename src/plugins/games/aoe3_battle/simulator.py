@@ -757,6 +757,8 @@ class BattleSimulator:
             "attacker_id": attacker.id,
             "attacker_name": attacker.name,
             "attacker_side": attacker.side.value,
+            "attacker_unit_type": attacker.unit.type,
+            "attacker_has_ranged": attacker.has_ranged,
             "target_id": target.id,
             "target_name": target.name,
             "target_side": target.side.value,
