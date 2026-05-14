@@ -33,6 +33,9 @@ HELP_TEXT = render.text_card(
         "",
         "🎮 @我 海龟汤      快速开一局海龟汤",
         "🎮 @我 趣味问答    快速开一局趣味问答（随机类型）",
+        "⚔️ @我 斗蛐蛐      帝国3兵种对战（押注模式）",
+        "⚔️ @我 斗蛐蛐 单挑  帝国3兵种 1v1",
+        "⚔️ @我 斗蛐蛐 2000  自定义资源（1000-5000）",
         "",
         "游戏中：",
         "💬 @我 你的问题    直接提问（海龟汤）",
@@ -41,6 +44,8 @@ HELP_TEXT = render.text_card(
         "📊 @我 状态        查看进度",
         "🐢 @我 汤面        重新查看题面（海龟汤）",
         "📜 @我 回顾        关键线索回顾（海龟汤）",
+        "🎲 @我 1 / @我 2   押注红/蓝方（斗蛐蛐）",
+        "⚔️ @我 开战        跳过等待直接开打（斗蛐蛐）",
         "🏳 @我 结束        投降 / 终止游戏",
         "",
         "其他：",
@@ -83,6 +88,7 @@ async def _(matcher: Matcher, event: MessageEvent) -> None:
     _QUICK_CMD: dict[str, str] = {
         "turtle_soup": "@我 海龟汤",
         "trivia": "@我 趣味问答",
+        "aoe3_battle": "@我 斗蛐蛐",
     }
 
     games = list_games()
@@ -137,7 +143,7 @@ async def _(matcher: Matcher, event: MessageEvent) -> None:
     coin = await economy.balance(qq_id, "coin")
     footer = [
         f"💰 金币：{coin}",
-        "🎮 开始游戏：@我 海龟汤 / @我 趣味问答",
+        "🎮 开始游戏：@我 海龟汤 / @我 趣味问答 / @我 斗蛐蛐",
         "📜 @我 帮助 查看帮助",
     ]
 

@@ -9,8 +9,10 @@ GameBase 子类，实现完整的游戏状态机：
 from __future__ import annotations
 
 import asyncio
+import json
 import logging
 import random
+from pathlib import Path
 from typing import Any
 
 from core import economy, render, session
@@ -46,6 +48,104 @@ BROADCAST_SLEEP = 2.0        # 播报间隔（秒）
 BUDGET_MIN = 1000            # 自定义资源下限
 BUDGET_MAX = 5000            # 自定义资源上限
 BUDGET_DEFAULT = 1000        # 默认资源
+BATTLE_LOG_DIR = Path(__file__).resolve().parent.parent.parent.parent / "logs" / "aoe3_battle"
+BATTLE_LOG_KEEP = 5          # 保留最近 N 局日志
+
+
+def _dump_battle_log(
+    session_id: str,
+    match: MatchLineup,
+    result: "BattleResult",
+) -> None:
+    """将战斗事件流写入日志文件，保留最近 BATTLE_LOG_KEEP 局。"""
+    try:
+        BATTLE_LOG_DIR.mkdir(parents=True, exist_ok=True)
+
+        from datetime import datetime
+        ts = datetime.now().strftime("%Y%m%d_%H%M%S")
+        filename = f"{ts}_{session_id}.json"
+
+        # 构建日志内容
+        log_data = {
+            "session_id": session_id,
+            "timestamp": ts,
+            "mode": match.mode,
+            "red": {
+                "unit_id": match.red.unit.id,
+                "unit_name": match.red.unit.name,
+                "count": match.red.count,
+                "total_cost": match.red.total_cost,
+                "hp": match.red.unit.hp,
+                "attack_ranged": match.red.unit.attack_ranged,
+                "attack_melee": match.red.unit.attack_melee,
+                "attack_siege": match.red.unit.attack_siege,
+                "armor_ranged": match.red.unit.armor_ranged,
+                "armor_melee": match.red.unit.armor_melee,
+                "speed": match.red.unit.speed,
+                "range": match.red.unit.range,
+                "range_min": match.red.unit.range_min,
+                "aoe_radius": match.red.unit.aoe_radius,
+            },
+            "blue": {
+                "unit_id": match.blue.unit.id,
+                "unit_name": match.blue.unit.name,
+                "count": match.blue.count,
+                "total_cost": match.blue.total_cost,
+                "hp": match.blue.unit.hp,
+                "attack_ranged": match.blue.unit.attack_ranged,
+                "attack_melee": match.blue.unit.attack_melee,
+                "attack_siege": match.blue.unit.attack_siege,
+                "armor_ranged": match.blue.unit.armor_ranged,
+                "armor_melee": match.blue.unit.armor_melee,
+                "speed": match.blue.unit.speed,
+                "range": match.blue.unit.range,
+                "range_min": match.blue.unit.range_min,
+                "aoe_radius": match.blue.unit.aoe_radius,
+            },
+            "result": {
+                "winner": result.winner.value if result.winner else None,
+                "duration": round(result.duration, 2),
+                "ticks": result.ticks,
+                "timeout": result.timeout,
+                "red_alive": len(result.red_alive),
+                "blue_alive": len(result.blue_alive),
+                "mvp": None,
+            },
+            "events": [
+                {
+                    "time": round(e.time, 2),
+                    "type": e.event_type.value,
+                    "data": e.data,
+                }
+                for e in result.events
+            ],
+        }
+
+        # MVP
+        all_soldiers = result.red_alive + result.red_dead + result.blue_alive + result.blue_dead
+        if all_soldiers:
+            mvp = max(all_soldiers, key=lambda s: s.total_damage_dealt * 0.5 + s.kills * 50)
+            log_data["result"]["mvp"] = {
+                "id": mvp.id,
+                "name": mvp.unit.name,
+                "side": mvp.side.value,
+                "damage": round(mvp.total_damage_dealt, 1),
+                "kills": mvp.kills,
+            }
+
+        filepath = BATTLE_LOG_DIR / filename
+        filepath.write_text(json.dumps(log_data, ensure_ascii=False, indent=2), encoding="utf-8")
+        logger.info("[aoe3_battle] 战斗日志已写入 %s", filepath.name)
+
+        # 轮转：保留最近 N 局
+        logs = sorted(BATTLE_LOG_DIR.glob("*.json"), key=lambda p: p.stat().st_mtime)
+        while len(logs) > BATTLE_LOG_KEEP:
+            old = logs.pop(0)
+            old.unlink()
+            logger.debug("[aoe3_battle] 清理旧战斗日志 %s", old.name)
+
+    except Exception as e:  # noqa: BLE001
+        logger.warning("[aoe3_battle] dump 战斗日志失败: %s", e)
 
 
 # =====================================================================
@@ -305,6 +405,9 @@ class AoE3BattleGame(GameBase):
                 match.blue.unit, match.blue.count,
             )
             result = sim.run()
+
+            # dump 战斗日志
+            _dump_battle_log(ctx.session_id, match, result)
 
             # 2. 播报
             bc = Broadcaster(result)
