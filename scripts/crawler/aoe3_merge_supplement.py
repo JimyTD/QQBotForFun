@@ -1,12 +1,14 @@
 """将 units_aoe_supplement.json 的数据合并回 units.json。
 
 合并内容：
-1. 攻击分类：从 supplement 的 attacks 数组重新分出 ranged / melee
-   - 过滤 "Siege Attack" / "Building" / "Chop" / "Gather"（拆建筑/采集）
+1. 保留完整 attacks 数组到 units.json（供未来技能扩展）
+2. 从 attacks 中选出远程/近战各一个"常规攻击模式"用于斗蛐蛐
+   - 排除 Charge / Explosion / Sabotage / Stun / Lasso 等特殊技能
+   - 排除 Siege Attack / Building / Chop / Gather（拆建筑/采集）
    - 剩余攻击按 max_range > 2 → ranged, ≤ 2 → melee
-   - 纯攻城兵种（过滤后无任何攻击）兜底提升为 ranged
-2. 覆写 attack_ranged/melee, range, rof, damage_type, aoe_radius, multipliers
-3. 不再写 attack_siege / range_siege / rof_siege 等独立攻城字段
+   - 优先常规姿态（Volley > Stagger > Defend > Melee/Ranged > 其他）
+   - 同等优先级取伤害最高
+3. 覆写 attack_ranged/melee, range, rof, damage_type, aoe_radius, multipliers
 
 设计文档：docs/games/aoe3-battle.md §3.9
 
@@ -27,8 +29,16 @@ _SEEDS = Path(__file__).resolve().parent.parent.parent / "seeds" / "aoe3"
 _UNITS_FILE = _SEEDS / "units.json"
 _SUPPLEMENT_FILE = _SEEDS / "units_aoe_supplement.json"
 
-# 被忽略的攻击名关键词（拆建筑 / 采集）
-_IGNORE_KEYWORDS = ["building", "chop", "gather"]
+# ── 攻击模式过滤 ──
+
+# 特殊技能关键词（排除，不代表持续战斗行为）
+_SPECIAL_KEYWORDS = [
+    "charge", "explosion", "explosive", "sabotage", "stun",
+    "chaos", "lasso", "death strike", "dynamite", "trample",
+]
+
+# 非战斗攻击关键词（排除）
+_IGNORE_KEYWORDS = ["building", "chop", "gather", "crate", "ship attack"]
 
 
 def _is_siege_attack_name(name: str) -> bool:
@@ -36,10 +46,18 @@ def _is_siege_attack_name(name: str) -> bool:
     return name.strip().lower() == "siege attack"
 
 
+def _is_special_attack(name: str) -> bool:
+    """判断是否为特殊技能攻击（Charge 等一次性技能）。"""
+    name_lower = name.lower()
+    return any(kw in name_lower for kw in _SPECIAL_KEYWORDS)
+
+
 def _should_ignore(atk: dict) -> bool:
-    """判断一个攻击是否应被忽略（拆建筑 / 采集）。"""
+    """判断一个攻击是否应被完全忽略（拆建筑/采集/特殊技能）。"""
     name = atk.get("name", "").lower()
     if _is_siege_attack_name(name):
+        return True
+    if _is_special_attack(atk.get("name", "")):
         return True
     return any(kw in name for kw in _IGNORE_KEYWORDS)
 
@@ -47,7 +65,7 @@ def _should_ignore(atk: dict) -> bool:
 def _classify_attack(atk: dict) -> str | None:
     """判断一个攻击属于 ranged / melee。
 
-    返回 None 表示应忽略（拆建筑/采集）。
+    返回 None 表示应忽略。
     """
     if _should_ignore(atk):
         return None
@@ -58,8 +76,31 @@ def _classify_attack(atk: dict) -> str | None:
     return "melee"
 
 
+# 常规姿态优先级（越小越优先）
+_STANCE_PRIORITY: dict[str, int] = {
+    "volley attack": 0,
+    "stagger attack": 1,
+    "defend attack": 2,
+    "melee attack": 3,
+    "ranged attack": 4,
+    "stand ground attack": 5,
+}
+
+
+def _attack_sort_key(atk: dict) -> tuple[int, float]:
+    """排序键：(姿态优先级, -伤害)。优先级越低越好，同优先级取伤害高的。"""
+    name = atk.get("name", "").lower()
+    priority = _STANCE_PRIORITY.get(name, 50)  # 未知姿态排最后
+    damage = -(atk.get("damage", 0) or 0)  # 负数，伤害越高越前
+    return (priority, damage)
+
+
 def _pick_best_attack(attacks: list[dict], category: str) -> dict | None:
-    """从 attacks 列表中选出指定类别的最佳攻击（伤害最高）。"""
+    """从 attacks 列表中选出指定类别的最佳常规攻击。
+
+    优先常规姿态（Volley > Stagger > Defend > Melee/Ranged），
+    同姿态取伤害最高。
+    """
     candidates = []
     for atk in attacks:
         cls = _classify_attack(atk)
@@ -69,8 +110,7 @@ def _pick_best_attack(attacks: list[dict], category: str) -> dict | None:
 
     if not candidates:
         return None
-    # 选伤害最高的
-    return max(candidates, key=lambda a: a.get("damage", 0))
+    return min(candidates, key=_attack_sort_key)
 
 
 def _pick_fallback_ranged(attacks: list[dict]) -> dict | None:
@@ -78,7 +118,9 @@ def _pick_fallback_ranged(attacks: list[dict]) -> dict | None:
 
     用于纯攻城兵种（如缴获臼炮），所有攻击都是 "Siege Attack" 系列。
     """
-    ignored = [atk for atk in attacks if _should_ignore(atk)]
+    ignored = [atk for atk in attacks
+               if _is_siege_attack_name(atk.get("name", ""))
+               and not _is_special_attack(atk.get("name", ""))]
     if not ignored:
         return None
     return max(ignored, key=lambda a: a.get("max_range", 0) or 0)
@@ -122,6 +164,13 @@ def merge() -> dict:
         attacks = supp.get("attacks", [])
         if not attacks:
             continue
+
+        # ---- 保留完整 attacks 数组供未来扩展 ----
+        u["attacks_all"] = attacks
+
+        # ---- 清理旧的 AOE 字段（防止残留错误数据）----
+        for key in ("aoe_radius", "aoe_radius_ranged", "aoe_radius_melee"):
+            u.pop(key, None)
 
         # ---- 分类攻击 ----
         ranged_atk = _pick_best_attack(attacks, "ranged")
@@ -214,8 +263,10 @@ def main(dry_run: bool = False) -> None:
 
     # 预览代表性兵种
     check_ids = [
-        "falconet", "disciple", "captured_mortar", "musketeer",
-        "abus_gunner", "grenadier", "hussar",
+        "falconet", "musketeer", "hussar", "grenadier",
+        "cree_tracker", "conquistador_age_of_empires_iii",
+        "deli", "cuirassier", "bolas_warrior",
+        "captured_mortar", "abus_gunner",
     ]
     units_by_id = {u["id"]: u for u in units}
     print("\n  代表性兵种验证:")
@@ -229,8 +280,9 @@ def main(dry_run: bool = False) -> None:
         dtype_r = u.get("damage_type_ranged", "-")
         dtype_m = u.get("damage_type_melee", "-")
         aoe_r = u.get("aoe_radius_ranged", 0)
-        print(f"    {u['name']:20s} ranged={atk_r:>5} (rng={rng}, dt={dtype_r}, aoe={aoe_r}) "
-              f"melee={atk_m:>5} (dt={dtype_m})")
+        aoe_m = u.get("aoe_radius_melee", 0)
+        print(f"    {u['name']:20s} ranged={atk_r:>5} (rng={rng}, dt={dtype_r}, aoe_r={aoe_r}) "
+              f"melee={atk_m:>5} (dt={dtype_m}, aoe_m={aoe_m})")
 
     if dry_run:
         # 还原文件
