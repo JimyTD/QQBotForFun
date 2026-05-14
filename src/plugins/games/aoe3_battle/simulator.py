@@ -651,8 +651,8 @@ class BattleSimulator:
         splash_count = min(max_splash, len(candidates))
         splash_targets = self._rng.sample(candidates, splash_count)
 
-        # 溅射伤害均匀分配
-        splash_dmg_each = damage_cap / splash_count
+        # 溅射伤害均匀分配，但单个目标不超过基础攻击力
+        splash_dmg_each = min(damage_cap / splash_count, base_atk)
 
         logger.debug(
             "tick=%d AOE %s#%d aoe_radius=%d cap=%.1f 溅射%d个目标 每个%.1f",
