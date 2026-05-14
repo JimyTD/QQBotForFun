@@ -21,7 +21,6 @@ logger = logging.getLogger("aoe3_battle.lineup")
 # 常量
 # =====================================================================
 BUDGET = 1000                # 资源预算
-MAX_UNITS_PER_SIDE = 30      # 单方最大个体数
 
 
 # =====================================================================
@@ -126,12 +125,12 @@ def get_duel_pool(repo: UnitRepo) -> list[Unit]:
 # 阵容生成
 # =====================================================================
 def _calc_count(unit: Unit, budget: int) -> int:
-    """计算兵种数量 = round(预算 / 单位资源)，最少 1，最多 MAX_UNITS_PER_SIDE。"""
+    """计算兵种数量 = round(预算 / 单位资源)，最少 1。"""
     unit_cost = sum(unit.cost.values())
     if unit_cost <= 0:
         return 1
     count = round(budget / unit_cost)
-    return max(1, min(count, MAX_UNITS_PER_SIDE))
+    return max(1, count)
 
 
 def generate_bet_lineup(

@@ -27,7 +27,6 @@ MAX_TICKS = 600              # 最大 tick 数（60 秒）
 FIELD_LENGTH = 30.0          # 场地长度
 MELEE_RANGE = 1.5            # 近战射程
 CLOSE_RANGE_PENALTY = 0.5    # 贴脸惩罚伤害系数
-MAX_UNITS_PER_SIDE = 30      # 单方最大个体数
 DEFAULT_ROF_RANGED = 3.0     # 远程 ROF 缺失默认值
 DEFAULT_ROF_MELEE = 1.5      # 近战 ROF 缺失默认值
 
@@ -203,8 +202,8 @@ class BattleSimulator:
     ) -> None:
         self.red_unit = red_unit
         self.blue_unit = blue_unit
-        self.red_count = min(red_count, MAX_UNITS_PER_SIDE)
-        self.blue_count = min(blue_count, MAX_UNITS_PER_SIDE)
+        self.red_count = red_count
+        self.blue_count = blue_count
         self.field_length = field_length
         self.max_ticks = max_ticks
 
