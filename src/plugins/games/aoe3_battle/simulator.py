@@ -521,9 +521,15 @@ class BattleSimulator:
             # 应用伤害到主目标
             self._apply_damage(s, target, damage, mode)
 
-            # AOE 溅射
-            if s.unit.aoe_radius > 0 and mode != AttackMode.MELEE:
-                self._process_aoe(s, target, mode)
+            # AOE 溅射：按当前攻击模式取对应的 AOE 半径
+            if mode == AttackMode.MELEE:
+                aoe = s.unit.aoe_radius_melee
+            elif mode in (AttackMode.SIEGE,):
+                aoe = s.unit.aoe_radius_siege or s.unit.aoe_radius_ranged
+            else:
+                aoe = s.unit.aoe_radius_ranged
+            if aoe > 0:
+                self._process_aoe(s, target, mode, aoe_override=aoe)
 
             # 进入 CD
             if mode == AttackMode.MELEE:
@@ -596,10 +602,11 @@ class BattleSimulator:
 
     # ---- AOE 溅射 ----
     def _process_aoe(
-        self, attacker: Soldier, main_target: Soldier, mode: AttackMode
+        self, attacker: Soldier, main_target: Soldier, mode: AttackMode,
+        *, aoe_override: int = 0,
     ) -> None:
         """处理 AOE 溅射伤害。"""
-        aoe_radius = attacker.unit.aoe_radius
+        aoe_radius = aoe_override or attacker.unit.aoe_radius
         if aoe_radius <= 0:
             return
 

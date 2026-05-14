@@ -311,8 +311,17 @@ def format_side_panel(
     armor = _armor_str(u)
     if armor:
         extras.append(f"🛡️{armor}")
-    if u.aoe_radius:
-        extras.append(f"💥AOE半径{u.aoe_radius}")
+    aoe_parts = []
+    if u.aoe_radius_ranged:
+        aoe_parts.append(f"远程AOE{u.aoe_radius_ranged}")
+    if u.aoe_radius_melee:
+        aoe_parts.append(f"近战AOE{u.aoe_radius_melee}")
+    if u.aoe_radius_siege:
+        aoe_parts.append(f"攻城AOE{u.aoe_radius_siege}")
+    if aoe_parts:
+        extras.append("💥" + " ".join(aoe_parts))
+    elif u.aoe_radius:
+        extras.append(f"💥AOE{u.aoe_radius}")
     if extras:
         lines.append(" ".join(extras))
 

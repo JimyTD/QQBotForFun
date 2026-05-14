@@ -16456,6 +16456,229 @@
     "main_attack_damage_type": "Siege"
   },
   {
+    "unit_id": "grenadier_age_of_empires_iii",
+    "slug": "grenadier",
+    "attacks": [
+      {
+        "name": "Mortar Attack",
+        "damage": 16,
+        "damage_type": "Siege",
+        "min_range": 4,
+        "max_range": 14,
+        "rof": 3,
+        "aoe_radius": 3,
+        "bonuses": [
+          {
+            "id": "MortarAttack-AbstractCavalry",
+            "type": "AbstractCavalry",
+            "label": "Cavalry",
+            "multiplier": 0.4
+          },
+          {
+            "id": "MortarAttack-AbstractLightInfantry",
+            "type": "AbstractLightInfantry",
+            "label": "Light Infantry",
+            "multiplier": 0.4
+          },
+          {
+            "id": "MortarAttack-AbstractVillager",
+            "type": "AbstractVillager",
+            "label": "Villager",
+            "multiplier": 0.5
+          },
+          {
+            "id": "MortarAttack-AbstractArtillery",
+            "type": "AbstractArtillery",
+            "label": "Artillery",
+            "multiplier": 0.5
+          }
+        ]
+      },
+      {
+        "name": "Mortar Building Attack",
+        "damage": 41,
+        "damage_type": "Siege",
+        "min_range": null,
+        "max_range": 14,
+        "rof": 3,
+        "aoe_radius": null,
+        "bonuses": []
+      },
+      {
+        "name": "Siege Attack",
+        "damage": 41,
+        "damage_type": "Siege",
+        "min_range": null,
+        "max_range": 12,
+        "rof": 3,
+        "aoe_radius": null,
+        "bonuses": []
+      },
+      {
+        "name": "Defend Attack",
+        "damage": 16,
+        "damage_type": "Siege",
+        "min_range": 4,
+        "max_range": 12,
+        "rof": 3,
+        "aoe_radius": 3,
+        "bonuses": [
+          {
+            "id": "DefendRangedAttack-Building",
+            "type": "Building",
+            "label": "Building",
+            "multiplier": 1
+          },
+          {
+            "id": "DefendRangedAttack-AbstractCavalry",
+            "type": "AbstractCavalry",
+            "label": "Cavalry",
+            "multiplier": 0.4
+          },
+          {
+            "id": "DefendRangedAttack-AbstractLightInfantry",
+            "type": "AbstractLightInfantry",
+            "label": "Light Infantry",
+            "multiplier": 0.4
+          },
+          {
+            "id": "DefendRangedAttack-AbstractVillager",
+            "type": "AbstractVillager",
+            "label": "Villager",
+            "multiplier": 0.5
+          },
+          {
+            "id": "DefendRangedAttack-AbstractArtillery",
+            "type": "AbstractArtillery",
+            "label": "Artillery",
+            "multiplier": 0.5
+          }
+        ]
+      },
+      {
+        "name": "Stagger Attack",
+        "damage": 16,
+        "damage_type": "Siege",
+        "min_range": 4,
+        "max_range": 12,
+        "rof": 3,
+        "aoe_radius": 3,
+        "bonuses": [
+          {
+            "id": "StaggerRangedAttack-Building",
+            "type": "Building",
+            "label": "Building",
+            "multiplier": 1
+          },
+          {
+            "id": "StaggerRangedAttack-AbstractCavalry",
+            "type": "AbstractCavalry",
+            "label": "Cavalry",
+            "multiplier": 0.4
+          },
+          {
+            "id": "StaggerRangedAttack-AbstractLightInfantry",
+            "type": "AbstractLightInfantry",
+            "label": "Light Infantry",
+            "multiplier": 0.4
+          },
+          {
+            "id": "StaggerRangedAttack-AbstractVillager",
+            "type": "AbstractVillager",
+            "label": "Villager",
+            "multiplier": 0.5
+          },
+          {
+            "id": "StaggerRangedAttack-AbstractArtillery",
+            "type": "AbstractArtillery",
+            "label": "Artillery",
+            "multiplier": 0.5
+          }
+        ]
+      },
+      {
+        "name": "Volley Attack",
+        "damage": 16,
+        "damage_type": "Siege",
+        "min_range": 2,
+        "max_range": 12,
+        "rof": 3,
+        "aoe_radius": 3,
+        "bonuses": [
+          {
+            "id": "VolleyRangedAttack-AbstractCavalry",
+            "type": "AbstractCavalry",
+            "label": "Cavalry",
+            "multiplier": 0.4
+          },
+          {
+            "id": "VolleyRangedAttack-AbstractLightInfantry",
+            "type": "AbstractLightInfantry",
+            "label": "Light Infantry",
+            "multiplier": 0.4
+          },
+          {
+            "id": "VolleyRangedAttack-AbstractVillager",
+            "type": "AbstractVillager",
+            "label": "Villager",
+            "multiplier": 0.5
+          },
+          {
+            "id": "VolleyRangedAttack-AbstractArtillery",
+            "type": "AbstractArtillery",
+            "label": "Artillery",
+            "multiplier": 0.5
+          }
+        ]
+      },
+      {
+        "name": "Chop Attack",
+        "damage": 8,
+        "damage_type": "Hand",
+        "min_range": null,
+        "max_range": 2,
+        "rof": 0.0001,
+        "aoe_radius": null,
+        "bonuses": []
+      },
+      {
+        "name": "Melee Attack",
+        "damage": 24,
+        "damage_type": "Hand",
+        "min_range": null,
+        "max_range": 2,
+        "rof": 1.5,
+        "aoe_radius": 1,
+        "bonuses": [
+          {
+            "id": "MeleeHandAttack-AbstractCavalry",
+            "type": "AbstractCavalry",
+            "label": "Cavalry",
+            "multiplier": 0.25
+          },
+          {
+            "id": "MeleeHandAttack-AbstractLightInfantry",
+            "type": "AbstractLightInfantry",
+            "label": "Light Infantry",
+            "multiplier": 0.15
+          }
+        ]
+      },
+      {
+        "name": "Hand Attack Crate",
+        "damage": 10,
+        "damage_type": "Hand",
+        "min_range": null,
+        "max_range": 1.75,
+        "rof": 1.5,
+        "aoe_radius": null,
+        "bonuses": []
+      }
+    ],
+    "main_attack_aoe": null,
+    "main_attack_damage_type": "Siege"
+  },
+  {
     "unit_id": "gunslinger",
     "slug": "gunslinger",
     "attacks": [

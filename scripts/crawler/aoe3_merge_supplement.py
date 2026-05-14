@@ -84,15 +84,35 @@ def merge() -> dict:
         stats["matched"] += 1
         attacks = supp.get("attacks", [])
 
-        # 1. AOE 半径：取所有攻击中最大的 aoe_radius（排除近战）
-        aoe_values = [a.get("aoe_radius") or 0 for a in attacks
-                      if (a.get("max_range") or 0) > 2]
-        if not aoe_values:
-            aoe_values = [a.get("aoe_radius") or 0 for a in attacks]
-        max_aoe = max(aoe_values) if aoe_values else 0
+        # 1. AOE 半径：按攻击方式分别提取
+        aoe_ranged = 0
+        aoe_melee = 0
+        aoe_siege = 0
+        for atk in attacks:
+            aoe = atk.get("aoe_radius") or 0
+            if aoe <= 0:
+                continue
+            cls = _classify_attack(atk)
+            if cls == "ranged":
+                aoe_ranged = max(aoe_ranged, aoe)
+            elif cls == "melee":
+                aoe_melee = max(aoe_melee, aoe)
+            elif cls == "siege":
+                aoe_siege = max(aoe_siege, aoe)
+
+        if aoe_ranged > 0:
+            u["aoe_radius_ranged"] = aoe_ranged
+            stats["aoe_added"] += 1
+        if aoe_melee > 0:
+            u["aoe_radius_melee"] = aoe_melee
+            stats["aoe_added"] += 1
+        if aoe_siege > 0:
+            u["aoe_radius_siege"] = aoe_siege
+            stats["aoe_added"] += 1
+        # 兼容旧代码：保留 aoe_radius = 所有攻击中最大的
+        max_aoe = max(aoe_ranged, aoe_melee, aoe_siege)
         if max_aoe > 0:
             u["aoe_radius"] = max_aoe
-            stats["aoe_added"] += 1
 
         # 2. 伤害类型
         # 远程攻击的伤害类型
@@ -132,12 +152,29 @@ def main(dry_run: bool = False) -> None:
 
         attacks = supp.get("attacks", [])
 
-        # AOE
-        aoe_values = [a.get("aoe_radius") or 0 for a in attacks
-                      if (a.get("max_range") or 0) > 2]
-        if not aoe_values:
-            aoe_values = [a.get("aoe_radius") or 0 for a in attacks]
-        max_aoe = max(aoe_values) if aoe_values else 0
+        # AOE：按攻击方式分别提取
+        aoe_ranged = 0
+        aoe_melee = 0
+        aoe_siege = 0
+        for atk in attacks:
+            aoe = atk.get("aoe_radius") or 0
+            if aoe <= 0:
+                continue
+            cls = _classify_attack(atk)
+            if cls == "ranged":
+                aoe_ranged = max(aoe_ranged, aoe)
+            elif cls == "melee":
+                aoe_melee = max(aoe_melee, aoe)
+            elif cls == "siege":
+                aoe_siege = max(aoe_siege, aoe)
+
+        if aoe_ranged > 0:
+            u["aoe_radius_ranged"] = aoe_ranged
+        if aoe_melee > 0:
+            u["aoe_radius_melee"] = aoe_melee
+        if aoe_siege > 0:
+            u["aoe_radius_siege"] = aoe_siege
+        max_aoe = max(aoe_ranged, aoe_melee, aoe_siege)
         if max_aoe > 0:
             u["aoe_radius"] = max_aoe
 
@@ -158,9 +195,9 @@ def main(dry_run: bool = False) -> None:
     print("\n  预览（AOE 兵种）:")
     aoe_units = [u for u in units if u.get("aoe_radius")]
     for u in sorted(aoe_units, key=lambda x: -(x.get("aoe_radius") or 0))[:10]:
-        print(f"    {u['name']:15s} AOE={u['aoe_radius']}  "
-              f"dtype_r={u.get('damage_type_ranged', '-')}  "
-              f"dtype_m={u.get('damage_type_melee', '-')}")
+        print(f"    {u['name']:15s} AOE r={u.get('aoe_radius_ranged', 0)} "
+              f"m={u.get('aoe_radius_melee', 0)} s={u.get('aoe_radius_siege', 0)} "
+              f"(max={u.get('aoe_radius', 0)})")
 
     if dry_run:
         print("\n  [dry-run] 未写入文件")

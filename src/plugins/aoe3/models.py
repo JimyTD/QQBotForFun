@@ -65,9 +65,12 @@ class Unit:
     multipliers_siege: list[Multiplier] = field(default_factory=list)
 
     # AOE / 伤害类型（从 aoe3explorer 补充）
-    aoe_radius: int = 0
-    damage_type_ranged: str = ""  # "Ranged" / "Siege" / "Hand"
-    damage_type_melee: str = ""   # "Hand" / 其他
+    aoe_radius: int = 0              # 兼容：所有攻击中最大的 AOE
+    aoe_radius_ranged: int = 0       # 远程攻击 AOE 半径
+    aoe_radius_melee: int = 0        # 近战攻击 AOE 半径
+    aoe_radius_siege: int = 0        # 攻城攻击 AOE 半径
+    damage_type_ranged: str = ""     # "Ranged" / "Siege" / "Hand"
+    damage_type_melee: str = ""      # "Hand" / 其他
 
     # 杂项
     internal_name: str = ""
@@ -145,6 +148,9 @@ class Unit:
                 mults.get("siege") if isinstance(mults, dict) else None
             ),
             aoe_radius=d.get("aoe_radius", 0),
+            aoe_radius_ranged=d.get("aoe_radius_ranged", 0),
+            aoe_radius_melee=d.get("aoe_radius_melee", 0),
+            aoe_radius_siege=d.get("aoe_radius_siege", 0),
             damage_type_ranged=d.get("damage_type_ranged", ""),
             damage_type_melee=d.get("damage_type_melee", ""),
             internal_name=d.get("internal_name", ""),
