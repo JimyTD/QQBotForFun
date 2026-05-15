@@ -151,13 +151,18 @@ def _is_ship(unit: Unit) -> bool:
     return "Ship" in unit.type
 
 
+def _is_villager(unit: Unit) -> bool:
+    """判断是否为村民类单位。"""
+    return "Villager" in unit.type
+
+
 def get_bet_pool(repo: UnitRepo) -> list[Unit]:
     """押注模式兵种池。
 
     规则（§2.2.2）：
     - cost > 0 且 has_attack 且 hp > 0
     - 保留雇佣兵、英雄、宠物
-    - 排除建筑马车、船只
+    - 排除建筑马车、船只、村民
     - 排除黑名单中的兵种
     """
     pool = []
@@ -171,6 +176,9 @@ def get_bet_pool(repo: UnitRepo) -> list[Unit]:
             continue
         # 排除船只
         if _is_ship(u):
+            continue
+        # 排除村民
+        if _is_villager(u):
             continue
         # 必须有 HP
         if u.hp <= 0:
@@ -192,8 +200,8 @@ def get_duel_pool(repo: UnitRepo) -> list[Unit]:
     """单挑模式兵种池。
 
     规则（§2.3）：
-    - 所有有攻击力的兵种（含英雄、特殊单位、雇佣兵、村民、宠物）
-    - 排除建筑、船只
+    - 所有有攻击力的兵种（含英雄、特殊单位、雇佣兵、宠物）
+    - 排除建筑、船只、村民
     - 排除黑名单中的兵种
     """
     pool = []
@@ -204,6 +212,8 @@ def get_duel_pool(repo: UnitRepo) -> list[Unit]:
         if _is_building(u):
             continue
         if _is_ship(u):
+            continue
+        if _is_villager(u):
             continue
         if u.hp <= 0:
             continue
