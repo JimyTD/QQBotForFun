@@ -147,18 +147,15 @@ async def get_session() -> AsyncIterator[AsyncSession]:
 
 
 async def init_db() -> None:
-    """启动时初始化。此处仅确认引擎可建立；建表由 Alembic 负责。
+    """启动时初始化：确保所有已注册模型的表存在。
 
-    在 dev 模式下，若数据库是空的 SQLite，也可以用 `Base.metadata.create_all` 做首次建表（方便起步）。
-    生产必须走 alembic upgrade。
+    使用 `Base.metadata.create_all`（幂等，只创建不存在的表）。
+    对于表结构变更（加列/改列），仍需通过 alembic migration 处理。
     """
-    settings = get_settings()
     engine = get_engine()
-    if settings.is_dev and str(engine.url).startswith("sqlite"):
-        # 导入所有模型，确保 metadata 完整
-        _import_all_models()
-        async with engine.begin() as conn:
-            await conn.run_sync(Base.metadata.create_all)
+    _import_all_models()
+    async with engine.begin() as conn:
+        await conn.run_sync(Base.metadata.create_all)
 
 
 async def close_db() -> None:
