@@ -1,0 +1,3 @@
+# 名人梗图目录
+# 每个名人一张代表梗图，如 trump.jpg、musk.jpg
+# 通过 scripts/crawler/celebrity_meme_downloader.py 下载候选图后人工挑选

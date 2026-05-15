@@ -82,14 +82,25 @@ HALF_DEAD_TEMPLATES: list[str] = [
 ]
 
 # =====================================================================
-# 极简片段前缀（新增变体）
+# 极简片段前缀 —— 双边伤亡（双方都有死人）
 # =====================================================================
-SKIRMISH_TEMPLATES: list[str] = [
-    "🔥 拉锯：",
+SKIRMISH_BOTH_TEMPLATES: list[str] = [
     "🔥 互有伤亡：",
     "🔥 你来我往：",
     "🔥 针锋相对：",
+    "🔥 拉锯：",
+    "🔥 互相交换：",
+]
+
+# =====================================================================
+# 极简片段前缀 —— 单边伤亡（只有一方死人）
+# =====================================================================
+SKIRMISH_ONE_SIDE_TEMPLATES: list[str] = [
     "🔥 小规模交火：",
+    "🔥 零星伤亡：",
+    "🔥 单方面打击：",
+    "🔥 一边倒：",
+    "🔥 火力压制：",
 ]
 
 # =====================================================================
@@ -106,15 +117,15 @@ FILLER_APPROACHING: list[str] = [
 
 FILLER_FIGHTING: list[str] = [
     "⏳ 双方激烈交火，暂无伤亡",
-    "⏳ 装甲互啃，子弹打在肉身上像挠痒...",
-    "⏳ 互相伤害中，HP 缓慢下降",
+    "⏳ 铅弹横飞，但厚甲挡住了致命一击",
+    "⏳ 互相伤害中，血量缓慢下降",
     "⏳ 重甲单位的较量，比的就是耐心",
-    "⏳ 血条在缓慢地掉，但没人倒下",
+    "⏳ 硝烟弥漫，但暂时没人倒下",
     "⏳ 双方都在等对面先露出破绽",
-    "⏳ 伤害不够，谁也杀不死谁",
+    "⏳ 火力不足以击穿防线，僵持中",
     "⏳ 这是一场消耗战",
     "⏳ 双方互相磨血，暂时势均力敌",
-    "⏳ 火力持续输出，但防御也在顶住",
+    "⏳ 枪炮持续轰鸣，但防线仍在坚守",
     "⏳ 打得有来有回，暂无决定性伤亡",
     "⏳ 双方咬牙硬扛，看谁先撑不住",
 ]
@@ -135,16 +146,14 @@ FILLER_STALEMATE: list[str] = [
 FIRST_ATTACK_MODE_TEMPLATES: dict[str, list[str]] = {
     # 首次远程交火（进入射程，开始对射）
     "ranged": [
-        "🔔 第 {time:.1f}s，{attacker_emoji} {attacker_name}率先开火，远程交火开始！",
-        "🔔 第 {time:.1f}s，进入射程！{attacker_emoji} {attacker_name}打出第一发，战斗正式打响！",
-        "🔔 第 {time:.1f}s，{attacker_emoji} {attacker_name}开火了！双方进入射程，远程对射开始！",
-        "🔔 第 {time:.1f}s，枪声响起！{attacker_emoji} {attacker_name}率先射击，交火开始！",
+        "🔔 {time:.1f}s，{attacker_emoji} {attacker_name}率先开火！",
+        "🔔 {time:.1f}s，进入射程！{attacker_emoji} {attacker_name}打响第一枪！",
+        "🔔 {time:.1f}s，枪声响起！{attacker_emoji} {attacker_name}率先射击！",
     ],
     # 首次近战肉搏（贴脸，开始白刃战）
     "melee": [
-        "⚔️ 第 {time:.1f}s，{attacker_emoji} {attacker_name}贴脸了！近战肉搏开始！",
-        "⚔️ 第 {time:.1f}s，{attacker_emoji} {attacker_name}冲入敌阵，白刃战开始！",
-        "⚔️ 第 {time:.1f}s，短兵相接！{attacker_emoji} {attacker_name}率先挥刀，近身厮杀开始！",
-        "⚔️ 第 {time:.1f}s，{attacker_emoji} {attacker_name}近身了！刀刀见血的肉搏战开始！",
+        "⚔️ {time:.1f}s，{attacker_emoji} {attacker_name}贴脸了！白刃战开始！",
+        "⚔️ {time:.1f}s，{attacker_emoji} {attacker_name}冲入敌阵！",
+        "⚔️ {time:.1f}s，短兵相接！{attacker_emoji} {attacker_name}率先挥刀！",
     ],
 }

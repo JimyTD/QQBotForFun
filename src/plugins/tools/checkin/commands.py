@@ -6,17 +6,19 @@
     @我 checkin
 
 行为：每日一次，发放 coin + score 奖励，连续签到有阶梯加成。
+签到成功后额外发送一条"今日运势"消息（名人寄语或黄历宜忌）。
 """
 
 from __future__ import annotations
 
 from nonebot import on_command
-from nonebot.adapters.onebot.v11 import MessageEvent
+from nonebot.adapters.onebot.v11 import Message, MessageEvent, MessageSegment
 from nonebot.matcher import Matcher
 from nonebot.rule import to_me
 
 from core import render
 
+from .fortune import FortuneResult, format_fortune_text, roll_fortune
 from .service import MILESTONE_REWARDS, do_checkin
 
 _cmd = on_command(
@@ -85,7 +87,30 @@ async def _(matcher: Matcher, event: MessageEvent) -> None:
         emoji="📅",
         footer=footer,
     )
-    await matcher.finish(card)
+    # 第一条消息：签到结果
+    await matcher.send(card)
+
+    # 第二条消息：今日运势
+    fortune = roll_fortune()
+    fortune_msg = _build_fortune_message(fortune)
+    await matcher.finish(fortune_msg)
+
+
+def _build_fortune_message(fortune: FortuneResult) -> Message | str:
+    """将运势结果构建为可发送的消息。
+
+    名人寄语：梗图（如果有）+ 文字
+    黄历宜忌：纯文字
+    """
+    text = format_fortune_text(fortune)
+
+    if fortune.style == "celebrity" and fortune.image_b64:
+        # 先发图片，再跟文字
+        msg = Message(MessageSegment.image(f"base64://{fortune.image_b64}"))
+        msg += MessageSegment.text(text)
+        return msg
+
+    return text
 
 
 def _next_milestone(current_streak: int) -> int | None:

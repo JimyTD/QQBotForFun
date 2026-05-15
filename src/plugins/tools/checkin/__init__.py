@@ -21,6 +21,10 @@ try:
 
     get_driver()
     from . import commands  # noqa: F401
+    from .fortune import load_image_cache
+
+    # 启动时预缓存名人梗图
+    load_image_cache()
 except Exception:
     # 测试环境或 seed 脚本场景：跳过命令注册
     pass

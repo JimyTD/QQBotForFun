@@ -28,7 +28,8 @@ from .phrases import (
     MASS_CASUALTY_VERBS,
     FINISH_VERBS,
     HALF_DEAD_TEMPLATES,
-    SKIRMISH_TEMPLATES,
+    SKIRMISH_BOTH_TEMPLATES,
+    SKIRMISH_ONE_SIDE_TEMPLATES,
     FILLER_APPROACHING,
     FILLER_FIGHTING,
     FILLER_STALEMATE,
@@ -437,13 +438,19 @@ class Broadcaster:
         total_deaths = len(red_deaths) + len(blue_deaths)
 
         if total_deaths <= 2:
-            # 极简片段
+            # 极简片段：区分双边/单边伤亡
             parts = []
             if red_deaths:
-                parts.append(f"🔴 -{len(red_deaths)}")
+                victim_name = red_deaths[0].data['soldier_name']
+                parts.append(f"🔴 {victim_name} -{len(red_deaths)}")
             if blue_deaths:
-                parts.append(f"🔵 -{len(blue_deaths)}")
-            prefix = self._rng.choice(SKIRMISH_TEMPLATES)
+                victim_name = blue_deaths[0].data['soldier_name']
+                parts.append(f"🔵 {victim_name} -{len(blue_deaths)}")
+            # 双方都有死人 → 用"互有伤亡"类前缀；只有一方 → 用"单边"类前缀
+            if red_deaths and blue_deaths:
+                prefix = self._rng.choice(SKIRMISH_BOTH_TEMPLATES)
+            else:
+                prefix = self._rng.choice(SKIRMISH_ONE_SIDE_TEMPLATES)
             lines.append(f"{prefix}{' / '.join(parts)}")
         else:
             # 标准片段
@@ -460,7 +467,6 @@ class Broadcaster:
                     f"🔵 {killer_name}{action}，"
                     f"🔴 {red_deaths[0].data['soldier_name']} "
                     f"-{len(red_deaths)}"
-                    f"（剩 {red_deaths[-1].data['remaining']}/{red_deaths[-1].data['total']}）"
                 )
             # 红方造成的蓝方死亡
             if blue_deaths:
@@ -474,7 +480,6 @@ class Broadcaster:
                     f"🔴 {killer_name}{action}，"
                     f"🔵 {blue_deaths[0].data['soldier_name']} "
                     f"-{len(blue_deaths)}"
-                    f"（剩 {blue_deaths[-1].data['remaining']}/{blue_deaths[-1].data['total']}）"
                 )
 
         # 战况行
