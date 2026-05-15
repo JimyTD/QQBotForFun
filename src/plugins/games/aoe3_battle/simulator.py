@@ -8,6 +8,7 @@
 
 from __future__ import annotations
 
+import bisect
 import logging
 import math
 import random
@@ -31,9 +32,8 @@ DEFAULT_ROF_RANGED = 3.0     # 远程 ROF 缺失默认值
 DEFAULT_ROF_MELEE = 1.5      # 近战 ROF 缺失默认值
 
 # ---- 阵型排布参数 ----
-ROW_SPACING = 1.5            # 排间距
+ROW_SPACING = 2.5            # 排间距（≥ range_min=2 常见值，确保后排可远程）
 ROW_CAPACITY = 8             # 每排站多少人
-FORMATION_MAX_DEPTH = 12.0   # 阵地最大纵深
 
 
 # =====================================================================
@@ -158,14 +158,13 @@ def _compute_formation(
     field_length: float = FIELD_LENGTH,
     row_spacing: float = ROW_SPACING,
     row_capacity: int = ROW_CAPACITY,
-    max_depth: float = FORMATION_MAX_DEPTH,
 ) -> list[tuple[Unit, float]]:
     """为一方军队计算阵型排布，返回 [(unit, pos), ...] 列表。
 
     规则：
     - 近战在前排，远程在后排（按 unit.range 排序）
     - 同一兵种分配到连续的排，每排最多 row_capacity 人
-    - 排间距 row_spacing，总深度不超过 max_depth
+    - 排间距 row_spacing，自然展开（不压缩）
     - 红方从 pos=0 往负方向展开（前排=0，后排=-depth）
     - 蓝方从 pos=field_length 往正方向展开（前排=field_length，后排=+depth）
     """
@@ -199,18 +198,13 @@ def _compute_formation(
     if current_row:
         rows.append(current_row)
 
-    # 3. 如果排数 × 排间距 > max_depth，压缩 row_spacing
+    # 3. 计算每排的位置（排间距固定，自然展开）
     num_rows = len(rows)
-    actual_spacing = row_spacing
-    if num_rows > 1:
-        needed = (num_rows - 1) * row_spacing
-        if needed > max_depth:
-            actual_spacing = max_depth / (num_rows - 1)
 
     # 4. 计算每排的位置
     result: list[tuple[Unit, float]] = []
     for row_idx, row in enumerate(rows):
-        depth_offset = row_idx * actual_spacing
+        depth_offset = row_idx * row_spacing
 
         if side == Side.RED:
             # 红方：前排 pos=0，后排往负方向
@@ -250,7 +244,6 @@ def compute_formation_rows(
     field_length: float = FIELD_LENGTH,
     row_spacing: float = ROW_SPACING,
     row_capacity: int = ROW_CAPACITY,
-    max_depth: float = FORMATION_MAX_DEPTH,
 ) -> list[FormationRow]:
     """计算阵型排布，返回行结构列表（前排在前）。供面板渲染使用。"""
     sorted_slots: list[ArmySlot] = sorted(
@@ -277,16 +270,9 @@ def compute_formation_rows(
     if current_row:
         rows_raw.append(current_row)
 
-    num_rows = len(rows_raw)
-    actual_spacing = row_spacing
-    if num_rows > 1:
-        needed = (num_rows - 1) * row_spacing
-        if needed > max_depth:
-            actual_spacing = max_depth / (num_rows - 1)
-
     result: list[FormationRow] = []
     for row_idx, row in enumerate(rows_raw):
-        depth_offset = row_idx * actual_spacing
+        depth_offset = row_idx * row_spacing
         if side == Side.RED:
             row_pos = -depth_offset
         else:
@@ -369,7 +355,6 @@ class BattleSimulator:
         duel_mode: bool = False,
         row_spacing: float = ROW_SPACING,
         row_capacity: int = ROW_CAPACITY,
-        formation_max_depth: float = FORMATION_MAX_DEPTH,
     ) -> None:
         # 支持两种调用方式：
         # 1. 旧式：BattleSimulator(red_unit, red_count, blue_unit, blue_count)
@@ -396,7 +381,6 @@ class BattleSimulator:
         # 阵型参数
         self._row_spacing = row_spacing
         self._row_capacity = row_capacity
-        self._formation_max_depth = formation_max_depth
 
         self._rng = random.Random(seed)
         self._events: list[BattleEvent] = []
@@ -424,7 +408,6 @@ class BattleSimulator:
                 field_length=self.field_length,
                 row_spacing=self._row_spacing,
                 row_capacity=self._row_capacity,
-                max_depth=self._formation_max_depth,
             )
             for unit, pos in formation:
                 s = _create_soldier(self._next_id, side, unit, pos)
@@ -438,6 +421,37 @@ class BattleSimulator:
                     s.effective_ranged_attack, s.effective_ranged_range,
                     s.unit.attack_melee,
                 )
+
+        # 根据实际部署位置计算移动边界（士兵不会跑出阵地后方）
+        all_pos = [s.pos for s in self._soldiers]
+        self._move_min_bound = min(all_pos) if all_pos else 0.0
+        self._move_max_bound = max(all_pos) if all_pos else self.field_length
+
+    # ---- 排序缓存（性能优化）----
+    # 每 tick 重建一次，按 pos 排序的存活单位列表
+    _red_sorted: list[Soldier]
+    _blue_sorted: list[Soldier]
+    _red_positions: list[float]   # 与 _red_sorted 对应的 pos 列表，供 bisect 用
+    _blue_positions: list[float]
+
+    def _rebuild_sorted_cache(self) -> None:
+        """重建按 pos 排序的存活单位缓存。每 tick 调用一次。"""
+        self._red_sorted = sorted(
+            (s for s in self._soldiers if s.alive and s.side == Side.RED),
+            key=lambda s: s.pos,
+        )
+        self._blue_sorted = sorted(
+            (s for s in self._soldiers if s.alive and s.side == Side.BLUE),
+            key=lambda s: s.pos,
+        )
+        self._red_positions = [s.pos for s in self._red_sorted]
+        self._blue_positions = [s.pos for s in self._blue_sorted]
+
+    def _sorted_enemies(self, side: Side) -> tuple[list[Soldier], list[float]]:
+        """返回敌方的排序列表和对应 pos 列表。"""
+        if side == Side.RED:
+            return self._blue_sorted, self._blue_positions
+        return self._red_sorted, self._red_positions
 
     def _alive(self, side: Side | None = None) -> list[Soldier]:
         """返回存活士兵列表。"""
@@ -462,11 +476,25 @@ class BattleSimulator:
         return abs(a.pos - b.pos)
 
     def _nearest_enemy(self, s: Soldier) -> Soldier | None:
-        """找最近的存活敌方。"""
-        enemies = self._alive(self._enemy_side(s.side))
+        """找最近的存活敌方（二分查找优化，O(log N)）。"""
+        enemies, positions = self._sorted_enemies(s.side)
         if not enemies:
             return None
-        return min(enemies, key=lambda e: abs(s.pos - e.pos))
+
+        idx = bisect.bisect_left(positions, s.pos)
+        best: Soldier | None = None
+        best_dist = float("inf")
+
+        # 检查 idx 左右两个候选（排序数组中最近的两个）
+        for i in (idx - 1, idx):
+            if 0 <= i < len(enemies):
+                e = enemies[i]
+                if e.alive:
+                    d = abs(s.pos - e.pos)
+                    if d < best_dist:
+                        best_dist = d
+                        best = e
+        return best
 
     # ---- 移动 ----
     def _process_movement(self) -> None:
@@ -495,8 +523,8 @@ class BattleSimulator:
             s.pos += direction * move_dist
 
             # 不超过场地边界（含阵地纵深）
-            min_bound = -self._formation_max_depth
-            max_bound = self.field_length + self._formation_max_depth
+            min_bound = self._move_min_bound
+            max_bound = self._move_max_bound
             s.pos = max(min_bound, min(max_bound, s.pos))
 
             if abs(s.pos - old_pos) > 0.001:
@@ -507,24 +535,38 @@ class BattleSimulator:
                 )
 
     def _can_attack_any_enemy(self, s: Soldier) -> bool:
-        """判断士兵是否能攻击任意敌方（F2A 停止条件）。"""
-        enemies = self._alive(self._enemy_side(s.side))
-        for e in enemies:
-            dist = self._distance(s, e)
-            # 有远程能力且在射程内
+        """判断士兵是否能攻击任意敌方（F2A 停止条件，二分查找优化）。"""
+        enemies, positions = self._sorted_enemies(s.side)
+        if not enemies:
+            return False
+
+        # 确定最大攻击距离
+        max_range = 0.0
+        if s.has_ranged:
+            max_range = s.effective_ranged_range
+        if s.has_melee:
+            max_range = max(max_range, MELEE_RANGE)
+        if max_range <= 0:
+            return False
+
+        # 二分查找 [pos - max_range, pos + max_range] 窗口
+        lo = bisect.bisect_left(positions, s.pos - max_range)
+        hi = bisect.bisect_right(positions, s.pos + max_range)
+
+        for i in range(lo, hi):
+            e = enemies[i]
+            if not e.alive:
+                continue
+            dist = abs(s.pos - e.pos)
             if s.has_ranged and dist <= s.effective_ranged_range:
                 return True
-            # 有近战能力且在近战距离
             if s.has_melee and dist <= MELEE_RANGE:
-                return True
-            # 纯近战兵只看近战距离
-            if not s.has_ranged and s.has_melee and dist <= MELEE_RANGE:
                 return True
         return False
 
     # ---- 目标锁定 ----
     def _acquire_target(self, s: Soldier) -> None:
-        """为士兵锁定目标。"""
+        """为士兵锁定目标（二分查找优化）。"""
         if not s.stopped:
             return
         # 当前目标还活着就不换
@@ -534,15 +576,28 @@ class BattleSimulator:
                 return
 
         # 重新锁定：射程内最近优先，距离相同随机
-        enemies = self._alive(self._enemy_side(s.side))
+        enemies, positions = self._sorted_enemies(s.side)
         if not enemies:
             s.target_id = None
             return
 
-        # 筛选射程内的敌方
+        # 确定最大攻击距离
+        max_range = 0.0
+        if s.has_ranged:
+            max_range = s.effective_ranged_range
+        if s.has_melee:
+            max_range = max(max_range, MELEE_RANGE)
+
+        # 二分查找射程窗口内的敌方
+        lo = bisect.bisect_left(positions, s.pos - max_range)
+        hi = bisect.bisect_right(positions, s.pos + max_range)
+
         in_range: list[tuple[Soldier, float]] = []
-        for e in enemies:
-            dist = self._distance(s, e)
+        for i in range(lo, hi):
+            e = enemies[i]
+            if not e.alive:
+                continue
+            dist = abs(s.pos - e.pos)
             if s.has_ranged and dist <= s.effective_ranged_range:
                 in_range.append((e, dist))
             elif s.has_melee and dist <= MELEE_RANGE:
@@ -559,7 +614,7 @@ class BattleSimulator:
             s.stopped = False
             return
 
-        # 按距离排序
+        # 按距离排序（候选集通常很小）
         in_range.sort(key=lambda x: x[1])
         min_dist = in_range[0][1]
 
@@ -822,16 +877,16 @@ class BattleSimulator:
         base_atk = attacker.unit.attack_ranged
         damage_cap = base_atk * 2.0
 
-        # 筛选溅射候选：与主目标距离 ≤ aoe_radius 的存活敌方（排除主目标）
-        enemies = self._alive(self._enemy_side(attacker.side))
+        # 筛选溅射候选：与主目标距离 ≤ aoe_radius 的存活敌方（排除主目标，二分优化）
+        enemies, positions = self._sorted_enemies(attacker.side)
+        lo = bisect.bisect_left(positions, main_target.pos - aoe_radius)
+        hi = bisect.bisect_right(positions, main_target.pos + aoe_radius)
         candidates = []
-        for e in enemies:
-            if e.id == main_target.id:
+        for i in range(lo, hi):
+            e = enemies[i]
+            if e.id == main_target.id or not e.alive:
                 continue
-            # 距离判定：与主目标的距离
-            dist_to_main = abs(e.pos - main_target.pos)
-            if dist_to_main <= aoe_radius:
-                candidates.append(e)
+            candidates.append(e)
 
         if not candidates:
             return
@@ -980,13 +1035,19 @@ class BattleSimulator:
         winner: Side | None = None
         timeout = False
 
+        # 初始化排序缓存
+        self._rebuild_sorted_cache()
+
         for tick in range(self.max_ticks):
             self._tick = tick
 
             # 1. 移动
             self._process_movement()
 
-            # 2. 目标锁定（在攻击前确保所有停下的兵都有目标）
+            # 2. 重建排序缓存（移动后 pos 变化，需要重新排序）
+            self._rebuild_sorted_cache()
+
+            # 3. 目标锁定（在攻击前确保所有停下的兵都有目标）
             for s in self._alive():
                 self._acquire_target(s)
 

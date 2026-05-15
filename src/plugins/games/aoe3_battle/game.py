@@ -49,8 +49,8 @@ ENTRY_FEE = 5                # 入场券（金币）
 PARTICIPATION_REWARD = 1     # 参与奖（金币）
 BROADCAST_SLEEP = 2.0        # 播报间隔（秒）
 BUDGET_MIN = 1000            # 自定义资源下限
-BUDGET_MAX = 10000           # 自定义资源上限
-BUDGET_DEFAULT = 3000        # 默认资源
+BUDGET_MAX = 50000           # 自定义资源上限
+BUDGET_DEFAULT = 10000       # 默认资源
 BATTLE_LOG_DIR = Path(__file__).resolve().parents[4] / "logs" / "aoe3_battle"
 BATTLE_LOG_KEEP = 5          # 保留最近 N 局（精简+完整各算一个文件）
 

@@ -57,7 +57,7 @@ class AoE3BattleCLIAdapter:
     def __init__(self, *, debug: bool = False) -> None:
         self._debug = debug
         self._mode_id = "bet"
-        self._budget = 3000
+        self._budget = 10000
         self._repo: UnitRepo | None = None
         self._match: MatchLineup | None = None
         self._result: BattleResult | None = None
@@ -69,9 +69,9 @@ class AoE3BattleCLIAdapter:
 
         # 押注模式支持自定义预算
         if mode_id == "bet":
-            budget_str = prompt("资源预算（直接回车默认 3000，范围 1000~10000）> ").strip()
+            budget_str = prompt("资源预算（直接回车默认 10000，范围 1000~50000）> ").strip()
             if budget_str.isdigit():
-                self._budget = max(1000, min(10000, int(budget_str)))
+                self._budget = max(1000, min(50000, int(budget_str)))
             info(f"本局资源预算：{self._budget}")
 
         # 生成阵容

@@ -208,3 +208,10 @@ def _import_all_models() -> None:
         from nonebot import logger
 
         logger.debug(f"[storage] tools/reminder models not loaded: {e}")
+
+    try:
+        from src.plugins.tools.checkin import models as _checkin_models  # noqa: F401
+    except Exception as e:  # noqa: BLE001
+        from nonebot import logger
+
+        logger.debug(f"[storage] tools/checkin models not loaded: {e}")

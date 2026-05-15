@@ -35,7 +35,7 @@ HELP_TEXT = render.text_card(
         "🎮 @我 趣味问答    快速开一局趣味问答（随机类型）",
         "⚔️ @我 斗蛐蛐      帝国3兵种对战（押注模式）",
         "⚔️ @我 斗蛐蛐 单挑  帝国3兵种 1v1",
-        "⚔️ @我 斗蛐蛐 5000  自定义资源（1000-10000，默认3000）",
+        "⚔️ @我 斗蛐蛐 5000  自定义资源（1000-50000，默认10000）",
         "",
         "游戏中：",
         "💬 @我 你的问题    直接提问（海龟汤）",
@@ -49,6 +49,7 @@ HELP_TEXT = render.text_card(
         "🏳 @我 结束        投降 / 终止游戏",
         "",
         "其他：",
+        "📅 @我 签到        每日签到领金币",
         "📋 @我 菜单        游戏大厅",
         "📊 @我 资料        个人信息",
         "💰 @我 金币        金币余额",
@@ -133,6 +134,14 @@ async def _(matcher: Matcher, event: MessageEvent) -> None:
             command="@我 aoe3 兵种名",
         )
     )
+    items.append(
+        MenuItem(
+            emoji="📅",
+            name="每日签到",
+            subtitle="每天签到领金币 + 积分，连续签到有加成",
+            command="@我 签到",
+        )
+    )
 
     if not items:
         await matcher.finish("🎮 大厅暂无可用游戏")
@@ -162,12 +171,29 @@ async def _(matcher: Matcher, event: MessageEvent) -> None:
     coin = await economy.balance(qq_id, "coin")
     items = await economy.list_items(qq_id)
 
+    # 签到信息
+    try:
+        from src.plugins.tools.checkin.storage import get_checkin_record
+
+        checkin = await get_checkin_record(qq_id)
+    except Exception:
+        checkin = None
+
     lines = [
         f"昵称：{u.nickname}",
         f"QQ  ：{qq_id}",
         "",
         f"💰 金币：{coin}",
     ]
+
+    # 签到区
+    if checkin is not None:
+        lines.append(f"📅 连续签到：{checkin.streak} 天")
+        lines.append(f"📅 累计签到：{checkin.total_checkins} 天")
+    else:
+        lines.append("📅 签到：尚未签到（@我 签到）")
+
+    lines.append("")
     if items:
         lines.append("🎒 道具：")
         for item_id, count in items.items():
