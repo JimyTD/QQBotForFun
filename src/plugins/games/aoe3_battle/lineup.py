@@ -52,6 +52,9 @@ BLACKLIST: set[str] = {
     "elmetto",                   # 钢盔骑兵，HP=1（应为 ~320）
     "mameluke_age_of_empires_iii",   # 马穆鲁克，HP=1（应为 ~230）
     "sennar_horseman",           # 森纳尔骑兵，HP=1（应为 ~320）
+
+    # 远程攻击数据缺失（supplement 未匹配到）
+    "lil_bombard",               # 小型射石炮（里尔火炮），attack_ranged=0，600HP 沙包
 }
 
 

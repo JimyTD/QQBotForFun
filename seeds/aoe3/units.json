@@ -14029,7 +14029,7 @@
     "armor_ranged": 0.2,
     "speed": 4.5,
     "los": 20.0,
-    "attack_ranged": 5,
+    "attack_ranged": 15,
     "range_min": 2,
     "range": 16,
     "rof_ranged": 3,
@@ -25795,7 +25795,7 @@
     "armor_ranged": 0.3,
     "speed": 5.75,
     "los": 15.0,
-    "attack_ranged": 14.5,
+    "attack_ranged": 43.5,
     "range": 14,
     "rof_ranged": 3,
     "multipliers": {
@@ -26127,7 +26127,7 @@
     "attack_ranged": 30,
     "range": 24,
     "range_min": 0,
-    "rof_ranged": 4,
+    "rof_ranged": 0.5,
     "multipliers_ranged": [
       {
         "vs": "AbstractArtillery",
@@ -48510,7 +48510,7 @@
     },
     "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/0/0a/Organ_aoe3de.png/revision/latest/scale-to-width-down/268?cb=20210206040218",
     "damage_type_ranged": "Siege",
-    "attack_ranged": 33,
+    "attack_ranged": 264,
     "range": 26,
     "range_min": 0,
     "rof_ranged": 4,

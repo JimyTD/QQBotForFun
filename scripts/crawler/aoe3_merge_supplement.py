@@ -88,9 +88,10 @@ _STANCE_PRIORITY: dict[str, int] = {
     "melee attack": 3,
     "ranged attack": 4,
     "stand ground attack": 5,
-    "barrage attack": 6,          # 臼炮打兵模式（优先于通用 cannon）
-    "solid attack": 7,            # 塞瓦斯托波尔臼炮打兵模式
-    "cannon attack": 8,           # 通用炮击（鹰炮/长管炮此即主攻击，臼炮则被 barrage 压过）
+    "repeating attack": 6,        # 加特林连射模式（rof=0.5，优先于 cannon）
+    "barrage attack": 7,          # 臼炮打兵模式（优先于通用 cannon）
+    "solid attack": 8,            # 塞瓦斯托波尔臼炮打兵模式
+    "cannon attack": 9,           # 通用炮击（鹰炮/长管炮此即主攻击，臼炮则被 barrage 压过）
 }
 
 
@@ -241,6 +242,22 @@ def merge() -> dict:
         # ---- 清理旧的 attack_siege 字段（如果 supplement 覆盖了） ----
         # 不主动删除，保留原始数据作为参考
 
+    # ---- 多弹丸/连射兵种修正 ----
+    # supplement 数据只包含单发伤害，但部分兵种每次攻击发射多发弹丸。
+    # 这里乘以弹丸数得到每次攻击的总伤害（projectile count 来自 wiki）。
+    _PROJECTILE_COUNT: dict[str, int] = {
+        "chu_ko_nu_age_of_empires_iii": 3,  # 诸葛弩手：射 3 箭
+        "organ_gun_age_of_empires_iii": 8,  # 管风琴炮：射 8 管（DE 2024.10 更新）
+        "gatling_camel": 3,                 # 加特林骆驼：burst 3 发
+    }
+    units_by_id = {u["id"]: u for u in units}
+    for uid, count in _PROJECTILE_COUNT.items():
+        u = units_by_id.get(uid)
+        if u and "attack_ranged" in u:
+            u["attack_ranged"] = round(u["attack_ranged"] * count, 1)
+            stats.setdefault("projectile_fixed", 0)
+            stats["projectile_fixed"] += 1
+
     # 写回文件
     _UNITS_FILE.write_text(
         json.dumps(units, ensure_ascii=False, indent=2),
@@ -267,6 +284,7 @@ def main(dry_run: bool = False) -> None:
     print(f"  兜底 ranged（纯攻城）: {stats['fallback_ranged']}")
     print(f"  新增 aoe_ranged: {stats['aoe_ranged']}")
     print(f"  新增 aoe_melee: {stats['aoe_melee']}")
+    print(f"  多弹丸修正: {stats.get('projectile_fixed', 0)}")
 
     # 预览代表性兵种
     check_ids = [
@@ -274,6 +292,9 @@ def main(dry_run: bool = False) -> None:
         "cree_tracker", "conquistador_age_of_empires_iii",
         "deli", "cuirassier", "bolas_warrior",
         "captured_mortar", "abus_gunner",
+        # 多弹丸 / 连射兵种
+        "gatling_gun", "gatling_camel",
+        "chu_ko_nu_age_of_empires_iii", "organ_gun_age_of_empires_iii",
     ]
     units_by_id = {u["id"]: u for u in units}
     print("\n  代表性兵种验证:")
