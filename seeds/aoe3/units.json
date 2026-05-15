@@ -8839,7 +8839,6 @@
         "bonuses": []
       }
     ],
-    "aoe_radius_melee": 2,
     "multipliers_melee": [
       {
         "vs": "Guardian",
@@ -8854,6 +8853,7 @@
         "value": 0.5
       }
     ],
+    "aoe_radius_melee": 2,
     "aoe_radius": 2
   },
   {
@@ -9945,18 +9945,26 @@
     },
     "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/b/b3/Captured_mortar_aoe3de.png/revision/latest/scale-to-width-down/268?cb=20210607005510",
     "damage_type_ranged": "Siege",
-    "attack_ranged": 416.666667,
-    "range": 40,
+    "attack_ranged": 25,
+    "range": 30,
     "range_min": 4,
     "rof_ranged": 6,
     "multipliers_ranged": [
       {
-        "vs": "AbstractWall",
-        "value": 1.25
+        "vs": "AbstractArtillery",
+        "value": 0.75
       },
       {
-        "vs": "Ship",
-        "value": 0.75
+        "vs": "AbstractCavalry",
+        "value": 0.4
+      },
+      {
+        "vs": "AbstractLightInfantry",
+        "value": 0.4
+      },
+      {
+        "vs": "AbstractVillager",
+        "value": 0.4
       }
     ],
     "attacks_all": [
@@ -10019,8 +10027,8 @@
         ]
       }
     ],
-    "aoe_radius_ranged": 1,
-    "aoe_radius": 1
+    "aoe_radius_ranged": 4,
+    "aoe_radius": 4
   },
   {
     "id": "caravel_age_of_empires_iii",
@@ -23601,7 +23609,6 @@
         ]
       }
     ],
-    "aoe_radius_melee": 2,
     "multipliers_melee": [
       {
         "vs": "AbstractInfantry",
@@ -23616,6 +23623,7 @@
         "value": 4
       }
     ],
+    "aoe_radius_melee": 2,
     "aoe_radius": 2
   },
   {
@@ -28752,7 +28760,6 @@
         ]
       }
     ],
-    "aoe_radius_ranged": 1,
     "multipliers_melee": [
       {
         "vs": "AbstractHeavyCavalry",
@@ -28775,6 +28782,7 @@
         "value": 0.75
       }
     ],
+    "aoe_radius_ranged": 1,
     "aoe_radius": 1
   },
   {
@@ -43332,18 +43340,26 @@
       "迫击炮"
     ],
     "damage_type_ranged": "Siege",
-    "attack_ranged": 500,
-    "range": 40,
+    "attack_ranged": 30,
+    "range": 30,
     "range_min": 4,
     "rof_ranged": 6,
     "multipliers_ranged": [
       {
-        "vs": "AbstractWall",
-        "value": 1.25
+        "vs": "AbstractArtillery",
+        "value": 0.4
       },
       {
-        "vs": "Ship",
-        "value": 0.75
+        "vs": "AbstractCavalry",
+        "value": 0.4
+      },
+      {
+        "vs": "AbstractLightInfantry",
+        "value": 0.4
+      },
+      {
+        "vs": "AbstractVillager",
+        "value": 0.4
       }
     ],
     "attacks_all": [
@@ -43406,8 +43422,8 @@
         ]
       }
     ],
-    "aoe_radius_ranged": 1,
-    "aoe_radius": 1
+    "aoe_radius_ranged": 4,
+    "aoe_radius": 4
   },
   {
     "id": "morutaru",
@@ -43453,18 +43469,26 @@
     },
     "icon_url": "https://static.wikia.nocookie.net/ageofempires/images/4/44/Morutaru_de.png/revision/latest/scale-to-width-down/268?cb=20210210132943",
     "damage_type_ranged": "Siege",
-    "attack_ranged": 385,
-    "range": 40,
+    "attack_ranged": 19,
+    "range": 28,
     "range_min": 4,
     "rof_ranged": 6,
     "multipliers_ranged": [
       {
-        "vs": "AbstractWall",
-        "value": 1.25
+        "vs": "AbstractArtillery",
+        "value": 0.4
       },
       {
-        "vs": "Ship",
-        "value": 0.5
+        "vs": "AbstractCavalry",
+        "value": 0.4
+      },
+      {
+        "vs": "AbstractLightInfantry",
+        "value": 0.4
+      },
+      {
+        "vs": "AbstractVillager",
+        "value": 0.4
       }
     ],
     "attacks_all": [
@@ -43527,8 +43551,8 @@
         ]
       }
     ],
-    "aoe_radius_ranged": 1,
-    "aoe_radius": 1
+    "aoe_radius_ranged": 4,
+    "aoe_radius": 4
   },
   {
     "id": "mountain_trooper",
@@ -62517,7 +62541,6 @@
         ]
       }
     ],
-    "aoe_radius_melee": 2,
     "multipliers_melee": [
       {
         "vs": "AbstractCavalry",
@@ -62528,6 +62551,7 @@
         "value": 2.2
       }
     ],
+    "aoe_radius_melee": 2,
     "aoe_radius": 2
   },
   {
@@ -70673,7 +70697,6 @@
         ]
       }
     ],
-    "aoe_radius_melee": 1,
     "multipliers_melee": [
       {
         "vs": "AbstractCoyoteMan",
@@ -70684,6 +70707,7 @@
         "value": 2
       }
     ],
+    "aoe_radius_melee": 1,
     "aoe_radius": 1
   },
   {

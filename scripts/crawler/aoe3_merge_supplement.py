@@ -77,6 +77,10 @@ def _classify_attack(atk: dict) -> str | None:
 
 
 # 常规姿态优先级（越小越优先）
+# 注意：Barrage Attack 是臼炮系打兵的常规攻击模式（低伤害+AOE+对兵惩罚倍率），
+# 而臼炮的 Cannon Attack 是打建筑模式（高伤害+对墙/船倍率）。
+# Barrage 必须优先于 Cannon，否则臼炮会被当成 500 攻击无惩罚轰步兵。
+# 对鹰炮等没有 Barrage 的兵种不影响（它们的 Cannon Attack 就是正确的主攻击）。
 _STANCE_PRIORITY: dict[str, int] = {
     "volley attack": 0,
     "stagger attack": 1,
@@ -84,6 +88,9 @@ _STANCE_PRIORITY: dict[str, int] = {
     "melee attack": 3,
     "ranged attack": 4,
     "stand ground attack": 5,
+    "barrage attack": 6,          # 臼炮打兵模式（优先于通用 cannon）
+    "solid attack": 7,            # 塞瓦斯托波尔臼炮打兵模式
+    "cannon attack": 8,           # 通用炮击（鹰炮/长管炮此即主攻击，臼炮则被 barrage 压过）
 }
 
 

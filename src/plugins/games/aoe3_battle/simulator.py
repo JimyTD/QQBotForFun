@@ -31,6 +31,10 @@ CLOSE_RANGE_PENALTY = 0.5    # 贴脸惩罚伤害系数
 DEFAULT_ROF_RANGED = 3.0     # 远程 ROF 缺失默认值
 DEFAULT_ROF_MELEE = 1.5      # 近战 ROF 缺失默认值
 
+# ---- 近战 CAP 与渗透 ----
+MELEE_ATTACK_CAP = 4         # 同一目标最多被几个近战兵同时攻击
+INFILTRATE_SPEED_MULT = 0.1  # 渗透状态移动速度系数
+
 # ---- 阵型排布参数 ----
 ROW_SPACING = 2.5            # 排间距（≥ range_min=2 常见值，确保后排可远程）
 ROW_CAPACITY = 8             # 每排站多少人
@@ -46,6 +50,7 @@ class EventType(str, Enum):
     DEATH = "DEATH"
     TARGET_LOCK = "TARGET_LOCK"
     AOE_SPLASH = "AOE_SPLASH"
+    INFILTRATE = "INFILTRATE"
     BATTLE_END = "BATTLE_END"
 
 
@@ -100,6 +105,7 @@ class Soldier:
     stopped: bool = False        # 是否已因 F2A 停下
     total_damage_dealt: float = 0.0  # 累计造成伤害
     kills: int = 0               # 击杀数
+    infiltrating: bool = False   # 是否处于渗透状态（CAP 满后缓慢穿越）
 
     # ---- 兵种能力缓存（初始化时从 Unit 提取）----
     has_ranged: bool = False     # 有远程攻击
@@ -496,11 +502,78 @@ class BattleSimulator:
                         best = e
         return best
 
+    # ---- 近战 CAP 统计 ----
+    def _melee_attacker_count(self, target_id: int) -> int:
+        """统计某目标当前被多少近战兵锁定（AttackMode.MELEE 方式）。"""
+        count = 0
+        target = self._soldier_map.get(target_id)
+        if target is None or not target.alive:
+            return 0
+        for s in self._alive():
+            if s.side == target.side:
+                continue  # 同阵营跳过
+            if s.target_id != target_id:
+                continue
+            if not s.has_melee:
+                continue
+            # 确认确实在近战距离内（正在以近战方式攻击）
+            if abs(s.pos - target.pos) <= MELEE_RANGE:
+                count += 1
+        return count
+
+    def _has_available_melee_target(self, s: Soldier) -> bool:
+        """检查射程内是否有 CAP 未满的近战目标（用于渗透退出判定）。"""
+        if not s.has_melee:
+            return False
+        enemies, positions = self._sorted_enemies(s.side)
+        if not enemies:
+            return False
+        lo = bisect.bisect_left(positions, s.pos - MELEE_RANGE)
+        hi = bisect.bisect_right(positions, s.pos + MELEE_RANGE)
+        for i in range(lo, hi):
+            e = enemies[i]
+            if not e.alive:
+                continue
+            if abs(s.pos - e.pos) <= MELEE_RANGE:
+                if self._melee_attacker_count(e.id) < MELEE_ATTACK_CAP:
+                    return True
+        return False
+
     # ---- 移动 ----
     def _process_movement(self) -> None:
         """每 tick 移动处理。"""
         for s in self._alive():
             if s.stopped:
+                continue
+
+            # 渗透状态：缓慢穿越，每 tick 检查是否有 CAP 未满的目标
+            if s.infiltrating:
+                # 检查是否有可锁定的近战目标（CAP 未满）
+                if self._has_available_melee_target(s):
+                    # 退出渗透，停下来锁定目标
+                    s.infiltrating = False
+                    s.stopped = True
+                    logger.debug(
+                        "tick=%d %s#%d 退出渗透 pos=%.2f（找到 CAP 未满目标）",
+                        self._tick, s.name, s.id, s.pos,
+                    )
+                    continue
+
+                # 继续渗透移动（速度 ×0.1）
+                nearest = self._nearest_enemy(s)
+                if nearest is None:
+                    s.infiltrating = False
+                    continue
+                direction = 1.0 if nearest.pos > s.pos else -1.0
+                move_dist = s.unit.speed * INFILTRATE_SPEED_MULT * TICK_INTERVAL
+                old_pos = s.pos
+                s.pos += direction * move_dist
+                s.pos = max(self._move_min_bound, min(self._move_max_bound, s.pos))
+                if abs(s.pos - old_pos) > 0.001:
+                    logger.debug(
+                        "tick=%d %s#%d 渗透移动 %.2f → %.2f",
+                        self._tick, s.name, s.id, old_pos, s.pos,
+                    )
                 continue
 
             # 检查是否能攻击任意敌方（F2A 停止条件）
@@ -566,7 +639,7 @@ class BattleSimulator:
 
     # ---- 目标锁定 ----
     def _acquire_target(self, s: Soldier) -> None:
-        """为士兵锁定目标（二分查找优化）。"""
+        """为士兵锁定目标（二分查找优化 + 近战 CAP 限制）。"""
         if not s.stopped:
             return
         # 当前目标还活着就不换
@@ -593,6 +666,7 @@ class BattleSimulator:
         hi = bisect.bisect_right(positions, s.pos + max_range)
 
         in_range: list[tuple[Soldier, float]] = []
+        in_range_melee_only: list[tuple[Soldier, float]] = []  # 仅近战可达的目标
         for i in range(lo, hi):
             e = enemies[i]
             if not e.alive:
@@ -602,6 +676,7 @@ class BattleSimulator:
                 in_range.append((e, dist))
             elif s.has_melee and dist <= MELEE_RANGE:
                 in_range.append((e, dist))
+                in_range_melee_only.append((e, dist))
 
         if not in_range:
             # 射程内没有敌方（不应该发生在 stopped 状态，但防御性处理）
@@ -614,12 +689,45 @@ class BattleSimulator:
             s.stopped = False
             return
 
+        # ---- CAP 过滤：对近战目标检查 CAP ----
+        # 只有"纯近战兵"（has_melee=True, has_ranged=False）在贴脸目标 CAP 满时
+        # 才需要进入渗透。有远程的兵可以退而远程攻击，不受 CAP 限制。
+        filtered: list[tuple[Soldier, float]] = []
+        is_pure_melee = s.has_melee and not s.has_ranged
+        for e, dist in in_range:
+            if is_pure_melee and dist <= MELEE_RANGE:
+                # 纯近战兵 + 贴脸目标 → 检查 CAP
+                if self._melee_attacker_count(e.id) < MELEE_ATTACK_CAP:
+                    filtered.append((e, dist))
+                # CAP 满了 → 不加入 filtered
+            else:
+                # 有远程能力的兵 或 远程距离目标 → 不受 CAP 限制
+                filtered.append((e, dist))
+
+        if not filtered:
+            # 所有目标的 CAP 都满了（只有纯近战兵才会走到这里）
+            # 进入渗透状态：缓慢穿越寻找后排目标
+            s.target_id = None
+            s.stopped = False
+            s.infiltrating = True
+            self._emit(EventType.INFILTRATE, {
+                "soldier_id": s.id,
+                "soldier_name": s.name,
+                "side": s.side.value,
+                "pos": round(s.pos, 2),
+            })
+            logger.debug(
+                "tick=%d %s#%d 进入渗透状态 pos=%.2f（所有近战目标 CAP 已满）",
+                self._tick, s.name, s.id, s.pos,
+            )
+            return
+
         # 按距离排序（候选集通常很小）
-        in_range.sort(key=lambda x: x[1])
-        min_dist = in_range[0][1]
+        filtered.sort(key=lambda x: x[1])
+        min_dist = filtered[0][1]
 
         # 距离相同的候选
-        candidates = [e for e, d in in_range if abs(d - min_dist) < 0.01]
+        candidates = [e for e, d in filtered if abs(d - min_dist) < 0.01]
         target = self._rng.choice(candidates)
         s.target_id = target.id
 

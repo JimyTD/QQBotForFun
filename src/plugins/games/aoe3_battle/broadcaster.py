@@ -137,6 +137,8 @@ class Broadcaster:
 
         # 已出现的攻击模式（用于首次攻击模式播报）
         self._seen_attack_modes: set[str] = set()
+        # 渗透事件是否已播报（每场只播一次）
+        self._infiltrate_emitted: bool = False
 
     def generate(self) -> list[BroadcastSegment]:
         """生成完整播报序列。"""
@@ -162,7 +164,7 @@ class Broadcaster:
                 e for e in events
                 if window_start <= e.time < window_end
                 and e.event_type in (EventType.ATTACK, EventType.DEATH,
-                                     EventType.AOE_SPLASH)
+                                     EventType.AOE_SPLASH, EventType.INFILTRATE)
             ]
 
             # 统计死亡
@@ -222,6 +224,26 @@ class Broadcaster:
                         f"🩸 第 {d.time:.1f}s，"
                         f"{killer_emoji} {d.data['killer_name']}{first_kill_verb}，"
                         f"{victim_emoji} {d.data['soldier_name']} -1"
+                    ),
+                    is_key_event=True,
+                    time_start=window_start,
+                    time_end=window_end,
+                ))
+
+            # 渗透事件播报（每场战斗只播报一次）
+            infiltrate_events = [
+                e for e in window_events
+                if e.event_type == EventType.INFILTRATE
+            ]
+            if infiltrate_events and not self._infiltrate_emitted:
+                self._infiltrate_emitted = True
+                inf = infiltrate_events[0]
+                inf_emoji = _side_emoji(inf.data["side"])
+                self._segments.append(BroadcastSegment(
+                    text=(
+                        f"⚔️ {inf.time:.1f}s，"
+                        f"{inf_emoji} {inf.data['soldier_name']}等发现前排拥挤，"
+                        f"开始向敌方后排渗透！"
                     ),
                     is_key_event=True,
                     time_start=window_start,
