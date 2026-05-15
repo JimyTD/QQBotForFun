@@ -433,22 +433,30 @@ AOE3 有三种伤害类型，每种只被对应的抗性减免：
 
 **分类规则**（由 `scripts/crawler/aoe3_merge_supplement.py :: _classify_attack` 实现）：
 
-#### 第一步：过滤拆建筑攻击（ignore）
+#### 第一步：过滤拆建筑攻击和掩体攻击（ignore）
 
 攻击名匹配以下任一条件 → **直接忽略**，不参与后续分类：
 - 名称完全等于 `"Siege Attack"`（通用拆建筑攻击，几乎所有兵种都有）
 - 名称包含 `"Building"`（如 `"Cover Building Attack"`）
-- 名称包含 `"Chop"` / `"Gather"`（砍伐/采集）
+- 名称包含 `"Chop"` / `"Gather"` / `"Crate"` / `"Ship Attack"`
+- 名称以 `"Cover "` 开头（掩体攻击，斗蛐蛐无掩体）
+- 名称包含特殊技能关键词（Charge / Explosion / Sabotage / Stun / Trample 等）
+- **掩体配对过滤**：如果兵种存在 `Cover Ranged Attack`，则非 Cover 版的 `Ranged Attack` 也视为掩体限定一并过滤
 
-> 为什么？这些攻击是用来打建筑/采集资源的，斗蛐蛐没有建筑，不需要。
+> 为什么？这些攻击是用来打建筑/采集资源/掩体限定的，斗蛐蛐没有建筑和掩体。
 > **关键辨别**：`"Siege Attack"` ≠ damage_type 为 Siege 的攻击。
 > 鹰炮的 `"Cannon Attack"` damage_type=Siege 但不是 "Siege Attack"，是真正的远程炮击。
 
-#### 第二步：按射程分 ranged / melee
+#### 第二步：按 damage_type + max_range 分 ranged / melee
 
-过滤后的攻击按 `max_range` 分类：
-- `max_range > 2` → **ranged**（远程）
-- `max_range ≤ 2` → **melee**（近战）
+过滤后的攻击按 `damage_type` 分类：
+- `damage_type = "Hand"` → **melee**（无论 max_range 多少）
+- `damage_type = "Ranged"` 或 `"Siege"`：
+  - `max_range > 6` → **ranged**（真远程攻击）
+  - `max_range ≤ 6` → **melee**（近距离攻城类攻击，如草原骑兵攻城 range=6）
+- `damage_type` 缺失 → 按 `max_range > 6` 兜底
+
+> 阈值 6 的依据：AOE3 中近战武器最大 range 约 4~6（长矛、流星锤等），远程攻击通常 range ≥ 10。
 
 #### 第三步：选最佳攻击
 
@@ -478,6 +486,7 @@ attack_ranged  = ranged 攻击的 damage（若有）
 attack_melee   = melee 攻击的 damage（若有）
 range          = ranged 攻击的 max_range
 range_min      = ranged 攻击的 min_range
+range_melee    = melee 攻击的 max_range（近战射程，0 表示使用默认值 1.5）
 rof_ranged     = ranged 攻击的 rof
 rof_melee      = melee 攻击的 rof
 damage_type_ranged = ranged 攻击的 damage_type
@@ -663,12 +672,13 @@ multipliers_melee  = melee 攻击的 bonuses
 |---|---|---|
 | **开战** | 战斗开始 | 单兵种：`⚔️ 战斗打响！🔴 [10 火枪手] vs 🔵 [8 长枪兵]` 多兵种：`⚔️ 战斗打响！🔴 [2黑骑士 + 3祖瓦夫 + 11火枪手] vs 🔵 [1铁甲舰 + 7火枪手 + 16散兵]` |
 | **首杀** | 整场第一次有人阵亡 | `🩸 第 X.Xs，🔵 长枪兵率先溅血，🔴 火枪手 -1` |
-| **重大伤亡** | 单次攻击造成 ≥4 人死亡（典型如鹰炮 AOE、霰弹齐射） | `💥 第 X.Xs，🔵 鹰炮一炮带走 🔴 火枪手 ×5！` |
+| **重大伤亡** | 单次攻击造成 ≥ 阈值人死亡（阈值=max(4, 总人数×5%)），每窗口只保留击杀数最多的一条 | `💥 第 X.Xs，🔵 鹰炮一炮带走 🔴 火枪手 ×5！` |
 | **半灭线** | 任一方剩余兵力首次 ≤ 50% | `⚠️ 🔴 已损失过半（剩 4/10），战况告急` |
 | **终结** | 一方全灭 | `☠️ 第 X.Xs，🔵 长枪兵踏平最后一名敌兵` |
 
 - "重大伤亡"比"首杀"更有冲击力，**两者都保留**（首杀负责开局气氛，重大伤亡负责高潮）
-- 单次攻击≥4 人死亡的阈值可调（首期固定 4，后续视播报频率调整）
+- 重大伤亡阈值 = `max(4, 总人数 × 5%)`，大规模对局自动提高门槛
+- **每个 2 秒窗口内最多只发一条重大伤亡播报**（取该窗口内击杀数最多的一条），避免刷屏
 - 重大伤亡和半灭线**可以同片段触发**（先发重大伤亡条，再发半灭线条）
 
 ### 8.4 沉默期填充（W4 决议）
@@ -708,18 +718,51 @@ multipliers_melee  = melee 攻击的 bonuses
   - 对耗期：以上之外
 - 同一阶段内的话术池**不重复抽**（避免连发两条一样的），抽完池子重置
 
-### 8.5 动态选词（W7：轻量化）
+### 8.5 动态选词（W7：按伤害分类）
 
-按"该方该窗口造成的死亡数"选动词，**词库小，每档 2~3 句即可**：
+击杀播报术语**根据实际攻击模式 + 伤害类型 + 单位标签**选词，不再按单位类型标签分类。
 
-| 死亡数 | 备选动词（红方造成 / 蓝方造成同模板） |
+#### 分类维度
+
+| 分类 key | 条件 | 术语风格 | 示例单位 |
+|---|---|---|---|
+| `ranged_gunpowder` | 远程 + Ranged伤害 + Gunpowder标签 | 枪炮 | 火枪手、龙骑兵 |
+| `ranged_archer` | 远程 + Ranged伤害 + Archer标签 | 弓箭 | 长弓手、弓骑兵 |
+| `ranged_normal` | 远程 + Ranged伤害 + 兜底 | 通用射击 | 休伦木盾等 |
+| `ranged_siege_art` | 远程 + Siege伤害 + Artillery标签 | 大炮 | 鹰炮、臼炮 |
+| `ranged_siege` | 远程 + Siege伤害 + 兜底 | 爆破/投掷 | 掷弹兵、骑马掷弹兵 |
+| `melee_hand` | 近战 + Hand伤害 + 兜底 | 冷兵器 | 长枪兵、黑骑士 |
+| `melee_siege` | 近战 + Siege伤害 | 火攻 | 沙漠突袭者 |
+
+#### 判定流程
+
+1. 从 DEATH 事件取 `killer_attack_mode`（ranged/melee/ranged_penalized）和 `killer_damage_type`（Ranged/Siege/Hand）
+2. 先按攻击模式分：ranged 系 vs melee 系
+3. 再按伤害类型分：Ranged / Siege / Hand
+4. 最后用单位标签辅助细分（Gunpowder / Archer / Artillery）
+5. 每层都有兜底，不会漏
+
+#### 死亡数档位（每类共用）
+
+| 死亡数 | 档位 key |
 |---|---|
-| 1 | `开火` / `击中` / `点掉一个` |
-| 2~3 | `齐射` / `一轮射击` / `连发` |
-| 4~ | `集火屠戮` / `致命齐射` / `一波带走` |
+| 1 | `"1"` |
+| 2~3 | `"2-3"` |
+| 4+ | `"4+"` |
 
 - 窗口内同一方多次攻击合并成一条播报（不要每次攻击单发，太碎）
-- 词库写在常量文件里，方便调整不动逻辑
+- 词库写在 `phrases.py` 常量文件里，方便调整不动逻辑
+
+#### 阵型 emoji（独立于术语系统）
+
+阵型面板中的 emoji 仍按单位类型标签判定（不变），但优先级调整为：
+**Ship > Elephant > Camel > Cavalry > Artillery/Siege trooper > 步兵细分 > 兜底**
+
+骑兵标签优先于 `Siege trooper`，避免草原骑兵等被误显示为 💣。
+
+#### 战前角色卡
+
+`_atk_summary` 不再显示攻城攻击（`attack_siege`），因为斗蛐蛐模拟器不使用攻城攻击，展示会误导群友。
 
 ### 8.6 最终战报 + 结算（一起发，W3）
 
@@ -880,3 +923,20 @@ multipliers_melee  = melee 攻击的 bonuses
 - ✅ **合并脚本选择逻辑**：每个兵种只选一个 ranged 攻击 + 一个 melee 攻击作为斗蛐蛐代表，选中攻击的 damage/bonuses/aoe 整体写入 units.json
 - ✅ **臼炮系修复**：臼炮/日本臼炮/缴获臼炮的 ranged 代表从 `Cannon Attack`（打建筑，500 伤害无步兵惩罚）改为 `Barrage Attack`（打兵，30 伤害 + 对骑兵/散兵/村民 x0.4 惩罚）。修法为在 `_STANCE_PRIORITY` 中给 `barrage attack` 比 `cannon attack` 更高优先级
 - ✅ **鹰炮系暂不处理**：鹰炮/骑兵炮/重型加农炮的 `Case Shot Attack`（近距离散弹）是第二攻击模式，当前模拟器只支持单攻击模式，不实现距离切换
+
+### 2026-05-16 追加决议（术语系统重构 + 播报精简）
+
+- ✅ **击杀术语改为按伤害分类**：不再按单位类型标签（artillery/cavalry/melee/ranged）选词，改为按实际攻击模式（ranged/melee）+ 伤害类型（Ranged/Siege/Hand）+ 单位标签辅助（Gunpowder/Archer/Artillery）选词。7 个分类覆盖所有场景，每层有兜底
+- ✅ **DEATH 事件新增字段**：`killer_attack_mode`（击杀时的攻击模式）、`killer_damage_type`（击杀时的伤害类型），供播报层精确选词
+- ✅ **阵型 emoji 优先级修复**：骑兵标签优先于 Siege trooper/Artillery trooper，避免草原骑兵等被误显示为 💣
+- ✅ **重大伤亡播报精简**：每 2 秒窗口内最多只发一条重大伤亡播报（取击杀数最多的），阈值改为动态 `max(4, 总人数×5%)`
+- ✅ **战前角色卡隐藏攻城攻击**：`_atk_summary` 不再显示 `attack_siege`，模拟器不使用攻城攻击，展示会误导群友
+
+### 2026-05-16 追加决议（merge 脚本重构 + 近战射程）
+
+- ✅ **merge 脚本攻击分类重构**：不再按 `max_range > 2` 数值判断 ranged/melee（该做法篡改原始数据语义）。改为按 `damage_type` 分类：`Hand` → melee，`Ranged`/`Siege` 且 `max_range > 6` → ranged，否则 melee。阈值 6 是 AOE3 近战武器最大触及范围（长矛/流星锤等 range 约 3~6）
+- ✅ **过滤掩体攻击（Cover）**：`Cover` 前缀的攻击直接忽略（斗蛐蛐无掩体）。如果兵种同时有 `Cover Ranged Attack` 和 `Ranged Attack`，后者也视为掩体限定一并过滤（海盗修复）
+- ✅ **清理残留数据**：supplement 匹配到的兵种，先清零所有攻击字段再重新写入，防止 wiki 原始数据残留错误的 `attack_ranged`/`range`
+- ✅ **新增 `range_melee` 字段**：`Unit` 模型新增 `range_melee`（近战射程，0 表示使用默认值 1.5），merge 脚本从 melee 攻击的 `max_range` 写入
+- ✅ **模拟器近战射程动态化**：`Soldier` 新增 `effective_melee_range`，从 `unit.range_melee` 取值（无数据时退化为 `MELEE_RANGE=1.5`）。所有近战距离判定（F2A停止/目标锁定/攻击模式选择/CAP统计/渗透检测）均使用个体射程
+- ✅ **角色卡显示近战射程**：`_atk_summary` 在 `range_melee > 1.5` 时显示近战射程

@@ -56,6 +56,7 @@ class Unit:
 
     # 近战攻击
     attack_melee: float = 0.0
+    range_melee: float = 0.0            # 近战射程（0 表示使用模拟器默认值 1.5）
     rof_melee: float = 0.0
     multipliers_melee: list[Multiplier] = field(default_factory=list)
 
@@ -139,6 +140,7 @@ class Unit:
                 mults.get("ranged") if isinstance(mults, dict) else None
             ),
             attack_melee=d.get("attack_melee", 0.0),
+            range_melee=d.get("range_melee", 0.0),
             rof_melee=d.get("rof_melee", 0.0),
             multipliers_melee=_parse_mults(
                 mults.get("melee") if isinstance(mults, dict) else None

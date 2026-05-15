@@ -41,45 +41,59 @@ from .phrases import (
 # =====================================================================
 WINDOW_SECONDS = 2.0         # 播报窗口（秒）
 WINDOW_TICKS = int(WINDOW_SECONDS / TICK_INTERVAL)  # 20 ticks
-MASS_CASUALTY_THRESHOLD = 4  # 重大伤亡阈值
+MASS_CASUALTY_THRESHOLD_BASE = 4   # 基础重大伤亡阈值
+MASS_CASUALTY_THRESHOLD_PCT = 0.05 # 动态阈值：总人数的 5%
 
 # =====================================================================
-# 兵种大类分类（标签优先 + 攻击方式兜底）
+# 伤害分类（攻击模式 × 伤害类型 × 单位标签辅助）
 # =====================================================================
-def _classify_unit(unit_type: list[str], has_ranged: bool = False) -> str:
-    """根据兵种标签判断大类，用于选词。
+_GUNPOWDER_TAGS = {
+    "Gunpowder trooper", "Gunpowder cavalry", "Gunpowder unit",
+    "Musket infantry", "Rifle infantry",
+}
+_ARCHER_TAGS = {"Archer", "Foot archer"}
+_ARTILLERY_TAGS = {"Artillery"}
 
-    优先级：artillery > ship > cavalry > 攻击方式兜底(ranged/melee)
+
+def _classify_attack(
+    attack_mode: str,
+    damage_type: str,
+    unit_type: list[str] | None = None,
+) -> str:
+    """根据实际攻击模式 + 伤害类型 + 单位标签选定术语分类。
+
+    分类结果对应 phrases.py 中的 key：
+      ranged_gunpowder / ranged_archer / ranged_normal
+      ranged_siege_art / ranged_siege
+      melee_hand / melee_siege
     """
-    type_set = set(unit_type)
-    if "Artillery" in type_set or "Siege trooper" in type_set:
-        return "artillery"
-    if "Ship" in type_set or "War ship" in type_set:
-        return "ship"
-    # 所有骑兵相关标签
-    cavalry_tags = {
-        "Cavalry", "Hand cavalry", "Ranged cavalry",
-        "Light ranged cavalry", "Gunpowder cavalry",
-        "Heavy cavalry", "Lance cavalry", "Ranged heavy cavalry",
-    }
-    if type_set & cavalry_tags:
-        return "cavalry"
-    # 兜底：看攻击方式
-    if has_ranged:
-        return "ranged"
-    return "melee"
+    type_set = set(unit_type) if unit_type else set()
 
+    if attack_mode in ("ranged", "ranged_penalized"):
+        if damage_type == "Siege":
+            if type_set & _ARTILLERY_TAGS:
+                return "ranged_siege_art"
+            return "ranged_siege"
+        # Ranged / Hand / 其他 → 细分枪炮 vs 弓箭
+        if type_set & _GUNPOWDER_TAGS:
+            return "ranged_gunpowder"
+        if type_set & _ARCHER_TAGS:
+            return "ranged_archer"
+        return "ranged_normal"
 
-# 话术常量已外置到 phrases.py，通过 import 引入
+    # melee（含兜底）
+    if damage_type == "Siege":
+        return "melee_siege"
+    return "melee_hand"
 
 
 def _pick_action_word(
     kill_count: int,
     rng: random.Random,
-    unit_class: str = "ranged",
+    attack_class: str = "ranged_normal",
 ) -> str:
-    """按死亡数 + 兵种大类选动词。"""
-    words = ACTION_WORDS.get(unit_class, ACTION_WORDS["ranged"])
+    """按死亡数 + 伤害分类选动词。"""
+    words = ACTION_WORDS.get(attack_class, ACTION_WORDS["ranged_normal"])
     if kill_count <= 1:
         return rng.choice(words["1"])
     elif kill_count <= 3:
@@ -213,12 +227,13 @@ class Broadcaster:
                 d = deaths[0]
                 killer_emoji = _side_emoji(d.data["killer_side"])
                 victim_emoji = _side_emoji(d.data["side"])
-                killer_class = _classify_unit(
+                killer_class = _classify_attack(
+                    d.data.get("killer_attack_mode", "ranged"),
+                    d.data.get("killer_damage_type", "Ranged"),
                     d.data.get("killer_unit_type", []),
-                    d.data.get("killer_has_ranged", False),
                 )
                 first_kill_verb = self._rng.choice(
-                    FIRST_KILL_VERBS.get(killer_class, FIRST_KILL_VERBS["ranged"])
+                    FIRST_KILL_VERBS.get(killer_class, FIRST_KILL_VERBS["ranged_normal"])
                 )
                 self._segments.append(BroadcastSegment(
                     text=(
@@ -355,12 +370,13 @@ class Broadcaster:
 
             if last_death and last_death.data["side"] == loser_side:
                 killer_name = last_death.data["killer_name"]
-                killer_class = _classify_unit(
+                killer_class = _classify_attack(
+                    last_death.data.get("killer_attack_mode", "ranged"),
+                    last_death.data.get("killer_damage_type", "Ranged"),
                     last_death.data.get("killer_unit_type", []),
-                    last_death.data.get("killer_has_ranged", False),
                 )
                 finish_verb = self._rng.choice(
-                    FINISH_VERBS.get(killer_class, FINISH_VERBS["ranged"])
+                    FINISH_VERBS.get(killer_class, FINISH_VERBS["ranged_normal"])
                 )
                 self._segments.append(BroadcastSegment(
                     text=(
@@ -386,43 +402,63 @@ class Broadcaster:
         window_start: float,
         window_end: float,
     ) -> None:
-        """检查重大伤亡（单个 tick 内 ≥4 人死亡）。"""
+        """检查重大伤亡（单 tick 内同一攻击者造成 ≥ 阈值人死亡）。
+
+        每个窗口只保留击杀数最多的一条播报，避免大规模对局刷屏。
+        阈值 = max(MASS_CASUALTY_THRESHOLD_BASE, total_count * 5%)。
+        """
+        total_count = self.result.red_count + self.result.blue_count
+        threshold = max(
+            MASS_CASUALTY_THRESHOLD_BASE,
+            int(total_count * MASS_CASUALTY_THRESHOLD_PCT),
+        )
+
         # 按 tick 分组
         by_tick: dict[int, list[BattleEvent]] = {}
         for d in deaths:
             by_tick.setdefault(d.tick, []).append(d)
 
-        for tick, tick_deaths in by_tick.items():
-            if len(tick_deaths) >= MASS_CASUALTY_THRESHOLD:
-                # 找出主要攻击者（按 killer 分组）
-                by_killer: dict[str, list[BattleEvent]] = {}
-                for d in tick_deaths:
-                    key = f"{d.data['killer_side']}:{d.data['killer_name']}"
-                    by_killer.setdefault(key, []).append(d)
+        # 收集所有满足阈值的候选，取最猛一条
+        best: tuple[int, BattleEvent, str] | None = None  # (kill_count, event, class)
 
-                for key, killer_deaths in by_killer.items():
-                    if len(killer_deaths) >= MASS_CASUALTY_THRESHOLD:
+        for tick, tick_deaths in by_tick.items():
+            if len(tick_deaths) < threshold:
+                continue
+            # 按 killer 分组
+            by_killer: dict[str, list[BattleEvent]] = {}
+            for d in tick_deaths:
+                key = f"{d.data['killer_side']}:{d.data['killer_name']}"
+                by_killer.setdefault(key, []).append(d)
+
+            for key, killer_deaths in by_killer.items():
+                if len(killer_deaths) >= threshold:
+                    if best is None or len(killer_deaths) > best[0]:
                         d0 = killer_deaths[0]
-                        killer_emoji = _side_emoji(d0.data["killer_side"])
-                        victim_emoji = _side_emoji(d0.data["side"])
-                        killer_class = _classify_unit(
+                        killer_class = _classify_attack(
+                            d0.data.get("killer_attack_mode", "ranged"),
+                            d0.data.get("killer_damage_type", "Ranged"),
                             d0.data.get("killer_unit_type", []),
-                            d0.data.get("killer_has_ranged", False),
                         )
-                        mass_verb = self._rng.choice(
-                            MASS_CASUALTY_VERBS.get(killer_class, MASS_CASUALTY_VERBS["ranged"])
-                        )
-                        self._segments.append(BroadcastSegment(
-                            text=(
-                                f"💥 第 {d0.time:.1f}s，"
-                                f"{killer_emoji} {d0.data['killer_name']}"
-                                f"{mass_verb} "
-                                f"{victim_emoji} {d0.data['soldier_name']} ×{len(killer_deaths)}！"
-                            ),
-                            is_key_event=True,
-                            time_start=window_start,
-                            time_end=window_end,
-                        ))
+                        best = (len(killer_deaths), d0, killer_class)
+
+        if best is not None:
+            kill_count, d0, killer_class = best
+            killer_emoji = _side_emoji(d0.data["killer_side"])
+            victim_emoji = _side_emoji(d0.data["side"])
+            mass_verb = self._rng.choice(
+                MASS_CASUALTY_VERBS.get(killer_class, MASS_CASUALTY_VERBS["ranged_normal"])
+            )
+            self._segments.append(BroadcastSegment(
+                text=(
+                    f"💥 第 {d0.time:.1f}s，"
+                    f"{killer_emoji} {d0.data['killer_name']}"
+                    f"{mass_verb} "
+                    f"{victim_emoji} {d0.data['soldier_name']} ×{kill_count}！"
+                ),
+                is_key_event=True,
+                time_start=window_start,
+                time_end=window_end,
+            ))
 
     def _emit_window_segment(
         self,
@@ -456,9 +492,10 @@ class Broadcaster:
             # 标准片段
             # 蓝方造成的红方死亡
             if red_deaths:
-                killer_class = _classify_unit(
+                killer_class = _classify_attack(
+                    red_deaths[0].data.get("killer_attack_mode", "ranged"),
+                    red_deaths[0].data.get("killer_damage_type", "Ranged"),
                     red_deaths[0].data.get("killer_unit_type", []),
-                    red_deaths[0].data.get("killer_has_ranged", False),
                 )
                 action = _pick_action_word(len(red_deaths), self._rng, killer_class)
                 # 找出攻击者兵种名
@@ -470,9 +507,10 @@ class Broadcaster:
                 )
             # 红方造成的蓝方死亡
             if blue_deaths:
-                killer_class = _classify_unit(
+                killer_class = _classify_attack(
+                    blue_deaths[0].data.get("killer_attack_mode", "ranged"),
+                    blue_deaths[0].data.get("killer_damage_type", "Ranged"),
                     blue_deaths[0].data.get("killer_unit_type", []),
-                    blue_deaths[0].data.get("killer_has_ranged", False),
                 )
                 action = _pick_action_word(len(blue_deaths), self._rng, killer_class)
                 killer_name = blue_deaths[0].data.get("killer_name", "?")

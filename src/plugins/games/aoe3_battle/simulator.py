@@ -26,7 +26,7 @@ logger = logging.getLogger("aoe3_battle.simulator")
 TICK_INTERVAL = 0.1          # 秒/tick
 MAX_TICKS = 1200             # 最大 tick 数（120 秒）
 FIELD_LENGTH = 30.0          # 中间空地长度（双方阵地在两侧展开）
-MELEE_RANGE = 1.5            # 近战射程
+MELEE_RANGE = 1.5            # 近战射程（默认值，有 range_melee 数据时以数据为准）
 CLOSE_RANGE_PENALTY = 0.5    # 贴脸惩罚伤害系数
 DEFAULT_ROF_RANGED = 3.0     # 远程 ROF 缺失默认值
 DEFAULT_ROF_MELEE = 1.5      # 近战 ROF 缺失默认值
@@ -110,6 +110,7 @@ class Soldier:
     # ---- 兵种能力缓存（初始化时从 Unit 提取）----
     has_ranged: bool = False     # 有远程攻击
     has_melee: bool = False      # 有近战攻击
+    effective_melee_range: float = MELEE_RANGE  # 实际近战射程
 
     # 实际使用的远程参数
     effective_ranged_attack: float = 0.0
@@ -145,6 +146,12 @@ def _create_soldier(
 
     s.has_ranged = has_ranged
     s.has_melee = has_melee
+
+    # 近战射程：优先使用数据中的 range_melee，否则用默认 MELEE_RANGE
+    if has_melee and unit.range_melee > 0:
+        s.effective_melee_range = unit.range_melee
+    else:
+        s.effective_melee_range = MELEE_RANGE
 
     if has_ranged:
         s.effective_ranged_attack = unit.attack_ranged
@@ -517,7 +524,7 @@ class BattleSimulator:
             if not s.has_melee:
                 continue
             # 确认确实在近战距离内（正在以近战方式攻击）
-            if abs(s.pos - target.pos) <= MELEE_RANGE:
+            if abs(s.pos - target.pos) <= s.effective_melee_range:
                 count += 1
         return count
 
@@ -528,13 +535,13 @@ class BattleSimulator:
         enemies, positions = self._sorted_enemies(s.side)
         if not enemies:
             return False
-        lo = bisect.bisect_left(positions, s.pos - MELEE_RANGE)
-        hi = bisect.bisect_right(positions, s.pos + MELEE_RANGE)
+        lo = bisect.bisect_left(positions, s.pos - s.effective_melee_range)
+        hi = bisect.bisect_right(positions, s.pos + s.effective_melee_range)
         for i in range(lo, hi):
             e = enemies[i]
             if not e.alive:
                 continue
-            if abs(s.pos - e.pos) <= MELEE_RANGE:
+            if abs(s.pos - e.pos) <= s.effective_melee_range:
                 if self._melee_attacker_count(e.id) < MELEE_ATTACK_CAP:
                     return True
         return False
@@ -618,7 +625,7 @@ class BattleSimulator:
         if s.has_ranged:
             max_range = s.effective_ranged_range
         if s.has_melee:
-            max_range = max(max_range, MELEE_RANGE)
+            max_range = max(max_range, s.effective_melee_range)
         if max_range <= 0:
             return False
 
@@ -633,7 +640,7 @@ class BattleSimulator:
             dist = abs(s.pos - e.pos)
             if s.has_ranged and dist <= s.effective_ranged_range:
                 return True
-            if s.has_melee and dist <= MELEE_RANGE:
+            if s.has_melee and dist <= s.effective_melee_range:
                 return True
         return False
 
@@ -659,7 +666,7 @@ class BattleSimulator:
         if s.has_ranged:
             max_range = s.effective_ranged_range
         if s.has_melee:
-            max_range = max(max_range, MELEE_RANGE)
+            max_range = max(max_range, s.effective_melee_range)
 
         # 二分查找射程窗口内的敌方
         lo = bisect.bisect_left(positions, s.pos - max_range)
@@ -674,7 +681,7 @@ class BattleSimulator:
             dist = abs(s.pos - e.pos)
             if s.has_ranged and dist <= s.effective_ranged_range:
                 in_range.append((e, dist))
-            elif s.has_melee and dist <= MELEE_RANGE:
+            elif s.has_melee and dist <= s.effective_melee_range:
                 in_range.append((e, dist))
                 in_range_melee_only.append((e, dist))
 
@@ -695,7 +702,7 @@ class BattleSimulator:
         filtered: list[tuple[Soldier, float]] = []
         is_pure_melee = s.has_melee and not s.has_ranged
         for e, dist in in_range:
-            if is_pure_melee and dist <= MELEE_RANGE:
+            if is_pure_melee and dist <= s.effective_melee_range:
                 # 纯近战兵 + 贴脸目标 → 检查 CAP
                 if self._melee_attacker_count(e.id) < MELEE_ATTACK_CAP:
                     filtered.append((e, dist))
@@ -753,7 +760,7 @@ class BattleSimulator:
         dist = self._distance(s, target)
 
         # 情况1：近战距离
-        if dist <= MELEE_RANGE:
+        if dist <= s.effective_melee_range:
             if s.has_melee:
                 return AttackMode.MELEE
             # 无近战但有远程 → 远程（可能有贴脸惩罚）
@@ -916,6 +923,12 @@ class BattleSimulator:
         target.hp -= damage
         attacker.total_damage_dealt += damage
 
+        # 推导伤害类型（供播报术语选词）
+        if mode == AttackMode.MELEE:
+            _damage_type = attacker.unit.damage_type_melee or "Hand"
+        else:
+            _damage_type = attacker.unit.damage_type_ranged or "Ranged"
+
         self._emit(EventType.ATTACK, {
             "attacker_id": attacker.id,
             "attacker_name": attacker.name,
@@ -927,6 +940,7 @@ class BattleSimulator:
             "target_side": target.side.value,
             "damage": round(damage, 1),
             "mode": mode.value,
+            "damage_type": _damage_type,
             "target_hp_before": round(old_hp, 1),
             "target_hp_after": round(max(0, target.hp), 1),
             "is_splash": is_splash,
@@ -951,6 +965,8 @@ class BattleSimulator:
                 "killer_side": attacker.side.value,
                 "killer_unit_type": attacker.unit.type,
                 "killer_has_ranged": attacker.has_ranged,
+                "killer_attack_mode": mode.value,
+                "killer_damage_type": _damage_type,
                 "remaining": side_alive,
                 "total": side_total,
                 "overkill": round(-target.hp + damage - old_hp, 1) if old_hp > 0 else 0,

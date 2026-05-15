@@ -472,7 +472,7 @@ def generate_duel_lineup(
 # =====================================================================
 
 def _atk_summary(u: Unit) -> str:
-    """一行压缩攻击信息。"""
+    """一行压缩攻击信息（仅显示模拟器实际使用的远程/近战攻击）。"""
     parts = []
     _dtype_label = {"Siege": "攻城伤害", "Hand": "近战伤害"}
 
@@ -488,9 +488,11 @@ def _atk_summary(u: Unit) -> str:
         dtype_tag = ""
         if u.damage_type_melee and u.damage_type_melee != "Hand":
             dtype_tag = f",{_dtype_label.get(u.damage_type_melee, u.damage_type_melee)}"
-        parts.append(f"近战{u.attack_melee:.0f}({u.rof_melee}s{dtype_tag})")
-    if u.attack_siege and not u.attack_ranged:
-        parts.append(f"攻城{u.attack_siege:.0f}")
+        range_tag = ""
+        if u.range_melee and u.range_melee > 1.5:
+            range_tag = f",射程{u.range_melee}"
+        parts.append(f"近战{u.attack_melee:.0f}({u.rof_melee}s{dtype_tag}{range_tag})")
+    # 攻城攻击不在斗蛐蛐中使用，不显示
     return " | ".join(parts) if parts else "无攻击"
 
 
@@ -631,13 +633,15 @@ def format_matchup_panel(lineup: MatchLineup) -> str:
 
 
 def _unit_emoji(unit) -> str:
-    """根据兵种类型返回对应 emoji。"""
+    """根据兵种类型返回对应 emoji。
+
+    优先级：Ship > Elephant > Camel > Cavalry > Artillery > 步兵细分 > 兜底
+    骑兵优先于 Siege trooper/Artillery trooper，避免草原骑兵等被误判为炮兵。
+    """
     tags = set(unit.type) if unit.type else set()
     # 按优先级匹配
     if tags & {"Ship", "War ship", "Fishing boat", "Recruiting ship"}:
         return "⛵"
-    if tags & {"Artillery", "Siege trooper", "Artillery trooper"}:
-        return "💣"
     if tags & {"Elephant"}:
         return "🐘"
     if tags & {"Camel"}:
@@ -646,6 +650,8 @@ def _unit_emoji(unit) -> str:
                "Light ranged cavalry", "Gunpowder cavalry", "Lance cavalry",
                "Ranged heavy cavalry"}:
         return "🐴"
+    if tags & {"Artillery", "Siege trooper", "Artillery trooper"}:
+        return "💣"
     if tags & {"Archer", "Foot archer"}:
         return "🏹"
     if tags & {"Gunpowder trooper", "Gunpowder unit", "Musket infantry",

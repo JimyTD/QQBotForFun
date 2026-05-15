@@ -40,6 +40,9 @@ _SPECIAL_KEYWORDS = [
 # 非战斗攻击关键词（排除）
 _IGNORE_KEYWORDS = ["building", "chop", "gather", "crate", "ship attack"]
 
+# 掩体攻击前缀（排除，需要掩体才能使用，斗蛐蛐无掩体）
+_COVER_PREFIX = "cover "
+
 
 def _is_siege_attack_name(name: str) -> bool:
     """判断是否是通用拆建筑攻击（名称完全等于 "Siege Attack"）。"""
@@ -53,27 +56,50 @@ def _is_special_attack(name: str) -> bool:
 
 
 def _should_ignore(atk: dict) -> bool:
-    """判断一个攻击是否应被完全忽略（拆建筑/采集/特殊技能）。"""
+    """判断一个攻击是否应被完全忽略（拆建筑/采集/特殊技能/掩体攻击）。"""
     name = atk.get("name", "").lower()
     if _is_siege_attack_name(name):
         return True
     if _is_special_attack(atk.get("name", "")):
         return True
+    if name.startswith(_COVER_PREFIX):
+        return True
     return any(kw in name for kw in _IGNORE_KEYWORDS)
 
 
 def _classify_attack(atk: dict) -> str | None:
-    """判断一个攻击属于 ranged / melee。
+    """按 damage_type + max_range 判断属于 ranged / melee。
 
-    返回 None 表示应忽略。
+    分类规则：
+    1. 被 _should_ignore 排除的 → None
+    2. damage_type = "Hand" → melee（无论 max_range 多少）
+    3. damage_type = "Ranged" 或 "Siege"：
+       - max_range > 6 → ranged（真远程攻击）
+       - max_range ≤ 6 → melee（近距离攻城类攻击，如草原骑兵攻城 range=6）
+    4. damage_type 缺失 → 按 max_range > 6 兜底
+
+    阈值 6 的依据：AOE3 中近战武器最大 range 约 4~6（长矛、流星锤等），
+    远程攻击通常 range ≥ 10。6 是安全分界线。
     """
     if _should_ignore(atk):
         return None
 
+    dtype = (atk.get("damage_type") or "").strip()
     max_range = atk.get("max_range") or 0
-    if max_range > 2:
+
+    if dtype == "Hand":
+        return "melee"
+
+    if dtype in ("Ranged", "Siege"):
+        return "ranged" if max_range > 6 else "melee"
+
+    # damage_type 缺失 → 按 max_range 兜底
+    if max_range > 6:
         return "ranged"
-    return "melee"
+    if max_range > 0:
+        return "melee"
+
+    return None
 
 
 # 常规姿态优先级（越小越优先）
@@ -180,14 +206,39 @@ def merge() -> dict:
         for key in ("aoe_radius", "aoe_radius_ranged", "aoe_radius_melee"):
             u.pop(key, None)
 
+        # ---- 清理旧的攻击字段（supplement 会重新写入正确值）----
+        # 防止 wiki 原始数据残留错误的 attack_ranged/range
+        for key in ("attack_ranged", "range", "range_min", "rof_ranged",
+                     "damage_type_ranged", "multipliers_ranged",
+                     "attack_melee", "range_melee", "rof_melee",
+                     "damage_type_melee", "multipliers_melee"):
+            u.pop(key, None)
+
         # ---- 分类攻击 ----
-        ranged_atk = _pick_best_attack(attacks, "ranged")
-        melee_atk = _pick_best_attack(attacks, "melee")
+        # 掩体配对过滤：如果存在 "Cover Ranged Attack"，
+        # 说明 "Ranged Attack" 也是掩体限定的（非Cover版是掩体正常伤害）
+        has_cover_ranged = any(
+            a.get("name", "").lower().startswith("cover ranged")
+            for a in attacks
+        )
+
+        def _is_cover_paired(atk: dict) -> bool:
+            """判断是否为掩体配对的非Cover版远程攻击。"""
+            if not has_cover_ranged:
+                return False
+            name = atk.get("name", "").lower()
+            return name == "ranged attack"
+
+        # 过滤掉掩体配对攻击后再分类
+        filtered_attacks = [a for a in attacks if not _is_cover_paired(a)]
+
+        ranged_atk = _pick_best_attack(filtered_attacks, "ranged")
+        melee_atk = _pick_best_attack(filtered_attacks, "melee")
         used_fallback = False
 
         # 兜底：纯攻城兵种
         if ranged_atk is None and melee_atk is None:
-            ranged_atk = _pick_fallback_ranged(attacks)
+            ranged_atk = _pick_fallback_ranged(filtered_attacks)
             if ranged_atk:
                 used_fallback = True
                 stats["fallback_ranged"] += 1
@@ -216,6 +267,9 @@ def merge() -> dict:
         # ---- 写入 melee 字段 ----
         if melee_atk:
             u["attack_melee"] = melee_atk.get("damage", 0)
+            melee_range = melee_atk.get("max_range") or 0
+            if melee_range > 0:
+                u["range_melee"] = melee_range
             rof = melee_atk.get("rof", 0) or 0
             if rof > 0:
                 u["rof_melee"] = rof
@@ -295,6 +349,9 @@ def main(dry_run: bool = False) -> None:
         # 多弹丸 / 连射兵种
         "gatling_gun", "gatling_camel",
         "chu_ko_nu_age_of_empires_iii", "organ_gun_age_of_empires_iii",
+        # 近战射程验证（cover过滤 + range_melee）
+        "pirate_age_of_empires_iii", "winged_hussar_age_of_empires_iii",
+        "steppe_rider",
     ]
     units_by_id = {u["id"]: u for u in units}
     print("\n  代表性兵种验证:")
@@ -305,12 +362,13 @@ def main(dry_run: bool = False) -> None:
         atk_r = u.get("attack_ranged", 0)
         atk_m = u.get("attack_melee", 0)
         rng = u.get("range", 0)
+        rng_m = u.get("range_melee", 0)
         dtype_r = u.get("damage_type_ranged", "-")
         dtype_m = u.get("damage_type_melee", "-")
         aoe_r = u.get("aoe_radius_ranged", 0)
         aoe_m = u.get("aoe_radius_melee", 0)
         print(f"    {u['name']:20s} ranged={atk_r:>5} (rng={rng}, dt={dtype_r}, aoe_r={aoe_r}) "
-              f"melee={atk_m:>5} (dt={dtype_m}, aoe_m={aoe_m})")
+              f"melee={atk_m:>5} (rng_m={rng_m}, dt={dtype_m}, aoe_m={aoe_m})")
 
     if dry_run:
         # 还原文件
