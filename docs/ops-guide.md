@@ -1,5 +1,20 @@
 # 运维手册（Agent 操作指南）
 
+## ⚠️ 铁律：不要触发重新扫码
+
+以下操作会导致用户必须手动扫码，**除非明确需要，禁止执行**：
+
+- ❌ `docker compose down`（删除所有容器包括 NapCat）
+- ❌ `docker compose stop napcat && rm napcat`（删除 NapCat 容器）
+- ❌ 任何导致 NapCat 容器被删除重建的操作
+
+**安全操作（不需要扫码）：**
+- ✅ `docker compose stop bot && rm -f bot && up -d --build bot`（日常部署）
+- ✅ `docker compose restart napcat`（重启但不删容器，登录态保留）
+- ✅ `docker compose restart bot`
+
+---
+
 ## 固定参数
 
 ```

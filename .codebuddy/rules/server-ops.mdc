@@ -8,6 +8,13 @@ provider:
 
 # QQBotForFun 服务器运维指令
 
+## ⚠️ 铁律：不要触发重新扫码
+
+- ❌ 禁止 `docker compose down`（会杀 NapCat，用户要扫码）
+- ❌ 禁止 `docker compose stop/rm napcat`（同上）
+- ✅ 日常部署只动 bot：`stop bot → rm bot → cp files → up --build bot`
+- ✅ NapCat 只用 `restart`（不删容器）
+
 ## 固定参数（直接使用，不需要查询）
 
 - Region: `ap-guangzhou`
