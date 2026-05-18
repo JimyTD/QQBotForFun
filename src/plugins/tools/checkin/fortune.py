@@ -107,8 +107,6 @@ def load_image_cache() -> None:
 class FortuneResult:
     """今日运势结果。"""
 
-    style: str  # "celebrity" 或 "almanac"
-
     # 名人寄语字段
     celebrity_name: str = ""
     quote: str = ""
@@ -124,32 +122,19 @@ class FortuneResult:
 def roll_fortune() -> FortuneResult:
     """随机生成今日运势。
 
-    50% 概率名人寄语，50% 概率黄历宜忌。纯函数，不依赖 DB。
+    同时包含名人寄语 + 黄历宜忌。
     """
-    if random.random() < 0.5:
-        return _roll_celebrity()
-    return _roll_almanac()
-
-
-def _roll_celebrity() -> FortuneResult:
-    """随机抽一条名人寄语。"""
     name, quote, img_file = random.choice(_CELEBRITY_QUOTES)
     image_b64 = _image_cache.get(img_file, "")
-    return FortuneResult(
-        style="celebrity",
-        celebrity_name=name,
-        quote=quote,
-        image_b64=image_b64,
-    )
 
-
-def _roll_almanac() -> FortuneResult:
-    """随机生成黄历宜忌。"""
     level = random.choice(_FORTUNE_LEVELS)
     lucky = random.sample(_LUCKY_POOL, 3)
     unlucky = random.sample(_UNLUCKY_POOL, 3)
+
     return FortuneResult(
-        style="almanac",
+        celebrity_name=name,
+        quote=quote,
+        image_b64=image_b64,
         fortune_level=level,
         lucky_items=lucky,
         unlucky_items=unlucky,
@@ -159,26 +144,25 @@ def _roll_almanac() -> FortuneResult:
 def format_fortune_text(fortune: FortuneResult) -> str:
     """将运势结果格式化为纯文字消息。
 
-    名人寄语风格：
+    同时包含名人寄语 + 黄历宜忌：
         🗣️ <名人>寄语：
         "<语录>"
 
-    黄历宜忌风格：
         📜 今日黄历 ─── <等级>
         宜：xxx、xxx、xxx
         忌：xxx、xxx、xxx
     """
-    if fortune.style == "celebrity":
-        return (
-            f"🗣️ {fortune.celebrity_name}寄语：\n"
-            f"\"{fortune.quote}\""
-        )
+    celebrity_part = (
+        f"🗣️ {fortune.celebrity_name}寄语：\n"
+        f"\"{fortune.quote}\""
+    )
 
-    # almanac
     lucky_str = "、".join(fortune.lucky_items)
     unlucky_str = "、".join(fortune.unlucky_items)
-    return (
+    almanac_part = (
         f"📜 今日黄历 ─── {fortune.fortune_level}\n"
         f"宜：{lucky_str}\n"
         f"忌：{unlucky_str}"
     )
+
+    return f"{celebrity_part}\n\n{almanac_part}"

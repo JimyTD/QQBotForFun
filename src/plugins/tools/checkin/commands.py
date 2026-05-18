@@ -99,12 +99,11 @@ async def _(matcher: Matcher, event: MessageEvent) -> None:
 def _build_fortune_message(fortune: FortuneResult) -> Message | str:
     """将运势结果构建为可发送的消息。
 
-    名人寄语：梗图（如果有）+ 文字
-    黄历宜忌：纯文字
+    名人寄语配梗图（如果有）+ 黄历宜忌文字。
     """
     text = format_fortune_text(fortune)
 
-    if fortune.style == "celebrity" and fortune.image_b64:
+    if fortune.image_b64:
         # 先发图片，再跟文字
         msg = Message(MessageSegment.image(f"base64://{fortune.image_b64}"))
         msg += MessageSegment.text(text)
