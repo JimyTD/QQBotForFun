@@ -615,7 +615,11 @@ class BattleSimulator:
                 )
 
     def _can_attack_any_enemy(self, s: Soldier) -> bool:
-        """判断士兵是否能攻击任意敌方（F2A 停止条件，二分查找优化）。"""
+        """判断士兵是否能攻击任意敌方（F2A 停止条件，二分查找优化）。
+
+        远程攻击有效区间：[range_min, range]（range_min 未配置视为 0）。
+        近战攻击有效区间：[0, melee_range]。
+        """
         enemies, positions = self._sorted_enemies(s.side)
         if not enemies:
             return False
@@ -638,8 +642,10 @@ class BattleSimulator:
             if not e.alive:
                 continue
             dist = abs(s.pos - e.pos)
-            if s.has_ranged and dist <= s.effective_ranged_range:
+            # 远程有效区间：[range_min, range]
+            if s.has_ranged and s.effective_ranged_range_min <= dist <= s.effective_ranged_range:
                 return True
+            # 近战有效区间：[0, melee_range]
             if s.has_melee and dist <= s.effective_melee_range:
                 return True
         return False
@@ -679,7 +685,8 @@ class BattleSimulator:
             if not e.alive:
                 continue
             dist = abs(s.pos - e.pos)
-            if s.has_ranged and dist <= s.effective_ranged_range:
+            # 远程有效区间：[range_min, range]
+            if s.has_ranged and s.effective_ranged_range_min <= dist <= s.effective_ranged_range:
                 in_range.append((e, dist))
             elif s.has_melee and dist <= s.effective_melee_range:
                 in_range.append((e, dist))
@@ -756,32 +763,49 @@ class BattleSimulator:
     def _determine_attack_mode(
         self, s: Soldier, target: Soldier
     ) -> AttackMode | None:
-        """根据与目标的距离判定攻击模式。返回 None 表示本 tick 无法攻击。"""
+        """根据与目标的距离判定攻击模式。
+
+        原则：不允许"等"——每个兵必须做出有效行动。
+        返回 None 表示逻辑错误（不应在正常流程中出现），会打 ERROR log。
+        """
         dist = self._distance(s, target)
 
-        # 情况1：近战距离
+        # 情况1：近战距离内
         if dist <= s.effective_melee_range:
             if s.has_melee:
                 return AttackMode.MELEE
-            # 无近战但有远程 → 远程（可能有贴脸惩罚）
+            # 纯远程兵被贴脸 → 半伤远程（保底输出）
             if s.has_ranged:
-                if s.effective_ranged_range_min > 0 and dist < s.effective_ranged_range_min:
-                    return AttackMode.RANGED_PENALIZED
-                return AttackMode.RANGED
+                return AttackMode.RANGED_PENALIZED
 
-        # 情况2：远程有效射程内
-        if s.has_ranged:
-            if dist <= s.effective_ranged_range:
-                if s.effective_ranged_range_min > 0 and dist < s.effective_ranged_range_min:
-                    # 在 range_min 和 1.5 之间
-                    if s.has_melee:
-                        # 有近战 → 等敌方靠近（本 tick 不攻击）
-                        return None
-                    else:
-                        return AttackMode.RANGED_PENALIZED
-                return AttackMode.RANGED
+        # 情况2：远程有效射程 [range_min, range] 内
+        if s.has_ranged and s.effective_ranged_range_min <= dist <= s.effective_ranged_range:
+            return AttackMode.RANGED
 
-        # 情况3：超出所有射程 → 不攻击（理论上不应发生在 stopped 状态）
+        # 情况3：在 range_min 以内但超出近战距离（不应在正常流程出现，
+        # 因为 _can_attack_any_enemy 已确保只有能有效攻击时才 stop）
+        # 防御性处理：有近战就冲近战，纯远程就半伤
+        if dist < s.effective_ranged_range_min if s.has_ranged else False:
+            logger.error(
+                "tick=%d %s#%d 处于死区！dist=%.2f range_min=%.1f melee_range=%.1f "
+                "（_can_attack_any_enemy 判定可能有误）",
+                self._tick, s.name, s.id, dist,
+                s.effective_ranged_range_min, s.effective_melee_range,
+            )
+            if s.has_melee:
+                # 不该走到这里，但防御性：取消 stop 让它继续前进
+                s.stopped = False
+                return None
+            return AttackMode.RANGED_PENALIZED
+
+        # 情况4：超出所有射程 → 逻辑错误
+        logger.error(
+            "tick=%d %s#%d 无法攻击目标 %s#%d！dist=%.2f "
+            "ranged_range=%.1f melee_range=%.1f（状态异常，取消 stop）",
+            self._tick, s.name, s.id, target.name, target.id, dist,
+            s.effective_ranged_range, s.effective_melee_range,
+        )
+        s.stopped = False
         return None
 
     # ---- 伤害计算 ----
