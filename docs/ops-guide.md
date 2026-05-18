@@ -1,101 +1,121 @@
-# 运维手册
+# 运维手册（Agent 操作指南）
 
-> 通过 CodeBuddy 的 Lighthouse 集成管理 QQ 机器人
+## 固定参数
 
-## 服务器信息
+```
+Region:      ap-guangzhou
+InstanceId:  lhins-hwnz7rcz
+IP:          106.55.228.236
+项目路径:     /root/qqbot（符号链接，指向实际目录）
+Bot QQ:      3959381140
+NapCat WebUI: http://106.55.228.236:6099
+```
 
-| 项目 | 值 |
-|------|------|
-| 实例 ID | lhins-hwnz7rcz |
-| 地域 | ap-guangzhou |
-| 服务器 IP | 106.55.228.236 |
-| 项目路径 | `/root/QQBotForFun_20260512170951` |
-| Bot QQ 号 | 3959381140 |
-| NapCat WebUI | http://106.55.228.236:6099 |
-| OneBot Token | `qqbot_fun_token_2026` |
-| Searxng | 内网 `http://searxng:8080`（不对外暴露） |
+所有命令直接用 `cd /root/qqbot && ...`，不需要查地域或实例列表。
 
 ---
 
-## 一、机器人没反应时的排查流程
-
-依次执行：
-
-### 1. 检查容器状态
+## 操作决策树
 
 ```
-cd /root/QQBotForFun_20260511114733 && docker compose ps
+需要做什么？
+├─ 更新 Python 代码/数据 → §1 日常部署
+├─ 机器人没反应 → §2 排查
+├─ NapCat 掉线/需要扫码 → §3 重新登录
+├─ 改了 docker-compose.yml → §4 全流程部署（需扫码）
+└─ 查战斗日志 → §5 日志
 ```
-
-正常：4 个容器都 `Up`，postgres 为 `healthy`。
-
-### 2. 检查 NapCat 是否掉线
-
-```
-cd /root/QQBotForFun_20260511114733 && docker compose logs napcat 2>&1 | grep -i 'kicked\|offline\|失效' | tail -3
-```
-
-如果有 `KickedOffLine` 记录，说明 QQ 掉线了，需要重新登录（见下方）。
-
-### 3. 检查 Bot 和 NapCat 的 WebSocket 连接
-
-```
-cd /root/QQBotForFun_20260511114733 && docker compose logs bot 2>&1 | grep 'connected' | tail -1
-```
-
-如果最后连接时间是很久以前，说明 NapCat 掉线后没重连。
 
 ---
 
-## 二、NapCat 重新登录
+## §1 日常部署（最常用）
 
-QQ 新号容易被风控踢下线，恢复步骤：
+适用：只改了 src/ seeds/ scripts/ docs/ pyproject.toml，未改 docker-compose.yml。
 
-### 1. 重启 NapCat
+**步骤：**
 
-```
-cd /root/QQBotForFun_20260511114733 && docker compose restart napcat
-```
+1. 用 `deploy_project_preparation` 上传项目（会生成临时目录 `/root/QQBotForFun_<ts>`）
+2. 停 bot、复制文件、重建：
 
-### 2. 获取 WebUI Token
-
-```
-cd /root/QQBotForFun_20260511114733 && docker compose logs napcat 2>&1 | grep 'WebUi Token' | tail -1
-```
-
-### 3. 浏览器扫码
-
-打开 http://106.55.228.236:6099 ，输入 Token，扫码登录。
-
-### 4. 确认连接成功
-
-```
-cd /root/QQBotForFun_20260502112049 && docker compose logs bot --tail 5
+```bash
+cd /root/qqbot && docker compose stop bot && docker compose rm -f bot
+cp -r /root/QQBotForFun_<ts>/{src,seeds,scripts,docs,pyproject.toml} /root/qqbot/
+cd /root/qqbot && docker compose up -d --build bot
 ```
 
-应该看到 `Bot 3959381140 connected`。
+3. 确认启动：
+
+```bash
+cd /root/qqbot && docker compose logs bot --tail=5
+```
+
+应看到 `[bot] ready.` 和 `Uvicorn running`。
+
+**禁止事项：**
+- ❌ 不要在新目录里执行 `docker compose up`（会启新容器栈）
+- ❌ 不要 `docker compose down`（会杀 NapCat，需要重新扫码）
+- ❌ 不要重命名或删除 `/root/qqbot` 链接指向的实际目录
 
 ---
 
-## 三、更新代码后重新部署
+## §2 排查：机器人没反应
 
-本地改完代码后：
+**按顺序检查：**
 
-### 1. 上传项目
+```bash
+# 1. 容器状态（4个都应 Up，postgres=healthy）
+cd /root/qqbot && docker compose ps
 
-使用 Lighthouse 集成的 `deploy_project_preparation` 工具上传项目。
+# 2. Bot 日志（看有没有报错）
+cd /root/qqbot && docker compose logs bot --tail=30
 
-### 2. 配置新目录
+# 3. WebSocket 是否连接（应有 "Bot 3959381140 connected"）
+cd /root/qqbot && docker compose logs bot 2>&1 | grep 'connected' | tail -1
 
+# 4. NapCat 是否掉线
+cd /root/qqbot && docker compose logs napcat 2>&1 | grep -i 'kicked\|offline\|二维码' | tail -3
 ```
-# 复制 .env（替换 NEW_DIR 为实际新路径）
-cp /root/QQBotForFun_20260502112049/.env /root/NEW_DIR/.env
+
+**判定：**
+- 容器不在 → `docker compose up -d`
+- Bot 报错 → 看错误修代码
+- 无 connected 日志 / NapCat 有 kicked → 需要重新扫码（§3）
+
+---
+
+## §3 NapCat 重新登录
+
+```bash
+# 1. 重启 NapCat
+cd /root/qqbot && docker compose restart napcat
+
+# 2. 获取 WebUI Token
+cd /root/qqbot && docker compose logs napcat 2>&1 | grep 'WebUi Token' | tail -1
+
+# 3. 浏览器打开 http://106.55.228.236:6099，输入 Token，扫码
+
+# 4. 确认连接
+cd /root/qqbot && docker compose logs bot --tail=5
+# 应看到 "Bot 3959381140 connected"
 ```
 
-### 3. Dockerfile 镜像加速补丁
+---
 
-```
-cd /root/NEW_DIR && python3 << 'PYEOF'
+## §4 全流程部署（极少用）
+
+**仅当修改了 docker-compose.yml 时才需要。会重启 NapCat，需要重新扫码。**
+
+```bash
+# 1. 上传代码（deploy_project_preparation），得到新目录 /root/QQBotForFun_<ts>
+
+# 2. 停掉所有容器
+cd /root/qqbot && docker compose down
+
+# 3. 更新符号链接
+ln -sfn /root/QQBotForFun_<ts> /root/qqbot
+
+# 4. Dockerfile 镜像加速（如果新目录的 Dockerfile 还没 patch）
+cd /root/qqbot && python3 << 'PYEOF'
 with open('Dockerfile','r') as f: c=f.read()
 c=c.replace("RUN apt-get update","RUN sed -i 's@deb.debian.org@mirrors.cloud.tencent.com@g' /etc/apt/sources.list.d/debian.sources && apt-get update")
 c=c.replace('RUN pip install uv','RUN pip install -i https://mirrors.cloud.tencent.com/pypi/simple uv')
@@ -104,150 +124,33 @@ c=c.replace('COPY pyproject.toml ./','COPY pyproject.toml README.md ./')
 with open('Dockerfile','w') as f: f.write(c)
 print('Dockerfile patched')
 PYEOF
-```
 
-### 4. 切换部署
+# 5. 启动
+cd /root/qqbot && docker compose up -d
 
-```
-cd /root/OLD_DIR && docker compose down
-cd /root/NEW_DIR && docker compose up -d
-```
-
-### 4.5 数据库迁移（重要！）
-
-新版本如果包含新的数据模型（ORM 表），需要在 bot 启动后执行迁移：
-
-```bash
-# 方式 1：用 alembic（推荐，如果有 migration 文件）
-cd /root/NEW_DIR && docker compose exec -T bot alembic upgrade head
-
-# 方式 2：手动建表（如果还没生成 migration）
-# 查看 bot 日志是否有 "UndefinedTableError" 报错，根据对应的 models.py 手动建表：
-cd /root/NEW_DIR && docker compose exec -T postgres psql -U qqbot qqbot -c "CREATE TABLE IF NOT EXISTS <表名> (...);"
-# 建表后重启 bot：
-docker compose restart bot
-```
-
-**如何判断是否需要迁移：** 部署后检查 bot 日志，如果看到 `UndefinedTableError` 或 `relation "xxx" does not exist`，就需要建表。
-
-### 5. 写入 NapCat WebSocket 配置
-
-```
-cd /root/NEW_DIR && docker compose exec napcat sh -c 'cat > /app/napcat/config/onebot11_3959381140.json << EOF
-{"network":{"httpServers":[],"httpSseServers":[],"httpClients":[],"websocketServers":[],"websocketClients":[{"enable":true,"name":"qqbot","url":"ws://bot:8080/onebot/v11/ws","messagePostFormat":"array","reconnectInterval":3000,"token":"qqbot_fun_token_2026","heartInterval":30000}],"plugins":[]},"musicSignUrl":"","enableLocalFile2Url":false,"parseMultMsg":false,"imageDownloadProxy":"","timeout":{"baseTimeout":10000,"uploadSpeedKBps":256,"downloadSpeedKBps":256,"maxTimeout":1800000}}
-EOF'
-# ⚠️ 必须用 stop+rm+up 而不是 restart！
-# restart 只是 stop+start 同一个容器实例，如果该容器创建时端口被占用
-# （常见于 down+up 切换目录时），端口映射会永久丢失，导致 WebUI 打不开。
-docker compose stop napcat && docker compose rm -f napcat && docker compose up -d napcat
-```
-
-### 6. 去 WebUI 扫码登录
-
----
-
-## 四、仅更新 Bot 代码（推荐，不需要扫码）
-
-**绝大多数部署应该用这个方式**（只要没改 `docker-compose.yml`）：
-
-```
-cd /root/<新项目目录> && docker compose up -d --build bot
-```
-
-NapCat 不会受影响，**不需要重新扫码**。
-
-> ⚠️ 仅当修改了 `docker-compose.yml`（如新增/删除服务、改端口映射等）时，
-> 才需要用"三、更新代码后重新部署"中的 `docker compose down` + `docker compose up -d` 全流程。
-> 全流程会重启 NapCat，需要重新扫码。
-
----
-
-## 五、查看战斗日志
-
-斗蛐蛐每局对战会在 `logs/aoe3_battle/` 写入两个文件：
-
-| 文件 | 大小 | 用途 |
-|------|------|------|
-| `{ts}_{sid}.json` | ~5KB | **精简版**：阵容、结果、击杀链、每个士兵终态统计。可远程 `cat` |
-| `{ts}_{sid}.full.json` | ~300KB | **完整版**：含全部事件流（每次攻击/移动/AOE），需 `scp` 下来看 |
-
-保留最近 5 局（10 个文件）。
-
-### 查看最近对战列表
-
-```bash
-ls -lht logs/aoe3_battle/*.json | grep -v full | head -5
-```
-
-### 远程查看精简日志（推荐）
-
-```bash
-cat logs/aoe3_battle/<最新的不含full的.json>
-```
-
-精简日志包含：
-- 阵容（兵种/数量/费用）
-- 结果（胜方/时长/存活数）
-- **击杀链**（谁在几秒杀了谁，按时间排序）
-- **每个士兵终态**（存活/伤害/击杀数）
-- 事件类型统计（ATTACK/DEATH/AOE_SPLASH 各多少次）
-
-### 下载完整日志（本地分析）
-
-```bash
-scp root@106.55.228.236:/root/QQBotForFun_20260512170951/logs/aoe3_battle/*.full.json ./
-```
-
-### CodeBuddy 获取日志的标准方式
-
-直接用 Lighthouse execute_command（不需要先查地域/实例）：
-
-```
-Region: ap-guangzhou
-InstanceId: lhins-hwnz7rcz
-Command: cd /root/<项目路径> && cat logs/aoe3_battle/$(ls -t logs/aoe3_battle/*.json | grep -v full | head -1)
+# 6. 去 WebUI 扫码（同 §3 步骤 2~4）
 ```
 
 ---
 
-## 六、关键注意事项
+## §5 查战斗日志
 
-- **NapCat 和 Bot 是两个独立容器**，文件系统隔离。Bot 容器里的文件 NapCat 读不到（图片要用 base64 发送）。
-- **NapCat 每次重启都需要重新扫码**，且重启后 WebSocket 配置可能被重置为空，需要重新写入。
-- **新 QQ 号前几天容易被风控踢下线**，养号几天后会稳定。
-- **`docker compose up -d --build bot`** 只重建 Bot，不影响 NapCat/数据库，是最轻量的更新方式。
+```bash
+# 最近 5 局列表
+cd /root/qqbot && ls -t logs/aoe3_battle/*.json | grep -v full | head -5
+
+# 查看最新一局精简日志
+cd /root/qqbot && cat logs/aoe3_battle/$(ls -t logs/aoe3_battle/*.json | grep -v full | head -1)
+```
+
+精简日志包含：阵容、结果、击杀链、单位统计、MVP。
 
 ---
 
-## 七、数据卷规范（重要）
+## §6 关键规则
 
-docker-compose.yml 使用**固定名称的外部卷**（`external: true`），确保无论项目目录怎么变，数据永远在同一个卷里。
-
-### 卷名约定
-
-| 卷名 | 用途 |
-|------|------|
-| `qqbot_pg_data` | PostgreSQL 数据（用户金币、积分、对局记录等） |
-| `qqbot_redis_data` | Redis 缓存 |
-| `qqbot_napcat_data` | NapCat 登录态和配置 |
-
-### 首次部署（全新服务器）
-
-必须先手动创建卷：
-
-```bash
-docker volume create qqbot_pg_data
-docker volume create qqbot_redis_data
-docker volume create qqbot_napcat_data
-```
-
-之后再 `docker compose up -d`。
-
-### 换目录重新部署
-
-只要卷存在，数据就不会丢。直接在新目录 `docker compose up -d` 即可挂载同一份数据。
-
-### 禁止操作
-
-- ❌ 不要 `docker volume rm qqbot_pg_data`（除非你确认要清空所有数据）
-- ❌ 不要在 docker-compose.yml 里去掉 `external: true`（会导致 compose 自建带前缀的新卷）
+- NapCat 每次重启都需要重新扫码
+- `docker compose up -d --build bot` 只重建 Bot，不影响 NapCat
+- docker-compose.yml 中 `name: qqbot` 固定了项目名，与目录名无关
+- 数据卷使用 external volume（`qqbot_pg_data` 等），数据不会因目录变化丢失
+- Bot 容器里的文件 NapCat 读不到，图片用 base64 发送

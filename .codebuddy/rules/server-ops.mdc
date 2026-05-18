@@ -1,0 +1,63 @@
+---
+description: Rule for deploying and operating the QQBotForFun server. Load this rule when you need to deploy code, check server status, or troubleshoot the bot.
+alwaysApply: false
+enabled: true
+updatedAt: 2026-05-18T00:00:00.000Z
+provider: 
+---
+
+# QQBotForFun 服务器运维指令
+
+## 固定参数（直接使用，不需要查询）
+
+- Region: `ap-guangzhou`
+- InstanceId: `lhins-hwnz7rcz`
+- IP: `106.55.228.236`
+- 项目路径: `/root/qqbot`（符号链接）
+- Bot QQ: `3959381140`
+- NapCat WebUI: `http://106.55.228.236:6099`
+
+用 lighthouse `execute_command` 工具执行命令，参数固定为上述 Region + InstanceId。
+
+## 日常部署（只改了代码/数据，未改 docker-compose.yml）
+
+1. `deploy_project_preparation` 上传项目 → 得到 `/root/QQBotForFun_<ts>`
+2. 执行：
+```
+cd /root/qqbot && docker compose stop bot && docker compose rm -f bot && cp -r /root/QQBotForFun_<ts>/{src,seeds,scripts,docs,pyproject.toml} /root/qqbot/ && docker compose up -d --build bot
+```
+3. 确认：`cd /root/qqbot && docker compose logs bot --tail=5`（看到 `[bot] ready.`）
+
+**禁止：**
+- ❌ 在新临时目录里执行 docker compose（会启新容器栈，造成混乱）
+- ❌ docker compose down（杀 NapCat，需重新扫码）
+
+## 排查：机器人没反应
+
+```
+cd /root/qqbot && docker compose ps
+cd /root/qqbot && docker compose logs bot --tail=30
+cd /root/qqbot && docker compose logs bot 2>&1 | grep 'connected' | tail -1
+cd /root/qqbot && docker compose logs napcat 2>&1 | grep -i 'kicked\|offline\|二维码' | tail -3
+```
+
+- 无 connected / NapCat kicked → 需要扫码（见下方）
+- Bot 报错 → 修代码重新部署
+
+## NapCat 重新登录（需要用户扫码）
+
+```
+cd /root/qqbot && docker compose restart napcat
+cd /root/qqbot && docker compose logs napcat 2>&1 | grep 'WebUi Token' | tail -1
+```
+告知用户打开 http://106.55.228.236:6099 输入 Token 扫码。
+
+## 查战斗日志
+
+```
+cd /root/qqbot && cat logs/aoe3_battle/$(ls -t logs/aoe3_battle/*.json | grep -v full | head -1)
+```
+
+## 全流程部署（仅改了 docker-compose.yml 时）
+
+会重启 NapCat，需要重新扫码。详见 docs/ops-guide.md §4。
