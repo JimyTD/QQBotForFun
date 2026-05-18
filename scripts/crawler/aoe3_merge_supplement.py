@@ -227,6 +227,11 @@ def merge() -> dict:
 
     for u in units:
         uid = u["id"]
+
+        # ---- 清理旧嵌套 multipliers 字段（对所有兵种生效）----
+        # 避免 from_dict fallback 到旧数据导致二义性
+        u.pop("multipliers", None)
+
         supp = supp_by_id.get(uid)
         if not supp:
             stats["unmatched"] += 1
