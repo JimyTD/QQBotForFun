@@ -850,7 +850,9 @@ class BattleSimulator:
         target_types = {t.lower() for t in target.unit.type}
         mult = 1.0
         for m in multipliers:
-            if m.vs.lower() in target_types:
+            # strip 末尾 " *" 或 "*"（旧 wiki 数据残留格式）
+            vs_clean = m.vs.rstrip(" *").lower()
+            if vs_clean in target_types:
                 mult *= m.value
                 logger.debug(
                     "  倍率匹配: vs=%s value=%.2f（目标类型=%s）",

@@ -335,7 +335,7 @@ class AoE3BattleGame(GameBase):
         mode = ctx.state["mode"]
 
         # ── 发红方（图片 + 详情）──
-        red_text = format_side_panel(match.red, "red", mode)
+        red_text = format_side_panel(match.red, "red", mode, opponent=match.blue)
         red_msg = Message()
         # 多兵种时发多张 icon
         for slot in match.red.slots:
@@ -347,7 +347,7 @@ class AoE3BattleGame(GameBase):
         await session.broadcast(ctx.group_id, red_msg)
 
         # ── 发蓝方（图片 + 详情）──
-        blue_text = format_side_panel(match.blue, "blue", mode)
+        blue_text = format_side_panel(match.blue, "blue", mode, opponent=match.red)
         blue_msg = Message()
         for slot in match.blue.slots:
             icon_path = _UnitRepo.get().get_icon_path(slot.unit)

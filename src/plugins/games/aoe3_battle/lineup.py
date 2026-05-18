@@ -524,12 +524,61 @@ def _type_str_zh(u: Unit) -> str:
 
 
 
+def _find_counter_relations(
+    unit: Unit, opponent_lineup: "Lineup", *, threshold: float = 1.5
+) -> tuple[list[str], list[str]]:
+    """分析一个兵种与对方阵容的克制关系。
+
+    返回 (advantages, disadvantages):
+      advantages: 己方克制对方的描述列表，如 "→ 克制 火枪手(重步兵 x3)"
+      disadvantages: 己方被对方克制的描述列表，如 "← 被 散兵 克制(轻步兵 x2)"
+    """
+    from src.plugins.aoe3.i18n import t
+
+    advantages: list[str] = []
+    disadvantages: list[str] = []
+
+    my_type_set = set(unit.type)
+    my_mults = unit.multipliers_ranged + unit.multipliers_melee
+
+    for slot in opponent_lineup.slots:
+        opp = slot.unit
+        opp_type_set = set(opp.type)
+
+        # 己方克制对方：我的倍率 vs 匹配对方的 type
+        best_adv: tuple[str, float] | None = None
+        for m in my_mults:
+            # 去掉倍率 vs 后面的 * 号再匹配
+            vs_clean = m.vs.rstrip(" *")
+            if vs_clean in opp_type_set and m.value >= threshold:
+                if best_adv is None or m.value > best_adv[1]:
+                    best_adv = (vs_clean, m.value)
+        if best_adv:
+            vs_zh = t("type", best_adv[0])
+            advantages.append(f"克制 {opp.name}({vs_zh} x{best_adv[1]:g})")
+
+        # 对方克制己方：对方的倍率 vs 匹配我的 type
+        opp_mults = opp.multipliers_ranged + opp.multipliers_melee
+        best_dis: tuple[str, float] | None = None
+        for m in opp_mults:
+            vs_clean = m.vs.rstrip(" *")
+            if vs_clean in my_type_set and m.value >= threshold:
+                if best_dis is None or m.value > best_dis[1]:
+                    best_dis = (vs_clean, m.value)
+        if best_dis:
+            vs_zh = t("type", best_dis[0])
+            disadvantages.append(f"被 {opp.name} 克制({vs_zh} x{best_dis[1]:g})")
+
+    return advantages, disadvantages
+
+
 def format_side_panel(
-    lineup: Lineup, side: str, mode: str
+    lineup: Lineup, side: str, mode: str, opponent: "Lineup | None" = None
 ) -> str:
     """生成单方的详情面板文本（配合 icon 图片发送）。
 
     side: "red" | "blue"
+    opponent: 对方阵容（用于标注克制关系）
     """
     emoji = "🔴" if side == "red" else "🔵"
     label = "1号" if side == "red" else "2号"
@@ -544,6 +593,8 @@ def format_side_panel(
         lines.append(f"❤️{u.hp} 🦶{u.speed}")
         lines.append(f"⚔️ {_atk_summary(u)}")
         _append_extras(lines, u)
+        if opponent:
+            _append_counter_info(lines, u, opponent)
 
     elif not lineup.is_multi:
         # 单兵种押注模式：紧凑
@@ -554,6 +605,8 @@ def format_side_panel(
         lines.append(f"❤️{u.hp} 🦶{u.speed}")
         lines.append(f"⚔️ {_atk_summary(u)}")
         _append_extras(lines, u)
+        if opponent:
+            _append_counter_info(lines, u, opponent)
 
     else:
         # 多兵种押注模式：每个兵种一段
@@ -566,6 +619,8 @@ def format_side_panel(
             lines.append(f"  ❤️{u.hp} 🦶{u.speed}")
             lines.append(f"  ⚔️ {_atk_summary(u)}")
             _append_extras(lines, u, indent="  ")
+            if opponent:
+                _append_counter_info(lines, u, opponent, indent="  ")
 
     return "\n".join(lines)
 
@@ -589,6 +644,19 @@ def _append_extras(lines: list[str], u: Unit, indent: str = "") -> None:
         extras.append(f"💥AOE{u.aoe_radius}")
     if extras:
         lines.append(f"{indent}{' '.join(extras)}")
+
+
+def _append_counter_info(
+    lines: list[str], u: Unit, opponent: "Lineup", indent: str = ""
+) -> None:
+    """追加克制关系高亮行。"""
+    advantages, disadvantages = _find_counter_relations(u, opponent)
+    if advantages:
+        for adv in advantages:
+            lines.append(f"{indent}✅ {adv}")
+    if disadvantages:
+        for dis in disadvantages:
+            lines.append(f"{indent}⚠️ {dis}")
 
 
 def format_vs_banner(lineup: MatchLineup) -> str:
@@ -624,9 +692,9 @@ def format_vs_banner(lineup: MatchLineup) -> str:
 def format_matchup_panel(lineup: MatchLineup) -> str:
     """兼容旧接口：生成完整对阵面板纯文本（CLI 等场景使用）。"""
     parts = []
-    parts.append(format_side_panel(lineup.red, "red", lineup.mode))
+    parts.append(format_side_panel(lineup.red, "red", lineup.mode, opponent=lineup.blue))
     parts.append("")
-    parts.append(format_side_panel(lineup.blue, "blue", lineup.mode))
+    parts.append(format_side_panel(lineup.blue, "blue", lineup.mode, opponent=lineup.red))
     parts.append("")
     parts.append(format_vs_banner(lineup))
     return "\n".join(parts)

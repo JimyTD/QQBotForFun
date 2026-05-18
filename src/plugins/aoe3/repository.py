@@ -128,41 +128,6 @@ class UnitRepo:
 
     # ------ 高级查询 ------
 
-    def find_counters(
-        self, target_type: str, *, min_mult: float = 1.5
-    ) -> list[tuple[Unit, str, float]]:
-        """找出克制某类型的兵种。
-
-        返回 (unit, attack_type, multiplier_value) 列表，按倍率降序。
-        target_type 支持中文（通过 i18n 反查）和英文。
-        """
-        q = target_type.strip().lower()
-
-        # 利用 i18n 反向表：中文→英文
-        q_en = reverse_lookup("multiplier_vs", q)
-        if not q_en:
-            q_en = reverse_lookup("type", q)
-        if not q_en:
-            q_en = q  # fallback 原文
-
-        q_en_lower = q_en.lower()
-
-        results: list[tuple[Unit, str, float]] = []
-        for u in self._units:
-            for atk_type, mults in [
-                ("ranged", u.multipliers_ranged),
-                ("melee", u.multipliers_melee),
-                ("siege", u.multipliers_siege),
-            ]:
-                for m in mults:
-                    vs_lower = m.vs.lower()
-                    if q_en_lower in vs_lower or q in vs_lower:
-                        if m.value >= min_mult:
-                            results.append((u, atk_type, m.value))
-
-        results.sort(key=lambda x: x[2], reverse=True)
-        return results
-
     def list_by_civ(self, civ: str) -> list[Unit]:
         """按文明名查找（支持中文，通过 i18n 反查）。"""
         q = civ.strip().lower()

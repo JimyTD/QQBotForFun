@@ -393,31 +393,31 @@
     "damage_type_ranged": "Siege",
     "multipliers_ranged": [
       {
-        "vs": "AbstractHeavyInfantry",
+        "vs": "Heavy infantry",
         "value": 1.75
       },
       {
-        "vs": "AbstractLightCavalry",
+        "vs": "Light ranged cavalry",
         "value": 2.25
       },
       {
-        "vs": "AbstractCavalry",
+        "vs": "Cavalry",
         "value": 0.4
       },
       {
-        "vs": "AbstractRangedShockInfantry",
+        "vs": "Ranged shock infantry",
         "value": 2.5
       },
       {
-        "vs": "AbstractLightInfantry",
+        "vs": "Light infantry",
         "value": 0.4
       },
       {
-        "vs": "AbstractArtillery",
+        "vs": "Artillery",
         "value": 0.5
       },
       {
-        "vs": "AbstractVillager",
+        "vs": "Villager",
         "value": 0.3
       }
     ],
@@ -427,15 +427,15 @@
     "damage_type_melee": "Hand",
     "multipliers_melee": [
       {
-        "vs": "AbstractHeavyInfantry",
+        "vs": "Heavy infantry",
         "value": 1.75
       },
       {
-        "vs": "AbstractHeavyCavalry",
+        "vs": "Heavy cavalry",
         "value": 0.5
       },
       {
-        "vs": "AbstractCoyoteMan",
+        "vs": "Shock infantry",
         "value": 0.5
       }
     ]
@@ -827,23 +827,23 @@
     "damage_type_ranged": "Ranged",
     "multipliers_ranged": [
       {
-        "vs": "AbstractHeavyInfantry",
+        "vs": "Heavy infantry",
         "value": 2
       },
       {
-        "vs": "AbstractLightCavalry",
+        "vs": "Light ranged cavalry",
         "value": 2.5
       },
       {
-        "vs": "AbstractRangedShockInfantry",
+        "vs": "Ranged shock infantry",
         "value": 2.5
       },
       {
-        "vs": "AbstractCavalry",
+        "vs": "Cavalry",
         "value": 0.6
       },
       {
-        "vs": "AbstractLightInfantry",
+        "vs": "Light infantry",
         "value": 0.6
       }
     ],
@@ -853,23 +853,23 @@
     "damage_type_melee": "Hand",
     "multipliers_melee": [
       {
-        "vs": "AbstractHeavyInfantry",
+        "vs": "Heavy infantry",
         "value": 2
       },
       {
-        "vs": "AbstractLightCavalry",
+        "vs": "Light ranged cavalry",
         "value": 2
       },
       {
-        "vs": "AbstractRangedShockInfantry",
+        "vs": "Ranged shock infantry",
         "value": 2
       },
       {
-        "vs": "AbstractCavalry",
+        "vs": "Cavalry",
         "value": 0.75
       },
       {
-        "vs": "AbstractLightInfantry",
+        "vs": "Light infantry",
         "value": 0.75
       }
     ]
@@ -1016,11 +1016,11 @@
     "damage_type_melee": "Hand",
     "multipliers_melee": [
       {
-        "vs": "AbstractCavalry",
+        "vs": "Cavalry",
         "value": 5
       },
       {
-        "vs": "AbstractLightInfantry",
+        "vs": "Light infantry",
         "value": 3.5
       }
     ]
@@ -1217,11 +1217,11 @@
     "damage_type_melee": "Hand",
     "multipliers_melee": [
       {
-        "vs": "AbstractCavalry",
+        "vs": "Cavalry",
         "value": 3
       },
       {
-        "vs": "AbstractLightInfantry",
+        "vs": "Light infantry",
         "value": 2.2
       }
     ],
@@ -1395,7 +1395,7 @@
     "damage_type_ranged": "Ranged",
     "multipliers_ranged": [
       {
-        "vs": "AbstractSiegeTrooper",
+        "vs": "Siege trooper",
         "value": 2
       }
     ],
@@ -1405,7 +1405,7 @@
     "damage_type_melee": "Hand",
     "multipliers_melee": [
       {
-        "vs": "AbstractSiegeTrooper",
+        "vs": "Siege trooper",
         "value": 2
       }
     ]
@@ -1530,11 +1530,11 @@
     "aoe_radius_melee": 1,
     "multipliers_melee": [
       {
-        "vs": "AbstractCavalry",
+        "vs": "Cavalry",
         "value": 5
       },
       {
-        "vs": "AbstractLightInfantry",
+        "vs": "Light infantry",
         "value": 3.4
       }
     ],
@@ -1732,19 +1732,19 @@
     "damage_type_ranged": "Ranged",
     "multipliers_ranged": [
       {
-        "vs": "AbstractHeavyCavalry",
+        "vs": "Heavy cavalry",
         "value": 3
       },
       {
-        "vs": "AbstractVillager",
+        "vs": "Villager",
         "value": 0.5
       },
       {
-        "vs": "AbstractArtillery",
+        "vs": "Artillery",
         "value": 1.5
       },
       {
-        "vs": "AbstractCoyoteMan",
+        "vs": "Shock infantry",
         "value": 2.25
       }
     ],
@@ -1754,15 +1754,15 @@
     "damage_type_melee": "Hand",
     "multipliers_melee": [
       {
-        "vs": "AbstractHeavyCavalry",
+        "vs": "Heavy cavalry",
         "value": 3
       },
       {
-        "vs": "AbstractArtillery",
+        "vs": "Artillery",
         "value": 1.5
       },
       {
-        "vs": "AbstractCoyoteMan",
+        "vs": "Shock infantry",
         "value": 2.25
       }
     ]
@@ -2004,11 +2004,11 @@
     "damage_type_melee": "Hand",
     "multipliers_melee": [
       {
-        "vs": "AbstractCavalry",
+        "vs": "Cavalry",
         "value": 3
       },
       {
-        "vs": "AbstractLightInfantry",
+        "vs": "Light infantry",
         "value": 2.25
       }
     ],
@@ -2395,23 +2395,23 @@
     "damage_type_ranged": "Ranged",
     "multipliers_ranged": [
       {
-        "vs": "AbstractHeavyInfantry",
+        "vs": "Heavy infantry",
         "value": 2
       },
       {
-        "vs": "AbstractLightCavalry",
+        "vs": "Light ranged cavalry",
         "value": 2.5
       },
       {
-        "vs": "AbstractRangedShockInfantry",
+        "vs": "Ranged shock infantry",
         "value": 2.5
       },
       {
-        "vs": "AbstractCavalry",
+        "vs": "Cavalry",
         "value": 0.6
       },
       {
-        "vs": "AbstractLightInfantry",
+        "vs": "Light infantry",
         "value": 0.6
       }
     ],
@@ -2421,23 +2421,23 @@
     "damage_type_melee": "Hand",
     "multipliers_melee": [
       {
-        "vs": "AbstractLightCavalry",
+        "vs": "Light ranged cavalry",
         "value": 2
       },
       {
-        "vs": "AbstractRangedShockInfantry",
+        "vs": "Ranged shock infantry",
         "value": 2
       },
       {
-        "vs": "AbstractHeavyInfantry",
+        "vs": "Heavy infantry",
         "value": 2
       },
       {
-        "vs": "AbstractCavalry",
+        "vs": "Cavalry",
         "value": 0.75
       },
       {
-        "vs": "AbstractLightInfantry",
+        "vs": "Light infantry",
         "value": 0.75
       }
     ]
@@ -2675,15 +2675,15 @@
     "damage_type_ranged": "Ranged",
     "multipliers_ranged": [
       {
-        "vs": "AbstractArtillery",
+        "vs": "Artillery",
         "value": 5.25
       },
       {
-        "vs": "AbstractCavalry",
+        "vs": "Cavalry",
         "value": 0.75
       },
       {
-        "vs": "AbstractLightInfantry",
+        "vs": "Light infantry",
         "value": 0.75
       }
     ],
@@ -2953,11 +2953,11 @@
     "aoe_radius_ranged": 3,
     "multipliers_ranged": [
       {
-        "vs": "AbstractLightInfantry",
+        "vs": "Light infantry",
         "value": 0.4
       },
       {
-        "vs": "AbstractCavalry",
+        "vs": "Cavalry",
         "value": 0.4
       }
     ],
@@ -3162,11 +3162,11 @@
     "damage_type_melee": "Hand",
     "multipliers_melee": [
       {
-        "vs": "AbstractCavalry",
+        "vs": "Cavalry",
         "value": 3.5
       },
       {
-        "vs": "AbstractLightInfantry",
+        "vs": "Light infantry",
         "value": 2.625
       }
     ]
@@ -3349,11 +3349,11 @@
     "damage_type_ranged": "Ranged",
     "multipliers_ranged": [
       {
-        "vs": "AbstractCavalry",
+        "vs": "Cavalry",
         "value": 1.5
       },
       {
-        "vs": "AbstractLightInfantry",
+        "vs": "Light infantry",
         "value": 1.3
       }
     ],
@@ -3425,7 +3425,7 @@
     "aoe_radius_ranged": 1,
     "multipliers_ranged": [
       {
-        "vs": "AbstractArtillery",
+        "vs": "Artillery",
         "value": 0.5
       }
     ],
@@ -3580,7 +3580,7 @@
     "damage_type_melee": "Hand",
     "multipliers_melee": [
       {
-        "vs": "AbstractLightCavalry",
+        "vs": "Light ranged cavalry",
         "value": 0.75
       }
     ]
@@ -3738,11 +3738,11 @@
     "damage_type_ranged": "Ranged",
     "multipliers_ranged": [
       {
-        "vs": "AbstractLightCavalry",
+        "vs": "Light ranged cavalry",
         "value": 3.5
       },
       {
-        "vs": "AbstractRangedShockInfantry",
+        "vs": "Ranged shock infantry",
         "value": 3.5
       }
     ],
@@ -3752,11 +3752,11 @@
     "damage_type_melee": "Hand",
     "multipliers_melee": [
       {
-        "vs": "AbstractCavalry",
+        "vs": "Cavalry",
         "value": 4
       },
       {
-        "vs": "AbstractLightInfantry",
+        "vs": "Light infantry",
         "value": 4
       }
     ]
@@ -4045,15 +4045,15 @@
     "damage_type_ranged": "Ranged",
     "multipliers_ranged": [
       {
-        "vs": "AbstractHeavyCavalry",
+        "vs": "Heavy cavalry",
         "value": 3
       },
       {
-        "vs": "AbstractCoyoteMan",
+        "vs": "Shock infantry",
         "value": 2
       },
       {
-        "vs": "AbstractVillager",
+        "vs": "Villager",
         "value": 0.5
       }
     ],
@@ -4063,11 +4063,11 @@
     "damage_type_melee": "Hand",
     "multipliers_melee": [
       {
-        "vs": "AbstractHeavyCavalry",
+        "vs": "Heavy cavalry",
         "value": 3
       },
       {
-        "vs": "AbstractCoyoteMan",
+        "vs": "Shock infantry",
         "value": 2
       }
     ]
@@ -4238,15 +4238,15 @@
     "damage_type_melee": "Hand",
     "multipliers_melee": [
       {
-        "vs": "AbstractCavalry",
+        "vs": "Cavalry",
         "value": 2
       },
       {
-        "vs": "AbstractLightInfantry",
+        "vs": "Light infantry",
         "value": 1.6
       },
       {
-        "vs": "AbstractHeavyInfantry",
+        "vs": "Heavy infantry",
         "value": 3
       }
     ]
@@ -4561,23 +4561,23 @@
     "damage_type_ranged": "Ranged",
     "multipliers_ranged": [
       {
-        "vs": "AbstractHeavyInfantry",
+        "vs": "Heavy infantry",
         "value": 2
       },
       {
-        "vs": "AbstractLightCavalry",
+        "vs": "Light ranged cavalry",
         "value": 2.5
       },
       {
-        "vs": "AbstractRangedShockInfantry",
+        "vs": "Ranged shock infantry",
         "value": 2.5
       },
       {
-        "vs": "AbstractCavalry",
+        "vs": "Cavalry",
         "value": 0.6
       },
       {
-        "vs": "AbstractLightInfantry",
+        "vs": "Light infantry",
         "value": 0.6
       }
     ],
@@ -4587,23 +4587,23 @@
     "damage_type_melee": "Hand",
     "multipliers_melee": [
       {
-        "vs": "AbstractHeavyInfantry",
+        "vs": "Heavy infantry",
         "value": 2
       },
       {
-        "vs": "AbstractRangedShockInfantry",
+        "vs": "Ranged shock infantry",
         "value": 2
       },
       {
-        "vs": "AbstractLightCavalry",
+        "vs": "Light ranged cavalry",
         "value": 2
       },
       {
-        "vs": "AbstractLightInfantry",
+        "vs": "Light infantry",
         "value": 0.75
       },
       {
-        "vs": "AbstractCavalry",
+        "vs": "Cavalry",
         "value": 0.75
       }
     ]
@@ -4780,11 +4780,11 @@
     "damage_type_melee": "Hand",
     "multipliers_melee": [
       {
-        "vs": "AbstractCavalry",
+        "vs": "Cavalry",
         "value": 3
       },
       {
-        "vs": "AbstractLightInfantry",
+        "vs": "Light infantry",
         "value": 2.25
       }
     ]
@@ -4999,11 +4999,11 @@
     "damage_type_melee": "Hand",
     "multipliers_melee": [
       {
-        "vs": "AbstractCavalry",
+        "vs": "Cavalry",
         "value": 2
       },
       {
-        "vs": "AbstractLightInfantry",
+        "vs": "Light infantry",
         "value": 1.5
       },
       {
@@ -5011,7 +5011,7 @@
         "value": 3
       },
       {
-        "vs": "AbstractVillager",
+        "vs": "Villager",
         "value": 2
       }
     ]
@@ -5166,7 +5166,7 @@
     "damage_type_ranged": "Siege",
     "multipliers_ranged": [
       {
-        "vs": "AbstractArtillery",
+        "vs": "Artillery",
         "value": 0.5
       }
     ]
@@ -5322,7 +5322,7 @@
     "aoe_radius_ranged": 1,
     "multipliers_ranged": [
       {
-        "vs": "AbstractArtillery",
+        "vs": "Artillery",
         "value": 0.34
       }
     ],
@@ -5482,19 +5482,19 @@
     "damage_type_ranged": "Ranged",
     "multipliers_ranged": [
       {
-        "vs": "AbstractVillager",
+        "vs": "Villager",
         "value": 0.5
       },
       {
-        "vs": "AbstractHeavyCavalry",
+        "vs": "Heavy cavalry",
         "value": 3
       },
       {
-        "vs": "AbstractArtillery",
+        "vs": "Artillery",
         "value": 2
       },
       {
-        "vs": "AbstractCoyoteMan",
+        "vs": "Shock infantry",
         "value": 1.75
       }
     ]
@@ -5888,23 +5888,23 @@
     "damage_type_ranged": "Ranged",
     "multipliers_ranged": [
       {
-        "vs": "AbstractHeavyInfantry",
+        "vs": "Heavy infantry",
         "value": 2
       },
       {
-        "vs": "AbstractLightCavalry",
+        "vs": "Light ranged cavalry",
         "value": 2.5
       },
       {
-        "vs": "AbstractRangedShockInfantry",
+        "vs": "Ranged shock infantry",
         "value": 2.5
       },
       {
-        "vs": "AbstractCavalry",
+        "vs": "Cavalry",
         "value": 0.6
       },
       {
-        "vs": "AbstractLightInfantry",
+        "vs": "Light infantry",
         "value": 0.6
       }
     ],
@@ -5914,23 +5914,23 @@
     "damage_type_melee": "Hand",
     "multipliers_melee": [
       {
-        "vs": "AbstractHeavyInfantry",
+        "vs": "Heavy infantry",
         "value": 2
       },
       {
-        "vs": "AbstractLightCavalry",
+        "vs": "Light ranged cavalry",
         "value": 2
       },
       {
-        "vs": "AbstractRangedShockInfantry",
+        "vs": "Ranged shock infantry",
         "value": 2
       },
       {
-        "vs": "AbstractCavalry",
+        "vs": "Cavalry",
         "value": 0.75
       },
       {
-        "vs": "AbstractLightInfantry",
+        "vs": "Light infantry",
         "value": 0.75
       }
     ]
@@ -6183,23 +6183,23 @@
     "damage_type_melee": "Hand",
     "multipliers_melee": [
       {
-        "vs": "AbstractCavalry",
+        "vs": "Cavalry",
         "value": 2
       },
       {
-        "vs": "AbstractLightInfantry",
+        "vs": "Light infantry",
         "value": 1.6
       },
       {
-        "vs": "AbstractArtillery",
+        "vs": "Artillery",
         "value": 1.5
       },
       {
-        "vs": "AbstractSkirmisher",
+        "vs": "Light infantry",
         "value": 0.5
       },
       {
-        "vs": "AbstractVillager",
+        "vs": "Villager",
         "value": 0.75
       }
     ]
@@ -6351,11 +6351,11 @@
     "damage_type_melee": "Hand",
     "multipliers_melee": [
       {
-        "vs": "AbstractCavalry",
+        "vs": "Cavalry",
         "value": 5
       },
       {
-        "vs": "AbstractLightInfantry",
+        "vs": "Light infantry",
         "value": 3.5
       }
     ]
@@ -6513,7 +6513,7 @@
     "damage_type_melee": "Hand",
     "multipliers_melee": [
       {
-        "vs": "AbstractVillager",
+        "vs": "Villager",
         "value": 0.25
       }
     ]
@@ -7024,27 +7024,27 @@
     "damage_type_ranged": "Ranged",
     "multipliers_ranged": [
       {
-        "vs": "AbstractHeavyInfantry",
+        "vs": "Heavy infantry",
         "value": 2
       },
       {
-        "vs": "AbstractLightCavalry",
+        "vs": "Light ranged cavalry",
         "value": 2.5
       },
       {
-        "vs": "AbstractRangedShockInfantry",
+        "vs": "Ranged shock infantry",
         "value": 2.5
       },
       {
-        "vs": "AbstractCavalry",
+        "vs": "Cavalry",
         "value": 0.6
       },
       {
-        "vs": "AbstractLightInfantry",
+        "vs": "Light infantry",
         "value": 0.6
       },
       {
-        "vs": "AbstractArtillery",
+        "vs": "Artillery",
         "value": 0.75
       }
     ],
@@ -7054,27 +7054,27 @@
     "damage_type_melee": "Hand",
     "multipliers_melee": [
       {
-        "vs": "AbstractHeavyInfantry",
+        "vs": "Heavy infantry",
         "value": 2
       },
       {
-        "vs": "AbstractLightCavalry",
+        "vs": "Light ranged cavalry",
         "value": 2.5
       },
       {
-        "vs": "AbstractRangedShockInfantry",
+        "vs": "Ranged shock infantry",
         "value": 2.5
       },
       {
-        "vs": "AbstractCavalry",
+        "vs": "Cavalry",
         "value": 0.6
       },
       {
-        "vs": "AbstractLightInfantry",
+        "vs": "Light infantry",
         "value": 0.6
       },
       {
-        "vs": "AbstractArtillery",
+        "vs": "Artillery",
         "value": 0.75
       }
     ]
@@ -7270,11 +7270,11 @@
     "damage_type_melee": "Hand",
     "multipliers_melee": [
       {
-        "vs": "AbstractCavalry",
+        "vs": "Cavalry",
         "value": 3
       },
       {
-        "vs": "AbstractLightInfantry",
+        "vs": "Light infantry",
         "value": 2.25
       }
     ]
@@ -7471,19 +7471,19 @@
     "damage_type_ranged": "Ranged",
     "multipliers_ranged": [
       {
-        "vs": "AbstractHeavyCavalry",
+        "vs": "Heavy cavalry",
         "value": 2.5
       },
       {
-        "vs": "AbstractVillager",
+        "vs": "Villager",
         "value": 0.5
       },
       {
-        "vs": "AbstractArtillery",
+        "vs": "Artillery",
         "value": 2
       },
       {
-        "vs": "AbstractCoyoteMan",
+        "vs": "Shock infantry",
         "value": 2
       }
     ],
@@ -7493,15 +7493,15 @@
     "damage_type_melee": "Hand",
     "multipliers_melee": [
       {
-        "vs": "AbstractHeavyCavalry",
+        "vs": "Heavy cavalry",
         "value": 2.5
       },
       {
-        "vs": "AbstractArtillery",
+        "vs": "Artillery",
         "value": 2
       },
       {
-        "vs": "AbstractCoyoteMan",
+        "vs": "Shock infantry",
         "value": 2
       }
     ]
@@ -8019,31 +8019,31 @@
     "aoe_radius_ranged": 2,
     "multipliers_ranged": [
       {
-        "vs": "AbstractCoyoteMan",
+        "vs": "Shock infantry",
         "value": 1.6
       },
       {
-        "vs": "AbstractHeavyCavalry",
+        "vs": "Heavy cavalry",
         "value": 2
       },
       {
-        "vs": "AbstractLightCavalry",
+        "vs": "Light ranged cavalry",
         "value": 1.25
       },
       {
-        "vs": "AbstractInfantry",
+        "vs": "Infantry",
         "value": 0.5
       },
       {
-        "vs": "AbstractRangedShockInfantry",
+        "vs": "Ranged shock infantry",
         "value": 1.25
       },
       {
-        "vs": "xpRifleRider",
+        "vs": "xp Rifle Rider",
         "value": 0.8
       },
       {
-        "vs": "deREVGranadero",
+        "vs": "de REVGranadero",
         "value": 0.8
       }
     ],
@@ -8053,31 +8053,31 @@
     "damage_type_melee": "Hand",
     "multipliers_melee": [
       {
-        "vs": "AbstractCoyoteMan",
+        "vs": "Shock infantry",
         "value": 1.6
       },
       {
-        "vs": "AbstractHeavyCavalry",
+        "vs": "Heavy cavalry",
         "value": 2
       },
       {
-        "vs": "AbstractLightCavalry",
+        "vs": "Light ranged cavalry",
         "value": 1.25
       },
       {
-        "vs": "AbstractInfantry",
+        "vs": "Infantry",
         "value": 0.5
       },
       {
-        "vs": "AbstractRangedShockInfantry",
+        "vs": "Ranged shock infantry",
         "value": 1.25
       },
       {
-        "vs": "xpRifleRider",
+        "vs": "xp Rifle Rider",
         "value": 0.8
       },
       {
-        "vs": "deREVGranadero",
+        "vs": "de REVGranadero",
         "value": 0.8
       }
     ],
@@ -8318,11 +8318,11 @@
     "damage_type_melee": "Hand",
     "multipliers_melee": [
       {
-        "vs": "AbstractInfantry",
+        "vs": "Infantry",
         "value": 1.5
       },
       {
-        "vs": "AbstractHeavyInfantry",
+        "vs": "Heavy infantry",
         "value": 0.667
       }
     ]
@@ -8510,19 +8510,19 @@
     "damage_type_ranged": "Ranged",
     "multipliers_ranged": [
       {
-        "vs": "AbstractHeavyCavalry",
+        "vs": "Heavy cavalry",
         "value": 2.5
       },
       {
-        "vs": "AbstractCoyoteMan",
+        "vs": "Shock infantry",
         "value": 1.5
       },
       {
-        "vs": "AbstractVillager",
+        "vs": "Villager",
         "value": 0.5
       },
       {
-        "vs": "AbstractArtillery",
+        "vs": "Artillery",
         "value": 1.5
       }
     ]
@@ -8645,7 +8645,7 @@
     "damage_type_melee": "Hand",
     "multipliers_melee": [
       {
-        "vs": "AbstractArtillery",
+        "vs": "Artillery",
         "value": 1.25
       }
     ]
@@ -8782,7 +8782,7 @@
         "value": 3
       },
       {
-        "vs": "AbstractVillager",
+        "vs": "Villager",
         "value": 0.25
       },
       {
@@ -8964,15 +8964,15 @@
     "damage_type_melee": "Hand",
     "multipliers_melee": [
       {
-        "vs": "AbstractVillager",
+        "vs": "Villager",
         "value": 2
       },
       {
-        "vs": "AbstractArtillery",
+        "vs": "Artillery",
         "value": 2
       },
       {
-        "vs": "AbstractSiegeTrooper",
+        "vs": "Siege trooper",
         "value": 2
       }
     ]
@@ -9176,19 +9176,19 @@
     "aoe_radius_ranged": 2,
     "multipliers_ranged": [
       {
-        "vs": "AbstractCavalry",
+        "vs": "Cavalry",
         "value": 2.5
       },
       {
-        "vs": "AbstractLightInfantry",
+        "vs": "Light infantry",
         "value": 1.9
       },
       {
-        "vs": "AbstractInfantry",
+        "vs": "Infantry",
         "value": 0.67
       },
       {
-        "vs": "AbstractVillager",
+        "vs": "Villager",
         "value": 0.34
       }
     ],
@@ -9307,7 +9307,7 @@
     "aoe_radius_ranged": 1,
     "multipliers_ranged": [
       {
-        "vs": "AbstractArtillery",
+        "vs": "Artillery",
         "value": 0.5
       }
     ],
@@ -9724,31 +9724,31 @@
     "damage_type_ranged": "Siege",
     "multipliers_ranged": [
       {
-        "vs": "AbstractHeavyInfantry",
+        "vs": "Heavy infantry",
         "value": 1.5
       },
       {
-        "vs": "AbstractLightCavalry",
+        "vs": "Light ranged cavalry",
         "value": 2.5
       },
       {
-        "vs": "AbstractCavalry",
+        "vs": "Cavalry",
         "value": 0.4
       },
       {
-        "vs": "AbstractRangedShockInfantry",
+        "vs": "Ranged shock infantry",
         "value": 2.5
       },
       {
-        "vs": "AbstractLightInfantry",
+        "vs": "Light infantry",
         "value": 0.4
       },
       {
-        "vs": "AbstractVillager",
+        "vs": "Villager",
         "value": 0.5
       },
       {
-        "vs": "AbstractArtillery",
+        "vs": "Artillery",
         "value": 0.5
       },
       {
@@ -9762,15 +9762,15 @@
     "damage_type_melee": "Hand",
     "multipliers_melee": [
       {
-        "vs": "AbstractHeavyInfantry",
+        "vs": "Heavy infantry",
         "value": 1.5
       },
       {
-        "vs": "AbstractHeavyCavalry",
+        "vs": "Heavy cavalry",
         "value": 0.5
       },
       {
-        "vs": "AbstractCoyoteMan",
+        "vs": "Shock infantry",
         "value": 0.5
       }
     ]
@@ -9950,19 +9950,19 @@
     "aoe_radius_ranged": 4,
     "multipliers_ranged": [
       {
-        "vs": "AbstractArtillery",
+        "vs": "Artillery",
         "value": 0.75
       },
       {
-        "vs": "AbstractCavalry",
+        "vs": "Cavalry",
         "value": 0.4
       },
       {
-        "vs": "AbstractLightInfantry",
+        "vs": "Light infantry",
         "value": 0.4
       },
       {
-        "vs": "AbstractVillager",
+        "vs": "Villager",
         "value": 0.4
       }
     ],
@@ -10104,7 +10104,7 @@
     "aoe_radius_ranged": 1,
     "multipliers_ranged": [
       {
-        "vs": "AbstractArtillery",
+        "vs": "Artillery",
         "value": 0.5
       }
     ],
@@ -10299,19 +10299,19 @@
     "damage_type_ranged": "Ranged",
     "multipliers_ranged": [
       {
-        "vs": "AbstractHeavyCavalry",
+        "vs": "Heavy cavalry",
         "value": 3
       },
       {
-        "vs": "AbstractVillager",
+        "vs": "Villager",
         "value": 0.5
       },
       {
-        "vs": "AbstractArtillery",
+        "vs": "Artillery",
         "value": 2
       },
       {
-        "vs": "AbstractCoyoteMan",
+        "vs": "Shock infantry",
         "value": 2.25
       }
     ],
@@ -10321,15 +10321,15 @@
     "damage_type_melee": "Hand",
     "multipliers_melee": [
       {
-        "vs": "AbstractHeavyCavalry",
+        "vs": "Heavy cavalry",
         "value": 3
       },
       {
-        "vs": "AbstractArtillery",
+        "vs": "Artillery",
         "value": 2
       },
       {
-        "vs": "AbstractCoyoteMan",
+        "vs": "Shock infantry",
         "value": 2.25
       }
     ]
@@ -10475,15 +10475,15 @@
     "damage_type_ranged": "Ranged",
     "multipliers_ranged": [
       {
-        "vs": "AbstractInfantry",
+        "vs": "Infantry",
         "value": 1.5
       },
       {
-        "vs": "AbstractHeavyCavalry",
+        "vs": "Heavy cavalry",
         "value": 0.6
       },
       {
-        "vs": "AbstractCoyoteMan",
+        "vs": "Shock infantry",
         "value": 0.6
       }
     ],
@@ -10493,15 +10493,15 @@
     "damage_type_melee": "Hand",
     "multipliers_melee": [
       {
-        "vs": "AbstractInfantry",
+        "vs": "Infantry",
         "value": 1.5
       },
       {
-        "vs": "AbstractCoyoteMan",
+        "vs": "Shock infantry",
         "value": 0.75
       },
       {
-        "vs": "AbstractHeavyCavalry",
+        "vs": "Heavy cavalry",
         "value": 0.75
       }
     ]
@@ -10735,11 +10735,11 @@
     "damage_type_ranged": "Ranged",
     "multipliers_ranged": [
       {
-        "vs": "AbstractHeavyCavalry",
+        "vs": "Heavy cavalry",
         "value": 1.5
       },
       {
-        "vs": "AbstractCoyoteMan",
+        "vs": "Shock infantry",
         "value": 1.3
       }
     ],
@@ -10749,7 +10749,7 @@
     "damage_type_melee": "Hand",
     "multipliers_melee": [
       {
-        "vs": "AbstractSkirmisher",
+        "vs": "Light infantry",
         "value": 0.8
       }
     ]
@@ -11147,23 +11147,23 @@
     "damage_type_ranged": "Ranged",
     "multipliers_ranged": [
       {
-        "vs": "AbstractHeavyInfantry",
+        "vs": "Heavy infantry",
         "value": 2
       },
       {
-        "vs": "AbstractLightCavalry",
+        "vs": "Light ranged cavalry",
         "value": 2.5
       },
       {
-        "vs": "AbstractRangedShockInfantry",
+        "vs": "Ranged shock infantry",
         "value": 2.5
       },
       {
-        "vs": "AbstractCavalry",
+        "vs": "Cavalry",
         "value": 0.6
       },
       {
-        "vs": "AbstractLightInfantry",
+        "vs": "Light infantry",
         "value": 0.6
       }
     ],
@@ -11173,23 +11173,23 @@
     "damage_type_melee": "Hand",
     "multipliers_melee": [
       {
-        "vs": "AbstractHeavyInfantry",
+        "vs": "Heavy infantry",
         "value": 2
       },
       {
-        "vs": "AbstractLightCavalry",
+        "vs": "Light ranged cavalry",
         "value": 2
       },
       {
-        "vs": "AbstractRangedShockInfantry",
+        "vs": "Ranged shock infantry",
         "value": 2
       },
       {
-        "vs": "AbstractCavalry",
+        "vs": "Cavalry",
         "value": 0.75
       },
       {
-        "vs": "AbstractLightInfantry",
+        "vs": "Light infantry",
         "value": 0.75
       }
     ]
@@ -11381,19 +11381,19 @@
     "damage_type_ranged": "Ranged",
     "multipliers_ranged": [
       {
-        "vs": "AbstractVillager",
+        "vs": "Villager",
         "value": 0.5
       },
       {
-        "vs": "AbstractHeavyCavalry",
+        "vs": "Heavy cavalry",
         "value": 3
       },
       {
-        "vs": "AbstractArtillery",
+        "vs": "Artillery",
         "value": 2
       },
       {
-        "vs": "AbstractCoyoteMan",
+        "vs": "Shock infantry",
         "value": 2.25
       }
     ]
@@ -11837,23 +11837,23 @@
     "damage_type_ranged": "Ranged",
     "multipliers_ranged": [
       {
-        "vs": "AbstractHeavyInfantry",
+        "vs": "Heavy infantry",
         "value": 1.5
       },
       {
-        "vs": "AbstractLightCavalry",
+        "vs": "Light ranged cavalry",
         "value": 2.5
       },
       {
-        "vs": "AbstractRangedShockInfantry",
+        "vs": "Ranged shock infantry",
         "value": 2.5
       },
       {
-        "vs": "AbstractCavalry",
+        "vs": "Cavalry",
         "value": 0.6
       },
       {
-        "vs": "AbstractLightInfantry",
+        "vs": "Light infantry",
         "value": 0.6
       }
     ],
@@ -11863,23 +11863,23 @@
     "damage_type_melee": "Hand",
     "multipliers_melee": [
       {
-        "vs": "AbstractHeavyInfantry",
+        "vs": "Heavy infantry",
         "value": 1.5
       },
       {
-        "vs": "AbstractLightCavalry",
+        "vs": "Light ranged cavalry",
         "value": 2
       },
       {
-        "vs": "AbstractRangedShockInfantry",
+        "vs": "Ranged shock infantry",
         "value": 2
       },
       {
-        "vs": "AbstractCavalry",
+        "vs": "Cavalry",
         "value": 0.75
       },
       {
-        "vs": "AbstractLightInfantry",
+        "vs": "Light infantry",
         "value": 0.75
       }
     ]
@@ -11976,11 +11976,11 @@
         "value": 6
       },
       {
-        "vs": "AbstractInfantry",
+        "vs": "Infantry",
         "value": 3
       },
       {
-        "vs": "xpArrowKnight",
+        "vs": "xp Arrow Knight",
         "value": 0.5
       }
     ],
@@ -12131,15 +12131,15 @@
     "aoe_radius_ranged": 2,
     "multipliers_ranged": [
       {
-        "vs": "AbstractHeavyInfantry",
+        "vs": "Heavy infantry",
         "value": 1.5
       },
       {
-        "vs": "AbstractHeavyCavalry",
+        "vs": "Heavy cavalry",
         "value": 0.6
       },
       {
-        "vs": "AbstractCoyoteMan",
+        "vs": "Shock infantry",
         "value": 0.6
       }
     ],
@@ -12149,15 +12149,15 @@
     "damage_type_melee": "Hand",
     "multipliers_melee": [
       {
-        "vs": "AbstractHeavyInfantry",
+        "vs": "Heavy infantry",
         "value": 1.5
       },
       {
-        "vs": "AbstractHeavyCavalry",
+        "vs": "Heavy cavalry",
         "value": 0.75
       },
       {
-        "vs": "AbstractCoyoteMan",
+        "vs": "Shock infantry",
         "value": 0.75
       }
     ],
@@ -12313,11 +12313,11 @@
     "damage_type_melee": "Hand",
     "multipliers_melee": [
       {
-        "vs": "AbstractCavalry",
+        "vs": "Cavalry",
         "value": 2.25
       },
       {
-        "vs": "AbstractLightInfantry",
+        "vs": "Light infantry",
         "value": 1.5
       }
     ]
@@ -12494,7 +12494,7 @@
         "value": 3
       },
       {
-        "vs": "AbstractVillager",
+        "vs": "Villager",
         "value": 0.25
       }
     ]
@@ -12951,23 +12951,23 @@
     "damage_type_ranged": "Ranged",
     "multipliers_ranged": [
       {
-        "vs": "AbstractHeavyInfantry",
+        "vs": "Heavy infantry",
         "value": 2
       },
       {
-        "vs": "AbstractLightCavalry",
+        "vs": "Light ranged cavalry",
         "value": 2.5
       },
       {
-        "vs": "AbstractRangedShockInfantry",
+        "vs": "Ranged shock infantry",
         "value": 2.5
       },
       {
-        "vs": "AbstractCavalry",
+        "vs": "Cavalry",
         "value": 0.6
       },
       {
-        "vs": "AbstractLightInfantry",
+        "vs": "Light infantry",
         "value": 0.6
       }
     ],
@@ -12977,23 +12977,23 @@
     "damage_type_melee": "Hand",
     "multipliers_melee": [
       {
-        "vs": "AbstractHeavyInfantry",
+        "vs": "Heavy infantry",
         "value": 2
       },
       {
-        "vs": "AbstractLightCavalry",
+        "vs": "Light ranged cavalry",
         "value": 2
       },
       {
-        "vs": "AbstractRangedShockInfantry",
+        "vs": "Ranged shock infantry",
         "value": 2
       },
       {
-        "vs": "AbstractCavalry",
+        "vs": "Cavalry",
         "value": 0.75
       },
       {
-        "vs": "AbstractLightInfantry",
+        "vs": "Light infantry",
         "value": 0.75
       }
     ]
@@ -13231,19 +13231,19 @@
     "damage_type_ranged": "Ranged",
     "multipliers_ranged": [
       {
-        "vs": "AbstractHeavyCavalry",
+        "vs": "Heavy cavalry",
         "value": 2.75
       },
       {
-        "vs": "AbstractArtillery",
+        "vs": "Artillery",
         "value": 2
       },
       {
-        "vs": "AbstractCoyoteMan",
+        "vs": "Shock infantry",
         "value": 2
       },
       {
-        "vs": "AbstractVillager",
+        "vs": "Villager",
         "value": 0.5
       }
     ],
@@ -13253,15 +13253,15 @@
     "damage_type_melee": "Hand",
     "multipliers_melee": [
       {
-        "vs": "AbstractHeavyCavalry",
+        "vs": "Heavy cavalry",
         "value": 1.6
       },
       {
-        "vs": "AbstractCoyoteMan",
+        "vs": "Shock infantry",
         "value": 1.2
       },
       {
-        "vs": "AbstractSkirmisher",
+        "vs": "Light infantry",
         "value": 0.75
       }
     ]
@@ -13406,11 +13406,11 @@
     "damage_type_melee": "Hand",
     "multipliers_melee": [
       {
-        "vs": "AbstractCavalry",
+        "vs": "Cavalry",
         "value": 1.5
       },
       {
-        "vs": "AbstractLightInfantry",
+        "vs": "Light infantry",
         "value": 1.25
       }
     ]
@@ -13591,7 +13591,7 @@
     "damage_type_melee": "Hand",
     "multipliers_melee": [
       {
-        "vs": "AbstractArtillery",
+        "vs": "Artillery",
         "value": 1.2
       }
     ]
@@ -13817,19 +13817,19 @@
     "damage_type_melee": "Hand",
     "multipliers_melee": [
       {
-        "vs": "AbstractInfantry",
+        "vs": "Infantry",
         "value": 1.5
       },
       {
-        "vs": "AbstractHeavyInfantry",
+        "vs": "Heavy infantry",
         "value": 0.667
       },
       {
-        "vs": "AbstractHeavyCavalry",
+        "vs": "Heavy cavalry",
         "value": 1.25
       },
       {
-        "vs": "AbstractCoyoteMan",
+        "vs": "Shock infantry",
         "value": 1.25
       }
     ]
@@ -13919,11 +13919,11 @@
     "aoe_radius_ranged": 1,
     "multipliers_ranged": [
       {
-        "vs": "AbstractVillager",
+        "vs": "Villager",
         "value": 0.25
       },
       {
-        "vs": "AbstractArtillery",
+        "vs": "Artillery",
         "value": 0.34
       }
     ],
@@ -14314,23 +14314,23 @@
     "damage_type_ranged": "Ranged",
     "multipliers_ranged": [
       {
-        "vs": "AbstractHeavyInfantry",
+        "vs": "Heavy infantry",
         "value": 2
       },
       {
-        "vs": "AbstractLightCavalry",
+        "vs": "Light ranged cavalry",
         "value": 2.5
       },
       {
-        "vs": "AbstractRangedShockInfantry",
+        "vs": "Ranged shock infantry",
         "value": 2.5
       },
       {
-        "vs": "AbstractCavalry",
+        "vs": "Cavalry",
         "value": 0.6
       },
       {
-        "vs": "AbstractLightInfantry",
+        "vs": "Light infantry",
         "value": 0.6
       }
     ],
@@ -14340,23 +14340,23 @@
     "damage_type_melee": "Hand",
     "multipliers_melee": [
       {
-        "vs": "AbstractLightCavalry",
+        "vs": "Light ranged cavalry",
         "value": 2
       },
       {
-        "vs": "AbstractRangedShockInfantry",
+        "vs": "Ranged shock infantry",
         "value": 2
       },
       {
-        "vs": "AbstractHeavyInfantry",
+        "vs": "Heavy infantry",
         "value": 2
       },
       {
-        "vs": "AbstractCavalry",
+        "vs": "Cavalry",
         "value": 0.75
       },
       {
-        "vs": "AbstractLightInfantry",
+        "vs": "Light infantry",
         "value": 0.75
       }
     ]
@@ -14582,11 +14582,11 @@
     "damage_type_melee": "Hand",
     "multipliers_melee": [
       {
-        "vs": "AbstractCavalry",
+        "vs": "Cavalry",
         "value": 4
       },
       {
-        "vs": "AbstractLightInfantry",
+        "vs": "Light infantry",
         "value": 3
       }
     ]
@@ -14771,23 +14771,23 @@
     "damage_type_ranged": "Ranged",
     "multipliers_ranged": [
       {
-        "vs": "AbstractHeavyInfantry",
+        "vs": "Heavy infantry",
         "value": 2
       },
       {
-        "vs": "AbstractLightCavalry",
+        "vs": "Light ranged cavalry",
         "value": 2.5
       },
       {
-        "vs": "AbstractRangedShockInfantry",
+        "vs": "Ranged shock infantry",
         "value": 2.5
       },
       {
-        "vs": "AbstractCavalry",
+        "vs": "Cavalry",
         "value": 0.6
       },
       {
-        "vs": "AbstractLightInfantry",
+        "vs": "Light infantry",
         "value": 0.6
       }
     ],
@@ -14797,23 +14797,23 @@
     "damage_type_melee": "Hand",
     "multipliers_melee": [
       {
-        "vs": "AbstractHeavyInfantry",
+        "vs": "Heavy infantry",
         "value": 2
       },
       {
-        "vs": "AbstractRangedShockInfantry",
+        "vs": "Ranged shock infantry",
         "value": 2
       },
       {
-        "vs": "AbstractLightCavalry",
+        "vs": "Light ranged cavalry",
         "value": 2
       },
       {
-        "vs": "AbstractCavalry",
+        "vs": "Cavalry",
         "value": 0.75
       },
       {
-        "vs": "AbstractLightInfantry",
+        "vs": "Light infantry",
         "value": 0.75
       }
     ]
@@ -14967,19 +14967,19 @@
     "damage_type_ranged": "Ranged",
     "multipliers_ranged": [
       {
-        "vs": "AbstractHeavyCavalry",
+        "vs": "Heavy cavalry",
         "value": 2.25
       },
       {
-        "vs": "AbstractVillager",
+        "vs": "Villager",
         "value": 0.5
       },
       {
-        "vs": "AbstractArtillery",
+        "vs": "Artillery",
         "value": 2
       },
       {
-        "vs": "AbstractCoyoteMan",
+        "vs": "Shock infantry",
         "value": 1.75
       }
     ]
@@ -15231,19 +15231,19 @@
     "damage_type_ranged": "Ranged",
     "multipliers_ranged": [
       {
-        "vs": "AbstractHeavyCavalry",
+        "vs": "Heavy cavalry",
         "value": 3
       },
       {
-        "vs": "AbstractCoyoteMan",
+        "vs": "Shock infantry",
         "value": 2.2
       },
       {
-        "vs": "AbstractVillager",
+        "vs": "Villager",
         "value": 0.5
       },
       {
-        "vs": "AbstractArtillery",
+        "vs": "Artillery",
         "value": 2
       }
     ],
@@ -15253,19 +15253,19 @@
     "damage_type_melee": "Hand",
     "multipliers_melee": [
       {
-        "vs": "AbstractHeavyCavalry",
+        "vs": "Heavy cavalry",
         "value": 3
       },
       {
-        "vs": "AbstractCoyoteMan",
+        "vs": "Shock infantry",
         "value": 2.2
       },
       {
-        "vs": "AbstractVillager",
+        "vs": "Villager",
         "value": 0.5
       },
       {
-        "vs": "AbstractArtillery",
+        "vs": "Artillery",
         "value": 2
       }
     ]
@@ -15456,19 +15456,19 @@
     "aoe_radius_ranged": 1,
     "multipliers_ranged": [
       {
-        "vs": "AbstractHeavyCavalry",
+        "vs": "Heavy cavalry",
         "value": 3
       },
       {
-        "vs": "AbstractVillager",
+        "vs": "Villager",
         "value": 0.5
       },
       {
-        "vs": "AbstractCoyoteMan",
+        "vs": "Shock infantry",
         "value": 2.25
       },
       {
-        "vs": "AbstractArtillery",
+        "vs": "Artillery",
         "value": 2
       }
     ],
@@ -15478,15 +15478,15 @@
     "damage_type_melee": "Hand",
     "multipliers_melee": [
       {
-        "vs": "AbstractHeavyCavalry",
+        "vs": "Heavy cavalry",
         "value": 3
       },
       {
-        "vs": "AbstractCoyoteMan",
+        "vs": "Shock infantry",
         "value": 2.25
       },
       {
-        "vs": "AbstractArtillery",
+        "vs": "Artillery",
         "value": 2
       }
     ],
@@ -16007,11 +16007,11 @@
     "damage_type_ranged": "Ranged",
     "multipliers_ranged": [
       {
-        "vs": "AbstractHeavyInfantry",
+        "vs": "Heavy infantry",
         "value": 2
       },
       {
-        "vs": "AbstractVillager",
+        "vs": "Villager",
         "value": 2
       },
       {
@@ -16019,19 +16019,19 @@
         "value": 3
       },
       {
-        "vs": "AbstractLightCavalry",
+        "vs": "Light ranged cavalry",
         "value": 2.5
       },
       {
-        "vs": "AbstractRangedShockInfantry",
+        "vs": "Ranged shock infantry",
         "value": 2.5
       },
       {
-        "vs": "AbstractCavalry",
+        "vs": "Cavalry",
         "value": 0.6
       },
       {
-        "vs": "AbstractLightInfantry",
+        "vs": "Light infantry",
         "value": 0.6
       }
     ],
@@ -16041,15 +16041,15 @@
     "damage_type_melee": "Hand",
     "multipliers_melee": [
       {
-        "vs": "AbstractHeavyInfantry",
+        "vs": "Heavy infantry",
         "value": 2
       },
       {
-        "vs": "AbstractLightCavalry",
+        "vs": "Light ranged cavalry",
         "value": 2
       },
       {
-        "vs": "AbstractVillager",
+        "vs": "Villager",
         "value": 2
       },
       {
@@ -16057,15 +16057,15 @@
         "value": 3
       },
       {
-        "vs": "AbstractRangedShockInfantry",
+        "vs": "Ranged shock infantry",
         "value": 2
       },
       {
-        "vs": "AbstractCavalry",
+        "vs": "Cavalry",
         "value": 0.75
       },
       {
-        "vs": "AbstractLightInfantry",
+        "vs": "Light infantry",
         "value": 0.75
       }
     ]
@@ -16269,11 +16269,11 @@
     "damage_type_melee": "Hand",
     "multipliers_melee": [
       {
-        "vs": "AbstractCavalry",
+        "vs": "Cavalry",
         "value": 2
       },
       {
-        "vs": "AbstractLightInfantry",
+        "vs": "Light infantry",
         "value": 1.6
       }
     ]
@@ -16493,23 +16493,23 @@
     "rof_ranged": 3,
     "multipliers_ranged": [
       {
-        "vs": "AbstractHeavyCavalry",
+        "vs": "Heavy cavalry",
         "value": 3
       },
       {
-        "vs": "AbstractCoyoteMan",
+        "vs": "Shock infantry",
         "value": 2.25
       },
       {
-        "vs": "AbstractArtillery",
+        "vs": "Artillery",
         "value": 2
       },
       {
-        "vs": "AbstractLightCavalry",
+        "vs": "Light ranged cavalry",
         "value": 1.2
       },
       {
-        "vs": "AbstractVillager",
+        "vs": "Villager",
         "value": 0.5
       }
     ],
@@ -16519,19 +16519,19 @@
     "damage_type_melee": "Hand",
     "multipliers_melee": [
       {
-        "vs": "AbstractHeavyCavalry",
+        "vs": "Heavy cavalry",
         "value": 3
       },
       {
-        "vs": "AbstractCoyoteMan",
+        "vs": "Shock infantry",
         "value": 2.25
       },
       {
-        "vs": "AbstractArtillery",
+        "vs": "Artillery",
         "value": 2
       },
       {
-        "vs": "AbstractLightCavalry",
+        "vs": "Light ranged cavalry",
         "value": 1.2
       }
     ]
@@ -16901,27 +16901,27 @@
     "damage_type_ranged": "Ranged",
     "multipliers_ranged": [
       {
-        "vs": "AbstractSkirmisher",
+        "vs": "Light infantry",
         "value": 2.5
       },
       {
-        "vs": "AbstractCounterSkirmisher",
+        "vs": "Counter-skirmisher",
         "value": 2.5
       },
       {
-        "vs": "AbstractLightCavalry",
+        "vs": "Light ranged cavalry",
         "value": 1.5
       },
       {
-        "vs": "AbstractHeavyInfantry",
+        "vs": "Heavy infantry",
         "value": 1.25
       },
       {
-        "vs": "AbstractHeavyCavalry",
+        "vs": "Heavy cavalry",
         "value": 0.6
       },
       {
-        "vs": "AbstractCoyoteMan",
+        "vs": "Shock infantry",
         "value": 0.6
       }
     ],
@@ -16931,15 +16931,15 @@
     "damage_type_melee": "Hand",
     "multipliers_melee": [
       {
-        "vs": "AbstractLightCavalry",
+        "vs": "Light ranged cavalry",
         "value": 1.5
       },
       {
-        "vs": "AbstractHeavyCavalry",
+        "vs": "Heavy cavalry",
         "value": 0.75
       },
       {
-        "vs": "AbstractCoyoteMan",
+        "vs": "Shock infantry",
         "value": 0.75
       }
     ]
@@ -17194,19 +17194,19 @@
     "damage_type_ranged": "Ranged",
     "multipliers_ranged": [
       {
-        "vs": "AbstractHeavyCavalry",
+        "vs": "Heavy cavalry",
         "value": 3
       },
       {
-        "vs": "AbstractCoyoteMan",
+        "vs": "Shock infantry",
         "value": 2.2
       },
       {
-        "vs": "AbstractVillager",
+        "vs": "Villager",
         "value": 0.5
       },
       {
-        "vs": "AbstractArtillery",
+        "vs": "Artillery",
         "value": 2
       }
     ],
@@ -17216,19 +17216,19 @@
     "damage_type_melee": "Hand",
     "multipliers_melee": [
       {
-        "vs": "AbstractHeavyCavalry",
+        "vs": "Heavy cavalry",
         "value": 3
       },
       {
-        "vs": "AbstractCoyoteMan",
+        "vs": "Shock infantry",
         "value": 2.2
       },
       {
-        "vs": "AbstractVillager",
+        "vs": "Villager",
         "value": 0.5
       },
       {
-        "vs": "AbstractArtillery",
+        "vs": "Artillery",
         "value": 2
       }
     ]
@@ -17415,7 +17415,7 @@
     "damage_type_ranged": "Ranged",
     "multipliers_ranged": [
       {
-        "vs": "AbstractVillager",
+        "vs": "Villager",
         "value": 0.5
       }
     ],
@@ -17425,11 +17425,11 @@
     "damage_type_melee": "Hand",
     "multipliers_melee": [
       {
-        "vs": "AbstractHeavyCavalry",
+        "vs": "Heavy cavalry",
         "value": 3
       },
       {
-        "vs": "AbstractCoyoteMan",
+        "vs": "Shock infantry",
         "value": 2.25
       }
     ]
@@ -17899,23 +17899,23 @@
     "damage_type_ranged": "Ranged",
     "multipliers_ranged": [
       {
-        "vs": "AbstractHeavyInfantry",
+        "vs": "Heavy infantry",
         "value": 2
       },
       {
-        "vs": "AbstractLightCavalry",
+        "vs": "Light ranged cavalry",
         "value": 2.5
       },
       {
-        "vs": "AbstractRangedShockInfantry",
+        "vs": "Ranged shock infantry",
         "value": 2.5
       },
       {
-        "vs": "AbstractCavalry",
+        "vs": "Cavalry",
         "value": 0.6
       },
       {
-        "vs": "AbstractLightInfantry",
+        "vs": "Light infantry",
         "value": 0.6
       }
     ],
@@ -17925,23 +17925,23 @@
     "damage_type_melee": "Hand",
     "multipliers_melee": [
       {
-        "vs": "AbstractHeavyInfantry",
+        "vs": "Heavy infantry",
         "value": 2
       },
       {
-        "vs": "AbstractLightCavalry",
+        "vs": "Light ranged cavalry",
         "value": 2
       },
       {
-        "vs": "AbstractRangedShockInfantry",
+        "vs": "Ranged shock infantry",
         "value": 2
       },
       {
-        "vs": "AbstractCavalry",
+        "vs": "Cavalry",
         "value": 0.75
       },
       {
-        "vs": "AbstractLightInfantry",
+        "vs": "Light infantry",
         "value": 0.75
       }
     ]
@@ -18346,23 +18346,23 @@
     "damage_type_ranged": "Ranged",
     "multipliers_ranged": [
       {
-        "vs": "AbstractLightCavalry",
+        "vs": "Light ranged cavalry",
         "value": 2.5
       },
       {
-        "vs": "AbstractRangedShockInfantry",
+        "vs": "Ranged shock infantry",
         "value": 2.5
       },
       {
-        "vs": "AbstractCavalry",
+        "vs": "Cavalry",
         "value": 0.6
       },
       {
-        "vs": "AbstractLightInfantry",
+        "vs": "Light infantry",
         "value": 0.6
       },
       {
-        "vs": "AbstractHeavyInfantry",
+        "vs": "Heavy infantry",
         "value": 1.25
       }
     ],
@@ -18372,23 +18372,23 @@
     "damage_type_melee": "Hand",
     "multipliers_melee": [
       {
-        "vs": "AbstractLightCavalry",
+        "vs": "Light ranged cavalry",
         "value": 2
       },
       {
-        "vs": "AbstractRangedShockInfantry",
+        "vs": "Ranged shock infantry",
         "value": 2
       },
       {
-        "vs": "AbstractCavalry",
+        "vs": "Cavalry",
         "value": 0.75
       },
       {
-        "vs": "AbstractLightInfantry",
+        "vs": "Light infantry",
         "value": 0.75
       },
       {
-        "vs": "AbstractHeavyInfantry",
+        "vs": "Heavy infantry",
         "value": 1.25
       }
     ]
@@ -18634,11 +18634,11 @@
     "damage_type_ranged": "Ranged",
     "multipliers_ranged": [
       {
-        "vs": "AbstractHeavyCavalry",
+        "vs": "Heavy cavalry",
         "value": 1.5
       },
       {
-        "vs": "AbstractCoyoteMan",
+        "vs": "Shock infantry",
         "value": 1.25
       }
     ],
@@ -18648,11 +18648,11 @@
     "damage_type_melee": "Hand",
     "multipliers_melee": [
       {
-        "vs": "AbstractCavalry",
+        "vs": "Cavalry",
         "value": 2
       },
       {
-        "vs": "AbstractLightInfantry",
+        "vs": "Light infantry",
         "value": 1.5
       }
     ]
@@ -18837,19 +18837,19 @@
     "damage_type_ranged": "Ranged",
     "multipliers_ranged": [
       {
-        "vs": "AbstractHeavyCavalry",
+        "vs": "Heavy cavalry",
         "value": 3
       },
       {
-        "vs": "AbstractCoyoteMan",
+        "vs": "Shock infantry",
         "value": 2.2
       },
       {
-        "vs": "AbstractVillager",
+        "vs": "Villager",
         "value": 0.5
       },
       {
-        "vs": "AbstractArtillery",
+        "vs": "Artillery",
         "value": 2
       }
     ],
@@ -18859,19 +18859,19 @@
     "damage_type_melee": "Hand",
     "multipliers_melee": [
       {
-        "vs": "AbstractHeavyCavalry",
+        "vs": "Heavy cavalry",
         "value": 3
       },
       {
-        "vs": "AbstractCoyoteMan",
+        "vs": "Shock infantry",
         "value": 2.2
       },
       {
-        "vs": "AbstractVillager",
+        "vs": "Villager",
         "value": 0.5
       },
       {
-        "vs": "AbstractArtillery",
+        "vs": "Artillery",
         "value": 2
       }
     ]
@@ -19035,11 +19035,11 @@
     "damage_type_ranged": "Ranged",
     "multipliers_ranged": [
       {
-        "vs": "AbstractSkirmisher",
+        "vs": "Light infantry",
         "value": 2
       },
       {
-        "vs": "AbstractArtillery",
+        "vs": "Artillery",
         "value": 1.5
       },
       {
@@ -19047,7 +19047,7 @@
         "value": 2
       },
       {
-        "vs": "AbstractVillager",
+        "vs": "Villager",
         "value": 0.5
       },
       {
@@ -19061,11 +19061,11 @@
     "damage_type_melee": "Hand",
     "multipliers_melee": [
       {
-        "vs": "AbstractArtillery",
+        "vs": "Artillery",
         "value": 3.5
       },
       {
-        "vs": "AbstractSkirmisher",
+        "vs": "Light infantry",
         "value": 2.5
       },
       {
@@ -19423,7 +19423,7 @@
     "aoe_radius_ranged": 1,
     "multipliers_ranged": [
       {
-        "vs": "AbstractArtillery",
+        "vs": "Artillery",
         "value": 4
       },
       {
@@ -19431,23 +19431,23 @@
         "value": 10
       },
       {
-        "vs": "AbstractSiegeTrooper",
+        "vs": "Siege trooper",
         "value": 1.75
       },
       {
-        "vs": "AbstractCavalry",
+        "vs": "Cavalry",
         "value": 0.5
       },
       {
-        "vs": "AbstractLightInfantry",
+        "vs": "Light infantry",
         "value": 0.5
       },
       {
-        "vs": "AbstractTrainingShip",
+        "vs": "Training ship",
         "value": 0.5715
       },
       {
-        "vs": "deMercGatlingCamel",
+        "vs": "de Merc Gatling Camel",
         "value": 2
       },
       {
@@ -19683,27 +19683,27 @@
     "damage_type_ranged": "Ranged",
     "multipliers_ranged": [
       {
-        "vs": "AbstractHeavyInfantry",
+        "vs": "Heavy infantry",
         "value": 3.5
       },
       {
-        "vs": "AbstractInfantry",
+        "vs": "Infantry",
         "value": 0.5
       },
       {
-        "vs": "AbstractHeavyCavalry",
+        "vs": "Heavy cavalry",
         "value": 0.5
       },
       {
-        "vs": "AbstractCoyoteMan",
+        "vs": "Shock infantry",
         "value": 0.5
       },
       {
-        "vs": "AbstractArtillery",
+        "vs": "Artillery",
         "value": 0.5
       },
       {
-        "vs": "AbstractVillager",
+        "vs": "Villager",
         "value": 0.5
       }
     ],
@@ -19713,27 +19713,27 @@
     "damage_type_melee": "Hand",
     "multipliers_melee": [
       {
-        "vs": "AbstractHeavyInfantry",
+        "vs": "Heavy infantry",
         "value": 3.5
       },
       {
-        "vs": "AbstractInfantry",
+        "vs": "Infantry",
         "value": 0.5
       },
       {
-        "vs": "AbstractHeavyCavalry",
+        "vs": "Heavy cavalry",
         "value": 0.5
       },
       {
-        "vs": "AbstractCoyoteMan",
+        "vs": "Shock infantry",
         "value": 0.5
       },
       {
-        "vs": "AbstractArtillery",
+        "vs": "Artillery",
         "value": 0.5
       },
       {
-        "vs": "AbstractVillager",
+        "vs": "Villager",
         "value": 0.5
       }
     ]
@@ -20093,23 +20093,23 @@
     "damage_type_ranged": "Ranged",
     "multipliers_ranged": [
       {
-        "vs": "AbstractHeavyInfantry",
+        "vs": "Heavy infantry",
         "value": 1.75
       },
       {
-        "vs": "AbstractLightCavalry",
+        "vs": "Light ranged cavalry",
         "value": 2.5
       },
       {
-        "vs": "AbstractRangedShockInfantry",
+        "vs": "Ranged shock infantry",
         "value": 2.5
       },
       {
-        "vs": "AbstractCavalry",
+        "vs": "Cavalry",
         "value": 0.6
       },
       {
-        "vs": "AbstractLightInfantry",
+        "vs": "Light infantry",
         "value": 0.6
       }
     ],
@@ -20119,23 +20119,23 @@
     "damage_type_melee": "Hand",
     "multipliers_melee": [
       {
-        "vs": "AbstractHeavyInfantry",
+        "vs": "Heavy infantry",
         "value": 1.75
       },
       {
-        "vs": "AbstractRangedShockInfantry",
+        "vs": "Ranged shock infantry",
         "value": 2
       },
       {
-        "vs": "AbstractLightCavalry",
+        "vs": "Light ranged cavalry",
         "value": 2
       },
       {
-        "vs": "AbstractCavalry",
+        "vs": "Cavalry",
         "value": 0.75
       },
       {
-        "vs": "AbstractLightInfantry",
+        "vs": "Light infantry",
         "value": 0.75
       }
     ]
@@ -20399,11 +20399,11 @@
     "damage_type_melee": "Hand",
     "multipliers_melee": [
       {
-        "vs": "AbstractCavalry",
+        "vs": "Cavalry",
         "value": 3.5
       },
       {
-        "vs": "AbstractLightInfantry",
+        "vs": "Light infantry",
         "value": 2.8
       }
     ]
@@ -20532,11 +20532,11 @@
     "damage_type_melee": "Hand",
     "multipliers_melee": [
       {
-        "vs": "AbstractCavalry",
+        "vs": "Cavalry",
         "value": 2
       },
       {
-        "vs": "AbstractLightInfantry",
+        "vs": "Light infantry",
         "value": 1.6
       }
     ]
@@ -20743,7 +20743,7 @@
     "damage_type_melee": "Hand",
     "multipliers_melee": [
       {
-        "vs": "AbstractVillager",
+        "vs": "Villager",
         "value": 0.2
       },
       {
@@ -20939,11 +20939,11 @@
     "aoe_radius_melee": 2,
     "multipliers_melee": [
       {
-        "vs": "AbstractCavalry",
+        "vs": "Cavalry",
         "value": 3
       },
       {
-        "vs": "AbstractLightInfantry",
+        "vs": "Light infantry",
         "value": 2
       }
     ],
@@ -21150,19 +21150,19 @@
     "rof_ranged": 3,
     "multipliers_ranged": [
       {
-        "vs": "AbstractHeavyCavalry",
+        "vs": "Heavy cavalry",
         "value": 3
       },
       {
-        "vs": "AbstractArtillery",
+        "vs": "Artillery",
         "value": 2
       },
       {
-        "vs": "AbstractCoyoteMan",
+        "vs": "Shock infantry",
         "value": 2.25
       },
       {
-        "vs": "AbstractVillager",
+        "vs": "Villager",
         "value": 0.5
       }
     ],
@@ -21172,15 +21172,15 @@
     "damage_type_melee": "Hand",
     "multipliers_melee": [
       {
-        "vs": "AbstractHeavyCavalry",
+        "vs": "Heavy cavalry",
         "value": 3
       },
       {
-        "vs": "AbstractArtillery",
+        "vs": "Artillery",
         "value": 2
       },
       {
-        "vs": "AbstractCoyoteMan",
+        "vs": "Shock infantry",
         "value": 2.25
       }
     ]
@@ -21538,19 +21538,19 @@
     "damage_type_ranged": "Ranged",
     "multipliers_ranged": [
       {
-        "vs": "AbstractHeavyCavalry",
+        "vs": "Heavy cavalry",
         "value": 3
       },
       {
-        "vs": "AbstractCoyoteMan",
+        "vs": "Shock infantry",
         "value": 2
       },
       {
-        "vs": "AbstractVillager",
+        "vs": "Villager",
         "value": 0.5
       },
       {
-        "vs": "AbstractInfantry",
+        "vs": "Infantry",
         "value": 0.75
       }
     ],
@@ -21560,11 +21560,11 @@
     "damage_type_melee": "Hand",
     "multipliers_melee": [
       {
-        "vs": "AbstractHeavyCavalry",
+        "vs": "Heavy cavalry",
         "value": 3
       },
       {
-        "vs": "AbstractCoyoteMan",
+        "vs": "Shock infantry",
         "value": 2
       }
     ]
@@ -21845,7 +21845,7 @@
         "value": 0.4
       },
       {
-        "vs": "AbstractVillager",
+        "vs": "Villager",
         "value": 0.1
       }
     ],
@@ -21863,7 +21863,7 @@
         "value": 0.4
       },
       {
-        "vs": "AbstractVillager",
+        "vs": "Villager",
         "value": 0.1
       }
     ]
@@ -22055,11 +22055,11 @@
     "damage_type_melee": "Hand",
     "multipliers_melee": [
       {
-        "vs": "AbstractArtillery",
+        "vs": "Artillery",
         "value": 3
       },
       {
-        "vs": "AbstractInfantry",
+        "vs": "Infantry",
         "value": 2
       },
       {
@@ -22067,7 +22067,7 @@
         "value": 2.5
       },
       {
-        "vs": "AbstractVillager",
+        "vs": "Villager",
         "value": 0.25
       }
     ]
@@ -22211,7 +22211,7 @@
     "damage_type_melee": "Hand",
     "multipliers_melee": [
       {
-        "vs": "AbstractInfantry",
+        "vs": "Infantry",
         "value": 3
       }
     ]
@@ -22642,23 +22642,23 @@
     "damage_type_ranged": "Ranged",
     "multipliers_ranged": [
       {
-        "vs": "AbstractHeavyInfantry",
+        "vs": "Heavy infantry",
         "value": 3
       },
       {
-        "vs": "AbstractLightCavalry",
+        "vs": "Light ranged cavalry",
         "value": 2.5
       },
       {
-        "vs": "AbstractRangedShockInfantry",
+        "vs": "Ranged shock infantry",
         "value": 2.5
       },
       {
-        "vs": "AbstractCavalry",
+        "vs": "Cavalry",
         "value": 0.6
       },
       {
-        "vs": "AbstractLightInfantry",
+        "vs": "Light infantry",
         "value": 0.6
       }
     ],
@@ -22668,23 +22668,23 @@
     "damage_type_melee": "Hand",
     "multipliers_melee": [
       {
-        "vs": "AbstractHeavyInfantry",
+        "vs": "Heavy infantry",
         "value": 3
       },
       {
-        "vs": "AbstractLightCavalry",
+        "vs": "Light ranged cavalry",
         "value": 2
       },
       {
-        "vs": "AbstractRangedShockInfantry",
+        "vs": "Ranged shock infantry",
         "value": 2
       },
       {
-        "vs": "AbstractCavalry",
+        "vs": "Cavalry",
         "value": 0.75
       },
       {
-        "vs": "AbstractLightInfantry",
+        "vs": "Light infantry",
         "value": 0.75
       }
     ]
@@ -22878,7 +22878,7 @@
     "aoe_radius_ranged": 3,
     "multipliers_ranged": [
       {
-        "vs": "AbstractInfantry",
+        "vs": "Infantry",
         "value": 3
       },
       {
@@ -22890,7 +22890,7 @@
         "value": 3
       },
       {
-        "vs": "xpArrowKnight",
+        "vs": "xp Arrow Knight",
         "value": 0.5
       }
     ],
@@ -23118,11 +23118,11 @@
     "damage_type_melee": "Hand",
     "multipliers_melee": [
       {
-        "vs": "AbstractCavalry",
+        "vs": "Cavalry",
         "value": 3
       },
       {
-        "vs": "AbstractLightInfantry",
+        "vs": "Light infantry",
         "value": 2.2
       }
     ]
@@ -23543,15 +23543,15 @@
     "aoe_radius_melee": 2,
     "multipliers_melee": [
       {
-        "vs": "AbstractInfantry",
+        "vs": "Infantry",
         "value": 1.5
       },
       {
-        "vs": "AbstractHeavyInfantry",
+        "vs": "Heavy infantry",
         "value": 0.67
       },
       {
-        "vs": "AbstractArtillery",
+        "vs": "Artillery",
         "value": 4
       }
     ],
@@ -23652,7 +23652,7 @@
     "aoe_radius_ranged": 1,
     "multipliers_ranged": [
       {
-        "vs": "AbstractInfantry",
+        "vs": "Infantry",
         "value": 6
       },
       {
@@ -23664,19 +23664,19 @@
         "value": 6
       },
       {
-        "vs": "AbstractArtillery",
+        "vs": "Artillery",
         "value": 2
       },
       {
-        "vs": "AbstractLightInfantry",
+        "vs": "Light infantry",
         "value": 0.6
       },
       {
-        "vs": "AbstractCavalry",
+        "vs": "Cavalry",
         "value": 0.8
       },
       {
-        "vs": "deMalteseGun",
+        "vs": "de Maltese Gun",
         "value": 0.5
       }
     ],
@@ -23780,7 +23780,7 @@
     "aoe_radius_ranged": 2,
     "multipliers_ranged": [
       {
-        "vs": "AbstractInfantry",
+        "vs": "Infantry",
         "value": 3
       },
       {
@@ -23792,7 +23792,7 @@
         "value": 5
       },
       {
-        "vs": "xpArrowKnight",
+        "vs": "xp Arrow Knight",
         "value": 0.5
       }
     ],
@@ -23920,7 +23920,7 @@
     "aoe_radius_ranged": 1,
     "multipliers_ranged": [
       {
-        "vs": "AbstractArtillery",
+        "vs": "Artillery",
         "value": 0.5
       }
     ],
@@ -24034,15 +24034,15 @@
         "value": 2
       },
       {
-        "vs": "xpArrowKnight",
+        "vs": "xp Arrow Knight",
         "value": 0.5
       },
       {
-        "vs": "AbstractCavalry",
+        "vs": "Cavalry",
         "value": 0.5
       },
       {
-        "vs": "AbstractLightInfantry",
+        "vs": "Light infantry",
         "value": 0.5
       }
     ],
@@ -24435,23 +24435,23 @@
     "damage_type_ranged": "Ranged",
     "multipliers_ranged": [
       {
-        "vs": "AbstractHeavyInfantry",
+        "vs": "Heavy infantry",
         "value": 2
       },
       {
-        "vs": "AbstractLightCavalry",
+        "vs": "Light ranged cavalry",
         "value": 2.5
       },
       {
-        "vs": "AbstractRangedShockInfantry",
+        "vs": "Ranged shock infantry",
         "value": 2.5
       },
       {
-        "vs": "AbstractCavalry",
+        "vs": "Cavalry",
         "value": 0.6
       },
       {
-        "vs": "AbstractLightInfantry",
+        "vs": "Light infantry",
         "value": 0.6
       }
     ],
@@ -24461,23 +24461,23 @@
     "damage_type_melee": "Hand",
     "multipliers_melee": [
       {
-        "vs": "AbstractHeavyInfantry",
+        "vs": "Heavy infantry",
         "value": 2
       },
       {
-        "vs": "AbstractLightCavalry",
+        "vs": "Light ranged cavalry",
         "value": 2
       },
       {
-        "vs": "AbstractRangedShockInfantry",
+        "vs": "Ranged shock infantry",
         "value": 2
       },
       {
-        "vs": "AbstractCavalry",
+        "vs": "Cavalry",
         "value": 0.75
       },
       {
-        "vs": "AbstractLightInfantry",
+        "vs": "Light infantry",
         "value": 0.75
       }
     ]
@@ -24581,7 +24581,7 @@
     "aoe_radius_ranged": 1,
     "multipliers_ranged": [
       {
-        "vs": "AbstractArtillery",
+        "vs": "Artillery",
         "value": 0.5
       }
     ],
@@ -24666,7 +24666,7 @@
     "aoe_radius_ranged": 1,
     "multipliers_ranged": [
       {
-        "vs": "AbstractArtillery",
+        "vs": "Artillery",
         "value": 0.5
       }
     ],
@@ -24917,23 +24917,23 @@
     "damage_type_ranged": "Ranged",
     "multipliers_ranged": [
       {
-        "vs": "AbstractHeavyInfantry",
+        "vs": "Heavy infantry",
         "value": 1.75
       },
       {
-        "vs": "AbstractLightCavalry",
+        "vs": "Light ranged cavalry",
         "value": 2.5
       },
       {
-        "vs": "AbstractRangedShockInfantry",
+        "vs": "Ranged shock infantry",
         "value": 2.5
       },
       {
-        "vs": "AbstractCavalry",
+        "vs": "Cavalry",
         "value": 0.6
       },
       {
-        "vs": "AbstractLightInfantry",
+        "vs": "Light infantry",
         "value": 0.6
       }
     ],
@@ -24943,23 +24943,23 @@
     "damage_type_melee": "Hand",
     "multipliers_melee": [
       {
-        "vs": "AbstractHeavyInfantry",
+        "vs": "Heavy infantry",
         "value": 1.75
       },
       {
-        "vs": "AbstractRangedShockInfantry",
+        "vs": "Ranged shock infantry",
         "value": 2
       },
       {
-        "vs": "AbstractLightCavalry",
+        "vs": "Light ranged cavalry",
         "value": 2
       },
       {
-        "vs": "AbstractLightInfantry",
+        "vs": "Light infantry",
         "value": 0.75
       },
       {
-        "vs": "AbstractCavalry",
+        "vs": "Cavalry",
         "value": 0.75
       }
     ]
@@ -25043,7 +25043,7 @@
     "aoe_radius_ranged": 1,
     "multipliers_ranged": [
       {
-        "vs": "AbstractArtillery",
+        "vs": "Artillery",
         "value": 0.5
       }
     ],
@@ -25286,11 +25286,11 @@
     "damage_type_ranged": "Ranged",
     "multipliers_ranged": [
       {
-        "vs": "AbstractCavalry",
+        "vs": "Cavalry",
         "value": 1.5
       },
       {
-        "vs": "AbstractLightInfantry",
+        "vs": "Light infantry",
         "value": 1.3
       }
     ],
@@ -25300,11 +25300,11 @@
     "damage_type_melee": "Hand",
     "multipliers_melee": [
       {
-        "vs": "AbstractCavalry",
+        "vs": "Cavalry",
         "value": 2
       },
       {
-        "vs": "AbstractLightInfantry",
+        "vs": "Light infantry",
         "value": 1.5
       }
     ]
@@ -25391,7 +25391,7 @@
     "aoe_radius_ranged": 1,
     "multipliers_ranged": [
       {
-        "vs": "AbstractVillager",
+        "vs": "Villager",
         "value": 1.5
       }
     ],
@@ -25479,7 +25479,7 @@
     "aoe_radius_ranged": 1,
     "multipliers_ranged": [
       {
-        "vs": "AbstractArtillery",
+        "vs": "Artillery",
         "value": 0.5
       }
     ],
@@ -25564,7 +25564,7 @@
     "aoe_radius_ranged": 1,
     "multipliers_ranged": [
       {
-        "vs": "AbstractArtillery",
+        "vs": "Artillery",
         "value": 0.5
       }
     ],
@@ -25700,11 +25700,11 @@
     "damage_type_melee": "Hand",
     "multipliers_melee": [
       {
-        "vs": "AbstractCavalry",
+        "vs": "Cavalry",
         "value": 3
       },
       {
-        "vs": "AbstractLightInfantry",
+        "vs": "Light infantry",
         "value": 2.25
       }
     ]
@@ -25950,27 +25950,27 @@
     "aoe_radius_ranged": 2,
     "multipliers_ranged": [
       {
-        "vs": "AbstractInfantry",
+        "vs": "Infantry",
         "value": 2
       },
       {
-        "vs": "AbstractHeavyInfantry",
+        "vs": "Heavy infantry",
         "value": 1.25
       },
       {
-        "vs": "AbstractCavalry",
+        "vs": "Cavalry",
         "value": 0.5
       },
       {
-        "vs": "AbstractLightInfantry",
+        "vs": "Light infantry",
         "value": 0.5
       },
       {
-        "vs": "AbstractArtillery",
+        "vs": "Artillery",
         "value": 0.34
       },
       {
-        "vs": "AbstractVillager",
+        "vs": "Villager",
         "value": 0.25
       }
     ],
@@ -25980,23 +25980,23 @@
     "damage_type_melee": "Hand",
     "multipliers_melee": [
       {
-        "vs": "AbstractInfantry",
+        "vs": "Infantry",
         "value": 2
       },
       {
-        "vs": "AbstractHeavyInfantry",
+        "vs": "Heavy infantry",
         "value": 1.25
       },
       {
-        "vs": "AbstractCavalry",
+        "vs": "Cavalry",
         "value": 0.5
       },
       {
-        "vs": "AbstractLightInfantry",
+        "vs": "Light infantry",
         "value": 0.5
       },
       {
-        "vs": "AbstractVillager",
+        "vs": "Villager",
         "value": 0.25
       }
     ],
@@ -26186,15 +26186,15 @@
     "aoe_radius_ranged": 2,
     "multipliers_ranged": [
       {
-        "vs": "AbstractArtillery",
+        "vs": "Artillery",
         "value": 0.5
       },
       {
-        "vs": "AbstractCavalry",
+        "vs": "Cavalry",
         "value": 0.25
       },
       {
-        "vs": "AbstractLightInfantry",
+        "vs": "Light infantry",
         "value": 0.15
       },
       {
@@ -26206,11 +26206,11 @@
         "value": 0.5
       },
       {
-        "vs": "xpArrowKnight",
+        "vs": "xp Arrow Knight",
         "value": 0.5
       },
       {
-        "vs": "deMalteseGun",
+        "vs": "de Maltese Gun",
         "value": 2.5
       }
     ],
@@ -26377,19 +26377,19 @@
     "damage_type_ranged": "Ranged",
     "multipliers_ranged": [
       {
-        "vs": "AbstractHeavyCavalry",
+        "vs": "Heavy cavalry",
         "value": 3
       },
       {
-        "vs": "AbstractCoyoteMan",
+        "vs": "Shock infantry",
         "value": 2.5
       },
       {
-        "vs": "AbstractVillager",
+        "vs": "Villager",
         "value": 0.5
       },
       {
-        "vs": "AbstractArtillery",
+        "vs": "Artillery",
         "value": 2
       },
       {
@@ -26403,19 +26403,19 @@
     "damage_type_melee": "Hand",
     "multipliers_melee": [
       {
-        "vs": "AbstractHeavyCavalry",
+        "vs": "Heavy cavalry",
         "value": 3
       },
       {
-        "vs": "AbstractCoyoteMan",
+        "vs": "Shock infantry",
         "value": 2.5
       },
       {
-        "vs": "AbstractVillager",
+        "vs": "Villager",
         "value": 0.5
       },
       {
-        "vs": "AbstractArtillery",
+        "vs": "Artillery",
         "value": 2
       },
       {
@@ -26578,7 +26578,7 @@
         "value": 3
       },
       {
-        "vs": "AbstractVillager",
+        "vs": "Villager",
         "value": 0.25
       }
     ],
@@ -26592,7 +26592,7 @@
         "value": 3
       },
       {
-        "vs": "AbstractVillager",
+        "vs": "Villager",
         "value": 0.25
       }
     ]
@@ -26728,11 +26728,11 @@
     "damage_type_melee": "Hand",
     "multipliers_melee": [
       {
-        "vs": "AbstractCavalry",
+        "vs": "Cavalry",
         "value": 1.75
       },
       {
-        "vs": "AbstractLightInfantry",
+        "vs": "Light infantry",
         "value": 1.4
       }
     ],
@@ -26920,7 +26920,7 @@
         "value": 3
       },
       {
-        "vs": "AbstractVillager",
+        "vs": "Villager",
         "value": 0.25
       }
     ],
@@ -26934,7 +26934,7 @@
         "value": 3
       },
       {
-        "vs": "AbstractVillager",
+        "vs": "Villager",
         "value": 0.25
       }
     ]
@@ -27055,11 +27055,11 @@
     "aoe_radius_ranged": 5,
     "multipliers_ranged": [
       {
-        "vs": "AbstractArtillery",
+        "vs": "Artillery",
         "value": 0.5
       },
       {
-        "vs": "AbstractCavalry",
+        "vs": "Cavalry",
         "value": 0.5
       },
       {
@@ -27067,15 +27067,15 @@
         "value": 1.5
       },
       {
-        "vs": "AbstractLightInfantry",
+        "vs": "Light infantry",
         "value": 0.5
       },
       {
-        "vs": "xpArrowKnight",
+        "vs": "xp Arrow Knight",
         "value": 0.5
       },
       {
-        "vs": "deMalteseGun",
+        "vs": "de Maltese Gun",
         "value": 2.5
       }
     ],
@@ -27410,19 +27410,19 @@
     "aoe_radius_ranged": 3,
     "multipliers_ranged": [
       {
-        "vs": "AbstractCavalry",
+        "vs": "Cavalry",
         "value": 0.4
       },
       {
-        "vs": "AbstractLightInfantry",
+        "vs": "Light infantry",
         "value": 0.4
       },
       {
-        "vs": "AbstractVillager",
+        "vs": "Villager",
         "value": 0.5
       },
       {
-        "vs": "AbstractArtillery",
+        "vs": "Artillery",
         "value": 0.5
       }
     ],
@@ -27433,11 +27433,11 @@
     "aoe_radius_melee": 1,
     "multipliers_melee": [
       {
-        "vs": "AbstractCavalry",
+        "vs": "Cavalry",
         "value": 0.25
       },
       {
-        "vs": "AbstractLightInfantry",
+        "vs": "Light infantry",
         "value": 0.15
       }
     ],
@@ -27621,11 +27621,11 @@
     "damage_type_melee": "Hand",
     "multipliers_melee": [
       {
-        "vs": "AbstractCavalry",
+        "vs": "Cavalry",
         "value": 3
       },
       {
-        "vs": "AbstractLightInfantry",
+        "vs": "Light infantry",
         "value": 2.2
       }
     ]
@@ -28026,23 +28026,23 @@
     "damage_type_ranged": "Ranged",
     "multipliers_ranged": [
       {
-        "vs": "AbstractHeavyInfantry",
+        "vs": "Heavy infantry",
         "value": 2
       },
       {
-        "vs": "AbstractLightCavalry",
+        "vs": "Light ranged cavalry",
         "value": 2.5
       },
       {
-        "vs": "AbstractRangedShockInfantry",
+        "vs": "Ranged shock infantry",
         "value": 2.5
       },
       {
-        "vs": "AbstractCavalry",
+        "vs": "Cavalry",
         "value": 0.6
       },
       {
-        "vs": "AbstractLightInfantry",
+        "vs": "Light infantry",
         "value": 0.6
       }
     ],
@@ -28052,23 +28052,23 @@
     "damage_type_melee": "Hand",
     "multipliers_melee": [
       {
-        "vs": "AbstractHeavyInfantry",
+        "vs": "Heavy infantry",
         "value": 2.5
       },
       {
-        "vs": "AbstractLightCavalry",
+        "vs": "Light ranged cavalry",
         "value": 2
       },
       {
-        "vs": "AbstractRangedShockInfantry",
+        "vs": "Ranged shock infantry",
         "value": 2
       },
       {
-        "vs": "AbstractCavalry",
+        "vs": "Cavalry",
         "value": 0.75
       },
       {
-        "vs": "AbstractLightInfantry",
+        "vs": "Light infantry",
         "value": 0.75
       }
     ]
@@ -28361,23 +28361,23 @@
     "damage_type_ranged": "Ranged",
     "multipliers_ranged": [
       {
-        "vs": "AbstractHeavyInfantry",
+        "vs": "Heavy infantry",
         "value": 1.5
       },
       {
-        "vs": "AbstractSkirmisher",
+        "vs": "Light infantry",
         "value": 2
       },
       {
-        "vs": "AbstractCounterSkirmisher",
+        "vs": "Counter-skirmisher",
         "value": 2
       },
       {
-        "vs": "AbstractCoyoteMan",
+        "vs": "Shock infantry",
         "value": 0.6
       },
       {
-        "vs": "AbstractHeavyCavalry",
+        "vs": "Heavy cavalry",
         "value": 0.6
       }
     ],
@@ -28387,23 +28387,23 @@
     "damage_type_melee": "Hand",
     "multipliers_melee": [
       {
-        "vs": "AbstractHeavyInfantry",
+        "vs": "Heavy infantry",
         "value": 1.5
       },
       {
-        "vs": "AbstractSkirmisher",
+        "vs": "Light infantry",
         "value": 2
       },
       {
-        "vs": "AbstractCounterSkirmisher",
+        "vs": "Counter-skirmisher",
         "value": 2
       },
       {
-        "vs": "AbstractCoyoteMan",
+        "vs": "Shock infantry",
         "value": 0.75
       },
       {
-        "vs": "AbstractHeavyCavalry",
+        "vs": "Heavy cavalry",
         "value": 0.75
       }
     ]
@@ -28693,23 +28693,23 @@
     "aoe_radius_ranged": 1,
     "multipliers_ranged": [
       {
-        "vs": "AbstractHeavyCavalry",
+        "vs": "Heavy cavalry",
         "value": 2.5
       },
       {
-        "vs": "AbstractCoyoteMan",
+        "vs": "Shock infantry",
         "value": 2
       },
       {
-        "vs": "AbstractArtillery",
+        "vs": "Artillery",
         "value": 2
       },
       {
-        "vs": "AbstractVillager",
+        "vs": "Villager",
         "value": 0.75
       },
       {
-        "vs": "AbstractInfantry",
+        "vs": "Infantry",
         "value": 0.75
       }
     ],
@@ -28719,23 +28719,23 @@
     "damage_type_melee": "Hand",
     "multipliers_melee": [
       {
-        "vs": "AbstractHeavyCavalry",
+        "vs": "Heavy cavalry",
         "value": 1.5
       },
       {
-        "vs": "AbstractArtillery",
+        "vs": "Artillery",
         "value": 1.5
       },
       {
-        "vs": "AbstractCoyoteMan",
+        "vs": "Shock infantry",
         "value": 1.2
       },
       {
-        "vs": "AbstractVillager",
+        "vs": "Villager",
         "value": 0.75
       },
       {
-        "vs": "AbstractInfantry",
+        "vs": "Infantry",
         "value": 0.75
       }
     ],
@@ -28912,7 +28912,7 @@
         "value": 16
       },
       {
-        "vs": "AbstractWall",
+        "vs": "Wall",
         "value": 1.25
       },
       {
@@ -28920,15 +28920,15 @@
         "value": 14
       },
       {
-        "vs": "AbstractSiegeTrooper",
+        "vs": "Siege trooper",
         "value": 2
       },
       {
-        "vs": "AbstractArtillery",
+        "vs": "Artillery",
         "value": 6
       },
       {
-        "vs": "deMalteseGun",
+        "vs": "de Maltese Gun",
         "value": 0.2
       }
     ],
@@ -29100,11 +29100,11 @@
     "aoe_radius_melee": 1,
     "multipliers_melee": [
       {
-        "vs": "AbstractVillager",
+        "vs": "Villager",
         "value": 0.5
       },
       {
-        "vs": "AbstractPikeman",
+        "vs": "Pikeman",
         "value": 0.5
       }
     ],
@@ -29300,11 +29300,11 @@
     "damage_type_melee": "Hand",
     "multipliers_melee": [
       {
-        "vs": "AbstractCavalry",
+        "vs": "Cavalry",
         "value": 2
       },
       {
-        "vs": "AbstractLightInfantry",
+        "vs": "Light infantry",
         "value": 1.6
       }
     ]
@@ -29550,7 +29550,7 @@
     "aoe_radius_ranged": 4,
     "multipliers_ranged": [
       {
-        "vs": "AbstractInfantry",
+        "vs": "Infantry",
         "value": 3
       },
       {
@@ -29562,15 +29562,15 @@
         "value": 3
       },
       {
-        "vs": "AbstractArtillery",
+        "vs": "Artillery",
         "value": 0.75
       },
       {
-        "vs": "xpArrowKnight",
+        "vs": "xp Arrow Knight",
         "value": 0.5
       },
       {
-        "vs": "deMalteseGun",
+        "vs": "de Maltese Gun",
         "value": 1.5
       }
     ],
@@ -29772,11 +29772,11 @@
     "damage_type_melee": "Hand",
     "multipliers_melee": [
       {
-        "vs": "AbstractCavalry",
+        "vs": "Cavalry",
         "value": 2
       },
       {
-        "vs": "AbstractLightInfantry",
+        "vs": "Light infantry",
         "value": 1.5
       }
     ]
@@ -29941,19 +29941,19 @@
     "damage_type_ranged": "Ranged",
     "multipliers_ranged": [
       {
-        "vs": "AbstractHeavyCavalry",
+        "vs": "Heavy cavalry",
         "value": 3
       },
       {
-        "vs": "AbstractCoyoteMan",
+        "vs": "Shock infantry",
         "value": 2.25
       },
       {
-        "vs": "AbstractVillager",
+        "vs": "Villager",
         "value": 0.5
       },
       {
-        "vs": "AbstractArtillery",
+        "vs": "Artillery",
         "value": 2
       }
     ],
@@ -29963,15 +29963,15 @@
     "damage_type_melee": "Hand",
     "multipliers_melee": [
       {
-        "vs": "AbstractHeavyCavalry",
+        "vs": "Heavy cavalry",
         "value": 3
       },
       {
-        "vs": "AbstractCoyoteMan",
+        "vs": "Shock infantry",
         "value": 2.2
       },
       {
-        "vs": "AbstractArtillery",
+        "vs": "Artillery",
         "value": 2
       }
     ]
@@ -30246,11 +30246,11 @@
     "damage_type_melee": "Hand",
     "multipliers_melee": [
       {
-        "vs": "AbstractCavalry",
+        "vs": "Cavalry",
         "value": 3
       },
       {
-        "vs": "AbstractLightInfantry",
+        "vs": "Light infantry",
         "value": 2.25
       }
     ]
@@ -30447,7 +30447,7 @@
     "aoe_radius_ranged": 3,
     "multipliers_ranged": [
       {
-        "vs": "AbstractInfantry",
+        "vs": "Infantry",
         "value": 3
       },
       {
@@ -30459,7 +30459,7 @@
         "value": 3
       },
       {
-        "vs": "xpArrowKnight",
+        "vs": "xp Arrow Knight",
         "value": 0.5
       }
     ],
@@ -30656,11 +30656,11 @@
     "aoe_radius_melee": 1,
     "multipliers_melee": [
       {
-        "vs": "AbstractCavalry",
+        "vs": "Cavalry",
         "value": 2.5
       },
       {
-        "vs": "AbstractLightInfantry",
+        "vs": "Light infantry",
         "value": 1.9
       }
     ],
@@ -30894,19 +30894,19 @@
     "damage_type_ranged": "Ranged",
     "multipliers_ranged": [
       {
-        "vs": "AbstractHeavyCavalry",
+        "vs": "Heavy cavalry",
         "value": 2.75
       },
       {
-        "vs": "AbstractVillager",
+        "vs": "Villager",
         "value": 0.5
       },
       {
-        "vs": "AbstractArtillery",
+        "vs": "Artillery",
         "value": 2.25
       },
       {
-        "vs": "AbstractCoyoteMan",
+        "vs": "Shock infantry",
         "value": 2.2
       }
     ],
@@ -30917,15 +30917,15 @@
     "aoe_radius_melee": 1,
     "multipliers_melee": [
       {
-        "vs": "AbstractHeavyCavalry",
+        "vs": "Heavy cavalry",
         "value": 2.75
       },
       {
-        "vs": "AbstractArtillery",
+        "vs": "Artillery",
         "value": 2.25
       },
       {
-        "vs": "AbstractCoyoteMan",
+        "vs": "Shock infantry",
         "value": 2.2
       }
     ],
@@ -31273,19 +31273,19 @@
     "damage_type_ranged": "Siege",
     "multipliers_ranged": [
       {
-        "vs": "AbstractArtillery",
+        "vs": "Artillery",
         "value": 2
       },
       {
-        "vs": "AbstractHeavyInfantry",
+        "vs": "Heavy infantry",
         "value": 1.2
       },
       {
-        "vs": "AbstractCavalry",
+        "vs": "Cavalry",
         "value": 0.3
       },
       {
-        "vs": "AbstractLightInfantry",
+        "vs": "Light infantry",
         "value": 0.3
       }
     ],
@@ -31295,19 +31295,19 @@
     "damage_type_melee": "Hand",
     "multipliers_melee": [
       {
-        "vs": "AbstractArtillery",
+        "vs": "Artillery",
         "value": 2
       },
       {
-        "vs": "AbstractHeavyInfantry",
+        "vs": "Heavy infantry",
         "value": 1.2
       },
       {
-        "vs": "AbstractCavalry",
+        "vs": "Cavalry",
         "value": 0.3
       },
       {
-        "vs": "AbstractLightInfantry",
+        "vs": "Light infantry",
         "value": 0.3
       }
     ]
@@ -31608,19 +31608,19 @@
     "aoe_radius_ranged": 2,
     "multipliers_ranged": [
       {
-        "vs": "AbstractCavalry",
+        "vs": "Cavalry",
         "value": 0.4
       },
       {
-        "vs": "AbstractVillager",
+        "vs": "Villager",
         "value": 0.5
       },
       {
-        "vs": "AbstractLightInfantry",
+        "vs": "Light infantry",
         "value": 0.4
       },
       {
-        "vs": "AbstractArtillery",
+        "vs": "Artillery",
         "value": 2
       }
     ],
@@ -31630,19 +31630,19 @@
     "damage_type_melee": "Hand",
     "multipliers_melee": [
       {
-        "vs": "AbstractArtillery",
+        "vs": "Artillery",
         "value": 1.75
       },
       {
-        "vs": "AbstractVillager",
+        "vs": "Villager",
         "value": 0.5
       },
       {
-        "vs": "AbstractCavalry",
+        "vs": "Cavalry",
         "value": 0.25
       },
       {
-        "vs": "AbstractLightInfantry",
+        "vs": "Light infantry",
         "value": 0.15
       }
     ],
@@ -32060,7 +32060,7 @@
     "damage_type_melee": "Siege",
     "multipliers_melee": [
       {
-        "vs": "AbstractVillager",
+        "vs": "Villager",
         "value": 1.5
       },
       {
@@ -32295,11 +32295,11 @@
     "damage_type_melee": "Hand",
     "multipliers_melee": [
       {
-        "vs": "AbstractCavalry",
+        "vs": "Cavalry",
         "value": 3.5
       },
       {
-        "vs": "AbstractLightInfantry",
+        "vs": "Light infantry",
         "value": 2.5
       }
     ]
@@ -32496,11 +32496,11 @@
     "damage_type_melee": "Hand",
     "multipliers_melee": [
       {
-        "vs": "AbstractCavalry",
+        "vs": "Cavalry",
         "value": 2
       },
       {
-        "vs": "AbstractLightInfantry",
+        "vs": "Light infantry",
         "value": 1.6
       }
     ]
@@ -32645,11 +32645,11 @@
     "aoe_radius_melee": 1,
     "multipliers_melee": [
       {
-        "vs": "AbstractInfantry",
+        "vs": "Infantry",
         "value": 1.5
       },
       {
-        "vs": "AbstractHeavyInfantry",
+        "vs": "Heavy infantry",
         "value": 0.67
       }
     ],
@@ -33043,23 +33043,23 @@
     "damage_type_ranged": "Ranged",
     "multipliers_ranged": [
       {
-        "vs": "AbstractHeavyInfantry",
+        "vs": "Heavy infantry",
         "value": 2
       },
       {
-        "vs": "AbstractLightCavalry",
+        "vs": "Light ranged cavalry",
         "value": 2.5
       },
       {
-        "vs": "AbstractRangedShockInfantry",
+        "vs": "Ranged shock infantry",
         "value": 2.5
       },
       {
-        "vs": "AbstractCavalry",
+        "vs": "Cavalry",
         "value": 0.6
       },
       {
-        "vs": "AbstractLightInfantry",
+        "vs": "Light infantry",
         "value": 0.6
       }
     ],
@@ -33069,23 +33069,23 @@
     "damage_type_melee": "Hand",
     "multipliers_melee": [
       {
-        "vs": "AbstractHeavyInfantry",
+        "vs": "Heavy infantry",
         "value": 2
       },
       {
-        "vs": "AbstractLightCavalry",
+        "vs": "Light ranged cavalry",
         "value": 2
       },
       {
-        "vs": "AbstractRangedShockInfantry",
+        "vs": "Ranged shock infantry",
         "value": 2
       },
       {
-        "vs": "AbstractCavalry",
+        "vs": "Cavalry",
         "value": 0.75
       },
       {
-        "vs": "AbstractLightInfantry",
+        "vs": "Light infantry",
         "value": 0.75
       }
     ]
@@ -33204,7 +33204,7 @@
     "aoe_radius_ranged": 1,
     "multipliers_ranged": [
       {
-        "vs": "AbstractArtillery",
+        "vs": "Artillery",
         "value": 0.5
       }
     ],
@@ -33434,11 +33434,11 @@
     "damage_type_ranged": "Ranged",
     "multipliers_ranged": [
       {
-        "vs": "AbstractSiegeTrooper",
+        "vs": "Siege trooper",
         "value": 2
       },
       {
-        "vs": "AbstractVillager",
+        "vs": "Villager",
         "value": 0.25
       }
     ],
@@ -33448,11 +33448,11 @@
     "damage_type_melee": "Hand",
     "multipliers_melee": [
       {
-        "vs": "AbstractSiegeTrooper",
+        "vs": "Siege trooper",
         "value": 2
       },
       {
-        "vs": "AbstractVillager",
+        "vs": "Villager",
         "value": 0.25
       }
     ]
@@ -33850,23 +33850,23 @@
     "damage_type_ranged": "Ranged",
     "multipliers_ranged": [
       {
-        "vs": "AbstractHeavyInfantry",
+        "vs": "Heavy infantry",
         "value": 2
       },
       {
-        "vs": "AbstractLightCavalry",
+        "vs": "Light ranged cavalry",
         "value": 2.5
       },
       {
-        "vs": "AbstractRangedShockInfantry",
+        "vs": "Ranged shock infantry",
         "value": 2.5
       },
       {
-        "vs": "AbstractCavalry",
+        "vs": "Cavalry",
         "value": 0.6
       },
       {
-        "vs": "AbstractLightInfantry",
+        "vs": "Light infantry",
         "value": 0.6
       }
     ],
@@ -33876,23 +33876,23 @@
     "damage_type_melee": "Hand",
     "multipliers_melee": [
       {
-        "vs": "AbstractHeavyInfantry",
+        "vs": "Heavy infantry",
         "value": 2
       },
       {
-        "vs": "AbstractLightCavalry",
+        "vs": "Light ranged cavalry",
         "value": 2
       },
       {
-        "vs": "AbstractRangedShockInfantry",
+        "vs": "Ranged shock infantry",
         "value": 2
       },
       {
-        "vs": "AbstractCavalry",
+        "vs": "Cavalry",
         "value": 0.75
       },
       {
-        "vs": "AbstractLightInfantry",
+        "vs": "Light infantry",
         "value": 0.75
       }
     ]
@@ -34061,15 +34061,15 @@
     "damage_type_melee": "Hand",
     "multipliers_melee": [
       {
-        "vs": "AbstractCavalry",
+        "vs": "Cavalry",
         "value": 2
       },
       {
-        "vs": "AbstractLightInfantry",
+        "vs": "Light infantry",
         "value": 1.6
       },
       {
-        "vs": "AbstractHeavyInfantry",
+        "vs": "Heavy infantry",
         "value": 3
       }
     ]
@@ -34346,11 +34346,11 @@
     "damage_type_melee": "Hand",
     "multipliers_melee": [
       {
-        "vs": "AbstractCavalry",
+        "vs": "Cavalry",
         "value": 2
       },
       {
-        "vs": "AbstractLightInfantry",
+        "vs": "Light infantry",
         "value": 1.5
       }
     ]
@@ -34468,7 +34468,7 @@
     "damage_type_melee": "Hand",
     "multipliers_melee": [
       {
-        "vs": "AbstractInfantry",
+        "vs": "Infantry",
         "value": 4
       }
     ]
@@ -34617,11 +34617,11 @@
     "damage_type_melee": "Hand",
     "multipliers_melee": [
       {
-        "vs": "AbstractCavalry",
+        "vs": "Cavalry",
         "value": 5
       },
       {
-        "vs": "AbstractLightInfantry",
+        "vs": "Light infantry",
         "value": 3.5
       }
     ]
@@ -34778,19 +34778,19 @@
     "damage_type_ranged": "Ranged",
     "multipliers_ranged": [
       {
-        "vs": "AbstractHeavyCavalry",
+        "vs": "Heavy cavalry",
         "value": 3
       },
       {
-        "vs": "AbstractCoyoteMan",
+        "vs": "Shock infantry",
         "value": 2.2
       },
       {
-        "vs": "AbstractVillager",
+        "vs": "Villager",
         "value": 0.5
       },
       {
-        "vs": "AbstractArtillery",
+        "vs": "Artillery",
         "value": 2.5
       }
     ]
@@ -35198,23 +35198,23 @@
     "damage_type_ranged": "Ranged",
     "multipliers_ranged": [
       {
-        "vs": "AbstractHeavyInfantry",
+        "vs": "Heavy infantry",
         "value": 1.75
       },
       {
-        "vs": "AbstractLightCavalry",
+        "vs": "Light ranged cavalry",
         "value": 2.5
       },
       {
-        "vs": "AbstractRangedShockInfantry",
+        "vs": "Ranged shock infantry",
         "value": 2.5
       },
       {
-        "vs": "AbstractCavalry",
+        "vs": "Cavalry",
         "value": 0.6
       },
       {
-        "vs": "AbstractLightInfantry",
+        "vs": "Light infantry",
         "value": 0.6
       }
     ],
@@ -35224,23 +35224,23 @@
     "damage_type_melee": "Hand",
     "multipliers_melee": [
       {
-        "vs": "AbstractHeavyInfantry",
+        "vs": "Heavy infantry",
         "value": 1.75
       },
       {
-        "vs": "AbstractLightCavalry",
+        "vs": "Light ranged cavalry",
         "value": 2
       },
       {
-        "vs": "AbstractRangedShockInfantry",
+        "vs": "Ranged shock infantry",
         "value": 2
       },
       {
-        "vs": "AbstractCavalry",
+        "vs": "Cavalry",
         "value": 0.75
       },
       {
-        "vs": "AbstractLightInfantry",
+        "vs": "Light infantry",
         "value": 0.75
       }
     ]
@@ -35431,19 +35431,19 @@
     "damage_type_ranged": "Ranged",
     "multipliers_ranged": [
       {
-        "vs": "AbstractHeavyCavalry",
+        "vs": "Heavy cavalry",
         "value": 3
       },
       {
-        "vs": "AbstractVillager",
+        "vs": "Villager",
         "value": 0.5
       },
       {
-        "vs": "AbstractArtillery",
+        "vs": "Artillery",
         "value": 3
       },
       {
-        "vs": "AbstractCoyoteMan",
+        "vs": "Shock infantry",
         "value": 2.2
       }
     ],
@@ -35453,15 +35453,15 @@
     "damage_type_melee": "Hand",
     "multipliers_melee": [
       {
-        "vs": "AbstractHeavyCavalry",
+        "vs": "Heavy cavalry",
         "value": 3
       },
       {
-        "vs": "AbstractArtillery",
+        "vs": "Artillery",
         "value": 3
       },
       {
-        "vs": "AbstractCoyoteMan",
+        "vs": "Shock infantry",
         "value": 2.2
       }
     ]
@@ -35584,7 +35584,7 @@
     "damage_type_melee": "Hand",
     "multipliers_melee": [
       {
-        "vs": "AbstractArtillery",
+        "vs": "Artillery",
         "value": 1.75
       }
     ]
@@ -35715,15 +35715,15 @@
     "damage_type_ranged": "Ranged",
     "multipliers_ranged": [
       {
-        "vs": "AbstractVillager",
+        "vs": "Villager",
         "value": 0.5
       },
       {
-        "vs": "AbstractHeavyCavalry",
+        "vs": "Heavy cavalry",
         "value": 3
       },
       {
-        "vs": "AbstractCoyoteMan",
+        "vs": "Shock infantry",
         "value": 2.5
       }
     ]
@@ -36183,23 +36183,23 @@
     "damage_type_ranged": "Ranged",
     "multipliers_ranged": [
       {
-        "vs": "AbstractHeavyInfantry",
+        "vs": "Heavy infantry",
         "value": 2
       },
       {
-        "vs": "AbstractLightCavalry",
+        "vs": "Light ranged cavalry",
         "value": 2.5
       },
       {
-        "vs": "AbstractRangedShockInfantry",
+        "vs": "Ranged shock infantry",
         "value": 2.5
       },
       {
-        "vs": "AbstractCavalry",
+        "vs": "Cavalry",
         "value": 0.6
       },
       {
-        "vs": "AbstractLightInfantry",
+        "vs": "Light infantry",
         "value": 0.6
       },
       {
@@ -36213,23 +36213,23 @@
     "damage_type_melee": "Hand",
     "multipliers_melee": [
       {
-        "vs": "AbstractHeavyInfantry",
+        "vs": "Heavy infantry",
         "value": 2
       },
       {
-        "vs": "AbstractLightCavalry",
+        "vs": "Light ranged cavalry",
         "value": 2
       },
       {
-        "vs": "AbstractRangedShockInfantry",
+        "vs": "Ranged shock infantry",
         "value": 2
       },
       {
-        "vs": "AbstractCavalry",
+        "vs": "Cavalry",
         "value": 0.75
       },
       {
-        "vs": "AbstractLightInfantry",
+        "vs": "Light infantry",
         "value": 0.75
       },
       {
@@ -36342,11 +36342,11 @@
     "damage_type_melee": "Hand",
     "multipliers_melee": [
       {
-        "vs": "AbstractHeavyCavalry",
+        "vs": "Heavy cavalry",
         "value": 3
       },
       {
-        "vs": "AbstractCoyoteMan",
+        "vs": "Shock infantry",
         "value": 2
       }
     ]
@@ -36842,11 +36842,11 @@
     "damage_type_melee": "Hand",
     "multipliers_melee": [
       {
-        "vs": "AbstractCavalry",
+        "vs": "Cavalry",
         "value": 2
       },
       {
-        "vs": "AbstractLightInfantry",
+        "vs": "Light infantry",
         "value": 1.5
       }
     ]
@@ -37216,23 +37216,23 @@
     "damage_type_ranged": "Ranged",
     "multipliers_ranged": [
       {
-        "vs": "AbstractHeavyInfantry",
+        "vs": "Heavy infantry",
         "value": 1.1
       },
       {
-        "vs": "AbstractLightCavalry",
+        "vs": "Light ranged cavalry",
         "value": 1.67
       },
       {
-        "vs": "AbstractRangedShockInfantry",
+        "vs": "Ranged shock infantry",
         "value": 1.67
       },
       {
-        "vs": "AbstractCavalry",
+        "vs": "Cavalry",
         "value": 0.6
       },
       {
-        "vs": "AbstractLightInfantry",
+        "vs": "Light infantry",
         "value": 0.6
       }
     ],
@@ -37242,23 +37242,23 @@
     "damage_type_melee": "Hand",
     "multipliers_melee": [
       {
-        "vs": "AbstractHeavyInfantry",
+        "vs": "Heavy infantry",
         "value": 1.1
       },
       {
-        "vs": "AbstractLightCavalry",
+        "vs": "Light ranged cavalry",
         "value": 1.67
       },
       {
-        "vs": "AbstractRangedShockInfantry",
+        "vs": "Ranged shock infantry",
         "value": 1.67
       },
       {
-        "vs": "AbstractCavalry",
+        "vs": "Cavalry",
         "value": 0.6
       },
       {
-        "vs": "AbstractLightInfantry",
+        "vs": "Light infantry",
         "value": 0.6
       }
     ]
@@ -37491,19 +37491,19 @@
     "aoe_radius_ranged": 2,
     "multipliers_ranged": [
       {
-        "vs": "AbstractInfantry",
+        "vs": "Infantry",
         "value": 3
       },
       {
-        "vs": "xpArrowKnight",
+        "vs": "xp Arrow Knight",
         "value": 0.5
       },
       {
-        "vs": "AbstractHeavyCavalry",
+        "vs": "Heavy cavalry",
         "value": 0.5
       },
       {
-        "vs": "AbstractCoyoteMan",
+        "vs": "Shock infantry",
         "value": 0.5
       }
     ],
@@ -37904,23 +37904,23 @@
     "damage_type_ranged": "Ranged",
     "multipliers_ranged": [
       {
-        "vs": "AbstractHeavyInfantry",
+        "vs": "Heavy infantry",
         "value": 2
       },
       {
-        "vs": "AbstractLightCavalry",
+        "vs": "Light ranged cavalry",
         "value": 2.5
       },
       {
-        "vs": "AbstractRangedShockInfantry",
+        "vs": "Ranged shock infantry",
         "value": 2.5
       },
       {
-        "vs": "AbstractCavalry",
+        "vs": "Cavalry",
         "value": 0.6
       },
       {
-        "vs": "AbstractLightInfantry",
+        "vs": "Light infantry",
         "value": 0.6
       }
     ],
@@ -37930,23 +37930,23 @@
     "damage_type_melee": "Hand",
     "multipliers_melee": [
       {
-        "vs": "AbstractHeavyInfantry",
+        "vs": "Heavy infantry",
         "value": 2
       },
       {
-        "vs": "AbstractLightCavalry",
+        "vs": "Light ranged cavalry",
         "value": 2
       },
       {
-        "vs": "AbstractRangedShockInfantry",
+        "vs": "Ranged shock infantry",
         "value": 2
       },
       {
-        "vs": "AbstractCavalry",
+        "vs": "Cavalry",
         "value": 0.75
       },
       {
-        "vs": "AbstractLightInfantry",
+        "vs": "Light infantry",
         "value": 0.75
       }
     ]
@@ -38438,27 +38438,27 @@
     "damage_type_ranged": "Ranged",
     "multipliers_ranged": [
       {
-        "vs": "AbstractLightCavalry",
+        "vs": "Light ranged cavalry",
         "value": 2.5
       },
       {
-        "vs": "AbstractRangedShockInfantry",
+        "vs": "Ranged shock infantry",
         "value": 2.5
       },
       {
-        "vs": "AbstractCavalry",
+        "vs": "Cavalry",
         "value": 0.6
       },
       {
-        "vs": "AbstractLightInfantry",
+        "vs": "Light infantry",
         "value": 0.6
       },
       {
-        "vs": "AbstractHeavyInfantry",
+        "vs": "Heavy infantry",
         "value": 1.25
       },
       {
-        "vs": "AbstractVillager",
+        "vs": "Villager",
         "value": 0.25
       }
     ],
@@ -38468,27 +38468,27 @@
     "damage_type_melee": "Hand",
     "multipliers_melee": [
       {
-        "vs": "AbstractLightCavalry",
+        "vs": "Light ranged cavalry",
         "value": 2
       },
       {
-        "vs": "AbstractRangedShockInfantry",
+        "vs": "Ranged shock infantry",
         "value": 2
       },
       {
-        "vs": "AbstractCavalry",
+        "vs": "Cavalry",
         "value": 0.75
       },
       {
-        "vs": "AbstractLightInfantry",
+        "vs": "Light infantry",
         "value": 0.75
       },
       {
-        "vs": "AbstractHeavyInfantry",
+        "vs": "Heavy infantry",
         "value": 1.25
       },
       {
-        "vs": "AbstractVillager",
+        "vs": "Villager",
         "value": 0.25
       }
     ]
@@ -38791,15 +38791,15 @@
     "damage_type_ranged": "Ranged",
     "multipliers_ranged": [
       {
-        "vs": "AbstractSiegeTrooper",
+        "vs": "Siege trooper",
         "value": 2
       },
       {
-        "vs": "AbstractArtillery",
+        "vs": "Artillery",
         "value": 2
       },
       {
-        "vs": "AbstractVillager",
+        "vs": "Villager",
         "value": 0.25
       }
     ],
@@ -38809,19 +38809,19 @@
     "damage_type_melee": "Hand",
     "multipliers_melee": [
       {
-        "vs": "AbstractCavalry",
+        "vs": "Cavalry",
         "value": 3
       },
       {
-        "vs": "AbstractLightInfantry",
+        "vs": "Light infantry",
         "value": 2.25
       },
       {
-        "vs": "AbstractSiegeTrooper",
+        "vs": "Siege trooper",
         "value": 2
       },
       {
-        "vs": "AbstractVillager",
+        "vs": "Villager",
         "value": 0.25
       }
     ]
@@ -38990,15 +38990,15 @@
     "damage_type_melee": "Hand",
     "multipliers_melee": [
       {
-        "vs": "AbstractCavalry",
+        "vs": "Cavalry",
         "value": 5
       },
       {
-        "vs": "AbstractLightInfantry",
+        "vs": "Light infantry",
         "value": 2.25
       },
       {
-        "vs": "AbstractVillager",
+        "vs": "Villager",
         "value": 0.25
       }
     ]
@@ -39251,7 +39251,7 @@
     "aoe_radius_ranged": 2,
     "multipliers_ranged": [
       {
-        "vs": "AbstractInfantry",
+        "vs": "Infantry",
         "value": 2
       },
       {
@@ -39263,7 +39263,7 @@
         "value": 3
       },
       {
-        "vs": "AbstractArtillery",
+        "vs": "Artillery",
         "value": 2
       }
     ],
@@ -39459,11 +39459,11 @@
     "damage_type_melee": "Hand",
     "multipliers_melee": [
       {
-        "vs": "AbstractCavalry",
+        "vs": "Cavalry",
         "value": 3
       },
       {
-        "vs": "AbstractLightInfantry",
+        "vs": "Light infantry",
         "value": 2.25
       }
     ]
@@ -39617,19 +39617,19 @@
     "damage_type_ranged": "Ranged",
     "multipliers_ranged": [
       {
-        "vs": "AbstractHeavyCavalry",
+        "vs": "Heavy cavalry",
         "value": 3
       },
       {
-        "vs": "AbstractArtillery",
+        "vs": "Artillery",
         "value": 2
       },
       {
-        "vs": "AbstractCoyoteMan",
+        "vs": "Shock infantry",
         "value": 2.25
       },
       {
-        "vs": "AbstractVillager",
+        "vs": "Villager",
         "value": 0.34
       }
     ]
@@ -39791,7 +39791,7 @@
     "damage_type_melee": "Hand",
     "multipliers_melee": [
       {
-        "vs": "AbstractInfantry",
+        "vs": "Infantry",
         "value": 2
       }
     ]
@@ -40211,23 +40211,23 @@
     "damage_type_ranged": "Ranged",
     "multipliers_ranged": [
       {
-        "vs": "AbstractHeavyInfantry",
+        "vs": "Heavy infantry",
         "value": 1.25
       },
       {
-        "vs": "AbstractLightCavalry",
+        "vs": "Light ranged cavalry",
         "value": 2.5
       },
       {
-        "vs": "AbstractRangedShockInfantry",
+        "vs": "Ranged shock infantry",
         "value": 2.5
       },
       {
-        "vs": "AbstractCavalry",
+        "vs": "Cavalry",
         "value": 0.6
       },
       {
-        "vs": "AbstractLightInfantry",
+        "vs": "Light infantry",
         "value": 0.6
       }
     ],
@@ -40237,23 +40237,23 @@
     "damage_type_melee": "Hand",
     "multipliers_melee": [
       {
-        "vs": "AbstractLightCavalry",
+        "vs": "Light ranged cavalry",
         "value": 2
       },
       {
-        "vs": "AbstractRangedShockInfantry",
+        "vs": "Ranged shock infantry",
         "value": 2
       },
       {
-        "vs": "AbstractHeavyInfantry",
+        "vs": "Heavy infantry",
         "value": 1.25
       },
       {
-        "vs": "AbstractCavalry",
+        "vs": "Cavalry",
         "value": 0.75
       },
       {
-        "vs": "AbstractLightInfantry",
+        "vs": "Light infantry",
         "value": 0.75
       }
     ]
@@ -40487,11 +40487,11 @@
     "aoe_radius_melee": 2.5,
     "multipliers_melee": [
       {
-        "vs": "AbstractCavalry",
+        "vs": "Cavalry",
         "value": 2
       },
       {
-        "vs": "AbstractLightInfantry",
+        "vs": "Light infantry",
         "value": 1.6
       }
     ],
@@ -40651,11 +40651,11 @@
     "aoe_radius_melee": 2,
     "multipliers_melee": [
       {
-        "vs": "AbstractInfantry",
+        "vs": "Infantry",
         "value": 2
       },
       {
-        "vs": "AbstractHeavyInfantry",
+        "vs": "Heavy infantry",
         "value": 0.5
       }
     ],
@@ -40835,7 +40835,7 @@
         "value": 1.5
       },
       {
-        "vs": "MercType2",
+        "vs": "Merc type2",
         "value": 1.5
       }
     ],
@@ -41090,19 +41090,19 @@
     "damage_type_ranged": "Ranged",
     "multipliers_ranged": [
       {
-        "vs": "AbstractVillager",
+        "vs": "Villager",
         "value": 0.5
       },
       {
-        "vs": "AbstractArtillery",
+        "vs": "Artillery",
         "value": 2
       },
       {
-        "vs": "AbstractHeavyCavalry",
+        "vs": "Heavy cavalry",
         "value": 2.5
       },
       {
-        "vs": "AbstractCoyoteMan",
+        "vs": "Shock infantry",
         "value": 2
       }
     ]
@@ -41374,27 +41374,27 @@
     "aoe_radius_ranged": 2,
     "multipliers_ranged": [
       {
-        "vs": "AbstractHeavyCavalry",
+        "vs": "Heavy cavalry",
         "value": 2.5
       },
       {
-        "vs": "AbstractLightCavalry",
+        "vs": "Light ranged cavalry",
         "value": 0.75
       },
       {
-        "vs": "AbstractCoyoteMan",
+        "vs": "Shock infantry",
         "value": 2.5
       },
       {
-        "vs": "AbstractRangedShockInfantry",
+        "vs": "Ranged shock infantry",
         "value": 0.75
       },
       {
-        "vs": "AbstractArtillery",
+        "vs": "Artillery",
         "value": 2
       },
       {
-        "vs": "AbstractVillager",
+        "vs": "Villager",
         "value": 0.5
       }
     ],
@@ -41591,11 +41591,11 @@
     "aoe_radius_melee": 2,
     "multipliers_melee": [
       {
-        "vs": "AbstractCavalry",
+        "vs": "Cavalry",
         "value": 2.5
       },
       {
-        "vs": "AbstractLightInfantry",
+        "vs": "Light infantry",
         "value": 1.75
       }
     ],
@@ -41758,11 +41758,11 @@
     "damage_type_melee": "Hand",
     "multipliers_melee": [
       {
-        "vs": "AbstractCavalry",
+        "vs": "Cavalry",
         "value": 3
       },
       {
-        "vs": "AbstractLightInfantry",
+        "vs": "Light infantry",
         "value": 2.25
       }
     ]
@@ -41948,23 +41948,23 @@
     "damage_type_ranged": "Ranged",
     "multipliers_ranged": [
       {
-        "vs": "AbstractHeavyInfantry",
+        "vs": "Heavy infantry",
         "value": 2
       },
       {
-        "vs": "AbstractLightCavalry",
+        "vs": "Light ranged cavalry",
         "value": 2.5
       },
       {
-        "vs": "AbstractRangedShockInfantry",
+        "vs": "Ranged shock infantry",
         "value": 2.5
       },
       {
-        "vs": "AbstractCavalry",
+        "vs": "Cavalry",
         "value": 0.6
       },
       {
-        "vs": "AbstractLightInfantry",
+        "vs": "Light infantry",
         "value": 0.6
       }
     ],
@@ -41974,23 +41974,23 @@
     "damage_type_melee": "Hand",
     "multipliers_melee": [
       {
-        "vs": "AbstractHeavyInfantry",
+        "vs": "Heavy infantry",
         "value": 2
       },
       {
-        "vs": "AbstractRangedShockInfantry",
+        "vs": "Ranged shock infantry",
         "value": 2
       },
       {
-        "vs": "AbstractLightCavalry",
+        "vs": "Light ranged cavalry",
         "value": 2
       },
       {
-        "vs": "AbstractLightInfantry",
+        "vs": "Light infantry",
         "value": 0.75
       },
       {
-        "vs": "AbstractCavalry",
+        "vs": "Cavalry",
         "value": 0.75
       }
     ]
@@ -42148,11 +42148,11 @@
     "damage_type_melee": "Hand",
     "multipliers_melee": [
       {
-        "vs": "AbstractCavalry",
+        "vs": "Cavalry",
         "value": 3
       },
       {
-        "vs": "AbstractLightInfantry",
+        "vs": "Light infantry",
         "value": 2.25
       }
     ]
@@ -42317,7 +42317,7 @@
     "damage_type_melee": "Hand",
     "multipliers_melee": [
       {
-        "vs": "AbstractArtillery",
+        "vs": "Artillery",
         "value": 1.34
       }
     ]
@@ -42459,11 +42459,11 @@
     "aoe_radius_ranged": 5,
     "multipliers_ranged": [
       {
-        "vs": "AbstractArtillery",
+        "vs": "Artillery",
         "value": 0.5
       },
       {
-        "vs": "AbstractVillager",
+        "vs": "Villager",
         "value": 0.5
       }
     ],
@@ -42473,11 +42473,11 @@
     "damage_type_melee": "Hand",
     "multipliers_melee": [
       {
-        "vs": "AbstractPet",
+        "vs": "Pet",
         "value": 2
       },
       {
-        "vs": "AbstractArtillery",
+        "vs": "Artillery",
         "value": 2
       }
     ],
@@ -42725,11 +42725,11 @@
     "damage_type_ranged": "Ranged",
     "multipliers_ranged": [
       {
-        "vs": "AbstractSiegeTrooper",
+        "vs": "Siege trooper",
         "value": 2
       },
       {
-        "vs": "AbstractVillager",
+        "vs": "Villager",
         "value": 0.25
       }
     ],
@@ -42739,11 +42739,11 @@
     "damage_type_melee": "Hand",
     "multipliers_melee": [
       {
-        "vs": "AbstractSiegeTrooper",
+        "vs": "Siege trooper",
         "value": 2
       },
       {
-        "vs": "AbstractVillager",
+        "vs": "Villager",
         "value": 0.25
       }
     ]
@@ -43030,15 +43030,15 @@
         "value": 10
       },
       {
-        "vs": "AbstractDock",
+        "vs": "Dock",
         "value": 0.1
       },
       {
-        "vs": "AbstractVillager",
+        "vs": "Villager",
         "value": 0.2
       },
       {
-        "vs": "AbstractArtillery",
+        "vs": "Artillery",
         "value": 0.5
       }
     ],
@@ -43265,19 +43265,19 @@
     "aoe_radius_ranged": 4,
     "multipliers_ranged": [
       {
-        "vs": "AbstractArtillery",
+        "vs": "Artillery",
         "value": 0.4
       },
       {
-        "vs": "AbstractCavalry",
+        "vs": "Cavalry",
         "value": 0.4
       },
       {
-        "vs": "AbstractLightInfantry",
+        "vs": "Light infantry",
         "value": 0.4
       },
       {
-        "vs": "AbstractVillager",
+        "vs": "Villager",
         "value": 0.4
       }
     ],
@@ -43394,19 +43394,19 @@
     "aoe_radius_ranged": 4,
     "multipliers_ranged": [
       {
-        "vs": "AbstractArtillery",
+        "vs": "Artillery",
         "value": 0.4
       },
       {
-        "vs": "AbstractCavalry",
+        "vs": "Cavalry",
         "value": 0.4
       },
       {
-        "vs": "AbstractLightInfantry",
+        "vs": "Light infantry",
         "value": 0.4
       },
       {
-        "vs": "AbstractVillager",
+        "vs": "Villager",
         "value": 0.4
       }
     ],
@@ -43797,23 +43797,23 @@
     "damage_type_ranged": "Ranged",
     "multipliers_ranged": [
       {
-        "vs": "AbstractHeavyInfantry",
+        "vs": "Heavy infantry",
         "value": 2
       },
       {
-        "vs": "AbstractLightCavalry",
+        "vs": "Light ranged cavalry",
         "value": 2.5
       },
       {
-        "vs": "AbstractRangedShockInfantry",
+        "vs": "Ranged shock infantry",
         "value": 2.5
       },
       {
-        "vs": "AbstractCavalry",
+        "vs": "Cavalry",
         "value": 0.6
       },
       {
-        "vs": "AbstractLightInfantry",
+        "vs": "Light infantry",
         "value": 0.6
       }
     ],
@@ -43823,23 +43823,23 @@
     "damage_type_melee": "Hand",
     "multipliers_melee": [
       {
-        "vs": "AbstractHeavyInfantry",
+        "vs": "Heavy infantry",
         "value": 2
       },
       {
-        "vs": "AbstractLightCavalry",
+        "vs": "Light ranged cavalry",
         "value": 2
       },
       {
-        "vs": "AbstractRangedShockInfantry",
+        "vs": "Ranged shock infantry",
         "value": 2
       },
       {
-        "vs": "AbstractCavalry",
+        "vs": "Cavalry",
         "value": 0.75
       },
       {
-        "vs": "AbstractLightInfantry",
+        "vs": "Light infantry",
         "value": 0.75
       }
     ]
@@ -43969,19 +43969,19 @@
     "aoe_radius_ranged": 2,
     "multipliers_ranged": [
       {
-        "vs": "AbstractLightCavalry",
+        "vs": "Light ranged cavalry",
         "value": 0.5
       },
       {
-        "vs": "AbstractRangedShockInfantry",
+        "vs": "Ranged shock infantry",
         "value": 0.5
       },
       {
-        "vs": "AbstractArtillery",
+        "vs": "Artillery",
         "value": 0.25
       },
       {
-        "vs": "AbstractVillager",
+        "vs": "Villager",
         "value": 0.25
       }
     ],
@@ -44153,7 +44153,7 @@
     "damage_type_ranged": "Ranged",
     "multipliers_ranged": [
       {
-        "vs": "AbstractInfantry",
+        "vs": "Infantry",
         "value": 2
       }
     ],
@@ -44163,7 +44163,7 @@
     "damage_type_melee": "Hand",
     "multipliers_melee": [
       {
-        "vs": "AbstractInfantry",
+        "vs": "Infantry",
         "value": 3
       }
     ]
@@ -44469,27 +44469,27 @@
     "damage_type_ranged": "Ranged",
     "multipliers_ranged": [
       {
-        "vs": "AbstractSkirmisher",
+        "vs": "Light infantry",
         "value": 2
       },
       {
-        "vs": "AbstractHeavyInfantry",
+        "vs": "Heavy infantry",
         "value": 1.34
       },
       {
-        "vs": "AbstractPikeman",
+        "vs": "Pikeman",
         "value": 0.5
       },
       {
-        "vs": "AbstractCavalry",
+        "vs": "Cavalry",
         "value": 0.6
       },
       {
-        "vs": "AbstractLightInfantry",
+        "vs": "Light infantry",
         "value": 0.6
       },
       {
-        "vs": "AbstractVillager",
+        "vs": "Villager",
         "value": 0.5
       }
     ],
@@ -44499,23 +44499,23 @@
     "damage_type_melee": "Hand",
     "multipliers_melee": [
       {
-        "vs": "AbstractSkirmisher",
+        "vs": "Light infantry",
         "value": 2
       },
       {
-        "vs": "AbstractHeavyInfantry",
+        "vs": "Heavy infantry",
         "value": 1.34
       },
       {
-        "vs": "AbstractPikeman",
+        "vs": "Pikeman",
         "value": 0.5
       },
       {
-        "vs": "AbstractCavalry",
+        "vs": "Cavalry",
         "value": 0.6
       },
       {
-        "vs": "AbstractLightInfantry",
+        "vs": "Light infantry",
         "value": 0.6
       }
     ]
@@ -44903,19 +44903,19 @@
     "damage_type_ranged": "Ranged",
     "multipliers_ranged": [
       {
-        "vs": "AbstractHeavyCavalry",
+        "vs": "Heavy cavalry",
         "value": 3
       },
       {
-        "vs": "AbstractVillager",
+        "vs": "Villager",
         "value": 0.5
       },
       {
-        "vs": "AbstractArtillery",
+        "vs": "Artillery",
         "value": 3
       },
       {
-        "vs": "AbstractCoyoteMan",
+        "vs": "Shock infantry",
         "value": 2
       }
     ],
@@ -44925,15 +44925,15 @@
     "damage_type_melee": "Hand",
     "multipliers_melee": [
       {
-        "vs": "AbstractHeavyCavalry",
+        "vs": "Heavy cavalry",
         "value": 3
       },
       {
-        "vs": "AbstractArtillery",
+        "vs": "Artillery",
         "value": 3
       },
       {
-        "vs": "AbstractCoyoteMan",
+        "vs": "Shock infantry",
         "value": 2
       }
     ]
@@ -45133,11 +45133,11 @@
     "damage_type_melee": "Hand",
     "multipliers_melee": [
       {
-        "vs": "AbstractCavalry",
+        "vs": "Cavalry",
         "value": 3
       },
       {
-        "vs": "AbstractLightInfantry",
+        "vs": "Light infantry",
         "value": 2.25
       }
     ]
@@ -45299,11 +45299,11 @@
     "damage_type_melee": "Hand",
     "multipliers_melee": [
       {
-        "vs": "AbstractInfantry",
+        "vs": "Infantry",
         "value": 1.5
       },
       {
-        "vs": "AbstractHeavyInfantry",
+        "vs": "Heavy infantry",
         "value": 0.667
       }
     ]
@@ -45453,7 +45453,7 @@
     "aoe_radius_ranged": 2,
     "multipliers_ranged": [
       {
-        "vs": "AbstractInfantry",
+        "vs": "Infantry",
         "value": 3
       },
       {
@@ -45461,7 +45461,7 @@
         "value": 2
       },
       {
-        "vs": "xpArrowKnight",
+        "vs": "xp Arrow Knight",
         "value": 0.5
       }
     ],
@@ -45655,7 +45655,7 @@
         "value": 5
       },
       {
-        "vs": "AbstractVillager",
+        "vs": "Villager",
         "value": 0.25
       }
     ]
@@ -46045,23 +46045,23 @@
     "damage_type_ranged": "Ranged",
     "multipliers_ranged": [
       {
-        "vs": "AbstractHeavyInfantry",
+        "vs": "Heavy infantry",
         "value": 2
       },
       {
-        "vs": "AbstractLightCavalry",
+        "vs": "Light ranged cavalry",
         "value": 2.5
       },
       {
-        "vs": "AbstractRangedShockInfantry",
+        "vs": "Ranged shock infantry",
         "value": 2.5
       },
       {
-        "vs": "AbstractCavalry",
+        "vs": "Cavalry",
         "value": 0.6
       },
       {
-        "vs": "AbstractLightInfantry",
+        "vs": "Light infantry",
         "value": 0.6
       }
     ],
@@ -46071,23 +46071,23 @@
     "damage_type_melee": "Hand",
     "multipliers_melee": [
       {
-        "vs": "AbstractHeavyInfantry",
+        "vs": "Heavy infantry",
         "value": 2
       },
       {
-        "vs": "AbstractLightCavalry",
+        "vs": "Light ranged cavalry",
         "value": 2
       },
       {
-        "vs": "AbstractRangedShockInfantry",
+        "vs": "Ranged shock infantry",
         "value": 2
       },
       {
-        "vs": "AbstractCavalry",
+        "vs": "Cavalry",
         "value": 0.75
       },
       {
-        "vs": "AbstractLightInfantry",
+        "vs": "Light infantry",
         "value": 0.75
       }
     ]
@@ -46481,23 +46481,23 @@
     "damage_type_ranged": "Ranged",
     "multipliers_ranged": [
       {
-        "vs": "AbstractHeavyInfantry",
+        "vs": "Heavy infantry",
         "value": 2
       },
       {
-        "vs": "AbstractLightCavalry",
+        "vs": "Light ranged cavalry",
         "value": 2.5
       },
       {
-        "vs": "AbstractRangedShockInfantry",
+        "vs": "Ranged shock infantry",
         "value": 2.5
       },
       {
-        "vs": "AbstractCavalry",
+        "vs": "Cavalry",
         "value": 0.6
       },
       {
-        "vs": "AbstractLightInfantry",
+        "vs": "Light infantry",
         "value": 0.6
       }
     ],
@@ -46507,23 +46507,23 @@
     "damage_type_melee": "Hand",
     "multipliers_melee": [
       {
-        "vs": "AbstractHeavyInfantry",
+        "vs": "Heavy infantry",
         "value": 2
       },
       {
-        "vs": "AbstractLightCavalry",
+        "vs": "Light ranged cavalry",
         "value": 2
       },
       {
-        "vs": "AbstractRangedShockInfantry",
+        "vs": "Ranged shock infantry",
         "value": 2
       },
       {
-        "vs": "AbstractCavalry",
+        "vs": "Cavalry",
         "value": 0.75
       },
       {
-        "vs": "AbstractLightInfantry",
+        "vs": "Light infantry",
         "value": 0.75
       }
     ]
@@ -46702,7 +46702,7 @@
         "value": 10
       },
       {
-        "vs": "AbstractNativeWarrior",
+        "vs": "Native warrior",
         "value": 5
       }
     ]
@@ -46939,7 +46939,7 @@
     "damage_type_ranged": "Ranged",
     "multipliers_ranged": [
       {
-        "vs": "AbstractHeavyInfantry",
+        "vs": "Heavy infantry",
         "value": 2
       }
     ],
@@ -46949,11 +46949,11 @@
     "damage_type_melee": "Hand",
     "multipliers_melee": [
       {
-        "vs": "AbstractCavalry",
+        "vs": "Cavalry",
         "value": 3
       },
       {
-        "vs": "AbstractLightInfantry",
+        "vs": "Light infantry",
         "value": 2.25
       }
     ]
@@ -47121,11 +47121,11 @@
     "damage_type_melee": "Hand",
     "multipliers_melee": [
       {
-        "vs": "AbstractCavalry",
+        "vs": "Cavalry",
         "value": 2
       },
       {
-        "vs": "AbstractLightInfantry",
+        "vs": "Light infantry",
         "value": 1.5
       }
     ]
@@ -47301,11 +47301,11 @@
     "aoe_radius_melee": 4,
     "multipliers_melee": [
       {
-        "vs": "AbstractCavalry",
+        "vs": "Cavalry",
         "value": 2
       },
       {
-        "vs": "AbstractLightInfantry",
+        "vs": "Light infantry",
         "value": 1.5
       }
     ],
@@ -47546,11 +47546,11 @@
     "damage_type_ranged": "Ranged",
     "multipliers_ranged": [
       {
-        "vs": "AbstractHeavyCavalry",
+        "vs": "Heavy cavalry",
         "value": 1.25
       },
       {
-        "vs": "AbstractCoyoteMan",
+        "vs": "Shock infantry",
         "value": 1.15
       }
     ],
@@ -47560,11 +47560,11 @@
     "damage_type_melee": "Hand",
     "multipliers_melee": [
       {
-        "vs": "AbstractCavalry",
+        "vs": "Cavalry",
         "value": 2
       },
       {
-        "vs": "AbstractLightInfantry",
+        "vs": "Light infantry",
         "value": 1.6
       }
     ]
@@ -47744,15 +47744,15 @@
     "damage_type_melee": "Hand",
     "multipliers_melee": [
       {
-        "vs": "AbstractVillager",
+        "vs": "Villager",
         "value": 3
       },
       {
-        "vs": "AbstractArtillery",
+        "vs": "Artillery",
         "value": 2
       },
       {
-        "vs": "AbstractSiegeTrooper",
+        "vs": "Siege trooper",
         "value": 2
       }
     ]
@@ -47852,7 +47852,7 @@
     "aoe_radius_ranged": 1,
     "multipliers_ranged": [
       {
-        "vs": "AbstractArtillery",
+        "vs": "Artillery",
         "value": 0.5
       }
     ],
@@ -48251,23 +48251,23 @@
     "damage_type_ranged": "Ranged",
     "multipliers_ranged": [
       {
-        "vs": "AbstractLightCavalry",
+        "vs": "Light ranged cavalry",
         "value": 2
       },
       {
-        "vs": "AbstractRangedShockInfantry",
+        "vs": "Ranged shock infantry",
         "value": 2
       },
       {
-        "vs": "AbstractCavalry",
+        "vs": "Cavalry",
         "value": 0.6
       },
       {
-        "vs": "AbstractLightInfantry",
+        "vs": "Light infantry",
         "value": 0.6
       },
       {
-        "vs": "AbstractHeavyInfantry",
+        "vs": "Heavy infantry",
         "value": 2
       }
     ],
@@ -48277,23 +48277,23 @@
     "damage_type_melee": "Hand",
     "multipliers_melee": [
       {
-        "vs": "AbstractLightCavalry",
+        "vs": "Light ranged cavalry",
         "value": 1.75
       },
       {
-        "vs": "AbstractRangedShockInfantry",
+        "vs": "Ranged shock infantry",
         "value": 1.75
       },
       {
-        "vs": "AbstractCavalry",
+        "vs": "Cavalry",
         "value": 0.75
       },
       {
-        "vs": "AbstractLightInfantry",
+        "vs": "Light infantry",
         "value": 0.75
       },
       {
-        "vs": "AbstractHeavyInfantry",
+        "vs": "Heavy infantry",
         "value": 2
       }
     ]
@@ -48427,11 +48427,11 @@
     "aoe_radius_ranged": 2,
     "multipliers_ranged": [
       {
-        "vs": "AbstractArtillery",
+        "vs": "Artillery",
         "value": 0.5
       },
       {
-        "vs": "AbstractCavalry",
+        "vs": "Cavalry",
         "value": 0.5
       },
       {
@@ -48443,15 +48443,15 @@
         "value": 0.5
       },
       {
-        "vs": "AbstractLightInfantry",
+        "vs": "Light infantry",
         "value": 0.5
       },
       {
-        "vs": "xpArrowKnight",
+        "vs": "xp Arrow Knight",
         "value": 0.5
       },
       {
-        "vs": "deMalteseGun",
+        "vs": "de Maltese Gun",
         "value": 2.5
       }
     ],
@@ -48958,23 +48958,23 @@
     "damage_type_ranged": "Ranged",
     "multipliers_ranged": [
       {
-        "vs": "AbstractHeavyInfantry",
+        "vs": "Heavy infantry",
         "value": 2
       },
       {
-        "vs": "AbstractLightCavalry",
+        "vs": "Light ranged cavalry",
         "value": 2.5
       },
       {
-        "vs": "AbstractRangedShockInfantry",
+        "vs": "Ranged shock infantry",
         "value": 2.5
       },
       {
-        "vs": "AbstractCavalry",
+        "vs": "Cavalry",
         "value": 0.6
       },
       {
-        "vs": "AbstractLightInfantry",
+        "vs": "Light infantry",
         "value": 0.6
       }
     ],
@@ -48984,23 +48984,23 @@
     "damage_type_melee": "Hand",
     "multipliers_melee": [
       {
-        "vs": "AbstractHeavyInfantry",
+        "vs": "Heavy infantry",
         "value": 2
       },
       {
-        "vs": "AbstractLightCavalry",
+        "vs": "Light ranged cavalry",
         "value": 2
       },
       {
-        "vs": "AbstractRangedShockInfantry",
+        "vs": "Ranged shock infantry",
         "value": 2
       },
       {
-        "vs": "AbstractCavalry",
+        "vs": "Cavalry",
         "value": 0.75
       },
       {
-        "vs": "AbstractLightInfantry",
+        "vs": "Light infantry",
         "value": 0.75
       }
     ]
@@ -49249,23 +49249,23 @@
     "damage_type_ranged": "Ranged",
     "multipliers_ranged": [
       {
-        "vs": "AbstractHeavyInfantry",
+        "vs": "Heavy infantry",
         "value": 1.75
       },
       {
-        "vs": "AbstractLightCavalry",
+        "vs": "Light ranged cavalry",
         "value": 2.5
       },
       {
-        "vs": "AbstractRangedShockInfantry",
+        "vs": "Ranged shock infantry",
         "value": 2.5
       },
       {
-        "vs": "AbstractCavalry",
+        "vs": "Cavalry",
         "value": 0.6
       },
       {
-        "vs": "AbstractLightInfantry",
+        "vs": "Light infantry",
         "value": 0.6
       }
     ],
@@ -49275,23 +49275,23 @@
     "damage_type_melee": "Hand",
     "multipliers_melee": [
       {
-        "vs": "AbstractHeavyInfantry",
+        "vs": "Heavy infantry",
         "value": 1.75
       },
       {
-        "vs": "AbstractRangedShockInfantry",
+        "vs": "Ranged shock infantry",
         "value": 2
       },
       {
-        "vs": "AbstractLightCavalry",
+        "vs": "Light ranged cavalry",
         "value": 2
       },
       {
-        "vs": "AbstractLightInfantry",
+        "vs": "Light infantry",
         "value": 0.75
       },
       {
-        "vs": "AbstractCavalry",
+        "vs": "Cavalry",
         "value": 0.75
       }
     ]
@@ -49649,23 +49649,23 @@
     "damage_type_ranged": "Ranged",
     "multipliers_ranged": [
       {
-        "vs": "AbstractSkirmisher",
+        "vs": "Light infantry",
         "value": 2.5
       },
       {
-        "vs": "AbstractCounterSkirmisher",
+        "vs": "Counter-skirmisher",
         "value": 2.5
       },
       {
-        "vs": "AbstractHeavyInfantry",
+        "vs": "Heavy infantry",
         "value": 1.25
       },
       {
-        "vs": "AbstractHeavyCavalry",
+        "vs": "Heavy cavalry",
         "value": 0.6
       },
       {
-        "vs": "AbstractCoyoteMan",
+        "vs": "Shock infantry",
         "value": 0.6
       }
     ],
@@ -49675,15 +49675,15 @@
     "damage_type_melee": "Hand",
     "multipliers_melee": [
       {
-        "vs": "AbstractVillager",
+        "vs": "Villager",
         "value": 3
       },
       {
-        "vs": "AbstractHeavyCavalry",
+        "vs": "Heavy cavalry",
         "value": 0.75
       },
       {
-        "vs": "AbstractCoyoteMan",
+        "vs": "Shock infantry",
         "value": 0.75
       }
     ]
@@ -49831,23 +49831,23 @@
     "aoe_radius_ranged": 4,
     "multipliers_ranged": [
       {
-        "vs": "AbstractArtillery",
+        "vs": "Artillery",
         "value": 0.5
       },
       {
-        "vs": "xpArrowKnight",
+        "vs": "xp Arrow Knight",
         "value": 0.5
       },
       {
-        "vs": "AbstractCavalry",
+        "vs": "Cavalry",
         "value": 0.75
       },
       {
-        "vs": "AbstractLightInfantry",
+        "vs": "Light infantry",
         "value": 0.75
       },
       {
-        "vs": "deMalteseGun",
+        "vs": "de Maltese Gun",
         "value": 2.5
       }
     ],
@@ -50084,11 +50084,11 @@
     "damage_type_melee": "Hand",
     "multipliers_melee": [
       {
-        "vs": "AbstractCavalry",
+        "vs": "Cavalry",
         "value": 3.5
       },
       {
-        "vs": "AbstractLightInfantry",
+        "vs": "Light infantry",
         "value": 2.5
       }
     ]
@@ -50226,7 +50226,7 @@
     "damage_type_melee": "Hand",
     "multipliers_melee": [
       {
-        "vs": "AbstractInfantry",
+        "vs": "Infantry",
         "value": 1.5
       }
     ]
@@ -50657,23 +50657,23 @@
     "damage_type_ranged": "Ranged",
     "multipliers_ranged": [
       {
-        "vs": "AbstractHeavyInfantry",
+        "vs": "Heavy infantry",
         "value": 1.25
       },
       {
-        "vs": "AbstractLightCavalry",
+        "vs": "Light ranged cavalry",
         "value": 2.5
       },
       {
-        "vs": "AbstractRangedShockInfantry",
+        "vs": "Ranged shock infantry",
         "value": 2.5
       },
       {
-        "vs": "AbstractCavalry",
+        "vs": "Cavalry",
         "value": 0.6
       },
       {
-        "vs": "AbstractLightInfantry",
+        "vs": "Light infantry",
         "value": 0.6
       }
     ],
@@ -50683,23 +50683,23 @@
     "damage_type_melee": "Hand",
     "multipliers_melee": [
       {
-        "vs": "AbstractHeavyInfantry",
+        "vs": "Heavy infantry",
         "value": 1.25
       },
       {
-        "vs": "AbstractLightCavalry",
+        "vs": "Light ranged cavalry",
         "value": 2
       },
       {
-        "vs": "AbstractRangedShockInfantry",
+        "vs": "Ranged shock infantry",
         "value": 2
       },
       {
-        "vs": "AbstractCavalry",
+        "vs": "Cavalry",
         "value": 0.75
       },
       {
-        "vs": "AbstractLightInfantry",
+        "vs": "Light infantry",
         "value": 0.75
       }
     ]
@@ -50880,11 +50880,11 @@
     "damage_type_melee": "Hand",
     "multipliers_melee": [
       {
-        "vs": "AbstractCavalry",
+        "vs": "Cavalry",
         "value": 5
       },
       {
-        "vs": "AbstractLightInfantry",
+        "vs": "Light infantry",
         "value": 3.5
       }
     ]
@@ -51153,11 +51153,11 @@
     "damage_type_melee": "Hand",
     "multipliers_melee": [
       {
-        "vs": "AbstractCavalry",
+        "vs": "Cavalry",
         "value": 3
       },
       {
-        "vs": "AbstractLightInfantry",
+        "vs": "Light infantry",
         "value": 2.2
       }
     ]
@@ -51308,11 +51308,11 @@
     "damage_type_melee": "Hand",
     "multipliers_melee": [
       {
-        "vs": "AbstractCavalry",
+        "vs": "Cavalry",
         "value": 3
       },
       {
-        "vs": "AbstractLightInfantry",
+        "vs": "Light infantry",
         "value": 2.25
       }
     ]
@@ -51457,11 +51457,11 @@
     "damage_type_melee": "Hand",
     "multipliers_melee": [
       {
-        "vs": "AbstractCavalry",
+        "vs": "Cavalry",
         "value": 2
       },
       {
-        "vs": "AbstractLightInfantry",
+        "vs": "Light infantry",
         "value": 1.5
       }
     ]
@@ -51598,7 +51598,7 @@
     "aoe_radius_ranged": 1,
     "multipliers_ranged": [
       {
-        "vs": "AbstractArtillery",
+        "vs": "Artillery",
         "value": 0.5
       }
     ],
@@ -51752,11 +51752,11 @@
     "damage_type_melee": "Hand",
     "multipliers_melee": [
       {
-        "vs": "AbstractCavalry",
+        "vs": "Cavalry",
         "value": 5
       },
       {
-        "vs": "AbstractLightInfantry",
+        "vs": "Light infantry",
         "value": 3.5
       }
     ]
@@ -51904,11 +51904,11 @@
     "damage_type_melee": "Hand",
     "multipliers_melee": [
       {
-        "vs": "AbstractCavalry",
+        "vs": "Cavalry",
         "value": 5
       },
       {
-        "vs": "AbstractLightInfantry",
+        "vs": "Light infantry",
         "value": 3.5
       }
     ]
@@ -52041,7 +52041,7 @@
     "damage_type_melee": "Hand",
     "multipliers_melee": [
       {
-        "vs": "AbstractInfantry",
+        "vs": "Infantry",
         "value": 2
       }
     ]
@@ -52552,23 +52552,23 @@
     "aoe_radius_ranged": 3,
     "multipliers_ranged": [
       {
-        "vs": "AbstractHeavyInfantry",
+        "vs": "Heavy infantry",
         "value": 2
       },
       {
-        "vs": "AbstractLightCavalry",
+        "vs": "Light ranged cavalry",
         "value": 2.5
       },
       {
-        "vs": "AbstractRangedShockInfantry",
+        "vs": "Ranged shock infantry",
         "value": 2.5
       },
       {
-        "vs": "AbstractCavalry",
+        "vs": "Cavalry",
         "value": 0.6
       },
       {
-        "vs": "AbstractLightInfantry",
+        "vs": "Light infantry",
         "value": 0.6
       }
     ],
@@ -52578,23 +52578,23 @@
     "damage_type_melee": "Hand",
     "multipliers_melee": [
       {
-        "vs": "AbstractHeavyInfantry",
+        "vs": "Heavy infantry",
         "value": 2
       },
       {
-        "vs": "AbstractLightCavalry",
+        "vs": "Light ranged cavalry",
         "value": 2
       },
       {
-        "vs": "AbstractRangedShockInfantry",
+        "vs": "Ranged shock infantry",
         "value": 2
       },
       {
-        "vs": "AbstractCavalry",
+        "vs": "Cavalry",
         "value": 0.75
       },
       {
-        "vs": "AbstractLightInfantry",
+        "vs": "Light infantry",
         "value": 0.75
       }
     ],
@@ -52742,11 +52742,11 @@
     "damage_type_melee": "Hand",
     "multipliers_melee": [
       {
-        "vs": "AbstractCavalry",
+        "vs": "Cavalry",
         "value": 3
       },
       {
-        "vs": "AbstractLightInfantry",
+        "vs": "Light infantry",
         "value": 2.25
       }
     ]
@@ -52905,11 +52905,11 @@
     "damage_type_melee": "Hand",
     "multipliers_melee": [
       {
-        "vs": "AbstractInfantry",
+        "vs": "Infantry",
         "value": 1.5
       },
       {
-        "vs": "AbstractHeavyInfantry",
+        "vs": "Heavy infantry",
         "value": 0.67
       }
     ]
@@ -53085,11 +53085,11 @@
     "damage_type_melee": "Hand",
     "multipliers_melee": [
       {
-        "vs": "AbstractCavalry",
+        "vs": "Cavalry",
         "value": 3
       },
       {
-        "vs": "AbstractLightInfantry",
+        "vs": "Light infantry",
         "value": 2.25
       }
     ]
@@ -53521,23 +53521,23 @@
     "damage_type_ranged": "Ranged",
     "multipliers_ranged": [
       {
-        "vs": "AbstractHeavyInfantry",
+        "vs": "Heavy infantry",
         "value": 2
       },
       {
-        "vs": "AbstractLightCavalry",
+        "vs": "Light ranged cavalry",
         "value": 2.5
       },
       {
-        "vs": "AbstractRangedShockInfantry",
+        "vs": "Ranged shock infantry",
         "value": 2.5
       },
       {
-        "vs": "AbstractCavalry",
+        "vs": "Cavalry",
         "value": 0.6
       },
       {
-        "vs": "AbstractLightInfantry",
+        "vs": "Light infantry",
         "value": 0.6
       }
     ],
@@ -53547,23 +53547,23 @@
     "damage_type_melee": "Hand",
     "multipliers_melee": [
       {
-        "vs": "AbstractHeavyInfantry",
+        "vs": "Heavy infantry",
         "value": 2
       },
       {
-        "vs": "AbstractLightCavalry",
+        "vs": "Light ranged cavalry",
         "value": 2
       },
       {
-        "vs": "AbstractRangedShockInfantry",
+        "vs": "Ranged shock infantry",
         "value": 2
       },
       {
-        "vs": "AbstractCavalry",
+        "vs": "Cavalry",
         "value": 0.75
       },
       {
-        "vs": "AbstractLightInfantry",
+        "vs": "Light infantry",
         "value": 0.75
       }
     ]
@@ -53951,11 +53951,11 @@
     "damage_type_melee": "Hand",
     "multipliers_melee": [
       {
-        "vs": "AbstractCavalry",
+        "vs": "Cavalry",
         "value": 3
       },
       {
-        "vs": "AbstractLightInfantry",
+        "vs": "Light infantry",
         "value": 2.25
       }
     ]
@@ -54150,11 +54150,11 @@
     "damage_type_melee": "Hand",
     "multipliers_melee": [
       {
-        "vs": "AbstractCavalry",
+        "vs": "Cavalry",
         "value": 3
       },
       {
-        "vs": "AbstractLightInfantry",
+        "vs": "Light infantry",
         "value": 2.25
       }
     ]
@@ -54391,23 +54391,23 @@
     "damage_type_ranged": "Ranged",
     "multipliers_ranged": [
       {
-        "vs": "AbstractHeavyInfantry",
+        "vs": "Heavy infantry",
         "value": 2
       },
       {
-        "vs": "AbstractLightCavalry",
+        "vs": "Light ranged cavalry",
         "value": 2.5
       },
       {
-        "vs": "AbstractRangedShockInfantry",
+        "vs": "Ranged shock infantry",
         "value": 2.5
       },
       {
-        "vs": "AbstractCavalry",
+        "vs": "Cavalry",
         "value": 0.6
       },
       {
-        "vs": "AbstractLightInfantry",
+        "vs": "Light infantry",
         "value": 0.6
       }
     ],
@@ -54417,23 +54417,23 @@
     "damage_type_melee": "Hand",
     "multipliers_melee": [
       {
-        "vs": "AbstractHeavyInfantry",
+        "vs": "Heavy infantry",
         "value": 2
       },
       {
-        "vs": "AbstractRangedShockInfantry",
+        "vs": "Ranged shock infantry",
         "value": 2
       },
       {
-        "vs": "AbstractLightCavalry",
+        "vs": "Light ranged cavalry",
         "value": 2
       },
       {
-        "vs": "AbstractLightInfantry",
+        "vs": "Light infantry",
         "value": 0.75
       },
       {
-        "vs": "AbstractCavalry",
+        "vs": "Cavalry",
         "value": 0.75
       }
     ]
@@ -54698,11 +54698,11 @@
     "damage_type_ranged": "Ranged",
     "multipliers_ranged": [
       {
-        "vs": "AbstractCavalry",
+        "vs": "Cavalry",
         "value": 2
       },
       {
-        "vs": "AbstractLightInfantry",
+        "vs": "Light infantry",
         "value": 1.6
       }
     ],
@@ -54712,11 +54712,11 @@
     "damage_type_melee": "Hand",
     "multipliers_melee": [
       {
-        "vs": "AbstractCavalry",
+        "vs": "Cavalry",
         "value": 2
       },
       {
-        "vs": "AbstractLightInfantry",
+        "vs": "Light infantry",
         "value": 1.6
       }
     ]
@@ -55119,23 +55119,23 @@
     "damage_type_ranged": "Ranged",
     "multipliers_ranged": [
       {
-        "vs": "AbstractHeavyInfantry",
+        "vs": "Heavy infantry",
         "value": 3
       },
       {
-        "vs": "AbstractLightCavalry",
+        "vs": "Light ranged cavalry",
         "value": 3.75
       },
       {
-        "vs": "AbstractRangedShockInfantry",
+        "vs": "Ranged shock infantry",
         "value": 3.75
       },
       {
-        "vs": "AbstractCavalry",
+        "vs": "Cavalry",
         "value": 0.6
       },
       {
-        "vs": "AbstractLightInfantry",
+        "vs": "Light infantry",
         "value": 0.6
       }
     ],
@@ -55145,23 +55145,23 @@
     "damage_type_melee": "Hand",
     "multipliers_melee": [
       {
-        "vs": "AbstractHeavyInfantry",
+        "vs": "Heavy infantry",
         "value": 3
       },
       {
-        "vs": "AbstractLightCavalry",
+        "vs": "Light ranged cavalry",
         "value": 3
       },
       {
-        "vs": "AbstractRangedShockInfantry",
+        "vs": "Ranged shock infantry",
         "value": 3
       },
       {
-        "vs": "AbstractCavalry",
+        "vs": "Cavalry",
         "value": 0.75
       },
       {
-        "vs": "AbstractLightInfantry",
+        "vs": "Light infantry",
         "value": 0.75
       }
     ]
@@ -55433,23 +55433,23 @@
     "damage_type_ranged": "Ranged",
     "multipliers_ranged": [
       {
-        "vs": "AbstractHeavyCavalry",
+        "vs": "Heavy cavalry",
         "value": 3
       },
       {
-        "vs": "AbstractVillager",
+        "vs": "Villager",
         "value": 0.5
       },
       {
-        "vs": "AbstractHeavyInfantry",
+        "vs": "Heavy infantry",
         "value": 3
       },
       {
-        "vs": "AbstractArtillery",
+        "vs": "Artillery",
         "value": 6
       },
       {
-        "vs": "AbstractCoyoteMan",
+        "vs": "Shock infantry",
         "value": 2
       },
       {
@@ -55463,19 +55463,19 @@
     "damage_type_melee": "Hand",
     "multipliers_melee": [
       {
-        "vs": "AbstractHeavyCavalry",
+        "vs": "Heavy cavalry",
         "value": 3
       },
       {
-        "vs": "AbstractHeavyInfantry",
+        "vs": "Heavy infantry",
         "value": 3
       },
       {
-        "vs": "AbstractArtillery",
+        "vs": "Artillery",
         "value": 6
       },
       {
-        "vs": "AbstractCoyoteMan",
+        "vs": "Shock infantry",
         "value": 2
       }
     ]
@@ -55610,19 +55610,19 @@
         "value": 3
       },
       {
-        "vs": "AbstractInfantry",
+        "vs": "Infantry",
         "value": 1.5
       },
       {
-        "vs": "AbstractArtillery",
+        "vs": "Artillery",
         "value": 0.75
       },
       {
-        "vs": "xpArrowKnight",
+        "vs": "xp Arrow Knight",
         "value": 0.5
       },
       {
-        "vs": "deMalteseGun",
+        "vs": "de Maltese Gun",
         "value": 2
       }
     ],
@@ -55780,11 +55780,11 @@
     "damage_type_melee": "Hand",
     "multipliers_melee": [
       {
-        "vs": "AbstractCavalry",
+        "vs": "Cavalry",
         "value": 3.5
       },
       {
-        "vs": "AbstractLightInfantry",
+        "vs": "Light infantry",
         "value": 2.25
       }
     ]
@@ -55961,11 +55961,11 @@
     "aoe_radius_melee": 2,
     "multipliers_melee": [
       {
-        "vs": "AbstractCavalry",
+        "vs": "Cavalry",
         "value": 3
       },
       {
-        "vs": "AbstractLightInfantry",
+        "vs": "Light infantry",
         "value": 2.25
       }
     ],
@@ -56356,23 +56356,23 @@
     "damage_type_ranged": "Ranged",
     "multipliers_ranged": [
       {
-        "vs": "AbstractHeavyInfantry",
+        "vs": "Heavy infantry",
         "value": 1.5
       },
       {
-        "vs": "AbstractLightCavalry",
+        "vs": "Light ranged cavalry",
         "value": 2.5
       },
       {
-        "vs": "AbstractRangedShockInfantry",
+        "vs": "Ranged shock infantry",
         "value": 2.5
       },
       {
-        "vs": "AbstractCavalry",
+        "vs": "Cavalry",
         "value": 0.6
       },
       {
-        "vs": "AbstractLightInfantry",
+        "vs": "Light infantry",
         "value": 0.6
       }
     ],
@@ -56382,23 +56382,23 @@
     "damage_type_melee": "Hand",
     "multipliers_melee": [
       {
-        "vs": "AbstractHeavyInfantry",
+        "vs": "Heavy infantry",
         "value": 1.5
       },
       {
-        "vs": "AbstractLightCavalry",
+        "vs": "Light ranged cavalry",
         "value": 2
       },
       {
-        "vs": "AbstractRangedShockInfantry",
+        "vs": "Ranged shock infantry",
         "value": 2
       },
       {
-        "vs": "AbstractCavalry",
+        "vs": "Cavalry",
         "value": 0.75
       },
       {
-        "vs": "AbstractLightInfantry",
+        "vs": "Light infantry",
         "value": 0.75
       }
     ]
@@ -56665,19 +56665,19 @@
     "damage_type_ranged": "Ranged",
     "multipliers_ranged": [
       {
-        "vs": "AbstractHeavyCavalry",
+        "vs": "Heavy cavalry",
         "value": 2.5
       },
       {
-        "vs": "AbstractArtillery",
+        "vs": "Artillery",
         "value": 2
       },
       {
-        "vs": "AbstractCoyoteMan",
+        "vs": "Shock infantry",
         "value": 1.9
       },
       {
-        "vs": "AbstractVillager",
+        "vs": "Villager",
         "value": 0.5
       }
     ],
@@ -56687,15 +56687,15 @@
     "damage_type_melee": "Hand",
     "multipliers_melee": [
       {
-        "vs": "AbstractHeavyCavalry",
+        "vs": "Heavy cavalry",
         "value": 1.34
       },
       {
-        "vs": "AbstractCoyoteMan",
+        "vs": "Shock infantry",
         "value": 1.2
       },
       {
-        "vs": "AbstractArtillery",
+        "vs": "Artillery",
         "value": 1.5
       }
     ]
@@ -57170,19 +57170,19 @@
     "damage_type_ranged": "Ranged",
     "multipliers_ranged": [
       {
-        "vs": "AbstractSkirmisher",
+        "vs": "Light infantry",
         "value": 1.5
       },
       {
-        "vs": "AbstractCounterSkirmisher",
+        "vs": "Counter-skirmisher",
         "value": 1.5
       },
       {
-        "vs": "AbstractCoyoteMan",
+        "vs": "Shock infantry",
         "value": 0.6
       },
       {
-        "vs": "AbstractHeavyCavalry",
+        "vs": "Heavy cavalry",
         "value": 0.6
       }
     ],
@@ -57192,11 +57192,11 @@
     "damage_type_melee": "Hand",
     "multipliers_melee": [
       {
-        "vs": "AbstractHeavyCavalry",
+        "vs": "Heavy cavalry",
         "value": 0.75
       },
       {
-        "vs": "AbstractCoyoteMan",
+        "vs": "Shock infantry",
         "value": 0.75
       }
     ]
@@ -57432,11 +57432,11 @@
     "damage_type_melee": "Hand",
     "multipliers_melee": [
       {
-        "vs": "AbstractCavalry",
+        "vs": "Cavalry",
         "value": 2
       },
       {
-        "vs": "AbstractLightInfantry",
+        "vs": "Light infantry",
         "value": 1.6
       }
     ]
@@ -57627,19 +57627,19 @@
     "damage_type_ranged": "Ranged",
     "multipliers_ranged": [
       {
-        "vs": "AbstractHeavyCavalry",
+        "vs": "Heavy cavalry",
         "value": 3
       },
       {
-        "vs": "AbstractVillager",
+        "vs": "Villager",
         "value": 0.5
       },
       {
-        "vs": "AbstractArtillery",
+        "vs": "Artillery",
         "value": 2
       },
       {
-        "vs": "AbstractCoyoteMan",
+        "vs": "Shock infantry",
         "value": 2.25
       }
     ],
@@ -57649,15 +57649,15 @@
     "damage_type_melee": "Hand",
     "multipliers_melee": [
       {
-        "vs": "AbstractHeavyCavalry",
+        "vs": "Heavy cavalry",
         "value": 3
       },
       {
-        "vs": "AbstractArtillery",
+        "vs": "Artillery",
         "value": 2
       },
       {
-        "vs": "AbstractCoyoteMan",
+        "vs": "Shock infantry",
         "value": 2.25
       }
     ]
@@ -57853,11 +57853,11 @@
     "damage_type_melee": "Hand",
     "multipliers_melee": [
       {
-        "vs": "AbstractCavalry",
+        "vs": "Cavalry",
         "value": 3
       },
       {
-        "vs": "AbstractLightInfantry",
+        "vs": "Light infantry",
         "value": 2.25
       }
     ]
@@ -58316,27 +58316,27 @@
     "damage_type_ranged": "Ranged",
     "multipliers_ranged": [
       {
-        "vs": "AbstractHeavyInfantry",
+        "vs": "Heavy infantry",
         "value": 2
       },
       {
-        "vs": "AbstractLightCavalry",
+        "vs": "Light ranged cavalry",
         "value": 2.5
       },
       {
-        "vs": "AbstractRangedShockInfantry",
+        "vs": "Ranged shock infantry",
         "value": 2.5
       },
       {
-        "vs": "AbstractCavalry",
+        "vs": "Cavalry",
         "value": 0.6
       },
       {
-        "vs": "AbstractLightInfantry",
+        "vs": "Light infantry",
         "value": 0.6
       },
       {
-        "vs": "AbstractVillager",
+        "vs": "Villager",
         "value": 0.75
       }
     ],
@@ -58346,27 +58346,27 @@
     "damage_type_melee": "Hand",
     "multipliers_melee": [
       {
-        "vs": "AbstractHeavyInfantry",
+        "vs": "Heavy infantry",
         "value": 2
       },
       {
-        "vs": "AbstractLightCavalry",
+        "vs": "Light ranged cavalry",
         "value": 2
       },
       {
-        "vs": "AbstractRangedShockInfantry",
+        "vs": "Ranged shock infantry",
         "value": 2
       },
       {
-        "vs": "AbstractCavalry",
+        "vs": "Cavalry",
         "value": 0.75
       },
       {
-        "vs": "AbstractLightInfantry",
+        "vs": "Light infantry",
         "value": 0.75
       },
       {
-        "vs": "AbstractVillager",
+        "vs": "Villager",
         "value": 0.75
       }
     ]
@@ -58559,11 +58559,11 @@
     "aoe_radius_melee": 1,
     "multipliers_melee": [
       {
-        "vs": "AbstractCavalry",
+        "vs": "Cavalry",
         "value": 1.75
       },
       {
-        "vs": "AbstractLightInfantry",
+        "vs": "Light infantry",
         "value": 1.4
       }
     ],
@@ -59033,23 +59033,23 @@
     "damage_type_ranged": "Ranged",
     "multipliers_ranged": [
       {
-        "vs": "AbstractSkirmisher",
+        "vs": "Light infantry",
         "value": 2.5
       },
       {
-        "vs": "AbstractCounterSkirmisher",
+        "vs": "Counter-skirmisher",
         "value": 2.5
       },
       {
-        "vs": "AbstractHeavyInfantry",
+        "vs": "Heavy infantry",
         "value": 1.25
       },
       {
-        "vs": "AbstractHeavyCavalry",
+        "vs": "Heavy cavalry",
         "value": 0.6
       },
       {
-        "vs": "AbstractCoyoteMan",
+        "vs": "Shock infantry",
         "value": 0.6
       }
     ],
@@ -59059,11 +59059,11 @@
     "damage_type_melee": "Hand",
     "multipliers_melee": [
       {
-        "vs": "AbstractHeavyCavalry",
+        "vs": "Heavy cavalry",
         "value": 0.75
       },
       {
-        "vs": "AbstractCoyoteMan",
+        "vs": "Shock infantry",
         "value": 0.75
       }
     ]
@@ -59268,23 +59268,23 @@
     "aoe_radius_ranged": 4,
     "multipliers_ranged": [
       {
-        "vs": "AbstractCavalry",
+        "vs": "Cavalry",
         "value": 0.5
       },
       {
-        "vs": "AbstractLightInfantry",
+        "vs": "Light infantry",
         "value": 0.5
       },
       {
-        "vs": "AbstractArtillery",
+        "vs": "Artillery",
         "value": 0.25
       },
       {
-        "vs": "xpArrowKnight",
+        "vs": "xp Arrow Knight",
         "value": 0.25
       },
       {
-        "vs": "deMalteseGun",
+        "vs": "de Maltese Gun",
         "value": 10
       }
     ],
@@ -59676,23 +59676,23 @@
     "damage_type_ranged": "Ranged",
     "multipliers_ranged": [
       {
-        "vs": "AbstractHeavyInfantry",
+        "vs": "Heavy infantry",
         "value": 2
       },
       {
-        "vs": "AbstractLightCavalry",
+        "vs": "Light ranged cavalry",
         "value": 2.5
       },
       {
-        "vs": "AbstractRangedShockInfantry",
+        "vs": "Ranged shock infantry",
         "value": 2.5
       },
       {
-        "vs": "AbstractCavalry",
+        "vs": "Cavalry",
         "value": 0.6
       },
       {
-        "vs": "AbstractLightInfantry",
+        "vs": "Light infantry",
         "value": 0.6
       }
     ],
@@ -59702,23 +59702,23 @@
     "damage_type_melee": "Hand",
     "multipliers_melee": [
       {
-        "vs": "AbstractHeavyInfantry",
+        "vs": "Heavy infantry",
         "value": 2
       },
       {
-        "vs": "AbstractLightCavalry",
+        "vs": "Light ranged cavalry",
         "value": 2
       },
       {
-        "vs": "AbstractRangedShockInfantry",
+        "vs": "Ranged shock infantry",
         "value": 2
       },
       {
-        "vs": "AbstractCavalry",
+        "vs": "Cavalry",
         "value": 0.75
       },
       {
-        "vs": "AbstractLightInfantry",
+        "vs": "Light infantry",
         "value": 0.75
       }
     ]
@@ -59846,7 +59846,7 @@
     "damage_type_melee": "Hand",
     "multipliers_melee": [
       {
-        "vs": "AbstractArtillery",
+        "vs": "Artillery",
         "value": 2
       }
     ]
@@ -59984,11 +59984,11 @@
     "damage_type_melee": "Hand",
     "multipliers_melee": [
       {
-        "vs": "AbstractCavalry",
+        "vs": "Cavalry",
         "value": 2.5
       },
       {
-        "vs": "AbstractLightInfantry",
+        "vs": "Light infantry",
         "value": 1.9
       }
     ]
@@ -60159,15 +60159,15 @@
     "damage_type_melee": "Hand",
     "multipliers_melee": [
       {
-        "vs": "AbstractCavalry",
+        "vs": "Cavalry",
         "value": 4
       },
       {
-        "vs": "AbstractVillager",
+        "vs": "Villager",
         "value": 0.25
       },
       {
-        "vs": "AbstractLightInfantry",
+        "vs": "Light infantry",
         "value": 2.25
       }
     ]
@@ -60370,11 +60370,11 @@
     "damage_type_melee": "Hand",
     "multipliers_melee": [
       {
-        "vs": "AbstractCavalry",
+        "vs": "Cavalry",
         "value": 2
       },
       {
-        "vs": "AbstractLightInfantry",
+        "vs": "Light infantry",
         "value": 1.5
       }
     ]
@@ -60617,7 +60617,7 @@
         "value": 3
       },
       {
-        "vs": "AbstractVillager",
+        "vs": "Villager",
         "value": 0.25
       },
       {
@@ -61015,23 +61015,23 @@
     "damage_type_ranged": "Ranged",
     "multipliers_ranged": [
       {
-        "vs": "AbstractHeavyInfantry",
+        "vs": "Heavy infantry",
         "value": 2.5
       },
       {
-        "vs": "AbstractLightCavalry",
+        "vs": "Light ranged cavalry",
         "value": 3.1
       },
       {
-        "vs": "AbstractRangedShockInfantry",
+        "vs": "Ranged shock infantry",
         "value": 3.1
       },
       {
-        "vs": "AbstractCavalry",
+        "vs": "Cavalry",
         "value": 0.6
       },
       {
-        "vs": "AbstractLightInfantry",
+        "vs": "Light infantry",
         "value": 0.6
       }
     ],
@@ -61041,23 +61041,23 @@
     "damage_type_melee": "Hand",
     "multipliers_melee": [
       {
-        "vs": "AbstractHeavyInfantry",
+        "vs": "Heavy infantry",
         "value": 2.5
       },
       {
-        "vs": "AbstractLightCavalry",
+        "vs": "Light ranged cavalry",
         "value": 2.5
       },
       {
-        "vs": "AbstractRangedShockInfantry",
+        "vs": "Ranged shock infantry",
         "value": 2.5
       },
       {
-        "vs": "AbstractCavalry",
+        "vs": "Cavalry",
         "value": 0.75
       },
       {
-        "vs": "AbstractLightInfantry",
+        "vs": "Light infantry",
         "value": 0.75
       }
     ]
@@ -61419,7 +61419,7 @@
     "damage_type_melee": "Hand",
     "multipliers_melee": [
       {
-        "vs": "AbstractSkirmisher",
+        "vs": "Light infantry",
         "value": 1.25
       }
     ]
@@ -61573,7 +61573,7 @@
         "value": 10
       },
       {
-        "vs": "AbstractWall",
+        "vs": "Wall",
         "value": 1.25
       },
       {
@@ -61581,19 +61581,19 @@
         "value": 8
       },
       {
-        "vs": "AbstractCavalry",
+        "vs": "Cavalry",
         "value": 0.5
       },
       {
-        "vs": "AbstractLightInfantry",
+        "vs": "Light infantry",
         "value": 0.5
       },
       {
-        "vs": "AbstractArtillery",
+        "vs": "Artillery",
         "value": 2.5
       },
       {
-        "vs": "deMalteseGun",
+        "vs": "de Maltese Gun",
         "value": 0.5
       }
     ],
@@ -62107,23 +62107,23 @@
     "damage_type_ranged": "Ranged",
     "multipliers_ranged": [
       {
-        "vs": "AbstractHeavyInfantry",
+        "vs": "Heavy infantry",
         "value": 2
       },
       {
-        "vs": "AbstractLightCavalry",
+        "vs": "Light ranged cavalry",
         "value": 2.5
       },
       {
-        "vs": "AbstractRangedShockInfantry",
+        "vs": "Ranged shock infantry",
         "value": 2.5
       },
       {
-        "vs": "AbstractCavalry",
+        "vs": "Cavalry",
         "value": 0.6
       },
       {
-        "vs": "AbstractLightInfantry",
+        "vs": "Light infantry",
         "value": 0.6
       }
     ],
@@ -62133,23 +62133,23 @@
     "damage_type_melee": "Hand",
     "multipliers_melee": [
       {
-        "vs": "AbstractHeavyInfantry",
+        "vs": "Heavy infantry",
         "value": 2
       },
       {
-        "vs": "AbstractLightCavalry",
+        "vs": "Light ranged cavalry",
         "value": 2
       },
       {
-        "vs": "AbstractRangedShockInfantry",
+        "vs": "Ranged shock infantry",
         "value": 2
       },
       {
-        "vs": "AbstractCavalry",
+        "vs": "Cavalry",
         "value": 0.75
       },
       {
-        "vs": "AbstractLightInfantry",
+        "vs": "Light infantry",
         "value": 0.75
       }
     ]
@@ -62326,11 +62326,11 @@
     "aoe_radius_melee": 2,
     "multipliers_melee": [
       {
-        "vs": "AbstractCavalry",
+        "vs": "Cavalry",
         "value": 3
       },
       {
-        "vs": "AbstractLightInfantry",
+        "vs": "Light infantry",
         "value": 2.2
       }
     ],
@@ -62433,7 +62433,7 @@
     "aoe_radius_ranged": 1,
     "multipliers_ranged": [
       {
-        "vs": "AbstractArtillery",
+        "vs": "Artillery",
         "value": 0.5
       }
     ],
@@ -62722,7 +62722,7 @@
         "value": 3
       },
       {
-        "vs": "AbstractVillager",
+        "vs": "Villager",
         "value": 0.25
       },
       {
@@ -62740,7 +62740,7 @@
         "value": 3
       },
       {
-        "vs": "AbstractVillager",
+        "vs": "Villager",
         "value": 0.25
       },
       {
@@ -62891,11 +62891,11 @@
     "damage_type_melee": "Hand",
     "multipliers_melee": [
       {
-        "vs": "AbstractCavalry",
+        "vs": "Cavalry",
         "value": 3.5
       },
       {
-        "vs": "AbstractLightInfantry",
+        "vs": "Light infantry",
         "value": 2.5
       }
     ]
@@ -63127,11 +63127,11 @@
     "damage_type_melee": "Hand",
     "multipliers_melee": [
       {
-        "vs": "AbstractCavalry",
+        "vs": "Cavalry",
         "value": 3
       },
       {
-        "vs": "AbstractLightInfantry",
+        "vs": "Light infantry",
         "value": 2.25
       }
     ]
@@ -63432,7 +63432,7 @@
     "damage_type_ranged": "Ranged",
     "multipliers_ranged": [
       {
-        "vs": "AbstractArtillery",
+        "vs": "Artillery",
         "value": 3
       },
       {
@@ -63440,11 +63440,11 @@
         "value": 6
       },
       {
-        "vs": "AbstractHeavyCavalry",
+        "vs": "Heavy cavalry",
         "value": 0.6
       },
       {
-        "vs": "AbstractCoyoteMan",
+        "vs": "Shock infantry",
         "value": 0.6
       }
     ],
@@ -63454,7 +63454,7 @@
     "damage_type_melee": "Hand",
     "multipliers_melee": [
       {
-        "vs": "AbstractArtillery",
+        "vs": "Artillery",
         "value": 3
       },
       {
@@ -63605,11 +63605,11 @@
     "damage_type_ranged": "Ranged",
     "multipliers_ranged": [
       {
-        "vs": "AbstractCavalry",
+        "vs": "Cavalry",
         "value": 2
       },
       {
-        "vs": "AbstractLightInfantry",
+        "vs": "Light infantry",
         "value": 1.5
       }
     ],
@@ -63619,11 +63619,11 @@
     "damage_type_melee": "Hand",
     "multipliers_melee": [
       {
-        "vs": "AbstractCavalry",
+        "vs": "Cavalry",
         "value": 2.5
       },
       {
-        "vs": "AbstractLightInfantry",
+        "vs": "Light infantry",
         "value": 2
       }
     ]
@@ -63788,11 +63788,11 @@
     "damage_type_melee": "Hand",
     "multipliers_melee": [
       {
-        "vs": "AbstractInfantry",
+        "vs": "Infantry",
         "value": 2
       },
       {
-        "vs": "AbstractHeavyInfantry",
+        "vs": "Heavy infantry",
         "value": 0.5
       }
     ]
@@ -64118,15 +64118,15 @@
         "value": 5
       },
       {
-        "vs": "AbstractCavalry",
+        "vs": "Cavalry",
         "value": 0.5
       },
       {
-        "vs": "AbstractLightInfantry",
+        "vs": "Light infantry",
         "value": 0.5
       },
       {
-        "vs": "AbstractVillager",
+        "vs": "Villager",
         "value": 0.5
       }
     ],
@@ -64535,23 +64535,23 @@
     "damage_type_ranged": "Ranged",
     "multipliers_ranged": [
       {
-        "vs": "AbstractHeavyInfantry",
+        "vs": "Heavy infantry",
         "value": 1.5
       },
       {
-        "vs": "AbstractLightCavalry",
+        "vs": "Light ranged cavalry",
         "value": 2.5
       },
       {
-        "vs": "AbstractRangedShockInfantry",
+        "vs": "Ranged shock infantry",
         "value": 2.5
       },
       {
-        "vs": "AbstractCavalry",
+        "vs": "Cavalry",
         "value": 0.6
       },
       {
-        "vs": "AbstractLightInfantry",
+        "vs": "Light infantry",
         "value": 0.6
       }
     ],
@@ -64561,23 +64561,23 @@
     "damage_type_melee": "Hand",
     "multipliers_melee": [
       {
-        "vs": "AbstractHeavyInfantry",
+        "vs": "Heavy infantry",
         "value": 1.5
       },
       {
-        "vs": "AbstractLightCavalry",
+        "vs": "Light ranged cavalry",
         "value": 2
       },
       {
-        "vs": "AbstractRangedShockInfantry",
+        "vs": "Ranged shock infantry",
         "value": 2
       },
       {
-        "vs": "AbstractCavalry",
+        "vs": "Cavalry",
         "value": 0.75
       },
       {
-        "vs": "AbstractLightInfantry",
+        "vs": "Light infantry",
         "value": 0.75
       }
     ]
@@ -64664,7 +64664,7 @@
     "aoe_radius_ranged": 1,
     "multipliers_ranged": [
       {
-        "vs": "AbstractArtillery",
+        "vs": "Artillery",
         "value": 0.5
       }
     ],
@@ -64810,11 +64810,11 @@
     "damage_type_melee": "Hand",
     "multipliers_melee": [
       {
-        "vs": "AbstractInfantry",
+        "vs": "Infantry",
         "value": 2
       },
       {
-        "vs": "AbstractHeavyInfantry",
+        "vs": "Heavy infantry",
         "value": 0.5
       }
     ]
@@ -65299,23 +65299,23 @@
     "damage_type_ranged": "Ranged",
     "multipliers_ranged": [
       {
-        "vs": "AbstractHeavyInfantry",
+        "vs": "Heavy infantry",
         "value": 2
       },
       {
-        "vs": "AbstractLightCavalry",
+        "vs": "Light ranged cavalry",
         "value": 2.5
       },
       {
-        "vs": "AbstractRangedShockInfantry",
+        "vs": "Ranged shock infantry",
         "value": 2.5
       },
       {
-        "vs": "AbstractCavalry",
+        "vs": "Cavalry",
         "value": 0.6
       },
       {
-        "vs": "AbstractLightInfantry",
+        "vs": "Light infantry",
         "value": 0.6
       }
     ],
@@ -65325,23 +65325,23 @@
     "damage_type_melee": "Hand",
     "multipliers_melee": [
       {
-        "vs": "AbstractHeavyInfantry",
+        "vs": "Heavy infantry",
         "value": 2
       },
       {
-        "vs": "AbstractLightCavalry",
+        "vs": "Light ranged cavalry",
         "value": 2
       },
       {
-        "vs": "AbstractRangedShockInfantry",
+        "vs": "Ranged shock infantry",
         "value": 2
       },
       {
-        "vs": "AbstractCavalry",
+        "vs": "Cavalry",
         "value": 0.75
       },
       {
-        "vs": "AbstractLightInfantry",
+        "vs": "Light infantry",
         "value": 0.75
       }
     ]
@@ -65486,15 +65486,15 @@
     "damage_type_melee": "Hand",
     "multipliers_melee": [
       {
-        "vs": "AbstractHeavyInfantry",
+        "vs": "Heavy infantry",
         "value": 3
       },
       {
-        "vs": "AbstractHeavyCavalry",
+        "vs": "Heavy cavalry",
         "value": 0.5
       },
       {
-        "vs": "AbstractCoyoteMan",
+        "vs": "Shock infantry",
         "value": 0.5
       }
     ]
@@ -65650,11 +65650,11 @@
     "damage_type_melee": "Hand",
     "multipliers_melee": [
       {
-        "vs": "AbstractCavalry",
+        "vs": "Cavalry",
         "value": 5
       },
       {
-        "vs": "AbstractLightInfantry",
+        "vs": "Light infantry",
         "value": 3.5
       }
     ]
@@ -65974,23 +65974,23 @@
     "damage_type_ranged": "Ranged",
     "multipliers_ranged": [
       {
-        "vs": "AbstractCavalry",
+        "vs": "Cavalry",
         "value": 4.5
       },
       {
-        "vs": "AbstractLightInfantry",
+        "vs": "Light infantry",
         "value": 3.5
       },
       {
-        "vs": "AbstractLightCavalry",
+        "vs": "Light ranged cavalry",
         "value": 0.5
       },
       {
-        "vs": "AbstractRangedShockInfantry",
+        "vs": "Ranged shock infantry",
         "value": 0.5
       },
       {
-        "vs": "AbstractArtillery",
+        "vs": "Artillery",
         "value": 2.5
       }
     ],
@@ -66000,23 +66000,23 @@
     "damage_type_melee": "Hand",
     "multipliers_melee": [
       {
-        "vs": "AbstractCavalry",
+        "vs": "Cavalry",
         "value": 4.5
       },
       {
-        "vs": "AbstractLightInfantry",
+        "vs": "Light infantry",
         "value": 3.5
       },
       {
-        "vs": "AbstractLightCavalry",
+        "vs": "Light ranged cavalry",
         "value": 0.5
       },
       {
-        "vs": "AbstractRangedShockInfantry",
+        "vs": "Ranged shock infantry",
         "value": 0.5
       },
       {
-        "vs": "AbstractArtillery",
+        "vs": "Artillery",
         "value": 2.5
       }
     ]
@@ -66103,7 +66103,7 @@
     "aoe_radius_ranged": 1,
     "multipliers_ranged": [
       {
-        "vs": "AbstractArtillery",
+        "vs": "Artillery",
         "value": 0.5
       }
     ],
@@ -66238,7 +66238,7 @@
         "value": 3
       },
       {
-        "vs": "AbstractPet",
+        "vs": "Pet",
         "value": 3
       }
     ]
@@ -66435,11 +66435,11 @@
     "damage_type_melee": "Hand",
     "multipliers_melee": [
       {
-        "vs": "AbstractInfantry",
+        "vs": "Infantry",
         "value": 2
       },
       {
-        "vs": "AbstractHeavyInfantry",
+        "vs": "Heavy infantry",
         "value": 0.5
       }
     ]
@@ -66647,7 +66647,7 @@
     "damage_type_melee": "Hand",
     "multipliers_melee": [
       {
-        "vs": "AbstractInfantry",
+        "vs": "Infantry",
         "value": 1.5
       }
     ]
@@ -66763,11 +66763,11 @@
     "damage_type_melee": "Hand",
     "multipliers_melee": [
       {
-        "vs": "AbstractCavalry",
+        "vs": "Cavalry",
         "value": 3
       },
       {
-        "vs": "AbstractLightInfantry",
+        "vs": "Light infantry",
         "value": 2.5
       }
     ]
@@ -67065,11 +67065,11 @@
     "damage_type_melee": "Hand",
     "multipliers_melee": [
       {
-        "vs": "AbstractCavalry",
+        "vs": "Cavalry",
         "value": 2
       },
       {
-        "vs": "AbstractLightInfantry",
+        "vs": "Light infantry",
         "value": 1.6
       }
     ]
@@ -67498,23 +67498,23 @@
     "damage_type_ranged": "Ranged",
     "multipliers_ranged": [
       {
-        "vs": "AbstractHeavyInfantry",
+        "vs": "Heavy infantry",
         "value": 2
       },
       {
-        "vs": "AbstractLightCavalry",
+        "vs": "Light ranged cavalry",
         "value": 2.5
       },
       {
-        "vs": "AbstractRangedShockInfantry",
+        "vs": "Ranged shock infantry",
         "value": 2.5
       },
       {
-        "vs": "AbstractCavalry",
+        "vs": "Cavalry",
         "value": 0.6
       },
       {
-        "vs": "AbstractLightInfantry",
+        "vs": "Light infantry",
         "value": 0.6
       }
     ],
@@ -67524,23 +67524,23 @@
     "damage_type_melee": "Hand",
     "multipliers_melee": [
       {
-        "vs": "AbstractHeavyInfantry",
+        "vs": "Heavy infantry",
         "value": 2
       },
       {
-        "vs": "AbstractLightCavalry",
+        "vs": "Light ranged cavalry",
         "value": 2
       },
       {
-        "vs": "AbstractRangedShockInfantry",
+        "vs": "Ranged shock infantry",
         "value": 2
       },
       {
-        "vs": "AbstractCavalry",
+        "vs": "Cavalry",
         "value": 0.75
       },
       {
-        "vs": "AbstractLightInfantry",
+        "vs": "Light infantry",
         "value": 0.75
       }
     ]
@@ -67868,23 +67868,23 @@
     "aoe_radius_melee": 1,
     "multipliers_melee": [
       {
-        "vs": "AbstractHeavyInfantry",
+        "vs": "Heavy infantry",
         "value": 1.75
       },
       {
-        "vs": "AbstractCavalry",
+        "vs": "Cavalry",
         "value": 0.75
       },
       {
-        "vs": "AbstractLightInfantry",
+        "vs": "Light infantry",
         "value": 0.75
       },
       {
-        "vs": "AbstractLightCavalry",
+        "vs": "Light ranged cavalry",
         "value": 2
       },
       {
-        "vs": "AbstractRangedShockInfantry",
+        "vs": "Ranged shock infantry",
         "value": 2
       }
     ],
@@ -68146,7 +68146,7 @@
     "aoe_radius_ranged": 1,
     "multipliers_ranged": [
       {
-        "vs": "AbstractArtillery",
+        "vs": "Artillery",
         "value": 0.5
       }
     ],
@@ -68294,11 +68294,11 @@
     "aoe_radius_melee": 2,
     "multipliers_melee": [
       {
-        "vs": "AbstractInfantry",
+        "vs": "Infantry",
         "value": 1.75
       },
       {
-        "vs": "AbstractHeavyInfantry",
+        "vs": "Heavy infantry",
         "value": 0.57
       }
     ],
@@ -68399,7 +68399,7 @@
     "aoe_radius_ranged": 1,
     "multipliers_ranged": [
       {
-        "vs": "AbstractArtillery",
+        "vs": "Artillery",
         "value": 0.5
       }
     ],
@@ -68692,11 +68692,11 @@
     "damage_type_ranged": "Ranged",
     "multipliers_ranged": [
       {
-        "vs": "AbstractSiegeTrooper",
+        "vs": "Siege trooper",
         "value": 2
       },
       {
-        "vs": "AbstractVillager",
+        "vs": "Villager",
         "value": 0.25
       }
     ],
@@ -68706,11 +68706,11 @@
     "damage_type_melee": "Hand",
     "multipliers_melee": [
       {
-        "vs": "AbstractSiegeTrooper",
+        "vs": "Siege trooper",
         "value": 2
       },
       {
-        "vs": "AbstractVillager",
+        "vs": "Villager",
         "value": 0.25
       }
     ]
@@ -69003,19 +69003,19 @@
     "damage_type_ranged": "Ranged",
     "multipliers_ranged": [
       {
-        "vs": "AbstractHeavyCavalry",
+        "vs": "Heavy cavalry",
         "value": 3
       },
       {
-        "vs": "AbstractCoyoteMan",
+        "vs": "Shock infantry",
         "value": 2.5
       },
       {
-        "vs": "AbstractVillager",
+        "vs": "Villager",
         "value": 0.5
       },
       {
-        "vs": "AbstractArtillery",
+        "vs": "Artillery",
         "value": 2
       }
     ]
@@ -69144,7 +69144,7 @@
     "aoe_radius_ranged": 1,
     "multipliers_ranged": [
       {
-        "vs": "AbstractArtillery",
+        "vs": "Artillery",
         "value": 0.5
       },
       {
@@ -69152,7 +69152,7 @@
         "value": 1.5
       },
       {
-        "vs": "AbstractDock",
+        "vs": "Dock",
         "value": 0.6666666
       }
     ],
@@ -69595,27 +69595,27 @@
     "damage_type_ranged": "Ranged",
     "multipliers_ranged": [
       {
-        "vs": "AbstractVillager",
+        "vs": "Villager",
         "value": 1.5
       },
       {
-        "vs": "AbstractHeavyInfantry",
+        "vs": "Heavy infantry",
         "value": 1.25
       },
       {
-        "vs": "AbstractLightCavalry",
+        "vs": "Light ranged cavalry",
         "value": 2.5
       },
       {
-        "vs": "AbstractRangedShockInfantry",
+        "vs": "Ranged shock infantry",
         "value": 2.5
       },
       {
-        "vs": "AbstractCavalry",
+        "vs": "Cavalry",
         "value": 0.6
       },
       {
-        "vs": "AbstractLightInfantry",
+        "vs": "Light infantry",
         "value": 0.6
       }
     ],
@@ -69625,27 +69625,27 @@
     "damage_type_melee": "Hand",
     "multipliers_melee": [
       {
-        "vs": "AbstractVillager",
+        "vs": "Villager",
         "value": 1.5
       },
       {
-        "vs": "AbstractHeavyInfantry",
+        "vs": "Heavy infantry",
         "value": 1.25
       },
       {
-        "vs": "AbstractLightCavalry",
+        "vs": "Light ranged cavalry",
         "value": 2
       },
       {
-        "vs": "AbstractRangedShockInfantry",
+        "vs": "Ranged shock infantry",
         "value": 2
       },
       {
-        "vs": "AbstractLightInfantry",
+        "vs": "Light infantry",
         "value": 0.75
       },
       {
-        "vs": "AbstractCavalry",
+        "vs": "Cavalry",
         "value": 0.75
       }
     ]
@@ -69753,7 +69753,7 @@
     "damage_type_melee": "Hand",
     "multipliers_melee": [
       {
-        "vs": "AbstractVillager",
+        "vs": "Villager",
         "value": 1.5
       }
     ]
@@ -69876,11 +69876,11 @@
     "damage_type_melee": "Hand",
     "multipliers_melee": [
       {
-        "vs": "AbstractCavalry",
+        "vs": "Cavalry",
         "value": 2
       },
       {
-        "vs": "AbstractLightInfantry",
+        "vs": "Light infantry",
         "value": 1.5
       }
     ]
@@ -69980,7 +69980,7 @@
     "aoe_radius_ranged": 1,
     "multipliers_ranged": [
       {
-        "vs": "AbstractArtillery",
+        "vs": "Artillery",
         "value": 0.5
       }
     ],
@@ -70210,11 +70210,11 @@
     "damage_type_melee": "Hand",
     "multipliers_melee": [
       {
-        "vs": "AbstractCavalry",
+        "vs": "Cavalry",
         "value": 5
       },
       {
-        "vs": "AbstractLightInfantry",
+        "vs": "Light infantry",
         "value": 3.5
       }
     ]
@@ -70405,19 +70405,19 @@
     "damage_type_ranged": "Ranged",
     "multipliers_ranged": [
       {
-        "vs": "AbstractCoyoteMan",
+        "vs": "Shock infantry",
         "value": 1.5
       },
       {
-        "vs": "AbstractArtillery",
+        "vs": "Artillery",
         "value": 2
       },
       {
-        "vs": "AbstractHeavyCavalry",
+        "vs": "Heavy cavalry",
         "value": 2
       },
       {
-        "vs": "AbstractVillager",
+        "vs": "Villager",
         "value": 0.5
       }
     ],
@@ -70428,11 +70428,11 @@
     "aoe_radius_melee": 1,
     "multipliers_melee": [
       {
-        "vs": "AbstractCoyoteMan",
+        "vs": "Shock infantry",
         "value": 1.5
       },
       {
-        "vs": "AbstractHeavyCavalry",
+        "vs": "Heavy cavalry",
         "value": 2
       }
     ],
@@ -70624,19 +70624,19 @@
     "damage_type_melee": "Hand",
     "multipliers_melee": [
       {
-        "vs": "AbstractArtillery",
+        "vs": "Artillery",
         "value": 1.5
       },
       {
-        "vs": "AbstractInfantry",
+        "vs": "Infantry",
         "value": 1.5
       },
       {
-        "vs": "AbstractHeavyInfantry",
+        "vs": "Heavy infantry",
         "value": 0.667
       },
       {
-        "vs": "AbstractVillager",
+        "vs": "Villager",
         "value": 0.25
       }
     ]
@@ -70764,11 +70764,11 @@
     "damage_type_melee": "Hand",
     "multipliers_melee": [
       {
-        "vs": "AbstractCavalry",
+        "vs": "Cavalry",
         "value": 3
       },
       {
-        "vs": "AbstractLightInfantry",
+        "vs": "Light infantry",
         "value": 2.2
       }
     ]
@@ -71177,23 +71177,23 @@
     "damage_type_ranged": "Ranged",
     "multipliers_ranged": [
       {
-        "vs": "AbstractHeavyInfantry",
+        "vs": "Heavy infantry",
         "value": 1.5
       },
       {
-        "vs": "AbstractLightCavalry",
+        "vs": "Light ranged cavalry",
         "value": 2.5
       },
       {
-        "vs": "AbstractRangedShockInfantry",
+        "vs": "Ranged shock infantry",
         "value": 2.5
       },
       {
-        "vs": "AbstractCavalry",
+        "vs": "Cavalry",
         "value": 0.6
       },
       {
-        "vs": "AbstractLightInfantry",
+        "vs": "Light infantry",
         "value": 0.6
       }
     ],
@@ -71203,23 +71203,23 @@
     "damage_type_melee": "Hand",
     "multipliers_melee": [
       {
-        "vs": "AbstractHeavyInfantry",
+        "vs": "Heavy infantry",
         "value": 1.5
       },
       {
-        "vs": "AbstractLightCavalry",
+        "vs": "Light ranged cavalry",
         "value": 2
       },
       {
-        "vs": "AbstractRangedShockInfantry",
+        "vs": "Ranged shock infantry",
         "value": 2
       },
       {
-        "vs": "AbstractCavalry",
+        "vs": "Cavalry",
         "value": 0.75
       },
       {
-        "vs": "AbstractLightInfantry",
+        "vs": "Light infantry",
         "value": 0.75
       }
     ]
@@ -71455,15 +71455,15 @@
     "rof_ranged": 3,
     "multipliers_ranged": [
       {
-        "vs": "AbstractHeavyCavalry",
+        "vs": "Heavy cavalry",
         "value": 3.5
       },
       {
-        "vs": "AbstractVillager",
+        "vs": "Villager",
         "value": 0.5
       },
       {
-        "vs": "AbstractCoyoteMan",
+        "vs": "Shock infantry",
         "value": 2.5
       }
     ],
@@ -71473,11 +71473,11 @@
     "damage_type_melee": "Hand",
     "multipliers_melee": [
       {
-        "vs": "AbstractHeavyCavalry",
+        "vs": "Heavy cavalry",
         "value": 3.5
       },
       {
-        "vs": "AbstractCoyoteMan",
+        "vs": "Shock infantry",
         "value": 2.5
       }
     ]
@@ -71644,15 +71644,15 @@
     "damage_type_melee": "Hand",
     "multipliers_melee": [
       {
-        "vs": "AbstractCavalry",
+        "vs": "Cavalry",
         "value": 2.5
       },
       {
-        "vs": "AbstractHeavyInfantry",
+        "vs": "Heavy infantry",
         "value": 2.25
       },
       {
-        "vs": "AbstractLightInfantry",
+        "vs": "Light infantry",
         "value": 2
       }
     ]
@@ -71845,19 +71845,19 @@
     "damage_type_ranged": "Ranged",
     "multipliers_ranged": [
       {
-        "vs": "AbstractVillager",
+        "vs": "Villager",
         "value": 0.5
       },
       {
-        "vs": "AbstractHeavyCavalry",
+        "vs": "Heavy cavalry",
         "value": 2.5
       },
       {
-        "vs": "AbstractArtillery",
+        "vs": "Artillery",
         "value": 2
       },
       {
-        "vs": "AbstractCoyoteMan",
+        "vs": "Shock infantry",
         "value": 2
       }
     ]

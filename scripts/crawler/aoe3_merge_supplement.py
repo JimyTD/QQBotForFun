@@ -161,14 +161,52 @@ def _pick_fallback_ranged(attacks: list[dict]) -> dict | None:
 
 
 def _bonuses_to_multipliers(bonuses: list[dict]) -> list[dict]:
-    """将 supplement 的 bonuses 格式转换为 units.json 的 multipliers 格式。"""
+    """将 supplement 的 bonuses 格式转换为 units.json 的 multipliers 格式。
+
+    使用 label 字段（可读名，如 "Heavy Cavalry"）而非 type 字段（引擎内部名
+    如 "AbstractHeavyCavalry"），确保与 unit.type 标签命名一致。
+    """
     result = []
     for b in bonuses:
-        vs = b.get("type", "")
+        # 优先用 label（可读名），fallback 到 type（不应发生）
+        vs = b.get("label", "") or b.get("type", "")
         value = b.get("multiplier", 1.0)
-        if vs and value != 1.0:
-            result.append({"vs": vs, "value": value})
+        if not vs or value == 1.0:
+            continue
+        # 统一格式为 unit.type 风格
+        vs = _normalize_bonus_label(vs)
+        result.append({"vs": vs, "value": value})
     return result
+
+
+# label -> unit.type 标签的映射表（处理格式差异和别名）
+_LABEL_TO_TYPE: dict[str, str] = {
+    # 格式差异（label 用空格，type 用连字符）
+    "Counter Skirmisher": "Counter-skirmisher",
+    # label 和 type 名称不同
+    "Coyote Man": "Shock infantry",
+    "Light Cavalry": "Light ranged cavalry",
+    "Skirmisher": "Light infantry",
+    # 非战斗标签保持原样（vs 匹配不到 = 不生效 = 正确行为）
+    # Dock, Wall, Huntable, Guardian 等对建筑/动物的倍率斗蛐蛐不需要
+}
+
+
+def _normalize_bonus_label(label: str) -> str:
+    """将 supplement label 统一为 units.json type 字段的命名格式。"""
+    # 先查硬编码映射
+    if label in _LABEL_TO_TYPE:
+        return _LABEL_TO_TYPE[label]
+
+    # de/xp/yp 前缀保持原样（特定兵种专属倍率）
+    if label.startswith(("de ", "xp ", "yp ")):
+        return label
+
+    # 通用规则："Heavy Cavalry" -> "Heavy cavalry"（首词大写，后续小写）
+    words = label.split()
+    if len(words) > 1:
+        return words[0] + " " + " ".join(w.lower() for w in words[1:])
+    return label
 
 
 def merge() -> dict:

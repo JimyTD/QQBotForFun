@@ -11,7 +11,6 @@ from nonebot.rule import to_me
 from .formatter import (
     render_civ_units,
     render_compare,
-    render_counter_list,
     render_unit_card,
 )
 from .repository import UnitRepo
@@ -36,7 +35,6 @@ async def _handle_aoe3(bot: Bot, event: GroupMessageEvent) -> None:
             "用法：\n"
             "  aoe3 <兵种名> — 查属性\n"
             "  aoe3 对比 <A> <B> — 对比\n"
-            "  aoe3 克制 <类型> — 克制查询\n"
             "  aoe3 文明 <文明名> — 文明兵种"
         )
 
@@ -54,15 +52,6 @@ async def _handle_aoe3(bot: Bot, event: GroupMessageEvent) -> None:
         if not b_list:
             await aoe3_cmd.finish(f"未找到「{parts[1]}」")
         msg = render_compare(a_list[0], b_list[0])
-        await aoe3_cmd.finish(msg)
-
-    # ── 克制 ──
-    if text.startswith("克制"):
-        target = text[2:].strip()
-        if not target:
-            await aoe3_cmd.finish("用法：aoe3 克制 <类型>，如：aoe3 克制 骑兵")
-        results = repo.find_counters(target)
-        msg = render_counter_list(results, target)
         await aoe3_cmd.finish(msg)
 
     # ── 文明 ──

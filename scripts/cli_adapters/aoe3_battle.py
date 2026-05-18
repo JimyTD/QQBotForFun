@@ -88,12 +88,12 @@ class AoE3BattleCLIAdapter:
         mode = self._mode_id
 
         # 1. 展示红方详情
-        red_panel = format_side_panel(match.red, "red", mode)
+        red_panel = format_side_panel(match.red, "red", mode, opponent=match.blue)
         print(f"\n{C.RED}{C.B}{'━' * 40}{C.R}")
         print(f"{C.RED}{red_panel}{C.R}")
 
         # 2. 展示蓝方详情
-        blue_panel = format_side_panel(match.blue, "blue", mode)
+        blue_panel = format_side_panel(match.blue, "blue", mode, opponent=match.red)
         print(f"\n{C.BLUE}{C.B}{'━' * 40}{C.R}")
         print(f"{C.BLUE}{blue_panel}{C.R}")
 
