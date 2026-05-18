@@ -128,7 +128,14 @@ PYEOF
 # 5. 启动
 cd /root/qqbot && docker compose up -d
 
-# 6. 去 WebUI 扫码（同 §3 步骤 2~4）
+# 6. 写入 NapCat WebSocket 配置（全流程部署后配置会被重置）
+cd /root/qqbot && docker compose exec napcat sh -c 'cat > /app/napcat/config/onebot11_3959381140.json << EOF
+{"network":{"httpServers":[],"httpSseServers":[],"httpClients":[],"websocketServers":[],"websocketClients":[{"enable":true,"name":"qqbot","url":"ws://bot:8080/onebot/v11/ws","messagePostFormat":"array","reconnectInterval":3000,"token":"qqbot_fun_token_2026","heartInterval":30000}],"plugins":[]},"musicSignUrl":"","enableLocalFile2Url":false,"parseMultMsg":false,"imageDownloadProxy":"","timeout":{"baseTimeout":10000,"uploadSpeedKBps":256,"downloadSpeedKBps":256,"maxTimeout":1800000}}
+EOF'
+# 必须 stop+rm+up（不是 restart），否则端口映射可能丢失
+docker compose stop napcat && docker compose rm -f napcat && docker compose up -d napcat
+
+# 7. 去 WebUI 扫码（同 §3 步骤 2~4）
 ```
 
 ---
