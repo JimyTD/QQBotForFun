@@ -105,12 +105,25 @@ class Unit:
     @classmethod
     def from_dict(cls, d: dict[str, Any]) -> Unit:
         """从 units.json 的字典构造。"""
-        mults = d.get("multipliers", {})
+        # 旧格式 fallback：multipliers: {ranged: [...], melee: [...], siege: [...]}
+        mults_legacy = d.get("multipliers", {})
 
         def _parse_mults(lst: list[dict] | None) -> list[Multiplier]:
             if not lst:
                 return []
             return [Multiplier(vs=m["vs"], value=m["value"]) for m in lst]
+
+        # 优先用顶层 multipliers_ranged/melee/siege（supplement 合并后写入）
+        # fallback 到旧的 multipliers.ranged/melee/siege
+        mults_ranged = d.get("multipliers_ranged") or (
+            mults_legacy.get("ranged") if isinstance(mults_legacy, dict) else None
+        )
+        mults_melee = d.get("multipliers_melee") or (
+            mults_legacy.get("melee") if isinstance(mults_legacy, dict) else None
+        )
+        mults_siege = d.get("multipliers_siege") or (
+            mults_legacy.get("siege") if isinstance(mults_legacy, dict) else None
+        )
 
         return cls(
             id=d.get("id", ""),
@@ -136,21 +149,15 @@ class Unit:
             range=d.get("range", 0.0),
             range_min=d.get("range_min", 0.0),
             rof_ranged=d.get("rof_ranged", 0.0),
-            multipliers_ranged=_parse_mults(
-                mults.get("ranged") if isinstance(mults, dict) else None
-            ),
+            multipliers_ranged=_parse_mults(mults_ranged),
             attack_melee=d.get("attack_melee", 0.0),
             range_melee=d.get("range_melee", 0.0),
             rof_melee=d.get("rof_melee", 0.0),
-            multipliers_melee=_parse_mults(
-                mults.get("melee") if isinstance(mults, dict) else None
-            ),
+            multipliers_melee=_parse_mults(mults_melee),
             attack_siege=d.get("attack_siege", 0.0),
             range_siege=d.get("range_siege", 0.0),
             rof_siege=d.get("rof_siege", 0.0),
-            multipliers_siege=_parse_mults(
-                mults.get("siege") if isinstance(mults, dict) else None
-            ),
+            multipliers_siege=_parse_mults(mults_siege),
             aoe_radius=d.get("aoe_radius", 0),
             aoe_radius_ranged=d.get("aoe_radius_ranged", 0),
             aoe_radius_melee=d.get("aoe_radius_melee", 0),

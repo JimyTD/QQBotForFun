@@ -1,0 +1,24 @@
+﻿....................F..                                                  [100%]
+================================== FAILURES ===================================
+_____ TestMultiplierDataIntegrity.test_no_abstract_prefix_in_multipliers ______
+
+self = <tests.games.aoe3_battle.test_damage_calc.TestMultiplierDataIntegrity object at 0x00000209E6861E50>
+
+    def test_no_abstract_prefix_in_multipliers(self):
+        """units.json 中不应有 Abstract 前缀的倍率标签。"""
+        for unit in self.repo.all_units:
+            for m in unit.multipliers_ranged + unit.multipliers_melee:
+>               assert not m.vs.startswith("Abstract"), (
+                    f"{unit.name} 的倍率 vs='{m.vs}' 含有 Abstract 前缀！"
+                    f"应使用可读标签（如 'Cavalry' 而非 'AbstractCavalry'）"
+                )
+E               AssertionError: 皮甲兵 的倍率 vs='Abstract' 含有 Abstract 前缀！应使用可读标签（如 'Cavalry' 而非 'AbstractCavalry'）
+E               assert not True
+E                +  where True = <built-in method startswith of str object at 0x00000209E6AFB3B0>('Abstract')
+E                +    where <built-in method startswith of str object at 0x00000209E6AFB3B0> = 'Abstract'.startswith
+E                +      where 'Abstract' = Multiplier(vs='Abstract', value=2).vs
+
+tests\games\aoe3_battle\test_damage_calc.py:432: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/games/aoe3_battle/test_damage_calc.py::TestMultiplierDataIntegrity::test_no_abstract_prefix_in_multipliers
+1 failed, 22 passed in 1.62s
