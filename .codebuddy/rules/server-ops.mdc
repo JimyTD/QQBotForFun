@@ -1,6 +1,6 @@
 ---
 description: Rule for deploying and operating the QQBotForFun server. Load this rule when you need to deploy code, check server status, or troubleshoot the bot.
-alwaysApply: false
+alwaysApply: true
 enabled: true
 updatedAt: 2026-05-18T00:00:00.000Z
 provider: 
