@@ -610,64 +610,37 @@ def format_battle_report(result: BattleResult) -> str:
     lines.append("")
 
     # 红方
-    red_alive_count = len(result.red_alive)
-    if red_alive_count == 0:
-        lines.append("🔴 红方 全军覆没")
-        for slot in result.red_army:
-            lines.append(f"  · {slot.unit.name} ×{slot.count} → 0")
-    else:
-        lost = result.red_count - red_alive_count
-        if lost == 0:
-            lines.append("🔴 红方 零伤亡")
+    red_all = result.red_alive + result.red_dead
+    for slot in result.red_army:
+        soldiers_of_type = [s for s in red_all if s.unit.id == slot.unit.id]
+        alive_of_type = [s for s in result.red_alive if s.unit.id == slot.unit.id]
+        kills = sum(s.kills for s in soldiers_of_type)
+        dmg = sum(s.total_damage_dealt for s in soldiers_of_type)
+        if len(alive_of_type) == 0:
+            status = "全灭"
         else:
-            lines.append("🔴 红方 残兵")
-        # 按兵种统计存活
-        for slot in result.red_army:
-            alive_of_type = [s for s in result.red_alive if s.unit.id == slot.unit.id]
-            dead_of_type = slot.count - len(alive_of_type)
-            if len(alive_of_type) == 0:
-                lines.append(f"  · {slot.unit.name} ×{slot.count} → 0")
-            elif len(alive_of_type) == 1 and dead_of_type > 0:
-                s = alive_of_type[0]
-                lines.append(
-                    f"  · {slot.unit.name} ×{len(alive_of_type)}"
-                    f"（损失 {dead_of_type}/{slot.count}，HP {s.hp:.0f}/{s.max_hp:.0f}）"
-                )
-            else:
-                lines.append(
-                    f"  · {slot.unit.name} ×{len(alive_of_type)}"
-                    f"（损失 {dead_of_type}/{slot.count}）"
-                )
-    lines.append("")
+            status = f"存活{len(alive_of_type)}"
+        lines.append(
+            f"🔴 {slot.unit.name} ×{slot.count}"
+            f" → {status}/击杀{kills}/伤害{dmg:.0f}"
+        )
+    lines.append("──────────")
 
     # 蓝方
-    blue_alive_count = len(result.blue_alive)
-    if blue_alive_count == 0:
-        lines.append("🔵 蓝方 全军覆没")
-        for slot in result.blue_army:
-            lines.append(f"  · {slot.unit.name} ×{slot.count} → 0")
-    else:
-        lost = result.blue_count - blue_alive_count
-        if lost == 0:
-            lines.append("🔵 蓝方 零伤亡")
+    blue_all = result.blue_alive + result.blue_dead
+    for slot in result.blue_army:
+        soldiers_of_type = [s for s in blue_all if s.unit.id == slot.unit.id]
+        alive_of_type = [s for s in result.blue_alive if s.unit.id == slot.unit.id]
+        kills = sum(s.kills for s in soldiers_of_type)
+        dmg = sum(s.total_damage_dealt for s in soldiers_of_type)
+        if len(alive_of_type) == 0:
+            status = "全灭"
         else:
-            lines.append("🔵 蓝方 残兵")
-        for slot in result.blue_army:
-            alive_of_type = [s for s in result.blue_alive if s.unit.id == slot.unit.id]
-            dead_of_type = slot.count - len(alive_of_type)
-            if len(alive_of_type) == 0:
-                lines.append(f"  · {slot.unit.name} ×{slot.count} → 0")
-            elif len(alive_of_type) == 1 and dead_of_type > 0:
-                s = alive_of_type[0]
-                lines.append(
-                    f"  · {slot.unit.name} ×{len(alive_of_type)}"
-                    f"（损失 {dead_of_type}/{slot.count}，HP {s.hp:.0f}/{s.max_hp:.0f}）"
-                )
-            else:
-                lines.append(
-                    f"  · {slot.unit.name} ×{len(alive_of_type)}"
-                    f"（损失 {dead_of_type}/{slot.count}）"
-                )
+            status = f"存活{len(alive_of_type)}"
+        lines.append(
+            f"🔵 {slot.unit.name} ×{slot.count}"
+            f" → {status}/击杀{kills}/伤害{dmg:.0f}"
+        )
     lines.append("")
 
     # MVP（仅胜方评选）
