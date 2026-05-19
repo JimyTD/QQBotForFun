@@ -884,11 +884,24 @@ class BattleSimulator:
                 )
         return mult
 
-    # ---- 攻击执行 ----
+    # ---- 攻击执行（同时开火结算） ----
     def _process_attacks(self) -> None:
-        """每 tick 攻击处理。"""
-        for s in self._alive():
-            if not s.stopped:
+        """每 tick 攻击处理。
+
+        同时开火规则：
+        1. 收集本轮所有能开火的射手（CD 好 + 有目标 + 在射程内）
+        2. 所有射手的弹丸"已打出"——即使结算过程中自己被杀也照样命中
+        3. 随机顺序结算伤害：
+           - 命中时目标还活着 → 扣血 + 触发 AOE
+           - 命中时目标已死（被本轮其他人先打死） → 伤害浪费，不触发 AOE
+        4. 这保证了火力浪费的真实性：多人锁同一目标会 overkill
+        """
+        # ---- 阶段 1：收集本轮射手，确定攻击参数，进入 CD ----
+        # (shooter, target, mode, damage) 四元组列表
+        volley: list[tuple[Soldier, Soldier, AttackMode, float]] = []
+
+        for s in self._soldiers:
+            if not s.alive or not s.stopped:
                 continue
 
             # CD 冷却
@@ -897,43 +910,63 @@ class BattleSimulator:
                 if s.attack_cd > 0.001:
                     continue
 
-            # 确保有目标
-            self._acquire_target(s)
+            # 必须有目标（锁定阶段已在主循环中完成）
             if s.target_id is None:
                 continue
 
             target = self._soldier_map.get(s.target_id)
-            if target is None or not target.alive:
+            if target is None:
                 s.target_id = None
                 continue
 
-            # 判定攻击模式
+            # 注意：这里不检查 target.alive——锁定时是活的就够了
+            # 目标可能在本轮被别人打死，结算时再判定
+
+            # 判定攻击模式（基于当前距离）
             mode = self._determine_attack_mode(s, target)
             if mode is None:
-                continue  # 本 tick 无法攻击（等敌方靠近）
+                continue
 
-            self._any_attack_happened = True
-
-            # 计算伤害
+            # 计算伤害（基于当前状态）
             damage = self._calc_damage(s, target, mode)
 
-            # 应用伤害到主目标
-            self._apply_damage(s, target, damage, mode)
-
-            # AOE 溅射：按当前攻击模式取对应的 AOE 半径
-            if mode == AttackMode.MELEE:
-                aoe = s.unit.aoe_radius_melee
-            else:
-                aoe = s.unit.aoe_radius_ranged
-            if aoe > 0:
-                self._process_aoe(s, target, mode, aoe_override=aoe)
-
-            # 进入 CD
+            # 弹丸已出，进入 CD
             if mode == AttackMode.MELEE:
                 rof = s.unit.rof_melee if s.unit.rof_melee > 0 else DEFAULT_ROF_MELEE
             else:
                 rof = s.effective_ranged_rof if s.effective_ranged_rof > 0 else DEFAULT_ROF_RANGED
             s.attack_cd = rof
+
+            volley.append((s, target, mode, damage))
+
+        if not volley:
+            return
+
+        self._any_attack_happened = True
+
+        # ---- 阶段 2：随机顺序结算 ----
+        self._rng.shuffle(volley)
+
+        for s, target, mode, damage in volley:
+            # 命中时目标是否还活着？
+            if target.alive:
+                # 目标活着 → 正常扣血
+                self._apply_damage(s, target, damage, mode)
+
+                # AOE 溅射：命中活目标才爆炸
+                if mode == AttackMode.MELEE:
+                    aoe = s.unit.aoe_radius_melee
+                else:
+                    aoe = s.unit.aoe_radius_ranged
+                if aoe > 0:
+                    self._process_aoe(s, target, mode, aoe_override=aoe)
+            else:
+                # 目标已死（被本轮其他人打死了）→ 打尸体，伤害浪费
+                # 不触发 AOE，不计入伤害统计
+                logger.debug(
+                    "tick=%d %s#%d 命中已死目标 %s#%d → 火力浪费",
+                    self._tick, s.name, s.id, target.name, target.id,
+                )
 
     def _apply_damage(
         self,
