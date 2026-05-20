@@ -36,25 +36,16 @@ MAX_DRAW_RETRIES = 20
 # 发现数据异常、表现极端、或不适合斗蛐蛐的兵种直接加 id
 BLACKLIST: set[str] = {
     # 作弊单位（Cheat unit）— 数据完全离谱
-    "mediocre_bombard",          # 普通射石炮，攻击力 5000，cost 16
-    "the_tommynator",            # The Tommynator，攻击力 1200，speed 11
+    "mediocrebombard",           # 普通射石炮，攻击力 5000，cost 16
+    "thetommynator",             # The Tommynator，攻击力 1200，speed 11
     "learicorn",                 # 独角兽，近战 800
-    "leonardos_tank",            # Leonardo's Tank，HP=3
 
     # 火船 — ROF=0，无限 DPS（自爆单位无法模拟）
-    "fire_junk",                 # 火船，ROF=0
-    "fire_ship_age_of_empires_iii",  # 火船，ROF=0
+    "firejunk",                  # 火船，ROF=0
+    "fireship",                  # 火船，ROF=0
 
     # 假炮 — 攻击力 500，cost 100，严重超模
-    "quaker_gun",                # 假炮
-
-    # HP 数据异常（wiki 爬虫缺失，详见 docs/aoe3-data-errata.md）
-    "elmetto",                   # 钢盔骑兵，HP=1（应为 ~320）
-    "mameluke_age_of_empires_iii",   # 马穆鲁克，HP=1（应为 ~230）
-    "sennar_horseman",           # 森纳尔骑兵，HP=1（应为 ~320）
-
-    # 远程攻击数据缺失（supplement 未匹配到）
-    "lil_bombard",               # 小型射石炮（里尔火炮），attack_ranged=0，600HP 沙包
+    "quakergun",                 # 假炮
 }
 
 
@@ -133,9 +124,8 @@ class MatchLineup:
 # =====================================================================
 def _is_building(unit: Unit) -> bool:
     """判断是否为建筑（排除建筑马车等）。"""
-    type_lower = {t.lower() for t in unit.type}
-    building_keywords = {"building", "wagon", "rickshaw"}
-    return bool(type_lower & building_keywords)
+    tags = set(unit.type)
+    return bool(tags & {"Building", "AbstractBuilding", "AbstractWagon"})
 
 
 def _is_hero(unit: Unit) -> bool:
@@ -145,18 +135,17 @@ def _is_hero(unit: Unit) -> bool:
 
 def _is_pet(unit: Unit) -> bool:
     """判断是否为宠物。"""
-    type_lower = {t.lower() for t in unit.type}
-    return "pet" in type_lower or "guardian" in type_lower
+    return "AbstractPet" in unit.type or "Guardian" in unit.type
 
 
 def _is_ship(unit: Unit) -> bool:
     """判断是否为船只。"""
-    return "Ship" in unit.type
+    return "Ship" in unit.type or "AbstractWarShip" in unit.type
 
 
 def _is_villager(unit: Unit) -> bool:
     """判断是否为村民类单位。"""
-    return "Villager" in unit.type
+    return "AbstractVillager" in unit.type
 
 
 def get_bet_pool(repo: UnitRepo) -> list[Unit]:
@@ -510,9 +499,9 @@ def _type_str_zh(u: Unit) -> str:
     """兵种类型中文翻译（精简版，去掉冗余标签）。"""
     from src.plugins.aoe3.i18n import t
 
-    # 过滤掉不太有用的标签
-    skip = {"Affected by villager upgrades", "MercType1", "MercType2",
-            "Cheat unit", "stealth"}
+    # 过滤掉对玩家无意义的通用/逻辑标签
+    skip = {"Unit", "UnitClass", "Military", "Ranged",
+            "LogicalTypeLandMilitary", "LogicalTypeLandEconomy"}
     types_zh = []
     for tp in u.type:
         if tp in skip:
@@ -704,43 +693,41 @@ def _unit_emoji(unit) -> str:
     """根据兵种类型返回对应 emoji。
 
     优先级：Ship > Elephant > Camel > Cavalry > Artillery > 步兵细分 > 兜底
-    骑兵优先于 Siege trooper/Artillery trooper，避免草原骑兵等被误判为炮兵。
     """
     tags = set(unit.type) if unit.type else set()
     # 按优先级匹配
-    if tags & {"Ship", "War ship", "Fishing boat", "Recruiting ship"}:
+    if tags & {"Ship", "AbstractWarShip"}:
         return "⛵"
-    if tags & {"Elephant"}:
+    if tags & {"AbstractElephant"}:
         return "🐘"
-    if tags & {"Camel"}:
+    if tags & {"AbstractCamel"}:
         return "🐫"
-    if tags & {"Cavalry", "Heavy cavalry", "Hand cavalry", "Ranged cavalry",
-               "Light ranged cavalry", "Gunpowder cavalry", "Lance cavalry",
-               "Ranged heavy cavalry"}:
+    if tags & {"AbstractCavalry", "AbstractHeavyCavalry", "AbstractHandCavalry",
+               "AbstractRangedCavalry", "AbstractLightCavalry", "AbstractLancer",
+               "AbstractRangedHeavyCavalry"}:
         return "🐴"
-    if tags & {"Artillery", "Siege trooper", "Artillery trooper"}:
+    if tags & {"AbstractArtillery", "AbstractSiegeTrooper"}:
         return "💣"
-    if tags & {"Archer", "Foot archer"}:
+    if tags & {"AbstractArcher"}:
         return "🏹"
-    if tags & {"Gunpowder trooper", "Gunpowder unit", "Musket infantry",
-               "Rifle infantry"}:
+    if tags & {"AbstractGunpowderTrooper", "AbstractMusketeer", "AbstractRifleman"}:
         return "🔫"
-    if tags & {"Pikeman"}:
+    if tags & {"AbstractPikeman"}:
         return "🗡️"
-    if tags & {"Monk", "Healing unit"}:
+    if tags & {"AbstractMonk"}:
         return "✝️"
     if tags & {"Hero"}:
         return "👑"
-    if tags & {"Pet"}:
+    if tags & {"AbstractPet"}:
         return "🐾"
-    if tags & {"Mercenary", "Outlaw", "MercType1", "MercType2"}:
+    if tags & {"Mercenary", "AbstractOutlaw", "MercType2"}:
         return "💰"
-    if tags & {"Villager"}:
+    if tags & {"AbstractVillager"}:
         return "👷"
-    if tags & {"Infantry", "Hand infantry", "Heavy infantry", "Light infantry",
-               "Shock infantry", "Hand shock infantry", "Ranged infantry",
-               "Ranged shock infantry", "Grenade trooper", "Counter-skirmisher",
-               "Hand skirmisher", "Archaic infantry", "Native warrior"}:
+    if tags & {"AbstractInfantry", "AbstractHeavyInfantry", "AbstractLightInfantry",
+               "AbstractCoyoteMan", "AbstractRangedShockInfantry",
+               "AbstractSkirmisher", "AbstractGrenadier",
+               "AbstractNativeWarrior", "AbstractHandInfantry"}:
         return "⚔️"
     return "■"
 

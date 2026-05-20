@@ -61,5 +61,8 @@ napcat/data/
 # 清洗产物（自动生成，不入库；可由 scripts/crawler/clean_crawled.py 重新产出）
 scripts/crawler/raw/*.cleaned.json
 
+# 游戏数据提取中间产物（从 Data.bar 解包的 XML，太大不入库；可由 aoe3_bar_extractor.py 重新产出）
+scripts/crawler/_extracted/
+
 # 名人梗图候选子目录（爬虫产出，人工挑选后只留根目录的代表图）
 resources/checkin/celebrities/*/

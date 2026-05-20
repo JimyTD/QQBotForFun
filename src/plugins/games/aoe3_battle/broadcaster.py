@@ -37,11 +37,10 @@ DETAILED_WINDOW_COUNT = 5
 # 伤害分类
 # =====================================================================
 _GUNPOWDER_TAGS = {
-    "Gunpowder trooper", "Gunpowder cavalry", "Gunpowder unit",
-    "Musket infantry", "Rifle infantry",
+    "AbstractGunpowderTrooper", "AbstractMusketeer", "AbstractRifleman",
 }
-_ARCHER_TAGS = {"Archer", "Foot archer"}
-_ARTILLERY_TAGS = {"Artillery"}
+_ARCHER_TAGS = {"AbstractArcher"}
+_ARTILLERY_TAGS = {"AbstractArtillery"}
 
 
 def _classify_attack(
