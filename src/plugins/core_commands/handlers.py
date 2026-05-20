@@ -13,6 +13,9 @@ from core import economy, render, user
 from core.game_base import list_games
 from core.render import MenuItem
 
+_SCOPE_GLOBAL = "全服"
+_SCOPE_GROUP = "本群"
+
 
 # -------------------- /测试 --------------------
 _ping = on_command("测试", aliases={"ping"}, rule=to_me(), priority=3, block=True)
@@ -242,19 +245,33 @@ def _currency_label(currency: str) -> tuple[str, str]:
     return _CURRENCY_LABELS.get(currency, (currency, "🏅"))
 
 
-async def _format_top(currency: str, viewer_qq_id: int) -> str:
+async def _get_group_member_ids(group_id: int | None) -> set[int] | None:
+    """获取群成员 qq_id 集合；私聊或获取失败时返回 None（回退全局）。"""
+    if group_id is None:
+        return None
+    members = await user.get_group_members(group_id)
+    if not members:
+        return None
+    return {m.qq_id for m in members}
+
+
+async def _format_top(
+    currency: str, viewer_qq_id: int, *, among: set[int] | None = None
+) -> str:
+    scope = _SCOPE_GROUP if among else _SCOPE_GLOBAL
     label, emoji = _currency_label(currency)
-    entries = await economy.top_balances(currency, limit=_LEADERBOARD_TOP_LIMIT)
+    entries = await economy.top_balances(
+        currency, limit=_LEADERBOARD_TOP_LIMIT, among=among
+    )
 
     if not entries:
         return render.text_card(
-            f"{label}榜 · TOP {_LEADERBOARD_TOP_LIMIT}",
+            f"{label}榜 · {scope} TOP {_LEADERBOARD_TOP_LIMIT}",
             ["（暂时还没有人上榜）"],
             emoji=emoji,
             footer="多玩几局游戏就能上榜咯~",
         )
 
-    # 查昵称（批量，带缓存）
     users = await user.get_many([e.qq_id for e in entries])
     nick_map = {u.qq_id: u.nickname for u in users}
 
@@ -269,7 +286,7 @@ async def _format_top(currency: str, viewer_qq_id: int) -> str:
     footer_lines: list[str] = []
     viewer_in_top = any(e.qq_id == viewer_qq_id for e in entries)
     if not viewer_in_top:
-        rank, bal = await economy.rank_of(viewer_qq_id, currency)
+        rank, bal = await economy.rank_of(viewer_qq_id, currency, among=among)
         if rank is not None:
             footer_lines.append(f"你：#{rank}（{bal} {label}）")
         elif bal > 0:
@@ -277,20 +294,22 @@ async def _format_top(currency: str, viewer_qq_id: int) -> str:
         else:
             footer_lines.append(f"你：0 {label}（未入榜，快去玩游戏吧）")
 
-    total = await economy.count_in_leaderboard(currency)
-    footer_lines.append(f"全服上榜人数：{total}")
+    total = await economy.count_in_leaderboard(currency, among=among)
+    footer_lines.append(f"{scope}上榜人数：{total}")
 
     return render.text_card(
-        f"{label}榜 · TOP {_LEADERBOARD_TOP_LIMIT}",
+        f"{label}榜 · {scope} TOP {_LEADERBOARD_TOP_LIMIT}",
         lines,
         emoji=emoji,
         footer=footer_lines,
     )
 
 
-async def _format_self(qq_id: int, specified: str | None) -> str:
+async def _format_self(
+    qq_id: int, specified: str | None, *, among: set[int] | None = None
+) -> str:
     """/榜 我 [currency]"""
-    # 没指定货币时，默认展示 score + coin 两个
+    scope = _SCOPE_GROUP if among else _SCOPE_GLOBAL
     currencies: list[str] = (
         [specified] if specified else ["score", "coin"]
     )
@@ -299,11 +318,11 @@ async def _format_self(qq_id: int, specified: str | None) -> str:
     lines.append("")
     for cur in currencies:
         label, emoji = _currency_label(cur)
-        rank, bal = await economy.rank_of(qq_id, cur)
+        rank, bal = await economy.rank_of(qq_id, cur, among=among)
         if rank is None:
             lines.append(f"{emoji} {label}：{bal}（未入榜）")
         else:
-            lines.append(f"{emoji} {label}：{bal}（全服 #{rank}）")
+            lines.append(f"{emoji} {label}：{bal}（{scope} #{rank}）")
     return render.text_card("我的排名", lines, emoji="📊")
 
 
@@ -323,17 +342,18 @@ async def _(
     args: Message = CommandArg(),
 ) -> None:
     qq_id = int(event.user_id)
+    group_id = event.group_id if isinstance(event, GroupMessageEvent) else None
+    among = await _get_group_member_ids(group_id)
+
     raw = args.extract_plain_text().strip()
     tokens = raw.split() if raw else []
 
-    # 空参数 → score 全局榜
     if not tokens:
-        await matcher.finish(await _format_top("score", qq_id))
+        await matcher.finish(await _format_top("score", qq_id, among=among))
         return
 
     first = tokens[0].lower()
 
-    # /榜 我 [currency]
     if first in ("我", "self", "me"):
         specified = tokens[1].lower() if len(tokens) > 1 else None
         if specified is not None and not economy.is_registered(specified):
@@ -341,10 +361,9 @@ async def _(
                 f"⚠️ 未知货币「{specified}」。可用：{'、'.join(sorted(_CURRENCY_LABELS))}"
             )
             return
-        await matcher.finish(await _format_self(qq_id, specified))
+        await matcher.finish(await _format_self(qq_id, specified, among=among))
         return
 
-    # /榜 <currency>
     currency = first
     if not economy.is_registered(currency):
         await matcher.finish(
@@ -352,4 +371,4 @@ async def _(
             f"或 @我 榜 我 查自己的排名"
         )
         return
-    await matcher.finish(await _format_top(currency, qq_id))
+    await matcher.finish(await _format_top(currency, qq_id, among=among))

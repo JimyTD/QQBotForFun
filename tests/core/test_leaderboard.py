@@ -94,7 +94,48 @@ async def test_count_in_leaderboard() -> None:
 
 
 async def test_score_is_registered_by_default() -> None:
-    # /榜 指令依赖 score 在默认注册表里，避免启动时还得手动注册
     assert economy.is_registered("score")
     assert economy.is_registered("coin")
     assert economy.is_registered("ticket")
+
+
+# ---------- among (群内榜) ----------
+
+async def test_top_balances_among_filters_to_subset() -> None:
+    await _seed([(1001, 200), (1002, 150), (1003, 100), (1004, 50)])
+    group_members = {1001, 1003, 1004}
+
+    top = await economy.top_balances("score", limit=10, among=group_members)
+    assert [e.qq_id for e in top] == [1001, 1003, 1004]
+    assert [e.rank for e in top] == [1, 2, 3]
+    # 1002 不在群内，被排除
+
+
+async def test_top_balances_among_empty_set() -> None:
+    await _seed([(1, 100)])
+    top = await economy.top_balances("score", limit=10, among=set())
+    assert top == []
+
+
+async def test_top_balances_among_none_is_global() -> None:
+    await _seed([(1001, 100), (1002, 200)])
+    top_global = await economy.top_balances("score", limit=10, among=None)
+    assert len(top_global) == 2
+
+
+async def test_rank_of_among_filters() -> None:
+    await _seed([(1001, 200), (1002, 150), (1003, 100)])
+    group_members = {1001, 1003}
+
+    rank, bal = await economy.rank_of(1003, "score", among=group_members)
+    assert rank == 2
+    assert bal == 100
+
+    rank, bal = await economy.rank_of(1002, "score", among=group_members)
+    assert rank is None
+
+
+async def test_count_in_leaderboard_among() -> None:
+    await _seed([(1, 100), (2, 200), (3, 50)])
+    assert await economy.count_in_leaderboard("score", among={1, 3}) == 2
+    assert await economy.count_in_leaderboard("score", among={9999}) == 0

@@ -162,22 +162,30 @@ class LeaderboardEntry:
 
 
 async def top_balances(
-    currency: str = "score", *, limit: int = 10, min_balance: int = 1
+    currency: str = "score",
+    *,
+    limit: int = 10,
+    min_balance: int = 1,
+    among: set[int] | None = None,
 ) -> list[LeaderboardEntry]:
     """取某货币的 TOP N。
 
     - 余额 < min_balance 的条目不入榜（默认剔除 0 和负数）
     - 按 balance 降序、qq_id 升序（稳定排序）
+    - among: 若提供，只在这些 qq_id 中排名（用于群内榜）
     """
     if limit <= 0:
         return []
     async with get_session() as sess:
+        conditions = [
+            EconomyBalance.currency == currency,
+            EconomyBalance.balance >= min_balance,
+        ]
+        if among is not None:
+            conditions.append(EconomyBalance.qq_id.in_(among))
         stmt = (
             select(EconomyBalance.qq_id, EconomyBalance.balance)
-            .where(
-                EconomyBalance.currency == currency,
-                EconomyBalance.balance >= min_balance,
-            )
+            .where(*conditions)
             .order_by(EconomyBalance.balance.desc(), EconomyBalance.qq_id.asc())
             .limit(limit)
         )
@@ -189,35 +197,50 @@ async def top_balances(
 
 
 async def rank_of(
-    qq_id: int, currency: str = "score", *, min_balance: int = 1
+    qq_id: int,
+    currency: str = "score",
+    *,
+    min_balance: int = 1,
+    among: set[int] | None = None,
 ) -> tuple[int | None, int]:
-    """查某人在全局榜的排名。
+    """查某人的排名。
 
     返回 (rank, balance)：
     - rank=None 表示未入榜（余额 < min_balance 或无记录）
     - rank 为 1-based
     并列时使用"标准竞赛排名"：并列者同名次，后面跳号（1, 2, 2, 4）。
+    - among: 若提供，只在这些 qq_id 中排名（用于群内榜）
     """
     bal = await balance(qq_id, currency)
     if bal < min_balance:
         return None, bal
+    if among is not None and qq_id not in among:
+        return None, bal
     async with get_session() as sess:
-        # 严格大于当前余额的玩家数 + 1 = 我的排名
-        stmt = select(func.count(EconomyBalance.id)).where(
+        conditions = [
             EconomyBalance.currency == currency,
             EconomyBalance.balance > bal,
-        )
+        ]
+        if among is not None:
+            conditions.append(EconomyBalance.qq_id.in_(among))
+        stmt = select(func.count(EconomyBalance.id)).where(*conditions)
         ahead = (await sess.execute(stmt)).scalar_one()
         return int(ahead) + 1, bal
 
 
 async def count_in_leaderboard(
-    currency: str = "score", *, min_balance: int = 1
+    currency: str = "score",
+    *,
+    min_balance: int = 1,
+    among: set[int] | None = None,
 ) -> int:
     """榜单总人数（余额 >= min_balance 的账户数）。"""
     async with get_session() as sess:
-        stmt = select(func.count(EconomyBalance.id)).where(
+        conditions = [
             EconomyBalance.currency == currency,
             EconomyBalance.balance >= min_balance,
-        )
+        ]
+        if among is not None:
+            conditions.append(EconomyBalance.qq_id.in_(among))
+        stmt = select(func.count(EconomyBalance.id)).where(*conditions)
         return int((await sess.execute(stmt)).scalar_one())
