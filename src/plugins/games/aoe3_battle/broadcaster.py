@@ -287,7 +287,7 @@ class Broadcaster:
     # 全灭播报（两种模式都显示）
     # ------------------------------------------------------------------
     def _emit_unit_wiped(self, events: list[BattleEvent]) -> None:
-        """当某个兵种全部阵亡时播报。"""
+        """当某个兵种全部阵亡时播报。按实际全灭时间排序。"""
         # 从 army slots 获取每种兵的总数
         unit_totals: dict[tuple[str, str, str], int] = {}  # (side, unit_id, unit_name) -> count
 
@@ -305,26 +305,31 @@ class Broadcaster:
                 continue
             unit_id = e.data.get("soldier_unit_id", "")
             if not unit_id:
-                # fallback: 用 soldier_name 作为 key
                 unit_id = e.data.get("soldier_name", "")
             key = (e.data["side"], unit_id)
             death_counts[key] = death_counts.get(key, 0) + 1
             death_times[key] = e.time
 
-        # 检查哪些兵种全灭
+        # 收集全灭事件并按时间排序
+        wiped_events: list[tuple[float, str, str, int]] = []  # (time, emoji, unit_name, count)
         for (side, unit_id, unit_name), total in unit_totals.items():
             key = (side, unit_id)
             died = death_counts.get(key, 0)
             if died >= total and total > 0:
                 emoji = _side_emoji(side)
-                tpl = self._rng.choice(UNIT_WIPED_TEMPLATES)
                 time = death_times.get(key, 0)
-                self._segments.append(BroadcastSegment(
-                    text=tpl.format(emoji=emoji, unit_name=unit_name, count=total),
-                    is_key_event=True,
-                    time_start=time,
-                    time_end=time,
-                ))
+                wiped_events.append((time, emoji, unit_name, total))
+
+        # 按全灭时间排序后输出
+        wiped_events.sort(key=lambda x: x[0])
+        for time, emoji, unit_name, count in wiped_events:
+            tpl = self._rng.choice(UNIT_WIPED_TEMPLATES)
+            self._segments.append(BroadcastSegment(
+                text=tpl.format(emoji=emoji, unit_name=unit_name, count=count),
+                is_key_event=True,
+                time_start=time,
+                time_end=time,
+            ))
 
 
 # =====================================================================
