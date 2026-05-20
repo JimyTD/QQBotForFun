@@ -1,51 +1,40 @@
 """AoE3 斗蛐蛐 —— 播报层。
 
 将模拟器输出的结构化事件流转换为播报文本。
-支持两种输出模式：
-- CLI 终端彩色文本
-- QQ 群纯文本消息
 
-设计文档：docs/games/aoe3-battle.md §八
+两种播报模式（群级别持久设置）：
+- "brief"（极简，默认）：开战 → 全灭播报 → 最终战报
+- "detailed"（详细）：开战 → 首次攻击模式 + 5段动态窗口 + 全灭播报 → 最终战报
 """
 
 from __future__ import annotations
 
 import random
-from dataclasses import dataclass, field
-from typing import Any
+from dataclasses import dataclass
 
 from .simulator import (
     BattleEvent,
-    BattlePhase,
     BattleResult,
     EventType,
     Side,
-    TICK_INTERVAL,
 )
 from .phrases import (
     ACTION_WORDS,
-    FIRST_KILL_VERBS,
-    MASS_CASUALTY_VERBS,
-    FINISH_VERBS,
-    HALF_DEAD_TEMPLATES,
-    SKIRMISH_BOTH_TEMPLATES,
-    SKIRMISH_ONE_SIDE_TEMPLATES,
-    FILLER_APPROACHING,
-    FILLER_FIGHTING,
-    FILLER_STALEMATE,
     FIRST_ATTACK_MODE_TEMPLATES,
+    UNIT_WIPED_TEMPLATES,
 )
 
 # =====================================================================
-# 常量
+# 播报模式常量
 # =====================================================================
-WINDOW_SECONDS = 2.0         # 播报窗口（秒）
-WINDOW_TICKS = int(WINDOW_SECONDS / TICK_INTERVAL)  # 20 ticks
-MASS_CASUALTY_THRESHOLD_BASE = 4   # 基础重大伤亡阈值
-MASS_CASUALTY_THRESHOLD_PCT = 0.05 # 动态阈值：总人数的 5%
+MODE_BRIEF = "brief"
+MODE_DETAILED = "detailed"
+
+# 详细模式下等分窗口数量上限
+DETAILED_WINDOW_COUNT = 5
 
 # =====================================================================
-# 伤害分类（攻击模式 × 伤害类型 × 单位标签辅助）
+# 伤害分类
 # =====================================================================
 _GUNPOWDER_TAGS = {
     "Gunpowder trooper", "Gunpowder cavalry", "Gunpowder unit",
@@ -60,13 +49,7 @@ def _classify_attack(
     damage_type: str,
     unit_type: list[str] | None = None,
 ) -> str:
-    """根据实际攻击模式 + 伤害类型 + 单位标签选定术语分类。
-
-    分类结果对应 phrases.py 中的 key：
-      ranged_gunpowder / ranged_archer / ranged_normal
-      ranged_siege_art / ranged_siege
-      melee_hand / melee_siege
-    """
+    """根据攻击模式 + 伤害类型 + 单位标签选定术语分类。"""
     type_set = set(unit_type) if unit_type else set()
 
     if attack_mode in ("ranged", "ranged_penalized"):
@@ -74,14 +57,12 @@ def _classify_attack(
             if type_set & _ARTILLERY_TAGS:
                 return "ranged_siege_art"
             return "ranged_siege"
-        # Ranged / Hand / 其他 → 细分枪炮 vs 弓箭
         if type_set & _GUNPOWDER_TAGS:
             return "ranged_gunpowder"
         if type_set & _ARCHER_TAGS:
             return "ranged_archer"
         return "ranged_normal"
 
-    # melee（含兜底）
     if damage_type == "Siege":
         return "melee_siege"
     return "melee_hand"
@@ -117,8 +98,8 @@ def _side_label(side: str) -> str:
 class BroadcastSegment:
     """一条播报消息。"""
     text: str
-    is_key_event: bool = False   # 关键节点（开战/首杀/终结等）
-    should_sleep: bool = True    # 是否需要 sleep（零伤亡填充不 sleep）
+    is_key_event: bool = False
+    should_sleep: bool = True
     time_start: float = 0.0
     time_end: float = 0.0
 
@@ -127,33 +108,25 @@ class BroadcastSegment:
 # 播报生成器
 # =====================================================================
 class Broadcaster:
-    """将事件流转换为播报文本序列。"""
+    """将事件流转换为播报文本序列。
+
+    Args:
+        result: 战斗结果
+        mode: 播报模式 ("brief" 或 "detailed")
+        seed: 随机种子
+    """
 
     def __init__(
         self,
         result: BattleResult,
         *,
+        mode: str = MODE_BRIEF,
         seed: int | None = None,
     ) -> None:
         self.result = result
+        self.mode = mode if mode in (MODE_BRIEF, MODE_DETAILED) else MODE_BRIEF
         self._rng = random.Random(seed)
         self._segments: list[BroadcastSegment] = []
-
-        # 运行时存活计数（用于战况行）
-        self._red_remaining = result.red_count
-        self._blue_remaining = result.blue_count
-
-        # 沉默期填充状态
-        self._filler_pools: dict[str, list[str]] = {
-            BattlePhase.APPROACHING.value: list(FILLER_APPROACHING),
-            BattlePhase.FIGHTING.value: list(FILLER_FIGHTING),
-            BattlePhase.STALEMATE.value: list(FILLER_STALEMATE),
-        }
-
-        # 已出现的攻击模式（用于首次攻击模式播报）
-        self._seen_attack_modes: set[str] = set()
-        # 渗透事件是否已播报（每场只播一次）
-        self._infiltrate_emitted: bool = False
 
     def generate(self) -> list[BroadcastSegment]:
         """生成完整播报序列。"""
@@ -161,165 +134,24 @@ class Broadcaster:
         events = self.result.events
 
         # 1. 开战
-        self._emit_battle_start(events)
+        self._emit_battle_start()
 
-        # 2. 按 2 秒窗口分批
-        max_time = self.result.duration
-        window_start = 0.0
-        first_death_emitted = False
-        half_red_emitted = False
-        half_blue_emitted = False
-        consecutive_silent = 0
+        # 2. 详细模式：首次攻击模式 + 动态窗口
+        if self.mode == MODE_DETAILED:
+            self._emit_detailed_segments(events)
 
-        while window_start < max_time:
-            window_end = window_start + WINDOW_SECONDS
-
-            # 收集窗口内事件
-            window_events = [
-                e for e in events
-                if window_start <= e.time < window_end
-                and e.event_type in (EventType.ATTACK, EventType.DEATH,
-                                     EventType.AOE_SPLASH, EventType.INFILTRATE)
-            ]
-
-            # 统计死亡
-            deaths = [
-                e for e in window_events if e.event_type == EventType.DEATH
-            ]
-            red_deaths = [d for d in deaths if d.data["side"] == "red"]
-            blue_deaths = [d for d in deaths if d.data["side"] == "blue"]
-
-            # 更新存活计数
-            self._red_remaining -= len(red_deaths)
-            self._blue_remaining -= len(blue_deaths)
-
-            # ---- 关键节点 ----
-
-            # 首次攻击模式播报（每种新攻击属性首次出现时触发）
-            window_attacks = [
-                e for e in window_events
-                if e.event_type == EventType.ATTACK and not e.data.get("is_splash")
-            ]
-            for atk in window_attacks:
-                mode = atk.data["mode"]
-                # ranged_penalized 归入 melee（都是贴脸状态）
-                effective_mode = "melee" if mode == "ranged_penalized" else mode
-                if effective_mode not in self._seen_attack_modes:
-                    self._seen_attack_modes.add(effective_mode)
-                    templates = FIRST_ATTACK_MODE_TEMPLATES.get(effective_mode)
-                    if templates:
-                        atk_emoji = _side_emoji(atk.data["attacker_side"])
-                        self._segments.append(BroadcastSegment(
-                            text=self._rng.choice(templates).format(
-                                time=atk.time,
-                                attacker_emoji=atk_emoji,
-                                attacker_name=atk.data["attacker_name"],
-                            ),
-                            is_key_event=True,
-                            time_start=window_start,
-                            time_end=window_end,
-                        ))
-                    break  # 每个窗口最多触发一条攻击模式播报
-
-            # 首杀
-            if deaths and not first_death_emitted:
-                first_death_emitted = True
-                d = deaths[0]
-                killer_emoji = _side_emoji(d.data["killer_side"])
-                victim_emoji = _side_emoji(d.data["side"])
-                killer_class = _classify_attack(
-                    d.data.get("killer_attack_mode", "ranged"),
-                    d.data.get("killer_damage_type", "Ranged"),
-                    d.data.get("killer_unit_type", []),
-                )
-                first_kill_verb = self._rng.choice(
-                    FIRST_KILL_VERBS.get(killer_class, FIRST_KILL_VERBS["ranged_normal"])
-                )
-                self._segments.append(BroadcastSegment(
-                    text=(
-                        f"🩸 第 {d.time:.1f}s，"
-                        f"{killer_emoji} {d.data['killer_name']}{first_kill_verb}，"
-                        f"{victim_emoji} {d.data['soldier_name']} -1"
-                    ),
-                    is_key_event=True,
-                    time_start=window_start,
-                    time_end=window_end,
-                ))
-
-            # 渗透事件播报（每场战斗只播报一次）
-            infiltrate_events = [
-                e for e in window_events
-                if e.event_type == EventType.INFILTRATE
-            ]
-            if infiltrate_events and not self._infiltrate_emitted:
-                self._infiltrate_emitted = True
-                inf = infiltrate_events[0]
-                inf_emoji = _side_emoji(inf.data["side"])
-                self._segments.append(BroadcastSegment(
-                    text=(
-                        f"⚔️ {inf.time:.1f}s，"
-                        f"{inf_emoji} {inf.data['soldier_name']}等发现前排拥挤，"
-                        f"开始向敌方后排渗透！"
-                    ),
-                    is_key_event=True,
-                    time_start=window_start,
-                    time_end=window_end,
-                ))
-
-            # 重大伤亡（单个 tick 内同一攻击者造成 ≥4 人死亡）
-            self._check_mass_casualty(deaths, window_start, window_end)
-
-            # 半灭线
-            for d in deaths:
-                side = d.data["side"]
-                remaining = d.data["remaining"]
-                total = d.data["total"]
-                if remaining <= total / 2:
-                    if side == "red" and not half_red_emitted:
-                        half_red_emitted = True
-                        tpl = self._rng.choice(HALF_DEAD_TEMPLATES)
-                        self._segments.append(BroadcastSegment(
-                            text=tpl.format(emoji="🔴", remaining=remaining, total=total),
-                            is_key_event=True,
-                            time_start=window_start,
-                            time_end=window_end,
-                        ))
-                    elif side == "blue" and not half_blue_emitted:
-                        half_blue_emitted = True
-                        tpl = self._rng.choice(HALF_DEAD_TEMPLATES)
-                        self._segments.append(BroadcastSegment(
-                            text=tpl.format(emoji="🔵", remaining=remaining, total=total),
-                            is_key_event=True,
-                            time_start=window_start,
-                            time_end=window_end,
-                        ))
-
-            # ---- 标准/极简片段 ----
-            if deaths:
-                consecutive_silent = 0
-                self._emit_window_segment(
-                    window_start, window_end,
-                    red_deaths, blue_deaths,
-                    window_events,
-                )
-            else:
-                consecutive_silent += 1
-                # 沉默期填充（§8.4）
-                if consecutive_silent >= 2 and consecutive_silent % 2 == 0:
-                    self._emit_filler(window_start, window_end, window_events)
-
-            window_start = window_end
-
-        # 3. 终结
-        self._emit_battle_end(events)
+        # 3. 全灭播报（两种模式都有）
+        self._emit_unit_wiped(events)
 
         return self._segments
 
-    def _emit_battle_start(self, events: list[BattleEvent]) -> None:
+    # ------------------------------------------------------------------
+    # 开战
+    # ------------------------------------------------------------------
+    def _emit_battle_start(self) -> None:
         """开战播报。"""
         r = self.result
 
-        # 多兵种时显示详细阵容
         if len(r.red_army) > 1:
             red_desc = " + ".join(f"{s.count}{s.unit.name}" for s in r.red_army)
         else:
@@ -341,156 +173,48 @@ class Broadcaster:
             time_end=0,
         ))
 
-    def _emit_battle_end(self, events: list[BattleEvent]) -> None:
-        """终结播报。"""
-        r = self.result
-        end_event = next(
-            (e for e in events if e.event_type == EventType.BATTLE_END), None
-        )
-        if end_event is None:
+    # ------------------------------------------------------------------
+    # 详细模式：动态窗口播报
+    # ------------------------------------------------------------------
+    def _emit_detailed_segments(self, events: list[BattleEvent]) -> None:
+        """详细模式：首次攻击模式 + 等分时间轴为5段。"""
+        # 首次攻击模式
+        self._emit_first_attack_mode(events)
+
+        # 等分时间轴
+        duration = self.result.duration
+        if duration <= 0:
             return
 
-        d = end_event.data
-        if d["winner"] == "draw":
-            self._segments.append(BroadcastSegment(
-                text=f"🏳️ 第 {d['duration']}s，战斗结束 — 平局！",
-                is_key_event=True,
-                time_start=end_event.time,
-                time_end=end_event.time,
-            ))
-        else:
-            winner_emoji = _side_emoji(d["winner"])
-            loser_side = "blue" if d["winner"] == "red" else "red"
-            # 找最后一个死亡事件
-            last_death = None
-            for e in reversed(events):
-                if e.event_type == EventType.DEATH:
-                    last_death = e
-                    break
+        window_size = duration / DETAILED_WINDOW_COUNT
+        red_remaining = self.result.red_count
+        blue_remaining = self.result.blue_count
 
-            if last_death and last_death.data["side"] == loser_side:
-                killer_name = last_death.data["killer_name"]
-                killer_class = _classify_attack(
-                    last_death.data.get("killer_attack_mode", "ranged"),
-                    last_death.data.get("killer_damage_type", "Ranged"),
-                    last_death.data.get("killer_unit_type", []),
-                )
-                finish_verb = self._rng.choice(
-                    FINISH_VERBS.get(killer_class, FINISH_VERBS["ranged_normal"])
-                )
-                self._segments.append(BroadcastSegment(
-                    text=(
-                        f"☠️ 第 {last_death.time:.1f}s，"
-                        f"{winner_emoji} {killer_name}{finish_verb}"
-                    ),
-                    is_key_event=True,
-                    time_start=end_event.time,
-                    time_end=end_event.time,
-                ))
-            else:
-                winner_label = _side_label(d["winner"])
-                self._segments.append(BroadcastSegment(
-                    text=f"🏆 第 {d['duration']}s，{winner_emoji} {winner_label}获胜！",
-                    is_key_event=True,
-                    time_start=end_event.time,
-                    time_end=end_event.time,
-                ))
+        for i in range(DETAILED_WINDOW_COUNT):
+            w_start = i * window_size
+            w_end = (i + 1) * window_size
 
-    def _check_mass_casualty(
-        self,
-        deaths: list[BattleEvent],
-        window_start: float,
-        window_end: float,
-    ) -> None:
-        """检查重大伤亡（单 tick 内同一攻击者造成 ≥ 阈值人死亡）。
+            # 收集窗口内死亡事件
+            deaths = [
+                e for e in events
+                if w_start <= e.time < w_end
+                and e.event_type == EventType.DEATH
+            ]
 
-        每个窗口只保留击杀数最多的一条播报，避免大规模对局刷屏。
-        阈值 = max(MASS_CASUALTY_THRESHOLD_BASE, total_count * 5%)。
-        """
-        total_count = self.result.red_count + self.result.blue_count
-        threshold = max(
-            MASS_CASUALTY_THRESHOLD_BASE,
-            int(total_count * MASS_CASUALTY_THRESHOLD_PCT),
-        )
-
-        # 按 tick 分组
-        by_tick: dict[int, list[BattleEvent]] = {}
-        for d in deaths:
-            by_tick.setdefault(d.tick, []).append(d)
-
-        # 收集所有满足阈值的候选，取最猛一条
-        best: tuple[int, BattleEvent, str] | None = None  # (kill_count, event, class)
-
-        for tick, tick_deaths in by_tick.items():
-            if len(tick_deaths) < threshold:
+            if not deaths:
+                # 更新计数但不输出
                 continue
-            # 按 killer 分组
-            by_killer: dict[str, list[BattleEvent]] = {}
-            for d in tick_deaths:
-                key = f"{d.data['killer_side']}:{d.data['killer_name']}"
-                by_killer.setdefault(key, []).append(d)
 
-            for key, killer_deaths in by_killer.items():
-                if len(killer_deaths) >= threshold:
-                    if best is None or len(killer_deaths) > best[0]:
-                        d0 = killer_deaths[0]
-                        killer_class = _classify_attack(
-                            d0.data.get("killer_attack_mode", "ranged"),
-                            d0.data.get("killer_damage_type", "Ranged"),
-                            d0.data.get("killer_unit_type", []),
-                        )
-                        best = (len(killer_deaths), d0, killer_class)
+            # 统计
+            red_deaths = [d for d in deaths if d.data["side"] == "red"]
+            blue_deaths = [d for d in deaths if d.data["side"] == "blue"]
+            red_remaining -= len(red_deaths)
+            blue_remaining -= len(blue_deaths)
 
-        if best is not None:
-            kill_count, d0, killer_class = best
-            killer_emoji = _side_emoji(d0.data["killer_side"])
-            victim_emoji = _side_emoji(d0.data["side"])
-            mass_verb = self._rng.choice(
-                MASS_CASUALTY_VERBS.get(killer_class, MASS_CASUALTY_VERBS["ranged_normal"])
-            )
-            self._segments.append(BroadcastSegment(
-                text=(
-                    f"💥 第 {d0.time:.1f}s，"
-                    f"{killer_emoji} {d0.data['killer_name']}"
-                    f"{mass_verb} "
-                    f"{victim_emoji} {d0.data['soldier_name']} ×{kill_count}！"
-                ),
-                is_key_event=True,
-                time_start=window_start,
-                time_end=window_end,
-            ))
+            # 构建消息
+            lines = [f"⏱ {w_start:.0f}-{w_end:.0f}s"]
 
-    def _emit_window_segment(
-        self,
-        window_start: float,
-        window_end: float,
-        red_deaths: list[BattleEvent],
-        blue_deaths: list[BattleEvent],
-        window_events: list[BattleEvent],
-    ) -> None:
-        """生成标准/极简播报片段。"""
-        lines = [f"⏱ {window_start:.0f}-{window_end:.0f}s"]
-
-        total_deaths = len(red_deaths) + len(blue_deaths)
-
-        if total_deaths <= 2:
-            # 极简片段：区分双边/单边伤亡
-            parts = []
-            if red_deaths:
-                victim_name = red_deaths[0].data['soldier_name']
-                parts.append(f"🔴 {victim_name} -{len(red_deaths)}")
-            if blue_deaths:
-                victim_name = blue_deaths[0].data['soldier_name']
-                parts.append(f"🔵 {victim_name} -{len(blue_deaths)}")
-            # 双方都有死人 → 用"互有伤亡"类前缀；只有一方 → 用"单边"类前缀
-            if red_deaths and blue_deaths:
-                prefix = self._rng.choice(SKIRMISH_BOTH_TEMPLATES)
-            else:
-                prefix = self._rng.choice(SKIRMISH_ONE_SIDE_TEMPLATES)
-            lines.append(f"{prefix}{' / '.join(parts)}")
-        else:
-            # 标准片段
-            # 蓝方造成的红方死亡
+            # 蓝方造成红方死亡
             if red_deaths:
                 killer_class = _classify_attack(
                     red_deaths[0].data.get("killer_attack_mode", "ranged"),
@@ -498,14 +222,13 @@ class Broadcaster:
                     red_deaths[0].data.get("killer_unit_type", []),
                 )
                 action = _pick_action_word(len(red_deaths), self._rng, killer_class)
-                # 找出攻击者兵种名
                 killer_name = red_deaths[0].data.get("killer_name", "?")
                 lines.append(
-                    f"🔵 {killer_name}{action}，"
-                    f"🔴 {red_deaths[0].data['soldier_name']} "
-                    f"-{len(red_deaths)}"
+                    f"🔵 {killer_name}{action} → "
+                    f"🔴 {red_deaths[0].data['soldier_name']} -{len(red_deaths)}"
                 )
-            # 红方造成的蓝方死亡
+
+            # 红方造成蓝方死亡
             if blue_deaths:
                 killer_class = _classify_attack(
                     blue_deaths[0].data.get("killer_attack_mode", "ranged"),
@@ -515,78 +238,97 @@ class Broadcaster:
                 action = _pick_action_word(len(blue_deaths), self._rng, killer_class)
                 killer_name = blue_deaths[0].data.get("killer_name", "?")
                 lines.append(
-                    f"🔴 {killer_name}{action}，"
-                    f"🔵 {blue_deaths[0].data['soldier_name']} "
-                    f"-{len(blue_deaths)}"
+                    f"🔴 {killer_name}{action} → "
+                    f"🔵 {blue_deaths[0].data['soldier_name']} -{len(blue_deaths)}"
                 )
 
-        # 战况行
-        # 从最后一个死亡事件获取当前存活数
-        last_death = None
-        for d in reversed(red_deaths + blue_deaths):
-            last_death = d
-            break
+            # 战况行
+            lines.append(
+                f"📊 🔴 {red_remaining}/{self.result.red_count}"
+                f" vs 🔵 {blue_remaining}/{self.result.blue_count}"
+            )
 
-        # 战况行（使用全局存活计数）
-        lines.append(
-            f"📊 战况 🔴 {self._red_remaining}/{self.result.red_count}"
-            f" vs 🔵 {self._blue_remaining}/{self.result.blue_count}"
-        )
+            self._segments.append(BroadcastSegment(
+                text="\n".join(lines),
+                time_start=w_start,
+                time_end=w_end,
+            ))
 
-        self._segments.append(BroadcastSegment(
-            text="\n".join(lines),
-            time_start=window_start,
-            time_end=window_end,
-        ))
+    def _emit_first_attack_mode(self, events: list[BattleEvent]) -> None:
+        """首次攻击模式播报（首次远程/近战）。"""
+        seen_modes: set[str] = set()
+        for e in events:
+            if e.event_type != EventType.ATTACK:
+                continue
+            if e.data.get("is_splash"):
+                continue
+            mode = e.data["mode"]
+            effective_mode = "melee" if mode == "ranged_penalized" else mode
+            if effective_mode in seen_modes:
+                continue
+            seen_modes.add(effective_mode)
+            templates = FIRST_ATTACK_MODE_TEMPLATES.get(effective_mode)
+            if templates:
+                atk_emoji = _side_emoji(e.data["attacker_side"])
+                self._segments.append(BroadcastSegment(
+                    text=self._rng.choice(templates).format(
+                        time=e.time,
+                        attacker_emoji=atk_emoji,
+                        attacker_name=e.data["attacker_name"],
+                    ),
+                    is_key_event=True,
+                    time_start=e.time,
+                    time_end=e.time,
+                ))
+            if len(seen_modes) >= 2:
+                break
 
-    def _emit_filler(
-        self,
-        window_start: float,
-        window_end: float,
-        window_events: list[BattleEvent],
-    ) -> None:
-        """沉默期填充消息。"""
-        # 判断当前阶段
-        has_attacks = any(
-            e.event_type == EventType.ATTACK
-            for e in self.result.events
-            if e.time <= window_end
-        )
+    # ------------------------------------------------------------------
+    # 全灭播报（两种模式都显示）
+    # ------------------------------------------------------------------
+    def _emit_unit_wiped(self, events: list[BattleEvent]) -> None:
+        """当某个兵种全部阵亡时播报。"""
+        # 从 army slots 获取每种兵的总数
+        unit_totals: dict[tuple[str, str, str], int] = {}  # (side, unit_id, unit_name) -> count
 
-        if not has_attacks:
-            phase = BattlePhase.APPROACHING.value
-        else:
-            # 用存活人数比例近似判断僵持（§8.4：双方剩余 < 30% 为僵持期）
-            red_pct = self._red_remaining / self.result.red_count if self.result.red_count else 0
-            blue_pct = self._blue_remaining / self.result.blue_count if self.result.blue_count else 0
-            if red_pct < 0.3 and blue_pct < 0.3:
-                phase = BattlePhase.STALEMATE.value
-            else:
-                phase = BattlePhase.FIGHTING.value
+        for slot in self.result.red_army:
+            unit_totals[("red", slot.unit.id, slot.unit.name)] = slot.count
+        for slot in self.result.blue_army:
+            unit_totals[("blue", slot.unit.id, slot.unit.name)] = slot.count
 
-        pool = self._filler_pools.get(phase, FILLER_FIGHTING)
-        if not pool:
-            # 池子用完，重置
-            if phase == BattlePhase.APPROACHING.value:
-                pool = list(FILLER_APPROACHING)
-            elif phase == BattlePhase.STALEMATE.value:
-                pool = list(FILLER_STALEMATE)
-            else:
-                pool = list(FILLER_FIGHTING)
-            self._filler_pools[phase] = pool
+        # 按 side+unit_id 统计死亡数和最后死亡时间
+        death_counts: dict[tuple[str, str], int] = {}
+        death_times: dict[tuple[str, str], float] = {}
 
-        text = pool.pop(self._rng.randrange(len(pool)))
+        for e in events:
+            if e.event_type != EventType.DEATH:
+                continue
+            unit_id = e.data.get("soldier_unit_id", "")
+            if not unit_id:
+                # fallback: 用 soldier_name 作为 key
+                unit_id = e.data.get("soldier_name", "")
+            key = (e.data["side"], unit_id)
+            death_counts[key] = death_counts.get(key, 0) + 1
+            death_times[key] = e.time
 
-        self._segments.append(BroadcastSegment(
-            text=text,
-            should_sleep=False,
-            time_start=window_start,
-            time_end=window_end,
-        ))
+        # 检查哪些兵种全灭
+        for (side, unit_id, unit_name), total in unit_totals.items():
+            key = (side, unit_id)
+            died = death_counts.get(key, 0)
+            if died >= total and total > 0:
+                emoji = _side_emoji(side)
+                tpl = self._rng.choice(UNIT_WIPED_TEMPLATES)
+                time = death_times.get(key, 0)
+                self._segments.append(BroadcastSegment(
+                    text=tpl.format(emoji=emoji, unit_name=unit_name, count=total),
+                    is_key_event=True,
+                    time_start=time,
+                    time_end=time,
+                ))
 
 
 # =====================================================================
-# 最终战报生成（§8.6）
+# 最终战报生成
 # =====================================================================
 def format_battle_report(result: BattleResult) -> str:
     """生成最终战报文本。"""
@@ -655,7 +397,6 @@ def format_battle_report(result: BattleResult) -> str:
         mvp_candidates = []
 
     if mvp_candidates:
-        # 综合分 = 伤害×0.5 + 击杀×50
         mvp_candidates.sort(
             key=lambda s: s.total_damage_dealt * 0.5 + s.kills * 50,
             reverse=True,

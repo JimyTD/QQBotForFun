@@ -1018,6 +1018,7 @@ class BattleSimulator:
             self._emit(EventType.DEATH, {
                 "soldier_id": target.id,
                 "soldier_name": target.name,
+                "soldier_unit_id": target.unit.id,
                 "side": target.side.value,
                 "killer_id": attacker.id,
                 "killer_name": attacker.name,

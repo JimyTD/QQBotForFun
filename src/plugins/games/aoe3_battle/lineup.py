@@ -24,7 +24,7 @@ logger = logging.getLogger("aoe3_battle.lineup")
 BUDGET = 10000               # 默认资源预算（与 game.py BUDGET_DEFAULT 一致）
 
 # 兵种数量权重（§2.2.3）
-SLOT_WEIGHTS = [45, 35, 20]  # 1种45%, 2种35%, 3种20%
+SLOT_WEIGHTS = [0, 50, 50]   # 1种0%, 2种50%, 3种50%
 
 # LCM 预算浮动范围（§2.2.4）
 LCM_BUDGET_TOLERANCE = 0.3   # ±30%

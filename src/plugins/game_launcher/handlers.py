@@ -115,6 +115,16 @@ async def _(matcher: Matcher, event: GroupMessageEvent, args: Message = CommandA
     # 获取指令后的参数文本
     arg_text = args.extract_plain_text().strip()
 
+    # ---- 播报模式切换（不开局）----
+    if arg_text in ("详细", "detailed"):
+        from core.group_config import set_group_config
+        await set_group_config(int(event.group_id), "aoe3_battle.broadcast_mode", "detailed")
+        await matcher.finish("✅ 已切换为【详细播报】模式（战斗过程会分段播报）")
+    if arg_text in ("极简", "简洁", "brief"):
+        from core.group_config import set_group_config
+        await set_group_config(int(event.group_id), "aoe3_battle.broadcast_mode", "brief")
+        await matcher.finish("✅ 已切换为【极简播报】模式（只显示开战和战报）")
+
     mode_id = "bet"  # 默认押注模式
     budget = None     # None = 使用默认值
 

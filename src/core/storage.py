@@ -212,3 +212,11 @@ def _import_all_models() -> None:
         from nonebot import logger
 
         logger.debug(f"[storage] tools/checkin models not loaded: {e}")
+
+    # 群配置
+    try:
+        from core import group_config as _group_config  # noqa: F401
+    except Exception as e:  # noqa: BLE001
+        from nonebot import logger
+
+        logger.debug(f"[storage] group_config not loaded: {e}")

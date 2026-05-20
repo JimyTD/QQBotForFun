@@ -26,7 +26,9 @@ from .broadcaster import (
     Broadcaster,
     BroadcastSegment,
     format_battle_report,
+    MODE_BRIEF,
 )
+from core.group_config import get_group_config
 from .lineup import (
     Lineup,
     MatchLineup,
@@ -525,7 +527,10 @@ class AoE3BattleGame(GameBase):
             _dump_battle_log(ctx.session_id, match, result)
 
             # 2. 播报
-            bc = Broadcaster(result)
+            broadcast_mode = await get_group_config(
+                ctx.group_id, "aoe3_battle.broadcast_mode", default=MODE_BRIEF
+            )
+            bc = Broadcaster(result, mode=broadcast_mode)
             segments = bc.generate()
 
             for seg in segments:

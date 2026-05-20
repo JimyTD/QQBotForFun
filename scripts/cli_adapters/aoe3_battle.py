@@ -147,7 +147,7 @@ class AoE3BattleCLIAdapter:
         self._result = result
 
         # 4. 播报
-        bc = Broadcaster(result)
+        bc = Broadcaster(result, mode="detailed")
         segments = bc.generate()
 
         print(f"\n{C.CYAN}{'━' * 50}{C.R}")
