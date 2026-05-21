@@ -449,7 +449,29 @@ AOE3 有三种伤害类型，每种只被对应的抗性减免：
 每个 protoaction 的 `damage / damagetype / maxrange / minrange / rof / damagearea / damagebonus*`
 **整体绑定**——同一个 protoaction 的所有字段是一套真实游戏数据，铁律：**不可拆分拼接**。
 
+#### 核心概念：攻击模式 vs 伤害类型（正交！）
+
+这是两个**独立维度**，**绝不能混淆**：
+
+| 维度 | 取值 | 由谁决定 | 影响 |
+|------|------|---------|------|
+| **攻击模式** | `ranged` / `melee` | 战斗时距离 + 是否锁敌 | 出手动作（远程射 / 近战砍） |
+| **伤害类型** | `Ranged` / `Hand` / `Siege` | protoaction 的 `damagetype` 字段 | 吃哪种护甲（armor_ranged / armor_melee / armor_siege）|
+
+**关键**：**伤害类型属于具体那条 protoaction**，与该 protoaction 是远程还是近战**无关**：
+
+- ✅ **远程攻击 + Siege 伤害**：鹰炮主炮（`attack_ranged=80, damage_type_ranged=Siege`）
+- ✅ **近战攻击 + Siege 伤害**：某些重炮的近战拆建筑动作（`damage_type_melee=Siege`）
+- ✅ **远程攻击 + Hand 伤害**：极少数斥候/标枪兵
+- ✅ **近战攻击 + Hand 伤害**：绝大多数近战兵（默认情况）
+
+> 因此 parser 的"槽位归类"和"伤害类型识别"是**两套独立判断**：
+> - 归 melee/ranged 槽位 → 看 `maxrange`（决定它是远程攻击还是近战攻击）
+> - `damage_type_*` 字段 → 直接抄 protoaction 的 `damagetype`（决定它打哪种护甲）
+
 **实现位置**：`scripts/crawler/aoe3_gamedata_parser.py :: _parse_attacks`
+
+
 
 **设计原则**（与旧版 merge_supplement 的关键差异）：
 - **type / multipliers.vs 直接存游戏原始标签**（`AbstractCavalry`、`AbstractHeavyInfantry` 等），不翻译
@@ -501,6 +523,28 @@ rof_siege           = siege 代表攻击的 rof
 
 > **siege 槽位仅用于拆建筑展示，斗蛐蛐模拟器不使用**——一维场地上没有建筑可拆。
 > 角色卡（`_atk_summary`）也不显示 `attack_siege`，避免误导群友（详见 §8.5）。
+
+#### 战斗池准入规则（重要）
+
+`Unit.has_attack` 只看 `attack_ranged` / `attack_melee`，**不算 `attack_siege`**：
+
+```python
+def has_attack(self) -> bool:
+    return bool(self.attack_ranged or self.attack_melee)
+```
+
+**含义**：一个单位如果**只有 attack_siege 没有 melee/ranged**，会被自动排除出战斗池
+（押注模式 `_build_*_pool` 和单挑模式都用 `has_attack` 过滤）。这是合理的——
+它在斗蛐蛐里没有可拆的建筑，等于站桩。典型代表：
+- 木制牛 `deeggwoodcattle`（彩蛋单位）
+- 审判官 `desalooninquisitor`（治疗师，只有拆建筑攻击）
+
+> ⚠️ **副作用警告**：如果一个真正能打兵的单位被 parser 误归类（`damagetype=Hand` 的近战
+> 攻击因为名字含 `BuildingAttack` 被丢进 siege 桶），它会被 `has_attack` 一起误排除。
+> 修法是**改 parser**（按 damagetype + maxrange 而非动作名归类），
+> **不要**在 `has_attack` 加例外白名单。
+
+
 
 #### simulator 侧
 

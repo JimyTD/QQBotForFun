@@ -79,7 +79,23 @@ class Unit:
 
     @property
     def has_attack(self) -> bool:
-        return bool(self.attack_ranged or self.attack_melee or self.attack_siege)
+        """是否有"对兵作战"的攻击能力。
+
+        **只算 attack_ranged / attack_melee**，不算 attack_siege。
+
+        理由：``attack_siege`` 是拆建筑专用槽位（``BuildingAttack`` 系列），
+        斗蛐蛐一维场地上没有建筑可拆，模拟器也不读这个字段（详见
+        ``docs/games/aoe3-battle.md`` §3.9）。如果一个单位**只有** ``attack_siege``
+        没有 melee/ranged，它在斗蛐蛐里就是个站桩木桩，必须排除：
+          - 木制牛 ``deeggwoodcattle`` —— 彩蛋单位，attack_siege=20000
+          - 审判官 ``desalooninquisitor`` —— 治疗师，仅有拆建筑攻击
+
+        > ⚠️ 已知遗漏：沙漠突袭者 ``deoutlawdesertraider`` 当前数据里也只有 attack_siege，
+        > 但游戏里它**确实能打兵**——疑似 parser 的 BuildingAttack 名字识别误把它的
+        > 真攻击丢进了 siege 桶（见 ``TODO.md`` 中"沙漠突袭者反兵攻击缺失"条目）。
+        > 修好 parser 后它会自然回到战斗池，不需要单独加白名单。
+        """
+        return bool(self.attack_ranged or self.attack_melee)
 
     @property
     def is_trainable(self) -> bool:
