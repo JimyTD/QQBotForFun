@@ -38,6 +38,7 @@ from .lineup import (
     format_side_panel,
     format_vs_banner,
     generate_bet_lineup,
+    generate_blacklist_lineup,
     generate_duel_lineup,
 )
 from .simulator import ArmySlot, BattleResult, BattleSimulator, Side
@@ -280,6 +281,12 @@ class AoE3BattleGame(GameBase):
             description="随机两个兵种，真 1v1",
             aliases=("单挑", "1v1"),
         ),
+        GameMode(
+            id="blacklist",
+            name="黑名单乱斗",
+            description="怪物 / 战役英雄 / 作弊码兵互殴，战力分平衡",
+            aliases=("黑名单", "乱斗", "黑名单乱斗", "blacklist"),
+        ),
     ]
 
     # ---- 生命周期 ----
@@ -295,6 +302,8 @@ class AoE3BattleGame(GameBase):
 
         if mode_id == "duel":
             match = generate_duel_lineup(repo, rng=rng)
+        elif mode_id == "blacklist":
+            match = generate_blacklist_lineup(repo, rng=rng)
         else:
             match = generate_bet_lineup(repo, rng=rng, budget=budget)
 

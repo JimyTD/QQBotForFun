@@ -161,3 +161,35 @@ elif damagetype == "Siege":
 `docs/games/aoe3-battle.md` §3.9。
 
 **优先级**：低 / 体验向 —— 不修也不影响斗蛐蛐核心玩法，只是少一个候选兵种。
+
+---
+
+## 🎯 迫击炮系列 multipliers 整体缺失（aoe3 数据）
+
+**现象**：`/帝国3 迫击炮` 系列（`mortar` / `demortar` / `xpheavymortar` 等）
+查出来的兵种倍率（multipliers）字段是空的，但游戏里它们对建筑 / 海军有非常高
+的倍率（实测对城镇中心 ×3、对船 ×2 等）。
+
+**根因怀疑**：`scripts/crawler/aoe3_merge_supplement.py` 里的
+"每个兵种只选一个 ranged + 一个 melee 攻击作为代表"逻辑，对迫击炮这种
+**主攻 = Cannon Attack（攻城），还有 Barrage Attack 等多个攻击模式**的兵种
+选错了代表攻击，导致主攻的 bonuses 没被写进 `units.json`。
+
+**铁律提醒**（来自 MEMORY.md ID 54955007）：
+supplement 中每个攻击模式的 damage/range/rof/aoe/bonuses 是**一套完整数据**，
+必须整体选用。绝对禁止把攻击 A 的伤害和攻击 B 的倍率拼在一起。
+要修的情况是"选错了代表攻击"，**不是**"从多个攻击里拼数据"。
+
+**验证步骤**：
+1. 跑 `python scripts/crawler/inspect_supplement.py mortar`（如果脚本不存在
+   就直接读 `seeds/aoe3/units_supplement_da.json` / `_es.json`），确认迫击炮在
+   supplement 里有几个攻击模式、各自的 damage/bonuses。
+2. 看当前 `units.json` 里 `mortar` 的 attack_siege / multipliers_siege 字段
+   到底取的是哪个攻击模式。
+3. 如果取错了 → 改 `aoe3_merge_supplement.py` 的代表攻击挑选规则
+   （比如：siege 桶里优先选 ``CannonAttack``，再考虑 damage 最大的）。
+
+**优先级**：中 / 体验向 —— 影响斗蛐蛐里迫击炮 vs 建筑/船的判定（目前会偏弱）。
+
+---
+

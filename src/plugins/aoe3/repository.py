@@ -28,9 +28,61 @@ _ICONS_DIR = _ROOT / "resources" / "aoe3" / "icons"
 #   2) 斗蛐蛐入池 —— 不让进对战池
 #
 # 排除原因：这些 id/标签对应的不是"玩家可控的真实兵种"，
-# 而是召唤占位符 / PVE 守护者，玩家在游戏里看不到这些条目。
+# 而是召唤占位符 / 代币 / PVE 守护者，玩家在游戏里看不到这些条目。
+#
+# ⚠️ 注意：彩蛋 / 作弊 / 剧情兵（如镭射熊、加特林骆驼）**不在这里排除**，
+# 它们是真单位，玩家应能 ``/帝国3 xxx`` 查到，仅在普通斗蛐蛐池排除。
+# 详见 ``src/plugins/games/aoe3_battle/lineup.py`` 中的 ``BATTLE_BLACKLIST``。
+
+# 战役 / 剧情专属条目，全局排除（搜索 + 对战池都不出现）。
+#
+# 筛选标准（2026-05-21 复审）：
+#   spc / despc / ypspc / xpspc 前缀 = 战役专属，普通对战玩家造不到。
+#   按"是否够格当怪物"分两类：
+#   - **菜鸡战役兵**（普通兵换皮 / 数据偏弱）→ 全局排除（这里）
+#   - **怪物战役兵**（hp ≥ 500 或攻击数据离谱、有名有姓的英雄/大名/酋长/特殊机械）
+#     → 留在 ``BATTLE_BLACKLIST``，黑名单乱斗模式里给玩家当 boss 玩
+#   NATIVE 客兵（``spcaztecchief`` 等 5 个）保留在常规池：原住民部落能合法获取。
+_EXCLUDED_IDS: frozenset[str] = frozenset({
+    # —— 战役专属 NAVY（陆战池不要海军；同名普通版在普通池里 / 或纯剧情用）——
+    "despcprivateer",      # 战役·私掠船（普通版 privateer 仍在）
+    "spcfireship",         # 战役·火战船
+    "despccorsairship",    # 战役·海盗船
+    "spcfrigate",          # 战役·帝国护卫舰
+    "despcrowboat",        # 战役·划艇
+    "spclizzieflagship",   # 战役·莉丝的旗舰
+    # —— 剧情触发物（不该进对战池）——
+    "ypspcriderlesselephant",  # 没人骑的大象（hp 2000 train_time=0）
+    "spcfiercecougar",         # 凶猛的美洲狮（战役剧情守护动物）
+    # —— 菜鸡战役兵（普通一人口兵换皮，hp ≤ 280，数据跟普通版基本一样） ——
+    # 这些战役兵进黑名单乱斗"不够怪"，留在常规池又是玩家造不到的冗余条目，
+    # 因此彻底屏蔽。普通版同名兵在常规池里照常存在。
+    "despcdelugecossack",      # 哥萨克骑兵（普通版 cossack hp 225 一致）
+    "despcgenitour",           # 标枪骑兵
+    "despchornspearman",       # 长矛兵（hp 100，比普通 pikeman 还菜）
+    "despcjanissarynopop",     # 奥斯曼火枪兵（普通版 janissary 在）
+    "despcshotel",             # 弯刀勇士（hp 90）
+    "despcusregular",          # 正规军
+    "spcbuccaneer",            # 海盗
+    "ypspcarrowknight",        # 弓箭武士
+    "ypspcarsonist",           # 火兵
+    "spchoopthrowers",         # 火环兵
+    "despcoutlawmusketeer",    # 亡命火枪兵（普通版 musketeer hp 150 一致）
+    "despccityguard",          # 城市护卫
+    "despchornskirmisher",     # 索马里火绳枪兵
+    "despcusvolunteer",        # 志愿军
+    "spcxpvfsoldier",          # 殖民地民兵
+    "xpspccolonialmilitia",    # 殖民地民兵(xp)
+    # —— 之前发现的 spc 守护者残留（虽已被 Guardian type 规则覆盖，列此处更显式） ——
+    # despcpikemanguardian / despcstreletguardian / despcoprichnikguardian
+    # → 已由 type 含 "Guardian" 规则排除，无需重复。
+    # —— 治疗者（atk 4 < 10，已由 _is_pure_healer 自动排除） ——
+    # ypspcbrahminhealer：lineup.py 里的 _is_pure_healer 处理。
+})
+
+
 def is_excluded_unit(unit: "Unit") -> bool:
-    """是否为玩家不应感知的单位（占位符 / PVE 守护者）。
+    """是否为玩家不应感知的单位（占位符 / 代币 / PVE 守护者 / 战役海军）。
 
     规则：
     1. id 以 ``batch`` 结尾 —— 颐和园 / 使馆联盟批量召唤的占位符
@@ -39,14 +91,33 @@ def is_excluded_unit(unit: "Unit") -> bool:
        （如 ``ypstandardarmyspawn`` "正规军(颐和园)"，
        ``ypforbiddenarmyspawn`` "紫禁军" 等共 8 个）。
        这些条目在游戏里召唤后会立刻拆解为具体兵种，玩家不会直接控制。
-    3. type 含 ``Guardian`` —— PVE 宝藏守护者
+    3. id 以 ``igc`` 开头 —— in-game cinematic / 剧情过场专用单位
+       （如 ``igcdeunclefrankhorse`` "法兰克叔叔"），玩家不可控。
+    4. type 含 ``Guardian`` —— PVE 宝藏守护者
        （如 ``despcpikemanguardian`` "宝藏守护者长矛兵"）。
+    5. type 含 ``AbstractBannerArmy`` —— 八旗军 / 领事馆远征军 / 原住民代币。
+       这是"召唤入口"标签，hp 固定 200（占位 hp），点了之后会拆解为具体兵种，
+       玩家不会直接控制单兵。覆盖 84 个 token：
+       - 12 个中国八旗军（如 ``ypimperialarmy`` 御林军、``ypmingarmy`` 明军）
+       - 39 个领事馆远征军（``ypconsulatearmy*``）
+       - 4 个原住民代币（``*proxy``）
+       - 29 个已被规则 1/2 覆盖的 batch/armyspawn（冗余防御）
+    6. id 在 ``_EXCLUDED_IDS`` 中 —— 战役专属海军 + 剧情触发物
+       + 菜鸡战役兵（普通一人口兵换皮，没资格进黑名单乱斗）。
+       够格当怪物的战役兵（hp ≥ 500、英雄/大名/酋长 等）保留在
+       ``BATTLE_BLACKLIST``，由黑名单乱斗模式专用。
     """
     if unit.id.endswith("batch"):
         return True
     if unit.id.endswith("armyspawn"):
         return True
+    if unit.id.startswith("igc"):
+        return True
     if "Guardian" in unit.type:
+        return True
+    if "AbstractBannerArmy" in unit.type:
+        return True
+    if unit.id in _EXCLUDED_IDS:
         return True
     return False
 

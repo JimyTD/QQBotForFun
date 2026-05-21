@@ -53,6 +53,58 @@ BLACKLIST: set[str] = {
 }
 
 
+# 普通对战黑名单：彩蛋 / 作弊码 / 怪物战役兵
+#
+# 这些都是**真单位**（玩家能 ``/帝国3 xxx`` 查到），但数据离谱、不该
+# 出现在普通斗蛐蛐对战池里。它们专为"黑名单乱斗"模式（计划中）准备：
+# 该模式从这个池子里抽兵，让群友体验一把怪物互殴。
+#
+# 与 ``BLACKLIST`` 的区别：
+#   - ``BLACKLIST``：数据 broken / 无法模拟，**永久禁用**（火船、假炮等）
+#   - ``BATTLE_BLACKLIST``：数据虽离谱但能跑，**仅普通对战禁用**，
+#     黑名单乱斗模式专属菜谱
+#
+# 战役兵分级标准（2026-05-21 重新整理）：
+#   - **怪物级战役兵** → 进这里（hp ≥ 500 / 攻击数据离谱 / 有名有姓的英雄）
+#   - **菜鸡级战役兵**（普通一人口兵换皮，hp ≤ 280）→ ``repository.py``
+#     ``_EXCLUDED_IDS`` 全局屏蔽，连黑名单乱斗都不配进
+#   - NATIVE 客兵（``spcaztecchief`` 等 5 个）→ 留在常规池（原住民部落能合法获取）
+BATTLE_BLACKLIST: dict[str, str] = {
+    # —— 作弊码 / 复活节彩蛋 ——
+    "lazerbear":           "彩蛋·镭射熊",            # hp 106106，cheat: tuck tuck tuck
+    "georgecrushington":   "彩蛋·乔治垮盛顿",        # hp 999999
+    "monstertrucka":       "彩蛋·怪兽卡车-大安迪",   # hp 60000
+    "monstertruckt":       "彩蛋·怪兽卡车-汤米",     # hp 60000
+    "ypeggicecreamtruck":  "彩蛋·冰淇淋大脚车",      # hp 60000
+
+    # —— 弃用 / 老版本兵种 ——
+    "legacygatlingcamel":  "祖传·加特林骆驼",        # hp 9001，legacy 前缀
+
+    # —— 战役大佬 · 大名 / 武将（hp 1000+ 超模） ——
+    "ypspcdaimyokiyomasa":  "剧情·加藤清正大名",     # hp 1000 atk siege=40
+    "ypspcdaimyomasamune":  "剧情·伊达政宗大名",     # hp 1000 atk siege=40
+    "ypspcdaimyotadaoki":   "剧情·细川忠兴大名",     # hp 1000 atk siege=40
+    "ypspcishida":          "剧情·石田大名",         # hp 1250
+
+    # —— 战役英雄（有名有姓的剧情主角，普通对战不可造） ——
+    "despckassahailu":      "剧情·卡萨·海卢",       # 埃塞俄比亚战役英雄 hp 650
+    "despcmansur":          "剧情·艾哈迈德·曼苏尔", # 摩洛哥战役英雄 hp 1000 atk siege=40
+    "spcdeunclefrankhorse": "剧情·法兰克叔叔",       # hp 1000
+    "spcxpcrazyhorse":      "剧情·疯马",             # hp 1000
+
+    # —— 战役酋长（原住民英雄级，hp ≥ 475） ——
+    "spcxpchiefbravewolf":  "剧情·狼勇士酋长",       # hp 500
+    "spcxpchiefbullbear":   "剧情·巨熊酋长",         # hp 475
+    "spcxpchieftwomoon":    "剧情·双月酋长",         # hp 500
+    "despcmilitiaofficer":  "剧情·民兵军官",         # hp 500
+
+    # —— 攻击数据离谱的特殊机械 / 强兵 ——
+    "spcxpredoubtcannon":     "剧情·防卫据点加农炮", # hp 1000 atk ranged=650（离谱）
+    "despcgreatbombardnopop": "剧情·重型火炮(无人口)", # hp 475 atk ranged=500
+    "despcoutlawlandsknecht": "剧情·亡命之徒德国步兵", # hp 430 atk siege=72（普通兵 atk 顶天 32）
+}
+
+
 # 纯治疗师攻击力阈值：≤ 此值视为"打不动人的辅助单位"，排除出池
 # - 0 攻击：审判官（1 个）
 # - 4-5 攻击：神父/传教士/伊玛目/女祭司/军医/婆罗门... 约 13 个
@@ -61,6 +113,41 @@ BLACKLIST: set[str] = {
 # - 15 攻击：说书人（保留）
 # - 30 攻击：少林大师（保留）
 PURE_HEALER_ATTACK_THRESHOLD = 10
+
+
+# =====================================================================
+# 黑名单乱斗常量（详见设计文档 §2.6 / §九）
+# =====================================================================
+# 兵种数权重：与普通押注略不同，多保留单兵种概率
+# 1 种 40%（神仙打架：5 镭射熊 vs 5 垮盛顿）
+# 2 种 40%（搭配节目效果）
+# 3 种 20%（豪华阵容，相对少）
+SLOT_WEIGHTS_BLACKLIST = [40, 40, 20]
+
+# 浮动倍率 r：每方独立 target = min(本方单兵分) × r，r ~ U(R_MIN, R_MAX)
+#
+# 含义：r 直接 ≈ "本方最弱兵种的出兵数"。
+#
+# 设计要点（详见 §2.4）：
+#
+# 1. 用 min（而非 max）锚定 target 的理由：
+#    池内战力分跨度极大（垮盛顿 80 亿 ↔ 民兵 2.8 千 ≈ 360 万倍）。
+#    若用 max × r 会让弱兵堆几万个，模拟器跑不动。
+#    用 min × r 后：强方 score >> target → 保底 1 只；弱方按 r 倍数出几只。
+#
+# 2. 用"本方 min"（而非全局 min）的理由：
+#    若一方抽到弱酋长（双月/民兵），全局 min 会被锚到 2.2k，
+#    让另一方的英雄（曼苏尔/大名等）被压成"1 只保底"——
+#    出现 "3 双月 vs 1 曼苏尔" 这种数量悬殊不好看。
+#    本方独立 min 后：双方都按各自最弱兵的 r 倍出兵，节目效果对等。
+#
+# 范围 3~6：r 即"本方弱兵出兵数"上下限，总个体数稳定在 5~30。
+BLACKLIST_R_MIN = 3.0
+BLACKLIST_R_MAX = 6.0
+
+# AOE 加成系数：每 1 半径 +30% DPS（aoe=4 鹰炮 → ×2.2 DPS）
+# 用于战力分公式，不影响实际战斗结算
+BLACKLIST_AOE_DPS_MULT = 0.3
 
 
 # =====================================================================
@@ -124,6 +211,11 @@ class Lineup:
         """是否为多兵种阵容。"""
         return len(self.slots) > 1
 
+    @property
+    def total_power(self) -> float:
+        """总战力分（仅用于黑名单乱斗展示与平衡计算）。"""
+        return sum(power_score(s.unit) * s.count for s in self.slots)
+
 
 @dataclass
 class MatchLineup:
@@ -185,7 +277,7 @@ def get_bet_pool(repo: UnitRepo) -> list[Unit]:
     - 排除建筑马车、船只、村民
     - 排除纯治疗师（``AbstractHealer`` 且攻击 ≤ 10）
     - 排除召唤占位符（``*batch``）和 PVE 守护者（``is_excluded_unit``）
-    - 排除黑名单中的兵种
+    - 排除 ``BLACKLIST``（数据 broken）和 ``BATTLE_BLACKLIST``（彩蛋/作弊兵）
     """
     pool = []
     blacklisted = 0
@@ -213,8 +305,8 @@ def get_bet_pool(repo: UnitRepo) -> list[Unit]:
         # 必须有 HP
         if u.hp <= 0:
             continue
-        # 黑名单
-        if u.id in BLACKLIST:
+        # 黑名单（永久禁用 + 普通对战禁用）
+        if u.id in BLACKLIST or u.id in BATTLE_BLACKLIST:
             blacklisted += 1
             continue
         pool.append(u)
@@ -222,6 +314,49 @@ def get_bet_pool(repo: UnitRepo) -> list[Unit]:
     logger.info(
         "押注模式兵种池：%d 个兵种（总 %d，全局排除 %d，黑名单排除 %d）",
         len(pool), len(repo.all_units), excluded, blacklisted,
+    )
+    return pool
+
+
+def get_blacklist_pool(repo: UnitRepo) -> list[Unit]:
+    """黑名单乱斗兵种池。
+
+    规则（详见设计文档 §2.6）：
+
+    - 来源：``BATTLE_BLACKLIST``（彩蛋 / 作弊码 / 怪物级战役兵）
+    - 必须 ``has_attack``（即 ``attack_ranged`` 或 ``attack_melee`` 有值），
+      模拟器才打得动；只有 ``attack_siege`` 的会被自动剔除
+    - 必须 ``hp > 0``
+    - 防御性地过一次 ``is_excluded_unit``，以防黑名单里混了被全局排除的 id
+
+    池子小（~20 个），日志按 INFO 打出来便于追踪。
+    """
+    pool: list[Unit] = []
+    skipped: list[str] = []
+    for unit_id in BATTLE_BLACKLIST:
+        u = repo.get_by_id(unit_id)
+        if u is None:
+            skipped.append(f"{unit_id}(数据库找不到)")
+            continue
+        if is_excluded_unit(u):
+            skipped.append(f"{unit_id}(被全局排除)")
+            continue
+        if not u.has_attack:
+            skipped.append(f"{unit_id}(无 melee/ranged 攻击)")
+            continue
+        if u.hp <= 0:
+            skipped.append(f"{unit_id}(hp ≤ 0)")
+            continue
+        pool.append(u)
+
+    if skipped:
+        logger.warning(
+            "黑名单乱斗池：跳过 %d 个 id（%s）",
+            len(skipped), ", ".join(skipped),
+        )
+    logger.info(
+        "黑名单乱斗池：%d 个兵种（BATTLE_BLACKLIST 共 %d）",
+        len(pool), len(BATTLE_BLACKLIST),
     )
     return pool
 
@@ -234,7 +369,7 @@ def get_duel_pool(repo: UnitRepo) -> list[Unit]:
     - 排除建筑、船只、村民
     - 排除纯治疗师（``AbstractHealer`` 且攻击 ≤ 10）
     - 排除召唤占位符（``*batch``）和 PVE 守护者（``is_excluded_unit``）
-    - 排除黑名单中的兵种
+    - 排除 ``BLACKLIST``（数据 broken）和 ``BATTLE_BLACKLIST``（彩蛋/作弊兵）
     """
     pool = []
     blacklisted = 0
@@ -255,8 +390,8 @@ def get_duel_pool(repo: UnitRepo) -> list[Unit]:
             continue
         if u.hp <= 0:
             continue
-        # 黑名单
-        if u.id in BLACKLIST:
+        # 黑名单（永久禁用 + 普通对战禁用）
+        if u.id in BLACKLIST or u.id in BATTLE_BLACKLIST:
             blacklisted += 1
             continue
         pool.append(u)
@@ -275,6 +410,40 @@ def get_duel_pool(repo: UnitRepo) -> list[Unit]:
 def _unit_cost(unit: Unit) -> int:
     """获取单位总资源消耗。"""
     return sum(unit.cost.values())
+
+
+def power_score(unit: Unit) -> float:
+    """单兵战力分（黑名单乱斗专用）。
+
+    公式：``HP_eff × DPS_eff``
+
+    - ``HP_eff = HP / (1 - max_armor)``：抗性等效放大（远防/近防取大头）
+    - ``DPS_eff = max(dps_ranged × aoe_mult_r, dps_melee × aoe_mult_m)``
+    - ``dps_X = attack_X / rof_X``
+    - ``aoe_mult = 1 + aoe_radius × BLACKLIST_AOE_DPS_MULT``
+
+    设计原则（与设计文档 §3.9 一致）：
+
+    - 只看模拟器实际会用的 ``attack_ranged`` / ``attack_melee`` 槽位；
+      ``attack_siege`` 是拆建筑用的（``BuildingAttack`` 系列），
+      模拟器不读，故不计入战力分（大名/曼苏尔的 atk_siege=40 听着唬人，
+      上场只能靠 melee 打人，战力分反映这个事实）。
+    - 倍率（multipliers）不计——克制天然在战斗里发挥作用，加进战力分会高估。
+    - 不算 speed / 射程 / 最小射程，那些在 1v1 模拟里影响小且难量化。
+    """
+    eff_armor = max(unit.armor_ranged or 0.0, unit.armor_melee or 0.0)
+    hp_eff = unit.hp / max(0.1, 1.0 - eff_armor)
+
+    rof_r = unit.rof_ranged or 3.0
+    rof_m = unit.rof_melee or 1.5
+    dps_r = (unit.attack_ranged or 0.0) / max(0.1, rof_r)
+    dps_m = (unit.attack_melee or 0.0) / max(0.1, rof_m)
+
+    aoe_mult_r = 1.0 + (unit.aoe_radius_ranged or 0) * BLACKLIST_AOE_DPS_MULT
+    aoe_mult_m = 1.0 + (unit.aoe_radius_melee or 0) * BLACKLIST_AOE_DPS_MULT
+    dps_eff = max(dps_r * aoe_mult_r, dps_m * aoe_mult_m)
+
+    return hp_eff * dps_eff
 
 
 def approx_lcm_budget(cost_a: int, cost_b: int, base_budget: int) -> int:
@@ -469,6 +638,117 @@ def generate_bet_lineup(
     return MatchLineup(red=red, blue=blue, mode="bet")
 
 
+def _greedy_fill_by_score(
+    target_score: float, scores: list[float]
+) -> list[int]:
+    """按战力分填充数量（参考 ``greedy_fill`` 三步法，但用浮点战力分代替整数 cost）。
+
+    输入：目标战力分 ``target_score``，各兵种单兵战力分 ``scores``
+    输出：每个兵种的数量
+
+    Step 1 保底：每种 +1
+    Step 2 均分：剩余战力分均分给每个兵种
+    Step 3 贪心零头：剩余战力分给最便宜的兵种 +1，直到无法再加
+    """
+    n = len(scores)
+    if n == 0:
+        return []
+
+    counts = [1] * n
+    remaining = target_score - sum(scores)
+    if remaining < 0:
+        # 保底就溢出（怪兽局的预期场景：score_max > target/n）
+        # 与 cost-based greedy_fill 不同，这里不重抽——节目效果就要这种悬殊
+        return counts
+
+    per = remaining / n
+    for i in range(n):
+        extra = int(per // scores[i]) if scores[i] > 0 else 0
+        counts[i] += extra
+
+    remaining = target_score - sum(c * s for c, s in zip(counts, scores))
+    while remaining > 0:
+        best = None
+        for i in range(n):
+            if scores[i] <= remaining:
+                if best is None or scores[i] < scores[best]:
+                    best = i
+        if best is None:
+            break
+        counts[best] += 1
+        remaining -= scores[best]
+
+    return counts
+
+
+def generate_blacklist_lineup(
+    repo: UnitRepo,
+    *,
+    rng: random.Random | None = None,
+) -> MatchLineup:
+    """生成黑名单乱斗阵容。
+
+    规则（详见设计文档 §2.6）：
+
+    - 红蓝双方独立从 ``BATTLE_BLACKLIST`` 池随机抽 1~3 个兵种，权重 ``[40, 40, 20]``
+    - 完全无视 cost，按战力分平衡数量
+    - 目标战力分 = ``max(双方全员单兵分) × r``，``r ~ U(R_MIN, R_MAX)``
+    - 无个体数上限（与押注/单挑一致，数量由战力分自然决定）
+    - 双方战力分不强求相等：抽到怪兽 vs 民兵就是悬殊，节目效果
+    """
+    if rng is None:
+        rng = random.Random()
+
+    pool = get_blacklist_pool(repo)
+    if len(pool) < 2:
+        raise ValueError(f"黑名单乱斗池不足：仅 {len(pool)} 个兵种")
+
+    def _draw(n_slots: int) -> list[Unit]:
+        return rng.sample(pool, min(n_slots, len(pool)))
+
+    red_slot_count = rng.choices([1, 2, 3], weights=SLOT_WEIGHTS_BLACKLIST, k=1)[0]
+    blue_slot_count = rng.choices([1, 2, 3], weights=SLOT_WEIGHTS_BLACKLIST, k=1)[0]
+    red_units = _draw(red_slot_count)
+    blue_units = _draw(blue_slot_count)
+
+    red_scores = [power_score(u) for u in red_units]
+    blue_scores = [power_score(u) for u in blue_units]
+
+    # 每方独立用本方最弱兵 × r 作为目标战力分（详见设计文档 §2.4）
+    # 不用全局 min 是因为：若一方抽到弱酋长（双月/民兵），全局 min 会被锚定到很低，
+    # 让另一方的英雄（曼苏尔/大名等）被压成"1 只保底"，节目效果差
+    r = rng.uniform(BLACKLIST_R_MIN, BLACKLIST_R_MAX)
+    red_target = min(red_scores) * r
+    blue_target = min(blue_scores) * r
+
+    red_counts = _greedy_fill_by_score(red_target, red_scores)
+    blue_counts = _greedy_fill_by_score(blue_target, blue_scores)
+
+    red_slots = [UnitSlot(u, c) for u, c in zip(red_units, red_counts)]
+    blue_slots = [UnitSlot(u, c) for u, c in zip(blue_units, blue_counts)]
+    red = Lineup(slots=red_slots)
+    blue = Lineup(slots=blue_slots)
+
+    logger.info(
+        "黑名单乱斗阵容：r=%.2f red_target=%.0f blue_target=%.0f, "
+        "🔴 %s (战力=%.0f, 总人数=%d) vs 🔵 %s (战力=%.0f, 总人数=%d)",
+        r, red_target, blue_target,
+        " + ".join(f"{s.unit.name}×{s.count}" for s in red_slots),
+        red.total_power, red.total_count,
+        " + ".join(f"{s.unit.name}×{s.count}" for s in blue_slots),
+        blue.total_power, blue.total_count,
+    )
+    for s in red_slots + blue_slots:
+        logger.debug(
+            "  %s ×%d (单兵分=%.0f, 小计=%.0f)",
+            s.unit.name, s.count,
+            power_score(s.unit),
+            power_score(s.unit) * s.count,
+        )
+
+    return MatchLineup(red=red, blue=blue, mode="blacklist")
+
+
 def generate_duel_lineup(
     repo: UnitRepo,
     *,
@@ -615,6 +895,8 @@ def format_side_panel(
 
     lines: list[str] = []
 
+    is_blacklist = mode == "blacklist"
+
     if mode == "duel":
         # 单挑模式：简洁
         lines.append(f"{emoji} {label} · {lineup.unit.name}")
@@ -627,11 +909,16 @@ def format_side_panel(
             _append_counter_info(lines, u, opponent)
 
     elif not lineup.is_multi:
-        # 单兵种押注模式：紧凑
+        # 单兵种押注模式 / 黑名单乱斗单兵种：紧凑
         lines.append(f"{emoji} {label} · {lineup.unit.name} ×{lineup.count}")
         u = lineup.unit
         lines.append(f"类型：{_type_str_zh(u)}")
-        lines.append(f"💰总资源 {lineup.total_cost}")
+        if is_blacklist:
+            lines.append(
+                f"⭐总战力 {lineup.total_power:,.0f}（单兵 {power_score(u):,.0f}）"
+            )
+        else:
+            lines.append(f"💰总资源 {lineup.total_cost}")
         lines.append(f"❤️{u.hp} 🦶{u.speed}")
         lines.append(f"⚔️ {_atk_summary(u)}")
         _append_extras(lines, u)
@@ -639,12 +926,24 @@ def format_side_panel(
             _append_counter_info(lines, u, opponent)
 
     else:
-        # 多兵种押注模式：每个兵种一段
-        lines.append(f"{emoji} {label}（总资源 {lineup.total_cost}，人口 {lineup.total_pop}）")
+        # 多兵种押注模式 / 黑名单乱斗多兵种：每个兵种一段
+        if is_blacklist:
+            lines.append(
+                f"{emoji} {label}（总战力 {lineup.total_power:,.0f}，总人数 {lineup.total_count}）"
+            )
+        else:
+            lines.append(
+                f"{emoji} {label}（总资源 {lineup.total_cost}，人口 {lineup.total_pop}）"
+            )
         for slot in lineup.slots:
             u = slot.unit
             lines.append(f"  {'─' * 20}")
-            lines.append(f"  {u.name} ×{slot.count}")
+            if is_blacklist:
+                lines.append(
+                    f"  {u.name} ×{slot.count}  ⭐{power_score(u):,.0f}/只"
+                )
+            else:
+                lines.append(f"  {u.name} ×{slot.count}")
             lines.append(f"  类型：{_type_str_zh(u)}")
             lines.append(f"  ❤️{u.hp} 🦶{u.speed}")
             lines.append(f"  ⚔️ {_atk_summary(u)}")
@@ -698,6 +997,16 @@ def format_vs_banner(lineup: MatchLineup) -> str:
         title = "⚔️ 帝国3斗蛐蛐 · 单挑"
         red_str = f"🔴 {r.unit.name}"
         blue_str = f"🔵 {b.unit.name}"
+    elif lineup.mode == "blacklist":
+        title = "🎪 帝国3斗蛐蛐 · 黑名单乱斗"
+        if r.is_multi or b.is_multi:
+            red_parts = "+".join(f"{s.count}{s.unit.name}" for s in r.slots)
+            blue_parts = "+".join(f"{s.count}{s.unit.name}" for s in b.slots)
+            red_str = f"🔴 [{red_parts}]"
+            blue_str = f"🔵 [{blue_parts}]"
+        else:
+            red_str = f"🔴 {r.unit.name} ×{r.count}"
+            blue_str = f"🔵 {b.unit.name} ×{b.count}"
     elif r.is_multi or b.is_multi:
         title = "⚔️ 帝国3斗蛐蛐"
         red_parts = "+".join(f"{s.count}{s.unit.name}" for s in r.slots)
@@ -712,10 +1021,16 @@ def format_vs_banner(lineup: MatchLineup) -> str:
     lines = [
         title,
         f"{red_str}  VS  {blue_str}",
+    ]
+    if lineup.mode == "blacklist":
+        lines.append(
+            f"⭐战力 🔴 {r.total_power:,.0f} vs 🔵 {b.total_power:,.0f}"
+        )
+    lines.extend([
         "━━━━━━━━━━━━━━━━━━━━━━━━",
         "@ 1 押红方 | @ 2 押蓝方",
         "入场券 5 金币 · @ 开战 直接开打",
-    ]
+    ])
     return "\n".join(lines)
 
 

@@ -782,18 +782,26 @@ class BattleSimulator:
         if s.has_ranged and s.effective_ranged_range_min <= dist <= s.effective_ranged_range:
             return AttackMode.RANGED
 
-        # 情况3：在 range_min 以内但超出近战距离（不应在正常流程出现，
-        # 因为 _can_attack_any_enemy 已确保只有能有效攻击时才 stop）
-        # 防御性处理：有近战就冲近战，纯远程就半伤
+        # 情况3：在 range_min 以内但超出近战距离 —— "死区"
+        #
+        # 触发场景：本兵在更早的 tick 处于 dist ≥ range_min 时停下了，
+        # 之后敌方继续靠近导致 dist < range_min，此时不再调用 _can_attack_any_enemy，
+        # 直接进入 _determine_attack_mode。这是**预期行为**，不是逻辑错误。
+        #
+        # 典型案例：加特林骆驼 range_min=10、melee_range=1.5、attack_melee=1
+        # —— 一旦敌方贴到 1.5 < dist < 10 就会反复触发本分支，每 tick 重新追近。
+        #
+        # 处理策略：
+        #   - 有近战 → 取消 stop 让它继续前进（这一 tick 不攻击），下一 tick 重新判定
+        #   - 纯远程 → 改用 RANGED_PENALIZED（贴脸半伤），原地继续打
         if dist < s.effective_ranged_range_min if s.has_ranged else False:
-            logger.error(
-                "tick=%d %s#%d 处于死区！dist=%.2f range_min=%.1f melee_range=%.1f "
-                "（_can_attack_any_enemy 判定可能有误）",
+            logger.debug(
+                "tick=%d %s#%d 进入死区 dist=%.2f<range_min=%.1f（melee_range=%.1f）→ %s",
                 self._tick, s.name, s.id, dist,
                 s.effective_ranged_range_min, s.effective_melee_range,
+                "重新追近" if s.has_melee else "贴脸半伤",
             )
             if s.has_melee:
-                # 不该走到这里，但防御性：取消 stop 让它继续前进
                 s.stopped = False
                 return None
             return AttackMode.RANGED_PENALIZED

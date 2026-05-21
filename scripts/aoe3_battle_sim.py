@@ -9,6 +9,7 @@
     uv run python scripts/aoe3_battle_sim.py --red 火枪手:10 --blue 长枪兵:8     # 中文也行
     uv run python scripts/aoe3_battle_sim.py --random                              # 随机押注模式阵容
     uv run python scripts/aoe3_battle_sim.py --duel                                # 随机单挑模式
+    uv run python scripts/aoe3_battle_sim.py --blacklist                            # 黑名单乱斗
 
 设计文档：docs/games/aoe3-battle.md §六
 """
@@ -48,6 +49,7 @@ from plugins.games.aoe3_battle.simulator import (  # noqa: E402
 )
 from plugins.games.aoe3_battle.lineup import (  # noqa: E402
     generate_bet_lineup,
+    generate_blacklist_lineup,
     generate_duel_lineup,
     format_matchup_panel,
 )
@@ -426,6 +428,9 @@ def main() -> None:
         "--duel", action="store_true", help="随机生成单挑模式阵容"
     )
     parser.add_argument(
+        "--blacklist", action="store_true", help="随机生成黑名单乱斗阵容"
+    )
+    parser.add_argument(
         "--broadcast", action="store_true", help="输出播报话术（模拟群消息效果）"
     )
     parser.add_argument(
@@ -455,10 +460,12 @@ def main() -> None:
     import random as _random
     rng = _random.Random(args.seed)
 
-    if args.random or args.duel:
+    if args.random or args.duel or args.blacklist:
         # 随机阵容模式
         if args.duel:
             match = generate_duel_lineup(repo, rng=rng)
+        elif args.blacklist:
+            match = generate_blacklist_lineup(repo, rng=rng)
         else:
             match = generate_bet_lineup(repo, rng=rng)
 
@@ -492,7 +499,7 @@ def main() -> None:
     # 跑模拟
     print(f"\n{C.DIM}模拟中...{C.R}")
     is_duel = args.duel
-    if args.random or args.duel:
+    if args.random or args.duel or args.blacklist:
         # 随机阵容模式：始终用新式接口（支持多兵种）
         sim = BattleSimulator(
             red_army=[(s.unit, s.count) for s in match.red.slots],

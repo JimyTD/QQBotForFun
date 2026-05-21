@@ -1,6 +1,6 @@
 """AoE3 斗蛐蛐 CLI 适配器。
 
-MODES 定义在此（首期两个模式：押注 / 单挑）。
+MODES 定义在此（押注 / 单挑 / 黑名单乱斗）。
 CLI 流程：
 - 开局 → 生成阵容 → 展示面板 → 模拟押注 → 跑模拟 → 播报 → 战报
 """
@@ -25,6 +25,7 @@ from plugins.games.aoe3_battle.lineup import (
     format_side_panel,
     format_vs_banner,
     generate_bet_lineup,
+    generate_blacklist_lineup,
     generate_duel_lineup,
 )
 from plugins.games.aoe3_battle.simulator import BattleResult, BattleSimulator, Side
@@ -44,6 +45,12 @@ MODES = [
         name="单挑模式",
         description="随机两个兵种，真 1v1",
         aliases=("单挑", "1v1"),
+    ),
+    GameMode(
+        id="blacklist",
+        name="黑名单乱斗",
+        description="怪物 / 战役英雄 / 作弊码兵互殴，战力分平衡",
+        aliases=("黑名单", "乱斗", "黑名单乱斗"),
     ),
 ]
 
@@ -78,6 +85,8 @@ class AoE3BattleCLIAdapter:
         rng = random.Random()
         if mode_id == "duel":
             self._match = generate_duel_lineup(self._repo, rng=rng)
+        elif mode_id == "blacklist":
+            self._match = generate_blacklist_lineup(self._repo, rng=rng)
         else:
             self._match = generate_bet_lineup(self._repo, rng=rng, budget=self._budget)
 

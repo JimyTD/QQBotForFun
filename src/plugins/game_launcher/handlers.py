@@ -128,10 +128,12 @@ async def _(matcher: Matcher, event: GroupMessageEvent, args: Message = CommandA
     mode_id = "bet"  # 默认押注模式
     budget = None     # None = 使用默认值
 
-    # 解析参数：可以是模式（单挑/1v1/duel）或资源数字
+    # 解析参数：可以是模式（单挑/黑名单乱斗）或资源数字
     for part in arg_text.split():
         if part in ("单挑", "1v1", "duel"):
             mode_id = "duel"
+        elif part in ("黑名单", "乱斗", "黑名单乱斗", "blacklist"):
+            mode_id = "blacklist"
         elif part.isdigit():
             budget = int(part)
 

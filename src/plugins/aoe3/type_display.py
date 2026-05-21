@@ -55,6 +55,15 @@ TYPE_DISPLAY_SKIP: frozenset[str] = frozenset({
     # ---- 时代/玩法模式标记（对 18 世纪殖民玩法无意义）----
     "AbstractArchaicInfantry",  # 古风步兵——共享加强卡用，显示无价值
 
+    # ---- 跨大类的内部抽象（横跨骑兵+步兵，对玩家零信息量）----
+    # AbstractCavalryInfantry：ESO 内部用于"参与骑步互克结算"的抽象 tag，
+    # 共 479/756 单位携带（181 骑兵 + 282 步兵 + 16 原住民），
+    # 顶层 AbstractCavalry 和 AbstractInfantry 互斥，none 单位同时挂这两个，
+    # 说明它不是"骑兵化步兵"或任何身份语义，纯实现细节。
+    # （旧译"反骑步兵"完全是把 Cavalry 看成 Counter Cavalry 的笔误，
+    #  AbstractCavalryInfantry ≠ AbstractCounterCavalry）
+    "AbstractCavalryInfantry",
+
     # ---- 极小众身份独占标签（一两个兵独占 + 不被克制系统引用）----
     # 这些标签既不是大类、也不参与 vs 克制，显示出来玩家也 get 不到。
     "AbstractAbusGun",
