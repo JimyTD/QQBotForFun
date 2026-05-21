@@ -1,7 +1,7 @@
 # 帝国3电子斗蛐蛐 —— 设计文档
 
 - **Status**: Draft v9（v2 复合阵容方案封板）
-- **Last Updated**: 2026-05-14
+- **Last Updated**: 2026-05-21
 - **Game ID**: `aoe3_battle`
 
 ---
@@ -413,9 +413,9 @@ AOE3 有三种伤害类型，每种只被对应的抗性减免：
 
 #### 数据来源
 
-- Fandom wiki 的爬虫**没有抓取 AOE 半径**（爬虫中无 area/splash 相关解析）
-- **aoe3explorer.com** 有完整的 AOE 数据（如鹰炮 AOE=3）
-- 需要写补充爬虫从 aoe3explorer.com 抓取，或手动维护常见 AOE 兵种数据
+- 直接从游戏文件 `protoy.xml` 的 `<protoaction>` → `<damagearea>` 字段解析（`scripts/crawler/aoe3_gamedata_parser.py`）
+- 当前 `units.json` 中 **147 个单位**带 AOE 数据（重型加农炮 / 迈索尔火箭炮 aoe=4，胸甲骑兵 melee aoe=2，战舰类 aoe=1 等）
+- 每个攻击模式的 AOE 与该模式的 damage / range / multipliers 整体绑定，不存在拼接
 
 #### AOE3 原版溅射机制（核实结论，仅供参考）
 
@@ -443,91 +443,91 @@ AOE3 有三种伤害类型，每种只被对应的抗性减免：
 - 兵种实际有 AOE 但字段缺失 → **数据 bug**，列入 §四数据缺失清单修复
 - 模拟器**不做兜底猜测**（不能“看到是炮就猜 aoe=3”，数据是什么就是什么）
 
-### 3.9 攻击分类（merge 脚本核心逻辑）
+### 3.9 攻击分类（解析脚本核心逻辑）
 
-**数据源**：`units_aoe_supplement.json` 中每个兵种的 `attacks` 数组，每条包含
-`name / damage / damage_type / max_range / rof / aoe_radius / bonuses`。
+**数据源**：游戏文件 `protoy.xml` 中每个 `<unit>` 的 `<protoaction>` 元素，
+每个 protoaction 的 `damage / damagetype / maxrange / minrange / rof / damagearea / damagebonus*`
+**整体绑定**——同一个 protoaction 的所有字段是一套真实游戏数据，铁律：**不可拆分拼接**。
 
-**分类规则**（由 `scripts/crawler/aoe3_merge_supplement.py :: _classify_attack` 实现）：
+**实现位置**：`scripts/crawler/aoe3_gamedata_parser.py :: _parse_attacks`
 
-#### 第一步：过滤拆建筑攻击和掩体攻击（ignore）
+**设计原则**（与旧版 merge_supplement 的关键差异）：
+- **type / multipliers.vs 直接存游戏原始标签**（`AbstractCavalry`、`AbstractHeavyInfantry` 等），不翻译
+- **倍率天然匹配**：`damagebonus.type` 和 `unit.type` 来自同一份 XML 同一套字符串，倍率匹配 = 字符串相等比对，不需要映射表
+- **翻译只在展示层**：`i18n_zh.json` 负责 `AbstractXxx → 中文`，与数据/匹配逻辑解耦
 
-攻击名匹配以下任一条件 → **直接忽略**，不参与后续分类：
-- 名称完全等于 `"Siege Attack"`（通用拆建筑攻击，几乎所有兵种都有）
-- 名称包含 `"Building"`（如 `"Cover Building Attack"`）
-- 名称包含 `"Chop"` / `"Gather"` / `"Crate"` / `"Ship Attack"`
-- 名称以 `"Cover "` 开头（掩体攻击，斗蛐蛐无掩体）
-- 名称包含特殊技能关键词（Charge / Explosion / Sabotage / Stun / Trample 等）
-- **掩体配对过滤**：如果兵种存在 `Cover Ranged Attack`，则非 Cover 版的 `Ranged Attack` 也视为掩体限定一并过滤
+#### 第一步：分类 ranged / melee / siege
 
-> 为什么？这些攻击是用来打建筑/采集资源/掩体限定的，斗蛐蛐没有建筑和掩体。
-> **关键辨别**：`"Siege Attack"` ≠ damage_type 为 Siege 的攻击。
-> 鹰炮的 `"Cannon Attack"` damage_type=Siege 但不是 "Siege Attack"，是真正的远程炮击。
+每个 protoaction 按以下规则归入三个槽位之一：
 
-#### 第二步：按 damage_type + max_range 分 ranged / melee
+- `damagetype = "Hand"` 或 `maxrange ≤ 2` → **melee**（近战）
+- `damagetype = "Siege"` 且 `maxrange > 6` → **ranged**（攻城类远程炮击，如鹰炮主炮）
+- `damagetype` 为 `Ranged` / `Siege`（其他情况）且 `maxrange > 2` → **ranged**
+- 标签包含 `BuildingAttack` 或攻击专门用于打建筑 → **siege**（独立第三槽位）
 
-过滤后的攻击按 `damage_type` 分类：
-- `damage_type = "Hand"` → **melee**（无论 max_range 多少）
-- `damage_type = "Ranged"` 或 `"Siege"`：
-  - `max_range > 6` → **ranged**（真远程攻击）
-  - `max_range ≤ 6` → **melee**（近距离攻城类攻击，如草原骑兵攻城 range=6）
-- `damage_type` 缺失 → 按 `max_range > 6` 兜底
+> 阈值 6 的依据：AOE3 中近战武器最大 range 约 4~6（长矛、流星锤等），远程炮击通常 range ≥ 10。
 
-> 阈值 6 的依据：AOE3 中近战武器最大 range 约 4~6（长矛、流星锤等），远程攻击通常 range ≥ 10。
+#### 第二步：选代表攻击
 
-#### 第三步：选最佳攻击
+每个槽位可能有多个候选攻击（如鹰炮的 `Cannon Attack` / `Bombard Attack` / `Case Shot Attack`
+都属于 ranged）。按 `ATTACK_PRIORITY` 常量选**优先级最高的一条**作为该槽位的代表，
+该 protoaction 的所有字段（damage / range / rof / aoe / multipliers）整体写入对应字段族。
 
-每个类别选伤害最高的一条，同时跳过姿态变体（Defend/Stagger/Volley，选伤害最高即可）。
-
-#### 第四步：攻城兵种兜底
-
-如果一个兵种过滤后 ranged 和 melee 都为空（所有攻击都被第一步忽略了），
-说明该兵种只有拆建筑攻击（如缴获臼炮 `captured_mortar`）→ **从被忽略的攻击中
-提升 max_range 最大的那条为 ranged**。
-
-#### 示例
-
-| 兵种 | 原始 attacks | 分类结果 |
-|------|-------------|---------|
-| 鹰炮 falconet | `Cannon Attack` (range=26, Siege), `Bombard Attack` (range=13, Siege), `Case Shot Attack` (range=13, Siege) | ranged=`Cannon Attack` (100), 无 melee |
-| 门徒 disciple | `Siege Attack` (range=6, Siege), `Cover Building Attack`, `Melee Attack` (range=1.75, Hand) | `Siege Attack` 和 `Building` 被忽略 → melee=`Melee Attack` (6) |
-| 火枪手 musketeer | `Ranged Attack` (range=12, Ranged), `Siege Attack` (range=6), 各种 Hand 近战 | ranged=`Ranged Attack` (23), melee=最高 Hand 近战 |
-| 缴获臼炮 captured_mortar | 只有 `Siege Attack` 系列 | 第一步全部忽略 → 第四步兜底提升为 ranged |
+> **铁律**：只能整体选用一个 protoaction，不能把 A 的 damage 和 B 的 multipliers 拼在一起。
+> 旧版 merge_supplement 的合并脚本同样遵守这一点，新版直接从 XML 解析后行为一致。
 
 #### 写入 units.json 的字段
 
-merge 脚本根据分类结果**覆写** units.json 中的攻击字段：
-
 ```
-attack_ranged  = ranged 攻击的 damage（若有）
-attack_melee   = melee 攻击的 damage（若有）
-range          = ranged 攻击的 max_range
-range_min      = ranged 攻击的 min_range
-range_melee    = melee 攻击的 max_range（近战射程，0 表示使用默认值 1.5）
-rof_ranged     = ranged 攻击的 rof
-rof_melee      = melee 攻击的 rof
-damage_type_ranged = ranged 攻击的 damage_type
-damage_type_melee  = melee 攻击的 damage_type
-aoe_radius_ranged  = ranged 攻击的 aoe_radius
-aoe_radius_melee   = melee 攻击的 aoe_radius
-multipliers_ranged = ranged 攻击的 bonuses
-multipliers_melee  = melee 攻击的 bonuses
+attack_ranged       = ranged 代表攻击的 damage
+range               = ranged 代表攻击的 maxrange
+range_min           = ranged 代表攻击的 minrange
+rof_ranged          = ranged 代表攻击的 rof
+damage_type_ranged  = ranged 代表攻击的 damagetype
+aoe_radius_ranged   = ranged 代表攻击的 damagearea
+multipliers.ranged  = ranged 代表攻击的 damagebonus 列表
+
+attack_melee        = melee 代表攻击的 damage
+range_melee         = melee 代表攻击的 maxrange（近战射程，0 表示用默认 1.5）
+rof_melee           = melee 代表攻击的 rof
+damage_type_melee   = melee 代表攻击的 damagetype
+aoe_radius_melee    = melee 代表攻击的 damagearea
+multipliers.melee   = melee 代表攻击的 damagebonus 列表
+
+attack_siege        = siege 代表攻击的 damage（拆建筑专用）
+range_siege         = siege 代表攻击的 maxrange
+rof_siege           = siege 代表攻击的 rof
 ```
 
-不再有 `attack_siege` / `range_siege` / `rof_siege` 作为独立字段——
-攻城类远程炮击统一写入 `attack_ranged` + `damage_type_ranged=Siege`。
+> **siege 槽位仅用于拆建筑展示，斗蛐蛐模拟器不使用**——一维场地上没有建筑可拆。
+> 角色卡（`_atk_summary`）也不显示 `attack_siege`，避免误导群友（详见 §8.5）。
 
 #### simulator 侧
 
-- **移除 `has_siege_as_ranged` hack**：不再需要 simulator 判断"无远程但有攻城"
-- 所有兵种的攻击能力直接从 `attack_ranged` / `attack_melee` 读取
-- `damage_type_ranged` / `damage_type_melee` 决定吃哪种护甲（Siege→armor_siege, Hand→armor_melee, Ranged→armor_ranged）
+- 战斗模拟只读 `attack_ranged` / `attack_melee` 及其对应字段族
+- `damage_type_ranged` / `damage_type_melee` 决定吃哪种护甲：
+  - `Siege` → `armor_siege`（极少见）
+  - `Hand` → `armor_melee`
+  - `Ranged` → `armor_ranged`
+- 例：鹰炮 `attack_ranged=80, damage_type_ranged=Siege` 打火枪手（无 siege 抗性）→ 全额伤害
+
+#### 示例
+
+| 兵种 | 选中的 protoaction | 写入 units.json |
+|------|-------------------|----------------|
+| 鹰炮 falconet | `Cannon Attack`（damage=80, range=26, type=Siege, aoe=4） | attack_ranged=80, range=26, damage_type_ranged=Siege, aoe_radius_ranged=4 |
+| 火枪手 musketeer | `Ranged Attack`（damage=23, range=12, type=Ranged） + `Hand Attack`（damage=13, type=Hand） | attack_ranged=23, attack_melee=13 |
+| 胸甲骑兵 cuirassier | `Hand Cavalry Attack`（damage=35, type=Hand, aoe=2） | attack_melee=35, aoe_radius_melee=2 |
+| 缴获臼炮 captured_mortar | 仅有 BuildingAttack 系列 | 写入 attack_siege（模拟器不用） |
+
 
 ---
 
 ## 四、数据缺失清单
 
-> ✅ **全部已解决**（2026-05-14）：`aoe_radius`、`damage_cap`、`damage_type` 已通过 `aoe3_aoe_supplement.py` 爬虫补充；Grenadier 已补入数据库。
+> ✅ **全部已解决**（2026-05-21）：`aoe_radius`、`damage_cap`、`damage_type` 已通过新版解析器
+> `scripts/crawler/aoe3_gamedata_parser.py`（直接从游戏文件 `protoy.xml` 解析）补全；
+> Grenadier 已补入数据库。
 
 ---
 
@@ -957,3 +957,11 @@ multipliers_melee  = melee 攻击的 bonuses
 - ✅ **新增 `range_melee` 字段**：`Unit` 模型新增 `range_melee`（近战射程，0 表示使用默认值 1.5），merge 脚本从 melee 攻击的 `max_range` 写入
 - ✅ **模拟器近战射程动态化**：`Soldier` 新增 `effective_melee_range`，从 `unit.range_melee` 取值（无数据时退化为 `MELEE_RANGE=1.5`）。所有近战距离判定（F2A停止/目标锁定/攻击模式选择/CAP统计/渗透检测）均使用个体射程
 - ✅ **角色卡显示近战射程**：`_atk_summary` 在 `range_melee > 1.5` 时显示近战射程
+
+### 2026-05-21 追加决议（数据源切换为游戏文件直解）
+
+- ✅ **数据源**：从 Fandom wiki + supplement 双源合并，切换为**直接解析游戏文件 `protoy.xml`**（`scripts/crawler/aoe3_gamedata_parser.py`）。原 `aoe3_merge_supplement.py` / `aoe3_aoe_supplement.py` 等合并爬虫弃用
+- ✅ **AOE 数据原生支持**：`damagearea` 直接从 protoy.xml 读取，当前 147 个单位带 AOE 数据（旧版 wiki 爬虫无此字段，需要 supplement 补丁；新版无需补丁）
+- ✅ **type 与 multipliers.vs 单一命名空间**：均存游戏原始标签（`AbstractCavalry` 等），倍率匹配 = 字符串相等比对，不再需要"wiki 名 ↔ 内部 type"映射表。中文翻译由 `i18n_zh.json` 在展示层完成
+- ✅ **保留 `attack_siege` / `range_siege` / `rof_siege` 独立槽位**：用于拆建筑攻击展示（BuildingAttack 系列）。模拟器不使用（一维场地无建筑），角色卡也不展示
+- ✅ **铁律不变**：每个 protoaction 的 damage / multipliers / aoe 整体绑定，不可拆分拼接

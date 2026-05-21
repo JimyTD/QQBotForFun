@@ -72,22 +72,35 @@ async def _handle_aoe3(bot: Bot, event: GroupMessageEvent) -> None:
     is_fuzzy = repo.search_is_fuzzy(text)
 
     # 发 icon + 文字卡片
-    # NapCat 和 Bot 容器文件系统隔离，图片必须用 base64 发送
+    import asyncio
     import base64
 
-    msg_parts = []
-    icon_path = repo.get_icon_path(unit)
-    if icon_path:
-        b64 = base64.b64encode(icon_path.read_bytes()).decode()
-        msg_parts.append(MessageSegment.image(f"base64://{b64}"))
+    from nonebot import logger
 
     card_text = render_unit_card(unit)
     if is_fuzzy:
         name = unit.name if unit.name != unit.name_en else unit.name_en
         card_text = f"💡 未精确匹配「{text}」，为你找到最接近的：{name}\n\n" + card_text
-    msg_parts.append(MessageSegment.text(card_text))
 
-    await bot.send(event, sum(msg_parts[1:], msg_parts[0]))
+    icon_path = repo.get_icon_path(unit)
+    if icon_path:
+        b64 = base64.b64encode(icon_path.read_bytes()).decode()
+        rich_msg = MessageSegment.image(f"base64://{b64}") + MessageSegment.text(card_text)
+        sent = False
+        for attempt in range(1, 3):
+            try:
+                await bot.send(event, rich_msg)
+                sent = True
+                break
+            except Exception:  # noqa: BLE001
+                if attempt < 2:
+                    logger.debug("[aoe3] 图片发送第 %d 次失败，重试", attempt)
+                    await asyncio.sleep(1)
+        if not sent:
+            logger.warning("[aoe3] 图片发送失败，降级为纯文本")
+            await bot.send(event, card_text)
+    else:
+        await bot.send(event, card_text)
 
     # 如果搜索到多个结果，提示
     if len(results) > 1:

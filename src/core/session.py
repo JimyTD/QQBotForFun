@@ -144,6 +144,38 @@ async def broadcast(
         raise
 
 
+async def broadcast_rich(
+    group_id: int,
+    rich_message: str | Message,
+    fallback_text: str,
+    *,
+    retries: int = 2,
+) -> None:
+    """发送富媒体消息，失败时重试，最终降级为纯文本。
+
+    适用于含图片等富媒体内容的消息：NapCat 偶尔会 rich media transfer
+    failed，重试通常能成功；实在不行再退回纯文本，保证消息一定能送达。
+    """
+    last_exc: Exception | None = None
+    for attempt in range(1, retries + 1):
+        try:
+            await broadcast(group_id, rich_message)
+            return
+        except Exception as e:  # noqa: BLE001
+            last_exc = e
+            if attempt < retries:
+                logger.debug(
+                    "[session] rich broadcast attempt %d/%d failed, retrying: %s",
+                    attempt, retries, e,
+                )
+                await asyncio.sleep(1)
+    logger.warning(
+        "[session] rich broadcast failed after %d attempts, falling back to text: %s",
+        retries, last_exc,
+    )
+    await broadcast(group_id, fallback_text)
+
+
 async def whisper(qq_id: int, message: str | Message) -> None:
     """私聊。"""
     await _throttle()

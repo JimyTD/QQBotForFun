@@ -2,7 +2,7 @@
 
 - **Module ID**: `aoe3`
 - **Status**: Design v0.1
-- **Last Updated**: 2026-05-12
+- **Last Updated**: 2026-05-21
 
 ---
 
@@ -22,9 +22,17 @@
 
 | 文件 | 内容 | 来源 |
 |------|------|------|
-| `seeds/aoe3/units.json` | 443 个单位属性 | Fandom Wiki API 爬取 |
-| `seeds/aoe3/technologies.json` | 240 条改良技术 | Fandom Wiki API 爬取 |
+| `seeds/aoe3/units.json` | 单位属性（含 type / 攻击 / 倍率 / AOE） | 游戏文件 `protoy.xml` 直接解析 |
+| `seeds/aoe3/technologies.json` | 改良技术 | 游戏文件解析 |
+| `seeds/aoe3/i18n_zh.json` | `AbstractXxx` → 中文显示名映射（仅展示层用） | 手工维护 |
 | `resources/aoe3/icons/{id}.png` | 单位头像 (268px) | Fandom Wiki CDN 下载 |
+
+**解析脚本**：`scripts/crawler/aoe3_gamedata_parser.py`
+
+**核心设计原则**：
+- `unit.type` 与 `multipliers.vs` 直接存游戏原始标签（`AbstractCavalry` 等），不翻译
+- 倍率天然匹配：`damagebonus.type` 和 `unit.type` 来自同一份 XML 同一套字符串，不需要映射表
+- 翻译只在展示层（`i18n_zh.json` + `formatter.py`），与数据/匹配逻辑解耦
 
 ### 2.1 单位数据结构 (Unit)
 
@@ -33,8 +41,7 @@
   "id": "musketeer",
   "name": "火枪手",
   "name_en": "Musketeer",
-  "wiki_url": "https://...",
-  "type": ["Infantry", "Heavy infantry", "Gunpowder trooper"],
+  "type": ["AbstractInfantry", "AbstractHeavyInfantry", "AbstractGunpowderTrooper", "Unit"],
   "civs": ["British", "French", ...],
   "age": "Commerce Age",
   "cost": {"food": 75, "gold": 25},
@@ -45,26 +52,37 @@
   "los": 16,
   "armor_melee": 0.2,
   "armor_ranged": null,
+  "armor_siege": 0.0,
   "attack_ranged": 23,
   "range": 12,
+  "range_min": 0,
   "rof_ranged": 3.0,
-  "multipliers": {
-    "ranged": [],
-    "melee": [
-      {"vs": "Cavalry", "value": 3.0},
-      {"vs": "Shock infantry", "value": 2.25}
-    ],
-    "siege": []
-  },
+  "damage_type_ranged": "Ranged",
+  "aoe_radius_ranged": 0,
   "attack_melee": 13,
+  "range_melee": 0,
   "rof_melee": 1.5,
+  "damage_type_melee": "Hand",
+  "aoe_radius_melee": 0,
   "attack_siege": 20,
   "range_siege": 6,
   "rof_siege": 3.0,
+  "multipliers": {
+    "ranged": [],
+    "melee": [
+      {"vs": "AbstractCavalry", "value": 3.0},
+      {"vs": "AbstractCoyoteMan", "value": 2.25}
+    ],
+    "siege": []
+  },
   "trained_at": ["Barracks", "Fort"],
   "internal_name": "Musketeer"
 }
 ```
+
+> **type 与 multipliers.vs 的标签来自同一命名空间**——例如火枪手 melee 倍率 `vs: AbstractCavalry` 直接对得上骑兵单位的 `type` 中的 `AbstractCavalry`，无需映射。中文展示由 `i18n_zh.json` 在 formatter 层完成。
+>
+> **siege 槽位仅用于拆建筑展示**，斗蛐蛐战斗模拟器不使用（详见 `aoe3-battle.md` §3.9）。
 
 ---
 
