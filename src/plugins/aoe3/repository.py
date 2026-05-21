@@ -194,7 +194,24 @@ class UnitRepo:
 
     # ------ icon ------
 
+    # PNG 文件头 magic bytes，用于过滤被错误命名为 .png 的 DDT/裸纹理文件
+    _PNG_MAGIC = b"\x89PNG\r\n\x1a\n"
+
     def get_icon_path(self, unit: Unit) -> Path | None:
-        """返回本地 icon 路径，不存在则返回 None。"""
+        """返回本地 icon 路径，不存在或不是合法 PNG 则返回 None。
+
+        校验文件前 8 字节 magic bytes，过滤掉 icons 目录里混入的非 PNG 文件
+        （比如游戏 BAR 里解包出来的 DDT 裸纹理被错误命名为 .png）。
+        这些坏文件如果发给 QQ，会导致整条消息（含其他正常图+文字详情）
+        被服务端拒收（rich media transfer failed / retcode=1200）。
+        """
         p = _ICONS_DIR / f"{unit.id}.png"
-        return p if p.exists() else None
+        if not p.exists():
+            return None
+        try:
+            with p.open("rb") as f:
+                if f.read(8) != self._PNG_MAGIC:
+                    return None
+        except OSError:
+            return None
+        return p
