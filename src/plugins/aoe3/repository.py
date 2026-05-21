@@ -20,6 +20,37 @@ _SEEDS_DIR = _ROOT / "seeds" / "aoe3"
 _ICONS_DIR = _ROOT / "resources" / "aoe3" / "icons"
 
 
+# =====================================================================
+# 全局排除规则
+# =====================================================================
+# 这套规则在两个地方共用：
+#   1) /帝国3 单位搜索 —— 不让玩家搜到
+#   2) 斗蛐蛐入池 —— 不让进对战池
+#
+# 排除原因：这些 id/标签对应的不是"玩家可控的真实兵种"，
+# 而是召唤占位符 / PVE 守护者，玩家在游戏里看不到这些条目。
+def is_excluded_unit(unit: "Unit") -> bool:
+    """是否为玩家不应感知的单位（占位符 / PVE 守护者）。
+
+    规则：
+    1. id 以 ``batch`` 结尾 —— 颐和园 / 使馆联盟批量召唤的占位符
+       （如 ``deforthussarbatch``, ``defortlegiondragoonbatch``）。
+    2. id 以 ``armyspawn`` 结尾 —— 中国旗军军队的颐和园召唤占位符
+       （如 ``ypstandardarmyspawn`` "正规军(颐和园)"，
+       ``ypforbiddenarmyspawn`` "紫禁军" 等共 8 个）。
+       这些条目在游戏里召唤后会立刻拆解为具体兵种，玩家不会直接控制。
+    3. type 含 ``Guardian`` —— PVE 宝藏守护者
+       （如 ``despcpikemanguardian`` "宝藏守护者长矛兵"）。
+    """
+    if unit.id.endswith("batch"):
+        return True
+    if unit.id.endswith("armyspawn"):
+        return True
+    if "Guardian" in unit.type:
+        return True
+    return False
+
+
 class UnitRepo:
     """单位数据仓库（单例，首次访问时懒加载）。"""
 
@@ -33,9 +64,12 @@ class UnitRepo:
         self._by_id = {u.id: u for u in self._units}
 
         # 预构建搜索用的名称池（用于模糊匹配兜底）
+        # 排除占位符 / 守护者，避免搜索结果被污染
         self._all_names: list[str] = []
         self._name_to_unit: dict[str, Unit] = {}
         for u in self._units:
+            if is_excluded_unit(u):
+                continue
             for name in [u.name.lower(), u.name_en.lower()] + [a.lower() for a in u.aliases]:
                 if name and name not in self._name_to_unit:
                     self._all_names.append(name)
@@ -57,7 +91,10 @@ class UnitRepo:
         return self._by_id.get(uid)
 
     def search(self, query: str, *, limit: int = 5) -> list[Unit]:
-        """中英文名 + 别名搜索。优先级：name精确 > alias精确 > 前缀 > 包含 > 模糊。"""
+        """中英文名 + 别名搜索。优先级：name精确 > alias精确 > 前缀 > 包含 > 模糊。
+
+        会自动过滤召唤占位符 / PVE 守护者（``is_excluded_unit``）。
+        """
         q = query.strip().lower()
         if not q:
             return []
@@ -68,6 +105,8 @@ class UnitRepo:
         contains: list[Unit] = []
 
         for u in self._units:
+            if is_excluded_unit(u):
+                continue
             name_lower = u.name.lower()
             name_en_lower = u.name_en.lower()
             alias_lower = [a.lower() for a in u.aliases]

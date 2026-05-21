@@ -14,7 +14,7 @@ from dataclasses import dataclass, field
 from typing import Sequence
 
 from src.plugins.aoe3.models import Unit
-from src.plugins.aoe3.repository import UnitRepo
+from src.plugins.aoe3.repository import UnitRepo, is_excluded_unit
 
 logger = logging.getLogger("aoe3_battle.lineup")
 
@@ -46,7 +46,21 @@ BLACKLIST: set[str] = {
 
     # 假炮 — 攻击力 500，cost 100，严重超模
     "quakergun",                 # 假炮
+
+    # 翻译缺失 + 不认识的奇怪单位
+    "yppeasantindians",          # ypPeasantIndians，无中文名
+    "ypirregularindians",        # ypIrregularIndians，无中文名
 }
+
+
+# 纯治疗师攻击力阈值：≤ 此值视为"打不动人的辅助单位"，排除出池
+# - 0 攻击：审判官（1 个）
+# - 4-5 攻击：神父/传教士/伊玛目/女祭司/军医/婆罗门... 约 13 个
+# - 8 攻击：弓僧兵（数据偏弱，一起排）
+# - 10 攻击：随军神父（一起排）
+# - 15 攻击：说书人（保留）
+# - 30 攻击：少林大师（保留）
+PURE_HEALER_ATTACK_THRESHOLD = 10
 
 
 # =====================================================================
@@ -134,8 +148,8 @@ def _is_hero(unit: Unit) -> bool:
 
 
 def _is_pet(unit: Unit) -> bool:
-    """判断是否为宠物。"""
-    return "AbstractPet" in unit.type or "Guardian" in unit.type
+    """判断是否为宠物（仅 AbstractPet；Guardian 由 ``is_excluded_unit`` 全局排除）。"""
+    return "AbstractPet" in unit.type
 
 
 def _is_ship(unit: Unit) -> bool:
@@ -148,20 +162,41 @@ def _is_villager(unit: Unit) -> bool:
     return "AbstractVillager" in unit.type
 
 
+def _is_pure_healer(unit: Unit) -> bool:
+    """判断是否为"打不动人的纯治疗师"。
+
+    规则：标签含 ``AbstractHealer`` 且最大攻击力 ≤ ``PURE_HEALER_ATTACK_THRESHOLD``。
+    斗蛐蛐里没有治疗机制，这些单位拉进池子就是纯纯拖后腿（教皇打拳 5 点伤害）。
+
+    保留有真实战斗力的"和尚"（说书人 15、少林大师 30）。
+    """
+    if "AbstractHealer" not in unit.type:
+        return False
+    max_atk = max(unit.attack_ranged or 0, unit.attack_melee or 0)
+    return max_atk <= PURE_HEALER_ATTACK_THRESHOLD
+
+
 def get_bet_pool(repo: UnitRepo) -> list[Unit]:
     """押注模式兵种池。
 
     规则（§2.2.2）：
     - cost > 0 且 has_attack 且 hp > 0
-    - 保留雇佣兵、英雄、宠物
+    - 保留雇佣兵、英雄、宠物、侦察兵（节目效果 / 有倍率机制）
     - 排除建筑马车、船只、村民
+    - 排除纯治疗师（``AbstractHealer`` 且攻击 ≤ 10）
+    - 排除召唤占位符（``*batch``）和 PVE 守护者（``is_excluded_unit``）
     - 排除黑名单中的兵种
     """
     pool = []
     blacklisted = 0
+    excluded = 0
     for u in repo.all_units:
         # 必须有费用和攻击力
         if not u.cost or not u.has_attack:
+            continue
+        # 全局排除：召唤占位符 / PVE 守护者
+        if is_excluded_unit(u):
+            excluded += 1
             continue
         # 排除建筑
         if _is_building(u):
@@ -171,6 +206,9 @@ def get_bet_pool(repo: UnitRepo) -> list[Unit]:
             continue
         # 排除村民
         if _is_villager(u):
+            continue
+        # 排除纯治疗师（打不动人的辅助单位）
+        if _is_pure_healer(u):
             continue
         # 必须有 HP
         if u.hp <= 0:
@@ -182,8 +220,8 @@ def get_bet_pool(repo: UnitRepo) -> list[Unit]:
         pool.append(u)
 
     logger.info(
-        "押注模式兵种池：%d 个兵种（总 %d，黑名单排除 %d）",
-        len(pool), len(repo.all_units), blacklisted,
+        "押注模式兵种池：%d 个兵种（总 %d，全局排除 %d，黑名单排除 %d）",
+        len(pool), len(repo.all_units), excluded, blacklisted,
     )
     return pool
 
@@ -194,18 +232,26 @@ def get_duel_pool(repo: UnitRepo) -> list[Unit]:
     规则（§2.3）：
     - 所有有攻击力的兵种（含英雄、特殊单位、雇佣兵、宠物）
     - 排除建筑、船只、村民
+    - 排除纯治疗师（``AbstractHealer`` 且攻击 ≤ 10）
+    - 排除召唤占位符（``*batch``）和 PVE 守护者（``is_excluded_unit``）
     - 排除黑名单中的兵种
     """
     pool = []
     blacklisted = 0
+    excluded = 0
     for u in repo.all_units:
         if not u.has_attack:
+            continue
+        if is_excluded_unit(u):
+            excluded += 1
             continue
         if _is_building(u):
             continue
         if _is_ship(u):
             continue
         if _is_villager(u):
+            continue
+        if _is_pure_healer(u):
             continue
         if u.hp <= 0:
             continue
@@ -216,8 +262,8 @@ def get_duel_pool(repo: UnitRepo) -> list[Unit]:
         pool.append(u)
 
     logger.info(
-        "单挑模式兵种池：%d 个兵种（总 %d，黑名单排除 %d）",
-        len(pool), len(repo.all_units), blacklisted,
+        "单挑模式兵种池：%d 个兵种（总 %d，全局排除 %d，黑名单排除 %d）",
+        len(pool), len(repo.all_units), excluded, blacklisted,
     )
     return pool
 
@@ -496,19 +542,14 @@ def _armor_str(u: Unit) -> str:
 
 
 def _type_str_zh(u: Unit) -> str:
-    """兵种类型中文翻译（精简版，去掉冗余标签）。"""
-    from src.plugins.aoe3.i18n import t
+    """兵种类型中文翻译（精简版，去掉冗余标签）。
 
-    # 过滤掉对玩家无意义的通用/逻辑标签
-    skip = {"Unit", "UnitClass", "Military", "Ranged",
-            "LogicalTypeLandMilitary", "LogicalTypeLandEconomy"}
-    types_zh = []
-    for tp in u.type:
-        if tp in skip:
-            continue
-        zh = t("type", tp)
-        if zh not in types_zh:
-            types_zh.append(zh)
+    与 `src/plugins/aoe3/formatter.py` 的兵种卡片共用同一份过滤+翻译逻辑，
+    保证 CLI/卡片/斗蛐蛐显示的兵种类型口径一致。
+    """
+    from src.plugins.aoe3.type_display import format_unit_types
+
+    types_zh = format_unit_types(u)
     return " / ".join(types_zh) if types_zh else "未知"
 
 

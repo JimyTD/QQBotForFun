@@ -124,8 +124,11 @@ def render_unit_card(unit: Unit) -> str:
 
     # 类型 + 文明
     if unit.type:
-        lines.append("")
-        lines.append(f"📋 类型：{' / '.join(t_list('type', unit.type))}")
+        from src.plugins.aoe3.type_display import format_unit_types
+        types_zh = format_unit_types(unit)
+        if types_zh:
+            lines.append("")
+            lines.append(f"📋 类型：{' / '.join(types_zh)}")
     if unit.civs:
         lines.append(f"文明：{'、'.join(t_list('civs', unit.civs))}")
 

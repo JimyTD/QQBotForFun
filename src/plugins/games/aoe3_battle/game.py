@@ -282,6 +282,19 @@ class AoE3BattleGame(GameBase):
         ),
     ]
 
+    # ---- 内部工具 ----
+
+    @staticmethod
+    async def _broadcast_with_fallback(
+        group_id: int, rich_msg: "Message", fallback_text: str
+    ) -> None:
+        """尝试发送含图片的消息，NapCat 富媒体失败时降级为纯文本。"""
+        try:
+            await session.broadcast(group_id, rich_msg)
+        except Exception:  # noqa: BLE001
+            logger.warning("[aoe3_battle] 图片发送失败，降级为纯文本")
+            await session.broadcast(group_id, fallback_text)
+
     # ---- 生命周期 ----
 
     async def on_create(self, ctx: GameContext) -> None:
@@ -339,14 +352,13 @@ class AoE3BattleGame(GameBase):
         # ── 发红方（图片 + 详情）──
         red_text = format_side_panel(match.red, "red", mode, opponent=match.blue)
         red_msg = Message()
-        # 多兵种时发多张 icon
         for slot in match.red.slots:
             icon_path = _UnitRepo.get().get_icon_path(slot.unit)
             if icon_path:
                 b64 = base64.b64encode(icon_path.read_bytes()).decode()
                 red_msg.append(MessageSegment.image(f"base64://{b64}"))
         red_msg.append(MessageSegment.text(red_text))
-        await session.broadcast(ctx.group_id, red_msg)
+        await self._broadcast_with_fallback(ctx.group_id, red_msg, red_text)
 
         # ── 发蓝方（图片 + 详情）──
         blue_text = format_side_panel(match.blue, "blue", mode, opponent=match.red)
@@ -357,7 +369,7 @@ class AoE3BattleGame(GameBase):
                 b64 = base64.b64encode(icon_path.read_bytes()).decode()
                 blue_msg.append(MessageSegment.image(f"base64://{b64}"))
         blue_msg.append(MessageSegment.text(blue_text))
-        await session.broadcast(ctx.group_id, blue_msg)
+        await self._broadcast_with_fallback(ctx.group_id, blue_msg, blue_text)
 
         # ── 发 VS 总览 + 押注提示 ──
         vs_text = format_vs_banner(match)
