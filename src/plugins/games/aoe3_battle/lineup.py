@@ -116,38 +116,55 @@ PURE_HEALER_ATTACK_THRESHOLD = 10
 
 
 # =====================================================================
-# 黑名单乱斗常量（详见设计文档 §2.6 / §九）
+# 黑名单乱斗常量（详见设计文档 §2.4）
 # =====================================================================
-# 兵种数权重：与普通押注略不同，多保留单兵种概率
-# 1 种 40%（神仙打架：5 镭射熊 vs 5 垮盛顿）
-# 2 种 40%（搭配节目效果）
-# 3 种 20%（豪华阵容，相对少）
-SLOT_WEIGHTS_BLACKLIST = [40, 40, 20]
+# 兵种数权重：黑名单池只有 18 个兵种，3 兵种局展示拥挤、节目效果分散，
+# 因此只保留 1 / 2 兵种概率。
+# 1 种 50%（神仙打架：N 镭射熊 vs N 垮盛顿）
+# 2 种 50%（搭配节目效果）
+SLOT_WEIGHTS_BLACKLIST = [50, 50, 0]
 
-# 浮动倍率 r：每方独立 target = min(本方单兵分) × r，r ~ U(R_MIN, R_MAX)
+# 浮动倍率 r：target = max(双方最强单兵分) × r，r ~ U(R_MIN, R_MAX)
 #
-# 含义：r 直接 ≈ "本方最弱兵种的出兵数"。
+# 含义：让两边都 ramp 到接近相同的总战力 target。
 #
 # 设计要点（详见 §2.4）：
 #
-# 1. 用 min（而非 max）锚定 target 的理由：
-#    池内战力分跨度极大（垮盛顿 80 亿 ↔ 民兵 2.8 千 ≈ 360 万倍）。
-#    若用 max × r 会让弱兵堆几万个，模拟器跑不动。
-#    用 min × r 后：强方 score >> target → 保底 1 只；弱方按 r 倍数出几只。
-#
-# 2. 用"本方 min"（而非全局 min）的理由：
-#    若一方抽到弱酋长（双月/民兵），全局 min 会被锚到 2.2k，
-#    让另一方的英雄（曼苏尔/大名等）被压成"1 只保底"——
-#    出现 "3 双月 vs 1 曼苏尔" 这种数量悬殊不好看。
-#    本方独立 min 后：双方都按各自最弱兵的 r 倍出兵，节目效果对等。
-#
-# 范围 3~6：r 即"本方弱兵出兵数"上下限，总个体数稳定在 5~30。
+# - 用 max(双方 max_score) 作为 anchor：双方都按同一个 target 配兵，
+#   总战力自然对齐（强方保底 1 只，弱方按总战力对齐 ramp）。
+# - **无个体数上限**：与押注/单挑一致，数量完全由战力分决定。
+#   1 镭射熊 vs 500 民兵这种"超人打蚂蚁"局是黑名单乱斗的常规节目效果。
+# - r 范围 3~6：强方最强单兵 ramp 到 r 只（其 score 通常 ≥ target/r 即可），
+#   弱方按 r×anchor 总战力 ramp 出几十到几百只。倍率取高让局面更壮观。
 BLACKLIST_R_MIN = 3.0
 BLACKLIST_R_MAX = 6.0
 
-# AOE 加成系数：每 1 半径 +30% DPS（aoe=4 鹰炮 → ×2.2 DPS）
-# 用于战力分公式，不影响实际战斗结算
-BLACKLIST_AOE_DPS_MULT = 0.3
+# ---- 战力公式参数（power_score）----
+#
+# 公式概念：score = sqrt(HP_eff × DPS_eff)
+#
+#   HP_eff  = hp × (1 + max_armor × ARMOR_WEIGHT)      ← 护甲轻微增益
+#   DPS_eff = soft(max(soft(hit_r), soft(hit_m)) / rof, DPS_BASELINE)
+#              ← 单次伤害 + DPS 双层"溢出减益"
+#   hit_x   = atk_x × (1 + aoe_x × AOE_HIT_MULT)        ← AOE 加成
+#
+# soft(x, base) = x ≤ base 时线性；x > base 时按 sqrt 收敛（边际递减）。
+#
+# 用几何平均（sqrt）的原因：HP 与 DPS 同等重要，单独任一项极端高不应
+# 让总战力线性爆炸（"血厚但打不动" / "高射炮打蚊子"），用 sqrt 让两边都
+# 受边际递减约束。
+#
+# 实测标定（1 镭射熊 = N X 的均衡点）：
+#   vs 重型火炮(无人口)：公式 ~19:1，实测 ~15:1（差距 1.2×）
+#   vs 防卫据点炮：     公式 ~12:1，实测  ~7:1（差距 1.8×）
+#   vs 民兵长：         公式 ~55:1，实测 ~30:1（差距 1.8×）
+#
+# 跨档差距仍存在（剪刀石头布、armor 实际抵消等无法用单兵公式覆盖），
+# 但已从旧版"几十~几千倍偏差"压缩到 1~2 倍量级。
+ARMOR_WEIGHT = 0.3              # 护甲增益系数：hp × (1 + armor × 0.3)
+BLACKLIST_AOE_DPS_MULT = 0.3    # AOE 加成：单次伤害每 1 半径 +30%
+HIT_BASELINE = 50.0             # 单击伤害基准：超出部分按 sqrt 减益
+DPS_BASELINE = 20.0             # DPS 基准：超出部分按 sqrt 减益
 
 
 # =====================================================================
@@ -412,38 +429,66 @@ def _unit_cost(unit: Unit) -> int:
     return sum(unit.cost.values())
 
 
+def _soft_diminish(value: float, baseline: float) -> float:
+    """边际递减软上限。
+
+    - ``value ≤ baseline``：线性返回 ``value``
+    - ``value > baseline``：``baseline + sqrt((value - baseline) × baseline)``
+
+    意义：在 baseline 内贡献全额，超出部分按 sqrt 收益。
+    用于战力公式里两层"溢出减益"——单次伤害和最终 DPS。
+    """
+    if value <= baseline:
+        return value
+    return baseline + math.sqrt(max(0.0, (value - baseline) * baseline))
+
+
 def power_score(unit: Unit) -> float:
     """单兵战力分（黑名单乱斗专用）。
 
-    公式：``HP_eff × DPS_eff``
+    公式：``score = sqrt(HP_eff × DPS_eff)``
 
-    - ``HP_eff = HP / (1 - max_armor)``：抗性等效放大（远防/近防取大头）
-    - ``DPS_eff = max(dps_ranged × aoe_mult_r, dps_melee × aoe_mult_m)``
-    - ``dps_X = attack_X / rof_X``
-    - ``aoe_mult = 1 + aoe_radius × BLACKLIST_AOE_DPS_MULT``
+    三要素（详见 ``BLACKLIST_AOE_DPS_MULT`` / ``HIT_BASELINE`` /
+    ``DPS_BASELINE`` 注释）：
+
+    - **HP**：``hp × (1 + max_armor × ARMOR_WEIGHT)``。
+      单调递增，护甲只做轻微增益（``armor=0.9`` 仅 ×1.27）。
+    - **DPS**：双层"溢出减益"。
+      单击伤害 ``hit = atk × (1 + aoe × AOE_HIT_MULT)`` 先 soft 一次（治
+      "800 攻击打民兵"的浪费），除以 rof 得 dps 再 soft 一次（治"机关枪打
+      蚊子"的浪费）。
+    - **几何平均**：``sqrt(HP × DPS)`` 让 HP/DPS 同等加权，避免单项极端
+      数据让总战力线性爆炸。
 
     设计原则（与设计文档 §3.9 一致）：
 
-    - 只看模拟器实际会用的 ``attack_ranged`` / ``attack_melee`` 槽位；
-      ``attack_siege`` 是拆建筑用的（``BuildingAttack`` 系列），
-      模拟器不读，故不计入战力分（大名/曼苏尔的 atk_siege=40 听着唬人，
-      上场只能靠 melee 打人，战力分反映这个事实）。
-    - 倍率（multipliers）不计——克制天然在战斗里发挥作用，加进战力分会高估。
-    - 不算 speed / 射程 / 最小射程，那些在 1v1 模拟里影响小且难量化。
+    - 只看模拟器实际会用的 ``attack_ranged`` / ``attack_melee``；
+      ``attack_siege`` 模拟器不读，不计入。
+    - 倍率（multipliers）不计——克制由模拟器自然发挥。
+    - 不计 speed / 射程，1v1 静态战力公式无法量化"接战阶段"的影响。
     """
     eff_armor = max(unit.armor_ranged or 0.0, unit.armor_melee or 0.0)
-    hp_eff = unit.hp / max(0.1, 1.0 - eff_armor)
+    hp_eff = unit.hp * (1.0 + eff_armor * ARMOR_WEIGHT)
 
     rof_r = unit.rof_ranged or 3.0
     rof_m = unit.rof_melee or 1.5
-    dps_r = (unit.attack_ranged or 0.0) / max(0.1, rof_r)
-    dps_m = (unit.attack_melee or 0.0) / max(0.1, rof_m)
 
-    aoe_mult_r = 1.0 + (unit.aoe_radius_ranged or 0) * BLACKLIST_AOE_DPS_MULT
-    aoe_mult_m = 1.0 + (unit.aoe_radius_melee or 0) * BLACKLIST_AOE_DPS_MULT
-    dps_eff = max(dps_r * aoe_mult_r, dps_m * aoe_mult_m)
+    hit_r = (unit.attack_ranged or 0.0) * (
+        1.0 + (unit.aoe_radius_ranged or 0) * BLACKLIST_AOE_DPS_MULT
+    )
+    hit_m = (unit.attack_melee or 0.0) * (
+        1.0 + (unit.aoe_radius_melee or 0) * BLACKLIST_AOE_DPS_MULT
+    )
+    eff_hit_r = _soft_diminish(hit_r, HIT_BASELINE)
+    eff_hit_m = _soft_diminish(hit_m, HIT_BASELINE)
 
-    return hp_eff * dps_eff
+    dps_raw = max(
+        eff_hit_r / max(0.1, rof_r),
+        eff_hit_m / max(0.1, rof_m),
+    )
+    dps_eff = _soft_diminish(dps_raw, DPS_BASELINE)
+
+    return math.sqrt(hp_eff * dps_eff)
 
 
 def approx_lcm_budget(cost_a: int, cost_b: int, base_budget: int) -> int:
@@ -638,45 +683,51 @@ def generate_bet_lineup(
     return MatchLineup(red=red, blue=blue, mode="bet")
 
 
-def _greedy_fill_by_score(
-    target_score: float, scores: list[float]
+def _fill_to_target(
+    target_score: float,
+    scores: list[float],
 ) -> list[int]:
-    """按战力分填充数量（参考 ``greedy_fill`` 三步法，但用浮点战力分代替整数 cost）。
+    """按战力分填充数量，让 ``sum(counts × scores)`` 逼近 ``target_score``。
 
-    输入：目标战力分 ``target_score``，各兵种单兵战力分 ``scores``
-    输出：每个兵种的数量
+    输入：
+      - ``target_score``：目标总战力分（双方共用）
+      - ``scores``：各兵种单兵战力分
 
-    Step 1 保底：每种 +1
-    Step 2 均分：剩余战力分均分给每个兵种
-    Step 3 贪心零头：剩余战力分给最便宜的兵种 +1，直到无法再加
+    输出：每个兵种的数量列表，``count_i ≥ 1``，**无数量上限**。
+
+    策略：
+      1. 每种保底 1 个
+      2. 若已超 target，直接返回（强方场景：怪兽 score >> target）
+      3. 否则反复挑 ``counts[i] × scores[i]`` 最小的兵种 +1，
+         直到总分 ≥ target × 1.05
+
+    "挑当前总分最小的 +1" 实现弱方多兵种均匀 ramp。
+    弱方对怪兽 anchor 时可能 ramp 到几百个个体——这与 §3.2 "无人口上限、
+    数量完全由资源/战力决定" 的全局哲学一致，1 镭射熊 vs 500 民兵就是
+    黑名单乱斗的常规节目效果。
     """
     n = len(scores)
     if n == 0:
         return []
 
     counts = [1] * n
-    remaining = target_score - sum(scores)
-    if remaining < 0:
-        # 保底就溢出（怪兽局的预期场景：score_max > target/n）
-        # 与 cost-based greedy_fill 不同，这里不重抽——节目效果就要这种悬殊
+    cur = sum(scores)
+    if cur >= target_score:
         return counts
 
-    per = remaining / n
-    for i in range(n):
-        extra = int(per // scores[i]) if scores[i] > 0 else 0
-        counts[i] += extra
-
-    remaining = target_score - sum(c * s for c, s in zip(counts, scores))
-    while remaining > 0:
-        best = None
-        for i in range(n):
-            if scores[i] <= remaining:
-                if best is None or scores[i] < scores[best]:
-                    best = i
-        if best is None:
-            break
+    overshoot_cap = target_score * 1.05
+    while cur < target_score:
+        best = 0
+        best_val = counts[0] * scores[0]
+        for i in range(1, n):
+            v = counts[i] * scores[i]
+            if v < best_val:
+                best_val = v
+                best = i
         counts[best] += 1
-        remaining -= scores[best]
+        cur += scores[best]
+        if cur >= overshoot_cap:
+            break
 
     return counts
 
@@ -688,13 +739,15 @@ def generate_blacklist_lineup(
 ) -> MatchLineup:
     """生成黑名单乱斗阵容。
 
-    规则（详见设计文档 §2.6）：
+    规则（详见设计文档 §2.4）：
 
-    - 红蓝双方独立从 ``BATTLE_BLACKLIST`` 池随机抽 1~3 个兵种，权重 ``[40, 40, 20]``
+    - 红蓝双方独立从 ``BATTLE_BLACKLIST`` 池随机抽 1~3 个兵种，
+      权重 ``SLOT_WEIGHTS_BLACKLIST = [40, 40, 20]``
     - 完全无视 cost，按战力分平衡数量
-    - 目标战力分 = ``max(双方全员单兵分) × r``，``r ~ U(R_MIN, R_MAX)``
-    - 无个体数上限（与押注/单挑一致，数量由战力分自然决定）
-    - 双方战力分不强求相等：抽到怪兽 vs 民兵就是悬殊，节目效果
+    - **目标战力分 = max(双方最强单兵分) × r**，``r ~ U(R_MIN, R_MAX)``
+    - 双方独立按 target 用 ``_fill_to_target`` ramp，无个体数上限
+    - 战力相对对齐（实测多数局战力比 1~4×），但不强求等于；
+      含怪兽的一方因数量上限仍会偏强（节目效果）
     """
     if rng is None:
         rng = random.Random()
@@ -714,15 +767,14 @@ def generate_blacklist_lineup(
     red_scores = [power_score(u) for u in red_units]
     blue_scores = [power_score(u) for u in blue_units]
 
-    # 每方独立用本方最弱兵 × r 作为目标战力分（详见设计文档 §2.4）
-    # 不用全局 min 是因为：若一方抽到弱酋长（双月/民兵），全局 min 会被锚定到很低，
-    # 让另一方的英雄（曼苏尔/大名等）被压成"1 只保底"，节目效果差
+    # 共用 anchor：双方最强单兵分的最大值 × r
+    # 这样两边都向同一个 target 配兵，总战力自然对齐
+    anchor = max(max(red_scores), max(blue_scores))
     r = rng.uniform(BLACKLIST_R_MIN, BLACKLIST_R_MAX)
-    red_target = min(red_scores) * r
-    blue_target = min(blue_scores) * r
+    target = anchor * r
 
-    red_counts = _greedy_fill_by_score(red_target, red_scores)
-    blue_counts = _greedy_fill_by_score(blue_target, blue_scores)
+    red_counts = _fill_to_target(target, red_scores)
+    blue_counts = _fill_to_target(target, blue_scores)
 
     red_slots = [UnitSlot(u, c) for u, c in zip(red_units, red_counts)]
     blue_slots = [UnitSlot(u, c) for u, c in zip(blue_units, blue_counts)]
@@ -730,9 +782,9 @@ def generate_blacklist_lineup(
     blue = Lineup(slots=blue_slots)
 
     logger.info(
-        "黑名单乱斗阵容：r=%.2f red_target=%.0f blue_target=%.0f, "
+        "黑名单乱斗阵容：r=%.2f anchor=%.0f target=%.0f, "
         "🔴 %s (战力=%.0f, 总人数=%d) vs 🔵 %s (战力=%.0f, 总人数=%d)",
-        r, red_target, blue_target,
+        r, anchor, target,
         " + ".join(f"{s.unit.name}×{s.count}" for s in red_slots),
         red.total_power, red.total_count,
         " + ".join(f"{s.unit.name}×{s.count}" for s in blue_slots),
@@ -1025,6 +1077,9 @@ def format_vs_banner(lineup: MatchLineup) -> str:
     if lineup.mode == "blacklist":
         lines.append(
             f"⭐战力 🔴 {r.total_power:,.0f} vs 🔵 {b.total_power:,.0f}"
+        )
+        lines.append(
+            f"👥总人数 🔴 {r.total_count} vs 🔵 {b.total_count}"
         )
     lines.extend([
         "━━━━━━━━━━━━━━━━━━━━━━━━",
