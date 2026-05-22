@@ -94,6 +94,12 @@ class PendingHit:
 
 
 @dataclass
+class ArmySlot:
+    actor_id: str
+    count: int
+
+
+@dataclass
 class UnitInstance:
     id: int
     actor_id: str
@@ -103,6 +109,8 @@ class UnitInstance:
     y: int
     hp: float
     max_hp: float
+    total_damage_dealt: float = 0.0
+    kills: int = 0
     target_id: int | None = None
     move_progress: float = 0.0
     ticks_since_shot: dict[str, int] = field(default_factory=dict)
@@ -138,6 +146,10 @@ class BattleResult:
     blue_alive: list[UnitInstance]
     red_dead: list[UnitInstance]
     blue_dead: list[UnitInstance]
+    red_army: list[ArmySlot]
+    blue_army: list[ArmySlot]
+    red_count: int
+    blue_count: int
 
 
 def _wdist_between(a: tuple[int, int], b: tuple[int, int]) -> int:
@@ -216,6 +228,17 @@ class BattleSimulator:
         self._next_id = 1
         self._tick = 0
         self._pending: list[PendingHit] = []
+
+        self.red_army = [
+            ArmySlot(aid, cnt)
+            for aid, cnt, _ in (self._parse_army_entry(e) for e in red)
+        ]
+        self.blue_army = [
+            ArmySlot(aid, cnt)
+            for aid, cnt, _ in (self._parse_army_entry(e) for e in blue)
+        ]
+        self.red_count = sum(s.count for s in self.red_army)
+        self.blue_count = sum(s.count for s in self.blue_army)
 
         self._spawn_side(Side.RED, red, x_base=2)
         self._spawn_side(Side.BLUE, blue, x_base=width - 3)
@@ -305,7 +328,52 @@ class BattleSimulator:
         return u
 
     def _emit(self, etype: EventType, payload: dict[str, Any]) -> None:
-        self._events.append(BattleEvent(self._tick, etype, payload))
+        self._events.append(
+            BattleEvent(self._tick, etype, payload)
+        )
+
+    @staticmethod
+    def _weapon_attack_mode(weapon: WeaponDef) -> str:
+        if weapon.id in ("DogJaw",):
+            return "melee"
+        if weapon.range and weapon.range > 0:
+            return "ranged"
+        return "melee"
+
+    def _side_alive_count(self, side: Side) -> int:
+        return len(self._alive(side))
+
+    def _side_total_count(self, side: Side) -> int:
+        return self.red_count if side == Side.RED else self.blue_count
+
+    def _emit_death(
+        self,
+        killer: UnitInstance,
+        victim: UnitInstance,
+        *,
+        attack_mode: str,
+        weapon_id: str | None = None,
+    ) -> None:
+        if killer.side != victim.side:
+            killer.kills += 1
+        side_alive = self._side_alive_count(victim.side)
+        side_total = self._side_total_count(victim.side)
+        self._emit(EventType.DEATH, {
+            "soldier_id": victim.id,
+            "soldier_name": victim.actor_id,
+            "soldier_actor_id": victim.actor_id,
+            "side": victim.side.value,
+            "killer_id": killer.id,
+            "killer_name": killer.actor_id,
+            "killer_actor_id": killer.actor_id,
+            "killer_side": killer.side.value,
+            "killer_attack_mode": attack_mode,
+            "killer_weapon_id": weapon_id,
+            "remaining": side_alive,
+            "total": side_total,
+        })
+        on_unit_death(self, victim)
+        self._on_kill(killer, victim)
 
     def _alive(self, side: Side | None = None) -> list[UnitInstance]:
         out = [u for u in self._units if u.alive]
@@ -414,6 +482,8 @@ class BattleSimulator:
         victim: UnitInstance,
         weapon: WeaponDef,
         dmg: int,
+        *,
+        is_splash: bool = False,
     ) -> None:
         victim_mult = combat_multipliers(
             victim.veterancy.level, self._veterancy_rules
@@ -422,26 +492,30 @@ class BattleSimulator:
         if dmg <= 0:
             return
         victim.hp -= dmg
+        u.total_damage_dealt += dmg
         u.active_weapon_id = weapon.id
+        attack_mode = self._weapon_attack_mode(weapon)
         self._emit(EventType.ATTACK, {
             "attacker_id": u.id,
             "attacker": u.actor_id,
+            "attacker_name": u.actor_id,
+            "attacker_side": u.side.value,
             "target_id": victim.id,
             "target": victim.actor_id,
+            "target_name": victim.actor_id,
+            "target_side": victim.side.value,
             "weapon": weapon.id,
             "damage": dmg,
             "target_hp": max(0, int(victim.hp)),
             "attacker_level": u.veterancy.level,
+            "mode": attack_mode,
+            "is_splash": is_splash,
         })
         if victim.hp <= 0:
             victim.alive = False
-            self._emit(EventType.DEATH, {
-                "unit_id": victim.id,
-                "actor_id": victim.actor_id,
-                "killer_id": u.id,
-            })
-            on_unit_death(self, victim)
-            self._on_kill(u, victim)
+            self._emit_death(
+                u, victim, attack_mode=attack_mode, weapon_id=weapon.id
+            )
 
     def _resolve_hit(
         self,
@@ -466,7 +540,7 @@ class BattleSimulator:
             )
             if dmg <= 0:
                 continue
-            self._apply_damage(u, victim, weapon, dmg)
+            self._apply_damage(u, victim, weapon, dmg, is_splash=dist > 0)
 
     def _fire_one_shot(
         self,
@@ -661,14 +735,14 @@ class BattleSimulator:
                 continue
             v.alive = False
             v.hp = 0
-            on_unit_death(self, v)
+            mover.total_damage_dealt += v.max_hp
             self._emit(EventType.CRUSH, {
                 "crusher_id": mover.id,
                 "crusher": mover.actor_id,
                 "victim_id": v.id,
                 "victim": v.actor_id,
             })
-            self._on_kill(mover, v)
+            self._emit_death(mover, v, attack_mode="crush")
 
     def _move_unit(self, u: UnitInstance) -> None:
         if u.target_id is None:
@@ -845,4 +919,8 @@ class BattleSimulator:
             blue_alive=[u for u in alive if u.side == Side.BLUE],
             red_dead=[u for u in dead if u.side == Side.RED],
             blue_dead=[u for u in dead if u.side == Side.BLUE],
+            red_army=list(self.red_army),
+            blue_army=list(self.blue_army),
+            red_count=self.red_count,
+            blue_count=self.blue_count,
         )

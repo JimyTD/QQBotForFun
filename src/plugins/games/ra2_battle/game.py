@@ -11,9 +11,15 @@ from typing import Any
 from core import economy, session
 from core.errors import InsufficientFundsError
 from core.game_base import GameBase, GameMode, register_game
+from core.group_config import get_group_config
 from core.types import EndReason, GameContext
 
-from .broadcaster import Broadcaster, format_battle_report
+from .broadcaster import (
+    BROADCAST_MODE_CONFIG_KEY,
+    MODE_BRIEF,
+    Broadcaster,
+    format_battle_report,
+)
 from .lineup import (
     BUDGET_DEFAULT,
     BUDGET_MAX,
@@ -249,7 +255,12 @@ class Ra2BattleGame(GameBase):
                 result.winner.value if result.winner else "draw",
             )
 
-            bc = Broadcaster(result)
+            bc = Broadcaster(
+                result,
+                mode=await get_group_config(
+                    ctx.group_id, BROADCAST_MODE_CONFIG_KEY, default=MODE_BRIEF
+                ),
+            )
             for seg in bc.generate():
                 await session.broadcast(ctx.group_id, seg.text)
                 if seg.should_sleep:

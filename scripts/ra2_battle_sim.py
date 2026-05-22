@@ -66,7 +66,7 @@ def _print_events(result) -> None:
                 f"({p['weapon']}) -{p['damage']} HP={p['target_hp']}"
             )
         elif ev.type == EventType.DEATH:
-            print(f"[{ev.tick:4d}] 阵亡 {p['actor_id']}")
+            print(f"[{ev.tick:4d}] 阵亡 {p['soldier_actor_id']}")
         elif ev.type == EventType.CRUSH:
             print(f"[{ev.tick:4d}] 碾压 {p['crusher']} → {p['victim']}")
         elif ev.type == EventType.BATTLE_END:
