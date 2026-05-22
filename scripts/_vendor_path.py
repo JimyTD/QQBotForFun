@@ -41,3 +41,8 @@ def openra_ra2_dir() -> Path:
 
 def openra_dir() -> Path:
     return vendor_root() / "openra"
+
+
+def yuris_revenge_dir() -> Path:
+    """cookgreen/Yuris-Revenge（YR 权威规则与 OpenRA.Mods.YR）。"""
+    return vendor_root() / "yuris-revenge"

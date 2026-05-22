@@ -1,14 +1,14 @@
-"""从原版 RA2 cameo.mix 导出斗蛐蛐用 PNG icon。
+"""从原版 RA2 + YR cameo mix 导出斗蛐蛐用 PNG icon。
 
 依赖（导出机安装）:
     uv pip install ra2mix Pillow
 
-需要原版游戏或 OpenRA 已安装的 mix（含 cameo.mix / cameo.pal）。
+需要合法拥有的原版游戏 mix（见 resources/ra2/icons/README.md 来源说明）。
 
 用法:
     uv run python scripts/crawler/ra2_icon_export.py
     uv run python scripts/crawler/ra2_icon_export.py --ra2-dir "D:/Games/Red Alert 2"
-    uv run python scripts/crawler/ra2_icon_export.py --cameo-mix path/to/cameo.mix --palette path/to/cameo.pal
+    uv run python scripts/crawler/ra2_icon_export.py --yr-dir "D:/Games/Yuri's Revenge"
 
 产出: resources/ra2/icons/{actor_id}.png
 """
@@ -35,64 +35,153 @@ from plugins.games.ra2_battle.shp_ts import (  # noqa: E402
     frame_to_rgba,
     load_jasc_pal,
 )
-from _vendor_path import openra_ra2_dir  # noqa: E402
+from _vendor_path import yuris_revenge_dir  # noqa: E402
 
 OUT_DIR = _ROOT / "resources" / "ra2" / "icons"
 ICON_MAP_PATH = _ROOT / "data" / "ra2" / "icon_map.json"
 ACTORS_PATH = _ROOT / "data" / "ra2" / "actors.json"
 
 
-def _find_cameo_assets(ra2_dir: Path) -> tuple[Path, Path]:
-    """在 RA2 安装目录或 OpenRA Content 中定位 cameo.mix / cameo.pal。"""
-    candidates_mix = [
-        ra2_dir / "cameo.mix",
-        ra2_dir / "Content" / "ra2" / "cameo.mix",
-    ]
-    candidates_pal = [
-        ra2_dir / "cameo.pal",
-        ra2_dir / "Content" / "ra2" / "cameo.pal",
-    ]
-    lang = ra2_dir / "language.mix"
-    if lang.is_file():
-        candidates_mix.insert(0, lang)
-
-    mix_path = next((p for p in candidates_mix if p.is_file()), None)
-    pal_path = next((p for p in candidates_pal if p.is_file()), None)
-    if mix_path and mix_path.name.lower() == "language.mix" and pal_path is None:
-        import ra2mix
-
-        lang_files = ra2mix.read(str(mix_path))
-        pal_blob = lang_files.get("cameo.pal") or lang_files.get("CAMEO.PAL")
-        if pal_blob:
-            tmp_pal = mix_path.parent / "_cameo_extracted.pal"
-            tmp_pal.write_bytes(pal_blob)
-            pal_path = tmp_pal
-    if mix_path is None:
-        raise FileNotFoundError(
-            f"未找到 cameo.mix（已查 {ra2_dir}）。请用 --cameo-mix 指定。"
-        )
-    if pal_path is None:
-        raise FileNotFoundError(
-            f"未找到 cameo.pal（已查 {ra2_dir}）。请用 --palette 指定。"
-        )
-    return mix_path, pal_path
+def _openra_content_root() -> Path | None:
+    for base in (
+        os.environ.get("OPENRA_SUPPORT_DIR"),
+        os.environ.get("APPDATA"),
+        os.environ.get("LOCALAPPDATA"),
+    ):
+        if not base:
+            continue
+        root = Path(base).expanduser()
+        if root.name.lower() == "openra":
+            content = root / "Content"
+        else:
+            content = root / "OpenRA" / "Content"
+        if content.is_dir():
+            return content
+    docs = Path.home() / "Documents" / "OpenRA" / "Content"
+    return docs if docs.is_dir() else None
 
 
-def _load_cameo_filemap(mix_path: Path) -> dict[str, bytes]:
+def _discover_asset_dirs(
+    *,
+    ra2_dir: Path | None,
+    yr_dir: Path | None,
+) -> list[Path]:
+    """收集可能含 language.mix / langmd.mix 的目录（去重保序）。"""
+    seen: set[Path] = set()
+    out: list[Path] = []
+
+    def add(p: Path | None) -> None:
+        if p is None:
+            return
+        p = p.expanduser().resolve()
+        if p.is_dir() and p not in seen:
+            seen.add(p)
+            out.append(p)
+
+    add(ra2_dir)
+    add(yr_dir)
+
+    for env in ("RA2_DIR", "RA2_PATH"):
+        if os.environ.get(env):
+            add(Path(os.environ[env]))
+
+    content = _openra_content_root()
+    if content:
+        add(content / "ra2")
+        add(content / "yr")
+
+    for guess in (
+        Path(r"C:\Program Files (x86)\Steam\steamapps\common\Red Alert 2"),
+        Path(r"C:\Program Files (x86)\Steam\steamapps\common\Command and Conquer Red Alert II"),
+        Path(r"C:\Program Files (x86)\Origin Games\Command and Conquer Red Alert II"),
+        Path(r"C:\Program Files (x86)\Steam\steamapps\common\Yuri's Revenge"),
+    ):
+        add(guess)
+        if guess.is_dir():
+            add(guess / "Yuri's Revenge")
+
+    return out
+
+
+def _read_mix_filemap(mix_path: Path) -> dict[str, bytes]:
     import ra2mix
 
-    if mix_path.name.lower() == "language.mix":
-        lang_files = ra2mix.read(str(mix_path))
-        nested = lang_files.get("cameo.mix") or lang_files.get("CAMEO.MIX")
-        if nested is None:
-            raise FileNotFoundError("language.mix 内无 cameo.mix")
-        tmp = mix_path.parent / "_cameo_nested.mix"
-        tmp.write_bytes(nested)
-        try:
-            return ra2mix.read(str(tmp))
-        finally:
-            tmp.unlink(missing_ok=True)
     return ra2mix.read(str(mix_path))
+
+
+def _read_nested_mix(outer: Path, inner_names: tuple[str, ...]) -> dict[str, bytes]:
+    """从 language.mix / langmd.mix 等外层 mix 解包内层 cameo mix。"""
+    import ra2mix
+
+    outer_files = ra2mix.read(str(outer))
+    lowered = {k.lower(): v for k, v in outer_files.items()}
+    for name in inner_names:
+        blob = lowered.get(name.lower())
+        if blob:
+            tmp = outer.parent / f"_nested_{name.replace('.', '_')}.mix"
+            tmp.write_bytes(blob)
+            try:
+                return ra2mix.read(str(tmp))
+            finally:
+                tmp.unlink(missing_ok=True)
+    return {}
+
+
+def _pick_palette(search_dirs: list[Path]) -> bytes:
+    import ra2mix
+
+    for d in search_dirs:
+        pal = d / "cameo.pal"
+        if pal.is_file():
+            return pal.read_bytes()
+        lang = d / "language.mix"
+        if lang.is_file():
+            files = ra2mix.read(str(lang))
+            blob = files.get("cameo.pal") or files.get("CAMEO.PAL")
+            if blob:
+                return blob
+    raise FileNotFoundError(
+        "未找到 cameo.pal（请确认 RA2 安装或 OpenRA Content/ra2 含 language.mix）"
+    )
+
+
+def _load_all_cameo_files(search_dirs: list[Path]) -> dict[str, bytes]:
+    """合并 RA2 cameo.mix + YR cameomd.mix（后者覆盖同名）。"""
+    merged: dict[str, bytes] = {}
+    sources: list[str] = []
+
+    for d in search_dirs:
+        direct = d / "cameo.mix"
+        if direct.is_file():
+            merged.update(_read_mix_filemap(direct))
+            sources.append(str(direct))
+
+        lang = d / "language.mix"
+        if lang.is_file():
+            part = _read_nested_mix(lang, ("cameo.mix",))
+            if part:
+                merged.update(part)
+                sources.append(f"{lang} → cameo.mix")
+
+        langmd = d / "langmd.mix"
+        if langmd.is_file():
+            part = _read_nested_mix(langmd, ("cameomd.mix",))
+            if part:
+                merged.update(part)
+                sources.append(f"{langmd} → cameomd.mix")
+
+    if not merged:
+        dirs = ", ".join(str(p) for p in search_dirs) or "(无)"
+        raise FileNotFoundError(
+            f"未找到 cameo.mix / cameomd.mix（已查: {dirs}）。"
+            "请用 --ra2-dir / --yr-dir 指定原版安装目录，或先通过 OpenRA 导入游戏资源。"
+        )
+
+    print(f"cameo 来源 ({len(sources)}):")
+    for s in sources:
+        print(f"  - {s}")
+    print(f"  合计 shp: {len(merged)}")
+    return merged
 
 
 def export_icons(
@@ -141,16 +230,22 @@ def main() -> None:
         "--vendor",
         type=Path,
         default=None,
-        help="openra-ra2 目录；缺省按 QQBOT_VENDOR / ../vendor-openra/ / ./vendor/ 查找",
+        help="yuris-revenge 目录；缺省 ../vendor-openra/yuris-revenge",
     )
     p.add_argument(
         "--ra2-dir",
         type=Path,
         default=None,
-        help="RA2 安装目录或 OpenRA Content/ra2（含 cameo.mix）",
+        help="RA2 安装目录或 OpenRA Content/ra2（含 language.mix）",
     )
-    p.add_argument("--cameo-mix", type=Path, default=None)
-    p.add_argument("--palette", type=Path, default=None)
+    p.add_argument(
+        "--yr-dir",
+        type=Path,
+        default=None,
+        help="YR 安装目录或 OpenRA Content/yr（含 langmd.mix）",
+    )
+    p.add_argument("--cameo-mix", type=Path, default=None, help="手动指定 cameo.mix")
+    p.add_argument("--palette", type=Path, default=None, help="手动指定 cameo.pal")
     p.add_argument("--resize", type=int, default=128)
     args = p.parse_args()
 
@@ -158,10 +253,13 @@ def main() -> None:
         raise SystemExit("请先运行 openra_ra2_export.py 生成 data/ra2/actors.json")
 
     actor_ids = set(json.loads(ACTORS_PATH.read_text(encoding="utf-8")).keys())
-    vendor = args.vendor.resolve() if args.vendor else openra_ra2_dir()
+    vendor = args.vendor.resolve() if args.vendor else yuris_revenge_dir()
+    mod = vendor / "mods" / "yr"
+    if not mod.is_dir():
+        raise SystemExit(f"未找到 YR mod: {mod}")
 
-    raw_rules = load_rules_dir(vendor / "mods" / "ra2" / "rules")
-    icon_map = build_icon_map(vendor, actor_ids, raw_rules)
+    raw_rules = load_rules_dir(mod / "rules")
+    icon_map = build_icon_map(vendor, actor_ids, raw_rules, mod_id="yr")
     ICON_MAP_PATH.parent.mkdir(parents=True, exist_ok=True)
     ICON_MAP_PATH.write_text(
         json.dumps(icon_map, ensure_ascii=False, indent=2),
@@ -169,29 +267,26 @@ def main() -> None:
     )
     print(f"icon_map: {len(icon_map)} 条 -> {ICON_MAP_PATH}")
 
-    if args.cameo_mix and args.palette:
-        mix_path, pal_path = args.cameo_mix.resolve(), args.palette.resolve()
-    else:
-        ra2_dir = args.ra2_dir
-        if ra2_dir is None:
-            for env in ("RA2_DIR", "RA2_PATH", "OPENRA_SUPPORT_DIR"):
-                if os.environ.get(env):
-                    ra2_dir = Path(os.environ[env])
-                    break
-        if ra2_dir is None:
-            ra2_dir = Path(r"C:\Program Files (x86)\Steam\steamapps\common\Red Alert 2")
-        mix_path, pal_path = _find_cameo_assets(ra2_dir.resolve())
-
-    print(f"cameo: {mix_path}")
-    print(f"palette: {pal_path}")
-
     try:
         import ra2mix  # noqa: F401
     except ImportError as e:
         raise SystemExit("请安装 ra2mix: uv pip install ra2mix") from e
 
-    cameo_files = _load_cameo_filemap(mix_path)
-    palette = pal_path.read_bytes()
+    if args.cameo_mix and args.palette:
+        cameo_files = _read_mix_filemap(args.cameo_mix.resolve())
+        palette = args.palette.resolve().read_bytes()
+        print(f"cameo: {args.cameo_mix}")
+        print(f"palette: {args.palette}")
+    else:
+        search_dirs = _discover_asset_dirs(ra2_dir=args.ra2_dir, yr_dir=args.yr_dir)
+        if not search_dirs:
+            raise SystemExit("未找到任何游戏目录，请设置 --ra2-dir / RA2_DIR")
+        print("搜索目录:")
+        for d in search_dirs:
+            print(f"  - {d}")
+        cameo_files = _load_all_cameo_files(search_dirs)
+        palette = _pick_palette(search_dirs)
+
     ok, fail, missing = export_icons(
         icon_map=icon_map,
         cameo_files=cameo_files,
@@ -200,7 +295,7 @@ def main() -> None:
     )
     print(f"完成: 成功 {ok}, 失败 {fail}, 输出 {OUT_DIR}")
     if missing:
-        print(f"  mix 中缺 shp ({len(missing)}): {', '.join(missing[:12])}...")
+        print(f"  mix 中缺 shp ({len(missing)}): {', '.join(missing[:16])}")
 
 
 if __name__ == "__main__":

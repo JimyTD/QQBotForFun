@@ -20,7 +20,7 @@ def require_export():
 
 def test_htnk_has_turret_export(require_export):
     h = load_actors()["htnk"]
-    assert h.turret_turn_speed == 20
+    assert h.turret_turn_speed == 5
     assert h.facing_tolerance is not None
 
 

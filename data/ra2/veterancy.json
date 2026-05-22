@@ -7,6 +7,6 @@
   "speed_elite": 140,
   "reload_delay_veteran": 90,
   "reload_delay_elite": 75,
-  "regen_step": 2,
+  "regen_step": 0,
   "regen_delay": 100
 }

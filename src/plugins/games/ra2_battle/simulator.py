@@ -29,7 +29,7 @@ from .projectile_lane import (
     find_projectile_blocker_between,
 )
 from .turret import tick_turret, turret_can_fire
-from .damage import calc_damage, spread_falloff_permille
+from .damage import calc_damage, max_weapon_damage_vs_armor, spread_falloff_permille
 from .experience import (
     UnitVeterancy,
     apply_initial_stars,
@@ -39,16 +39,24 @@ from .experience import (
     scaled_reload_delay,
     scaled_speed,
 )
+from .demolition import can_demolish_target, could_demolish_target
 from .mind import apply_mind_control, is_mind_control_weapon, on_unit_death
 from .pathfinder import astar
 from .repo import ActorDef, ArmamentDef, WeaponDef, load_actors, load_veterancy_rules, resolve_weapon
+from .beam import (
+    beam_damage_pulse_offsets,
+    is_beam_weapon,
+    warhead_hits_enemy,
+    warhead_valid_against_types,
+)
+from .battle_armament import weapon_battle_denied
 from .targeting import (
     armament_allowed,
     auto_target_sort_key,
     can_auto_target,
     target_categories,
     effective_target_types,
-    weapon_valid_against_unit,
+    weapon_valid_for_battle,
 )
 
 logger = logging.getLogger("ra2_battle.simulator")
@@ -68,6 +76,7 @@ class EventType(str, Enum):
     LEVEL_UP = "LEVEL_UP"
     MIND_CONTROL = "MIND_CONTROL"
     MIND_RELEASE = "MIND_RELEASE"
+    DEMOLISH = "DEMOLISH"
     SPAWN_CHILD = "SPAWN_CHILD"
     REARM = "REARM"
     INTERCEPT = "INTERCEPT"
@@ -121,14 +130,17 @@ class UnitInstance:
     regen_cooldown: int = 0
     original_side: Side | None = None
     controlled_by_id: int | None = None
-    controls_unit_id: int | None = None
+    controlled_unit_ids: list[int] = field(default_factory=list)
     parent_carrier_id: int | None = None
     carrier_respawn_cooldown: int = 0
     ammo_left: int | None = None
     turret_facing: int = 0
-    airborne: bool = True
+    airborne: bool = False
+    underwater: bool = False
     takeoff_ticks_left: int = 0
     rearm_ticks_left: int = 0
+    demolish_ticks_left: int = 0
+    demolish_victim_id: int | None = None
     alive: bool = True
 
     @property
@@ -163,6 +175,8 @@ def _damage_warheads(weapon: WeaponDef) -> list[Any]:
         wh
         for wh in weapon.warheads
         if wh.type in ("SpreadDamage", "TargetDamage")
+        and wh.damage > 0
+        and warhead_hits_enemy(wh)
     ]
 
 
@@ -281,6 +295,11 @@ class BattleSimulator:
                     )
                 if adef.ammo_max is not None:
                     u.ammo_left = adef.ammo_max
+                if any(
+                    layer.requires_condition == "underwater"
+                    for layer in adef.targetable_layers
+                ):
+                    u.underwater = True
                 self._next_id += 1
                 self._units.append(u)
                 self._by_id[u.id] = u
@@ -397,36 +416,97 @@ class BattleSimulator:
     def _infantry_count(self, cell: tuple[int, int]) -> int:
         return sum(1 for u in self._cell_occupants(cell) if u.actor.shares_cell)
 
+    def _weapon_effective_vs_target(
+        self, u: UnitInstance, target: UnitInstance, weapon: WeaponDef
+    ) -> bool:
+        if is_mind_control_weapon(weapon):
+            return True
+        mult = combat_multipliers(u.veterancy.level, self._veterancy_rules)
+        return max_weapon_damage_vs_armor(
+            weapon, target.actor.armor, firepower_percent=mult.firepower
+        ) > 0
+
     def _iter_armaments_vs(
         self, attacker: UnitInstance, target: UnitInstance
     ):
         dist = _wdist_between(attacker.cell, target.cell)
         for arm in attacker.actor.armaments:
-            if not armament_allowed(arm, veterancy_level=attacker.veterancy.level):
+            if not armament_allowed(
+                arm,
+                veterancy_level=attacker.veterancy.level,
+                actor=attacker.actor,
+            ):
                 continue
             weapon = resolve_weapon(arm.weapon)
-            if weapon is None:
+            if weapon is None or weapon_battle_denied(attacker.actor_id, weapon.id):
                 continue
-            if not weapon_valid_against_unit(
+            if not weapon_valid_for_battle(
                 weapon,
-                target.actor,
+                attacker.actor_id,
                 target_types=effective_target_types(target),
             ):
                 continue
             if not _weapon_in_range(dist, weapon):
                 continue
+            if not self._weapon_effective_vs_target(attacker, target, weapon):
+                continue
             yield arm, weapon
+
+    def _can_fight_target_now(
+        self, attacker: UnitInstance, target: UnitInstance
+    ) -> bool:
+        if can_demolish_target(attacker, target):
+            return True
+        return any(True for _ in self._iter_armaments_vs(attacker, target))
+
+    def _can_fight_target(
+        self, attacker: UnitInstance, target: UnitInstance
+    ) -> bool:
+        if self._can_fight_target_now(attacker, target):
+            return True
+        if could_demolish_target(attacker, target):
+            return True
+        for arm in attacker.actor.armaments:
+            if not armament_allowed(
+                arm,
+                veterancy_level=attacker.veterancy.level,
+                actor=attacker.actor,
+            ):
+                continue
+            weapon = resolve_weapon(arm.weapon)
+            if weapon is None or weapon_battle_denied(attacker.actor_id, weapon.id):
+                continue
+            if not weapon_valid_for_battle(
+                weapon,
+                attacker.actor_id,
+                target_types=effective_target_types(target),
+            ):
+                continue
+            if is_mind_control_weapon(weapon):
+                return True
+            if self._weapon_effective_vs_target(attacker, target, weapon):
+                return True
+        return False
 
     def _has_weapon_in_range(
         self, attacker: UnitInstance, target: UnitInstance
     ) -> bool:
-        return any(True for _ in self._iter_armaments_vs(attacker, target))
+        return self._can_fight_target_now(attacker, target)
 
     def _is_reloading(self, u: UnitInstance, weapon: WeaponDef) -> bool:
         return u.fire_delay.get(weapon.id, 0) > 0
 
+    @staticmethod
+    def _is_air_unit(unit: UnitInstance) -> bool:
+        """需管理 airborne 状态、未升空时不应攻击的空中单位。"""
+        if unit.actor.carrier_child or unit.actor.takeoff_ticks > 0:
+            return True
+        if "Aircraft" in unit.actor.categories:
+            return True
+        return unit.actor.locomotor in ("aircraft", "helicopter", "hover")
+
     def _is_controlling(self, u: UnitInstance) -> bool:
-        return u.controls_unit_id is not None
+        return len(u.controlled_unit_ids) > 0
 
     def _can_check_fire(
         self, u: UnitInstance, target: UnitInstance, weapon: WeaponDef
@@ -460,9 +540,9 @@ class BattleSimulator:
             dist = _wdist_between(other.cell, primary.cell)
             if dist > spread:
                 continue
-            if not weapon_valid_against_unit(
+            if not weapon_valid_for_battle(
                 weapon,
-                other.actor,
+                attacker.actor_id,
                 target_types=effective_target_types(other),
             ):
                 continue
@@ -531,6 +611,10 @@ class BattleSimulator:
         for victim, dist in self._splash_victims(u, target, weapon, wh):
             if not victim.alive:
                 continue
+            if not warhead_valid_against_types(
+                wh, effective_target_types(victim)
+            ):
+                continue
             falloff = spread_falloff_permille(wh, dist)
             dmg = calc_damage(
                 wh,
@@ -582,23 +666,25 @@ class BattleSimulator:
                 )
             )
             return
+        pulse_offsets = beam_damage_pulse_offsets(weapon)
         for wh in warheads:
-            impact = self._tick + travel + max(0, wh.delay)
-            if travel > 0 or wh.delay > 0:
-                self._pending.append(
-                    PendingHit(
-                        impact_tick=impact,
-                        fire_tick=self._tick,
-                        src_x=u.x,
-                        src_y=u.y,
-                        attacker_id=u.id,
-                        victim_id=target.id,
-                        weapon_id=weapon.id,
-                        warhead_id=wh.id,
+            for pulse in pulse_offsets:
+                impact = self._tick + travel + pulse + max(0, wh.delay)
+                if travel > 0 or pulse > 0 or wh.delay > 0:
+                    self._pending.append(
+                        PendingHit(
+                            impact_tick=impact,
+                            fire_tick=self._tick,
+                            src_x=u.x,
+                            src_y=u.y,
+                            attacker_id=u.id,
+                            victim_id=target.id,
+                            weapon_id=weapon.id,
+                            warhead_id=wh.id,
+                        )
                     )
-                )
-            else:
-                self._resolve_hit(u, target, weapon, wh)
+                else:
+                    self._resolve_hit(u, target, weapon, wh)
 
     def _process_pending_hits(self) -> None:
         remaining: list[PendingHit] = []
@@ -631,6 +717,9 @@ class BattleSimulator:
                 continue
             weapon = resolve_weapon(hit.weapon_id)
             if weapon is None:
+                continue
+            if is_mind_control_weapon(weapon):
+                self._resolve_hit(attacker, victim, weapon, None)
                 continue
             wh = next((w for w in weapon.warheads if w.id == hit.warhead_id), None)
             if wh is None:
@@ -703,6 +792,7 @@ class BattleSimulator:
                 is_controlling=self._is_controlling(u),
                 target_unit=e,
             )
+            and self._can_fight_target(u, e)
         ]
         if not enemies:
             u.target_id = None
@@ -755,7 +845,7 @@ class BattleSimulator:
 
         move_mult = combat_multipliers(u.veterancy.level, self._veterancy_rules)
         base_speed = max(1, u.actor.speed)
-        if not u.airborne:
+        if not u.airborne and u.actor.carrier_child:
             base_speed = max(1, base_speed // 4)
         speed = scaled_speed(base_speed, move_mult)
         u.move_progress += speed
@@ -806,13 +896,81 @@ class BattleSimulator:
             "to": [u.x, u.y],
         })
 
+    def _start_demolish(self, u: UnitInstance, target: UnitInstance) -> None:
+        u.demolish_victim_id = target.id
+        u.demolish_ticks_left = max(1, u.actor.demolition_delay)
+        self._emit(EventType.DEMOLISH, {
+            "phase": "plant",
+            "attacker_id": u.id,
+            "attacker": u.actor_id,
+            "target_id": target.id,
+            "target": target.actor_id,
+            "delay_ticks": u.demolish_ticks_left,
+        })
+
+    def _tick_demolish(self, u: UnitInstance) -> None:
+        if u.demolish_ticks_left <= 0:
+            return
+        victim = self._by_id.get(u.demolish_victim_id or -1)
+        if victim is None or not victim.alive:
+            u.demolish_ticks_left = 0
+            u.demolish_victim_id = None
+            return
+        if not can_demolish_target(u, victim):
+            u.demolish_ticks_left = 0
+            u.demolish_victim_id = None
+            return
+        u.demolish_ticks_left -= 1
+        if u.demolish_ticks_left > 0:
+            return
+        dmg = int(victim.hp)
+        victim.hp = 0
+        victim.alive = False
+        u.total_damage_dealt += dmg
+        self._emit(EventType.DEMOLISH, {
+            "phase": "detonate",
+            "attacker_id": u.id,
+            "attacker": u.actor_id,
+            "target_id": victim.id,
+            "target": victim.actor_id,
+            "damage": dmg,
+        })
+        self._emit(EventType.ATTACK, {
+            "attacker_id": u.id,
+            "attacker": u.actor_id,
+            "attacker_name": u.actor_id,
+            "attacker_side": u.side.value,
+            "target_id": victim.id,
+            "target": victim.actor_id,
+            "target_name": victim.actor_id,
+            "target_side": victim.side.value,
+            "weapon": "C4",
+            "damage": dmg,
+            "target_hp": 0,
+            "attacker_level": u.veterancy.level,
+            "mode": "demolish",
+            "is_splash": False,
+        })
+        self._on_kill(u, victim)
+        self._emit_death(u, victim, attack_mode="demolish", weapon_id="C4")
+        u.demolish_victim_id = None
+
     def _attack(self, u: UnitInstance) -> None:
-        if u.target_id is None or needs_rearm(u) or not u.airborne:
+        if u.target_id is None or needs_rearm(u):
+            return
+        if u.demolish_ticks_left > 0:
+            return
+        if self._is_air_unit(u) and not u.airborne:
             return
         target = self._by_id.get(u.target_id)
         if target is None or not target.alive or target.side == u.side:
             return
         if not turret_can_fire(u, target.cell):
+            return
+        if can_demolish_target(u, target) and not any(
+            True for _ in self._iter_armaments_vs(u, target)
+        ):
+            self._start_demolish(u, target)
             return
         for _arm, weapon in self._iter_armaments_vs(u, target):
             self._check_fire(u, target, weapon)
@@ -832,6 +990,9 @@ class BattleSimulator:
         """按单位交错：起飞/补给 → 锁敌 → 炮塔 → 移动 → 攻击。"""
         tick_aircraft_takeoff(u)
         tick_rearm(self, u)
+        self._tick_demolish(u)
+        if u.demolish_ticks_left > 0:
+            return
         self._acquire_target(u)
         if u.target_id is not None:
             target = self._by_id.get(u.target_id)
@@ -848,7 +1009,9 @@ class BattleSimulator:
     def _tick_unit_timers(self, u: UnitInstance) -> None:
         weapons_seen: set[str] = set()
         for arm in u.actor.armaments:
-            if not armament_allowed(arm, veterancy_level=u.veterancy.level):
+            if not armament_allowed(
+                arm, veterancy_level=u.veterancy.level, actor=u.actor
+            ):
                 continue
             w = resolve_weapon(arm.weapon)
             if w is None or w.id in weapons_seen:

@@ -34,7 +34,30 @@ from plugins.games.ra2_battle.openra_yaml import (  # noqa: E402
 from plugins.games.ra2_battle.icon_map import build_icon_map  # noqa: E402
 from _vendor_path import openra_ra2_dir  # noqa: E402
 
+from _vendor_path import openra_ra2_dir, yuris_revenge_dir  # noqa: E402
+
 OUT_DIR = _ROOT / "data" / "ra2"
+
+# 导出时跳过的 rules 文件（建筑/战役/装饰等）
+RULES_SKIP_FILES = frozenset({
+    "ai.yaml",
+    "bridges.yaml",
+    "campaign-rules.yaml",
+    "campaign-tooltips.yaml",
+    "civilian-props.yaml",
+    "civilian-structures.yaml",
+    "civilian-vehicles.yaml",
+    "civilian-naval.yaml",
+    "civilians.yaml",
+    "allied-structures.yaml",
+    "soviet-structures.yaml",
+    "yuri-structures.yaml",
+    "tech-structures.yaml",
+    "trees.yaml",
+    "player.yaml",
+    "proxy-actors.yaml",
+    "palettes.yaml",
+})
 
 
 def _nested_get(node: dict[str, Any], *keys: str) -> Any:
@@ -94,6 +117,16 @@ def _export_warheads(merged: dict[str, Any]) -> list[dict[str, Any]]:
         if falloff_raw:
             falloff = [int(x.strip()) for x in str(falloff_raw).split(",") if x.strip()]
         delay = int(block.get("Delay", 0)) if isinstance(block, dict) else 0
+        valid_stances = (
+            split_csv(block.get("ValidStances"))
+            if isinstance(block, dict)
+            else []
+        )
+        valid_targets_wh = (
+            split_csv(block.get("ValidTargets"))
+            if isinstance(block, dict)
+            else []
+        )
         warheads.append({
             "id": key,
             "type": wh_name,
@@ -102,6 +135,8 @@ def _export_warheads(merged: dict[str, Any]) -> list[dict[str, Any]]:
             "spread": spread,
             "falloff": falloff,
             "delay": delay,
+            "valid_stances": valid_stances,
+            "valid_targets": valid_targets_wh,
         })
     return warheads
 
@@ -120,6 +155,13 @@ def _export_weapons(raw_weapons: dict[str, dict[str, Any]]) -> dict[str, dict[st
         if not warheads:
             continue
         proj = _nested_get(merged, "Projectile") or {}
+        proj_kind = ""
+        if isinstance(proj, dict):
+            proj_kind = str(proj.get("@value", "") or "")
+        beam_duration = int(proj.get("Duration", 0)) if isinstance(proj, dict) else 0
+        beam_damage_interval = (
+            int(proj.get("DamageInterval", 0)) if isinstance(proj, dict) else 0
+        )
         out[wid] = {
             "id": wid,
             "reload_delay": int(merged.get("ReloadDelay", 1)),
@@ -131,6 +173,9 @@ def _export_weapons(raw_weapons: dict[str, dict[str, Any]]) -> dict[str, dict[st
             ] if isinstance(merged.get("BurstDelays"), list) else [],
             "valid_targets": split_csv(merged.get("ValidTargets")),
             "invalid_targets": split_csv(merged.get("InvalidTargets")),
+            "projectile_kind": proj_kind,
+            "beam_duration": beam_duration,
+            "beam_damage_interval": beam_damage_interval,
             "projectile_speed": parse_wdist(proj.get("Speed")) if isinstance(proj, dict) else None,
             "projectile_blockable": _projectile_blockable(proj),
             "warheads": warheads,
@@ -229,9 +274,11 @@ def _export_armaments(merged: dict[str, Any]) -> list[dict[str, Any]]:
 
 
 def _is_battle_pool(merged: dict[str, Any]) -> bool:
-    if "Health" not in merged or "Mobile" not in merged:
+    if "Health" not in merged:
         return False
     if "Buildable" not in merged:
+        return False
+    if "Mobile" not in merged and "Aircraft" not in merged:
         return False
     cats = _nested_get(merged, "MapEditorData", "Categories") or ""
     cat_s = str(cats).lower()
@@ -266,9 +313,21 @@ def _export_targetable_layers(merged: dict[str, Any]) -> list[dict[str, Any]]:
     return layers
 
 
+def _starts_submerged(merged: dict[str, Any]) -> bool:
+    """斗蛐蛐默认：潜艇/海豚等以水下态开战。"""
+    for _, tb in trait_blocks(merged, "Targetable"):
+        if str(tb.get("RequiresCondition", "")).strip() == "underwater":
+            return True
+    cloak = merged.get("Cloak")
+    if isinstance(cloak, dict) and str(cloak.get("CloakedCondition", "")).strip() == "underwater":
+        return True
+    return False
+
+
 def _export_target_types(merged: dict[str, Any]) -> list[str]:
     """斗蛐蛐默认态下成立的 TargetTypes（fallback；战中见 effective_target_types）。"""
     types: set[str] = set()
+    submerged = _starts_submerged(merged)
     for key, tb in trait_blocks(merged, "Targetable"):
         tt = split_csv(tb.get("TargetTypes"))
         if not tt:
@@ -276,8 +335,12 @@ def _export_target_types(merged: dict[str, Any]) -> list[str]:
         if "MindControl" in tt:
             types.update(tt)
             continue
-        if _targetable_active(tb):
+        cond = str(tb.get("RequiresCondition", "")).strip()
+        if _targetable_active(tb) or (submerged and cond == "underwater"):
             types.update(tt)
+    mobile = merged.get("Mobile") or {}
+    if str(mobile.get("Locomotor", "")).strip() == "naval":
+        types.add("Water")
     return sorted(types)
 
 
@@ -292,18 +355,30 @@ def _export_speed(merged: dict[str, Any]) -> int:
 
 
 def _export_carrier_parent(merged: dict[str, Any]) -> dict[str, Any] | None:
-    block = merged.get("CarrierParent")
-    if not isinstance(block, dict):
-        return None
-    actors_raw = str(block.get("Actors", ""))
-    actors = [a.strip() for a in actors_raw.split(",") if a.strip()]
-    if not actors:
-        return None
-    return {
-        "actors": actors,
-        "respawn_ticks": int(block.get("RespawnTicks", 300)),
-        "spawn_all_at_once": bool(block.get("SpawnAllAtOnce", True)),
-    }
+    for key in ("CarrierParent", "CarrierMaster"):
+        block = merged.get(key)
+        if not isinstance(block, dict):
+            continue
+        actors_raw = str(block.get("Actors", ""))
+        actors = [a.strip() for a in actors_raw.split(",") if a.strip()]
+        if not actors:
+            continue
+        return {
+            "actors": actors,
+            "respawn_ticks": int(block.get("RespawnTicks", 300)),
+            "spawn_all_at_once": bool(block.get("SpawnAllAtOnce", True)),
+        }
+    block = merged.get("MissileSpawnerMaster")
+    if isinstance(block, dict):
+        actors_raw = str(block.get("Actors", ""))
+        actors = [a.strip() for a in actors_raw.split(",") if a.strip()]
+        if actors:
+            return {
+                "actors": actors,
+                "respawn_ticks": 300,
+                "spawn_all_at_once": True,
+            }
+    return None
 
 
 def _export_ammo_max(merged: dict[str, Any]) -> int | None:
@@ -354,6 +429,17 @@ def _build_actor_record(
     bp_height = parse_wdist(bp.get("Height")) if blocks else None
     bp_rels = split_csv(bp.get("ValidRelationships")) if blocks else []
 
+    mc_block = merged.get("MindController")
+    mind_cap = 0
+    if isinstance(mc_block, dict):
+        mind_cap = int(mc_block.get("Capacity", 1))
+
+    demo_block = merged.get("Demolition")
+    demolition = demo_block is not None
+    demolition_delay = 45
+    if isinstance(demo_block, dict):
+        demolition_delay = int(demo_block.get("DetonationDelay", 45))
+
     return {
         "id": aid,
         "name": str(name),
@@ -375,6 +461,7 @@ def _build_actor_record(
         "spawn_only": spawn_only,
         "mind_controllable": "MindControllable" in merged,
         "mind_controller": "MindController" in merged,
+        "mind_control_capacity": mind_cap,
         "carrier_parent": _export_carrier_parent(merged),
         "carrier_child": "CarrierChild" in merged,
         "ammo_max": _export_ammo_max(merged),
@@ -385,6 +472,8 @@ def _build_actor_record(
         "blocks_projectiles": blocks,
         "blocks_projectiles_height": bp_height if bp_height is not None else 1024,
         "blocks_projectiles_relationships": bp_rels,
+        "demolition": demolition,
+        "demolition_delay": demolition_delay,
     }
 
 
@@ -425,7 +514,59 @@ def _export_actors(
     return out
 
 
+def export_yr(vendor_yr: Path | None = None) -> Path:
+    """从 cookgreen/Yuris-Revenge mods/yr 导出斗蛐蛐 JSON。"""
+    vendor_yr = (vendor_yr or yuris_revenge_dir()).resolve()
+    mod = vendor_yr / "mods" / "yr"
+    rules_dir = mod / "rules"
+    weapons_dir = mod / "weapons"
+    if not rules_dir.is_dir():
+        raise FileNotFoundError(
+            f"未找到 YR 规则目录: {rules_dir}，请先 clone vendor/yuris-revenge"
+        )
+
+    raw_rules = load_rules_dir(rules_dir, skip_files=RULES_SKIP_FILES)
+    raw_weapons = load_weapons_dir(weapons_dir)
+
+    world_cache: dict[str, dict[str, Any]] = {}
+    world_merged = merge_actor("^BaseWorld", raw_rules, world_cache)
+    locomotors = _export_locomotors(world_merged)
+    weapons = _export_weapons(raw_weapons)
+    actors = _export_actors(raw_rules, locomotors)
+    veterancy = _export_veterancy_rules(raw_rules)
+    icon_map = build_icon_map(vendor_yr, set(actors.keys()), raw_rules, mod_id="yr")
+
+    OUT_DIR.mkdir(parents=True, exist_ok=True)
+    for name, payload in (
+        ("locomotors.json", locomotors),
+        ("weapons.json", weapons),
+        ("actors.json", actors),
+        ("veterancy.json", veterancy),
+        ("icon_map.json", icon_map),
+    ):
+        path = OUT_DIR / name
+        path.write_text(json.dumps(payload, ensure_ascii=False, indent=2), encoding="utf-8")
+
+    manifest = {
+        "source": "cookgreen/Yuris-Revenge",
+        "vendor_path": str(vendor_yr),
+        "reference_source": "OpenRA/ra2",
+        "reference_vendor_path": str(openra_ra2_dir().resolve()),
+        "exported_at": datetime.now(timezone.utc).isoformat(),
+        "actor_count": len(actors),
+        "weapon_count": len(weapons),
+        "locomotor_count": len(locomotors),
+    }
+    (OUT_DIR / "manifest.json").write_text(
+        json.dumps(manifest, ensure_ascii=False, indent=2),
+        encoding="utf-8",
+    )
+    print(f"YR 导出完成: {len(actors)} 单位, {len(weapons)} 武器 -> {OUT_DIR}")
+    return OUT_DIR
+
+
 def export(vendor_ra2: Path) -> Path:
+    """[legacy] 从 OpenRA/ra2 导出。新流程请用 export_yr()。"""
     mod = vendor_ra2 / "mods" / "ra2"
     rules_dir = mod / "rules"
     weapons_dir = mod / "weapons"
@@ -441,7 +582,7 @@ def export(vendor_ra2: Path) -> Path:
     weapons = _export_weapons(raw_weapons)
     actors = _export_actors(raw_rules, locomotors)
     veterancy = _export_veterancy_rules(raw_rules)
-    icon_map = build_icon_map(vendor_ra2, set(actors.keys()), raw_rules)
+    icon_map = build_icon_map(vendor_ra2, set(actors.keys()), raw_rules, mod_id="ra2")
 
     OUT_DIR.mkdir(parents=True, exist_ok=True)
     for name, payload in (
@@ -471,16 +612,31 @@ def export(vendor_ra2: Path) -> Path:
 
 
 def main() -> None:
-    p = argparse.ArgumentParser()
+    p = argparse.ArgumentParser(description="从 Yuris-Revenge (mods/yr) 导出斗蛐蛐 JSON")
+    p.add_argument(
+        "--yr-vendor",
+        type=Path,
+        default=None,
+        help="Yuris-Revenge 根目录；缺省 vendor-openra/yuris-revenge",
+    )
+    p.add_argument(
+        "--legacy-ra2",
+        action="store_true",
+        help="使用旧版 OpenRA/ra2 单 mod 导出（调试用）",
+    )
     p.add_argument(
         "--vendor",
         type=Path,
         default=None,
-        help="openra-ra2 目录；缺省按 QQBOT_VENDOR / ../vendor-openra/ / ./vendor/ 查找",
+        help="[--legacy-ra2] openra-ra2 目录",
     )
     args = p.parse_args()
-    vendor = args.vendor.resolve() if args.vendor else openra_ra2_dir()
-    export(vendor)
+    if args.legacy_ra2:
+        vendor = args.vendor.resolve() if args.vendor else openra_ra2_dir()
+        export(vendor)
+    else:
+        yr = args.yr_vendor.resolve() if args.yr_vendor else yuris_revenge_dir()
+        export_yr(yr)
 
 
 if __name__ == "__main__":

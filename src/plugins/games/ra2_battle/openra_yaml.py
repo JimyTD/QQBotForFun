@@ -41,10 +41,16 @@ def _load_yaml_file(path: Path) -> dict[str, Any]:
     return load_miniyaml_file(path)
 
 
-def load_rules_dir(rules_dir: Path) -> dict[str, dict[str, Any]]:
+def load_rules_dir(
+    rules_dir: Path,
+    *,
+    skip_files: frozenset[str] | None = None,
+) -> dict[str, dict[str, Any]]:
     """合并目录下所有规则文件为 actor_id -> raw node。"""
     actors: dict[str, dict[str, Any]] = {}
     for path in sorted(rules_dir.glob("*.yaml")):
+        if skip_files and path.name in skip_files:
+            continue
         chunk = _load_yaml_file(path)
         for key, node in chunk.items():
             if not isinstance(node, dict):

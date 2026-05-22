@@ -33,7 +33,7 @@ logger = logging.getLogger("ra2_battle.lineup")
 
 
 
-BUDGET_DEFAULT = 5000
+BUDGET_DEFAULT = 10000
 
 BUDGET_MIN = 500
 

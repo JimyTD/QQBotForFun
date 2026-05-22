@@ -45,10 +45,12 @@ def parse_miniyaml(text: str) -> dict[str, Any]:
     for raw_line in text.splitlines():
         if not raw_line.strip():
             continue
+        # YR yaml 偶发「空格+Tab」缩进，按 Tab 深度解析
+        stripped = raw_line.lstrip(" ")
         depth = 0
-        while depth < len(raw_line) and raw_line[depth] == "\t":
+        while depth < len(stripped) and stripped[depth] == "\t":
             depth += 1
-        line = raw_line[depth:].strip()
+        line = stripped[depth:].strip()
         if not line or line.startswith("#"):
             continue
 

@@ -17,9 +17,9 @@ _ROOT = Path(__file__).resolve().parents[3]
 _SCRIPTS = _ROOT / "scripts"
 if str(_SCRIPTS) not in sys.path:
     sys.path.insert(0, str(_SCRIPTS))
-from _vendor_path import openra_ra2_dir  # noqa: E402
+from _vendor_path import yuris_revenge_dir  # noqa: E402
 
-_VENDOR = openra_ra2_dir()
+_VENDOR = yuris_revenge_dir()
 _ICON_MAP = _ROOT / "data" / "ra2" / "icon_map.json"
 _ACTORS = _ROOT / "data" / "ra2" / "actors.json"
 _ICONS_DIR = _ROOT / "resources" / "ra2" / "icons"
@@ -30,15 +30,19 @@ def test_icon_map_covers_exported_actors():
         pytest.skip("缺少 data/ra2")
     actors = json.loads(_ACTORS.read_text(encoding="utf-8"))
     icon_map = json.loads(_ICON_MAP.read_text(encoding="utf-8"))
-    missing = [aid for aid in actors if aid not in icon_map]
+    missing = [
+        aid
+        for aid, rec in actors.items()
+        if not rec.get("spawn_only") and aid not in icon_map
+    ]
     assert not missing, f"icon_map 缺: {missing[:10]}"
     assert len(icon_map) >= 40
 
 
-@pytest.mark.skipif(not _VENDOR.is_dir(), reason="无 vendor/openra-ra2")
+@pytest.mark.skipif(not _VENDOR.is_dir(), reason="无 vendor/yuris-revenge")
 def test_build_icon_map_from_vendor():
     actors = json.loads(_ACTORS.read_text(encoding="utf-8")) if _ACTORS.is_file() else {}
-    m = build_icon_map(_VENDOR, set(actors.keys()))
+    m = build_icon_map(_VENDOR, set(actors.keys()), mod_id="yr")
     assert "e1" in m and m["e1"] == "giicon.shp"
     assert "ccomand" in m and m["ccomand"] == "ccomicon.shp"
     assert m.get("dog") == "adogicon.shp"

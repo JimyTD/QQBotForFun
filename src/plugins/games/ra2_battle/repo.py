@@ -75,6 +75,7 @@ class ActorDef:
     spawn_only: bool = False
     mind_controllable: bool = False
     mind_controller: bool = False
+    mind_control_capacity: int = 0
     carrier_parent: CarrierParentDef | None = None
     carrier_child: bool = False
     ammo_max: int | None = None
@@ -85,6 +86,8 @@ class ActorDef:
     blocks_projectiles: bool = False
     blocks_projectiles_height: int = 0
     blocks_projectiles_relationships: tuple[str, ...] = ()
+    demolition: bool = False
+    demolition_delay: int = 45
 
 
 @dataclass(frozen=True)
@@ -103,6 +106,8 @@ class WarheadDef:
     spread: int | None
     falloff: tuple[int, ...] = ()
     delay: int = 0
+    valid_stances: tuple[str, ...] = ()
+    valid_targets: tuple[str, ...] = ()
 
 
 @dataclass(frozen=True)
@@ -115,8 +120,11 @@ class WeaponDef:
     burst_delays: tuple[int, ...]
     valid_targets: tuple[str, ...]
     invalid_targets: tuple[str, ...]
-    projectile_speed: int | None
-    warheads: tuple[WarheadDef, ...]
+    projectile_kind: str = ""
+    beam_duration: int = 0
+    beam_damage_interval: int = 0
+    projectile_speed: int | None = None
+    warheads: tuple[WarheadDef, ...] = ()
     projectile_blockable: bool = False
 
 
@@ -199,6 +207,7 @@ def load_actors() -> dict[str, ActorDef]:
             spawn_only=bool(node.get("spawn_only", False)),
             mind_controllable=bool(node.get("mind_controllable", False)),
             mind_controller=bool(node.get("mind_controller", False)),
+            mind_control_capacity=int(node.get("mind_control_capacity", 0)),
             carrier_parent=cp,
             carrier_child=bool(node.get("carrier_child", False)),
             ammo_max=node.get("ammo_max"),
@@ -211,6 +220,8 @@ def load_actors() -> dict[str, ActorDef]:
             blocks_projectiles_relationships=tuple(
                 node.get("blocks_projectiles_relationships", [])
             ),
+            demolition=bool(node.get("demolition", False)),
+            demolition_delay=int(node.get("demolition_delay", 45)),
         )
     return out
 
@@ -253,6 +264,8 @@ def load_weapons() -> dict[str, WeaponDef]:
                 spread=w.get("spread"),
                 falloff=tuple(w.get("falloff", [])),
                 delay=int(w.get("delay", 0)),
+                valid_stances=tuple(w.get("valid_stances", [])),
+                valid_targets=tuple(w.get("valid_targets", [])),
             )
             for w in node.get("warheads", [])
         )
@@ -265,6 +278,9 @@ def load_weapons() -> dict[str, WeaponDef]:
             burst_delays=tuple(node.get("burst_delays", [])),
             valid_targets=tuple(node.get("valid_targets", [])),
             invalid_targets=tuple(node.get("invalid_targets", [])),
+            projectile_kind=str(node.get("projectile_kind", "")),
+            beam_duration=int(node.get("beam_duration", 0)),
+            beam_damage_interval=int(node.get("beam_damage_interval", 0)),
             projectile_speed=node.get("projectile_speed"),
             projectile_blockable=bool(node.get("projectile_blockable", False)),
             warheads=whs,

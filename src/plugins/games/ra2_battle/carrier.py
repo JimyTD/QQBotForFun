@@ -66,6 +66,11 @@ def needs_rearm(unit: UnitInstance) -> bool:
 
 
 def tick_aircraft_takeoff(unit: UnitInstance) -> None:
+    from .simulator import BattleSimulator
+
+    if not BattleSimulator._is_air_unit(unit):
+        unit.airborne = False
+        return
     if unit.actor.takeoff_ticks <= 0:
         unit.airborne = True
         return

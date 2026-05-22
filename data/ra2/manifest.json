@@ -1,8 +1,10 @@
 {
-  "source": "OpenRA/ra2",
-  "vendor_path": "I:\\QQBotForFun\\vendor\\openra-ra2",
-  "exported_at": "2026-05-22T08:36:43.280336+00:00",
-  "actor_count": 45,
-  "weapon_count": 103,
+  "source": "cookgreen/Yuris-Revenge",
+  "vendor_path": "I:\\vendor-openra\\yuris-revenge",
+  "reference_source": "OpenRA/ra2",
+  "reference_vendor_path": "I:\\vendor-openra\\openra-ra2",
+  "exported_at": "2026-05-22T09:57:14.914081+00:00",
+  "actor_count": 75,
+  "weapon_count": 169,
   "locomotor_count": 8
 }

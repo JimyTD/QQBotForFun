@@ -1,13 +1,523 @@
 {
+  "shad": {
+    "id": "shad",
+    "name": "Night Hawk",
+    "description": "Infantry Transport Helicopter\\nUndetectable by radar.\\n  Strong vs Infantry\\n  Weak vs Vehicles, Aircraft",
+    "categories": "Aircraft",
+    "cost": 1000,
+    "hp": 175,
+    "armor": "Light",
+    "speed": 100,
+    "locomotor": "aircraft",
+    "shares_cell": false,
+    "crushes": [],
+    "target_types": [
+      "Ground",
+      "MindControl",
+      "Repair",
+      "Vehicle"
+    ],
+    "targetable_layers": [
+      {
+        "id": "Targetable@airborne",
+        "types": [
+          "Air"
+        ],
+        "requires_condition": "airborne"
+      },
+      {
+        "id": "Targetable@ground",
+        "types": [
+          "Ground",
+          "Repair",
+          "Vehicle"
+        ],
+        "requires_condition": "!airborne"
+      },
+      {
+        "id": "Targetable@MC",
+        "types": [
+          "MindControl"
+        ],
+        "requires_condition": "!controlled"
+      }
+    ],
+    "crushable": false,
+    "armaments": [
+      {
+        "id": "Armament",
+        "weapon": "BlackHawkCannon",
+        "requires_condition": null,
+        "name": "primary"
+      }
+    ],
+    "auto_target_priorities": [
+      {
+        "id": "AutoTargetPriority@DEFAULT",
+        "valid_targets": [
+          "Infantry",
+          "Vehicle",
+          "Water",
+          "Underwater",
+          "Defense"
+        ],
+        "invalid_targets": [
+          "NoAutoTarget",
+          "WaterStructure"
+        ],
+        "requires_condition": "!stance-attackanything && !assault-move"
+      },
+      {
+        "id": "AutoTargetPriority@ATTACKANYTHING",
+        "valid_targets": [
+          "Infantry",
+          "Vehicle",
+          "Water",
+          "Underwater",
+          "Structure",
+          "Defense"
+        ],
+        "invalid_targets": [
+          "NoAutoTarget"
+        ],
+        "requires_condition": "stance-attackanything || assault-move"
+      }
+    ],
+    "gains_experience": {
+      "conditions": {
+        "500": "rank-veteran",
+        "1000": "rank-elite"
+      },
+      "experience_modifier": -1
+    },
+    "spawn_only": false,
+    "mind_controllable": true,
+    "mind_controller": false,
+    "mind_control_capacity": 0,
+    "carrier_parent": null,
+    "carrier_child": false,
+    "ammo_max": null,
+    "turret_turn_speed": null,
+    "facing_tolerance": null,
+    "rearmable_actors": [],
+    "takeoff_ticks": 0,
+    "blocks_projectiles": false,
+    "blocks_projectiles_height": 1024,
+    "blocks_projectiles_relationships": [],
+    "demolition": false,
+    "demolition_delay": 45
+  },
+  "zep": {
+    "id": "zep",
+    "name": "Kirov Airship",
+    "description": "Soviet heavy bomber\\n  Strong vs Infantry, Vehicle, Ship and Structure\\n Weak vs Aircraft",
+    "categories": "Aircraft",
+    "cost": 2000,
+    "hp": 2000,
+    "armor": "Light",
+    "speed": 25,
+    "locomotor": "aircraft",
+    "shares_cell": false,
+    "crushes": [],
+    "target_types": [
+      "Ground",
+      "Repair",
+      "Vehicle"
+    ],
+    "targetable_layers": [
+      {
+        "id": "Targetable@airborne",
+        "types": [
+          "Air"
+        ],
+        "requires_condition": "airborne"
+      },
+      {
+        "id": "Targetable@ground",
+        "types": [
+          "Ground",
+          "Repair",
+          "Vehicle"
+        ],
+        "requires_condition": "!airborne"
+      }
+    ],
+    "crushable": false,
+    "armaments": [
+      {
+        "id": "Armament",
+        "weapon": "BlimpBomb",
+        "requires_condition": "!rank-elite",
+        "name": "primary"
+      },
+      {
+        "id": "Armament@elite",
+        "weapon": "BlimpBombE",
+        "requires_condition": "rank-elite",
+        "name": "primary"
+      }
+    ],
+    "auto_target_priorities": [
+      {
+        "id": "AutoTargetPriority@DEFAULT",
+        "valid_targets": [
+          "Infantry",
+          "Vehicle",
+          "Water",
+          "Underwater",
+          "Defense"
+        ],
+        "invalid_targets": [
+          "NoAutoTarget",
+          "WaterStructure"
+        ],
+        "requires_condition": "!stance-attackanything && !assault-move"
+      },
+      {
+        "id": "AutoTargetPriority@ATTACKANYTHING",
+        "valid_targets": [
+          "Infantry",
+          "Vehicle",
+          "Water",
+          "Underwater",
+          "Structure",
+          "Defense"
+        ],
+        "invalid_targets": [
+          "NoAutoTarget"
+        ],
+        "requires_condition": "stance-attackanything || assault-move"
+      }
+    ],
+    "gains_experience": {
+      "conditions": {
+        "500": "rank-veteran",
+        "1000": "rank-elite"
+      },
+      "experience_modifier": -1
+    },
+    "spawn_only": false,
+    "mind_controllable": false,
+    "mind_controller": false,
+    "mind_control_capacity": 0,
+    "carrier_parent": null,
+    "carrier_child": false,
+    "ammo_max": null,
+    "turret_turn_speed": null,
+    "facing_tolerance": null,
+    "rearmable_actors": [],
+    "takeoff_ticks": 0,
+    "blocks_projectiles": false,
+    "blocks_projectiles_height": 1024,
+    "blocks_projectiles_relationships": [],
+    "demolition": false,
+    "demolition_delay": 45
+  },
+  "orca": {
+    "id": "orca",
+    "name": "Harrier",
+    "description": "Fast assault fighter\\n  Strong vs Buildings, Vehicles\\n  Weak vs Infantry, Aircraft",
+    "categories": "Aircraft",
+    "cost": 1200,
+    "hp": 150,
+    "armor": "Light",
+    "speed": 210,
+    "locomotor": "aircraft",
+    "shares_cell": false,
+    "crushes": [],
+    "target_types": [
+      "Ground",
+      "Repair",
+      "Vehicle"
+    ],
+    "targetable_layers": [
+      {
+        "id": "Targetable@airborne",
+        "types": [
+          "Air"
+        ],
+        "requires_condition": "airborne"
+      },
+      {
+        "id": "Targetable@ground",
+        "types": [
+          "Ground",
+          "Repair",
+          "Vehicle"
+        ],
+        "requires_condition": "!airborne"
+      }
+    ],
+    "crushable": false,
+    "armaments": [
+      {
+        "id": "Armament",
+        "weapon": "Maverick",
+        "requires_condition": null,
+        "name": "primary"
+      }
+    ],
+    "auto_target_priorities": [
+      {
+        "id": "AutoTarget@fallback",
+        "valid_targets": [
+          "Infantry",
+          "Vehicle",
+          "Air"
+        ],
+        "invalid_targets": [
+          "NoAutoTarget"
+        ],
+        "requires_condition": null
+      }
+    ],
+    "gains_experience": {
+      "conditions": {
+        "500": "rank-veteran",
+        "1000": "rank-elite"
+      },
+      "experience_modifier": -1
+    },
+    "spawn_only": false,
+    "mind_controllable": false,
+    "mind_controller": false,
+    "mind_control_capacity": 0,
+    "carrier_parent": null,
+    "carrier_child": false,
+    "ammo_max": 1,
+    "turret_turn_speed": null,
+    "facing_tolerance": null,
+    "rearmable_actors": [
+      "gaairc",
+      "amradr"
+    ],
+    "takeoff_ticks": 0,
+    "blocks_projectiles": false,
+    "blocks_projectiles_height": 1024,
+    "blocks_projectiles_relationships": [],
+    "demolition": false,
+    "demolition_delay": 45
+  },
+  "beag": {
+    "id": "beag",
+    "name": "Black Eagle",
+    "description": "Fast assault fighter\\n  Strong vs Buildings, Vehicles\\n  Weak vs Infantry, Aircraft",
+    "categories": "Aircraft",
+    "cost": 1200,
+    "hp": 200,
+    "armor": "Light",
+    "speed": 210,
+    "locomotor": "aircraft",
+    "shares_cell": false,
+    "crushes": [],
+    "target_types": [
+      "Ground",
+      "Repair",
+      "Vehicle"
+    ],
+    "targetable_layers": [
+      {
+        "id": "Targetable@airborne",
+        "types": [
+          "Air"
+        ],
+        "requires_condition": "airborne"
+      },
+      {
+        "id": "Targetable@ground",
+        "types": [
+          "Ground",
+          "Repair",
+          "Vehicle"
+        ],
+        "requires_condition": "!airborne"
+      }
+    ],
+    "crushable": false,
+    "armaments": [
+      {
+        "id": "Armament",
+        "weapon": "Maverick2",
+        "requires_condition": null,
+        "name": "primary"
+      }
+    ],
+    "auto_target_priorities": [
+      {
+        "id": "AutoTarget@fallback",
+        "valid_targets": [
+          "Infantry",
+          "Vehicle",
+          "Air"
+        ],
+        "invalid_targets": [
+          "NoAutoTarget"
+        ],
+        "requires_condition": null
+      }
+    ],
+    "gains_experience": {
+      "conditions": {
+        "500": "rank-veteran",
+        "1000": "rank-elite"
+      },
+      "experience_modifier": -1
+    },
+    "spawn_only": false,
+    "mind_controllable": false,
+    "mind_controller": false,
+    "mind_control_capacity": 0,
+    "carrier_parent": null,
+    "carrier_child": false,
+    "ammo_max": 1,
+    "turret_turn_speed": null,
+    "facing_tolerance": null,
+    "rearmable_actors": [
+      "gaairc",
+      "amradr"
+    ],
+    "takeoff_ticks": 0,
+    "blocks_projectiles": false,
+    "blocks_projectiles_height": 1024,
+    "blocks_projectiles_relationships": [],
+    "demolition": false,
+    "demolition_delay": 45
+  },
+  "schp": {
+    "id": "schp",
+    "name": "Soviet Siege Chopper",
+    "description": "Soviet Siege Chopper\\n  Strong vs Infantry, Structures\\n  Weak vs Vehicles, Aircraft",
+    "categories": "Aircraft",
+    "cost": 1000,
+    "hp": 300,
+    "armor": "Light",
+    "speed": 180,
+    "locomotor": "aircraft",
+    "shares_cell": false,
+    "crushes": [],
+    "target_types": [
+      "Ground",
+      "MindControl",
+      "Repair",
+      "Vehicle"
+    ],
+    "targetable_layers": [
+      {
+        "id": "Targetable@airborne",
+        "types": [
+          "Air"
+        ],
+        "requires_condition": "airborne"
+      },
+      {
+        "id": "Targetable@ground",
+        "types": [
+          "Ground",
+          "Repair",
+          "Vehicle"
+        ],
+        "requires_condition": "!airborne"
+      },
+      {
+        "id": "Targetable@MC",
+        "types": [
+          "MindControl"
+        ],
+        "requires_condition": "!controlled"
+      }
+    ],
+    "crushable": false,
+    "armaments": [
+      {
+        "id": "Armament@primary",
+        "weapon": "BlackHawkCannon",
+        "requires_condition": "!rank-elite && !deployed",
+        "name": "primary"
+      },
+      {
+        "id": "Armament@primary-elite",
+        "weapon": "BlackHawkCannonE",
+        "requires_condition": "rank-elite && !deployed",
+        "name": "primary"
+      },
+      {
+        "id": "Armament@second",
+        "weapon": "160mm",
+        "requires_condition": "!rank-elite && deployed",
+        "name": "primary"
+      },
+      {
+        "id": "Armament@second-elite",
+        "weapon": "160mmE",
+        "requires_condition": "rank-elite && deployed",
+        "name": "primary"
+      }
+    ],
+    "auto_target_priorities": [
+      {
+        "id": "AutoTargetPriority@DEFAULT",
+        "valid_targets": [
+          "Infantry",
+          "Vehicle",
+          "Water",
+          "Underwater",
+          "Defense"
+        ],
+        "invalid_targets": [
+          "NoAutoTarget",
+          "WaterStructure"
+        ],
+        "requires_condition": "!stance-attackanything && !assault-move"
+      },
+      {
+        "id": "AutoTargetPriority@ATTACKANYTHING",
+        "valid_targets": [
+          "Infantry",
+          "Vehicle",
+          "Water",
+          "Underwater",
+          "Structure",
+          "Defense"
+        ],
+        "invalid_targets": [
+          "NoAutoTarget"
+        ],
+        "requires_condition": "stance-attackanything || assault-move"
+      }
+    ],
+    "gains_experience": {
+      "conditions": {
+        "500": "rank-veteran",
+        "1000": "rank-elite"
+      },
+      "experience_modifier": -1
+    },
+    "spawn_only": false,
+    "mind_controllable": true,
+    "mind_controller": false,
+    "mind_control_capacity": 0,
+    "carrier_parent": null,
+    "carrier_child": false,
+    "ammo_max": null,
+    "turret_turn_speed": null,
+    "facing_tolerance": null,
+    "rearmable_actors": [],
+    "takeoff_ticks": 0,
+    "blocks_projectiles": false,
+    "blocks_projectiles_height": 1024,
+    "blocks_projectiles_relationships": [],
+    "demolition": false,
+    "demolition_delay": 45
+  },
   "engineer": {
     "id": "engineer",
     "name": "Engineer",
-    "description": "Captures enemy structures.\\n  Unarmed",
+    "description": "Captures enemy structures and netural vehicles.\\n  Unarmed",
     "categories": "Infantry",
     "cost": 500,
     "hp": 75,
     "armor": "None",
-    "speed": 60,
+    "speed": 56,
     "locomotor": "foot",
     "shares_cell": true,
     "crushes": [
@@ -18,7 +528,8 @@
       "Disguise",
       "Ground",
       "Infantry",
-      "MindControl"
+      "MindControl",
+      "SuperMindControl"
     ],
     "targetable_layers": [
       {
@@ -37,6 +548,13 @@
           "MindControl"
         ],
         "requires_condition": "!controlled"
+      },
+      {
+        "id": "Targetable@SMC",
+        "types": [
+          "SuperMindControl"
+        ],
+        "requires_condition": "!controlled"
       }
     ],
     "crushable": true,
@@ -52,6 +570,7 @@
     "spawn_only": false,
     "mind_controllable": true,
     "mind_controller": false,
+    "mind_control_capacity": 0,
     "carrier_parent": null,
     "carrier_child": false,
     "ammo_max": null,
@@ -61,7 +580,9 @@
     "takeoff_ticks": 0,
     "blocks_projectiles": false,
     "blocks_projectiles_height": 1024,
-    "blocks_projectiles_relationships": []
+    "blocks_projectiles_relationships": [],
+    "demolition": false,
+    "demolition_delay": 45
   },
   "dog": {
     "id": "dog",
@@ -118,6 +639,7 @@
     "spawn_only": false,
     "mind_controllable": false,
     "mind_controller": false,
+    "mind_control_capacity": 0,
     "carrier_parent": null,
     "carrier_child": false,
     "ammo_max": null,
@@ -127,7 +649,9 @@
     "takeoff_ticks": 0,
     "blocks_projectiles": false,
     "blocks_projectiles_height": 1024,
-    "blocks_projectiles_relationships": []
+    "blocks_projectiles_relationships": [],
+    "demolition": false,
+    "demolition_delay": 45
   },
   "e1": {
     "id": "e1",
@@ -137,7 +661,7 @@
     "cost": 200,
     "hp": 125,
     "armor": "None",
-    "speed": 60,
+    "speed": 31,
     "locomotor": "foot",
     "shares_cell": true,
     "crushes": [
@@ -148,7 +672,8 @@
       "Disguise",
       "Ground",
       "Infantry",
-      "MindControl"
+      "MindControl",
+      "SuperMindControl"
     ],
     "targetable_layers": [
       {
@@ -159,19 +684,19 @@
           "DetonateAttack",
           "Disguise"
         ],
-        "requires_condition": "!parachute"
-      },
-      {
-        "id": "Targetable@airborne",
-        "types": [
-          "Air"
-        ],
-        "requires_condition": "parachute"
+        "requires_condition": null
       },
       {
         "id": "Targetable@MC",
         "types": [
           "MindControl"
+        ],
+        "requires_condition": "!controlled"
+      },
+      {
+        "id": "Targetable@SMC",
+        "types": [
+          "SuperMindControl"
         ],
         "requires_condition": "!controlled"
       }
@@ -181,26 +706,26 @@
       {
         "id": "Armament@primary",
         "weapon": "M60",
-        "requires_condition": "!deployed && !rank-elite",
+        "requires_condition": "!rank-elite && !deployed",
         "name": "primary"
       },
       {
         "id": "Armament@elite",
         "weapon": "M60E",
-        "requires_condition": "!deployed && rank-elite",
+        "requires_condition": "rank-elite && !deployed",
         "name": "primary"
       },
       {
         "id": "Armament@deployed",
         "weapon": "para",
-        "requires_condition": "deployed && !rank-elite",
+        "requires_condition": "!rank-elite && deployed",
         "name": "deployed"
       },
       {
         "id": "Armament@elite-deployed",
         "weapon": "paraE",
-        "requires_condition": "deployed && rank-elite",
-        "name": "deployed-elite"
+        "requires_condition": "rank-elite && deployed",
+        "name": "deployed"
       }
     ],
     "auto_target_priorities": [
@@ -245,26 +770,29 @@
     "spawn_only": false,
     "mind_controllable": true,
     "mind_controller": false,
+    "mind_control_capacity": 0,
     "carrier_parent": null,
     "carrier_child": false,
     "ammo_max": null,
-    "turret_turn_speed": 200,
+    "turret_turn_speed": 50,
     "facing_tolerance": 512,
     "rearmable_actors": [],
     "takeoff_ticks": 0,
     "blocks_projectiles": false,
     "blocks_projectiles_height": 1024,
-    "blocks_projectiles_relationships": []
+    "blocks_projectiles_relationships": [],
+    "demolition": false,
+    "demolition_delay": 45
   },
-  "snipe": {
-    "id": "snipe",
-    "name": "Sniper",
-    "description": "Special anti-infantry unit.\\n  Strong vs Infantry\\n  Weak vs Vehicles, Aircraft",
+  "ggi": {
+    "id": "ggi",
+    "name": "Guardian GI",
+    "description": "General-purpose Anti-vehicle infantry.\\n  Strong vs Vehicles, Aircraft\\n  Weak vs Infantry",
     "categories": "Infantry",
-    "cost": 600,
+    "cost": 200,
     "hp": 125,
     "armor": "None",
-    "speed": 60,
+    "speed": 31,
     "locomotor": "foot",
     "shares_cell": true,
     "crushes": [
@@ -275,7 +803,8 @@
       "Disguise",
       "Ground",
       "Infantry",
-      "MindControl"
+      "MindControl",
+      "SuperMindControl"
     ],
     "targetable_layers": [
       {
@@ -294,6 +823,144 @@
           "MindControl"
         ],
         "requires_condition": "!controlled"
+      },
+      {
+        "id": "Targetable@SMC",
+        "types": [
+          "SuperMindControl"
+        ],
+        "requires_condition": "!controlled"
+      }
+    ],
+    "crushable": true,
+    "armaments": [
+      {
+        "id": "Armament@primary",
+        "weapon": "M60",
+        "requires_condition": "!rank-elite && !deployed",
+        "name": "primary"
+      },
+      {
+        "id": "Armament@elite",
+        "weapon": "M60E",
+        "requires_condition": "rank-elite && !deployed",
+        "name": "primary"
+      },
+      {
+        "id": "Armament@deployed",
+        "weapon": "MissileLauncher",
+        "requires_condition": "(!rank-elite && deployed) || bunkered",
+        "name": "deployed"
+      },
+      {
+        "id": "Armament@elite-deployed",
+        "weapon": "MissileLauncherE",
+        "requires_condition": "(rank-elite && deployed) || bunkered",
+        "name": "deployed"
+      }
+    ],
+    "auto_target_priorities": [
+      {
+        "id": "AutoTargetPriority@DEFAULT",
+        "valid_targets": [
+          "Infantry",
+          "Vehicle",
+          "Water",
+          "Underwater",
+          "Defense"
+        ],
+        "invalid_targets": [
+          "NoAutoTarget",
+          "WaterStructure"
+        ],
+        "requires_condition": "!stance-attackanything && !assault-move"
+      },
+      {
+        "id": "AutoTargetPriority@ATTACKANYTHING",
+        "valid_targets": [
+          "Infantry",
+          "Vehicle",
+          "Water",
+          "Underwater",
+          "Structure",
+          "Defense"
+        ],
+        "invalid_targets": [
+          "NoAutoTarget"
+        ],
+        "requires_condition": "stance-attackanything || assault-move"
+      }
+    ],
+    "gains_experience": {
+      "conditions": {
+        "500": "rank-veteran",
+        "1000": "rank-elite"
+      },
+      "experience_modifier": -1
+    },
+    "spawn_only": false,
+    "mind_controllable": true,
+    "mind_controller": false,
+    "mind_control_capacity": 0,
+    "carrier_parent": null,
+    "carrier_child": false,
+    "ammo_max": null,
+    "turret_turn_speed": 50,
+    "facing_tolerance": 512,
+    "rearmable_actors": [],
+    "takeoff_ticks": 0,
+    "blocks_projectiles": false,
+    "blocks_projectiles_height": 1024,
+    "blocks_projectiles_relationships": [],
+    "demolition": false,
+    "demolition_delay": 45
+  },
+  "snipe": {
+    "id": "snipe",
+    "name": "Sniper",
+    "description": "Special anti-infantry unit.\\n  Strong vs Infantry\\n  Weak vs Vehicles, Aircraft",
+    "categories": "Infantry",
+    "cost": 600,
+    "hp": 125,
+    "armor": "None",
+    "speed": 35,
+    "locomotor": "foot",
+    "shares_cell": true,
+    "crushes": [
+      "crate"
+    ],
+    "target_types": [
+      "DetonateAttack",
+      "Disguise",
+      "Ground",
+      "Infantry",
+      "MindControl",
+      "SuperMindControl"
+    ],
+    "targetable_layers": [
+      {
+        "id": "Targetable",
+        "types": [
+          "Ground",
+          "Infantry",
+          "DetonateAttack",
+          "Disguise"
+        ],
+        "requires_condition": null
+      },
+      {
+        "id": "Targetable@MC",
+        "types": [
+          "MindControl"
+        ],
+        "requires_condition": "!controlled"
+      },
+      {
+        "id": "Targetable@SMC",
+        "types": [
+          "SuperMindControl"
+        ],
+        "requires_condition": "!controlled"
       }
     ],
     "crushable": true,
@@ -305,8 +972,8 @@
         "name": "primary"
       },
       {
-        "id": "Armament@elite",
-        "weapon": "awpe",
+        "id": "Armament@primary-elite",
+        "weapon": "awpE",
         "requires_condition": "rank-elite",
         "name": "primary"
       }
@@ -353,6 +1020,7 @@
     "spawn_only": false,
     "mind_controllable": true,
     "mind_controller": false,
+    "mind_control_capacity": 0,
     "carrier_parent": null,
     "carrier_child": false,
     "ammo_max": null,
@@ -362,17 +1030,19 @@
     "takeoff_ticks": 0,
     "blocks_projectiles": false,
     "blocks_projectiles_height": 1024,
-    "blocks_projectiles_relationships": []
+    "blocks_projectiles_relationships": [],
+    "demolition": false,
+    "demolition_delay": 45
   },
   "spy": {
     "id": "spy",
     "name": "spy",
     "description": "Infiltrates enemy structures for intel or\\nsabotage. Exact effect depends on the\\nbuilding infiltrated.\\n  Unarmed\\nSpecial Ability: Disguises",
     "categories": "Infantry",
-    "cost": 1000,
+    "cost": 500,
     "hp": 25,
     "armor": "None",
-    "speed": 60,
+    "speed": 56,
     "locomotor": "foot",
     "shares_cell": true,
     "crushes": [
@@ -409,6 +1079,7 @@
     "spawn_only": false,
     "mind_controllable": false,
     "mind_controller": false,
+    "mind_control_capacity": 0,
     "carrier_parent": null,
     "carrier_child": false,
     "ammo_max": null,
@@ -418,7 +1089,9 @@
     "takeoff_ticks": 0,
     "blocks_projectiles": false,
     "blocks_projectiles_height": 1024,
-    "blocks_projectiles_relationships": []
+    "blocks_projectiles_relationships": [],
+    "demolition": false,
+    "demolition_delay": 45
   },
   "ghost": {
     "id": "ghost",
@@ -428,7 +1101,7 @@
     "cost": 1000,
     "hp": 125,
     "armor": "Flak",
-    "speed": 75,
+    "speed": 71,
     "locomotor": "swimsuit",
     "shares_cell": true,
     "crushes": [
@@ -439,7 +1112,8 @@
       "Disguise",
       "Ground",
       "Infantry",
-      "MindControl"
+      "MindControl",
+      "SuperMindControl"
     ],
     "targetable_layers": [
       {
@@ -460,11 +1134,18 @@
         "requires_condition": "!controlled"
       },
       {
+        "id": "Targetable@SMC",
+        "types": [
+          "SuperMindControl"
+        ],
+        "requires_condition": "!controlled"
+      },
+      {
         "id": "Targetable@WaterBorne",
         "types": [
           "Underwater"
         ],
-        "requires_condition": "swimming"
+        "requires_condition": "water-borne"
       }
     ],
     "crushable": true,
@@ -524,6 +1205,7 @@
     "spawn_only": false,
     "mind_controllable": true,
     "mind_controller": false,
+    "mind_control_capacity": 0,
     "carrier_parent": null,
     "carrier_child": false,
     "ammo_max": null,
@@ -533,7 +1215,9 @@
     "takeoff_ticks": 0,
     "blocks_projectiles": false,
     "blocks_projectiles_height": 1024,
-    "blocks_projectiles_relationships": []
+    "blocks_projectiles_relationships": [],
+    "demolition": true,
+    "demolition_delay": 45
   },
   "ccomand": {
     "id": "ccomand",
@@ -543,7 +1227,7 @@
     "cost": 2000,
     "hp": 100,
     "armor": "Flak",
-    "speed": 75,
+    "speed": 71,
     "locomotor": "foot",
     "shares_cell": true,
     "crushes": [
@@ -608,6 +1292,7 @@
     "spawn_only": false,
     "mind_controllable": true,
     "mind_controller": false,
+    "mind_control_capacity": 0,
     "carrier_parent": null,
     "carrier_child": false,
     "ammo_max": null,
@@ -617,7 +1302,9 @@
     "takeoff_ticks": 0,
     "blocks_projectiles": false,
     "blocks_projectiles_height": 1024,
-    "blocks_projectiles_relationships": []
+    "blocks_projectiles_relationships": [],
+    "demolition": true,
+    "demolition_delay": 45
   },
   "ptroop": {
     "id": "ptroop",
@@ -627,7 +1314,7 @@
     "cost": 1000,
     "hp": 100,
     "armor": "Flak",
-    "speed": 75,
+    "speed": 71,
     "locomotor": "foot",
     "shares_cell": true,
     "crushes": [
@@ -664,6 +1351,7 @@
     "spawn_only": false,
     "mind_controllable": true,
     "mind_controller": true,
+    "mind_control_capacity": 1,
     "carrier_parent": null,
     "carrier_child": false,
     "ammo_max": null,
@@ -673,7 +1361,9 @@
     "takeoff_ticks": 0,
     "blocks_projectiles": false,
     "blocks_projectiles_height": 1024,
-    "blocks_projectiles_relationships": []
+    "blocks_projectiles_relationships": [],
+    "demolition": true,
+    "demolition_delay": 45
   },
   "tany": {
     "id": "tany",
@@ -683,7 +1373,7 @@
     "cost": 1000,
     "hp": 125,
     "armor": "Flak",
-    "speed": 75,
+    "speed": 71,
     "locomotor": "swimsuit",
     "shares_cell": true,
     "crushes": [
@@ -711,7 +1401,7 @@
         "types": [
           "Underwater"
         ],
-        "requires_condition": "swimming"
+        "requires_condition": "water-borne"
       }
     ],
     "crushable": true,
@@ -771,6 +1461,7 @@
     "spawn_only": false,
     "mind_controllable": false,
     "mind_controller": false,
+    "mind_control_capacity": 0,
     "carrier_parent": null,
     "carrier_child": false,
     "ammo_max": null,
@@ -780,7 +1471,120 @@
     "takeoff_ticks": 0,
     "blocks_projectiles": false,
     "blocks_projectiles_height": 1024,
-    "blocks_projectiles_relationships": []
+    "blocks_projectiles_relationships": [],
+    "demolition": true,
+    "demolition_delay": 45
+  },
+  "jumpjet": {
+    "id": "jumpjet",
+    "name": "Rocketeer",
+    "description": "Airborne soldier.\\n  Strong vs Infantry, Aircraft\\n  Weak vs Vehicles",
+    "categories": "Infantry",
+    "cost": 600,
+    "hp": 125,
+    "armor": "None",
+    "speed": 140,
+    "locomotor": "aircraft",
+    "shares_cell": false,
+    "crushes": [],
+    "target_types": [
+      "DetonateAttack",
+      "Disguise",
+      "Ground",
+      "Infantry"
+    ],
+    "targetable_layers": [
+      {
+        "id": "Targetable@airborne",
+        "types": [
+          "Air",
+          "Disguise"
+        ],
+        "requires_condition": "airborne"
+      },
+      {
+        "id": "Targetable@ground",
+        "types": [
+          "Ground",
+          "Infantry",
+          "DetonateAttack",
+          "Disguise"
+        ],
+        "requires_condition": "!airborne"
+      }
+    ],
+    "crushable": false,
+    "armaments": [
+      {
+        "id": "Armament@primary",
+        "weapon": "20mm",
+        "requires_condition": "!rank-elite",
+        "name": "primary"
+      },
+      {
+        "id": "Armament@elite",
+        "weapon": "20mmE",
+        "requires_condition": "rank-elite",
+        "name": "primary"
+      }
+    ],
+    "auto_target_priorities": [
+      {
+        "id": "AutoTargetPriority@DEFAULT",
+        "valid_targets": [
+          "Infantry",
+          "Vehicle",
+          "Water",
+          "Underwater",
+          "Air",
+          "Defense"
+        ],
+        "invalid_targets": [
+          "NoAutoTarget",
+          "WaterStructure"
+        ],
+        "requires_condition": "!stance-attackanything && !assault-move"
+      },
+      {
+        "id": "AutoTargetPriority@ATTACKANYTHING",
+        "valid_targets": [
+          "Infantry",
+          "Vehicle",
+          "Water",
+          "Underwater",
+          "Air",
+          "Structure",
+          "Defense"
+        ],
+        "invalid_targets": [
+          "NoAutoTarget"
+        ],
+        "requires_condition": "stance-attackanything || assault-move"
+      }
+    ],
+    "gains_experience": {
+      "conditions": {
+        "500": "rank-veteran",
+        "1000": "rank-elite"
+      },
+      "experience_modifier": -1
+    },
+    "spawn_only": false,
+    "mind_controllable": false,
+    "mind_controller": false,
+    "mind_control_capacity": 0,
+    "carrier_parent": null,
+    "carrier_child": false,
+    "ammo_max": null,
+    "turret_turn_speed": null,
+    "facing_tolerance": null,
+    "rearmable_actors": [],
+    "takeoff_ticks": 0,
+    "blocks_projectiles": false,
+    "blocks_projectiles_height": 1024,
+    "blocks_projectiles_relationships": [],
+    "demolition": false,
+    "demolition_delay": 45
   },
   "cleg": {
     "id": "cleg",
@@ -790,7 +1594,7 @@
     "cost": 1500,
     "hp": 125,
     "armor": "None",
-    "speed": 60,
+    "speed": 1,
     "locomotor": "foot",
     "shares_cell": true,
     "crushes": [
@@ -801,7 +1605,8 @@
       "Disguise",
       "Ground",
       "Infantry",
-      "MindControl"
+      "MindControl",
+      "SuperMindControl"
     ],
     "targetable_layers": [
       {
@@ -818,6 +1623,13 @@
         "id": "Targetable@MC",
         "types": [
           "MindControl"
+        ],
+        "requires_condition": "!controlled"
+      },
+      {
+        "id": "Targetable@SMC",
+        "types": [
+          "SuperMindControl"
         ],
         "requires_condition": "!controlled"
       }
@@ -842,6 +1654,7 @@
     "spawn_only": false,
     "mind_controllable": true,
     "mind_controller": false,
+    "mind_control_capacity": 0,
     "carrier_parent": null,
     "carrier_child": false,
     "ammo_max": null,
@@ -851,7 +1664,9 @@
     "takeoff_ticks": 0,
     "blocks_projectiles": false,
     "blocks_projectiles_height": 1024,
-    "blocks_projectiles_relationships": []
+    "blocks_projectiles_relationships": [],
+    "demolition": false,
+    "demolition_delay": 45
   },
   "lcrf": {
     "id": "lcrf",
@@ -861,7 +1676,7 @@
     "cost": 900,
     "hp": 300,
     "armor": "Light",
-    "speed": 90,
+    "speed": 75,
     "locomotor": "lcraft",
     "shares_cell": false,
     "crushes": [
@@ -870,28 +1685,29 @@
     "target_types": [
       "Ground",
       "MindControl",
-      "Water"
+      "Repair",
+      "SuperMindControl"
     ],
     "targetable_layers": [
       {
         "id": "Targetable",
         "types": [
           "Ground",
-          "Water"
-        ],
-        "requires_condition": null
-      },
-      {
-        "id": "Targetable@REPAIR",
-        "types": [
           "Repair"
         ],
-        "requires_condition": "damaged"
+        "requires_condition": null
       },
       {
         "id": "Targetable@MC",
         "types": [
           "MindControl"
+        ],
+        "requires_condition": "!controlled"
+      },
+      {
+        "id": "Targetable@SMC",
+        "types": [
+          "SuperMindControl"
         ],
         "requires_condition": "!controlled"
       }
@@ -909,6 +1725,7 @@
     "spawn_only": false,
     "mind_controllable": true,
     "mind_controller": false,
+    "mind_control_capacity": 0,
     "carrier_parent": null,
     "carrier_child": false,
     "ammo_max": null,
@@ -918,7 +1735,9 @@
     "takeoff_ticks": 0,
     "blocks_projectiles": false,
     "blocks_projectiles_height": 1024,
-    "blocks_projectiles_relationships": []
+    "blocks_projectiles_relationships": [],
+    "demolition": false,
+    "demolition_delay": 45
   },
   "dest": {
     "id": "dest",
@@ -928,7 +1747,7 @@
     "cost": 1000,
     "hp": 600,
     "armor": "Heavy",
-    "speed": 90,
+    "speed": 105,
     "locomotor": "naval",
     "shares_cell": false,
     "crushes": [
@@ -937,6 +1756,8 @@
     "target_types": [
       "Ground",
       "MindControl",
+      "Repair",
+      "SuperMindControl",
       "Water"
     ],
     "targetable_layers": [
@@ -944,21 +1765,21 @@
         "id": "Targetable",
         "types": [
           "Ground",
-          "Water"
-        ],
-        "requires_condition": null
-      },
-      {
-        "id": "Targetable@REPAIR",
-        "types": [
           "Repair"
         ],
-        "requires_condition": "damaged"
+        "requires_condition": null
       },
       {
         "id": "Targetable@MC",
         "types": [
           "MindControl"
+        ],
+        "requires_condition": "!controlled"
+      },
+      {
+        "id": "Targetable@SMC",
+        "types": [
+          "SuperMindControl"
         ],
         "requires_condition": "!controlled"
       }
@@ -978,10 +1799,10 @@
         "name": "primary"
       },
       {
-        "id": "Armament@asw",
+        "id": "Armament@secondary",
         "weapon": "ASWLauncher",
-        "requires_condition": null,
-        "name": "asw"
+        "requires_condition": "!rank-elite",
+        "name": "primary"
       }
     ],
     "auto_target_priorities": [
@@ -1026,6 +1847,7 @@
     "spawn_only": false,
     "mind_controllable": true,
     "mind_controller": false,
+    "mind_control_capacity": 0,
     "carrier_parent": {
       "actors": [
         "asw"
@@ -1041,7 +1863,9 @@
     "takeoff_ticks": 0,
     "blocks_projectiles": false,
     "blocks_projectiles_height": 1024,
-    "blocks_projectiles_relationships": []
+    "blocks_projectiles_relationships": [],
+    "demolition": false,
+    "demolition_delay": 45
   },
   "aegis": {
     "id": "aegis",
@@ -1051,7 +1875,7 @@
     "cost": 1200,
     "hp": 800,
     "armor": "Light",
-    "speed": 60,
+    "speed": 45,
     "locomotor": "naval",
     "shares_cell": false,
     "crushes": [
@@ -1060,6 +1884,8 @@
     "target_types": [
       "Ground",
       "MindControl",
+      "Repair",
+      "SuperMindControl",
       "Water"
     ],
     "targetable_layers": [
@@ -1067,21 +1893,21 @@
         "id": "Targetable",
         "types": [
           "Ground",
-          "Water"
-        ],
-        "requires_condition": null
-      },
-      {
-        "id": "Targetable@REPAIR",
-        "types": [
           "Repair"
         ],
-        "requires_condition": "damaged"
+        "requires_condition": null
       },
       {
         "id": "Targetable@MC",
         "types": [
           "MindControl"
+        ],
+        "requires_condition": "!controlled"
+      },
+      {
+        "id": "Targetable@SMC",
+        "types": [
+          "SuperMindControl"
         ],
         "requires_condition": "!controlled"
       }
@@ -1117,6 +1943,7 @@
     "spawn_only": false,
     "mind_controllable": true,
     "mind_controller": false,
+    "mind_control_capacity": 0,
     "carrier_parent": null,
     "carrier_child": false,
     "ammo_max": null,
@@ -1126,7 +1953,9 @@
     "takeoff_ticks": 0,
     "blocks_projectiles": false,
     "blocks_projectiles_height": 1024,
-    "blocks_projectiles_relationships": []
+    "blocks_projectiles_relationships": [],
+    "demolition": false,
+    "demolition_delay": 45
   },
   "dlph": {
     "id": "dlph",
@@ -1136,7 +1965,7 @@
     "cost": 500,
     "hp": 200,
     "armor": "Light",
-    "speed": 120,
+    "speed": 90,
     "locomotor": "naval",
     "shares_cell": false,
     "crushes": [
@@ -1144,8 +1973,7 @@
     ],
     "target_types": [
       "Ground",
-      "ImmuneToAllySonic",
-      "Submergeable",
+      "Underwater",
       "Water"
     ],
     "targetable_layers": [
@@ -1153,18 +1981,14 @@
         "id": "Targetable",
         "types": [
           "Ground",
-          "Water",
-          "ImmuneToAllySonic",
-          "Submergeable"
+          "Water"
         ],
-        "requires_condition": "!underwater"
+        "requires_condition": "underwater"
       },
       {
         "id": "Targetable@underwater",
         "types": [
-          "Underwater",
-          "ImmuneToAllySonic",
-          "Submergeable"
+          "Underwater"
         ],
         "requires_condition": "underwater"
       }
@@ -1220,6 +2044,7 @@
     "spawn_only": false,
     "mind_controllable": false,
     "mind_controller": false,
+    "mind_control_capacity": 0,
     "carrier_parent": null,
     "carrier_child": false,
     "ammo_max": null,
@@ -1229,7 +2054,9 @@
     "takeoff_ticks": 0,
     "blocks_projectiles": false,
     "blocks_projectiles_height": 1024,
-    "blocks_projectiles_relationships": []
+    "blocks_projectiles_relationships": [],
+    "demolition": false,
+    "demolition_delay": 45
   },
   "carrier": {
     "id": "carrier",
@@ -1248,6 +2075,8 @@
     "target_types": [
       "Ground",
       "MindControl",
+      "Repair",
+      "SuperMindControl",
       "Water"
     ],
     "targetable_layers": [
@@ -1255,21 +2084,21 @@
         "id": "Targetable",
         "types": [
           "Ground",
-          "Water"
-        ],
-        "requires_condition": null
-      },
-      {
-        "id": "Targetable@REPAIR",
-        "types": [
           "Repair"
         ],
-        "requires_condition": "damaged"
+        "requires_condition": null
       },
       {
         "id": "Targetable@MC",
         "types": [
           "MindControl"
+        ],
+        "requires_condition": "!controlled"
+      },
+      {
+        "id": "Targetable@SMC",
+        "types": [
+          "SuperMindControl"
         ],
         "requires_condition": "!controlled"
       }
@@ -1285,34 +2114,16 @@
     ],
     "auto_target_priorities": [
       {
-        "id": "AutoTargetPriority@DEFAULT",
+        "id": "AutoTarget@fallback",
         "valid_targets": [
           "Infantry",
           "Vehicle",
-          "Water",
-          "Underwater",
-          "Defense"
-        ],
-        "invalid_targets": [
-          "NoAutoTarget",
-          "WaterStructure"
-        ],
-        "requires_condition": "!stance-attackanything && !assault-move"
-      },
-      {
-        "id": "AutoTargetPriority@ATTACKANYTHING",
-        "valid_targets": [
-          "Infantry",
-          "Vehicle",
-          "Water",
-          "Underwater",
-          "Structure",
-          "Defense"
+          "Air"
         ],
         "invalid_targets": [
           "NoAutoTarget"
         ],
-        "requires_condition": "stance-attackanything || assault-move"
+        "requires_condition": null
       }
     ],
     "gains_experience": {
@@ -1325,6 +2136,7 @@
     "spawn_only": false,
     "mind_controllable": true,
     "mind_controller": false,
+    "mind_control_capacity": 0,
     "carrier_parent": {
       "actors": [
         "hornet",
@@ -1336,13 +2148,15 @@
     },
     "carrier_child": false,
     "ammo_max": null,
-    "turret_turn_speed": null,
-    "facing_tolerance": null,
+    "turret_turn_speed": 255,
+    "facing_tolerance": 512,
     "rearmable_actors": [],
     "takeoff_ticks": 0,
     "blocks_projectiles": false,
     "blocks_projectiles_height": 1024,
-    "blocks_projectiles_relationships": []
+    "blocks_projectiles_relationships": [],
+    "demolition": false,
+    "demolition_delay": 45
   },
   "amcv": {
     "id": "amcv",
@@ -1352,7 +2166,7 @@
     "cost": 3000,
     "hp": 1000,
     "armor": "Heavy",
-    "speed": 60,
+    "speed": 80,
     "locomotor": "heavytracked",
     "shares_cell": false,
     "crushes": [
@@ -1364,36 +2178,40 @@
       "DetonateAttack",
       "Ground",
       "MindControl",
+      "Repair",
+      "SuperMindControl",
       "Vehicle"
     ],
     "targetable_layers": [
+      {
+        "id": "Targetable@AIRBORNE",
+        "types": [
+          "Air",
+          "Tractable"
+        ],
+        "requires_condition": "airborne"
+      },
       {
         "id": "Targetable",
         "types": [
           "Ground",
           "Vehicle",
+          "Repair",
           "DetonateAttack"
         ],
-        "requires_condition": "!parachute"
-      },
-      {
-        "id": "Targetable@airborne",
-        "types": [
-          "Air"
-        ],
-        "requires_condition": "parachute"
-      },
-      {
-        "id": "Targetable@REPAIR",
-        "types": [
-          "Repair"
-        ],
-        "requires_condition": "damaged"
+        "requires_condition": null
       },
       {
         "id": "Targetable@MC",
         "types": [
           "MindControl"
+        ],
+        "requires_condition": "!controlled"
+      },
+      {
+        "id": "Targetable@SMC",
+        "types": [
+          "SuperMindControl"
         ],
         "requires_condition": "!controlled"
       }
@@ -1411,6 +2229,7 @@
     "spawn_only": false,
     "mind_controllable": true,
     "mind_controller": false,
+    "mind_control_capacity": 0,
     "carrier_parent": null,
     "carrier_child": false,
     "ammo_max": null,
@@ -1420,7 +2239,9 @@
     "takeoff_ticks": 0,
     "blocks_projectiles": false,
     "blocks_projectiles_height": 1024,
-    "blocks_projectiles_relationships": []
+    "blocks_projectiles_relationships": [],
+    "demolition": false,
+    "demolition_delay": 45
   },
   "cmin": {
     "id": "cmin",
@@ -1430,7 +2251,7 @@
     "cost": 1400,
     "hp": 1000,
     "armor": "Medium",
-    "speed": 60,
+    "speed": 85,
     "locomotor": "tracked",
     "shares_cell": false,
     "crushes": [
@@ -1441,31 +2262,27 @@
       "DetonateAttack",
       "Ground",
       "ImmuneToRadiation",
+      "Repair",
       "Vehicle"
     ],
     "targetable_layers": [
+      {
+        "id": "Targetable@AIRBORNE",
+        "types": [
+          "Air",
+          "Tractable"
+        ],
+        "requires_condition": "airborne"
+      },
       {
         "id": "Targetable",
         "types": [
           "Ground",
           "Vehicle",
+          "Repair",
           "DetonateAttack"
         ],
-        "requires_condition": "!parachute"
-      },
-      {
-        "id": "Targetable@airborne",
-        "types": [
-          "Air"
-        ],
-        "requires_condition": "parachute"
-      },
-      {
-        "id": "Targetable@REPAIR",
-        "types": [
-          "Repair"
-        ],
-        "requires_condition": "damaged"
+        "requires_condition": null
       },
       {
         "id": "Targetable@RadiationImmunity",
@@ -1488,6 +2305,7 @@
     "spawn_only": false,
     "mind_controllable": false,
     "mind_controller": false,
+    "mind_control_capacity": 0,
     "carrier_parent": null,
     "carrier_child": false,
     "ammo_max": null,
@@ -1497,7 +2315,9 @@
     "takeoff_ticks": 0,
     "blocks_projectiles": false,
     "blocks_projectiles_height": 1024,
-    "blocks_projectiles_relationships": []
+    "blocks_projectiles_relationships": [],
+    "demolition": false,
+    "demolition_delay": 45
   },
   "mtnk": {
     "id": "mtnk",
@@ -1507,7 +2327,7 @@
     "cost": 700,
     "hp": 300,
     "armor": "Heavy",
-    "speed": 105,
+    "speed": 90,
     "locomotor": "heavytracked",
     "shares_cell": false,
     "crushes": [
@@ -1519,36 +2339,40 @@
       "DetonateAttack",
       "Ground",
       "MindControl",
+      "Repair",
+      "SuperMindControl",
       "Vehicle"
     ],
     "targetable_layers": [
+      {
+        "id": "Targetable@AIRBORNE",
+        "types": [
+          "Air",
+          "Tractable"
+        ],
+        "requires_condition": "airborne"
+      },
       {
         "id": "Targetable",
         "types": [
           "Ground",
           "Vehicle",
+          "Repair",
           "DetonateAttack"
         ],
-        "requires_condition": "!parachute"
-      },
-      {
-        "id": "Targetable@airborne",
-        "types": [
-          "Air"
-        ],
-        "requires_condition": "parachute"
-      },
-      {
-        "id": "Targetable@REPAIR",
-        "types": [
-          "Repair"
-        ],
-        "requires_condition": "damaged"
+        "requires_condition": null
       },
       {
         "id": "Targetable@MC",
         "types": [
           "MindControl"
+        ],
+        "requires_condition": "!controlled"
+      },
+      {
+        "id": "Targetable@SMC",
+        "types": [
+          "SuperMindControl"
         ],
         "requires_condition": "!controlled"
       }
@@ -1610,16 +2434,19 @@
     "spawn_only": false,
     "mind_controllable": true,
     "mind_controller": false,
+    "mind_control_capacity": 0,
     "carrier_parent": null,
     "carrier_child": false,
     "ammo_max": null,
-    "turret_turn_speed": 20,
+    "turret_turn_speed": 5,
     "facing_tolerance": 512,
     "rearmable_actors": [],
     "takeoff_ticks": 0,
     "blocks_projectiles": false,
     "blocks_projectiles_height": 1024,
-    "blocks_projectiles_relationships": []
+    "blocks_projectiles_relationships": [],
+    "demolition": false,
+    "demolition_delay": 45
   },
   "tnkd": {
     "id": "tnkd",
@@ -1629,7 +2456,7 @@
     "cost": 900,
     "hp": 400,
     "armor": "Heavy",
-    "speed": 75,
+    "speed": 70,
     "locomotor": "heavytracked",
     "shares_cell": false,
     "crushes": [
@@ -1641,36 +2468,40 @@
       "DetonateAttack",
       "Ground",
       "MindControl",
+      "Repair",
+      "SuperMindControl",
       "Vehicle"
     ],
     "targetable_layers": [
+      {
+        "id": "Targetable@AIRBORNE",
+        "types": [
+          "Air",
+          "Tractable"
+        ],
+        "requires_condition": "airborne"
+      },
       {
         "id": "Targetable",
         "types": [
           "Ground",
           "Vehicle",
+          "Repair",
           "DetonateAttack"
         ],
-        "requires_condition": "!parachute"
-      },
-      {
-        "id": "Targetable@airborne",
-        "types": [
-          "Air"
-        ],
-        "requires_condition": "parachute"
-      },
-      {
-        "id": "Targetable@REPAIR",
-        "types": [
-          "Repair"
-        ],
-        "requires_condition": "damaged"
+        "requires_condition": null
       },
       {
         "id": "Targetable@MC",
         "types": [
           "MindControl"
+        ],
+        "requires_condition": "!controlled"
+      },
+      {
+        "id": "Targetable@SMC",
+        "types": [
+          "SuperMindControl"
         ],
         "requires_condition": "!controlled"
       }
@@ -1732,6 +2563,7 @@
     "spawn_only": false,
     "mind_controllable": true,
     "mind_controller": false,
+    "mind_control_capacity": 0,
     "carrier_parent": null,
     "carrier_child": false,
     "ammo_max": null,
@@ -1741,7 +2573,9 @@
     "takeoff_ticks": 0,
     "blocks_projectiles": false,
     "blocks_projectiles_height": 1024,
-    "blocks_projectiles_relationships": []
+    "blocks_projectiles_relationships": [],
+    "demolition": false,
+    "demolition_delay": 45
   },
   "fv": {
     "id": "fv",
@@ -1751,7 +2585,7 @@
     "cost": 600,
     "hp": 200,
     "armor": "Light",
-    "speed": 150,
+    "speed": 128,
     "locomotor": "wheeled",
     "shares_cell": false,
     "crushes": [
@@ -1761,36 +2595,40 @@
       "DetonateAttack",
       "Ground",
       "MindControl",
+      "Repair",
+      "SuperMindControl",
       "Vehicle"
     ],
     "targetable_layers": [
+      {
+        "id": "Targetable@AIRBORNE",
+        "types": [
+          "Air",
+          "Tractable"
+        ],
+        "requires_condition": "airborne"
+      },
       {
         "id": "Targetable",
         "types": [
           "Ground",
           "Vehicle",
+          "Repair",
           "DetonateAttack"
         ],
-        "requires_condition": "!parachute"
-      },
-      {
-        "id": "Targetable@airborne",
-        "types": [
-          "Air"
-        ],
-        "requires_condition": "parachute"
-      },
-      {
-        "id": "Targetable@REPAIR",
-        "types": [
-          "Repair"
-        ],
-        "requires_condition": "damaged"
+        "requires_condition": null
       },
       {
         "id": "Targetable@MC",
         "types": [
           "MindControl"
+        ],
+        "requires_condition": "!controlled"
+      },
+      {
+        "id": "Targetable@SMC",
+        "types": [
+          "SuperMindControl"
         ],
         "requires_condition": "!controlled"
       }
@@ -1849,12 +2687,6 @@
         "id": "Armament@flak",
         "weapon": "CRFlakGuyGun",
         "requires_condition": "ifv-flak",
-        "name": "primary"
-      },
-      {
-        "id": "Armament@chrono",
-        "weapon": "CRNeutronRifle",
-        "requires_condition": "ifv-chrono",
         "name": "primary"
       }
     ],
@@ -1963,16 +2795,19 @@
     "spawn_only": false,
     "mind_controllable": true,
     "mind_controller": false,
+    "mind_control_capacity": 0,
     "carrier_parent": null,
     "carrier_child": false,
     "ammo_max": null,
-    "turret_turn_speed": 20,
+    "turret_turn_speed": 5,
     "facing_tolerance": 512,
     "rearmable_actors": [],
     "takeoff_ticks": 0,
     "blocks_projectiles": false,
     "blocks_projectiles_height": 1024,
-    "blocks_projectiles_relationships": []
+    "blocks_projectiles_relationships": [],
+    "demolition": false,
+    "demolition_delay": 45
   },
   "sref": {
     "id": "sref",
@@ -1994,36 +2829,40 @@
       "DetonateAttack",
       "Ground",
       "MindControl",
+      "Repair",
+      "SuperMindControl",
       "Vehicle"
     ],
     "targetable_layers": [
+      {
+        "id": "Targetable@AIRBORNE",
+        "types": [
+          "Air",
+          "Tractable"
+        ],
+        "requires_condition": "airborne"
+      },
       {
         "id": "Targetable",
         "types": [
           "Ground",
           "Vehicle",
+          "Repair",
           "DetonateAttack"
         ],
-        "requires_condition": "!parachute"
-      },
-      {
-        "id": "Targetable@airborne",
-        "types": [
-          "Air"
-        ],
-        "requires_condition": "parachute"
-      },
-      {
-        "id": "Targetable@REPAIR",
-        "types": [
-          "Repair"
-        ],
-        "requires_condition": "damaged"
+        "requires_condition": null
       },
       {
         "id": "Targetable@MC",
         "types": [
           "MindControl"
+        ],
+        "requires_condition": "!controlled"
+      },
+      {
+        "id": "Targetable@SMC",
+        "types": [
+          "SuperMindControl"
         ],
         "requires_condition": "!controlled"
       }
@@ -2085,16 +2924,19 @@
     "spawn_only": false,
     "mind_controllable": true,
     "mind_controller": false,
+    "mind_control_capacity": 0,
     "carrier_parent": null,
     "carrier_child": false,
     "ammo_max": null,
-    "turret_turn_speed": 40,
+    "turret_turn_speed": 10,
     "facing_tolerance": 512,
     "rearmable_actors": [],
     "takeoff_ticks": 0,
     "blocks_projectiles": false,
     "blocks_projectiles_height": 1024,
-    "blocks_projectiles_relationships": []
+    "blocks_projectiles_relationships": [],
+    "demolition": false,
+    "demolition_delay": 45
   },
   "mgtk": {
     "id": "mgtk",
@@ -2116,36 +2958,40 @@
       "DetonateAttack",
       "Ground",
       "MindControl",
+      "Repair",
+      "SuperMindControl",
       "Vehicle"
     ],
     "targetable_layers": [
+      {
+        "id": "Targetable@AIRBORNE",
+        "types": [
+          "Air",
+          "Tractable"
+        ],
+        "requires_condition": "airborne"
+      },
       {
         "id": "Targetable",
         "types": [
           "Ground",
           "Vehicle",
+          "Repair",
           "DetonateAttack"
         ],
-        "requires_condition": "!parachute"
-      },
-      {
-        "id": "Targetable@airborne",
-        "types": [
-          "Air"
-        ],
-        "requires_condition": "parachute"
-      },
-      {
-        "id": "Targetable@REPAIR",
-        "types": [
-          "Repair"
-        ],
-        "requires_condition": "damaged"
+        "requires_condition": "!varing"
       },
       {
         "id": "Targetable@MC",
         "types": [
           "MindControl"
+        ],
+        "requires_condition": "!controlled"
+      },
+      {
+        "id": "Targetable@SMC",
+        "types": [
+          "SuperMindControl"
         ],
         "requires_condition": "!controlled"
       }
@@ -2207,6 +3053,7 @@
     "spawn_only": false,
     "mind_controllable": true,
     "mind_controller": false,
+    "mind_control_capacity": 0,
     "carrier_parent": null,
     "carrier_child": false,
     "ammo_max": null,
@@ -2216,7 +3063,231 @@
     "takeoff_ticks": 0,
     "blocks_projectiles": false,
     "blocks_projectiles_height": 1024,
-    "blocks_projectiles_relationships": []
+    "blocks_projectiles_relationships": [],
+    "demolition": false,
+    "demolition_delay": 45
+  },
+  "robo": {
+    "id": "robo",
+    "name": "Robot Tank",
+    "description": "Allied Robot Tank.\\n  Will not effected by Mind Control.\\n Strong vs Vehicles, Ships\\n  Weak vs Infantry, Aircraft",
+    "categories": "Vehicle",
+    "cost": 600,
+    "hp": 180,
+    "armor": "Heavy",
+    "speed": 150,
+    "locomotor": "lcraft",
+    "shares_cell": false,
+    "crushes": [
+      "crate"
+    ],
+    "target_types": [
+      "DetonateAttack",
+      "Ground",
+      "Repair",
+      "Vehicle"
+    ],
+    "targetable_layers": [
+      {
+        "id": "Targetable@AIRBORNE",
+        "types": [
+          "Air",
+          "Tractable"
+        ],
+        "requires_condition": "airborne"
+      },
+      {
+        "id": "Targetable",
+        "types": [
+          "Ground",
+          "Vehicle",
+          "Repair",
+          "DetonateAttack"
+        ],
+        "requires_condition": null
+      }
+    ],
+    "crushable": false,
+    "armaments": [
+      {
+        "id": "Armament@primary",
+        "weapon": "105mm",
+        "requires_condition": "!rank-elite && robotcenter",
+        "name": "primary"
+      },
+      {
+        "id": "Armament@elite",
+        "weapon": "105mmE",
+        "requires_condition": "rank-elite && robotcenter",
+        "name": "primary"
+      }
+    ],
+    "auto_target_priorities": [
+      {
+        "id": "AutoTargetPriority@DEFAULT",
+        "valid_targets": [],
+        "invalid_targets": [],
+        "requires_condition": "!stance-attackanything && !assault-move && robotcenter"
+      },
+      {
+        "id": "AutoTargetPriority@ATTACKANYTHING",
+        "valid_targets": [],
+        "invalid_targets": [],
+        "requires_condition": "(stance-attackanything || assault-move) && robotcenter"
+      }
+    ],
+    "gains_experience": {
+      "conditions": {
+        "500": "rank-veteran",
+        "1000": "rank-elite"
+      },
+      "experience_modifier": -1
+    },
+    "spawn_only": false,
+    "mind_controllable": false,
+    "mind_controller": false,
+    "mind_control_capacity": 0,
+    "carrier_parent": null,
+    "carrier_child": false,
+    "ammo_max": null,
+    "turret_turn_speed": 5,
+    "facing_tolerance": 512,
+    "rearmable_actors": [],
+    "takeoff_ticks": 0,
+    "blocks_projectiles": false,
+    "blocks_projectiles_height": 1024,
+    "blocks_projectiles_relationships": [],
+    "demolition": false,
+    "demolition_delay": 45
+  },
+  "bfrt": {
+    "id": "bfrt",
+    "name": "Battle Fortress",
+    "description": "Allied heavy tank",
+    "categories": "Vehicle",
+    "cost": 2000,
+    "hp": 600,
+    "armor": "Heavy",
+    "speed": 60,
+    "locomotor": "heavytracked",
+    "shares_cell": false,
+    "crushes": [
+      "wall",
+      "crate",
+      "infantry"
+    ],
+    "target_types": [
+      "DetonateAttack",
+      "Ground",
+      "MindControl",
+      "Repair",
+      "SuperMindControl",
+      "Vehicle"
+    ],
+    "targetable_layers": [
+      {
+        "id": "Targetable@AIRBORNE",
+        "types": [
+          "Air",
+          "Tractable"
+        ],
+        "requires_condition": "airborne"
+      },
+      {
+        "id": "Targetable",
+        "types": [
+          "Ground",
+          "Vehicle",
+          "Repair",
+          "DetonateAttack"
+        ],
+        "requires_condition": null
+      },
+      {
+        "id": "Targetable@MC",
+        "types": [
+          "MindControl"
+        ],
+        "requires_condition": "!controlled"
+      },
+      {
+        "id": "Targetable@SMC",
+        "types": [
+          "SuperMindControl"
+        ],
+        "requires_condition": "!controlled"
+      }
+    ],
+    "crushable": false,
+    "armaments": [
+      {
+        "id": "Armament@primary",
+        "weapon": "20mmRapid",
+        "requires_condition": "!rank-elite",
+        "name": "primary"
+      },
+      {
+        "id": "Armament@elite",
+        "weapon": "20mmRapidE",
+        "requires_condition": "rank-elite",
+        "name": "primary"
+      }
+    ],
+    "auto_target_priorities": [
+      {
+        "id": "AutoTargetPriority@DEFAULT",
+        "valid_targets": [
+          "Infantry",
+          "Vehicle",
+          "Water",
+          "Underwater",
+          "Defense"
+        ],
+        "invalid_targets": [
+          "NoAutoTarget",
+          "WaterStructure"
+        ],
+        "requires_condition": "!stance-attackanything && !assault-move"
+      },
+      {
+        "id": "AutoTargetPriority@ATTACKANYTHING",
+        "valid_targets": [
+          "Infantry",
+          "Vehicle",
+          "Water",
+          "Underwater",
+          "Structure",
+          "Defense"
+        ],
+        "invalid_targets": [
+          "NoAutoTarget"
+        ],
+        "requires_condition": "stance-attackanything || assault-move"
+      }
+    ],
+    "gains_experience": {
+      "conditions": {
+        "500": "rank-veteran",
+        "1000": "rank-elite"
+      },
+      "experience_modifier": -1
+    },
+    "spawn_only": false,
+    "mind_controllable": true,
+    "mind_controller": false,
+    "mind_control_capacity": 0,
+    "carrier_parent": null,
+    "carrier_child": false,
+    "ammo_max": null,
+    "turret_turn_speed": null,
+    "facing_tolerance": null,
+    "rearmable_actors": [],
+    "takeoff_ticks": 0,
+    "blocks_projectiles": false,
+    "blocks_projectiles_height": 1024,
+    "blocks_projectiles_relationships": [],
+    "demolition": false,
+    "demolition_delay": 45
   },
   "e2": {
     "id": "e2",
@@ -2226,7 +3297,7 @@
     "cost": 100,
     "hp": 125,
     "armor": "None",
-    "speed": 60,
+    "speed": 34,
     "locomotor": "foot",
     "shares_cell": true,
     "crushes": [
@@ -2237,7 +3308,8 @@
       "Disguise",
       "Ground",
       "Infantry",
-      "MindControl"
+      "MindControl",
+      "SuperMindControl"
     ],
     "targetable_layers": [
       {
@@ -2248,19 +3320,19 @@
           "DetonateAttack",
           "Disguise"
         ],
-        "requires_condition": "!parachute"
-      },
-      {
-        "id": "Targetable@airborne",
-        "types": [
-          "Air"
-        ],
-        "requires_condition": "parachute"
+        "requires_condition": null
       },
       {
         "id": "Targetable@MC",
         "types": [
           "MindControl"
+        ],
+        "requires_condition": "!controlled"
+      },
+      {
+        "id": "Targetable@SMC",
+        "types": [
+          "SuperMindControl"
         ],
         "requires_condition": "!controlled"
       }
@@ -2322,6 +3394,7 @@
     "spawn_only": false,
     "mind_controllable": true,
     "mind_controller": false,
+    "mind_control_capacity": 0,
     "carrier_parent": null,
     "carrier_child": false,
     "ammo_max": null,
@@ -2331,17 +3404,19 @@
     "takeoff_ticks": 0,
     "blocks_projectiles": false,
     "blocks_projectiles_height": 1024,
-    "blocks_projectiles_relationships": []
+    "blocks_projectiles_relationships": [],
+    "demolition": false,
+    "demolition_delay": 45
   },
   "flakt": {
     "id": "flakt",
     "name": "Flak Trooper",
     "description": "Anti-Air/Anti-Infantry unit.\\n  Strong vs Aircraft, Infantry\\n  Weak vs Vehicles",
     "categories": "Infantry",
-    "cost": 300,
+    "cost": 100,
     "hp": 100,
     "armor": "None",
-    "speed": 60,
+    "speed": 34,
     "locomotor": "foot",
     "shares_cell": true,
     "crushes": [
@@ -2352,7 +3427,8 @@
       "Disguise",
       "Ground",
       "Infantry",
-      "MindControl"
+      "MindControl",
+      "SuperMindControl"
     ],
     "targetable_layers": [
       {
@@ -2363,19 +3439,19 @@
           "DetonateAttack",
           "Disguise"
         ],
-        "requires_condition": "!parachute"
-      },
-      {
-        "id": "Targetable@airborne",
-        "types": [
-          "Air"
-        ],
-        "requires_condition": "parachute"
+        "requires_condition": null
       },
       {
         "id": "Targetable@MC",
         "types": [
           "MindControl"
+        ],
+        "requires_condition": "!controlled"
+      },
+      {
+        "id": "Targetable@SMC",
+        "types": [
+          "SuperMindControl"
         ],
         "requires_condition": "!controlled"
       }
@@ -2451,6 +3527,7 @@
     "spawn_only": false,
     "mind_controllable": true,
     "mind_controller": false,
+    "mind_control_capacity": 0,
     "carrier_parent": null,
     "carrier_child": false,
     "ammo_max": null,
@@ -2460,7 +3537,9 @@
     "takeoff_ticks": 0,
     "blocks_projectiles": false,
     "blocks_projectiles_height": 1024,
-    "blocks_projectiles_relationships": []
+    "blocks_projectiles_relationships": [],
+    "demolition": false,
+    "demolition_delay": 45
   },
   "shk": {
     "id": "shk",
@@ -2470,7 +3549,7 @@
     "cost": 500,
     "hp": 130,
     "armor": "Plate",
-    "speed": 60,
+    "speed": 51,
     "locomotor": "foot",
     "shares_cell": true,
     "crushes": [
@@ -2481,7 +3560,8 @@
       "Disguise",
       "Ground",
       "Infantry",
-      "MindControl"
+      "MindControl",
+      "SuperMindControl"
     ],
     "targetable_layers": [
       {
@@ -2492,19 +3572,19 @@
           "DetonateAttack",
           "Disguise"
         ],
-        "requires_condition": "!parachute"
-      },
-      {
-        "id": "Targetable@airborne",
-        "types": [
-          "Air"
-        ],
-        "requires_condition": "parachute"
+        "requires_condition": null
       },
       {
         "id": "Targetable@MC",
         "types": [
           "MindControl"
+        ],
+        "requires_condition": "!controlled"
+      },
+      {
+        "id": "Targetable@SMC",
+        "types": [
+          "SuperMindControl"
         ],
         "requires_condition": "!controlled"
       }
@@ -2572,6 +3652,7 @@
     "spawn_only": false,
     "mind_controllable": true,
     "mind_controller": false,
+    "mind_control_capacity": 0,
     "carrier_parent": null,
     "carrier_child": false,
     "ammo_max": null,
@@ -2581,7 +3662,9 @@
     "takeoff_ticks": 0,
     "blocks_projectiles": false,
     "blocks_projectiles_height": 1024,
-    "blocks_projectiles_relationships": []
+    "blocks_projectiles_relationships": [],
+    "demolition": false,
+    "demolition_delay": 45
   },
   "terror": {
     "id": "terror",
@@ -2591,7 +3674,7 @@
     "cost": 200,
     "hp": 75,
     "armor": "Flak",
-    "speed": 90,
+    "speed": 71,
     "locomotor": "foot",
     "shares_cell": true,
     "crushes": [
@@ -2601,8 +3684,69 @@
       "DetonateAttack",
       "Disguise",
       "Ground",
+      "Infantry"
+    ],
+    "targetable_layers": [
+      {
+        "id": "Targetable",
+        "types": [
+          "Ground",
+          "Infantry",
+          "DetonateAttack",
+          "Disguise"
+        ],
+        "requires_condition": null
+      }
+    ],
+    "crushable": true,
+    "armaments": [],
+    "auto_target_priorities": [],
+    "gains_experience": {
+      "conditions": {
+        "500": "rank-veteran",
+        "1000": "rank-elite"
+      },
+      "experience_modifier": -1
+    },
+    "spawn_only": false,
+    "mind_controllable": false,
+    "mind_controller": false,
+    "mind_control_capacity": 0,
+    "carrier_parent": null,
+    "carrier_child": false,
+    "ammo_max": null,
+    "turret_turn_speed": null,
+    "facing_tolerance": null,
+    "rearmable_actors": [],
+    "takeoff_ticks": 0,
+    "blocks_projectiles": false,
+    "blocks_projectiles_height": 1024,
+    "blocks_projectiles_relationships": [],
+    "demolition": false,
+    "demolition_delay": 45
+  },
+  "deso": {
+    "id": "deso",
+    "name": "Desolator",
+    "description": "Carries a radiation-emitting weapon.\\nCan deploy for area-of-effect damage.\\n  Strong vs Infantry, Light armor\\n  Weak vs Tanks, Aircraft",
+    "categories": "Infantry",
+    "cost": 200,
+    "hp": 150,
+    "armor": "Plate",
+    "speed": 60,
+    "locomotor": "foot",
+    "shares_cell": true,
+    "crushes": [
+      "crate"
+    ],
+    "target_types": [
+      "DetonateAttack",
+      "Disguise",
+      "Ground",
+      "ImmuneToRadiation",
       "Infantry",
-      "MindControl"
+      "MindControl",
+      "SuperMindControl"
     ],
     "targetable_layers": [
       {
@@ -2621,76 +3765,11 @@
           "MindControl"
         ],
         "requires_condition": "!controlled"
-      }
-    ],
-    "crushable": true,
-    "armaments": [
-      {
-        "id": "Armament@PRIMARY",
-        "weapon": "DemoTruckTargeting",
-        "requires_condition": null,
-        "name": "primary"
-      }
-    ],
-    "auto_target_priorities": [],
-    "gains_experience": {
-      "conditions": {
-        "500": "rank-veteran",
-        "1000": "rank-elite"
-      },
-      "experience_modifier": -1
-    },
-    "spawn_only": false,
-    "mind_controllable": true,
-    "mind_controller": false,
-    "carrier_parent": null,
-    "carrier_child": false,
-    "ammo_max": null,
-    "turret_turn_speed": null,
-    "facing_tolerance": null,
-    "rearmable_actors": [],
-    "takeoff_ticks": 0,
-    "blocks_projectiles": false,
-    "blocks_projectiles_height": 1024,
-    "blocks_projectiles_relationships": []
-  },
-  "deso": {
-    "id": "deso",
-    "name": "Desolator",
-    "description": "Carries a radiation-emitting weapon.\\nCan deploy for area-of-effect damage.\\n  Strong vs Infantry, Light armor\\n  Weak vs Tanks, Aircraft",
-    "categories": "Infantry",
-    "cost": 600,
-    "hp": 150,
-    "armor": "Plate",
-    "speed": 60,
-    "locomotor": "foot",
-    "shares_cell": true,
-    "crushes": [
-      "crate"
-    ],
-    "target_types": [
-      "DetonateAttack",
-      "Disguise",
-      "Ground",
-      "ImmuneToRadiation",
-      "Infantry",
-      "MindControl"
-    ],
-    "targetable_layers": [
-      {
-        "id": "Targetable",
-        "types": [
-          "Ground",
-          "Infantry",
-          "DetonateAttack",
-          "Disguise"
-        ],
-        "requires_condition": null
       },
       {
-        "id": "Targetable@MC",
+        "id": "Targetable@SMC",
         "types": [
-          "MindControl"
+          "SuperMindControl"
         ],
         "requires_condition": "!controlled"
       },
@@ -2759,6 +3838,7 @@
     "spawn_only": false,
     "mind_controllable": true,
     "mind_controller": false,
+    "mind_control_capacity": 0,
     "carrier_parent": null,
     "carrier_child": false,
     "ammo_max": null,
@@ -2768,7 +3848,9 @@
     "takeoff_ticks": 0,
     "blocks_projectiles": false,
     "blocks_projectiles_height": 1024,
-    "blocks_projectiles_relationships": []
+    "blocks_projectiles_relationships": [],
+    "demolition": false,
+    "demolition_delay": 45
   },
   "ivan": {
     "id": "ivan",
@@ -2789,7 +3871,8 @@
       "Disguise",
       "Ground",
       "Infantry",
-      "MindControl"
+      "MindControl",
+      "SuperMindControl"
     ],
     "targetable_layers": [
       {
@@ -2808,81 +3891,11 @@
           "MindControl"
         ],
         "requires_condition": "!controlled"
-      }
-    ],
-    "crushable": true,
-    "armaments": [
-      {
-        "id": "Armament@primary",
-        "weapon": "IvanBomber",
-        "requires_condition": "!rank-elite",
-        "name": "primary"
       },
       {
-        "id": "Armament@elite",
-        "weapon": "IvanBomberE",
-        "requires_condition": "rank-elite",
-        "name": "primary"
-      }
-    ],
-    "auto_target_priorities": [],
-    "gains_experience": {
-      "conditions": {
-        "500": "rank-veteran",
-        "1000": "rank-elite"
-      },
-      "experience_modifier": -1
-    },
-    "spawn_only": false,
-    "mind_controllable": true,
-    "mind_controller": false,
-    "carrier_parent": null,
-    "carrier_child": false,
-    "ammo_max": null,
-    "turret_turn_speed": null,
-    "facing_tolerance": null,
-    "rearmable_actors": [],
-    "takeoff_ticks": 0,
-    "blocks_projectiles": false,
-    "blocks_projectiles_height": 1024,
-    "blocks_projectiles_relationships": []
-  },
-  "civan": {
-    "id": "civan",
-    "name": "Chrono Ivan",
-    "description": "Specialist for explosives. Can plant a Bomb on anything, even Cows. Can teleport on anywhere on the map.",
-    "categories": "Infantry",
-    "cost": 1000,
-    "hp": 100,
-    "armor": "None",
-    "speed": 60,
-    "locomotor": "foot",
-    "shares_cell": true,
-    "crushes": [
-      "crate"
-    ],
-    "target_types": [
-      "DetonateAttack",
-      "Disguise",
-      "Ground",
-      "Infantry",
-      "MindControl"
-    ],
-    "targetable_layers": [
-      {
-        "id": "Targetable",
+        "id": "Targetable@SMC",
         "types": [
-          "Ground",
-          "Infantry",
-          "DetonateAttack",
-          "Disguise"
-        ],
-        "requires_condition": null
-      },
-      {
-        "id": "Targetable@MC",
-        "types": [
-          "MindControl"
+          "SuperMindControl"
         ],
         "requires_condition": "!controlled"
       }
@@ -2913,6 +3926,7 @@
     "spawn_only": false,
     "mind_controllable": true,
     "mind_controller": false,
+    "mind_control_capacity": 0,
     "carrier_parent": null,
     "carrier_child": false,
     "ammo_max": null,
@@ -2922,96 +3936,19 @@
     "takeoff_ticks": 0,
     "blocks_projectiles": false,
     "blocks_projectiles_height": 1024,
-    "blocks_projectiles_relationships": []
+    "blocks_projectiles_relationships": [],
+    "demolition": false,
+    "demolition_delay": 45
   },
-  "yuri": {
-    "id": "yuri",
-    "name": "Yuri",
-    "description": "Psychic infantry. Can mind control enemy units.\\nCan be deployed to unleash a powerful psychic wave.\\n  Strong vs Infantry, Vehicles\\n  Weak vs Terror Drones, Aircraft, Buildings",
+  "boris": {
+    "id": "boris",
+    "name": "Boris",
+    "description": "Elite Soviet commando Infantry\\n  Strong vs Infantry, Buildings, Vehicles\\n  Weak with Aircraft",
     "categories": "Infantry",
-    "cost": 1200,
-    "hp": 100,
-    "armor": "None",
-    "speed": 60,
-    "locomotor": "foot",
-    "shares_cell": true,
-    "crushes": [
-      "crate"
-    ],
-    "target_types": [
-      "DetonateAttack",
-      "Disguise",
-      "Ground",
-      "Infantry"
-    ],
-    "targetable_layers": [
-      {
-        "id": "Targetable",
-        "types": [
-          "Ground",
-          "Infantry",
-          "DetonateAttack",
-          "Disguise"
-        ],
-        "requires_condition": "!parachute"
-      },
-      {
-        "id": "Targetable@airborne",
-        "types": [
-          "Air"
-        ],
-        "requires_condition": "parachute"
-      }
-    ],
-    "crushable": true,
-    "armaments": [
-      {
-        "id": "Armament",
-        "weapon": "MindControl",
-        "requires_condition": null,
-        "name": "primary"
-      }
-    ],
-    "auto_target_priorities": [
-      {
-        "id": "AutoTargetPriority@DEFAULT",
-        "valid_targets": [
-          "MindControl"
-        ],
-        "invalid_targets": [],
-        "requires_condition": "!controlling"
-      }
-    ],
-    "gains_experience": {
-      "conditions": {
-        "500": "rank-veteran",
-        "1000": "rank-elite"
-      },
-      "experience_modifier": -1
-    },
-    "spawn_only": false,
-    "mind_controllable": false,
-    "mind_controller": true,
-    "carrier_parent": null,
-    "carrier_child": false,
-    "ammo_max": null,
-    "turret_turn_speed": null,
-    "facing_tolerance": null,
-    "rearmable_actors": [],
-    "takeoff_ticks": 0,
-    "blocks_projectiles": false,
-    "blocks_projectiles_height": 1024,
-    "blocks_projectiles_relationships": []
-  },
-  "yuripr": {
-    "id": "yuripr",
-    "name": "Yuri Prime",
-    "description": "Psychic infantry. Can mind control enemy units from a great range.\\nCan be deployed to unleash a powerful psychic wave.\\n  Strong vs Infantry, Vehicles\\n  Weak vs Terror Drones, Aircraft, Buildings\\n\\nMaximum 1 can be trained.",
-    "categories": "Infantry",
-    "cost": 2000,
+    "cost": 1500,
     "hp": 200,
-    "armor": "Flak",
-    "speed": 90,
+    "armor": "None",
+    "speed": 75,
     "locomotor": "foot",
     "shares_cell": true,
     "crushes": [
@@ -3032,33 +3969,66 @@
           "DetonateAttack",
           "Disguise"
         ],
-        "requires_condition": "!parachute"
-      },
-      {
-        "id": "Targetable@airborne",
-        "types": [
-          "Air"
-        ],
-        "requires_condition": "parachute"
+        "requires_condition": null
       }
     ],
     "crushable": false,
     "armaments": [
       {
-        "id": "Armament",
-        "weapon": "SuperMindControl",
-        "requires_condition": null,
+        "id": "Armament@primary",
+        "weapon": "AKM",
+        "requires_condition": "!rank-elite",
         "name": "primary"
+      },
+      {
+        "id": "Armament@elite",
+        "weapon": "AKME",
+        "requires_condition": "rank-elite",
+        "name": "primary"
+      },
+      {
+        "id": "Armament@secondary",
+        "weapon": "Flare",
+        "requires_condition": "!rank-elite",
+        "name": "secondary"
+      },
+      {
+        "id": "Armament@secondary-elite",
+        "weapon": "FlareE",
+        "requires_condition": "rank-elite",
+        "name": "secondary-elite"
       }
     ],
     "auto_target_priorities": [
       {
         "id": "AutoTargetPriority@DEFAULT",
         "valid_targets": [
-          "MindControl"
+          "Infantry",
+          "Vehicle",
+          "Water",
+          "Underwater",
+          "Defense"
         ],
-        "invalid_targets": [],
-        "requires_condition": "!controlling"
+        "invalid_targets": [
+          "NoAutoTarget",
+          "WaterStructure"
+        ],
+        "requires_condition": "!stance-attackanything && !assault-move"
+      },
+      {
+        "id": "AutoTargetPriority@ATTACKANYTHING",
+        "valid_targets": [
+          "Infantry",
+          "Vehicle",
+          "Water",
+          "Underwater",
+          "Structure",
+          "Defense"
+        ],
+        "invalid_targets": [
+          "NoAutoTarget"
+        ],
+        "requires_condition": "stance-attackanything || assault-move"
       }
     ],
     "gains_experience": {
@@ -3070,7 +4040,8 @@
     },
     "spawn_only": false,
     "mind_controllable": false,
-    "mind_controller": true,
+    "mind_controller": false,
+    "mind_control_capacity": 0,
     "carrier_parent": null,
     "carrier_child": false,
     "ammo_max": null,
@@ -3080,7 +4051,9 @@
     "takeoff_ticks": 0,
     "blocks_projectiles": false,
     "blocks_projectiles_height": 1024,
-    "blocks_projectiles_relationships": []
+    "blocks_projectiles_relationships": [],
+    "demolition": false,
+    "demolition_delay": 45
   },
   "sapc": {
     "id": "sapc",
@@ -3090,7 +4063,7 @@
     "cost": 900,
     "hp": 300,
     "armor": "Heavy",
-    "speed": 90,
+    "speed": 75,
     "locomotor": "lcraft",
     "shares_cell": false,
     "crushes": [
@@ -3099,28 +4072,29 @@
     "target_types": [
       "Ground",
       "MindControl",
-      "Water"
+      "Repair",
+      "SuperMindControl"
     ],
     "targetable_layers": [
       {
         "id": "Targetable",
         "types": [
           "Ground",
-          "Water"
-        ],
-        "requires_condition": null
-      },
-      {
-        "id": "Targetable@REPAIR",
-        "types": [
           "Repair"
         ],
-        "requires_condition": "damaged"
+        "requires_condition": null
       },
       {
         "id": "Targetable@MC",
         "types": [
           "MindControl"
+        ],
+        "requires_condition": "!controlled"
+      },
+      {
+        "id": "Targetable@SMC",
+        "types": [
+          "SuperMindControl"
         ],
         "requires_condition": "!controlled"
       }
@@ -3138,6 +4112,7 @@
     "spawn_only": false,
     "mind_controllable": true,
     "mind_controller": false,
+    "mind_control_capacity": 0,
     "carrier_parent": null,
     "carrier_child": false,
     "ammo_max": null,
@@ -3147,7 +4122,9 @@
     "takeoff_ticks": 0,
     "blocks_projectiles": false,
     "blocks_projectiles_height": 1024,
-    "blocks_projectiles_relationships": []
+    "blocks_projectiles_relationships": [],
+    "demolition": false,
+    "demolition_delay": 45
   },
   "sub": {
     "id": "sub",
@@ -3157,7 +4134,7 @@
     "cost": 1000,
     "hp": 600,
     "armor": "Heavy",
-    "speed": 60,
+    "speed": 71,
     "locomotor": "naval",
     "shares_cell": false,
     "crushes": [
@@ -3165,9 +4142,8 @@
     ],
     "target_types": [
       "Ground",
-      "MindControl",
       "Repair",
-      "Submergeable",
+      "Underwater",
       "Water"
     ],
     "targetable_layers": [
@@ -3176,30 +4152,7 @@
         "types": [
           "Ground",
           "Water",
-          "Repair",
-          "Submergeable"
-        ],
-        "requires_condition": "!underwater"
-      },
-      {
-        "id": "Targetable@REPAIR",
-        "types": [
           "Repair"
-        ],
-        "requires_condition": "damaged"
-      },
-      {
-        "id": "Targetable@MC",
-        "types": [
-          "MindControl"
-        ],
-        "requires_condition": "!controlled"
-      },
-      {
-        "id": "Targetable@UNDERWATER",
-        "types": [
-          "Underwater",
-          "Submergeable"
         ],
         "requires_condition": "underwater"
       },
@@ -3269,6 +4222,7 @@
     "spawn_only": false,
     "mind_controllable": true,
     "mind_controller": false,
+    "mind_control_capacity": 0,
     "carrier_parent": null,
     "carrier_child": false,
     "ammo_max": null,
@@ -3278,7 +4232,9 @@
     "takeoff_ticks": 0,
     "blocks_projectiles": false,
     "blocks_projectiles_height": 1024,
-    "blocks_projectiles_relationships": []
+    "blocks_projectiles_relationships": [],
+    "demolition": false,
+    "demolition_delay": 45
   },
   "hyd": {
     "id": "hyd",
@@ -3288,7 +4244,7 @@
     "cost": 900,
     "hp": 300,
     "armor": "Heavy",
-    "speed": 120,
+    "speed": 75,
     "locomotor": "naval",
     "shares_cell": false,
     "crushes": [
@@ -3297,6 +4253,8 @@
     "target_types": [
       "Ground",
       "MindControl",
+      "Repair",
+      "SuperMindControl",
       "Water"
     ],
     "targetable_layers": [
@@ -3304,21 +4262,21 @@
         "id": "Targetable",
         "types": [
           "Ground",
-          "Water"
-        ],
-        "requires_condition": null
-      },
-      {
-        "id": "Targetable@REPAIR",
-        "types": [
           "Repair"
         ],
-        "requires_condition": "damaged"
+        "requires_condition": null
       },
       {
         "id": "Targetable@MC",
         "types": [
           "MindControl"
+        ],
+        "requires_condition": "!controlled"
+      },
+      {
+        "id": "Targetable@SMC",
+        "types": [
+          "SuperMindControl"
         ],
         "requires_condition": "!controlled"
       }
@@ -3382,6 +4340,7 @@
     "spawn_only": false,
     "mind_controllable": true,
     "mind_controller": false,
+    "mind_control_capacity": 0,
     "carrier_parent": null,
     "carrier_child": false,
     "ammo_max": null,
@@ -3391,17 +4350,19 @@
     "takeoff_ticks": 0,
     "blocks_projectiles": false,
     "blocks_projectiles_height": 1024,
-    "blocks_projectiles_relationships": []
+    "blocks_projectiles_relationships": [],
+    "demolition": false,
+    "demolition_delay": 45
   },
   "sqd": {
     "id": "sqd",
     "name": "Giant Squid",
     "description": "Ocean creature\\npunches enemies in close combat.\\n  Strong vs Ships",
     "categories": "",
-    "cost": 1000,
+    "cost": 500,
     "hp": 200,
     "armor": "Light",
-    "speed": 120,
+    "speed": 90,
     "locomotor": "naval",
     "shares_cell": false,
     "crushes": [
@@ -3409,7 +4370,7 @@
     ],
     "target_types": [
       "Ground",
-      "Submergeable",
+      "Underwater",
       "Water"
     ],
     "targetable_layers": [
@@ -3417,16 +4378,14 @@
         "id": "Targetable",
         "types": [
           "Ground",
-          "Water",
-          "Submergeable"
+          "Water"
         ],
-        "requires_condition": "!underwater"
+        "requires_condition": "underwater"
       },
       {
         "id": "Targetable@underwater",
         "types": [
-          "Underwater",
-          "Submergeable"
+          "Underwater"
         ],
         "requires_condition": "underwater"
       }
@@ -3442,34 +4401,16 @@
     ],
     "auto_target_priorities": [
       {
-        "id": "AutoTargetPriority@DEFAULT",
+        "id": "AutoTarget@fallback",
         "valid_targets": [
           "Infantry",
           "Vehicle",
-          "Water",
-          "Underwater",
-          "Defense"
-        ],
-        "invalid_targets": [
-          "NoAutoTarget",
-          "WaterStructure"
-        ],
-        "requires_condition": "!stance-attackanything && !assault-move"
-      },
-      {
-        "id": "AutoTargetPriority@ATTACKANYTHING",
-        "valid_targets": [
-          "Infantry",
-          "Vehicle",
-          "Water",
-          "Underwater",
-          "Structure",
-          "Defense"
+          "Air"
         ],
         "invalid_targets": [
           "NoAutoTarget"
         ],
-        "requires_condition": "stance-attackanything || assault-move"
+        "requires_condition": null
       }
     ],
     "gains_experience": {
@@ -3482,6 +4423,7 @@
     "spawn_only": false,
     "mind_controllable": false,
     "mind_controller": false,
+    "mind_control_capacity": 0,
     "carrier_parent": null,
     "carrier_child": false,
     "ammo_max": null,
@@ -3491,7 +4433,108 @@
     "takeoff_ticks": 0,
     "blocks_projectiles": false,
     "blocks_projectiles_height": 1024,
-    "blocks_projectiles_relationships": []
+    "blocks_projectiles_relationships": [],
+    "demolition": false,
+    "demolition_delay": 45
+  },
+  "dred": {
+    "id": "dred",
+    "name": "Dreadnought",
+    "description": "Soviet dreadnought ship.\\n  Strong vs Tanks, Structures, Infantry\\n  Weak vs Aircraft",
+    "categories": "Naval",
+    "cost": 2000,
+    "hp": 800,
+    "armor": "Heavy",
+    "speed": 60,
+    "locomotor": "naval",
+    "shares_cell": false,
+    "crushes": [
+      "crate"
+    ],
+    "target_types": [
+      "Ground",
+      "MindControl",
+      "Repair",
+      "SuperMindControl",
+      "Water"
+    ],
+    "targetable_layers": [
+      {
+        "id": "Targetable",
+        "types": [
+          "Ground",
+          "Repair"
+        ],
+        "requires_condition": null
+      },
+      {
+        "id": "Targetable@MC",
+        "types": [
+          "MindControl"
+        ],
+        "requires_condition": "!controlled"
+      },
+      {
+        "id": "Targetable@SMC",
+        "types": [
+          "SuperMindControl"
+        ],
+        "requires_condition": "!controlled"
+      }
+    ],
+    "crushable": false,
+    "armaments": [
+      {
+        "id": "Armament",
+        "weapon": "DredLauncher",
+        "requires_condition": null,
+        "name": "primary"
+      }
+    ],
+    "auto_target_priorities": [
+      {
+        "id": "AutoTarget@fallback",
+        "valid_targets": [
+          "Infantry",
+          "Vehicle",
+          "Air"
+        ],
+        "invalid_targets": [
+          "NoAutoTarget"
+        ],
+        "requires_condition": null
+      }
+    ],
+    "gains_experience": {
+      "conditions": {
+        "500": "rank-veteran",
+        "1000": "rank-elite"
+      },
+      "experience_modifier": -1
+    },
+    "spawn_only": false,
+    "mind_controllable": true,
+    "mind_controller": false,
+    "mind_control_capacity": 0,
+    "carrier_parent": {
+      "actors": [
+        "dmisl",
+        "dmisl"
+      ],
+      "respawn_ticks": 300,
+      "spawn_all_at_once": true
+    },
+    "carrier_child": false,
+    "ammo_max": null,
+    "turret_turn_speed": 255,
+    "facing_tolerance": 512,
+    "rearmable_actors": [],
+    "takeoff_ticks": 0,
+    "blocks_projectiles": false,
+    "blocks_projectiles_height": 1024,
+    "blocks_projectiles_relationships": [],
+    "demolition": false,
+    "demolition_delay": 45
   },
   "smcv": {
     "id": "smcv",
@@ -3501,48 +4544,50 @@
     "cost": 3000,
     "hp": 1000,
     "armor": "Heavy",
-    "speed": 60,
-    "locomotor": "heavytracked",
+    "speed": 85,
+    "locomotor": "wheeled",
     "shares_cell": false,
     "crushes": [
-      "wall",
-      "crate",
-      "infantry"
+      "crate"
     ],
     "target_types": [
       "DetonateAttack",
       "Ground",
       "MindControl",
+      "Repair",
+      "SuperMindControl",
       "Vehicle"
     ],
     "targetable_layers": [
+      {
+        "id": "Targetable@AIRBORNE",
+        "types": [
+          "Air",
+          "Tractable"
+        ],
+        "requires_condition": "airborne"
+      },
       {
         "id": "Targetable",
         "types": [
           "Ground",
           "Vehicle",
+          "Repair",
           "DetonateAttack"
         ],
-        "requires_condition": "!parachute"
-      },
-      {
-        "id": "Targetable@airborne",
-        "types": [
-          "Air"
-        ],
-        "requires_condition": "parachute"
-      },
-      {
-        "id": "Targetable@REPAIR",
-        "types": [
-          "Repair"
-        ],
-        "requires_condition": "damaged"
+        "requires_condition": null
       },
       {
         "id": "Targetable@MC",
         "types": [
           "MindControl"
+        ],
+        "requires_condition": "!controlled"
+      },
+      {
+        "id": "Targetable@SMC",
+        "types": [
+          "SuperMindControl"
         ],
         "requires_condition": "!controlled"
       }
@@ -3560,6 +4605,7 @@
     "spawn_only": false,
     "mind_controllable": true,
     "mind_controller": false,
+    "mind_control_capacity": 0,
     "carrier_parent": null,
     "carrier_child": false,
     "ammo_max": null,
@@ -3569,7 +4615,9 @@
     "takeoff_ticks": 0,
     "blocks_projectiles": false,
     "blocks_projectiles_height": 1024,
-    "blocks_projectiles_relationships": []
+    "blocks_projectiles_relationships": [],
+    "demolition": false,
+    "demolition_delay": 45
   },
   "harv": {
     "id": "harv",
@@ -3579,42 +4627,37 @@
     "cost": 1400,
     "hp": 1000,
     "armor": "Medium",
-    "speed": 60,
-    "locomotor": "tracked",
+    "speed": 85,
+    "locomotor": "wheeled",
     "shares_cell": false,
     "crushes": [
-      "crate",
-      "infantry"
+      "crate"
     ],
     "target_types": [
       "DetonateAttack",
       "Ground",
       "ImmuneToRadiation",
+      "Repair",
       "Vehicle"
     ],
     "targetable_layers": [
+      {
+        "id": "Targetable@AIRBORNE",
+        "types": [
+          "Air",
+          "Tractable"
+        ],
+        "requires_condition": "airborne"
+      },
       {
         "id": "Targetable",
         "types": [
           "Ground",
           "Vehicle",
+          "Repair",
           "DetonateAttack"
         ],
-        "requires_condition": "!parachute"
-      },
-      {
-        "id": "Targetable@airborne",
-        "types": [
-          "Air"
-        ],
-        "requires_condition": "parachute"
-      },
-      {
-        "id": "Targetable@REPAIR",
-        "types": [
-          "Repair"
-        ],
-        "requires_condition": "damaged"
+        "requires_condition": null
       },
       {
         "id": "Targetable@RadiationImmunity",
@@ -3681,16 +4724,19 @@
     "spawn_only": false,
     "mind_controllable": false,
     "mind_controller": false,
+    "mind_control_capacity": 0,
     "carrier_parent": null,
     "carrier_child": false,
     "ammo_max": null,
-    "turret_turn_speed": 40,
+    "turret_turn_speed": 10,
     "facing_tolerance": 512,
     "rearmable_actors": [],
     "takeoff_ticks": 0,
     "blocks_projectiles": false,
     "blocks_projectiles_height": 1024,
-    "blocks_projectiles_relationships": []
+    "blocks_projectiles_relationships": [],
+    "demolition": false,
+    "demolition_delay": 45
   },
   "dron": {
     "id": "dron",
@@ -3700,7 +4746,7 @@
     "cost": 500,
     "hp": 100,
     "armor": "Drone",
-    "speed": 150,
+    "speed": 105,
     "locomotor": "wheeled",
     "shares_cell": false,
     "crushes": [
@@ -3710,31 +4756,27 @@
       "DetonateAttack",
       "Ground",
       "ImmuneToRadiation",
+      "Repair",
       "Vehicle"
     ],
     "targetable_layers": [
+      {
+        "id": "Targetable@AIRBORNE",
+        "types": [
+          "Air",
+          "Tractable"
+        ],
+        "requires_condition": "airborne"
+      },
       {
         "id": "Targetable",
         "types": [
           "Ground",
           "Vehicle",
+          "Repair",
           "DetonateAttack"
         ],
-        "requires_condition": "!parachute"
-      },
-      {
-        "id": "Targetable@airborne",
-        "types": [
-          "Air"
-        ],
-        "requires_condition": "parachute"
-      },
-      {
-        "id": "Targetable@REPAIR",
-        "types": [
-          "Repair"
-        ],
-        "requires_condition": "damaged"
+        "requires_condition": null
       },
       {
         "id": "Targetable@RadiationImmunity",
@@ -3756,9 +4798,7 @@
     "auto_target_priorities": [
       {
         "id": "AutoTargetPriority@DEFAULT",
-        "valid_targets": [
-          "Infantry"
-        ],
+        "valid_targets": [],
         "invalid_targets": [],
         "requires_condition": null
       }
@@ -3773,6 +4813,7 @@
     "spawn_only": false,
     "mind_controllable": false,
     "mind_controller": false,
+    "mind_control_capacity": 0,
     "carrier_parent": null,
     "carrier_child": false,
     "ammo_max": null,
@@ -3782,7 +4823,9 @@
     "takeoff_ticks": 0,
     "blocks_projectiles": false,
     "blocks_projectiles_height": 1024,
-    "blocks_projectiles_relationships": []
+    "blocks_projectiles_relationships": [],
+    "demolition": false,
+    "demolition_delay": 45
   },
   "htk": {
     "id": "htk",
@@ -3793,46 +4836,49 @@
     "hp": 180,
     "armor": "Heavy",
     "speed": 120,
-    "locomotor": "tracked",
+    "locomotor": "wheeled",
     "shares_cell": false,
     "crushes": [
-      "crate",
-      "infantry"
+      "crate"
     ],
     "target_types": [
       "DetonateAttack",
       "Ground",
       "MindControl",
+      "Repair",
+      "SuperMindControl",
       "Vehicle"
     ],
     "targetable_layers": [
+      {
+        "id": "Targetable@AIRBORNE",
+        "types": [
+          "Air",
+          "Tractable"
+        ],
+        "requires_condition": "airborne"
+      },
       {
         "id": "Targetable",
         "types": [
           "Ground",
           "Vehicle",
+          "Repair",
           "DetonateAttack"
         ],
-        "requires_condition": "!parachute"
-      },
-      {
-        "id": "Targetable@airborne",
-        "types": [
-          "Air"
-        ],
-        "requires_condition": "parachute"
-      },
-      {
-        "id": "Targetable@REPAIR",
-        "types": [
-          "Repair"
-        ],
-        "requires_condition": "damaged"
+        "requires_condition": null
       },
       {
         "id": "Targetable@MC",
         "types": [
           "MindControl"
+        ],
+        "requires_condition": "!controlled"
+      },
+      {
+        "id": "Targetable@SMC",
+        "types": [
+          "SuperMindControl"
         ],
         "requires_condition": "!controlled"
       }
@@ -3896,16 +4942,19 @@
     "spawn_only": false,
     "mind_controllable": true,
     "mind_controller": false,
+    "mind_control_capacity": 0,
     "carrier_parent": null,
     "carrier_child": false,
     "ammo_max": null,
-    "turret_turn_speed": 60,
+    "turret_turn_speed": 15,
     "facing_tolerance": 512,
     "rearmable_actors": [],
     "takeoff_ticks": 0,
     "blocks_projectiles": false,
     "blocks_projectiles_height": 1024,
-    "blocks_projectiles_relationships": []
+    "blocks_projectiles_relationships": [],
+    "demolition": false,
+    "demolition_delay": 45
   },
   "htnk": {
     "id": "htnk",
@@ -3915,48 +4964,50 @@
     "cost": 900,
     "hp": 400,
     "armor": "Heavy",
-    "speed": 90,
-    "locomotor": "heavytracked",
+    "speed": 75,
+    "locomotor": "wheeled",
     "shares_cell": false,
     "crushes": [
-      "wall",
-      "crate",
-      "infantry"
+      "crate"
     ],
     "target_types": [
       "DetonateAttack",
       "Ground",
       "MindControl",
+      "Repair",
+      "SuperMindControl",
       "Vehicle"
     ],
     "targetable_layers": [
+      {
+        "id": "Targetable@AIRBORNE",
+        "types": [
+          "Air",
+          "Tractable"
+        ],
+        "requires_condition": "airborne"
+      },
       {
         "id": "Targetable",
         "types": [
           "Ground",
           "Vehicle",
+          "Repair",
           "DetonateAttack"
         ],
-        "requires_condition": "!parachute"
-      },
-      {
-        "id": "Targetable@airborne",
-        "types": [
-          "Air"
-        ],
-        "requires_condition": "parachute"
-      },
-      {
-        "id": "Targetable@REPAIR",
-        "types": [
-          "Repair"
-        ],
-        "requires_condition": "damaged"
+        "requires_condition": null
       },
       {
         "id": "Targetable@MC",
         "types": [
           "MindControl"
+        ],
+        "requires_condition": "!controlled"
+      },
+      {
+        "id": "Targetable@SMC",
+        "types": [
+          "SuperMindControl"
         ],
         "requires_condition": "!controlled"
       }
@@ -4018,16 +5069,19 @@
     "spawn_only": false,
     "mind_controllable": true,
     "mind_controller": false,
+    "mind_control_capacity": 0,
     "carrier_parent": null,
     "carrier_child": false,
     "ammo_max": null,
-    "turret_turn_speed": 20,
+    "turret_turn_speed": 5,
     "facing_tolerance": 512,
     "rearmable_actors": [],
     "takeoff_ticks": 0,
     "blocks_projectiles": false,
     "blocks_projectiles_height": 1024,
-    "blocks_projectiles_relationships": []
+    "blocks_projectiles_relationships": [],
+    "demolition": false,
+    "demolition_delay": 45
   },
   "apoc": {
     "id": "apoc",
@@ -4037,50 +5091,36 @@
     "cost": 1750,
     "hp": 800,
     "armor": "Heavy",
-    "speed": 60,
-    "locomotor": "heavytracked",
+    "speed": 45,
+    "locomotor": "wheeled",
     "shares_cell": false,
     "crushes": [
-      "wall",
-      "crate",
-      "infantry"
+      "crate"
     ],
     "target_types": [
       "DetonateAttack",
       "Ground",
-      "MindControl",
+      "Repair",
       "Vehicle"
     ],
     "targetable_layers": [
+      {
+        "id": "Targetable@AIRBORNE",
+        "types": [
+          "Air",
+          "Tractable"
+        ],
+        "requires_condition": "airborne"
+      },
       {
         "id": "Targetable",
         "types": [
           "Ground",
           "Vehicle",
+          "Repair",
           "DetonateAttack"
         ],
-        "requires_condition": "!parachute"
-      },
-      {
-        "id": "Targetable@airborne",
-        "types": [
-          "Air"
-        ],
-        "requires_condition": "parachute"
-      },
-      {
-        "id": "Targetable@REPAIR",
-        "types": [
-          "Repair"
-        ],
-        "requires_condition": "damaged"
-      },
-      {
-        "id": "Targetable@MC",
-        "types": [
-          "MindControl"
-        ],
-        "requires_condition": "!controlled"
+        "requires_condition": null
       }
     ],
     "crushable": false,
@@ -4146,18 +5186,21 @@
       "experience_modifier": -1
     },
     "spawn_only": false,
-    "mind_controllable": true,
+    "mind_controllable": false,
     "mind_controller": false,
+    "mind_control_capacity": 0,
     "carrier_parent": null,
     "carrier_child": false,
     "ammo_max": null,
-    "turret_turn_speed": 20,
+    "turret_turn_speed": 5,
     "facing_tolerance": 512,
     "rearmable_actors": [],
     "takeoff_ticks": 0,
     "blocks_projectiles": false,
     "blocks_projectiles_height": 1024,
-    "blocks_projectiles_relationships": []
+    "blocks_projectiles_relationships": [],
+    "demolition": false,
+    "demolition_delay": 45
   },
   "ttnk": {
     "id": "ttnk",
@@ -4167,48 +5210,50 @@
     "cost": 1200,
     "hp": 300,
     "armor": "Heavy",
-    "speed": 90,
-    "locomotor": "heavytracked",
+    "speed": 75,
+    "locomotor": "wheeled",
     "shares_cell": false,
     "crushes": [
-      "wall",
-      "crate",
-      "infantry"
+      "crate"
     ],
     "target_types": [
       "DetonateAttack",
       "Ground",
       "MindControl",
+      "Repair",
+      "SuperMindControl",
       "Vehicle"
     ],
     "targetable_layers": [
+      {
+        "id": "Targetable@AIRBORNE",
+        "types": [
+          "Air",
+          "Tractable"
+        ],
+        "requires_condition": "airborne"
+      },
       {
         "id": "Targetable",
         "types": [
           "Ground",
           "Vehicle",
+          "Repair",
           "DetonateAttack"
         ],
-        "requires_condition": "!parachute"
-      },
-      {
-        "id": "Targetable@airborne",
-        "types": [
-          "Air"
-        ],
-        "requires_condition": "parachute"
-      },
-      {
-        "id": "Targetable@REPAIR",
-        "types": [
-          "Repair"
-        ],
-        "requires_condition": "damaged"
+        "requires_condition": null
       },
       {
         "id": "Targetable@MC",
         "types": [
           "MindControl"
+        ],
+        "requires_condition": "!controlled"
+      },
+      {
+        "id": "Targetable@SMC",
+        "types": [
+          "SuperMindControl"
         ],
         "requires_condition": "!controlled"
       }
@@ -4270,62 +5315,60 @@
     "spawn_only": false,
     "mind_controllable": true,
     "mind_controller": false,
+    "mind_control_capacity": 0,
     "carrier_parent": null,
     "carrier_child": false,
     "ammo_max": null,
-    "turret_turn_speed": 20,
+    "turret_turn_speed": 5,
     "facing_tolerance": 512,
     "rearmable_actors": [],
     "takeoff_ticks": 0,
     "blocks_projectiles": false,
     "blocks_projectiles_height": 1024,
-    "blocks_projectiles_relationships": []
+    "blocks_projectiles_relationships": [],
+    "demolition": false,
+    "demolition_delay": 45
   },
   "dtruck": {
     "id": "dtruck",
     "name": "Demolition Truck",
     "description": "Demolition Truck, actively armed with nuclear explosives.",
     "categories": "Vehicle",
-    "cost": 1500,
+    "cost": 3000,
     "hp": 150,
     "armor": "Light",
-    "speed": 75,
-    "locomotor": "heavytracked",
+    "speed": 85,
+    "locomotor": "wheeled",
     "shares_cell": false,
     "crushes": [
-      "wall",
-      "crate",
-      "infantry"
+      "crate"
     ],
     "target_types": [
       "DetonateAttack",
       "Ground",
       "MindControl",
+      "Repair",
+      "SuperMindControl",
       "Vehicle"
     ],
     "targetable_layers": [
+      {
+        "id": "Targetable@AIRBORNE",
+        "types": [
+          "Air",
+          "Tractable"
+        ],
+        "requires_condition": "airborne"
+      },
       {
         "id": "Targetable",
         "types": [
           "Ground",
           "Vehicle",
+          "Repair",
           "DetonateAttack"
         ],
-        "requires_condition": "!parachute"
-      },
-      {
-        "id": "Targetable@airborne",
-        "types": [
-          "Air"
-        ],
-        "requires_condition": "parachute"
-      },
-      {
-        "id": "Targetable@REPAIR",
-        "types": [
-          "Repair"
-        ],
-        "requires_condition": "damaged"
+        "requires_condition": null
       },
       {
         "id": "Targetable@MC",
@@ -4333,14 +5376,657 @@
           "MindControl"
         ],
         "requires_condition": "!controlled"
+      },
+      {
+        "id": "Targetable@SMC",
+        "types": [
+          "SuperMindControl"
+        ],
+        "requires_condition": "!controlled"
+      }
+    ],
+    "crushable": false,
+    "armaments": [],
+    "auto_target_priorities": [],
+    "gains_experience": {
+      "conditions": {
+        "500": "rank-veteran",
+        "1000": "rank-elite"
+      },
+      "experience_modifier": -1
+    },
+    "spawn_only": false,
+    "mind_controllable": true,
+    "mind_controller": false,
+    "mind_control_capacity": 0,
+    "carrier_parent": null,
+    "carrier_child": false,
+    "ammo_max": null,
+    "turret_turn_speed": null,
+    "facing_tolerance": null,
+    "rearmable_actors": [],
+    "takeoff_ticks": 0,
+    "blocks_projectiles": false,
+    "blocks_projectiles_height": 1024,
+    "blocks_projectiles_relationships": [],
+    "demolition": false,
+    "demolition_delay": 45
+  },
+  "v3": {
+    "id": "v3",
+    "name": "V3 Launcher",
+    "description": "Soviet V3 Rocket Launcher\\n  Strong vs Building, Infantry\\n  Weak vs Vehicle, Aircraft",
+    "categories": "Vehicle",
+    "cost": 800,
+    "hp": 150,
+    "armor": "Light",
+    "speed": 70,
+    "locomotor": "wheeled",
+    "shares_cell": false,
+    "crushes": [
+      "crate"
+    ],
+    "target_types": [
+      "DetonateAttack",
+      "Ground",
+      "MindControl",
+      "Repair",
+      "SuperMindControl",
+      "Vehicle"
+    ],
+    "targetable_layers": [
+      {
+        "id": "Targetable@AIRBORNE",
+        "types": [
+          "Air",
+          "Tractable"
+        ],
+        "requires_condition": "airborne"
+      },
+      {
+        "id": "Targetable",
+        "types": [
+          "Ground",
+          "Vehicle",
+          "Repair",
+          "DetonateAttack"
+        ],
+        "requires_condition": null
+      },
+      {
+        "id": "Targetable@MC",
+        "types": [
+          "MindControl"
+        ],
+        "requires_condition": "!controlled"
+      },
+      {
+        "id": "Targetable@SMC",
+        "types": [
+          "SuperMindControl"
+        ],
+        "requires_condition": "!controlled"
       }
     ],
     "crushable": false,
     "armaments": [
       {
-        "id": "Armament@PRIMARY",
-        "weapon": "DemoTruckTargeting",
-        "requires_condition": null,
+        "id": "Armament@primary",
+        "weapon": "V3Launcher",
+        "requires_condition": "!rank-elite",
+        "name": "primary"
+      },
+      {
+        "id": "Armament@elite",
+        "weapon": "V3Launcher",
+        "requires_condition": "rank-elite",
+        "name": "primary"
+      }
+    ],
+    "auto_target_priorities": [
+      {
+        "id": "AutoTargetPriority@DEFAULT",
+        "valid_targets": [
+          "Infantry",
+          "Vehicle",
+          "Water",
+          "Underwater",
+          "Defense"
+        ],
+        "invalid_targets": [
+          "NoAutoTarget",
+          "WaterStructure"
+        ],
+        "requires_condition": "!stance-attackanything && !assault-move"
+      },
+      {
+        "id": "AutoTargetPriority@ATTACKANYTHING",
+        "valid_targets": [
+          "Infantry",
+          "Vehicle",
+          "Water",
+          "Underwater",
+          "Structure",
+          "Defense"
+        ],
+        "invalid_targets": [
+          "NoAutoTarget"
+        ],
+        "requires_condition": "stance-attackanything || assault-move"
+      }
+    ],
+    "gains_experience": {
+      "conditions": {
+        "500": "rank-veteran",
+        "1000": "rank-elite"
+      },
+      "experience_modifier": -1
+    },
+    "spawn_only": false,
+    "mind_controllable": true,
+    "mind_controller": false,
+    "mind_control_capacity": 0,
+    "carrier_parent": {
+      "actors": [
+        "v3rocket"
+      ],
+      "respawn_ticks": 300,
+      "spawn_all_at_once": true
+    },
+    "carrier_child": false,
+    "ammo_max": null,
+    "turret_turn_speed": 5,
+    "facing_tolerance": 512,
+    "rearmable_actors": [],
+    "takeoff_ticks": 0,
+    "blocks_projectiles": false,
+    "blocks_projectiles_height": 1024,
+    "blocks_projectiles_relationships": [],
+    "demolition": false,
+    "demolition_delay": 45
+  },
+  "init": {
+    "id": "init",
+    "name": "Initiate",
+    "description": "Basic Yuri Infantry.\\n Strong vs Infantry and Vehicle\\n Weak vs aircraft",
+    "categories": "Infantry",
+    "cost": 200,
+    "hp": 100,
+    "armor": "None",
+    "speed": 60,
+    "locomotor": "foot",
+    "shares_cell": true,
+    "crushes": [
+      "crate"
+    ],
+    "target_types": [
+      "DetonateAttack",
+      "Disguise",
+      "Ground",
+      "Infantry",
+      "MindControl",
+      "SuperMindControl"
+    ],
+    "targetable_layers": [
+      {
+        "id": "Targetable",
+        "types": [
+          "Ground",
+          "Infantry",
+          "DetonateAttack",
+          "Disguise"
+        ],
+        "requires_condition": null
+      },
+      {
+        "id": "Targetable@MC",
+        "types": [
+          "MindControl"
+        ],
+        "requires_condition": "!controlled"
+      },
+      {
+        "id": "Targetable@SMC",
+        "types": [
+          "SuperMindControl"
+        ],
+        "requires_condition": "!controlled"
+      }
+    ],
+    "crushable": true,
+    "armaments": [
+      {
+        "id": "Armament@primary",
+        "weapon": "PsychicJab",
+        "requires_condition": "!rank-elite",
+        "name": "primary"
+      },
+      {
+        "id": "Armament@elite",
+        "weapon": "PsychicJabE",
+        "requires_condition": "rank-elite",
+        "name": "primary"
+      }
+    ],
+    "auto_target_priorities": [
+      {
+        "id": "AutoTargetPriority@DEFAULT",
+        "valid_targets": [
+          "Infantry",
+          "Vehicle",
+          "Water",
+          "Underwater",
+          "Defense"
+        ],
+        "invalid_targets": [
+          "NoAutoTarget",
+          "WaterStructure"
+        ],
+        "requires_condition": "!stance-attackanything && !assault-move"
+      },
+      {
+        "id": "AutoTargetPriority@ATTACKANYTHING",
+        "valid_targets": [
+          "Infantry",
+          "Vehicle",
+          "Water",
+          "Underwater",
+          "Structure",
+          "Defense"
+        ],
+        "invalid_targets": [
+          "NoAutoTarget"
+        ],
+        "requires_condition": "stance-attackanything || assault-move"
+      }
+    ],
+    "gains_experience": {
+      "conditions": {
+        "500": "rank-veteran",
+        "1000": "rank-elite"
+      },
+      "experience_modifier": -1
+    },
+    "spawn_only": false,
+    "mind_controllable": true,
+    "mind_controller": false,
+    "mind_control_capacity": 0,
+    "carrier_parent": null,
+    "carrier_child": false,
+    "ammo_max": null,
+    "turret_turn_speed": null,
+    "facing_tolerance": null,
+    "rearmable_actors": [],
+    "takeoff_ticks": 0,
+    "blocks_projectiles": false,
+    "blocks_projectiles_height": 1024,
+    "blocks_projectiles_relationships": [],
+    "demolition": false,
+    "demolition_delay": 45
+  },
+  "yengineer": {
+    "id": "yengineer",
+    "name": "Engineer",
+    "description": "Capture enemy structures.\\n Unarmed",
+    "categories": "Infantry",
+    "cost": 500,
+    "hp": 75,
+    "armor": "None",
+    "speed": 60,
+    "locomotor": "foot",
+    "shares_cell": true,
+    "crushes": [
+      "crate"
+    ],
+    "target_types": [
+      "DetonateAttack",
+      "Disguise",
+      "Ground",
+      "Infantry",
+      "MindControl",
+      "SuperMindControl"
+    ],
+    "targetable_layers": [
+      {
+        "id": "Targetable",
+        "types": [
+          "Ground",
+          "Infantry",
+          "DetonateAttack",
+          "Disguise"
+        ],
+        "requires_condition": null
+      },
+      {
+        "id": "Targetable@MC",
+        "types": [
+          "MindControl"
+        ],
+        "requires_condition": "!controlled"
+      },
+      {
+        "id": "Targetable@SMC",
+        "types": [
+          "SuperMindControl"
+        ],
+        "requires_condition": "!controlled"
+      }
+    ],
+    "crushable": true,
+    "armaments": [],
+    "auto_target_priorities": [],
+    "gains_experience": {
+      "conditions": {
+        "500": "rank-veteran",
+        "1000": "rank-elite"
+      },
+      "experience_modifier": -1
+    },
+    "spawn_only": false,
+    "mind_controllable": true,
+    "mind_controller": false,
+    "mind_control_capacity": 0,
+    "carrier_parent": null,
+    "carrier_child": false,
+    "ammo_max": null,
+    "turret_turn_speed": null,
+    "facing_tolerance": null,
+    "rearmable_actors": [],
+    "takeoff_ticks": 0,
+    "blocks_projectiles": false,
+    "blocks_projectiles_height": 1024,
+    "blocks_projectiles_relationships": [],
+    "demolition": false,
+    "demolition_delay": 45
+  },
+  "brute": {
+    "id": "brute",
+    "name": "Brute",
+    "description": "Powerful soldiers.\\n Strong vs Infantry and Vehicle\\n Weak vs aircraft",
+    "categories": "Infantry",
+    "cost": 500,
+    "hp": 200,
+    "armor": "None",
+    "speed": 90,
+    "locomotor": "foot",
+    "shares_cell": true,
+    "crushes": [
+      "crate"
+    ],
+    "target_types": [
+      "DetonateAttack",
+      "Disguise",
+      "Ground",
+      "Infantry",
+      "MindControl",
+      "SuperMindControl"
+    ],
+    "targetable_layers": [
+      {
+        "id": "Targetable",
+        "types": [
+          "Ground",
+          "Infantry",
+          "DetonateAttack",
+          "Disguise"
+        ],
+        "requires_condition": null
+      },
+      {
+        "id": "Targetable@MC",
+        "types": [
+          "MindControl"
+        ],
+        "requires_condition": "!controlled"
+      },
+      {
+        "id": "Targetable@SMC",
+        "types": [
+          "SuperMindControl"
+        ],
+        "requires_condition": "!controlled"
+      }
+    ],
+    "crushable": false,
+    "armaments": [
+      {
+        "id": "Armament@primary",
+        "weapon": "Punch",
+        "requires_condition": "!rank-elite",
+        "name": "primary"
+      },
+      {
+        "id": "Armament@elite",
+        "weapon": "PunchE",
+        "requires_condition": "rank-elite",
+        "name": "primary"
+      },
+      {
+        "id": "Armament@second",
+        "weapon": "Smash",
+        "requires_condition": "!rank-elite",
+        "name": "primary"
+      },
+      {
+        "id": "Armament@second-elite",
+        "weapon": "SmashE",
+        "requires_condition": "rank-elite",
+        "name": "primary"
+      }
+    ],
+    "auto_target_priorities": [
+      {
+        "id": "AutoTargetPriority@DEFAULT",
+        "valid_targets": [
+          "Infantry",
+          "Vehicle",
+          "Water",
+          "Underwater",
+          "Defense"
+        ],
+        "invalid_targets": [
+          "NoAutoTarget",
+          "WaterStructure"
+        ],
+        "requires_condition": "!stance-attackanything && !assault-move"
+      },
+      {
+        "id": "AutoTargetPriority@ATTACKANYTHING",
+        "valid_targets": [
+          "Infantry",
+          "Vehicle",
+          "Water",
+          "Underwater",
+          "Structure",
+          "Defense"
+        ],
+        "invalid_targets": [
+          "NoAutoTarget"
+        ],
+        "requires_condition": "stance-attackanything || assault-move"
+      }
+    ],
+    "gains_experience": {
+      "conditions": {
+        "500": "rank-veteran",
+        "1000": "rank-elite"
+      },
+      "experience_modifier": -1
+    },
+    "spawn_only": false,
+    "mind_controllable": true,
+    "mind_controller": false,
+    "mind_control_capacity": 0,
+    "carrier_parent": null,
+    "carrier_child": false,
+    "ammo_max": null,
+    "turret_turn_speed": null,
+    "facing_tolerance": null,
+    "rearmable_actors": [],
+    "takeoff_ticks": 0,
+    "blocks_projectiles": false,
+    "blocks_projectiles_height": 1024,
+    "blocks_projectiles_relationships": [],
+    "demolition": false,
+    "demolition_delay": 45
+  },
+  "virus": {
+    "id": "virus",
+    "name": "Virus",
+    "description": "Virus sniper.\\n Strong vs Infantry\\n Weak vs Vehicle and Aircraft",
+    "categories": "Infantry",
+    "cost": 700,
+    "hp": 100,
+    "armor": "None",
+    "speed": 60,
+    "locomotor": "foot",
+    "shares_cell": true,
+    "crushes": [
+      "crate"
+    ],
+    "target_types": [
+      "DetonateAttack",
+      "Disguise",
+      "Ground",
+      "Infantry",
+      "MindControl",
+      "SuperMindControl"
+    ],
+    "targetable_layers": [
+      {
+        "id": "Targetable",
+        "types": [
+          "Ground",
+          "Infantry",
+          "DetonateAttack",
+          "Disguise"
+        ],
+        "requires_condition": null
+      },
+      {
+        "id": "Targetable@MC",
+        "types": [
+          "MindControl"
+        ],
+        "requires_condition": "!controlled"
+      },
+      {
+        "id": "Targetable@SMC",
+        "types": [
+          "SuperMindControl"
+        ],
+        "requires_condition": "!controlled"
+      }
+    ],
+    "crushable": true,
+    "armaments": [
+      {
+        "id": "Armament@primary",
+        "weapon": "Virusgun",
+        "requires_condition": "!rank-elite",
+        "name": "primary"
+      },
+      {
+        "id": "Armament@elite",
+        "weapon": "VirusgunE",
+        "requires_condition": "rank-elite",
+        "name": "primary"
+      }
+    ],
+    "auto_target_priorities": [
+      {
+        "id": "AutoTargetPriority@DEFAULT",
+        "valid_targets": [
+          "Infantry",
+          "Vehicle",
+          "Water",
+          "Underwater",
+          "Defense"
+        ],
+        "invalid_targets": [
+          "NoAutoTarget",
+          "WaterStructure"
+        ],
+        "requires_condition": "!stance-attackanything && !assault-move"
+      },
+      {
+        "id": "AutoTargetPriority@ATTACKANYTHING",
+        "valid_targets": [
+          "Infantry",
+          "Vehicle",
+          "Water",
+          "Underwater",
+          "Structure",
+          "Defense"
+        ],
+        "invalid_targets": [
+          "NoAutoTarget"
+        ],
+        "requires_condition": "stance-attackanything || assault-move"
+      }
+    ],
+    "gains_experience": {
+      "conditions": {
+        "500": "rank-veteran",
+        "1000": "rank-elite"
+      },
+      "experience_modifier": -1
+    },
+    "spawn_only": false,
+    "mind_controllable": true,
+    "mind_controller": false,
+    "mind_control_capacity": 0,
+    "carrier_parent": null,
+    "carrier_child": false,
+    "ammo_max": null,
+    "turret_turn_speed": null,
+    "facing_tolerance": null,
+    "rearmable_actors": [],
+    "takeoff_ticks": 0,
+    "blocks_projectiles": false,
+    "blocks_projectiles_height": 1024,
+    "blocks_projectiles_relationships": [],
+    "demolition": false,
+    "demolition_delay": 45
+  },
+  "slav": {
+    "id": "slav",
+    "name": "Slave",
+    "description": "Slave Worker",
+    "categories": "Infantry",
+    "cost": 700,
+    "hp": 100,
+    "armor": "None",
+    "speed": 45,
+    "locomotor": "foot",
+    "shares_cell": true,
+    "crushes": [
+      "crate"
+    ],
+    "target_types": [
+      "DetonateAttack",
+      "Disguise",
+      "Ground",
+      "Infantry"
+    ],
+    "targetable_layers": [
+      {
+        "id": "Targetable",
+        "types": [
+          "Ground",
+          "Infantry",
+          "DetonateAttack",
+          "Disguise"
+        ],
+        "requires_condition": null
+      }
+    ],
+    "crushable": true,
+    "armaments": [
+      {
+        "id": "Armament@primary",
+        "weapon": "shovel",
+        "requires_condition": "freed",
         "name": "primary"
       }
     ],
@@ -4353,8 +6039,9 @@
       "experience_modifier": -1
     },
     "spawn_only": false,
-    "mind_controllable": true,
+    "mind_controllable": false,
     "mind_controller": false,
+    "mind_control_capacity": 0,
     "carrier_parent": null,
     "carrier_child": false,
     "ammo_max": null,
@@ -4364,7 +6051,1474 @@
     "takeoff_ticks": 0,
     "blocks_projectiles": false,
     "blocks_projectiles_height": 1024,
-    "blocks_projectiles_relationships": []
+    "blocks_projectiles_relationships": [],
+    "demolition": false,
+    "demolition_delay": 45
+  },
+  "yuri": {
+    "id": "yuri",
+    "name": "Yuri Clone",
+    "description": "Psychic infantry. Can mind control enemy units.\\nCan be deployed to unleash a powerful psychic wave.\\n  Strong vs Infantry, Vehicles\\n  Weak vs Terror Drones, Aircraft, Buildings",
+    "categories": "Infantry",
+    "cost": 1200,
+    "hp": 100,
+    "armor": "None",
+    "speed": 60,
+    "locomotor": "foot",
+    "shares_cell": true,
+    "crushes": [
+      "crate"
+    ],
+    "target_types": [
+      "DetonateAttack",
+      "Disguise",
+      "Ground",
+      "Infantry",
+      "MindControl",
+      "SuperMindControl"
+    ],
+    "targetable_layers": [
+      {
+        "id": "Targetable",
+        "types": [
+          "Ground",
+          "Infantry",
+          "DetonateAttack",
+          "Disguise"
+        ],
+        "requires_condition": null
+      },
+      {
+        "id": "Targetable@MC",
+        "types": [
+          "MindControl"
+        ],
+        "requires_condition": "!controlled"
+      },
+      {
+        "id": "Targetable@SMC",
+        "types": [
+          "SuperMindControl"
+        ],
+        "requires_condition": "!controlled"
+      }
+    ],
+    "crushable": true,
+    "armaments": [
+      {
+        "id": "Armament",
+        "weapon": "MindControl",
+        "requires_condition": null,
+        "name": "primary"
+      }
+    ],
+    "auto_target_priorities": [
+      {
+        "id": "AutoTargetPriority@DEFAULT",
+        "valid_targets": [
+          "Infantry",
+          "Vehicle",
+          "Water",
+          "Underwater",
+          "Defense"
+        ],
+        "invalid_targets": [
+          "NoAutoTarget",
+          "WaterStructure"
+        ],
+        "requires_condition": "!controlling"
+      },
+      {
+        "id": "AutoTargetPriority@ATTACKANYTHING",
+        "valid_targets": [
+          "Infantry",
+          "Vehicle",
+          "Water",
+          "Underwater",
+          "Structure",
+          "Defense"
+        ],
+        "invalid_targets": [
+          "NoAutoTarget"
+        ],
+        "requires_condition": "stance-attackanything || assault-move"
+      }
+    ],
+    "gains_experience": {
+      "conditions": {
+        "500": "rank-veteran",
+        "1000": "rank-elite"
+      },
+      "experience_modifier": -1
+    },
+    "spawn_only": false,
+    "mind_controllable": true,
+    "mind_controller": true,
+    "mind_control_capacity": 1,
+    "carrier_parent": null,
+    "carrier_child": false,
+    "ammo_max": null,
+    "turret_turn_speed": null,
+    "facing_tolerance": null,
+    "rearmable_actors": [],
+    "takeoff_ticks": 0,
+    "blocks_projectiles": false,
+    "blocks_projectiles_height": 1024,
+    "blocks_projectiles_relationships": [],
+    "demolition": false,
+    "demolition_delay": 45
+  },
+  "yuripr": {
+    "id": "yuripr",
+    "name": "Yuri Prime",
+    "description": "Yuri Prime himself. Can mind control enemy units and structures.\\nCan be deployed to unleash a powerful psychic wave.\\n  Strong vs Infantry, Vehicles, Structures\\n  Weak vs Terror Drones, Aircraft, Buildings",
+    "categories": "Infantry",
+    "cost": 1500,
+    "hp": 150,
+    "armor": "None",
+    "speed": 90,
+    "locomotor": "swimsuit",
+    "shares_cell": true,
+    "crushes": [
+      "crate"
+    ],
+    "target_types": [
+      "DetonateAttack",
+      "Disguise",
+      "Ground",
+      "Infantry"
+    ],
+    "targetable_layers": [
+      {
+        "id": "Targetable",
+        "types": [
+          "Ground",
+          "Infantry",
+          "DetonateAttack",
+          "Disguise"
+        ],
+        "requires_condition": null
+      }
+    ],
+    "crushable": false,
+    "armaments": [
+      {
+        "id": "Armament",
+        "weapon": "SuperMindControl",
+        "requires_condition": null,
+        "name": "primary"
+      }
+    ],
+    "auto_target_priorities": [
+      {
+        "id": "AutoTargetPriority@DEFAULT",
+        "valid_targets": [
+          "Infantry",
+          "Vehicle",
+          "Water",
+          "Underwater",
+          "Defense"
+        ],
+        "invalid_targets": [
+          "NoAutoTarget",
+          "WaterStructure"
+        ],
+        "requires_condition": "!controlling"
+      },
+      {
+        "id": "AutoTargetPriority@ATTACKANYTHING",
+        "valid_targets": [
+          "Infantry",
+          "Vehicle",
+          "Water",
+          "Underwater",
+          "Structure",
+          "Defense"
+        ],
+        "invalid_targets": [
+          "NoAutoTarget"
+        ],
+        "requires_condition": "stance-attackanything || assault-move"
+      }
+    ],
+    "gains_experience": {
+      "conditions": {
+        "500": "rank-veteran",
+        "1000": "rank-elite"
+      },
+      "experience_modifier": -1
+    },
+    "spawn_only": false,
+    "mind_controllable": false,
+    "mind_controller": true,
+    "mind_control_capacity": 1,
+    "carrier_parent": null,
+    "carrier_child": false,
+    "ammo_max": null,
+    "turret_turn_speed": null,
+    "facing_tolerance": null,
+    "rearmable_actors": [],
+    "takeoff_ticks": 0,
+    "blocks_projectiles": false,
+    "blocks_projectiles_height": 1024,
+    "blocks_projectiles_relationships": [],
+    "demolition": false,
+    "demolition_delay": 45
+  },
+  "lunr": {
+    "id": "lunr",
+    "name": "Lunar Infantry",
+    "description": "",
+    "categories": "Infantry",
+    "cost": 600,
+    "hp": 125,
+    "armor": "None",
+    "speed": 140,
+    "locomotor": "aircraft",
+    "shares_cell": false,
+    "crushes": [],
+    "target_types": [
+      "DetonateAttack",
+      "Disguise",
+      "Ground",
+      "Infantry"
+    ],
+    "targetable_layers": [
+      {
+        "id": "Targetable@airborne",
+        "types": [
+          "Air",
+          "Disguise"
+        ],
+        "requires_condition": "airborne"
+      },
+      {
+        "id": "Targetable@ground",
+        "types": [
+          "Ground",
+          "Infantry",
+          "DetonateAttack",
+          "Disguise"
+        ],
+        "requires_condition": "!airborne"
+      }
+    ],
+    "crushable": false,
+    "armaments": [
+      {
+        "id": "Armament@primary",
+        "weapon": "Lunarlaser",
+        "requires_condition": "!rank-elite",
+        "name": "primary"
+      },
+      {
+        "id": "Armament@elite",
+        "weapon": "Lunarlaser",
+        "requires_condition": "rank-elite",
+        "name": "primary"
+      }
+    ],
+    "auto_target_priorities": [
+      {
+        "id": "AutoTargetPriority@DEFAULT",
+        "valid_targets": [
+          "Infantry",
+          "Vehicle",
+          "Water",
+          "Underwater",
+          "Air",
+          "Defense"
+        ],
+        "invalid_targets": [
+          "NoAutoTarget",
+          "WaterStructure"
+        ],
+        "requires_condition": "!stance-attackanything && !assault-move"
+      },
+      {
+        "id": "AutoTargetPriority@ATTACKANYTHING",
+        "valid_targets": [
+          "Infantry",
+          "Vehicle",
+          "Water",
+          "Underwater",
+          "Air",
+          "Structure",
+          "Defense"
+        ],
+        "invalid_targets": [
+          "NoAutoTarget"
+        ],
+        "requires_condition": "stance-attackanything || assault-move"
+      }
+    ],
+    "gains_experience": {
+      "conditions": {
+        "500": "rank-veteran",
+        "1000": "rank-elite"
+      },
+      "experience_modifier": -1
+    },
+    "spawn_only": false,
+    "mind_controllable": false,
+    "mind_controller": false,
+    "mind_control_capacity": 0,
+    "carrier_parent": null,
+    "carrier_child": false,
+    "ammo_max": null,
+    "turret_turn_speed": null,
+    "facing_tolerance": null,
+    "rearmable_actors": [],
+    "takeoff_ticks": 0,
+    "blocks_projectiles": false,
+    "blocks_projectiles_height": 1024,
+    "blocks_projectiles_relationships": [],
+    "demolition": false,
+    "demolition_delay": 45
+  },
+  "yhvr": {
+    "id": "yhvr",
+    "name": "Hover Transport Yuri",
+    "description": "Yuri naval transport.\\nCan carry yuri infantry and yuri vehicles.\\n  Unarmed",
+    "categories": "Naval",
+    "cost": 900,
+    "hp": 300,
+    "armor": "Heavy",
+    "speed": 75,
+    "locomotor": "lcraft",
+    "shares_cell": false,
+    "crushes": [
+      "crate"
+    ],
+    "target_types": [
+      "Ground",
+      "MindControl",
+      "Repair",
+      "SuperMindControl"
+    ],
+    "targetable_layers": [
+      {
+        "id": "Targetable",
+        "types": [
+          "Ground",
+          "Repair"
+        ],
+        "requires_condition": null
+      },
+      {
+        "id": "Targetable@MC",
+        "types": [
+          "MindControl"
+        ],
+        "requires_condition": "!controlled"
+      },
+      {
+        "id": "Targetable@SMC",
+        "types": [
+          "SuperMindControl"
+        ],
+        "requires_condition": "!controlled"
+      }
+    ],
+    "crushable": false,
+    "armaments": [],
+    "auto_target_priorities": [],
+    "gains_experience": {
+      "conditions": {
+        "500": "rank-veteran",
+        "1000": "rank-elite"
+      },
+      "experience_modifier": -1
+    },
+    "spawn_only": false,
+    "mind_controllable": true,
+    "mind_controller": false,
+    "mind_control_capacity": 0,
+    "carrier_parent": null,
+    "carrier_child": false,
+    "ammo_max": null,
+    "turret_turn_speed": null,
+    "facing_tolerance": null,
+    "rearmable_actors": [],
+    "takeoff_ticks": 0,
+    "blocks_projectiles": false,
+    "blocks_projectiles_height": 1024,
+    "blocks_projectiles_relationships": [],
+    "demolition": false,
+    "demolition_delay": 45
+  },
+  "bsub": {
+    "id": "bsub",
+    "name": "Yuri Boomer",
+    "description": "Basic Yuri Navy unit\\nCan detect other submarines and Giant Squids.\\nCan fire missile to attack targets on the ground.\\n  Strong vs Ships， Ground units\\n  Weak vs Aircraft\\nSpecial Ability: Submerge",
+    "categories": "Naval",
+    "cost": 2000,
+    "hp": 1200,
+    "armor": "Heavy",
+    "speed": 71,
+    "locomotor": "naval",
+    "shares_cell": false,
+    "crushes": [
+      "crate"
+    ],
+    "target_types": [
+      "Ground",
+      "Repair",
+      "Underwater",
+      "Water"
+    ],
+    "targetable_layers": [
+      {
+        "id": "Targetable",
+        "types": [
+          "Ground",
+          "Water",
+          "Repair"
+        ],
+        "requires_condition": "underwater"
+      },
+      {
+        "id": "Targetable@underwater",
+        "types": [
+          "Underwater",
+          "Repair"
+        ],
+        "requires_condition": "underwater"
+      }
+    ],
+    "crushable": false,
+    "armaments": [
+      {
+        "id": "Armament",
+        "weapon": "BoomerTorpedo",
+        "requires_condition": "!rank-elite",
+        "name": "primary"
+      },
+      {
+        "id": "Armament@Elite",
+        "weapon": "BoomerTorpedoE",
+        "requires_condition": "rank-elite",
+        "name": "primary"
+      },
+      {
+        "id": "Armament@Second",
+        "weapon": "CruiseLauncher",
+        "requires_condition": null,
+        "name": "primary"
+      }
+    ],
+    "auto_target_priorities": [
+      {
+        "id": "AutoTargetPriority@DEFAULT",
+        "valid_targets": [
+          "Infantry",
+          "Vehicle",
+          "Water",
+          "Underwater",
+          "Defense"
+        ],
+        "invalid_targets": [
+          "NoAutoTarget",
+          "WaterStructure"
+        ],
+        "requires_condition": "!stance-attackanything && !assault-move"
+      },
+      {
+        "id": "AutoTargetPriority@ATTACKANYTHING",
+        "valid_targets": [
+          "Infantry",
+          "Vehicle",
+          "Water",
+          "Underwater",
+          "Structure",
+          "Defense"
+        ],
+        "invalid_targets": [
+          "NoAutoTarget"
+        ],
+        "requires_condition": "stance-attackanything || assault-move"
+      }
+    ],
+    "gains_experience": {
+      "conditions": {
+        "500": "rank-veteran",
+        "1000": "rank-elite"
+      },
+      "experience_modifier": -1
+    },
+    "spawn_only": false,
+    "mind_controllable": true,
+    "mind_controller": false,
+    "mind_control_capacity": 0,
+    "carrier_parent": {
+      "actors": [
+        "cmisl",
+        "cmisl"
+      ],
+      "respawn_ticks": 300,
+      "spawn_all_at_once": true
+    },
+    "carrier_child": false,
+    "ammo_max": null,
+    "turret_turn_speed": null,
+    "facing_tolerance": null,
+    "rearmable_actors": [],
+    "takeoff_ticks": 0,
+    "blocks_projectiles": false,
+    "blocks_projectiles_height": 1024,
+    "blocks_projectiles_relationships": [],
+    "demolition": false,
+    "demolition_delay": 45
+  },
+  "pcv": {
+    "id": "pcv",
+    "name": "Mobile Construction Vehicle",
+    "description": "Deploys into a Construction Yard.",
+    "categories": "Vehicle",
+    "cost": 3000,
+    "hp": 1000,
+    "armor": "Heavy",
+    "speed": 80,
+    "locomotor": "wheeled",
+    "shares_cell": false,
+    "crushes": [
+      "crate"
+    ],
+    "target_types": [
+      "DetonateAttack",
+      "Ground",
+      "MindControl",
+      "Repair",
+      "SuperMindControl",
+      "Vehicle"
+    ],
+    "targetable_layers": [
+      {
+        "id": "Targetable@AIRBORNE",
+        "types": [
+          "Air",
+          "Tractable"
+        ],
+        "requires_condition": "airborne"
+      },
+      {
+        "id": "Targetable",
+        "types": [
+          "Ground",
+          "Vehicle",
+          "Repair",
+          "DetonateAttack"
+        ],
+        "requires_condition": null
+      },
+      {
+        "id": "Targetable@MC",
+        "types": [
+          "MindControl"
+        ],
+        "requires_condition": "!controlled"
+      },
+      {
+        "id": "Targetable@SMC",
+        "types": [
+          "SuperMindControl"
+        ],
+        "requires_condition": "!controlled"
+      }
+    ],
+    "crushable": false,
+    "armaments": [],
+    "auto_target_priorities": [],
+    "gains_experience": {
+      "conditions": {
+        "500": "rank-veteran",
+        "1000": "rank-elite"
+      },
+      "experience_modifier": -1
+    },
+    "spawn_only": false,
+    "mind_controllable": true,
+    "mind_controller": false,
+    "mind_control_capacity": 0,
+    "carrier_parent": null,
+    "carrier_child": false,
+    "ammo_max": null,
+    "turret_turn_speed": null,
+    "facing_tolerance": null,
+    "rearmable_actors": [],
+    "takeoff_ticks": 0,
+    "blocks_projectiles": false,
+    "blocks_projectiles_height": 1024,
+    "blocks_projectiles_relationships": [],
+    "demolition": false,
+    "demolition_delay": 45
+  },
+  "smin": {
+    "id": "smin",
+    "name": "Slave Miner",
+    "description": "Provides Credit for Yuri",
+    "categories": "Vehicle",
+    "cost": 1500,
+    "hp": 2000,
+    "armor": "Medium",
+    "speed": 45,
+    "locomotor": "wheeled",
+    "shares_cell": false,
+    "crushes": [
+      "crate"
+    ],
+    "target_types": [
+      "DetonateAttack",
+      "Ground",
+      "ImmuneToRadiation",
+      "Repair",
+      "Vehicle"
+    ],
+    "targetable_layers": [
+      {
+        "id": "Targetable@AIRBORNE",
+        "types": [
+          "Air",
+          "Tractable"
+        ],
+        "requires_condition": "airborne"
+      },
+      {
+        "id": "Targetable",
+        "types": [
+          "Ground",
+          "Vehicle",
+          "Repair",
+          "DetonateAttack"
+        ],
+        "requires_condition": null
+      },
+      {
+        "id": "Targetable@RadiationImmunity",
+        "types": [
+          "ImmuneToRadiation"
+        ],
+        "requires_condition": null
+      }
+    ],
+    "crushable": false,
+    "armaments": [
+      {
+        "id": "Armament@primary",
+        "weapon": "20mmrapid",
+        "requires_condition": "!rank-elite",
+        "name": "primary"
+      },
+      {
+        "id": "Armament@elite",
+        "weapon": "20mmrapidE",
+        "requires_condition": "rank-elite",
+        "name": "primary"
+      }
+    ],
+    "auto_target_priorities": [],
+    "gains_experience": {
+      "conditions": {
+        "500": "rank-veteran",
+        "1000": "rank-elite"
+      },
+      "experience_modifier": -1
+    },
+    "spawn_only": false,
+    "mind_controllable": false,
+    "mind_controller": false,
+    "mind_control_capacity": 0,
+    "carrier_parent": null,
+    "carrier_child": false,
+    "ammo_max": null,
+    "turret_turn_speed": 5,
+    "facing_tolerance": 512,
+    "rearmable_actors": [],
+    "takeoff_ticks": 0,
+    "blocks_projectiles": false,
+    "blocks_projectiles_height": 1024,
+    "blocks_projectiles_relationships": [],
+    "demolition": false,
+    "demolition_delay": 45
+  },
+  "ltnk": {
+    "id": "ltnk",
+    "name": "Lasher Light Tank",
+    "description": "Basic Yuri Tank.\\n  Strong vs Vehicle\\n  Weak vs Infantry, Aircraft",
+    "categories": "Vehicle",
+    "cost": 700,
+    "hp": 300,
+    "armor": "Heavy",
+    "speed": 105,
+    "locomotor": "wheeled",
+    "shares_cell": false,
+    "crushes": [
+      "crate"
+    ],
+    "target_types": [
+      "DetonateAttack",
+      "Ground",
+      "MindControl",
+      "Repair",
+      "SuperMindControl",
+      "Vehicle"
+    ],
+    "targetable_layers": [
+      {
+        "id": "Targetable@AIRBORNE",
+        "types": [
+          "Air",
+          "Tractable"
+        ],
+        "requires_condition": "airborne"
+      },
+      {
+        "id": "Targetable",
+        "types": [
+          "Ground",
+          "Vehicle",
+          "Repair",
+          "DetonateAttack"
+        ],
+        "requires_condition": null
+      },
+      {
+        "id": "Targetable@MC",
+        "types": [
+          "MindControl"
+        ],
+        "requires_condition": "!controlled"
+      },
+      {
+        "id": "Targetable@SMC",
+        "types": [
+          "SuperMindControl"
+        ],
+        "requires_condition": "!controlled"
+      }
+    ],
+    "crushable": false,
+    "armaments": [
+      {
+        "id": "Armament@primary",
+        "weapon": "105mm",
+        "requires_condition": "!rank-elite",
+        "name": "primary"
+      },
+      {
+        "id": "Armament@elite",
+        "weapon": "105mmE",
+        "requires_condition": "rank-elite",
+        "name": "primary"
+      }
+    ],
+    "auto_target_priorities": [
+      {
+        "id": "AutoTargetPriority@DEFAULT",
+        "valid_targets": [
+          "Infantry",
+          "Vehicle",
+          "Water",
+          "Underwater",
+          "Defense"
+        ],
+        "invalid_targets": [
+          "NoAutoTarget",
+          "WaterStructure"
+        ],
+        "requires_condition": "!stance-attackanything && !assault-move"
+      },
+      {
+        "id": "AutoTargetPriority@ATTACKANYTHING",
+        "valid_targets": [
+          "Infantry",
+          "Vehicle",
+          "Water",
+          "Underwater",
+          "Structure",
+          "Defense"
+        ],
+        "invalid_targets": [
+          "NoAutoTarget"
+        ],
+        "requires_condition": "stance-attackanything || assault-move"
+      }
+    ],
+    "gains_experience": {
+      "conditions": {
+        "500": "rank-veteran",
+        "1000": "rank-elite"
+      },
+      "experience_modifier": -1
+    },
+    "spawn_only": false,
+    "mind_controllable": true,
+    "mind_controller": false,
+    "mind_control_capacity": 0,
+    "carrier_parent": null,
+    "carrier_child": false,
+    "ammo_max": null,
+    "turret_turn_speed": 5,
+    "facing_tolerance": 512,
+    "rearmable_actors": [],
+    "takeoff_ticks": 0,
+    "blocks_projectiles": false,
+    "blocks_projectiles_height": 1024,
+    "blocks_projectiles_relationships": [],
+    "demolition": false,
+    "demolition_delay": 45
+  },
+  "ytnk": {
+    "id": "ytnk",
+    "name": "Gatling Tank",
+    "description": "Yuri Gattling Tank.\\n  Strong vs Infantry, Aircraft\\n  Weak vs Vehicle",
+    "categories": "Vehicle",
+    "cost": 600,
+    "hp": 210,
+    "armor": "Heavy",
+    "speed": 90,
+    "locomotor": "wheeled",
+    "shares_cell": false,
+    "crushes": [
+      "crate"
+    ],
+    "target_types": [
+      "DetonateAttack",
+      "Ground",
+      "MindControl",
+      "Repair",
+      "SuperMindControl",
+      "Vehicle"
+    ],
+    "targetable_layers": [
+      {
+        "id": "Targetable@AIRBORNE",
+        "types": [
+          "Air",
+          "Tractable"
+        ],
+        "requires_condition": "airborne"
+      },
+      {
+        "id": "Targetable",
+        "types": [
+          "Ground",
+          "Vehicle",
+          "Repair",
+          "DetonateAttack"
+        ],
+        "requires_condition": null
+      },
+      {
+        "id": "Targetable@MC",
+        "types": [
+          "MindControl"
+        ],
+        "requires_condition": "!controlled"
+      },
+      {
+        "id": "Targetable@SMC",
+        "types": [
+          "SuperMindControl"
+        ],
+        "requires_condition": "!controlled"
+      }
+    ],
+    "crushable": false,
+    "armaments": [
+      {
+        "id": "Armament@primary-stage-1",
+        "weapon": "AGGattling",
+        "requires_condition": "!rank-elite && stage-1",
+        "name": "primary"
+      },
+      {
+        "id": "Armament@primary-elite-stage-1",
+        "weapon": "AGGattling",
+        "requires_condition": "rank-elite && elite-stage-1",
+        "name": "primary"
+      },
+      {
+        "id": "Armament@primary-stage-2",
+        "weapon": "AGGattling2",
+        "requires_condition": "!rank-elite && stage-2",
+        "name": "primary"
+      },
+      {
+        "id": "Armament@primary-elite-stage-2",
+        "weapon": "AGGattling2E",
+        "requires_condition": "rank-elite && elite-stage-2",
+        "name": "primary"
+      },
+      {
+        "id": "Armament@primary-stage-3",
+        "weapon": "AGGattling3",
+        "requires_condition": "!rank-elite && stage-3",
+        "name": "primary"
+      },
+      {
+        "id": "Armament@primary-elite-stage-3",
+        "weapon": "AGGattling3E",
+        "requires_condition": "rank-elite && elite-stage-3",
+        "name": "primary"
+      },
+      {
+        "id": "Armament@second-stage-1",
+        "weapon": "AAGattling",
+        "requires_condition": "!rank-elite && stage-1",
+        "name": "primary"
+      },
+      {
+        "id": "Armament@second-elite-stage-1",
+        "weapon": "AAGattlingE",
+        "requires_condition": "rank-elite && elite-stage-1",
+        "name": "primary"
+      },
+      {
+        "id": "Armament@second-stage-2",
+        "weapon": "AAGattling2",
+        "requires_condition": "!rank-elite && stage-2",
+        "name": "primary"
+      },
+      {
+        "id": "Armament@second-elite-stage-2",
+        "weapon": "AAGattling2E",
+        "requires_condition": "rank-elite && elite-stage-2",
+        "name": "primary"
+      },
+      {
+        "id": "Armament@second-stage-3",
+        "weapon": "AAGattling3",
+        "requires_condition": "!rank-elite && stage-3",
+        "name": "primary"
+      },
+      {
+        "id": "Armament@second-elite-stage-3",
+        "weapon": "AAGattling3E",
+        "requires_condition": "rank-elite && elite-stage-3",
+        "name": "primary"
+      }
+    ],
+    "auto_target_priorities": [
+      {
+        "id": "AutoTargetPriority@DEFAULT",
+        "valid_targets": [
+          "Infantry",
+          "Vehicle",
+          "Water",
+          "Underwater",
+          "Air",
+          "Defense"
+        ],
+        "invalid_targets": [
+          "NoAutoTarget",
+          "WaterStructure"
+        ],
+        "requires_condition": "!stance-attackanything && !assault-move"
+      },
+      {
+        "id": "AutoTargetPriority@ATTACKANYTHING",
+        "valid_targets": [
+          "Infantry",
+          "Vehicle",
+          "Water",
+          "Underwater",
+          "Air",
+          "Structure",
+          "Defense"
+        ],
+        "invalid_targets": [
+          "NoAutoTarget"
+        ],
+        "requires_condition": "stance-attackanything || assault-move"
+      }
+    ],
+    "gains_experience": {
+      "conditions": {
+        "500": "rank-veteran",
+        "1000": "rank-elite"
+      },
+      "experience_modifier": -1
+    },
+    "spawn_only": false,
+    "mind_controllable": true,
+    "mind_controller": false,
+    "mind_control_capacity": 0,
+    "carrier_parent": null,
+    "carrier_child": false,
+    "ammo_max": null,
+    "turret_turn_speed": 5,
+    "facing_tolerance": 512,
+    "rearmable_actors": [],
+    "takeoff_ticks": 0,
+    "blocks_projectiles": false,
+    "blocks_projectiles_height": 1024,
+    "blocks_projectiles_relationships": [],
+    "demolition": false,
+    "demolition_delay": 45
+  },
+  "tele": {
+    "id": "tele",
+    "name": "Magnetron",
+    "description": "Yuri Magnetron Tank. Powerful sige weapon.\\n  Strong vs structures\\n  Weak vs Infantry, Vehicle, Aircraft and Ships",
+    "categories": "Vehicle",
+    "cost": 1000,
+    "hp": 150,
+    "armor": "Light",
+    "speed": 75,
+    "locomotor": "wheeled",
+    "shares_cell": false,
+    "crushes": [
+      "crate"
+    ],
+    "target_types": [
+      "DetonateAttack",
+      "Ground",
+      "MindControl",
+      "Repair",
+      "SuperMindControl",
+      "Vehicle"
+    ],
+    "targetable_layers": [
+      {
+        "id": "Targetable@AIRBORNE",
+        "types": [
+          "Air",
+          "Tractable"
+        ],
+        "requires_condition": "airborne"
+      },
+      {
+        "id": "Targetable",
+        "types": [
+          "Ground",
+          "Vehicle",
+          "Repair",
+          "DetonateAttack"
+        ],
+        "requires_condition": null
+      },
+      {
+        "id": "Targetable@MC",
+        "types": [
+          "MindControl"
+        ],
+        "requires_condition": "!controlled"
+      },
+      {
+        "id": "Targetable@SMC",
+        "types": [
+          "SuperMindControl"
+        ],
+        "requires_condition": "!controlled"
+      }
+    ],
+    "crushable": false,
+    "armaments": [
+      {
+        "id": "Armament@primary",
+        "weapon": "MagneShake",
+        "requires_condition": null,
+        "name": "primary"
+      },
+      {
+        "id": "Armament@effect",
+        "weapon": "MagnetronZapEffect",
+        "requires_condition": null,
+        "name": "primary"
+      },
+      {
+        "id": "Armament@tract",
+        "weapon": "MagnetronTract",
+        "requires_condition": "stance-defend",
+        "name": "primary"
+      },
+      {
+        "id": "Armament@repel",
+        "weapon": "MagnetronRepel",
+        "requires_condition": "stance-holdfire",
+        "name": "primary"
+      },
+      {
+        "id": "Armament@lift",
+        "weapon": "MagnetronLift",
+        "requires_condition": "!stance-defend && !stance-holdfire",
+        "name": "primary"
+      }
+    ],
+    "auto_target_priorities": [
+      {
+        "id": "AutoTargetPriority@DEFAULT",
+        "valid_targets": [
+          "Infantry",
+          "Vehicle",
+          "Water",
+          "Underwater",
+          "Defense"
+        ],
+        "invalid_targets": [
+          "NoAutoTarget",
+          "WaterStructure"
+        ],
+        "requires_condition": "!stance-attackanything && !assault-move"
+      },
+      {
+        "id": "AutoTargetPriority@ATTACKANYTHING",
+        "valid_targets": [
+          "Infantry",
+          "Vehicle",
+          "Water",
+          "Underwater",
+          "Structure",
+          "Defense"
+        ],
+        "invalid_targets": [
+          "NoAutoTarget"
+        ],
+        "requires_condition": "stance-attackanything || assault-move"
+      }
+    ],
+    "gains_experience": {
+      "conditions": {
+        "500": "rank-veteran",
+        "1000": "rank-elite"
+      },
+      "experience_modifier": -1
+    },
+    "spawn_only": false,
+    "mind_controllable": true,
+    "mind_controller": false,
+    "mind_control_capacity": 0,
+    "carrier_parent": null,
+    "carrier_child": false,
+    "ammo_max": null,
+    "turret_turn_speed": 5,
+    "facing_tolerance": 512,
+    "rearmable_actors": [],
+    "takeoff_ticks": 0,
+    "blocks_projectiles": false,
+    "blocks_projectiles_height": 1024,
+    "blocks_projectiles_relationships": [],
+    "demolition": false,
+    "demolition_delay": 45
+  },
+  "caos": {
+    "id": "caos",
+    "name": "Chaos Drone",
+    "description": "Yuri Chaos Drone can make chaos in enemy force\\n  Strong vs Infantry, Vehicles\\n  Weak vs Aircraft",
+    "categories": "Vehicle",
+    "cost": 800,
+    "hp": 200,
+    "armor": "Light",
+    "speed": 300,
+    "locomotor": "wheeled",
+    "shares_cell": false,
+    "crushes": [
+      "crate"
+    ],
+    "target_types": [
+      "DetonateAttack",
+      "Ground",
+      "Repair",
+      "Vehicle"
+    ],
+    "targetable_layers": [
+      {
+        "id": "Targetable@AIRBORNE",
+        "types": [
+          "Air",
+          "Tractable"
+        ],
+        "requires_condition": "airborne"
+      },
+      {
+        "id": "Targetable",
+        "types": [
+          "Ground",
+          "Vehicle",
+          "Repair",
+          "DetonateAttack"
+        ],
+        "requires_condition": null
+      }
+    ],
+    "crushable": false,
+    "armaments": [
+      {
+        "id": "Armament@primary",
+        "weapon": "ChaosGasAttack",
+        "requires_condition": null,
+        "name": "primary"
+      }
+    ],
+    "auto_target_priorities": [
+      {
+        "id": "AutoTargetPriority@DEFAULT",
+        "valid_targets": [
+          "Infantry",
+          "Vehicle",
+          "Water",
+          "Underwater",
+          "Defense"
+        ],
+        "invalid_targets": [
+          "NoAutoTarget",
+          "WaterStructure"
+        ],
+        "requires_condition": "!stance-attackanything && !assault-move"
+      },
+      {
+        "id": "AutoTargetPriority@ATTACKANYTHING",
+        "valid_targets": [
+          "Infantry",
+          "Vehicle",
+          "Water",
+          "Underwater",
+          "Structure",
+          "Defense"
+        ],
+        "invalid_targets": [
+          "NoAutoTarget"
+        ],
+        "requires_condition": "stance-attackanything || assault-move"
+      }
+    ],
+    "gains_experience": {
+      "conditions": {
+        "500": "rank-veteran",
+        "1000": "rank-elite"
+      },
+      "experience_modifier": -1
+    },
+    "spawn_only": false,
+    "mind_controllable": false,
+    "mind_controller": false,
+    "mind_control_capacity": 0,
+    "carrier_parent": null,
+    "carrier_child": false,
+    "ammo_max": null,
+    "turret_turn_speed": 5,
+    "facing_tolerance": 512,
+    "rearmable_actors": [],
+    "takeoff_ticks": 0,
+    "blocks_projectiles": false,
+    "blocks_projectiles_height": 1024,
+    "blocks_projectiles_relationships": [],
+    "demolition": false,
+    "demolition_delay": 45
+  },
+  "mind": {
+    "id": "mind",
+    "name": "Master Mind",
+    "description": "Yuri MindControl Vehicle.\\n  Strong vs Infantry, Vehicles, Ships\\n  Weak vs Aircraft",
+    "categories": "Vehicle",
+    "cost": 1750,
+    "hp": 500,
+    "armor": "Heavy",
+    "speed": 60,
+    "locomotor": "wheeled",
+    "shares_cell": false,
+    "crushes": [
+      "crate"
+    ],
+    "target_types": [
+      "DetonateAttack",
+      "Ground",
+      "Repair",
+      "Vehicle"
+    ],
+    "targetable_layers": [
+      {
+        "id": "Targetable@AIRBORNE",
+        "types": [
+          "Air",
+          "Tractable"
+        ],
+        "requires_condition": "airborne"
+      },
+      {
+        "id": "Targetable",
+        "types": [
+          "Ground",
+          "Vehicle",
+          "Repair",
+          "DetonateAttack"
+        ],
+        "requires_condition": null
+      }
+    ],
+    "crushable": false,
+    "armaments": [
+      {
+        "id": "Armament",
+        "weapon": "MindControl",
+        "requires_condition": null,
+        "name": "primary"
+      }
+    ],
+    "auto_target_priorities": [
+      {
+        "id": "AutoTargetPriority@DEFAULT",
+        "valid_targets": [
+          "Infantry",
+          "Vehicle",
+          "Water",
+          "Underwater",
+          "Defense"
+        ],
+        "invalid_targets": [
+          "NoAutoTarget",
+          "WaterStructure"
+        ],
+        "requires_condition": "!stance-attackanything && !assault-move"
+      },
+      {
+        "id": "AutoTargetPriority@ATTACKANYTHING",
+        "valid_targets": [
+          "Infantry",
+          "Vehicle",
+          "Water",
+          "Underwater",
+          "Structure",
+          "Defense"
+        ],
+        "invalid_targets": [
+          "NoAutoTarget"
+        ],
+        "requires_condition": "stance-attackanything || assault-move"
+      }
+    ],
+    "gains_experience": {
+      "conditions": {
+        "500": "rank-veteran",
+        "1000": "rank-elite"
+      },
+      "experience_modifier": -1
+    },
+    "spawn_only": false,
+    "mind_controllable": false,
+    "mind_controller": true,
+    "mind_control_capacity": 3,
+    "carrier_parent": null,
+    "carrier_child": false,
+    "ammo_max": null,
+    "turret_turn_speed": 5,
+    "facing_tolerance": 512,
+    "rearmable_actors": [],
+    "takeoff_ticks": 0,
+    "blocks_projectiles": false,
+    "blocks_projectiles_height": 1024,
+    "blocks_projectiles_relationships": [],
+    "demolition": false,
+    "demolition_delay": 45
+  },
+  "disk": {
+    "id": "disk",
+    "name": "Floating Disk",
+    "description": "Yuri Laser Disk, Strong with infantry, aircraft\\n Weak with vehicles",
+    "categories": "Aircraft",
+    "cost": 1750,
+    "hp": 600,
+    "armor": "Light",
+    "speed": 200,
+    "locomotor": "aircraft",
+    "shares_cell": false,
+    "crushes": [],
+    "target_types": [
+      "Ground",
+      "Repair",
+      "Vehicle"
+    ],
+    "targetable_layers": [
+      {
+        "id": "Targetable@airborne",
+        "types": [
+          "Air"
+        ],
+        "requires_condition": "airborne"
+      },
+      {
+        "id": "Targetable@ground",
+        "types": [
+          "Ground",
+          "Repair",
+          "Vehicle"
+        ],
+        "requires_condition": "!airborne"
+      }
+    ],
+    "crushable": false,
+    "armaments": [
+      {
+        "id": "Armament@primary",
+        "weapon": "DiskLaser",
+        "requires_condition": null,
+        "name": "primary"
+      },
+      {
+        "id": "Armament@second",
+        "weapon": "DiskDrain",
+        "requires_condition": null,
+        "name": "secondary"
+      }
+    ],
+    "auto_target_priorities": [
+      {
+        "id": "AutoTargetPriority@DEFAULT",
+        "valid_targets": [
+          "Infantry",
+          "Vehicle",
+          "Water",
+          "Underwater",
+          "Air",
+          "Defense"
+        ],
+        "invalid_targets": [
+          "NoAutoTarget",
+          "WaterStructure"
+        ],
+        "requires_condition": "!stance-attackanything && !assault-move"
+      },
+      {
+        "id": "AutoTargetPriority@ATTACKANYTHING",
+        "valid_targets": [
+          "Infantry",
+          "Vehicle",
+          "Water",
+          "Underwater",
+          "Air",
+          "Structure",
+          "Defense"
+        ],
+        "invalid_targets": [
+          "NoAutoTarget"
+        ],
+        "requires_condition": "stance-attackanything || assault-move"
+      }
+    ],
+    "gains_experience": {
+      "conditions": {
+        "500": "rank-veteran",
+        "1000": "rank-elite"
+      },
+      "experience_modifier": -1
+    },
+    "spawn_only": false,
+    "mind_controllable": false,
+    "mind_controller": false,
+    "mind_control_capacity": 0,
+    "carrier_parent": null,
+    "carrier_child": false,
+    "ammo_max": null,
+    "turret_turn_speed": 5,
+    "facing_tolerance": 512,
+    "rearmable_actors": [],
+    "takeoff_ticks": 0,
+    "blocks_projectiles": false,
+    "blocks_projectiles_height": 1024,
+    "blocks_projectiles_relationships": [],
+    "demolition": false,
+    "demolition_delay": 45
   },
   "asw": {
     "id": "asw",
@@ -4372,7 +7526,7 @@
     "description": "",
     "categories": "Aircraft",
     "cost": 50,
-    "hp": 135,
+    "hp": 75,
     "armor": "Light",
     "speed": 180,
     "locomotor": "aircraft",
@@ -4395,16 +7549,10 @@
         "id": "Targetable@ground",
         "types": [
           "Ground",
+          "Repair",
           "Vehicle"
         ],
         "requires_condition": "!airborne"
-      },
-      {
-        "id": "Targetable@REPAIR",
-        "types": [
-          "Repair"
-        ],
-        "requires_condition": "!airborne && damaged"
       }
     ],
     "crushable": false,
@@ -4412,13 +7560,7 @@
       {
         "id": "Armament",
         "weapon": "ASWBomb",
-        "requires_condition": "!rank-elite",
-        "name": "primary"
-      },
-      {
-        "id": "Armament@Elite",
-        "weapon": "ASWBombE",
-        "requires_condition": "rank-elite",
+        "requires_condition": null,
         "name": "primary"
       }
     ],
@@ -4428,24 +7570,126 @@
         "500": "rank-veteran",
         "1000": "rank-elite"
       },
-      "experience_modifier": 500
+      "experience_modifier": -1
     },
     "spawn_only": true,
     "mind_controllable": false,
     "mind_controller": false,
+    "mind_control_capacity": 0,
     "carrier_parent": null,
-    "carrier_child": true,
-    "ammo_max": 5,
+    "carrier_child": false,
+    "ammo_max": 3,
     "turret_turn_speed": null,
     "facing_tolerance": null,
     "rearmable_actors": [
-      "dest",
-      "cdest"
+      "carrier"
     ],
-    "takeoff_ticks": 8,
+    "takeoff_ticks": 0,
     "blocks_projectiles": false,
     "blocks_projectiles_height": 1024,
-    "blocks_projectiles_relationships": []
+    "blocks_projectiles_relationships": [],
+    "demolition": false,
+    "demolition_delay": 45
+  },
+  "cmisl": {
+    "id": "cmisl",
+    "name": "Cruise Missile",
+    "description": "",
+    "categories": "",
+    "cost": 1,
+    "hp": 90,
+    "armor": "Light",
+    "speed": 1,
+    "locomotor": "foot",
+    "shares_cell": true,
+    "crushes": [
+      "crate"
+    ],
+    "target_types": [],
+    "targetable_layers": [],
+    "crushable": false,
+    "armaments": [],
+    "auto_target_priorities": [
+      {
+        "id": "AutoTarget@fallback",
+        "valid_targets": [
+          "Infantry",
+          "Vehicle",
+          "Air"
+        ],
+        "invalid_targets": [
+          "NoAutoTarget"
+        ],
+        "requires_condition": null
+      }
+    ],
+    "gains_experience": null,
+    "spawn_only": true,
+    "mind_controllable": false,
+    "mind_controller": false,
+    "mind_control_capacity": 0,
+    "carrier_parent": null,
+    "carrier_child": false,
+    "ammo_max": null,
+    "turret_turn_speed": null,
+    "facing_tolerance": null,
+    "rearmable_actors": [],
+    "takeoff_ticks": 0,
+    "blocks_projectiles": false,
+    "blocks_projectiles_height": 1024,
+    "blocks_projectiles_relationships": [],
+    "demolition": false,
+    "demolition_delay": 45
+  },
+  "dmisl": {
+    "id": "dmisl",
+    "name": "Cruise Missile",
+    "description": "",
+    "categories": "",
+    "cost": 1,
+    "hp": 90,
+    "armor": "Light",
+    "speed": 1,
+    "locomotor": "foot",
+    "shares_cell": true,
+    "crushes": [
+      "crate"
+    ],
+    "target_types": [],
+    "targetable_layers": [],
+    "crushable": false,
+    "armaments": [],
+    "auto_target_priorities": [
+      {
+        "id": "AutoTarget@fallback",
+        "valid_targets": [
+          "Infantry",
+          "Vehicle",
+          "Air"
+        ],
+        "invalid_targets": [
+          "NoAutoTarget"
+        ],
+        "requires_condition": null
+      }
+    ],
+    "gains_experience": null,
+    "spawn_only": true,
+    "mind_controllable": false,
+    "mind_controller": false,
+    "mind_control_capacity": 0,
+    "carrier_parent": null,
+    "carrier_child": false,
+    "ammo_max": null,
+    "turret_turn_speed": null,
+    "facing_tolerance": null,
+    "rearmable_actors": [],
+    "takeoff_ticks": 0,
+    "blocks_projectiles": false,
+    "blocks_projectiles_height": 1024,
+    "blocks_projectiles_relationships": [],
+    "demolition": false,
+    "demolition_delay": 45
   },
   "hornet": {
     "id": "hornet",
@@ -4455,7 +7699,7 @@
     "cost": 50,
     "hp": 75,
     "armor": "Light",
-    "speed": 273,
+    "speed": 180,
     "locomotor": "aircraft",
     "shares_cell": false,
     "crushes": [],
@@ -4476,16 +7720,10 @@
         "id": "Targetable@ground",
         "types": [
           "Ground",
+          "Repair",
           "Vehicle"
         ],
         "requires_condition": "!airborne"
-      },
-      {
-        "id": "Targetable@REPAIR",
-        "types": [
-          "Repair"
-        ],
-        "requires_condition": "!airborne && damaged"
       }
     ],
     "crushable": false,
@@ -4493,13 +7731,7 @@
       {
         "id": "Armament",
         "weapon": "HornetBomb",
-        "requires_condition": "!rank-elite",
-        "name": "primary"
-      },
-      {
-        "id": "Armament@Elite",
-        "weapon": "HornetBombE",
-        "requires_condition": "rank-elite",
+        "requires_condition": null,
         "name": "primary"
       }
     ],
@@ -4509,22 +7741,75 @@
         "500": "rank-veteran",
         "1000": "rank-elite"
       },
-      "experience_modifier": 500
+      "experience_modifier": -1
     },
     "spawn_only": true,
     "mind_controllable": false,
     "mind_controller": false,
+    "mind_control_capacity": 0,
     "carrier_parent": null,
-    "carrier_child": true,
-    "ammo_max": 5,
+    "carrier_child": false,
+    "ammo_max": 3,
     "turret_turn_speed": null,
     "facing_tolerance": null,
     "rearmable_actors": [
       "carrier"
     ],
-    "takeoff_ticks": 8,
+    "takeoff_ticks": 0,
     "blocks_projectiles": false,
     "blocks_projectiles_height": 1024,
-    "blocks_projectiles_relationships": []
+    "blocks_projectiles_relationships": [],
+    "demolition": false,
+    "demolition_delay": 45
+  },
+  "v3rocket": {
+    "id": "v3rocket",
+    "name": "V3 Rocket",
+    "description": "",
+    "categories": "",
+    "cost": 10,
+    "hp": 90,
+    "armor": "Light",
+    "speed": 1,
+    "locomotor": "foot",
+    "shares_cell": true,
+    "crushes": [
+      "crate"
+    ],
+    "target_types": [],
+    "targetable_layers": [],
+    "crushable": false,
+    "armaments": [],
+    "auto_target_priorities": [
+      {
+        "id": "AutoTarget@fallback",
+        "valid_targets": [
+          "Infantry",
+          "Vehicle",
+          "Air"
+        ],
+        "invalid_targets": [
+          "NoAutoTarget"
+        ],
+        "requires_condition": null
+      }
+    ],
+    "gains_experience": null,
+    "spawn_only": true,
+    "mind_controllable": false,
+    "mind_controller": false,
+    "mind_control_capacity": 0,
+    "carrier_parent": null,
+    "carrier_child": false,
+    "ammo_max": null,
+    "turret_turn_speed": null,
+    "facing_tolerance": null,
+    "rearmable_actors": [],
+    "takeoff_ticks": 0,
+    "blocks_projectiles": false,
+    "blocks_projectiles_height": 1024,
+    "blocks_projectiles_relationships": [],
+    "demolition": false,
+    "demolition_delay": 45
   }
 }

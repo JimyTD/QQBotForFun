@@ -8,6 +8,9 @@
     "burst_delays": [],
     "valid_targets": [],
     "invalid_targets": [],
+    "projectile_kind": "Bullet",
+    "beam_duration": 0,
+    "beam_damage_interval": 0,
     "projectile_speed": 682,
     "projectile_blockable": false,
     "warheads": [
@@ -30,7 +33,9 @@
         },
         "spread": 128,
         "falloff": [],
-        "delay": 0
+        "delay": 0,
+        "valid_stances": [],
+        "valid_targets": []
       }
     ]
   },
@@ -46,7 +51,10 @@
       "Water"
     ],
     "invalid_targets": [],
-    "projectile_speed": 682,
+    "projectile_kind": "Bullet",
+    "beam_duration": 0,
+    "beam_damage_interval": 0,
+    "projectile_speed": 102400,
     "projectile_blockable": true,
     "warheads": [
       {
@@ -68,7 +76,9 @@
         },
         "spread": 190,
         "falloff": [],
-        "delay": 0
+        "delay": 0,
+        "valid_stances": [],
+        "valid_targets": []
       }
     ]
   },
@@ -84,8 +94,11 @@
       "Water"
     ],
     "invalid_targets": [],
-    "projectile_speed": 682,
-    "projectile_blockable": false,
+    "projectile_kind": "Bullet",
+    "beam_duration": 0,
+    "beam_damage_interval": 0,
+    "projectile_speed": 102400,
+    "projectile_blockable": true,
     "warheads": [
       {
         "id": "Warhead@1Dam",
@@ -106,7 +119,9 @@
         },
         "spread": 190,
         "falloff": [],
-        "delay": 0
+        "delay": 0,
+        "valid_stances": [],
+        "valid_targets": []
       }
     ]
   },
@@ -119,6 +134,9 @@
     "burst_delays": [],
     "valid_targets": [],
     "invalid_targets": [],
+    "projectile_kind": "Bullet",
+    "beam_duration": 0,
+    "beam_damage_interval": 0,
     "projectile_speed": 102400,
     "projectile_blockable": true,
     "warheads": [
@@ -141,7 +159,9 @@
         },
         "spread": 64,
         "falloff": [],
-        "delay": 0
+        "delay": 0,
+        "valid_stances": [],
+        "valid_targets": []
       }
     ]
   },
@@ -154,6 +174,9 @@
     "burst_delays": [],
     "valid_targets": [],
     "invalid_targets": [],
+    "projectile_kind": "Bullet",
+    "beam_duration": 0,
+    "beam_damage_interval": 0,
     "projectile_speed": 102400,
     "projectile_blockable": true,
     "warheads": [
@@ -176,7 +199,9 @@
         },
         "spread": 64,
         "falloff": [],
-        "delay": 0
+        "delay": 0,
+        "valid_stances": [],
+        "valid_targets": []
       }
     ]
   },
@@ -189,8 +214,11 @@
     "burst_delays": [],
     "valid_targets": [],
     "invalid_targets": [],
-    "projectile_speed": null,
-    "projectile_blockable": false,
+    "projectile_kind": "Bullet",
+    "beam_duration": 0,
+    "beam_damage_interval": 0,
+    "projectile_speed": 102400,
+    "projectile_blockable": true,
     "warheads": [
       {
         "id": "Warhead@1Dam",
@@ -211,7 +239,9 @@
         },
         "spread": 64,
         "falloff": [],
-        "delay": 0
+        "delay": 0,
+        "valid_stances": [],
+        "valid_targets": []
       }
     ]
   },
@@ -224,6 +254,9 @@
     "burst_delays": [],
     "valid_targets": [],
     "invalid_targets": [],
+    "projectile_kind": "Bullet",
+    "beam_duration": 0,
+    "beam_damage_interval": 0,
     "projectile_speed": 40960,
     "projectile_blockable": true,
     "warheads": [
@@ -246,7 +279,9 @@
         },
         "spread": 128,
         "falloff": [],
-        "delay": 0
+        "delay": 0,
+        "valid_stances": [],
+        "valid_targets": []
       }
     ]
   },
@@ -259,7 +294,10 @@
     "burst_delays": [],
     "valid_targets": [],
     "invalid_targets": [],
-    "projectile_speed": 682,
+    "projectile_kind": "Bullet",
+    "beam_duration": 0,
+    "beam_damage_interval": 0,
+    "projectile_speed": 40960,
     "projectile_blockable": true,
     "warheads": [
       {
@@ -281,7 +319,9 @@
         },
         "spread": 128,
         "falloff": [],
-        "delay": 0
+        "delay": 0,
+        "valid_stances": [],
+        "valid_targets": []
       }
     ]
   },
@@ -294,7 +334,10 @@
     "burst_delays": [],
     "valid_targets": [],
     "invalid_targets": [],
-    "projectile_speed": 682,
+    "projectile_kind": "Bullet",
+    "beam_duration": 0,
+    "beam_damage_interval": 0,
+    "projectile_speed": 40960,
     "projectile_blockable": true,
     "warheads": [
       {
@@ -316,7 +359,9 @@
         },
         "spread": 128,
         "falloff": [],
-        "delay": 0
+        "delay": 0,
+        "valid_stances": [],
+        "valid_targets": []
       }
     ]
   },
@@ -329,7 +374,10 @@
     "burst_delays": [],
     "valid_targets": [],
     "invalid_targets": [],
-    "projectile_speed": 682,
+    "projectile_kind": "Bullet",
+    "beam_duration": 0,
+    "beam_damage_interval": 0,
+    "projectile_speed": 40960,
     "projectile_blockable": true,
     "warheads": [
       {
@@ -351,7 +399,9 @@
         },
         "spread": 128,
         "falloff": [],
-        "delay": 0
+        "delay": 0,
+        "valid_stances": [],
+        "valid_targets": []
       }
     ]
   },
@@ -364,7 +414,10 @@
     "burst_delays": [],
     "valid_targets": [],
     "invalid_targets": [],
-    "projectile_speed": 682,
+    "projectile_kind": "Bullet",
+    "beam_duration": 0,
+    "beam_damage_interval": 0,
+    "projectile_speed": 40960,
     "projectile_blockable": true,
     "warheads": [
       {
@@ -386,7 +439,9 @@
         },
         "spread": 128,
         "falloff": [],
-        "delay": 0
+        "delay": 0,
+        "valid_stances": [],
+        "valid_targets": []
       }
     ]
   },
@@ -399,7 +454,10 @@
     "burst_delays": [],
     "valid_targets": [],
     "invalid_targets": [],
-    "projectile_speed": 682,
+    "projectile_kind": "Bullet",
+    "beam_duration": 0,
+    "beam_damage_interval": 0,
+    "projectile_speed": 40960,
     "projectile_blockable": true,
     "warheads": [
       {
@@ -421,7 +479,9 @@
         },
         "spread": 128,
         "falloff": [],
-        "delay": 0
+        "delay": 0,
+        "valid_stances": [],
+        "valid_targets": []
       }
     ]
   },
@@ -434,7 +494,10 @@
     "burst_delays": [],
     "valid_targets": [],
     "invalid_targets": [],
-    "projectile_speed": 682,
+    "projectile_kind": "Bullet",
+    "beam_duration": 0,
+    "beam_damage_interval": 0,
+    "projectile_speed": 40960,
     "projectile_blockable": true,
     "warheads": [
       {
@@ -456,7 +519,9 @@
         },
         "spread": 128,
         "falloff": [],
-        "delay": 0
+        "delay": 0,
+        "valid_stances": [],
+        "valid_targets": []
       }
     ]
   },
@@ -468,11 +533,12 @@
     "burst": 1,
     "burst_delays": [],
     "valid_targets": [],
-    "invalid_targets": [
-      "Underwater"
-    ],
-    "projectile_speed": 682,
-    "projectile_blockable": false,
+    "invalid_targets": [],
+    "projectile_kind": "Bullet",
+    "beam_duration": 0,
+    "beam_damage_interval": 0,
+    "projectile_speed": 40960,
+    "projectile_blockable": true,
     "warheads": [
       {
         "id": "Warhead@1Dam",
@@ -493,7 +559,9 @@
         },
         "spread": 128,
         "falloff": [],
-        "delay": 0
+        "delay": 0,
+        "valid_stances": [],
+        "valid_targets": []
       }
     ]
   },
@@ -505,11 +573,12 @@
     "burst": 2,
     "burst_delays": [],
     "valid_targets": [],
-    "invalid_targets": [
-      "Underwater"
-    ],
-    "projectile_speed": 682,
-    "projectile_blockable": false,
+    "invalid_targets": [],
+    "projectile_kind": "Bullet",
+    "beam_duration": 0,
+    "beam_damage_interval": 0,
+    "projectile_speed": 40960,
+    "projectile_blockable": true,
     "warheads": [
       {
         "id": "Warhead@1Dam",
@@ -530,7 +599,259 @@
         },
         "spread": 128,
         "falloff": [],
-        "delay": 0
+        "delay": 0,
+        "valid_stances": [],
+        "valid_targets": []
+      }
+    ]
+  },
+  "160mm": {
+    "id": "160mm",
+    "reload_delay": 100,
+    "range": 12288,
+    "min_range": null,
+    "burst": 1,
+    "burst_delays": [],
+    "valid_targets": [],
+    "invalid_targets": [],
+    "projectile_kind": "Bullet",
+    "beam_duration": 0,
+    "beam_damage_interval": 0,
+    "projectile_speed": 40960,
+    "projectile_blockable": true,
+    "warheads": [
+      {
+        "id": "Warhead@1Dam",
+        "type": "SpreadDamage",
+        "damage": 90,
+        "versus": {
+          "None": 100,
+          "Flak": 80,
+          "Plate": 60,
+          "Light": 80,
+          "Medium": 50,
+          "Heavy": 50,
+          "Wood": 100,
+          "Steel": 100,
+          "Concrete": 60,
+          "Drone": 100,
+          "Rocket": 100
+        },
+        "spread": 128,
+        "falloff": [],
+        "delay": 0,
+        "valid_stances": [],
+        "valid_targets": []
+      }
+    ]
+  },
+  "160mmE": {
+    "id": "160mmE",
+    "reload_delay": 100,
+    "range": 12288,
+    "min_range": null,
+    "burst": 2,
+    "burst_delays": [],
+    "valid_targets": [],
+    "invalid_targets": [],
+    "projectile_kind": "Bullet",
+    "beam_duration": 0,
+    "beam_damage_interval": 0,
+    "projectile_speed": 40960,
+    "projectile_blockable": true,
+    "warheads": [
+      {
+        "id": "Warhead@1Dam",
+        "type": "SpreadDamage",
+        "damage": 90,
+        "versus": {
+          "None": 100,
+          "Flak": 80,
+          "Plate": 60,
+          "Light": 80,
+          "Medium": 50,
+          "Heavy": 50,
+          "Wood": 100,
+          "Steel": 100,
+          "Concrete": 60,
+          "Drone": 100,
+          "Rocket": 100
+        },
+        "spread": 128,
+        "falloff": [],
+        "delay": 0,
+        "valid_stances": [],
+        "valid_targets": []
+      }
+    ]
+  },
+  "ArtilleryCannon": {
+    "id": "ArtilleryCannon",
+    "reload_delay": 60,
+    "range": 12288,
+    "min_range": 4096,
+    "burst": 1,
+    "burst_delays": [],
+    "valid_targets": [
+      "Ground",
+      "Water"
+    ],
+    "invalid_targets": [],
+    "projectile_kind": "Bullet",
+    "beam_duration": 0,
+    "beam_damage_interval": 0,
+    "projectile_speed": 204,
+    "projectile_blockable": false,
+    "warheads": [
+      {
+        "id": "Warhead@1Dam",
+        "type": "SpreadDamage",
+        "damage": 200,
+        "versus": {
+          "None": 30,
+          "Flak": 30,
+          "Plate": 30,
+          "Light": 40,
+          "Medium": 40,
+          "Heavy": 40,
+          "Wood": 100,
+          "Steel": 100,
+          "Concrete": 60,
+          "Drone": 100,
+          "Rocket": 100
+        },
+        "spread": 426,
+        "falloff": [],
+        "delay": 0,
+        "valid_stances": [],
+        "valid_targets": []
+      }
+    ]
+  },
+  "ArtilleryCannonE": {
+    "id": "ArtilleryCannonE",
+    "reload_delay": 70,
+    "range": 15360,
+    "min_range": 3072,
+    "burst": 1,
+    "burst_delays": [],
+    "valid_targets": [
+      "Ground",
+      "Water"
+    ],
+    "invalid_targets": [],
+    "projectile_kind": "Bullet",
+    "beam_duration": 0,
+    "beam_damage_interval": 0,
+    "projectile_speed": 204,
+    "projectile_blockable": false,
+    "warheads": [
+      {
+        "id": "Warhead@1Dam",
+        "type": "SpreadDamage",
+        "damage": 200,
+        "versus": {
+          "None": 30,
+          "Flak": 30,
+          "Plate": 30,
+          "Light": 40,
+          "Medium": 40,
+          "Heavy": 40,
+          "Wood": 100,
+          "Steel": 100,
+          "Concrete": 60,
+          "Drone": 100,
+          "Rocket": 100
+        },
+        "spread": 426,
+        "falloff": [],
+        "delay": 0,
+        "valid_stances": [],
+        "valid_targets": []
+      }
+    ]
+  },
+  "ArtilleryCannonBeacon": {
+    "id": "ArtilleryCannonBeacon",
+    "reload_delay": 100,
+    "range": 102400,
+    "min_range": 4096,
+    "burst": 1,
+    "burst_delays": [],
+    "valid_targets": [
+      "Beacon"
+    ],
+    "invalid_targets": [],
+    "projectile_kind": "Bullet",
+    "beam_duration": 0,
+    "beam_damage_interval": 0,
+    "projectile_speed": 204,
+    "projectile_blockable": false,
+    "warheads": [
+      {
+        "id": "Warhead@1Dam",
+        "type": "SpreadDamage",
+        "damage": 200,
+        "versus": {
+          "None": 30,
+          "Flak": 30,
+          "Plate": 30,
+          "Light": 40,
+          "Medium": 40,
+          "Heavy": 40,
+          "Wood": 100,
+          "Steel": 100,
+          "Concrete": 60,
+          "Drone": 100,
+          "Rocket": 100
+        },
+        "spread": 426,
+        "falloff": [],
+        "delay": 0,
+        "valid_stances": [],
+        "valid_targets": []
+      }
+    ]
+  },
+  "ArtilleryCannonBeaconE": {
+    "id": "ArtilleryCannonBeaconE",
+    "reload_delay": 120,
+    "range": 122880,
+    "min_range": 3072,
+    "burst": 1,
+    "burst_delays": [],
+    "valid_targets": [
+      "Beacon"
+    ],
+    "invalid_targets": [],
+    "projectile_kind": "Bullet",
+    "beam_duration": 0,
+    "beam_damage_interval": 0,
+    "projectile_speed": 204,
+    "projectile_blockable": false,
+    "warheads": [
+      {
+        "id": "Warhead@1Dam",
+        "type": "SpreadDamage",
+        "damage": 200,
+        "versus": {
+          "None": 30,
+          "Flak": 30,
+          "Plate": 30,
+          "Light": 40,
+          "Medium": 40,
+          "Heavy": 40,
+          "Wood": 100,
+          "Steel": 100,
+          "Concrete": 60,
+          "Drone": 100,
+          "Rocket": 100
+        },
+        "spread": 426,
+        "falloff": [],
+        "delay": 0,
+        "valid_stances": [],
+        "valid_targets": []
       }
     ]
   },
@@ -543,6 +864,9 @@
     "burst_delays": [],
     "valid_targets": [],
     "invalid_targets": [],
+    "projectile_kind": "",
+    "beam_duration": 0,
+    "beam_damage_interval": 0,
     "projectile_speed": null,
     "projectile_blockable": false,
     "warheads": [
@@ -571,7 +895,9 @@
           20,
           0
         ],
-        "delay": 0
+        "delay": 0,
+        "valid_stances": [],
+        "valid_targets": []
       }
     ]
   },
@@ -584,6 +910,9 @@
     "burst_delays": [],
     "valid_targets": [],
     "invalid_targets": [],
+    "projectile_kind": "",
+    "beam_duration": 0,
+    "beam_damage_interval": 0,
     "projectile_speed": null,
     "projectile_blockable": false,
     "warheads": [
@@ -612,7 +941,9 @@
           20,
           0
         ],
-        "delay": 0
+        "delay": 0,
+        "valid_stances": [],
+        "valid_targets": []
       }
     ]
   },
@@ -625,6 +956,9 @@
     "burst_delays": [],
     "valid_targets": [],
     "invalid_targets": [],
+    "projectile_kind": "",
+    "beam_duration": 0,
+    "beam_damage_interval": 0,
     "projectile_speed": null,
     "projectile_blockable": false,
     "warheads": [
@@ -653,7 +987,9 @@
           20,
           0
         ],
-        "delay": 0
+        "delay": 0,
+        "valid_stances": [],
+        "valid_targets": []
       }
     ]
   },
@@ -666,6 +1002,9 @@
     "burst_delays": [],
     "valid_targets": [],
     "invalid_targets": [],
+    "projectile_kind": "",
+    "beam_duration": 0,
+    "beam_damage_interval": 0,
     "projectile_speed": null,
     "projectile_blockable": false,
     "warheads": [
@@ -684,7 +1023,9 @@
           7,
           0
         ],
-        "delay": 0
+        "delay": 0,
+        "valid_stances": [],
+        "valid_targets": []
       }
     ]
   },
@@ -697,6 +1038,9 @@
     "burst_delays": [],
     "valid_targets": [],
     "invalid_targets": [],
+    "projectile_kind": "",
+    "beam_duration": 0,
+    "beam_damage_interval": 0,
     "projectile_speed": null,
     "projectile_blockable": false,
     "warheads": [
@@ -715,7 +1059,9 @@
           7,
           0
         ],
-        "delay": 0
+        "delay": 0,
+        "valid_stances": [],
+        "valid_targets": []
       }
     ]
   },
@@ -728,6 +1074,9 @@
     "burst_delays": [],
     "valid_targets": [],
     "invalid_targets": [],
+    "projectile_kind": "",
+    "beam_duration": 0,
+    "beam_damage_interval": 0,
     "projectile_speed": null,
     "projectile_blockable": false,
     "warheads": [
@@ -746,7 +1095,9 @@
           7,
           0
         ],
-        "delay": 0
+        "delay": 0,
+        "valid_stances": [],
+        "valid_targets": []
       }
     ]
   },
@@ -759,6 +1110,9 @@
     "burst_delays": [],
     "valid_targets": [],
     "invalid_targets": [],
+    "projectile_kind": "Bullet",
+    "beam_duration": 0,
+    "beam_damage_interval": 0,
     "projectile_speed": 425,
     "projectile_blockable": false,
     "warheads": [
@@ -789,7 +1143,9 @@
           7,
           0
         ],
-        "delay": 100
+        "delay": 100,
+        "valid_stances": [],
+        "valid_targets": []
       }
     ]
   },
@@ -802,6 +1158,9 @@
     "burst_delays": [],
     "valid_targets": [],
     "invalid_targets": [],
+    "projectile_kind": "Bullet",
+    "beam_duration": 0,
+    "beam_damage_interval": 0,
     "projectile_speed": 425,
     "projectile_blockable": false,
     "warheads": [
@@ -832,7 +1191,9 @@
           7,
           0
         ],
-        "delay": 100
+        "delay": 100,
+        "valid_stances": [],
+        "valid_targets": []
       }
     ]
   },
@@ -845,6 +1206,9 @@
     "burst_delays": [],
     "valid_targets": [],
     "invalid_targets": [],
+    "projectile_kind": "Bullet",
+    "beam_duration": 0,
+    "beam_damage_interval": 0,
     "projectile_speed": 425,
     "projectile_blockable": false,
     "warheads": [
@@ -855,36 +1219,9 @@
         "versus": {},
         "spread": null,
         "falloff": [],
-        "delay": 0
-      }
-    ]
-  },
-  "CRNuke": {
-    "id": "CRNuke",
-    "reload_delay": 50,
-    "range": 1873,
-    "min_range": null,
-    "burst": 1,
-    "burst_delays": [],
-    "valid_targets": [],
-    "invalid_targets": [],
-    "projectile_speed": 425,
-    "projectile_blockable": false,
-    "warheads": [
-      {
-        "id": "Warhead@1Dam",
-        "type": "SpreadDamage",
-        "damage": 200,
-        "versus": {
-          "Light": 90,
-          "Medium": 50,
-          "Heavy": 50,
-          "Wood": 60,
-          "Steel": 150
-        },
-        "spread": 426,
-        "falloff": [],
-        "delay": 0
+        "delay": 0,
+        "valid_stances": [],
+        "valid_targets": []
       }
     ]
   },
@@ -897,6 +1234,9 @@
     "burst_delays": [],
     "valid_targets": [],
     "invalid_targets": [],
+    "projectile_kind": "Bullet",
+    "beam_duration": 0,
+    "beam_damage_interval": 0,
     "projectile_speed": 1706,
     "projectile_blockable": true,
     "warheads": [
@@ -927,7 +1267,9 @@
           256,
           0
         ],
-        "delay": 0
+        "delay": 0,
+        "valid_stances": [],
+        "valid_targets": []
       }
     ]
   },
@@ -940,6 +1282,9 @@
     "burst_delays": [],
     "valid_targets": [],
     "invalid_targets": [],
+    "projectile_kind": "Bullet",
+    "beam_duration": 0,
+    "beam_damage_interval": 0,
     "projectile_speed": 1706,
     "projectile_blockable": true,
     "warheads": [
@@ -970,7 +1315,9 @@
           256,
           0
         ],
-        "delay": 0
+        "delay": 0,
+        "valid_stances": [],
+        "valid_targets": []
       }
     ]
   },
@@ -987,6 +1334,9 @@
       "Air"
     ],
     "invalid_targets": [],
+    "projectile_kind": "",
+    "beam_duration": 0,
+    "beam_damage_interval": 0,
     "projectile_speed": null,
     "projectile_blockable": false,
     "warheads": [
@@ -1020,7 +1370,13 @@
           4,
           2
         ],
-        "delay": 0
+        "delay": 0,
+        "valid_stances": [],
+        "valid_targets": [
+          "Ground",
+          "Water",
+          "Air"
+        ]
       }
     ]
   },
@@ -1037,6 +1393,9 @@
       "Air"
     ],
     "invalid_targets": [],
+    "projectile_kind": "",
+    "beam_duration": 0,
+    "beam_damage_interval": 0,
     "projectile_speed": null,
     "projectile_blockable": false,
     "warheads": [
@@ -1070,7 +1429,13 @@
           4,
           2
         ],
-        "delay": 25
+        "delay": 25,
+        "valid_stances": [],
+        "valid_targets": [
+          "Ground",
+          "Water",
+          "Air"
+        ]
       }
     ]
   },
@@ -1087,6 +1452,9 @@
       "Air"
     ],
     "invalid_targets": [],
+    "projectile_kind": "",
+    "beam_duration": 0,
+    "beam_damage_interval": 0,
     "projectile_speed": null,
     "projectile_blockable": false,
     "warheads": [
@@ -1117,7 +1485,13 @@
           7,
           0
         ],
-        "delay": 0
+        "delay": 0,
+        "valid_stances": [],
+        "valid_targets": [
+          "Ground",
+          "Water",
+          "Air"
+        ]
       },
       {
         "id": "Warhead@4Dam_areanuke1",
@@ -1146,7 +1520,13 @@
           7,
           0
         ],
-        "delay": 5
+        "delay": 5,
+        "valid_stances": [],
+        "valid_targets": [
+          "Ground",
+          "Water",
+          "Air"
+        ]
       },
       {
         "id": "Warhead@7Dam_areanuke2",
@@ -1175,7 +1555,13 @@
           7,
           0
         ],
-        "delay": 10
+        "delay": 10,
+        "valid_stances": [],
+        "valid_targets": [
+          "Ground",
+          "Water",
+          "Air"
+        ]
       },
       {
         "id": "Warhead@9Dam_areanuke3",
@@ -1204,7 +1590,501 @@
           7,
           0
         ],
-        "delay": 15
+        "delay": 15,
+        "valid_stances": [],
+        "valid_targets": [
+          "Ground",
+          "Water",
+          "Air"
+        ]
+      }
+    ]
+  },
+  "MigDeath": {
+    "id": "MigDeath",
+    "reload_delay": 0,
+    "range": 1873,
+    "min_range": null,
+    "burst": 1,
+    "burst_delays": [],
+    "valid_targets": [],
+    "invalid_targets": [],
+    "projectile_kind": "Bullet",
+    "beam_duration": 0,
+    "beam_damage_interval": 0,
+    "projectile_speed": 425,
+    "projectile_blockable": false,
+    "warheads": [
+      {
+        "id": "Warhead@1Dam",
+        "type": "SpreadDamage",
+        "damage": 1,
+        "versus": {
+          "None": 1,
+          "Flak": 1,
+          "Plate": 1,
+          "Light": 1,
+          "Medium": 1,
+          "Heavy": 1,
+          "Wood": 1,
+          "Steel": 1,
+          "Concrete": 1,
+          "Drone": 1,
+          "Rocket": 1
+        },
+        "spread": 213,
+        "falloff": [
+          1000,
+          368,
+          135,
+          50,
+          18,
+          7,
+          0
+        ],
+        "delay": 100,
+        "valid_stances": [],
+        "valid_targets": []
+      }
+    ]
+  },
+  "DominatorWH": {
+    "id": "DominatorWH",
+    "reload_delay": 0,
+    "range": 5120,
+    "min_range": null,
+    "burst": 1,
+    "burst_delays": [],
+    "valid_targets": [],
+    "invalid_targets": [],
+    "projectile_kind": "Bullet",
+    "beam_duration": 0,
+    "beam_damage_interval": 0,
+    "projectile_speed": 425,
+    "projectile_blockable": false,
+    "warheads": [
+      {
+        "id": "Warhead@1Dam",
+        "type": "SpreadDamage",
+        "damage": 450,
+        "versus": {
+          "None": 0,
+          "Flak": 0,
+          "Plate": 0,
+          "Light": 0,
+          "Medium": 0,
+          "Heavy": 0,
+          "Wood": 100,
+          "Steel": 100,
+          "Concrete": 6,
+          "Drone": 0,
+          "Rocket": 0
+        },
+        "spread": 1024,
+        "falloff": [],
+        "delay": 5,
+        "valid_stances": [],
+        "valid_targets": []
+      }
+    ]
+  },
+  "LightningStormWeapon1": {
+    "id": "LightningStormWeapon1",
+    "reload_delay": 0,
+    "range": 7168,
+    "min_range": null,
+    "burst": 1,
+    "burst_delays": [],
+    "valid_targets": [],
+    "invalid_targets": [],
+    "projectile_kind": "InstantHit",
+    "beam_duration": 0,
+    "beam_damage_interval": 0,
+    "projectile_speed": 425,
+    "projectile_blockable": false,
+    "warheads": [
+      {
+        "id": "Warhead@1Dam",
+        "type": "SpreadDamage",
+        "damage": 45,
+        "versus": {
+          "None": 0,
+          "Flak": 0,
+          "Plate": 0,
+          "Light": 0,
+          "Medium": 0,
+          "Heavy": 0,
+          "Wood": 100,
+          "Steel": 100,
+          "Concrete": 6,
+          "Drone": 0,
+          "Rocket": 0
+        },
+        "spread": 1024,
+        "falloff": [],
+        "delay": 5,
+        "valid_stances": [],
+        "valid_targets": []
+      }
+    ]
+  },
+  "LightningStormWeapon2": {
+    "id": "LightningStormWeapon2",
+    "reload_delay": 0,
+    "range": 7168,
+    "min_range": null,
+    "burst": 1,
+    "burst_delays": [],
+    "valid_targets": [],
+    "invalid_targets": [],
+    "projectile_kind": "InstantHit",
+    "beam_duration": 0,
+    "beam_damage_interval": 0,
+    "projectile_speed": 425,
+    "projectile_blockable": false,
+    "warheads": [
+      {
+        "id": "Warhead@1Dam",
+        "type": "SpreadDamage",
+        "damage": 45,
+        "versus": {
+          "None": 0,
+          "Flak": 0,
+          "Plate": 0,
+          "Light": 0,
+          "Medium": 0,
+          "Heavy": 0,
+          "Wood": 100,
+          "Steel": 100,
+          "Concrete": 6,
+          "Drone": 0,
+          "Rocket": 0
+        },
+        "spread": 1024,
+        "falloff": [],
+        "delay": 5,
+        "valid_stances": [],
+        "valid_targets": []
+      }
+    ]
+  },
+  "LightningStormWeapon3": {
+    "id": "LightningStormWeapon3",
+    "reload_delay": 0,
+    "range": 7168,
+    "min_range": null,
+    "burst": 1,
+    "burst_delays": [],
+    "valid_targets": [],
+    "invalid_targets": [],
+    "projectile_kind": "InstantHit",
+    "beam_duration": 0,
+    "beam_damage_interval": 0,
+    "projectile_speed": 425,
+    "projectile_blockable": false,
+    "warheads": [
+      {
+        "id": "Warhead@1Dam",
+        "type": "SpreadDamage",
+        "damage": 45,
+        "versus": {
+          "None": 0,
+          "Flak": 0,
+          "Plate": 0,
+          "Light": 0,
+          "Medium": 0,
+          "Heavy": 0,
+          "Wood": 100,
+          "Steel": 100,
+          "Concrete": 6,
+          "Drone": 0,
+          "Rocket": 0
+        },
+        "spread": 1024,
+        "falloff": [],
+        "delay": 5,
+        "valid_stances": [],
+        "valid_targets": []
+      }
+    ]
+  },
+  "LightningStormWeapon4": {
+    "id": "LightningStormWeapon4",
+    "reload_delay": 0,
+    "range": 7168,
+    "min_range": null,
+    "burst": 1,
+    "burst_delays": [],
+    "valid_targets": [],
+    "invalid_targets": [],
+    "projectile_kind": "InstantHit",
+    "beam_duration": 0,
+    "beam_damage_interval": 0,
+    "projectile_speed": 425,
+    "projectile_blockable": false,
+    "warheads": [
+      {
+        "id": "Warhead@1Dam",
+        "type": "SpreadDamage",
+        "damage": 45,
+        "versus": {
+          "None": 0,
+          "Flak": 0,
+          "Plate": 0,
+          "Light": 0,
+          "Medium": 0,
+          "Heavy": 0,
+          "Wood": 100,
+          "Steel": 100,
+          "Concrete": 6,
+          "Drone": 0,
+          "Rocket": 0
+        },
+        "spread": 1024,
+        "falloff": [],
+        "delay": 5,
+        "valid_stances": [],
+        "valid_targets": []
+      }
+    ]
+  },
+  "LightningStormWeapon5": {
+    "id": "LightningStormWeapon5",
+    "reload_delay": 0,
+    "range": 7168,
+    "min_range": null,
+    "burst": 1,
+    "burst_delays": [],
+    "valid_targets": [],
+    "invalid_targets": [],
+    "projectile_kind": "InstantHit",
+    "beam_duration": 0,
+    "beam_damage_interval": 0,
+    "projectile_speed": 425,
+    "projectile_blockable": false,
+    "warheads": [
+      {
+        "id": "Warhead@1Dam",
+        "type": "SpreadDamage",
+        "damage": 45,
+        "versus": {
+          "None": 0,
+          "Flak": 0,
+          "Plate": 0,
+          "Light": 0,
+          "Medium": 0,
+          "Heavy": 0,
+          "Wood": 100,
+          "Steel": 100,
+          "Concrete": 6,
+          "Drone": 0,
+          "Rocket": 0
+        },
+        "spread": 1024,
+        "falloff": [],
+        "delay": 5,
+        "valid_stances": [],
+        "valid_targets": []
+      }
+    ]
+  },
+  "LightningStormWeapon6": {
+    "id": "LightningStormWeapon6",
+    "reload_delay": 0,
+    "range": 7168,
+    "min_range": null,
+    "burst": 1,
+    "burst_delays": [],
+    "valid_targets": [],
+    "invalid_targets": [],
+    "projectile_kind": "InstantHit",
+    "beam_duration": 0,
+    "beam_damage_interval": 0,
+    "projectile_speed": 425,
+    "projectile_blockable": false,
+    "warheads": [
+      {
+        "id": "Warhead@1Dam",
+        "type": "SpreadDamage",
+        "damage": 45,
+        "versus": {
+          "None": 0,
+          "Flak": 0,
+          "Plate": 0,
+          "Light": 0,
+          "Medium": 0,
+          "Heavy": 0,
+          "Wood": 100,
+          "Steel": 100,
+          "Concrete": 6,
+          "Drone": 0,
+          "Rocket": 0
+        },
+        "spread": 1024,
+        "falloff": [],
+        "delay": 5,
+        "valid_stances": [],
+        "valid_targets": []
+      }
+    ]
+  },
+  "LightningStormWeapon7": {
+    "id": "LightningStormWeapon7",
+    "reload_delay": 0,
+    "range": 7168,
+    "min_range": null,
+    "burst": 1,
+    "burst_delays": [],
+    "valid_targets": [],
+    "invalid_targets": [],
+    "projectile_kind": "InstantHit",
+    "beam_duration": 0,
+    "beam_damage_interval": 0,
+    "projectile_speed": 425,
+    "projectile_blockable": false,
+    "warheads": [
+      {
+        "id": "Warhead@1Dam",
+        "type": "SpreadDamage",
+        "damage": 45,
+        "versus": {
+          "None": 0,
+          "Flak": 0,
+          "Plate": 0,
+          "Light": 0,
+          "Medium": 0,
+          "Heavy": 0,
+          "Wood": 100,
+          "Steel": 100,
+          "Concrete": 6,
+          "Drone": 0,
+          "Rocket": 0
+        },
+        "spread": 1024,
+        "falloff": [],
+        "delay": 5,
+        "valid_stances": [],
+        "valid_targets": []
+      }
+    ]
+  },
+  "LightningStormWeapon8": {
+    "id": "LightningStormWeapon8",
+    "reload_delay": 0,
+    "range": 7168,
+    "min_range": null,
+    "burst": 1,
+    "burst_delays": [],
+    "valid_targets": [],
+    "invalid_targets": [],
+    "projectile_kind": "InstantHit",
+    "beam_duration": 0,
+    "beam_damage_interval": 0,
+    "projectile_speed": 425,
+    "projectile_blockable": false,
+    "warheads": [
+      {
+        "id": "Warhead@1Dam",
+        "type": "SpreadDamage",
+        "damage": 45,
+        "versus": {
+          "None": 0,
+          "Flak": 0,
+          "Plate": 0,
+          "Light": 0,
+          "Medium": 0,
+          "Heavy": 0,
+          "Wood": 100,
+          "Steel": 100,
+          "Concrete": 6,
+          "Drone": 0,
+          "Rocket": 0
+        },
+        "spread": 1024,
+        "falloff": [],
+        "delay": 5,
+        "valid_stances": [],
+        "valid_targets": []
+      }
+    ]
+  },
+  "LightningStormWeapon9": {
+    "id": "LightningStormWeapon9",
+    "reload_delay": 0,
+    "range": 7168,
+    "min_range": null,
+    "burst": 1,
+    "burst_delays": [],
+    "valid_targets": [],
+    "invalid_targets": [],
+    "projectile_kind": "InstantHit",
+    "beam_duration": 0,
+    "beam_damage_interval": 0,
+    "projectile_speed": 425,
+    "projectile_blockable": false,
+    "warheads": [
+      {
+        "id": "Warhead@1Dam",
+        "type": "SpreadDamage",
+        "damage": 45,
+        "versus": {
+          "None": 0,
+          "Flak": 0,
+          "Plate": 0,
+          "Light": 0,
+          "Medium": 0,
+          "Heavy": 0,
+          "Wood": 100,
+          "Steel": 100,
+          "Concrete": 6,
+          "Drone": 0,
+          "Rocket": 0
+        },
+        "spread": 1024,
+        "falloff": [],
+        "delay": 5,
+        "valid_stances": [],
+        "valid_targets": []
+      }
+    ]
+  },
+  "LightningStormWeapon10": {
+    "id": "LightningStormWeapon10",
+    "reload_delay": 0,
+    "range": 7168,
+    "min_range": null,
+    "burst": 1,
+    "burst_delays": [],
+    "valid_targets": [],
+    "invalid_targets": [],
+    "projectile_kind": "InstantHit",
+    "beam_duration": 0,
+    "beam_damage_interval": 0,
+    "projectile_speed": 425,
+    "projectile_blockable": false,
+    "warheads": [
+      {
+        "id": "Warhead@1Dam",
+        "type": "SpreadDamage",
+        "damage": 45,
+        "versus": {
+          "None": 0,
+          "Flak": 0,
+          "Plate": 0,
+          "Light": 0,
+          "Medium": 0,
+          "Heavy": 0,
+          "Wood": 100,
+          "Steel": 100,
+          "Concrete": 6,
+          "Drone": 0,
+          "Rocket": 0
+        },
+        "spread": 1024,
+        "falloff": [],
+        "delay": 5,
+        "valid_stances": [],
+        "valid_targets": []
       }
     ]
   },
@@ -1217,6 +2097,9 @@
     "burst_delays": [],
     "valid_targets": [],
     "invalid_targets": [],
+    "projectile_kind": "",
+    "beam_duration": 0,
+    "beam_damage_interval": 0,
     "projectile_speed": null,
     "projectile_blockable": false,
     "warheads": [
@@ -1227,7 +2110,131 @@
         "versus": {},
         "spread": null,
         "falloff": [],
-        "delay": 0
+        "delay": 0,
+        "valid_stances": [],
+        "valid_targets": []
+      }
+    ]
+  },
+  "V3WH": {
+    "id": "V3WH",
+    "reload_delay": 1,
+    "range": null,
+    "min_range": null,
+    "burst": 1,
+    "burst_delays": [],
+    "valid_targets": [],
+    "invalid_targets": [],
+    "projectile_kind": "",
+    "beam_duration": 0,
+    "beam_damage_interval": 0,
+    "projectile_speed": null,
+    "projectile_blockable": false,
+    "warheads": [
+      {
+        "id": "Warhead@1Dam",
+        "type": "SpreadDamage",
+        "damage": 300,
+        "versus": {
+          "None": 100,
+          "Flak": 90,
+          "Plate": 80,
+          "Light": 90,
+          "Medium": 70,
+          "Heavy": 70,
+          "Wood": 100,
+          "Steel": 100,
+          "Concrete": 50,
+          "Drone": 80,
+          "Rocket": 0
+        },
+        "spread": null,
+        "falloff": [],
+        "delay": 0,
+        "valid_stances": [],
+        "valid_targets": []
+      }
+    ]
+  },
+  "V3EWH": {
+    "id": "V3EWH",
+    "reload_delay": 1,
+    "range": null,
+    "min_range": null,
+    "burst": 1,
+    "burst_delays": [],
+    "valid_targets": [],
+    "invalid_targets": [],
+    "projectile_kind": "",
+    "beam_duration": 0,
+    "beam_damage_interval": 0,
+    "projectile_speed": null,
+    "projectile_blockable": false,
+    "warheads": [
+      {
+        "id": "Warhead@1Dam",
+        "type": "SpreadDamage",
+        "damage": 400,
+        "versus": {
+          "None": 100,
+          "Flak": 90,
+          "Plate": 80,
+          "Light": 80,
+          "Medium": 70,
+          "Heavy": 70,
+          "Wood": 100,
+          "Steel": 75,
+          "Concrete": 50,
+          "Drone": 80,
+          "Rocket": 0
+        },
+        "spread": null,
+        "falloff": [],
+        "delay": 0,
+        "valid_stances": [],
+        "valid_targets": []
+      }
+    ]
+  },
+  "VirusCloudDamage": {
+    "id": "VirusCloudDamage",
+    "reload_delay": 5,
+    "range": null,
+    "min_range": null,
+    "burst": 1,
+    "burst_delays": [],
+    "valid_targets": [],
+    "invalid_targets": [
+      "Air"
+    ],
+    "projectile_kind": "",
+    "beam_duration": 0,
+    "beam_damage_interval": 0,
+    "projectile_speed": null,
+    "projectile_blockable": false,
+    "warheads": [
+      {
+        "id": "Warhead@1Dam",
+        "type": "SpreadDamage",
+        "damage": 200,
+        "versus": {
+          "None": 300,
+          "Flak": 0,
+          "Plate": 0,
+          "Light": 0,
+          "Medium": 0,
+          "Heavy": 0,
+          "Wood": 0,
+          "Steel": 0,
+          "Concrete": 0,
+          "Drone": 0,
+          "Rocket": 0
+        },
+        "spread": 164,
+        "falloff": [],
+        "delay": 0,
+        "valid_stances": [],
+        "valid_targets": []
       }
     ]
   },
@@ -1240,7 +2247,10 @@
     "burst_delays": [],
     "valid_targets": [],
     "invalid_targets": [],
-    "projectile_speed": 341,
+    "projectile_kind": "Bullet",
+    "beam_duration": 0,
+    "beam_damage_interval": 0,
+    "projectile_speed": 51200,
     "projectile_blockable": true,
     "warheads": [
       {
@@ -1262,7 +2272,9 @@
         },
         "spread": 64,
         "falloff": [],
-        "delay": 0
+        "delay": 0,
+        "valid_stances": [],
+        "valid_targets": []
       }
     ]
   },
@@ -1275,7 +2287,10 @@
     "burst_delays": [],
     "valid_targets": [],
     "invalid_targets": [],
-    "projectile_speed": 341,
+    "projectile_kind": "Bullet",
+    "beam_duration": 0,
+    "beam_damage_interval": 0,
+    "projectile_speed": 51200,
     "projectile_blockable": true,
     "warheads": [
       {
@@ -1297,7 +2312,9 @@
         },
         "spread": 64,
         "falloff": [],
-        "delay": 0
+        "delay": 0,
+        "valid_stances": [],
+        "valid_targets": []
       }
     ]
   },
@@ -1310,7 +2327,10 @@
     "burst_delays": [],
     "valid_targets": [],
     "invalid_targets": [],
-    "projectile_speed": 341,
+    "projectile_kind": "Bullet",
+    "beam_duration": 0,
+    "beam_damage_interval": 0,
+    "projectile_speed": 51200,
     "projectile_blockable": true,
     "warheads": [
       {
@@ -1332,7 +2352,9 @@
         },
         "spread": 64,
         "falloff": [],
-        "delay": 0
+        "delay": 0,
+        "valid_stances": [],
+        "valid_targets": []
       }
     ]
   },
@@ -1347,6 +2369,9 @@
       "Air"
     ],
     "invalid_targets": [],
+    "projectile_kind": "Bullet",
+    "beam_duration": 0,
+    "beam_damage_interval": 0,
     "projectile_speed": 102400,
     "projectile_blockable": true,
     "warheads": [
@@ -1369,7 +2394,11 @@
         },
         "spread": 120,
         "falloff": [],
-        "delay": 0
+        "delay": 0,
+        "valid_stances": [],
+        "valid_targets": [
+          "Air"
+        ]
       }
     ]
   },
@@ -1384,6 +2413,9 @@
       "Air"
     ],
     "invalid_targets": [],
+    "projectile_kind": "Bullet",
+    "beam_duration": 0,
+    "beam_damage_interval": 0,
     "projectile_speed": 102400,
     "projectile_blockable": true,
     "warheads": [
@@ -1406,7 +2438,11 @@
         },
         "spread": 120,
         "falloff": [],
-        "delay": 0
+        "delay": 0,
+        "valid_stances": [],
+        "valid_targets": [
+          "Air"
+        ]
       }
     ]
   },
@@ -1422,7 +2458,10 @@
       "Water"
     ],
     "invalid_targets": [],
-    "projectile_speed": 341,
+    "projectile_kind": "Bullet",
+    "beam_duration": 0,
+    "beam_damage_interval": 0,
+    "projectile_speed": 51200,
     "projectile_blockable": true,
     "warheads": [
       {
@@ -1444,7 +2483,9 @@
         },
         "spread": 64,
         "falloff": [],
-        "delay": 0
+        "delay": 0,
+        "valid_stances": [],
+        "valid_targets": []
       }
     ]
   },
@@ -1459,6 +2500,9 @@
       "Air"
     ],
     "invalid_targets": [],
+    "projectile_kind": "Bullet",
+    "beam_duration": 0,
+    "beam_damage_interval": 0,
     "projectile_speed": 102400,
     "projectile_blockable": true,
     "warheads": [
@@ -1481,7 +2525,11 @@
         },
         "spread": 120,
         "falloff": [],
-        "delay": 0
+        "delay": 0,
+        "valid_stances": [],
+        "valid_targets": [
+          "Air"
+        ]
       }
     ]
   },
@@ -1496,6 +2544,9 @@
       "Air"
     ],
     "invalid_targets": [],
+    "projectile_kind": "Bullet",
+    "beam_duration": 0,
+    "beam_damage_interval": 0,
     "projectile_speed": 102400,
     "projectile_blockable": true,
     "warheads": [
@@ -1518,7 +2569,107 @@
         },
         "spread": 120,
         "falloff": [],
-        "delay": 0
+        "delay": 0,
+        "valid_stances": [],
+        "valid_targets": [
+          "Air"
+        ]
+      }
+    ]
+  },
+  "Flare": {
+    "id": "Flare",
+    "reload_delay": 60,
+    "range": 12288,
+    "min_range": null,
+    "burst": 1,
+    "burst_delays": [],
+    "valid_targets": [
+      "Structure"
+    ],
+    "invalid_targets": [
+      "Infantry",
+      "Vehicle",
+      "Ship"
+    ],
+    "projectile_kind": "LaserZap",
+    "beam_duration": 15,
+    "beam_damage_interval": 0,
+    "projectile_speed": null,
+    "projectile_blockable": false,
+    "warheads": [
+      {
+        "id": "Warhead@1Dam",
+        "type": "SpreadDamage",
+        "damage": 0,
+        "versus": {
+          "None": 0,
+          "Flak": 0,
+          "Plate": 0,
+          "Light": 0,
+          "Medium": 0,
+          "Heavy": 0,
+          "Wood": 1,
+          "Steel": 1,
+          "Concrete": 1,
+          "Drone": 0,
+          "Rocket": 0
+        },
+        "spread": 0,
+        "falloff": [],
+        "delay": 0,
+        "valid_stances": [],
+        "valid_targets": [
+          "Structure"
+        ]
+      }
+    ]
+  },
+  "FlareE": {
+    "id": "FlareE",
+    "reload_delay": 60,
+    "range": 12288,
+    "min_range": null,
+    "burst": 1,
+    "burst_delays": [],
+    "valid_targets": [
+      "Structure"
+    ],
+    "invalid_targets": [
+      "Infantry",
+      "Vehicle",
+      "Ship"
+    ],
+    "projectile_kind": "LaserZap",
+    "beam_duration": 15,
+    "beam_damage_interval": 0,
+    "projectile_speed": null,
+    "projectile_blockable": false,
+    "warheads": [
+      {
+        "id": "Warhead@1Dam",
+        "type": "SpreadDamage",
+        "damage": 0,
+        "versus": {
+          "None": 0,
+          "Flak": 0,
+          "Plate": 0,
+          "Light": 0,
+          "Medium": 0,
+          "Heavy": 0,
+          "Wood": 1,
+          "Steel": 1,
+          "Concrete": 1,
+          "Drone": 0,
+          "Rocket": 0
+        },
+        "spread": 0,
+        "falloff": [],
+        "delay": 0,
+        "valid_stances": [],
+        "valid_targets": [
+          "Structure"
+        ]
       }
     ]
   },
@@ -1533,6 +2684,9 @@
       "Infantry"
     ],
     "invalid_targets": [],
+    "projectile_kind": "",
+    "beam_duration": 0,
+    "beam_damage_interval": 0,
     "projectile_speed": null,
     "projectile_blockable": false,
     "warheads": [
@@ -1555,7 +2709,11 @@
         },
         "spread": null,
         "falloff": [],
-        "delay": 0
+        "delay": 0,
+        "valid_stances": [],
+        "valid_targets": [
+          "Infantry"
+        ]
       }
     ]
   },
@@ -1570,6 +2728,9 @@
       "Infantry"
     ],
     "invalid_targets": [],
+    "projectile_kind": "",
+    "beam_duration": 0,
+    "beam_damage_interval": 0,
     "projectile_speed": null,
     "projectile_blockable": false,
     "warheads": [
@@ -1592,7 +2753,11 @@
         },
         "spread": null,
         "falloff": [],
-        "delay": 0
+        "delay": 0,
+        "valid_stances": [],
+        "valid_targets": [
+          "Infantry"
+        ]
       }
     ]
   },
@@ -1607,6 +2772,9 @@
       "Ground"
     ],
     "invalid_targets": [],
+    "projectile_kind": "",
+    "beam_duration": 0,
+    "beam_damage_interval": 0,
     "projectile_speed": null,
     "projectile_blockable": false,
     "warheads": [
@@ -1617,7 +2785,9 @@
         "versus": {},
         "spread": 213,
         "falloff": [],
-        "delay": 0
+        "delay": 0,
+        "valid_stances": [],
+        "valid_targets": []
       }
     ]
   },
@@ -1632,6 +2802,9 @@
       "Ground"
     ],
     "invalid_targets": [],
+    "projectile_kind": "",
+    "beam_duration": 0,
+    "beam_damage_interval": 0,
     "projectile_speed": null,
     "projectile_blockable": false,
     "warheads": [
@@ -1642,7 +2815,9 @@
         "versus": {},
         "spread": 213,
         "falloff": [],
-        "delay": 0
+        "delay": 0,
+        "valid_stances": [],
+        "valid_targets": []
       }
     ]
   },
@@ -1657,6 +2832,9 @@
       "Ground"
     ],
     "invalid_targets": [],
+    "projectile_kind": "",
+    "beam_duration": 0,
+    "beam_damage_interval": 0,
     "projectile_speed": null,
     "projectile_blockable": false,
     "warheads": [
@@ -1667,7 +2845,9 @@
         "versus": {},
         "spread": 213,
         "falloff": [],
-        "delay": 0
+        "delay": 0,
+        "valid_stances": [],
+        "valid_targets": []
       }
     ]
   },
@@ -1683,6 +2863,9 @@
       "Underwater"
     ],
     "invalid_targets": [],
+    "projectile_kind": "",
+    "beam_duration": 0,
+    "beam_damage_interval": 0,
     "projectile_speed": null,
     "projectile_blockable": false,
     "warheads": [
@@ -1693,7 +2876,323 @@
         "versus": {},
         "spread": 213,
         "falloff": [],
-        "delay": 0
+        "delay": 0,
+        "valid_stances": [],
+        "valid_targets": [
+          "Water",
+          "Underwater"
+        ]
+      }
+    ]
+  },
+  "Punch": {
+    "id": "Punch",
+    "reload_delay": 60,
+    "range": 1520,
+    "min_range": null,
+    "burst": 1,
+    "burst_delays": [],
+    "valid_targets": [
+      "Ground"
+    ],
+    "invalid_targets": [],
+    "projectile_kind": "InstantHit",
+    "beam_duration": 0,
+    "beam_damage_interval": 0,
+    "projectile_speed": 600,
+    "projectile_blockable": false,
+    "warheads": [
+      {
+        "id": "Warhead@1Dam",
+        "type": "SpreadDamage",
+        "damage": 100,
+        "versus": {
+          "None": 100,
+          "Flak": 100,
+          "Plate": 100,
+          "Light": 0,
+          "Medium": 0,
+          "Heavy": 0,
+          "Wood": 30,
+          "Steel": 30,
+          "Concrete": 20,
+          "Drone": 200,
+          "Rocket": 100
+        },
+        "spread": null,
+        "falloff": [],
+        "delay": 0,
+        "valid_stances": [],
+        "valid_targets": [
+          "Infantry",
+          "Structure"
+        ]
+      }
+    ]
+  },
+  "PunchE": {
+    "id": "PunchE",
+    "reload_delay": 60,
+    "range": 1520,
+    "min_range": null,
+    "burst": 1,
+    "burst_delays": [],
+    "valid_targets": [
+      "Ground"
+    ],
+    "invalid_targets": [],
+    "projectile_kind": "InstantHit",
+    "beam_duration": 0,
+    "beam_damage_interval": 0,
+    "projectile_speed": 600,
+    "projectile_blockable": false,
+    "warheads": [
+      {
+        "id": "Warhead@1Dam",
+        "type": "SpreadDamage",
+        "damage": 100,
+        "versus": {
+          "None": 100,
+          "Flak": 100,
+          "Plate": 100,
+          "Light": 0,
+          "Medium": 0,
+          "Heavy": 0,
+          "Wood": 30,
+          "Steel": 30,
+          "Concrete": 20,
+          "Drone": 200,
+          "Rocket": 100
+        },
+        "spread": null,
+        "falloff": [],
+        "delay": 0,
+        "valid_stances": [],
+        "valid_targets": [
+          "Infantry",
+          "Structure"
+        ]
+      }
+    ]
+  },
+  "Smash": {
+    "id": "Smash",
+    "reload_delay": 60,
+    "range": 1520,
+    "min_range": null,
+    "burst": 1,
+    "burst_delays": [],
+    "valid_targets": [
+      "Ground"
+    ],
+    "invalid_targets": [],
+    "projectile_kind": "InstantHit",
+    "beam_duration": 0,
+    "beam_damage_interval": 0,
+    "projectile_speed": 600,
+    "projectile_blockable": false,
+    "warheads": [
+      {
+        "id": "Warhead@1Dam",
+        "type": "SpreadDamage",
+        "damage": 100,
+        "versus": {
+          "None": 0,
+          "Flak": 0,
+          "Plate": 0,
+          "Light": 100,
+          "Medium": 20,
+          "Heavy": 100,
+          "Wood": 0,
+          "Steel": 0,
+          "Concrete": 0,
+          "Drone": 0,
+          "Rocket": 0
+        },
+        "spread": null,
+        "falloff": [],
+        "delay": 0,
+        "valid_stances": [],
+        "valid_targets": [
+          "Vehicle"
+        ]
+      }
+    ]
+  },
+  "SmashE": {
+    "id": "SmashE",
+    "reload_delay": 60,
+    "range": 1520,
+    "min_range": null,
+    "burst": 1,
+    "burst_delays": [],
+    "valid_targets": [
+      "Ground"
+    ],
+    "invalid_targets": [],
+    "projectile_kind": "InstantHit",
+    "beam_duration": 0,
+    "beam_damage_interval": 0,
+    "projectile_speed": 600,
+    "projectile_blockable": false,
+    "warheads": [
+      {
+        "id": "Warhead@1Dam",
+        "type": "SpreadDamage",
+        "damage": 100,
+        "versus": {
+          "None": 0,
+          "Flak": 0,
+          "Plate": 0,
+          "Light": 100,
+          "Medium": 20,
+          "Heavy": 100,
+          "Wood": 0,
+          "Steel": 0,
+          "Concrete": 0,
+          "Drone": 0,
+          "Rocket": 0
+        },
+        "spread": null,
+        "falloff": [],
+        "delay": 0,
+        "valid_stances": [],
+        "valid_targets": [
+          "Vehicle"
+        ]
+      }
+    ]
+  },
+  "shovel": {
+    "id": "shovel",
+    "reload_delay": 30,
+    "range": 1520,
+    "min_range": null,
+    "burst": 1,
+    "burst_delays": [],
+    "valid_targets": [
+      "Ground"
+    ],
+    "invalid_targets": [],
+    "projectile_kind": "",
+    "beam_duration": 0,
+    "beam_damage_interval": 0,
+    "projectile_speed": null,
+    "projectile_blockable": false,
+    "warheads": [
+      {
+        "id": "Warhead@1Dam",
+        "type": "SpreadDamage",
+        "damage": 100,
+        "versus": {
+          "None": 100,
+          "Flak": 80,
+          "Plate": 80,
+          "Light": 50,
+          "Medium": 25,
+          "Heavy": 25,
+          "Wood": 75,
+          "Steel": 50,
+          "Concrete": 25,
+          "Drone": 100,
+          "Rocket": 100
+        },
+        "spread": 213,
+        "falloff": [],
+        "delay": 0,
+        "valid_stances": [],
+        "valid_targets": [
+          "Ground"
+        ]
+      }
+    ]
+  },
+  "Mummypunch": {
+    "id": "Mummypunch",
+    "reload_delay": 60,
+    "range": 1520,
+    "min_range": null,
+    "burst": 1,
+    "burst_delays": [],
+    "valid_targets": [
+      "Ground"
+    ],
+    "invalid_targets": [],
+    "projectile_kind": "InstantHit",
+    "beam_duration": 0,
+    "beam_damage_interval": 0,
+    "projectile_speed": 600,
+    "projectile_blockable": false,
+    "warheads": [
+      {
+        "id": "Warhead@1Dam",
+        "type": "SpreadDamage",
+        "damage": 100,
+        "versus": {
+          "None": 100,
+          "Flak": 100,
+          "Plate": 100,
+          "Light": 0,
+          "Medium": 0,
+          "Heavy": 0,
+          "Wood": 30,
+          "Steel": 30,
+          "Concrete": 20,
+          "Drone": 200,
+          "Rocket": 100
+        },
+        "spread": null,
+        "falloff": [],
+        "delay": 0,
+        "valid_stances": [],
+        "valid_targets": [
+          "Infantry",
+          "Structure"
+        ]
+      }
+    ]
+  },
+  "MummySmash": {
+    "id": "MummySmash",
+    "reload_delay": 60,
+    "range": 1520,
+    "min_range": null,
+    "burst": 1,
+    "burst_delays": [],
+    "valid_targets": [
+      "Ground"
+    ],
+    "invalid_targets": [],
+    "projectile_kind": "InstantHit",
+    "beam_duration": 0,
+    "beam_damage_interval": 0,
+    "projectile_speed": 600,
+    "projectile_blockable": false,
+    "warheads": [
+      {
+        "id": "Warhead@1Dam",
+        "type": "SpreadDamage",
+        "damage": 100,
+        "versus": {
+          "None": 0,
+          "Flak": 0,
+          "Plate": 0,
+          "Light": 100,
+          "Medium": 20,
+          "Heavy": 100,
+          "Wood": 0,
+          "Steel": 0,
+          "Concrete": 0,
+          "Drone": 0,
+          "Rocket": 0
+        },
+        "spread": null,
+        "falloff": [],
+        "delay": 0,
+        "valid_stances": [],
+        "valid_targets": [
+          "Vehicle"
+        ]
       }
     ]
   },
@@ -1706,8 +3205,11 @@
     "burst_delays": [],
     "valid_targets": [],
     "invalid_targets": [],
-    "projectile_speed": null,
-    "projectile_blockable": false,
+    "projectile_kind": "Bullet",
+    "beam_duration": 0,
+    "beam_damage_interval": 0,
+    "projectile_speed": 102400,
+    "projectile_blockable": true,
     "warheads": [
       {
         "id": "Warhead@1Dam",
@@ -1728,7 +3230,9 @@
         },
         "spread": 64,
         "falloff": [],
-        "delay": 0
+        "delay": 0,
+        "valid_stances": [],
+        "valid_targets": []
       }
     ]
   },
@@ -1741,8 +3245,11 @@
     "burst_delays": [],
     "valid_targets": [],
     "invalid_targets": [],
-    "projectile_speed": null,
-    "projectile_blockable": false,
+    "projectile_kind": "Bullet",
+    "beam_duration": 0,
+    "beam_damage_interval": 0,
+    "projectile_speed": 102400,
+    "projectile_blockable": true,
     "warheads": [
       {
         "id": "Warhead@1Dam",
@@ -1763,7 +3270,9 @@
         },
         "spread": 64,
         "falloff": [],
-        "delay": 0
+        "delay": 0,
+        "valid_stances": [],
+        "valid_targets": []
       }
     ]
   },
@@ -1776,8 +3285,11 @@
     "burst_delays": [],
     "valid_targets": [],
     "invalid_targets": [],
-    "projectile_speed": null,
-    "projectile_blockable": false,
+    "projectile_kind": "Bullet",
+    "beam_duration": 0,
+    "beam_damage_interval": 0,
+    "projectile_speed": 102400,
+    "projectile_blockable": true,
     "warheads": [
       {
         "id": "Warhead@1Dam",
@@ -1798,7 +3310,9 @@
         },
         "spread": 64,
         "falloff": [],
-        "delay": 0
+        "delay": 0,
+        "valid_stances": [],
+        "valid_targets": []
       }
     ]
   },
@@ -1811,8 +3325,11 @@
     "burst_delays": [],
     "valid_targets": [],
     "invalid_targets": [],
-    "projectile_speed": null,
-    "projectile_blockable": false,
+    "projectile_kind": "Bullet",
+    "beam_duration": 0,
+    "beam_damage_interval": 0,
+    "projectile_speed": 102400,
+    "projectile_blockable": true,
     "warheads": [
       {
         "id": "Warhead@1Dam",
@@ -1833,7 +3350,9 @@
         },
         "spread": 64,
         "falloff": [],
-        "delay": 0
+        "delay": 0,
+        "valid_stances": [],
+        "valid_targets": []
       }
     ]
   },
@@ -1846,8 +3365,11 @@
     "burst_delays": [],
     "valid_targets": [],
     "invalid_targets": [],
-    "projectile_speed": null,
-    "projectile_blockable": false,
+    "projectile_kind": "Bullet",
+    "beam_duration": 0,
+    "beam_damage_interval": 0,
+    "projectile_speed": 102400,
+    "projectile_blockable": true,
     "warheads": [
       {
         "id": "Warhead@1Dam",
@@ -1868,7 +3390,9 @@
         },
         "spread": 64,
         "falloff": [],
-        "delay": 0
+        "delay": 0,
+        "valid_stances": [],
+        "valid_targets": []
       }
     ]
   },
@@ -1881,8 +3405,11 @@
     "burst_delays": [],
     "valid_targets": [],
     "invalid_targets": [],
-    "projectile_speed": null,
-    "projectile_blockable": false,
+    "projectile_kind": "Bullet",
+    "beam_duration": 0,
+    "beam_damage_interval": 0,
+    "projectile_speed": 102400,
+    "projectile_blockable": true,
     "warheads": [
       {
         "id": "Warhead@1Dam",
@@ -1903,7 +3430,9 @@
         },
         "spread": 64,
         "falloff": [],
-        "delay": 0
+        "delay": 0,
+        "valid_stances": [],
+        "valid_targets": []
       }
     ]
   },
@@ -1916,8 +3445,11 @@
     "burst_delays": [],
     "valid_targets": [],
     "invalid_targets": [],
-    "projectile_speed": null,
-    "projectile_blockable": false,
+    "projectile_kind": "Bullet",
+    "beam_duration": 0,
+    "beam_damage_interval": 0,
+    "projectile_speed": 102400,
+    "projectile_blockable": true,
     "warheads": [
       {
         "id": "Warhead@1Dam",
@@ -1938,7 +3470,9 @@
         },
         "spread": 64,
         "falloff": [],
-        "delay": 0
+        "delay": 0,
+        "valid_stances": [],
+        "valid_targets": []
       }
     ]
   },
@@ -1951,29 +3485,34 @@
     "burst_delays": [],
     "valid_targets": [],
     "invalid_targets": [],
-    "projectile_speed": null,
-    "projectile_blockable": false,
+    "projectile_kind": "Bullet",
+    "beam_duration": 0,
+    "beam_damage_interval": 0,
+    "projectile_speed": 102400,
+    "projectile_blockable": true,
     "warheads": [
       {
         "id": "Warhead@1Dam",
         "type": "SpreadDamage",
         "damage": 125,
         "versus": {
-          "None": 200,
-          "Flak": 100,
-          "Plate": 100,
-          "Light": 0,
-          "Medium": 0,
-          "Heavy": 0,
-          "Wood": 0,
-          "Steel": 0,
-          "Concrete": 0,
-          "Drone": 0,
+          "None": 100,
+          "Flak": 80,
+          "Plate": 70,
+          "Light": 50,
+          "Medium": 25,
+          "Heavy": 25,
+          "Wood": 75,
+          "Steel": 50,
+          "Concrete": 25,
+          "Drone": 100,
           "Rocket": 100
         },
         "spread": 64,
         "falloff": [],
-        "delay": 0
+        "delay": 0,
+        "valid_stances": [],
+        "valid_targets": []
       }
     ]
   },
@@ -1986,29 +3525,34 @@
     "burst_delays": [],
     "valid_targets": [],
     "invalid_targets": [],
-    "projectile_speed": null,
-    "projectile_blockable": false,
+    "projectile_kind": "Bullet",
+    "beam_duration": 0,
+    "beam_damage_interval": 0,
+    "projectile_speed": 102400,
+    "projectile_blockable": true,
     "warheads": [
       {
         "id": "Warhead@1Dam",
         "type": "SpreadDamage",
         "damage": 125,
         "versus": {
-          "None": 200,
-          "Flak": 100,
-          "Plate": 100,
-          "Light": 0,
-          "Medium": 0,
-          "Heavy": 0,
-          "Wood": 0,
-          "Steel": 0,
-          "Concrete": 0,
-          "Drone": 0,
+          "None": 100,
+          "Flak": 80,
+          "Plate": 70,
+          "Light": 50,
+          "Medium": 25,
+          "Heavy": 25,
+          "Wood": 75,
+          "Steel": 50,
+          "Concrete": 25,
+          "Drone": 100,
           "Rocket": 100
         },
         "spread": 64,
         "falloff": [],
-        "delay": 0
+        "delay": 0,
+        "valid_stances": [],
+        "valid_targets": []
       }
     ]
   },
@@ -2021,8 +3565,11 @@
     "burst_delays": [],
     "valid_targets": [],
     "invalid_targets": [],
-    "projectile_speed": null,
-    "projectile_blockable": false,
+    "projectile_kind": "Bullet",
+    "beam_duration": 0,
+    "beam_damage_interval": 0,
+    "projectile_speed": 102400,
+    "projectile_blockable": true,
     "warheads": [
       {
         "id": "Warhead@1Dam",
@@ -2043,7 +3590,9 @@
         },
         "spread": 64,
         "falloff": [],
-        "delay": 0
+        "delay": 0,
+        "valid_stances": [],
+        "valid_targets": []
       }
     ]
   },
@@ -2056,8 +3605,11 @@
     "burst_delays": [],
     "valid_targets": [],
     "invalid_targets": [],
-    "projectile_speed": null,
-    "projectile_blockable": false,
+    "projectile_kind": "Bullet",
+    "beam_duration": 0,
+    "beam_damage_interval": 0,
+    "projectile_speed": 102400,
+    "projectile_blockable": true,
     "warheads": [
       {
         "id": "Warhead@1Dam",
@@ -2078,21 +3630,26 @@
         },
         "spread": 64,
         "falloff": [],
-        "delay": 0
+        "delay": 0,
+        "valid_stances": [],
+        "valid_targets": []
       }
     ]
   },
   "CRMP5": {
     "id": "CRMP5",
-    "reload_delay": 20,
+    "reload_delay": 10,
     "range": 6144,
     "min_range": null,
     "burst": 1,
     "burst_delays": [],
     "valid_targets": [],
     "invalid_targets": [],
-    "projectile_speed": null,
-    "projectile_blockable": false,
+    "projectile_kind": "Bullet",
+    "beam_duration": 0,
+    "beam_damage_interval": 0,
+    "projectile_speed": 102400,
+    "projectile_blockable": true,
     "warheads": [
       {
         "id": "Warhead@1Dam",
@@ -2113,7 +3670,9 @@
         },
         "spread": 64,
         "falloff": [],
-        "delay": 0
+        "delay": 0,
+        "valid_stances": [],
+        "valid_targets": []
       }
     ]
   },
@@ -2128,6 +3687,9 @@
       "Infantry"
     ],
     "invalid_targets": [],
+    "projectile_kind": "Bullet",
+    "beam_duration": 0,
+    "beam_damage_interval": 0,
     "projectile_speed": 6826,
     "projectile_blockable": true,
     "warheads": [
@@ -2150,7 +3712,9 @@
         },
         "spread": 42,
         "falloff": [],
-        "delay": 0
+        "delay": 0,
+        "valid_stances": [],
+        "valid_targets": []
       }
     ]
   },
@@ -2165,6 +3729,9 @@
       "Infantry"
     ],
     "invalid_targets": [],
+    "projectile_kind": "Bullet",
+    "beam_duration": 0,
+    "beam_damage_interval": 0,
     "projectile_speed": 6826,
     "projectile_blockable": true,
     "warheads": [
@@ -2187,7 +3754,9 @@
         },
         "spread": 42,
         "falloff": [],
-        "delay": 0
+        "delay": 0,
+        "valid_stances": [],
+        "valid_targets": []
       }
     ]
   },
@@ -2204,8 +3773,11 @@
       "Air"
     ],
     "invalid_targets": [],
-    "projectile_speed": null,
-    "projectile_blockable": false,
+    "projectile_kind": "Bullet",
+    "beam_duration": 0,
+    "beam_damage_interval": 0,
+    "projectile_speed": 102400,
+    "projectile_blockable": true,
     "warheads": [
       {
         "id": "Warhead@1Dam",
@@ -2226,7 +3798,13 @@
         },
         "spread": 64,
         "falloff": [],
-        "delay": 0
+        "delay": 0,
+        "valid_stances": [],
+        "valid_targets": [
+          "Ground",
+          "Water",
+          "Air"
+        ]
       }
     ]
   },
@@ -2243,8 +3821,11 @@
       "Air"
     ],
     "invalid_targets": [],
-    "projectile_speed": null,
-    "projectile_blockable": false,
+    "projectile_kind": "Bullet",
+    "beam_duration": 0,
+    "beam_damage_interval": 0,
+    "projectile_speed": 102400,
+    "projectile_blockable": true,
     "warheads": [
       {
         "id": "Warhead@1Dam",
@@ -2265,7 +3846,13 @@
         },
         "spread": 64,
         "falloff": [],
-        "delay": 0
+        "delay": 0,
+        "valid_stances": [],
+        "valid_targets": [
+          "Ground",
+          "Water",
+          "Air"
+        ]
       }
     ]
   },
@@ -2278,8 +3865,11 @@
     "burst_delays": [],
     "valid_targets": [],
     "invalid_targets": [],
-    "projectile_speed": null,
-    "projectile_blockable": false,
+    "projectile_kind": "Bullet",
+    "beam_duration": 0,
+    "beam_damage_interval": 0,
+    "projectile_speed": 102400,
+    "projectile_blockable": true,
     "warheads": [
       {
         "id": "Warhead@1Dam",
@@ -2300,7 +3890,9 @@
         },
         "spread": 64,
         "falloff": [],
-        "delay": 0
+        "delay": 0,
+        "valid_stances": [],
+        "valid_targets": []
       }
     ]
   },
@@ -2313,8 +3905,11 @@
     "burst_delays": [],
     "valid_targets": [],
     "invalid_targets": [],
-    "projectile_speed": null,
-    "projectile_blockable": false,
+    "projectile_kind": "Bullet",
+    "beam_duration": 0,
+    "beam_damage_interval": 0,
+    "projectile_speed": 102400,
+    "projectile_blockable": true,
     "warheads": [
       {
         "id": "Warhead@1Dam",
@@ -2335,7 +3930,9 @@
         },
         "spread": 64,
         "falloff": [],
-        "delay": 0
+        "delay": 0,
+        "valid_stances": [],
+        "valid_targets": []
       }
     ]
   },
@@ -2348,8 +3945,11 @@
     "burst_delays": [],
     "valid_targets": [],
     "invalid_targets": [],
-    "projectile_speed": null,
-    "projectile_blockable": false,
+    "projectile_kind": "Bullet",
+    "beam_duration": 0,
+    "beam_damage_interval": 0,
+    "projectile_speed": 102400,
+    "projectile_blockable": true,
     "warheads": [
       {
         "id": "Warhead@1Dam",
@@ -2370,7 +3970,1161 @@
         },
         "spread": 64,
         "falloff": [],
-        "delay": 0
+        "delay": 0,
+        "valid_stances": [],
+        "valid_targets": []
+      }
+    ]
+  },
+  "BlackHawkCannonE": {
+    "id": "BlackHawkCannonE",
+    "reload_delay": 40,
+    "range": 6144,
+    "min_range": null,
+    "burst": 1,
+    "burst_delays": [],
+    "valid_targets": [],
+    "invalid_targets": [],
+    "projectile_kind": "Bullet",
+    "beam_duration": 0,
+    "beam_damage_interval": 0,
+    "projectile_speed": 102400,
+    "projectile_blockable": true,
+    "warheads": [
+      {
+        "id": "Warhead@1Dam",
+        "type": "SpreadDamage",
+        "damage": 40,
+        "versus": {
+          "None": 100,
+          "Flak": 80,
+          "Plate": 70,
+          "Light": 50,
+          "Medium": 25,
+          "Heavy": 25,
+          "Wood": 75,
+          "Steel": 50,
+          "Concrete": 25,
+          "Drone": 100,
+          "Rocket": 100
+        },
+        "spread": 64,
+        "falloff": [],
+        "delay": 0,
+        "valid_stances": [],
+        "valid_targets": []
+      }
+    ]
+  },
+  "PsychicJab": {
+    "id": "PsychicJab",
+    "reload_delay": 15,
+    "range": 4608,
+    "min_range": null,
+    "burst": 1,
+    "burst_delays": [],
+    "valid_targets": [],
+    "invalid_targets": [],
+    "projectile_kind": "Bullet",
+    "beam_duration": 0,
+    "beam_damage_interval": 0,
+    "projectile_speed": 102400,
+    "projectile_blockable": true,
+    "warheads": [
+      {
+        "id": "Warhead@1Dam",
+        "type": "SpreadDamage",
+        "damage": 25,
+        "versus": {
+          "None": 100,
+          "Flak": 80,
+          "Plate": 80,
+          "Light": 50,
+          "Medium": 25,
+          "Heavy": 25,
+          "Wood": 75,
+          "Steel": 50,
+          "Concrete": 25,
+          "Drone": 100,
+          "Rocket": 100
+        },
+        "spread": 64,
+        "falloff": [],
+        "delay": 0,
+        "valid_stances": [],
+        "valid_targets": [
+          "Ground",
+          "Water"
+        ]
+      }
+    ]
+  },
+  "PsychicJabE": {
+    "id": "PsychicJabE",
+    "reload_delay": 10,
+    "range": 6144,
+    "min_range": null,
+    "burst": 1,
+    "burst_delays": [],
+    "valid_targets": [],
+    "invalid_targets": [],
+    "projectile_kind": "Bullet",
+    "beam_duration": 0,
+    "beam_damage_interval": 0,
+    "projectile_speed": 102400,
+    "projectile_blockable": true,
+    "warheads": [
+      {
+        "id": "Warhead@1Dam",
+        "type": "SpreadDamage",
+        "damage": 30,
+        "versus": {
+          "None": 100,
+          "Flak": 80,
+          "Plate": 80,
+          "Light": 50,
+          "Medium": 25,
+          "Heavy": 25,
+          "Wood": 75,
+          "Steel": 50,
+          "Concrete": 25,
+          "Drone": 100,
+          "Rocket": 100
+        },
+        "spread": 64,
+        "falloff": [],
+        "delay": 0,
+        "valid_stances": [],
+        "valid_targets": [
+          "Ground",
+          "Water"
+        ]
+      }
+    ]
+  },
+  "Virusgun": {
+    "id": "Virusgun",
+    "reload_delay": 100,
+    "range": 10240,
+    "min_range": null,
+    "burst": 1,
+    "burst_delays": [],
+    "valid_targets": [
+      "Infantry"
+    ],
+    "invalid_targets": [],
+    "projectile_kind": "Bullet",
+    "beam_duration": 0,
+    "beam_damage_interval": 0,
+    "projectile_speed": 102400,
+    "projectile_blockable": true,
+    "warheads": [
+      {
+        "id": "Warhead@1Dam",
+        "type": "SpreadDamage",
+        "damage": 125,
+        "versus": {
+          "None": 100,
+          "Flak": 100,
+          "Plate": 100,
+          "Light": 1,
+          "Medium": 1,
+          "Heavy": 1,
+          "Wood": 1,
+          "Steel": 1,
+          "Concrete": 1,
+          "Drone": 1,
+          "Rocket": 100
+        },
+        "spread": 64,
+        "falloff": [],
+        "delay": 0,
+        "valid_stances": [],
+        "valid_targets": [
+          "Infantry"
+        ]
+      },
+      {
+        "id": "Warhead@2Dam",
+        "type": "SpawnActor",
+        "damage": 0,
+        "versus": {},
+        "spread": null,
+        "falloff": [],
+        "delay": 0,
+        "valid_stances": [],
+        "valid_targets": []
+      }
+    ]
+  },
+  "VirusgunE": {
+    "id": "VirusgunE",
+    "reload_delay": 80,
+    "range": 16384,
+    "min_range": null,
+    "burst": 1,
+    "burst_delays": [],
+    "valid_targets": [
+      "Infantry"
+    ],
+    "invalid_targets": [],
+    "projectile_kind": "Bullet",
+    "beam_duration": 0,
+    "beam_damage_interval": 0,
+    "projectile_speed": 102400,
+    "projectile_blockable": true,
+    "warheads": [
+      {
+        "id": "Warhead@1Dam",
+        "type": "SpreadDamage",
+        "damage": 125,
+        "versus": {
+          "None": 100,
+          "Flak": 100,
+          "Plate": 100,
+          "Light": 1,
+          "Medium": 1,
+          "Heavy": 1,
+          "Wood": 1,
+          "Steel": 1,
+          "Concrete": 1,
+          "Drone": 1,
+          "Rocket": 100
+        },
+        "spread": 64,
+        "falloff": [],
+        "delay": 0,
+        "valid_stances": [],
+        "valid_targets": [
+          "Infantry"
+        ]
+      },
+      {
+        "id": "Warhead@2Dam",
+        "type": "SpawnActor",
+        "damage": 0,
+        "versus": {},
+        "spread": null,
+        "falloff": [],
+        "delay": 0,
+        "valid_stances": [],
+        "valid_targets": []
+      }
+    ]
+  },
+  "AGGattling": {
+    "id": "AGGattling",
+    "reload_delay": 16,
+    "range": 5120,
+    "min_range": null,
+    "burst": 2,
+    "burst_delays": [],
+    "valid_targets": [
+      "Ground",
+      "Water"
+    ],
+    "invalid_targets": [],
+    "projectile_kind": "Bullet",
+    "beam_duration": 0,
+    "beam_damage_interval": 0,
+    "projectile_speed": 102400,
+    "projectile_blockable": true,
+    "warheads": [
+      {
+        "id": "Warhead@1Dam",
+        "type": "SpreadDamage",
+        "damage": 25,
+        "versus": {
+          "None": 100,
+          "Flak": 80,
+          "Plate": 70,
+          "Light": 50,
+          "Medium": 30,
+          "Heavy": 10,
+          "Wood": 10,
+          "Steel": 5,
+          "Concrete": 3,
+          "Drone": 200,
+          "Rocket": 50
+        },
+        "spread": 64,
+        "falloff": [],
+        "delay": 0,
+        "valid_stances": [],
+        "valid_targets": [
+          "Ground",
+          "Water"
+        ]
+      }
+    ]
+  },
+  "AAGattling": {
+    "id": "AAGattling",
+    "reload_delay": 16,
+    "range": 8192,
+    "min_range": null,
+    "burst": 2,
+    "burst_delays": [],
+    "valid_targets": [
+      "Air"
+    ],
+    "invalid_targets": [],
+    "projectile_kind": "Bullet",
+    "beam_duration": 0,
+    "beam_damage_interval": 0,
+    "projectile_speed": 102400,
+    "projectile_blockable": true,
+    "warheads": [
+      {
+        "id": "Warhead@1Dam",
+        "type": "SpreadDamage",
+        "damage": 25,
+        "versus": {
+          "None": 100,
+          "Flak": 80,
+          "Plate": 70,
+          "Light": 50,
+          "Medium": 30,
+          "Heavy": 10,
+          "Wood": 10,
+          "Steel": 5,
+          "Concrete": 3,
+          "Drone": 200,
+          "Rocket": 50
+        },
+        "spread": 64,
+        "falloff": [],
+        "delay": 0,
+        "valid_stances": [],
+        "valid_targets": [
+          "Air"
+        ]
+      }
+    ]
+  },
+  "AGGattling2": {
+    "id": "AGGattling2",
+    "reload_delay": 16,
+    "range": 5120,
+    "min_range": null,
+    "burst": 2,
+    "burst_delays": [],
+    "valid_targets": [
+      "Ground",
+      "Water"
+    ],
+    "invalid_targets": [],
+    "projectile_kind": "Bullet",
+    "beam_duration": 0,
+    "beam_damage_interval": 0,
+    "projectile_speed": 102400,
+    "projectile_blockable": true,
+    "warheads": [
+      {
+        "id": "Warhead@1Dam",
+        "type": "SpreadDamage",
+        "damage": 25,
+        "versus": {
+          "None": 100,
+          "Flak": 80,
+          "Plate": 70,
+          "Light": 50,
+          "Medium": 30,
+          "Heavy": 10,
+          "Wood": 10,
+          "Steel": 5,
+          "Concrete": 3,
+          "Drone": 200,
+          "Rocket": 50
+        },
+        "spread": 64,
+        "falloff": [],
+        "delay": 0,
+        "valid_stances": [],
+        "valid_targets": [
+          "Ground",
+          "Water"
+        ]
+      }
+    ]
+  },
+  "AAGattling2": {
+    "id": "AAGattling2",
+    "reload_delay": 8,
+    "range": 8192,
+    "min_range": null,
+    "burst": 2,
+    "burst_delays": [],
+    "valid_targets": [
+      "Air"
+    ],
+    "invalid_targets": [],
+    "projectile_kind": "Bullet",
+    "beam_duration": 0,
+    "beam_damage_interval": 0,
+    "projectile_speed": 102400,
+    "projectile_blockable": true,
+    "warheads": [
+      {
+        "id": "Warhead@1Dam",
+        "type": "SpreadDamage",
+        "damage": 30,
+        "versus": {
+          "None": 100,
+          "Flak": 80,
+          "Plate": 70,
+          "Light": 50,
+          "Medium": 30,
+          "Heavy": 10,
+          "Wood": 10,
+          "Steel": 5,
+          "Concrete": 3,
+          "Drone": 200,
+          "Rocket": 50
+        },
+        "spread": 64,
+        "falloff": [],
+        "delay": 0,
+        "valid_stances": [],
+        "valid_targets": [
+          "Air"
+        ]
+      }
+    ]
+  },
+  "AGGattling3": {
+    "id": "AGGattling3",
+    "reload_delay": 16,
+    "range": 5120,
+    "min_range": null,
+    "burst": 2,
+    "burst_delays": [],
+    "valid_targets": [
+      "Ground",
+      "Water"
+    ],
+    "invalid_targets": [],
+    "projectile_kind": "Bullet",
+    "beam_duration": 0,
+    "beam_damage_interval": 0,
+    "projectile_speed": 102400,
+    "projectile_blockable": true,
+    "warheads": [
+      {
+        "id": "Warhead@1Dam",
+        "type": "SpreadDamage",
+        "damage": 25,
+        "versus": {
+          "None": 100,
+          "Flak": 80,
+          "Plate": 70,
+          "Light": 50,
+          "Medium": 30,
+          "Heavy": 10,
+          "Wood": 10,
+          "Steel": 5,
+          "Concrete": 3,
+          "Drone": 200,
+          "Rocket": 50
+        },
+        "spread": 64,
+        "falloff": [],
+        "delay": 0,
+        "valid_stances": [],
+        "valid_targets": [
+          "Ground",
+          "Water"
+        ]
+      }
+    ]
+  },
+  "AAGattling3": {
+    "id": "AAGattling3",
+    "reload_delay": 4,
+    "range": 8192,
+    "min_range": null,
+    "burst": 2,
+    "burst_delays": [],
+    "valid_targets": [
+      "Air"
+    ],
+    "invalid_targets": [],
+    "projectile_kind": "Bullet",
+    "beam_duration": 0,
+    "beam_damage_interval": 0,
+    "projectile_speed": 102400,
+    "projectile_blockable": true,
+    "warheads": [
+      {
+        "id": "Warhead@1Dam",
+        "type": "SpreadDamage",
+        "damage": 40,
+        "versus": {
+          "None": 100,
+          "Flak": 80,
+          "Plate": 70,
+          "Light": 50,
+          "Medium": 30,
+          "Heavy": 10,
+          "Wood": 10,
+          "Steel": 5,
+          "Concrete": 3,
+          "Drone": 200,
+          "Rocket": 50
+        },
+        "spread": 64,
+        "falloff": [],
+        "delay": 0,
+        "valid_stances": [],
+        "valid_targets": [
+          "Air"
+        ]
+      }
+    ]
+  },
+  "AGGattlingE": {
+    "id": "AGGattlingE",
+    "reload_delay": 16,
+    "range": 5120,
+    "min_range": null,
+    "burst": 2,
+    "burst_delays": [],
+    "valid_targets": [
+      "Ground",
+      "Water"
+    ],
+    "invalid_targets": [],
+    "projectile_kind": "Bullet",
+    "beam_duration": 0,
+    "beam_damage_interval": 0,
+    "projectile_speed": 102400,
+    "projectile_blockable": true,
+    "warheads": [
+      {
+        "id": "Warhead@1Dam",
+        "type": "SpreadDamage",
+        "damage": 25,
+        "versus": {
+          "None": 100,
+          "Flak": 80,
+          "Plate": 70,
+          "Light": 50,
+          "Medium": 30,
+          "Heavy": 10,
+          "Wood": 10,
+          "Steel": 5,
+          "Concrete": 3,
+          "Drone": 200,
+          "Rocket": 50
+        },
+        "spread": 64,
+        "falloff": [],
+        "delay": 0,
+        "valid_stances": [],
+        "valid_targets": [
+          "Ground",
+          "Water"
+        ]
+      }
+    ]
+  },
+  "AAGattlingE": {
+    "id": "AAGattlingE",
+    "reload_delay": 16,
+    "range": 8192,
+    "min_range": null,
+    "burst": 2,
+    "burst_delays": [],
+    "valid_targets": [
+      "Air"
+    ],
+    "invalid_targets": [],
+    "projectile_kind": "Bullet",
+    "beam_duration": 0,
+    "beam_damage_interval": 0,
+    "projectile_speed": 102400,
+    "projectile_blockable": true,
+    "warheads": [
+      {
+        "id": "Warhead@1Dam",
+        "type": "SpreadDamage",
+        "damage": 25,
+        "versus": {
+          "None": 100,
+          "Flak": 80,
+          "Plate": 70,
+          "Light": 50,
+          "Medium": 30,
+          "Heavy": 10,
+          "Wood": 10,
+          "Steel": 5,
+          "Concrete": 3,
+          "Drone": 200,
+          "Rocket": 50
+        },
+        "spread": 64,
+        "falloff": [],
+        "delay": 0,
+        "valid_stances": [],
+        "valid_targets": [
+          "Air"
+        ]
+      }
+    ]
+  },
+  "AGGattling2E": {
+    "id": "AGGattling2E",
+    "reload_delay": 16,
+    "range": 5120,
+    "min_range": null,
+    "burst": 2,
+    "burst_delays": [],
+    "valid_targets": [
+      "Ground",
+      "Water"
+    ],
+    "invalid_targets": [],
+    "projectile_kind": "Bullet",
+    "beam_duration": 0,
+    "beam_damage_interval": 0,
+    "projectile_speed": 102400,
+    "projectile_blockable": true,
+    "warheads": [
+      {
+        "id": "Warhead@1Dam",
+        "type": "SpreadDamage",
+        "damage": 25,
+        "versus": {
+          "None": 100,
+          "Flak": 80,
+          "Plate": 70,
+          "Light": 50,
+          "Medium": 30,
+          "Heavy": 10,
+          "Wood": 10,
+          "Steel": 5,
+          "Concrete": 3,
+          "Drone": 200,
+          "Rocket": 50
+        },
+        "spread": 64,
+        "falloff": [],
+        "delay": 0,
+        "valid_stances": [],
+        "valid_targets": [
+          "Ground",
+          "Water"
+        ]
+      }
+    ]
+  },
+  "AAGattling2E": {
+    "id": "AAGattling2E",
+    "reload_delay": 8,
+    "range": 8192,
+    "min_range": null,
+    "burst": 2,
+    "burst_delays": [],
+    "valid_targets": [
+      "Air"
+    ],
+    "invalid_targets": [],
+    "projectile_kind": "Bullet",
+    "beam_duration": 0,
+    "beam_damage_interval": 0,
+    "projectile_speed": 102400,
+    "projectile_blockable": true,
+    "warheads": [
+      {
+        "id": "Warhead@1Dam",
+        "type": "SpreadDamage",
+        "damage": 25,
+        "versus": {
+          "None": 100,
+          "Flak": 80,
+          "Plate": 70,
+          "Light": 50,
+          "Medium": 30,
+          "Heavy": 10,
+          "Wood": 10,
+          "Steel": 5,
+          "Concrete": 3,
+          "Drone": 200,
+          "Rocket": 50
+        },
+        "spread": 64,
+        "falloff": [],
+        "delay": 0,
+        "valid_stances": [],
+        "valid_targets": [
+          "Air"
+        ]
+      }
+    ]
+  },
+  "AGGattling3E": {
+    "id": "AGGattling3E",
+    "reload_delay": 16,
+    "range": 5120,
+    "min_range": null,
+    "burst": 2,
+    "burst_delays": [],
+    "valid_targets": [
+      "Ground",
+      "Water"
+    ],
+    "invalid_targets": [],
+    "projectile_kind": "Bullet",
+    "beam_duration": 0,
+    "beam_damage_interval": 0,
+    "projectile_speed": 102400,
+    "projectile_blockable": true,
+    "warheads": [
+      {
+        "id": "Warhead@1Dam",
+        "type": "SpreadDamage",
+        "damage": 25,
+        "versus": {
+          "None": 100,
+          "Flak": 80,
+          "Plate": 70,
+          "Light": 50,
+          "Medium": 30,
+          "Heavy": 10,
+          "Wood": 10,
+          "Steel": 5,
+          "Concrete": 3,
+          "Drone": 200,
+          "Rocket": 50
+        },
+        "spread": 64,
+        "falloff": [],
+        "delay": 0,
+        "valid_stances": [],
+        "valid_targets": [
+          "Ground",
+          "Water"
+        ]
+      }
+    ]
+  },
+  "AAGattling3E": {
+    "id": "AAGattling3E",
+    "reload_delay": 4,
+    "range": 8192,
+    "min_range": null,
+    "burst": 2,
+    "burst_delays": [],
+    "valid_targets": [
+      "Air"
+    ],
+    "invalid_targets": [],
+    "projectile_kind": "Bullet",
+    "beam_duration": 0,
+    "beam_damage_interval": 0,
+    "projectile_speed": 102400,
+    "projectile_blockable": true,
+    "warheads": [
+      {
+        "id": "Warhead@1Dam",
+        "type": "SpreadDamage",
+        "damage": 25,
+        "versus": {
+          "None": 100,
+          "Flak": 80,
+          "Plate": 70,
+          "Light": 50,
+          "Medium": 30,
+          "Heavy": 10,
+          "Wood": 10,
+          "Steel": 5,
+          "Concrete": 3,
+          "Drone": 200,
+          "Rocket": 50
+        },
+        "spread": 64,
+        "falloff": [],
+        "delay": 0,
+        "valid_stances": [],
+        "valid_targets": [
+          "Air"
+        ]
+      }
+    ]
+  },
+  "AAGattCann": {
+    "id": "AAGattCann",
+    "reload_delay": 100,
+    "range": 8192,
+    "min_range": null,
+    "burst": 1,
+    "burst_delays": [],
+    "valid_targets": [
+      "Air"
+    ],
+    "invalid_targets": [],
+    "projectile_kind": "Bullet",
+    "beam_duration": 0,
+    "beam_damage_interval": 0,
+    "projectile_speed": 102400,
+    "projectile_blockable": true,
+    "warheads": [
+      {
+        "id": "Warhead@1Dam",
+        "type": "SpreadDamage",
+        "damage": 30,
+        "versus": {
+          "None": 100,
+          "Flak": 80,
+          "Plate": 70,
+          "Light": 50,
+          "Medium": 30,
+          "Heavy": 10,
+          "Wood": 10,
+          "Steel": 5,
+          "Concrete": 3,
+          "Drone": 200,
+          "Rocket": 100
+        },
+        "spread": 64,
+        "falloff": [],
+        "delay": 0,
+        "valid_stances": [],
+        "valid_targets": [
+          "Ground",
+          "Water",
+          "Air"
+        ]
+      }
+    ]
+  },
+  "AAGattCann2": {
+    "id": "AAGattCann2",
+    "reload_delay": 100,
+    "range": 8192,
+    "min_range": null,
+    "burst": 1,
+    "burst_delays": [],
+    "valid_targets": [
+      "Air"
+    ],
+    "invalid_targets": [],
+    "projectile_kind": "Bullet",
+    "beam_duration": 0,
+    "beam_damage_interval": 0,
+    "projectile_speed": 102400,
+    "projectile_blockable": true,
+    "warheads": [
+      {
+        "id": "Warhead@1Dam",
+        "type": "SpreadDamage",
+        "damage": 30,
+        "versus": {
+          "None": 100,
+          "Flak": 80,
+          "Plate": 70,
+          "Light": 50,
+          "Medium": 30,
+          "Heavy": 10,
+          "Wood": 10,
+          "Steel": 5,
+          "Concrete": 3,
+          "Drone": 200,
+          "Rocket": 100
+        },
+        "spread": 64,
+        "falloff": [],
+        "delay": 0,
+        "valid_stances": [],
+        "valid_targets": [
+          "Ground",
+          "Water",
+          "Air"
+        ]
+      }
+    ]
+  },
+  "AAGattCann3": {
+    "id": "AAGattCann3",
+    "reload_delay": 100,
+    "range": 8192,
+    "min_range": null,
+    "burst": 1,
+    "burst_delays": [],
+    "valid_targets": [
+      "Air"
+    ],
+    "invalid_targets": [],
+    "projectile_kind": "Bullet",
+    "beam_duration": 0,
+    "beam_damage_interval": 0,
+    "projectile_speed": 102400,
+    "projectile_blockable": true,
+    "warheads": [
+      {
+        "id": "Warhead@1Dam",
+        "type": "SpreadDamage",
+        "damage": 30,
+        "versus": {
+          "None": 100,
+          "Flak": 80,
+          "Plate": 70,
+          "Light": 50,
+          "Medium": 30,
+          "Heavy": 10,
+          "Wood": 10,
+          "Steel": 5,
+          "Concrete": 3,
+          "Drone": 200,
+          "Rocket": 100
+        },
+        "spread": 64,
+        "falloff": [],
+        "delay": 0,
+        "valid_stances": [],
+        "valid_targets": [
+          "Ground",
+          "Water",
+          "Air"
+        ]
+      }
+    ]
+  },
+  "AAGattCannE": {
+    "id": "AAGattCannE",
+    "reload_delay": 100,
+    "range": 8192,
+    "min_range": null,
+    "burst": 1,
+    "burst_delays": [],
+    "valid_targets": [
+      "Air"
+    ],
+    "invalid_targets": [],
+    "projectile_kind": "Bullet",
+    "beam_duration": 0,
+    "beam_damage_interval": 0,
+    "projectile_speed": 102400,
+    "projectile_blockable": true,
+    "warheads": [
+      {
+        "id": "Warhead@1Dam",
+        "type": "SpreadDamage",
+        "damage": 30,
+        "versus": {
+          "None": 100,
+          "Flak": 80,
+          "Plate": 70,
+          "Light": 50,
+          "Medium": 30,
+          "Heavy": 10,
+          "Wood": 10,
+          "Steel": 5,
+          "Concrete": 3,
+          "Drone": 200,
+          "Rocket": 100
+        },
+        "spread": 64,
+        "falloff": [],
+        "delay": 0,
+        "valid_stances": [],
+        "valid_targets": [
+          "Ground",
+          "Water",
+          "Air"
+        ]
+      }
+    ]
+  },
+  "AAGattCann2E": {
+    "id": "AAGattCann2E",
+    "reload_delay": 100,
+    "range": 8192,
+    "min_range": null,
+    "burst": 1,
+    "burst_delays": [],
+    "valid_targets": [
+      "Air"
+    ],
+    "invalid_targets": [],
+    "projectile_kind": "Bullet",
+    "beam_duration": 0,
+    "beam_damage_interval": 0,
+    "projectile_speed": 102400,
+    "projectile_blockable": true,
+    "warheads": [
+      {
+        "id": "Warhead@1Dam",
+        "type": "SpreadDamage",
+        "damage": 30,
+        "versus": {
+          "None": 100,
+          "Flak": 80,
+          "Plate": 70,
+          "Light": 50,
+          "Medium": 30,
+          "Heavy": 10,
+          "Wood": 10,
+          "Steel": 5,
+          "Concrete": 3,
+          "Drone": 200,
+          "Rocket": 100
+        },
+        "spread": 64,
+        "falloff": [],
+        "delay": 0,
+        "valid_stances": [],
+        "valid_targets": [
+          "Ground",
+          "Water",
+          "Air"
+        ]
+      }
+    ]
+  },
+  "AAGattCann3E": {
+    "id": "AAGattCann3E",
+    "reload_delay": 100,
+    "range": 8192,
+    "min_range": null,
+    "burst": 1,
+    "burst_delays": [],
+    "valid_targets": [
+      "Air"
+    ],
+    "invalid_targets": [],
+    "projectile_kind": "Bullet",
+    "beam_duration": 0,
+    "beam_damage_interval": 0,
+    "projectile_speed": 102400,
+    "projectile_blockable": true,
+    "warheads": [
+      {
+        "id": "Warhead@1Dam",
+        "type": "SpreadDamage",
+        "damage": 30,
+        "versus": {
+          "None": 100,
+          "Flak": 80,
+          "Plate": 70,
+          "Light": 50,
+          "Medium": 30,
+          "Heavy": 10,
+          "Wood": 10,
+          "Steel": 5,
+          "Concrete": 3,
+          "Drone": 200,
+          "Rocket": 100
+        },
+        "spread": 64,
+        "falloff": [],
+        "delay": 0,
+        "valid_stances": [],
+        "valid_targets": [
+          "Ground",
+          "Water",
+          "Air"
+        ]
+      }
+    ]
+  },
+  "AKM": {
+    "id": "AKM",
+    "reload_delay": 20,
+    "range": 7168,
+    "min_range": null,
+    "burst": 1,
+    "burst_delays": [],
+    "valid_targets": [
+      "Infantry",
+      "Vehicle",
+      "Ship"
+    ],
+    "invalid_targets": [
+      "Structure"
+    ],
+    "projectile_kind": "Bullet",
+    "beam_duration": 0,
+    "beam_damage_interval": 0,
+    "projectile_speed": 102400,
+    "projectile_blockable": true,
+    "warheads": [
+      {
+        "id": "Warhead@1Dam",
+        "type": "SpreadDamage",
+        "damage": 65,
+        "versus": {
+          "None": 200,
+          "Flak": 200,
+          "Plate": 100,
+          "Light": 50,
+          "Medium": 50,
+          "Heavy": 50,
+          "Wood": 1,
+          "Steel": 1,
+          "Concrete": 1,
+          "Drone": 100,
+          "Rocket": 100
+        },
+        "spread": 64,
+        "falloff": [],
+        "delay": 0,
+        "valid_stances": [],
+        "valid_targets": [
+          "Infantry",
+          "Vehicle",
+          "Ship"
+        ]
+      }
+    ]
+  },
+  "AKME": {
+    "id": "AKME",
+    "reload_delay": 20,
+    "range": 9216,
+    "min_range": null,
+    "burst": 1,
+    "burst_delays": [],
+    "valid_targets": [
+      "Infantry",
+      "Vehicle",
+      "Ship"
+    ],
+    "invalid_targets": [
+      "Structure"
+    ],
+    "projectile_kind": "Bullet",
+    "beam_duration": 0,
+    "beam_damage_interval": 0,
+    "projectile_speed": 102400,
+    "projectile_blockable": true,
+    "warheads": [
+      {
+        "id": "Warhead@1Dam",
+        "type": "SpreadDamage",
+        "damage": 90,
+        "versus": {
+          "None": 200,
+          "Flak": 200,
+          "Plate": 100,
+          "Light": 50,
+          "Medium": 50,
+          "Heavy": 50,
+          "Wood": 1,
+          "Steel": 1,
+          "Concrete": 1,
+          "Drone": 100,
+          "Rocket": 100
+        },
+        "spread": 64,
+        "falloff": [],
+        "delay": 0,
+        "valid_stances": [],
+        "valid_targets": [
+          "Infantry",
+          "Vehicle",
+          "Ship"
+        ]
       }
     ]
   },
@@ -2383,6 +5137,9 @@
     "burst_delays": [],
     "valid_targets": [],
     "invalid_targets": [],
+    "projectile_kind": "GravityBomb",
+    "beam_duration": 0,
+    "beam_damage_interval": 0,
     "projectile_speed": null,
     "projectile_blockable": false,
     "warheads": [
@@ -2405,7 +5162,13 @@
         },
         "spread": 400,
         "falloff": [],
-        "delay": 0
+        "delay": 0,
+        "valid_stances": [],
+        "valid_targets": [
+          "Building",
+          "Ground",
+          "Water"
+        ]
       }
     ]
   },
@@ -2418,6 +5181,9 @@
     "burst_delays": [],
     "valid_targets": [],
     "invalid_targets": [],
+    "projectile_kind": "GravityBomb",
+    "beam_duration": 0,
+    "beam_damage_interval": 0,
     "projectile_speed": null,
     "projectile_blockable": false,
     "warheads": [
@@ -2440,7 +5206,13 @@
         },
         "spread": 400,
         "falloff": [],
-        "delay": 0
+        "delay": 0,
+        "valid_stances": [],
+        "valid_targets": [
+          "Building",
+          "Ground",
+          "Water"
+        ]
       }
     ]
   },
@@ -2455,6 +5227,9 @@
       "Repair"
     ],
     "invalid_targets": [],
+    "projectile_kind": "Bullet",
+    "beam_duration": 0,
+    "beam_damage_interval": 0,
     "projectile_speed": 1706,
     "projectile_blockable": true,
     "warheads": [
@@ -2465,7 +5240,11 @@
         "versus": {},
         "spread": 213,
         "falloff": [],
-        "delay": 0
+        "delay": 0,
+        "valid_stances": [],
+        "valid_targets": [
+          "Repair"
+        ]
       }
     ]
   },
@@ -2480,6 +5259,9 @@
       "MindControl"
     ],
     "invalid_targets": [],
+    "projectile_kind": "",
+    "beam_duration": 0,
+    "beam_damage_interval": 0,
     "projectile_speed": null,
     "projectile_blockable": false,
     "warheads": [
@@ -2490,21 +5272,27 @@
         "versus": {},
         "spread": null,
         "falloff": [],
-        "delay": 0
+        "delay": 0,
+        "valid_stances": [],
+        "valid_targets": []
       }
     ]
   },
   "SuperMindControl": {
     "id": "SuperMindControl",
     "reload_delay": 200,
-    "range": 30720,
+    "range": 7168,
     "min_range": null,
     "burst": 1,
     "burst_delays": [],
     "valid_targets": [
-      "MindControl"
+      "SuperMindControl #Which can control infantry",
+      "vehicle and structure"
     ],
     "invalid_targets": [],
+    "projectile_kind": "",
+    "beam_duration": 0,
+    "beam_damage_interval": 0,
     "projectile_speed": null,
     "projectile_blockable": false,
     "warheads": [
@@ -2515,7 +5303,9 @@
         "versus": {},
         "spread": null,
         "falloff": [],
-        "delay": 0
+        "delay": 0,
+        "valid_stances": [],
+        "valid_targets": []
       }
     ]
   },
@@ -2528,6 +5318,9 @@
     "burst_delays": [],
     "valid_targets": [],
     "invalid_targets": [],
+    "projectile_kind": "",
+    "beam_duration": 0,
+    "beam_damage_interval": 0,
     "projectile_speed": null,
     "projectile_blockable": false,
     "warheads": [
@@ -2541,22 +5334,30 @@
           100,
           100
         ],
-        "delay": 0
+        "delay": 0,
+        "valid_stances": [],
+        "valid_targets": [
+          "Infantry"
+        ]
       }
     ]
   },
-  "DemoTruckTargeting": {
-    "id": "DemoTruckTargeting",
-    "reload_delay": 1,
-    "range": 2048,
+  "V3Launcher": {
+    "id": "V3Launcher",
+    "reload_delay": 30,
+    "range": 25600,
     "min_range": null,
     "burst": 1,
     "burst_delays": [],
     "valid_targets": [
-      "DetonateAttack"
+      "Ground",
+      "Water"
     ],
     "invalid_targets": [],
-    "projectile_speed": null,
+    "projectile_kind": "InstantHit",
+    "beam_duration": 0,
+    "beam_damage_interval": 0,
+    "projectile_speed": 500,
     "projectile_blockable": false,
     "warheads": [
       {
@@ -2566,7 +5367,12 @@
         "versus": {},
         "spread": null,
         "falloff": [],
-        "delay": 0
+        "delay": 0,
+        "valid_stances": [],
+        "valid_targets": [
+          "Ground",
+          "Water"
+        ]
       }
     ]
   },
@@ -2582,7 +5388,10 @@
       "Water"
     ],
     "invalid_targets": [],
-    "projectile_speed": null,
+    "projectile_kind": "InstantHit",
+    "beam_duration": 0,
+    "beam_damage_interval": 0,
+    "projectile_speed": 500,
     "projectile_blockable": false,
     "warheads": [
       {
@@ -2592,14 +5401,85 @@
         "versus": {},
         "spread": null,
         "falloff": [],
-        "delay": 0
+        "delay": 0,
+        "valid_stances": [],
+        "valid_targets": [
+          "Ground",
+          "Water"
+        ]
+      }
+    ]
+  },
+  "DredLauncher": {
+    "id": "DredLauncher",
+    "reload_delay": 30,
+    "range": 25600,
+    "min_range": null,
+    "burst": 1,
+    "burst_delays": [],
+    "valid_targets": [
+      "Ground",
+      "Water"
+    ],
+    "invalid_targets": [],
+    "projectile_kind": "InstantHit",
+    "beam_duration": 0,
+    "beam_damage_interval": 0,
+    "projectile_speed": 500,
+    "projectile_blockable": false,
+    "warheads": [
+      {
+        "id": "Warhead@1Dam",
+        "type": "TargetDamage",
+        "damage": 0,
+        "versus": {},
+        "spread": null,
+        "falloff": [],
+        "delay": 0,
+        "valid_stances": [],
+        "valid_targets": [
+          "Ground",
+          "Water"
+        ]
+      }
+    ]
+  },
+  "CruiseLauncher": {
+    "id": "CruiseLauncher",
+    "reload_delay": 30,
+    "range": 25600,
+    "min_range": null,
+    "burst": 1,
+    "burst_delays": [],
+    "valid_targets": [
+      "Structure"
+    ],
+    "invalid_targets": [],
+    "projectile_kind": "InstantHit",
+    "beam_duration": 0,
+    "beam_damage_interval": 0,
+    "projectile_speed": 500,
+    "projectile_blockable": false,
+    "warheads": [
+      {
+        "id": "Warhead@1Dam",
+        "type": "TargetDamage",
+        "damage": 0,
+        "versus": {},
+        "spread": null,
+        "falloff": [],
+        "delay": 0,
+        "valid_stances": [],
+        "valid_targets": [
+          "Structure"
+        ]
       }
     ]
   },
   "ASWLauncher": {
     "id": "ASWLauncher",
-    "reload_delay": 150,
-    "range": 8192,
+    "reload_delay": 30,
+    "range": 25600,
     "min_range": null,
     "burst": 1,
     "burst_delays": [],
@@ -2607,7 +5487,10 @@
       "Underwater"
     ],
     "invalid_targets": [],
-    "projectile_speed": null,
+    "projectile_kind": "InstantHit",
+    "beam_duration": 0,
+    "beam_damage_interval": 0,
+    "projectile_speed": 500,
     "projectile_blockable": false,
     "warheads": [
       {
@@ -2617,7 +5500,42 @@
         "versus": {},
         "spread": null,
         "falloff": [],
-        "delay": 0
+        "delay": 0,
+        "valid_stances": [],
+        "valid_targets": [
+          "Underwater"
+        ]
+      }
+    ]
+  },
+  "SpyCameraWeapon": {
+    "id": "SpyCameraWeapon",
+    "reload_delay": 30,
+    "range": 20480,
+    "min_range": null,
+    "burst": 1,
+    "burst_delays": [],
+    "valid_targets": [
+      "Ground",
+      "Water"
+    ],
+    "invalid_targets": [],
+    "projectile_kind": "GravityBomb",
+    "beam_duration": 0,
+    "beam_damage_interval": 0,
+    "projectile_speed": null,
+    "projectile_blockable": false,
+    "warheads": [
+      {
+        "id": "Warhead@1Dam",
+        "type": "RevealShroud",
+        "damage": 0,
+        "versus": {},
+        "spread": null,
+        "falloff": [],
+        "delay": 0,
+        "valid_stances": [],
+        "valid_targets": []
       }
     ]
   },
@@ -2632,6 +5550,9 @@
       "Air"
     ],
     "invalid_targets": [],
+    "projectile_kind": "Missile",
+    "beam_duration": 0,
+    "beam_damage_interval": 0,
     "projectile_speed": 100,
     "projectile_blockable": false,
     "warheads": [
@@ -2652,9 +5573,16 @@
           "Drone": 100,
           "Rocket": 100
         },
-        "spread": 120,
-        "falloff": [],
-        "delay": 0
+        "spread": 307,
+        "falloff": [
+          100,
+          0
+        ],
+        "delay": 0,
+        "valid_stances": [],
+        "valid_targets": [
+          "Air"
+        ]
       }
     ]
   },
@@ -2669,6 +5597,9 @@
       "Air"
     ],
     "invalid_targets": [],
+    "projectile_kind": "Missile",
+    "beam_duration": 0,
+    "beam_damage_interval": 0,
     "projectile_speed": 170,
     "projectile_blockable": false,
     "warheads": [
@@ -2690,8 +5621,15 @@
           "Rocket": 100
         },
         "spread": 171,
-        "falloff": [],
-        "delay": 0
+        "falloff": [
+          100,
+          0
+        ],
+        "delay": 0,
+        "valid_stances": [],
+        "valid_targets": [
+          "Air"
+        ]
       }
     ]
   },
@@ -2707,19 +5645,24 @@
       "Water"
     ],
     "invalid_targets": [],
+    "projectile_kind": "Missile",
+    "beam_duration": 0,
+    "beam_damage_interval": 0,
     "projectile_speed": 373,
     "projectile_blockable": false,
     "warheads": [
       {
         "id": "Warhead@1Dam",
         "type": "SpreadDamage",
-        "damage": 150,
+        "damage": 200,
         "versus": {
           "Concrete": 75
         },
         "spread": 128,
         "falloff": [],
-        "delay": 0
+        "delay": 0,
+        "valid_stances": [],
+        "valid_targets": []
       }
     ]
   },
@@ -2735,6 +5678,9 @@
       "Water"
     ],
     "invalid_targets": [],
+    "projectile_kind": "Missile",
+    "beam_duration": 0,
+    "beam_damage_interval": 0,
     "projectile_speed": 373,
     "projectile_blockable": false,
     "warheads": [
@@ -2747,7 +5693,9 @@
         },
         "spread": 128,
         "falloff": [],
-        "delay": 0
+        "delay": 0,
+        "valid_stances": [],
+        "valid_targets": []
       }
     ]
   },
@@ -2762,6 +5710,9 @@
       "Air"
     ],
     "invalid_targets": [],
+    "projectile_kind": "Missile",
+    "beam_duration": 0,
+    "beam_damage_interval": 0,
     "projectile_speed": 100,
     "projectile_blockable": false,
     "warheads": [
@@ -2783,8 +5734,15 @@
           "Rocket": 100
         },
         "spread": 60,
-        "falloff": [],
-        "delay": 0
+        "falloff": [
+          100,
+          0
+        ],
+        "delay": 0,
+        "valid_stances": [],
+        "valid_targets": [
+          "Air"
+        ]
       }
     ]
   },
@@ -2800,6 +5758,9 @@
       "Air"
     ],
     "invalid_targets": [],
+    "projectile_kind": "Missile",
+    "beam_duration": 0,
+    "beam_damage_interval": 0,
     "projectile_speed": 213,
     "projectile_blockable": false,
     "warheads": [
@@ -2822,7 +5783,12 @@
         },
         "spread": 128,
         "falloff": [],
-        "delay": 0
+        "delay": 0,
+        "valid_stances": [],
+        "valid_targets": [
+          "Ground",
+          "Air"
+        ]
       }
     ]
   },
@@ -2838,6 +5804,9 @@
       "Air"
     ],
     "invalid_targets": [],
+    "projectile_kind": "Missile",
+    "beam_duration": 0,
+    "beam_damage_interval": 0,
     "projectile_speed": 213,
     "projectile_blockable": false,
     "warheads": [
@@ -2860,7 +5829,12 @@
         },
         "spread": 128,
         "falloff": [],
-        "delay": 0
+        "delay": 0,
+        "valid_stances": [],
+        "valid_targets": [
+          "Ground",
+          "Air"
+        ]
       }
     ]
   },
@@ -2876,6 +5850,9 @@
       "Underwater"
     ],
     "invalid_targets": [],
+    "projectile_kind": "Missile",
+    "beam_duration": 0,
+    "beam_damage_interval": 0,
     "projectile_speed": 102,
     "projectile_blockable": true,
     "warheads": [
@@ -2898,7 +5875,13 @@
         },
         "spread": 426,
         "falloff": [],
-        "delay": 0
+        "delay": 0,
+        "valid_stances": [],
+        "valid_targets": [
+          "Water",
+          "Underwater",
+          "Bridge"
+        ]
       }
     ]
   },
@@ -2914,6 +5897,9 @@
       "Underwater"
     ],
     "invalid_targets": [],
+    "projectile_kind": "Missile",
+    "beam_duration": 0,
+    "beam_damage_interval": 0,
     "projectile_speed": 102,
     "projectile_blockable": true,
     "warheads": [
@@ -2936,7 +5922,203 @@
         },
         "spread": 426,
         "falloff": [],
-        "delay": 0
+        "delay": 0,
+        "valid_stances": [],
+        "valid_targets": [
+          "Water",
+          "Underwater",
+          "Bridge"
+        ]
+      }
+    ]
+  },
+  "Maverick3": {
+    "id": "Maverick3",
+    "reload_delay": 10,
+    "range": 6144,
+    "min_range": null,
+    "burst": 1,
+    "burst_delays": [],
+    "valid_targets": [
+      "Ground",
+      "Water"
+    ],
+    "invalid_targets": [],
+    "projectile_kind": "Missile",
+    "beam_duration": 0,
+    "beam_damage_interval": 0,
+    "projectile_speed": 373,
+    "projectile_blockable": false,
+    "warheads": [
+      {
+        "id": "Warhead@1Dam",
+        "type": "SpreadDamage",
+        "damage": 750,
+        "versus": {
+          "Concrete": 75,
+          "Flak": 100,
+          "Plate": 100,
+          "Light": 100,
+          "Medium": 100,
+          "Heavy": 100,
+          "Wood": 100,
+          "Steel": 100,
+          "Drone": 100,
+          "Rocket": 100
+        },
+        "spread": 128,
+        "falloff": [],
+        "delay": 0,
+        "valid_stances": [],
+        "valid_targets": []
+      }
+    ]
+  },
+  "Maverick3E": {
+    "id": "Maverick3E",
+    "reload_delay": 10,
+    "range": 6144,
+    "min_range": null,
+    "burst": 1,
+    "burst_delays": [],
+    "valid_targets": [
+      "Ground",
+      "Water"
+    ],
+    "invalid_targets": [],
+    "projectile_kind": "Missile",
+    "beam_duration": 0,
+    "beam_damage_interval": 0,
+    "projectile_speed": 373,
+    "projectile_blockable": false,
+    "warheads": [
+      {
+        "id": "Warhead@1Dam",
+        "type": "SpreadDamage",
+        "damage": 750,
+        "versus": {
+          "Concrete": 75,
+          "Flak": 100,
+          "Plate": 100,
+          "Light": 100,
+          "Medium": 100,
+          "Heavy": 100,
+          "Wood": 100,
+          "Steel": 100,
+          "Drone": 100,
+          "Rocket": 100
+        },
+        "spread": 128,
+        "falloff": [],
+        "delay": 0,
+        "valid_stances": [],
+        "valid_targets": []
+      }
+    ]
+  },
+  "MissileLauncher": {
+    "id": "MissileLauncher",
+    "reload_delay": 40,
+    "range": 6144,
+    "min_range": null,
+    "burst": 1,
+    "burst_delays": [],
+    "valid_targets": [
+      "Ground",
+      "Air",
+      "Water"
+    ],
+    "invalid_targets": [],
+    "projectile_kind": "Missile",
+    "beam_duration": 0,
+    "beam_damage_interval": 0,
+    "projectile_speed": 512,
+    "projectile_blockable": false,
+    "warheads": [
+      {
+        "id": "Warhead@1Dam",
+        "type": "SpreadDamage",
+        "damage": 40,
+        "versus": {
+          "None": 15,
+          "Flak": 15,
+          "Plate": 10,
+          "Light": 75,
+          "Medium": 100,
+          "Heavy": 100,
+          "Wood": 55,
+          "Steel": 75,
+          "Concrete": 50,
+          "Drone": 40,
+          "Rocket": 100
+        },
+        "spread": 128,
+        "falloff": [
+          100,
+          83,
+          67,
+          50,
+          0
+        ],
+        "delay": 0,
+        "valid_stances": [],
+        "valid_targets": [
+          "Ground",
+          "Air"
+        ]
+      }
+    ]
+  },
+  "MissileLauncherE": {
+    "id": "MissileLauncherE",
+    "reload_delay": 20,
+    "range": 8192,
+    "min_range": null,
+    "burst": 1,
+    "burst_delays": [],
+    "valid_targets": [
+      "Ground",
+      "Air",
+      "Water"
+    ],
+    "invalid_targets": [],
+    "projectile_kind": "Missile",
+    "beam_duration": 0,
+    "beam_damage_interval": 0,
+    "projectile_speed": 512,
+    "projectile_blockable": false,
+    "warheads": [
+      {
+        "id": "Warhead@1Dam",
+        "type": "SpreadDamage",
+        "damage": 50,
+        "versus": {
+          "None": 15,
+          "Flak": 15,
+          "Plate": 10,
+          "Light": 75,
+          "Medium": 100,
+          "Heavy": 100,
+          "Wood": 55,
+          "Steel": 75,
+          "Concrete": 50,
+          "Drone": 40,
+          "Rocket": 100
+        },
+        "spread": 128,
+        "falloff": [
+          100,
+          83,
+          67,
+          50,
+          0
+        ],
+        "delay": 0,
+        "valid_stances": [],
+        "valid_targets": [
+          "Ground",
+          "Air"
+        ]
       }
     ]
   },
@@ -2952,13 +6134,16 @@
       "Water"
     ],
     "invalid_targets": [],
-    "projectile_speed": 384,
+    "projectile_kind": "Missile",
+    "beam_duration": 0,
+    "beam_damage_interval": 0,
+    "projectile_speed": 256,
     "projectile_blockable": false,
     "warheads": [
       {
         "id": "Warhead@1Dam",
         "type": "SpreadDamage",
-        "damage": 80,
+        "damage": 40,
         "versus": {
           "None": 100,
           "Flak": 100,
@@ -2972,17 +6157,19 @@
           "Drone": 100,
           "Rocket": 100
         },
-        "spread": 410,
-        "falloff": [
-          100,
-          0
-        ],
-        "delay": 0
+        "spread": 128,
+        "falloff": [],
+        "delay": 0,
+        "valid_stances": [],
+        "valid_targets": [
+          "Ground",
+          "Water"
+        ]
       }
     ]
   },
-  "HornetBombE": {
-    "id": "HornetBombE",
+  "ASWBomb": {
+    "id": "ASWBomb",
     "reload_delay": 3,
     "range": 5120,
     "min_range": null,
@@ -2993,13 +6180,16 @@
       "Water"
     ],
     "invalid_targets": [],
-    "projectile_speed": 384,
+    "projectile_kind": "Missile",
+    "beam_duration": 0,
+    "beam_damage_interval": 0,
+    "projectile_speed": 256,
     "projectile_blockable": false,
     "warheads": [
       {
         "id": "Warhead@1Dam",
         "type": "SpreadDamage",
-        "damage": 140,
+        "damage": 40,
         "versus": {
           "None": 100,
           "Flak": 100,
@@ -3013,33 +6203,86 @@
           "Drone": 100,
           "Rocket": 100
         },
-        "spread": 512,
-        "falloff": [
-          100,
-          0
-        ],
-        "delay": 0
+        "spread": 128,
+        "falloff": [],
+        "delay": 0,
+        "valid_stances": [],
+        "valid_targets": [
+          "Ground",
+          "Water"
+        ]
       }
     ]
   },
-  "ASWBomb": {
-    "id": "ASWBomb",
-    "reload_delay": 3,
-    "range": 3072,
+  "BoomerTorpedo": {
+    "id": "BoomerTorpedo",
+    "reload_delay": 120,
+    "range": 7168,
     "min_range": null,
     "burst": 1,
     "burst_delays": [],
     "valid_targets": [
-      "Submergeable"
+      "Water",
+      "Underwater"
     ],
     "invalid_targets": [],
-    "projectile_speed": 384,
-    "projectile_blockable": false,
+    "projectile_kind": "Missile",
+    "beam_duration": 0,
+    "beam_damage_interval": 0,
+    "projectile_speed": 102,
+    "projectile_blockable": true,
     "warheads": [
       {
         "id": "Warhead@1Dam",
         "type": "SpreadDamage",
-        "damage": 50,
+        "damage": 60,
+        "versus": {
+          "None": 100,
+          "Flak": 100,
+          "Plate": 100,
+          "Light": 75,
+          "Medium": 100,
+          "Heavy": 100,
+          "Wood": 65,
+          "Steel": 65,
+          "Concrete": 60,
+          "Drone": 25,
+          "Rocket": 100
+        },
+        "spread": 426,
+        "falloff": [],
+        "delay": 0,
+        "valid_stances": [],
+        "valid_targets": [
+          "Water",
+          "Underwater",
+          "Bridge"
+        ]
+      }
+    ]
+  },
+  "BoomerTorpedoE": {
+    "id": "BoomerTorpedoE",
+    "reload_delay": 75,
+    "range": 7168,
+    "min_range": null,
+    "burst": 4,
+    "burst_delays": [],
+    "valid_targets": [
+      "Water",
+      "Underwater"
+    ],
+    "invalid_targets": [],
+    "projectile_kind": "Missile",
+    "beam_duration": 0,
+    "beam_damage_interval": 0,
+    "projectile_speed": 102,
+    "projectile_blockable": true,
+    "warheads": [
+      {
+        "id": "Warhead@1Dam",
+        "type": "SpreadDamage",
+        "damage": 100,
         "versus": {
           "None": 25,
           "Flak": 25,
@@ -3048,49 +6291,151 @@
           "Medium": 100,
           "Heavy": 100,
           "Wood": 65,
-          "Steel": 85,
+          "Steel": 65,
           "Concrete": 60,
-          "Drone": 25
+          "Drone": 25,
+          "Rocket": 100
         },
         "spread": 426,
         "falloff": [],
-        "delay": 0
+        "delay": 0,
+        "valid_stances": [],
+        "valid_targets": [
+          "Water",
+          "Underwater",
+          "Bridge"
+        ]
       }
     ]
   },
-  "ASWBombE": {
-    "id": "ASWBombE",
-    "reload_delay": 3,
+  "ChaosGasAttack": {
+    "id": "ChaosGasAttack",
+    "reload_delay": 30,
     "range": 3072,
     "min_range": null,
     "burst": 1,
     "burst_delays": [],
     "valid_targets": [
-      "Submergeable"
+      "Infantry",
+      "Vehicle",
+      "Water"
     ],
     "invalid_targets": [],
-    "projectile_speed": 384,
+    "projectile_kind": "",
+    "beam_duration": 0,
+    "beam_damage_interval": 0,
+    "projectile_speed": null,
     "projectile_blockable": false,
     "warheads": [
       {
         "id": "Warhead@1Dam",
         "type": "SpreadDamage",
-        "damage": 80,
+        "damage": 0,
         "versus": {
-          "None": 25,
-          "Flak": 25,
-          "Plate": 25,
-          "Light": 75,
-          "Medium": 100,
-          "Heavy": 100,
-          "Wood": 65,
-          "Steel": 85,
-          "Concrete": 60,
-          "Drone": 25
+          "None": 100,
+          "Flak": 100,
+          "Plate": 100,
+          "Light": 50,
+          "Medium": 50,
+          "Heavy": 50,
+          "Wood": 0,
+          "Steel": 0,
+          "Concrete": 0,
+          "Drone": 100,
+          "Rocket": 100
         },
-        "spread": 426,
+        "spread": 0,
         "falloff": [],
-        "delay": 0
+        "delay": 0,
+        "valid_stances": [],
+        "valid_targets": [
+          "Infantry",
+          "Vehicle",
+          "Water"
+        ]
+      }
+    ]
+  },
+  "VirtusGas": {
+    "id": "VirtusGas",
+    "reload_delay": 80,
+    "range": 1024,
+    "min_range": null,
+    "burst": 1,
+    "burst_delays": [],
+    "valid_targets": [],
+    "invalid_targets": [],
+    "projectile_kind": "Bullet",
+    "beam_duration": 0,
+    "beam_damage_interval": 0,
+    "projectile_speed": 102400,
+    "projectile_blockable": true,
+    "warheads": [
+      {
+        "id": "Warhead@1Dam",
+        "type": "SpreadDamage",
+        "damage": 0,
+        "versus": {
+          "None": 100,
+          "Flak": 100,
+          "Plate": 100,
+          "Light": 50,
+          "Medium": 50,
+          "Heavy": 50,
+          "Wood": 0,
+          "Steel": 0,
+          "Concrete": 0,
+          "Drone": 100,
+          "Rocket": 0
+        },
+        "spread": 64,
+        "falloff": [],
+        "delay": 0,
+        "valid_stances": [],
+        "valid_targets": [
+          "Infantry"
+        ]
+      }
+    ]
+  },
+  "CRRadBeamWeapon": {
+    "id": "CRRadBeamWeapon",
+    "reload_delay": 30,
+    "range": 7168,
+    "min_range": null,
+    "burst": 1,
+    "burst_delays": [],
+    "valid_targets": [
+      "Ground"
+    ],
+    "invalid_targets": [],
+    "projectile_kind": "RadBeam",
+    "beam_duration": 0,
+    "beam_damage_interval": 0,
+    "projectile_speed": null,
+    "projectile_blockable": false,
+    "warheads": [
+      {
+        "id": "Warhead@1Dam",
+        "type": "SpreadDamage",
+        "damage": 175,
+        "versus": {
+          "None": 100,
+          "Flak": 100,
+          "Plate": 100,
+          "Light": 20,
+          "Medium": 15,
+          "Heavy": 10,
+          "Wood": 0,
+          "Steel": 0,
+          "Concrete": 0,
+          "Rocket": 100
+        },
+        "spread": 42,
+        "falloff": [],
+        "delay": 0,
+        "valid_stances": [],
+        "valid_targets": []
       }
     ]
   },
@@ -3103,6 +6448,9 @@
     "burst_delays": [],
     "valid_targets": [],
     "invalid_targets": [],
+    "projectile_kind": "",
+    "beam_duration": 0,
+    "beam_damage_interval": 0,
     "projectile_speed": null,
     "projectile_blockable": false,
     "warheads": [
@@ -3125,7 +6473,9 @@
         },
         "spread": 120,
         "falloff": [],
-        "delay": 0
+        "delay": 0,
+        "valid_stances": [],
+        "valid_targets": []
       }
     ]
   },
@@ -3138,6 +6488,9 @@
     "burst_delays": [],
     "valid_targets": [],
     "invalid_targets": [],
+    "projectile_kind": "",
+    "beam_duration": 0,
+    "beam_damage_interval": 0,
     "projectile_speed": null,
     "projectile_blockable": false,
     "warheads": [
@@ -3160,7 +6513,9 @@
         },
         "spread": 120,
         "falloff": [],
-        "delay": 0
+        "delay": 0,
+        "valid_stances": [],
+        "valid_targets": []
       }
     ]
   },
@@ -3173,6 +6528,9 @@
     "burst_delays": [],
     "valid_targets": [],
     "invalid_targets": [],
+    "projectile_kind": "",
+    "beam_duration": 0,
+    "beam_damage_interval": 0,
     "projectile_speed": null,
     "projectile_blockable": false,
     "warheads": [
@@ -3195,7 +6553,9 @@
         },
         "spread": 120,
         "falloff": [],
-        "delay": 0
+        "delay": 0,
+        "valid_stances": [],
+        "valid_targets": []
       }
     ]
   },
@@ -3208,6 +6568,9 @@
     "burst_delays": [],
     "valid_targets": [],
     "invalid_targets": [],
+    "projectile_kind": "",
+    "beam_duration": 0,
+    "beam_damage_interval": 0,
     "projectile_speed": null,
     "projectile_blockable": false,
     "warheads": [
@@ -3230,7 +6593,9 @@
         },
         "spread": 42,
         "falloff": [],
-        "delay": 0
+        "delay": 0,
+        "valid_stances": [],
+        "valid_targets": []
       }
     ]
   },
@@ -3243,6 +6608,9 @@
     "burst_delays": [],
     "valid_targets": [],
     "invalid_targets": [],
+    "projectile_kind": "TeslaZap",
+    "beam_duration": 0,
+    "beam_damage_interval": 0,
     "projectile_speed": null,
     "projectile_blockable": false,
     "warheads": [
@@ -3265,7 +6633,9 @@
         },
         "spread": 42,
         "falloff": [],
-        "delay": 0
+        "delay": 0,
+        "valid_stances": [],
+        "valid_targets": []
       }
     ]
   },
@@ -3278,6 +6648,9 @@
     "burst_delays": [],
     "valid_targets": [],
     "invalid_targets": [],
+    "projectile_kind": "",
+    "beam_duration": 0,
+    "beam_damage_interval": 0,
     "projectile_speed": null,
     "projectile_blockable": false,
     "warheads": [
@@ -3300,7 +6673,9 @@
         },
         "spread": 120,
         "falloff": [],
-        "delay": 0
+        "delay": 0,
+        "valid_stances": [],
+        "valid_targets": []
       }
     ]
   },
@@ -3313,6 +6688,9 @@
     "burst_delays": [],
     "valid_targets": [],
     "invalid_targets": [],
+    "projectile_kind": "",
+    "beam_duration": 0,
+    "beam_damage_interval": 0,
     "projectile_speed": null,
     "projectile_blockable": false,
     "warheads": [
@@ -3335,7 +6713,9 @@
         },
         "spread": 120,
         "falloff": [],
-        "delay": 0
+        "delay": 0,
+        "valid_stances": [],
+        "valid_targets": []
       }
     ]
   },
@@ -3344,14 +6724,17 @@
     "reload_delay": 180,
     "range": 6144,
     "min_range": null,
-    "burst": 1,
+    "burst": 2,
     "burst_delays": [],
     "valid_targets": [
       "Water",
       "Underwater"
     ],
     "invalid_targets": [],
-    "projectile_speed": 256,
+    "projectile_kind": "AreaBeam",
+    "beam_duration": 10,
+    "beam_damage_interval": 5,
+    "projectile_speed": 1024,
     "projectile_blockable": true,
     "warheads": [
       {
@@ -3367,7 +6750,15 @@
           100,
           100
         ],
-        "delay": 0
+        "delay": 0,
+        "valid_stances": [
+          "Neutral",
+          "Enemy"
+        ],
+        "valid_targets": [
+          "Water",
+          "Underwater"
+        ]
       },
       {
         "id": "Warhead@2Dam",
@@ -3382,7 +6773,14 @@
           50,
           50
         ],
-        "delay": 0
+        "delay": 0,
+        "valid_stances": [
+          "Ally"
+        ],
+        "valid_targets": [
+          "Water",
+          "Underwater"
+        ]
       }
     ]
   },
@@ -3395,6 +6793,9 @@
     "burst_delays": [],
     "valid_targets": [],
     "invalid_targets": [],
+    "projectile_kind": "LaserZap",
+    "beam_duration": 0,
+    "beam_damage_interval": 0,
     "projectile_speed": null,
     "projectile_blockable": false,
     "warheads": [
@@ -3417,7 +6818,9 @@
         },
         "spread": 42,
         "falloff": [],
-        "delay": 0
+        "delay": 0,
+        "valid_stances": [],
+        "valid_targets": []
       }
     ]
   },
@@ -3433,6 +6836,9 @@
       "Water"
     ],
     "invalid_targets": [],
+    "projectile_kind": "LaserZap",
+    "beam_duration": 15,
+    "beam_damage_interval": 0,
     "projectile_speed": null,
     "projectile_blockable": false,
     "warheads": [
@@ -3455,7 +6861,9 @@
         },
         "spread": 800,
         "falloff": [],
-        "delay": 0
+        "delay": 0,
+        "valid_stances": [],
+        "valid_targets": []
       }
     ]
   },
@@ -3471,6 +6879,9 @@
       "Water"
     ],
     "invalid_targets": [],
+    "projectile_kind": "LaserZap",
+    "beam_duration": 15,
+    "beam_damage_interval": 0,
     "projectile_speed": null,
     "projectile_blockable": false,
     "warheads": [
@@ -3493,7 +6904,76 @@
         },
         "spread": 800,
         "falloff": [],
-        "delay": 0
+        "delay": 0,
+        "valid_stances": [],
+        "valid_targets": []
+      }
+    ]
+  },
+  "DiskLaser": {
+    "id": "DiskLaser",
+    "reload_delay": 50,
+    "range": 7168,
+    "min_range": null,
+    "burst": 1,
+    "burst_delays": [],
+    "valid_targets": [
+      "Ground",
+      "Water"
+    ],
+    "invalid_targets": [
+      "powerplant",
+      "refinery",
+      "powerable-defense"
+    ],
+    "projectile_kind": "LaserZap",
+    "beam_duration": 15,
+    "beam_damage_interval": 0,
+    "projectile_speed": null,
+    "projectile_blockable": false,
+    "warheads": [
+      {
+        "id": "Warhead@1Dam",
+        "type": "SpreadDamage",
+        "damage": 25,
+        "versus": {},
+        "spread": null,
+        "falloff": [],
+        "delay": 0,
+        "valid_stances": [],
+        "valid_targets": []
+      }
+    ]
+  },
+  "DiskDrain": {
+    "id": "DiskDrain",
+    "reload_delay": 4,
+    "range": 256,
+    "min_range": 1,
+    "burst": 1,
+    "burst_delays": [],
+    "valid_targets": [
+      "powerplant",
+      "refinery",
+      "powerable-defense"
+    ],
+    "invalid_targets": [],
+    "projectile_kind": "",
+    "beam_duration": 0,
+    "beam_damage_interval": 0,
+    "projectile_speed": null,
+    "projectile_blockable": false,
+    "warheads": [
+      {
+        "id": "Warhead@1Dam",
+        "type": "GrantExternalCondition",
+        "damage": 0,
+        "versus": {},
+        "spread": null,
+        "falloff": [],
+        "delay": 0,
+        "valid_stances": [],
+        "valid_targets": []
       }
     ]
   },
@@ -3508,6 +6988,9 @@
       "Ground"
     ],
     "invalid_targets": [],
+    "projectile_kind": "RadBeam",
+    "beam_duration": 0,
+    "beam_damage_interval": 0,
     "projectile_speed": null,
     "projectile_blockable": false,
     "warheads": [
@@ -3529,7 +7012,9 @@
         },
         "spread": 42,
         "falloff": [],
-        "delay": 0
+        "delay": 0,
+        "valid_stances": [],
+        "valid_targets": []
       }
     ]
   },
@@ -3544,6 +7029,9 @@
       "Ground"
     ],
     "invalid_targets": [],
+    "projectile_kind": "RadBeam",
+    "beam_duration": 0,
+    "beam_damage_interval": 0,
     "projectile_speed": null,
     "projectile_blockable": false,
     "warheads": [
@@ -3565,50 +7053,16 @@
         },
         "spread": 42,
         "falloff": [],
-        "delay": 0
-      }
-    ]
-  },
-  "CRRadBeamWeapon": {
-    "id": "CRRadBeamWeapon",
-    "reload_delay": 30,
-    "range": 7168,
-    "min_range": null,
-    "burst": 1,
-    "burst_delays": [],
-    "valid_targets": [
-      "Ground"
-    ],
-    "invalid_targets": [],
-    "projectile_speed": null,
-    "projectile_blockable": false,
-    "warheads": [
-      {
-        "id": "Warhead@1Dam",
-        "type": "SpreadDamage",
-        "damage": 175,
-        "versus": {
-          "None": 100,
-          "Flak": 100,
-          "Plate": 100,
-          "Light": 20,
-          "Medium": 15,
-          "Heavy": 10,
-          "Wood": 0,
-          "Steel": 0,
-          "Concrete": 0,
-          "Rocket": 100
-        },
-        "spread": 42,
-        "falloff": [],
-        "delay": 0
+        "delay": 0,
+        "valid_stances": [],
+        "valid_targets": []
       }
     ]
   },
   "NeutronRifle": {
     "id": "NeutronRifle",
     "reload_delay": 120,
-    "range": 5120,
+    "range": 10240,
     "min_range": null,
     "burst": 1,
     "burst_delays": [],
@@ -3616,6 +7070,9 @@
       "Ground"
     ],
     "invalid_targets": [],
+    "projectile_kind": "TeslaZap",
+    "beam_duration": 0,
+    "beam_damage_interval": 0,
     "projectile_speed": null,
     "projectile_blockable": false,
     "warheads": [
@@ -3626,67 +7083,126 @@
         "versus": {},
         "spread": 64,
         "falloff": [],
-        "delay": 0
+        "delay": 0,
+        "valid_stances": [],
+        "valid_targets": []
       }
     ]
   },
-  "CRNeutronRifle": {
-    "id": "CRNeutronRifle",
-    "reload_delay": 120,
-    "range": 6144,
+  "MagneShake": {
+    "id": "MagneShake",
+    "reload_delay": 110,
+    "range": 10240,
     "min_range": null,
     "burst": 1,
     "burst_delays": [],
     "valid_targets": [
-      "Ground"
+      "Structure"
     ],
     "invalid_targets": [],
-    "projectile_speed": null,
-    "projectile_blockable": false,
+    "projectile_kind": "AreaBeam #TODO: need to rewrite a new warhead to make it more looks like the original",
+    "beam_duration": 111,
+    "beam_damage_interval": 25,
+    "projectile_speed": 128,
+    "projectile_blockable": true,
     "warheads": [
       {
-        "id": "Warhead@Damage",
+        "id": "Warhead@1Dam",
         "type": "SpreadDamage",
-        "damage": 8,
-        "versus": {},
-        "spread": 64,
+        "damage": 80,
+        "versus": {
+          "None": 0,
+          "Flak": 0,
+          "Plate": 0,
+          "Light": 0,
+          "Medium": 100,
+          "Heavy": 0,
+          "Wood": 100,
+          "Steel": 100,
+          "Concrete": 100,
+          "Drone": 0,
+          "Rocket": 0
+        },
+        "spread": 2,
         "falloff": [],
-        "delay": 0
+        "delay": 0,
+        "valid_stances": [],
+        "valid_targets": []
       }
     ]
   },
-  "LightningStorm": {
-    "id": "LightningStorm",
-    "reload_delay": 0,
+  "MagnetronZapEffect": {
+    "id": "MagnetronZapEffect",
+    "reload_delay": 15,
+    "range": 10240,
+    "min_range": null,
+    "burst": 1,
+    "burst_delays": [],
+    "valid_targets": [
+      "Tractable"
+    ],
+    "invalid_targets": [],
+    "projectile_kind": "AreaBeam #TODO: need to rewrite a new warhead to make it more looks like the original",
+    "beam_duration": 15,
+    "beam_damage_interval": 25,
+    "projectile_speed": 128,
+    "projectile_blockable": true,
+    "warheads": [
+      {
+        "id": "Warhead@1Dam",
+        "type": "SpreadDamage",
+        "damage": 0,
+        "versus": {},
+        "spread": null,
+        "falloff": [
+          100,
+          100
+        ],
+        "delay": 0,
+        "valid_stances": [],
+        "valid_targets": [
+          "Tractable"
+        ]
+      }
+    ]
+  },
+  "Lunarlaser": {
+    "id": "Lunarlaser",
+    "reload_delay": 20,
     "range": 7168,
     "min_range": null,
     "burst": 1,
     "burst_delays": [],
     "valid_targets": [],
     "invalid_targets": [],
+    "projectile_kind": "LaserZap",
+    "beam_duration": 15,
+    "beam_damage_interval": 0,
     "projectile_speed": null,
     "projectile_blockable": false,
     "warheads": [
       {
-        "id": "Warhead@2Dam",
+        "id": "Warhead@1Dam",
         "type": "SpreadDamage",
-        "damage": 165,
+        "damage": 25,
         "versus": {
           "None": 100,
           "Flak": 100,
           "Plate": 100,
-          "Light": 100,
-          "Medium": 100,
-          "Heavy": 100,
+          "Light": 75,
+          "Medium": 50,
+          "Heavy": 50,
           "Wood": 100,
           "Steel": 100,
-          "Concrete": 3,
+          "Concrete": 100,
           "Drone": 100,
           "Rocket": 100
         },
-        "spread": 3072,
+        "spread": null,
         "falloff": [],
-        "delay": 56
+        "delay": 0,
+        "valid_stances": [],
+        "valid_targets": []
       }
     ]
   }

@@ -25,8 +25,12 @@ if (-not (Test-Path (Join-Path $vendor "openra\.git"))) {
     git clone --depth 1 https://github.com/OpenRA/OpenRA.git (Join-Path $vendor "openra")
 }
 
+if (-not (Test-Path (Join-Path $vendor "yuris-revenge\.git"))) {
+    git clone --depth 1 https://github.com/cookgreen/Yuris-Revenge.git (Join-Path $vendor "yuris-revenge")
+}
+
 Write-Host ""
 Write-Host "完成。可选：把路径写入用户环境变量以便测试/导出脚本自动找到："
 Write-Host "  setx QQBOT_VENDOR `"$vendor`""
 Write-Host ""
-Write-Host "导出数据：uv run python scripts/crawler/openra_ra2_export.py"
+Write-Host "导出数据（YR）：uv run python scripts/crawler/openra_ra2_export.py"

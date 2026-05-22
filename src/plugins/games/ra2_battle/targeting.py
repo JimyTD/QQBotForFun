@@ -26,9 +26,9 @@ def _eval_targetable_condition(cond: str | None, unit: UnitInstance) -> bool:
     if c == "damaged":
         return unit.hp < unit.max_hp
     if c == "underwater":
-        return False
+        return unit.underwater
     if c == "!underwater":
-        return True
+        return not unit.underwater
     if c == "controlled":
         return unit.controlled_by_id is not None
     if c == "!controlled":
@@ -48,7 +48,9 @@ def effective_target_types(unit: UnitInstance) -> set[str]:
         if _eval_targetable_condition(layer.requires_condition, unit):
             active.update(layer.types)
     if not active:
-        return set(unit.actor.target_types)
+        active = set(unit.actor.target_types)
+    if unit.actor.locomotor == "naval":
+        active.add("Water")
     return active
 
 
@@ -231,8 +233,41 @@ def weapon_valid_against_unit(
     return True
 
 
-def armament_allowed(arm: ArmamentDef, *, veterancy_level: int = 0) -> bool:
-    """对齐 Armament RequiresCondition 与 rank-veteran / rank-elite。"""
+def weapon_valid_for_battle(
+    weapon: WeaponDef,
+    actor_id: str,
+    *,
+    target_types: set[str],
+) -> bool:
+    """斗蛐蛐模式下 ValidTargets 判定（含 YR 降级 override）。"""
+    from .battle_armament import battle_weapon_valid_targets
+
+    valid = set(battle_weapon_valid_targets(weapon, actor_id))
+    if not valid:
+        valid = (
+            set(weapon.valid_targets)
+            if weapon.valid_targets
+            else set(_DEFAULT_WEAPON_VALID)
+        )
+    invalid = set(weapon.invalid_targets)
+    if not valid.intersection(target_types):
+        return False
+    if invalid.intersection(target_types):
+        return False
+    return True
+
+
+def armament_allowed(
+    arm: ArmamentDef,
+    *,
+    veterancy_level: int = 0,
+    actor: ActorDef | None = None,
+) -> bool:
+    """对齐 Armament RequiresCondition；传入 actor 时启用斗蛐蛐降级规则。"""
+    if actor is not None:
+        from .battle_armament import armament_battle_allowed
+
+        return armament_battle_allowed(arm, actor, veterancy_level=veterancy_level)
     cond = arm.requires_condition
     if cond is None:
         return True

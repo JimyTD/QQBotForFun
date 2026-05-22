@@ -179,6 +179,130 @@
     "yuripr": {
       "name": "尤里改",
       "description": "强化心灵控制，射程更远。"
+    },
+    "shad": {
+      "name": "黑鹰战机",
+      "description": "盟军高速战斗机。\n强对：地面单位\n弱对：防空"
+    },
+    "zep": {
+      "name": "基洛夫飞艇",
+      "description": "苏军重型轰炸飞艇。\n强对：建筑、地面\n弱对：防空"
+    },
+    "orca": {
+      "name": "入侵者战机",
+      "description": "盟军对地攻击机。"
+    },
+    "beag": {
+      "name": "黑鹰战机（韩国）",
+      "description": "韩国专属高速战斗机。"
+    },
+    "schp": {
+      "name": "战斗要塞",
+      "description": "可搭载步兵的多功能重型载具。"
+    },
+    "ggi": {
+      "name": "重装大兵",
+      "description": "可部署的盟军反装甲步兵。"
+    },
+    "jumpjet": {
+      "name": "火箭飞行兵",
+      "description": "可飞行的盟军步兵。"
+    },
+    "robo": {
+      "name": "机器人坦克",
+      "description": "盟军无人坦克，可伪装。"
+    },
+    "bfrt": {
+      "name": "战斗要塞",
+      "description": "盟军多功能重型载具，可搭载步兵。"
+    },
+    "boris": {
+      "name": "鲍里斯",
+      "description": "苏军英雄，召唤空袭。"
+    },
+    "dred": {
+      "name": "无畏级战舰",
+      "description": "苏军导弹舰。\n强对：地面、建筑"
+    },
+    "v3": {
+      "name": "V3 火箭发射车",
+      "description": "远程火箭，需展开发射。"
+    },
+    "init": {
+      "name": "尤里新兵",
+      "description": "尤里阵营基础步兵。\n强对：步兵"
+    },
+    "yengineer": {
+      "name": "尤里工程师",
+      "description": "占领敌方建筑，无武器。"
+    },
+    "brute": {
+      "name": "狂兽人",
+      "description": "尤里近战单位。\n强对：步兵、车辆"
+    },
+    "virus": {
+      "name": "病毒狙击手",
+      "description": "专精反步兵，可感染。"
+    },
+    "slav": {
+      "name": "奴隶矿场",
+      "description": "尤里矿场，带防御武器。"
+    },
+    "lunr": {
+      "name": "月球飞行兵",
+      "description": "尤里飞行步兵。"
+    },
+    "yhvr": {
+      "name": "尤里 hover 运输",
+      "description": "尤里两栖运输，无武器。"
+    },
+    "bsub": {
+      "name": "雷鸣潜艇",
+      "description": "尤里水下单位，可发射导弹。"
+    },
+    "pcv": {
+      "name": "尤里基地车",
+      "description": "可展开为建造厂。"
+    },
+    "smin": {
+      "name": "奴隶矿场车",
+      "description": "尤里采矿车，带防御。"
+    },
+    "ltnk": {
+      "name": "盖特坦克",
+      "description": "尤里轻型坦克，可升级。"
+    },
+    "ytnk": {
+      "name": "盖特坦克（二阶）",
+      "description": "盖特坦克升级形态。"
+    },
+    "tele": {
+      "name": "磁电坦克",
+      "description": "可将敌方载具举至空中。"
+    },
+    "caos": {
+      "name": "混沌发生器",
+      "description": "尤里心灵干扰载具。"
+    },
+    "mind": {
+      "name": "精神控制车",
+      "description": "可心灵控制多个敌方单位。"
+    },
+    "disk": {
+      "name": "飞碟",
+      "description": "尤里飞行器，可吸电（斗蛐蛐仅激光）。"
+    },
+    "cmisl": {
+      "name": "巡航导弹",
+      "description": "V3/无畏发射的导弹（战中生成）。"
+    },
+    "dmisl": {
+      "name": "无畏导弹",
+      "description": "无畏级发射的导弹（战中生成）。"
+    },
+    "v3rocket": {
+      "name": "V3 火箭",
+      "description": "V3 发射的火箭（战中生成）。"
     }
   },
   "weapons": {}

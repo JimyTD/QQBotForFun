@@ -46,7 +46,7 @@ def _cells_from_wdist(wdist: int | None) -> str:
 
 def _primary_weapon(actor: ActorDef):
     for arm in actor.armaments:
-        if not armament_allowed(arm):
+        if not armament_allowed(arm, actor=actor):
             continue
         return resolve_weapon(arm.weapon)
     return None
@@ -58,7 +58,7 @@ def format_attack_summary(actor: ActorDef) -> str:
     labels = ("主武器", "副武器")
     idx = 0
     for arm in actor.armaments:
-        if not armament_allowed(arm):
+        if not armament_allowed(arm, actor=actor):
             continue
         w = resolve_weapon(arm.weapon)
         if not w or not w.warheads:
