@@ -519,14 +519,22 @@ for tick in 0..max_ticks:
 .\scripts\setup_openra_vendor.ps1
 ```
 
-**手动**（任意平台，见 `vendor/README.md`）：
+**推荐布局**：vendor 放在**项目同级目录** `../vendor-openra/`，体积大且与运行时无关，
+不入库、不部署。详见 `vendor/README.md`。
 
-```bash
-git clone --depth 1 https://github.com/OpenRA/ra2.git vendor/openra-ra2
-git clone --depth 1 https://github.com/OpenRA/OpenRA.git vendor/openra
+```powershell
+# Windows 一键
+.\scripts\setup_openra_vendor.ps1
 ```
 
-`vendor/openra/` 与 `vendor/openra-ra2/` 已加入 `.gitignore`，每台开发机需自行克隆。
+```bash
+# 手动（任意平台）
+mkdir ../vendor-openra
+git clone --depth 1 https://github.com/OpenRA/ra2.git ../vendor-openra/openra-ra2
+git clone --depth 1 https://github.com/OpenRA/OpenRA.git ../vendor-openra/openra
+```
+
+可用 `QQBOT_VENDOR` 环境变量自定义路径。脚本与测试通过 `scripts/_vendor_path.py` 统一解析。
 
 ### 9.2 导出数据
 

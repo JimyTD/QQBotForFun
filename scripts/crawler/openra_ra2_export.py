@@ -16,8 +16,10 @@ from typing import Any
 
 _ROOT = Path(__file__).resolve().parents[2]
 _SRC = _ROOT / "src"
-if str(_SRC) not in sys.path:
-    sys.path.insert(0, str(_SRC))
+_SCRIPTS = _ROOT / "scripts"
+for _p in (_SRC, _SCRIPTS):
+    if str(_p) not in sys.path:
+        sys.path.insert(0, str(_p))
 
 from plugins.games.ra2_battle.openra_yaml import (  # noqa: E402
     load_rules_dir,
@@ -30,8 +32,8 @@ from plugins.games.ra2_battle.openra_yaml import (  # noqa: E402
 )
 
 from plugins.games.ra2_battle.icon_map import build_icon_map  # noqa: E402
+from _vendor_path import openra_ra2_dir  # noqa: E402
 
-DEFAULT_VENDOR = _ROOT / "vendor" / "openra-ra2"
 OUT_DIR = _ROOT / "data" / "ra2"
 
 
@@ -470,9 +472,15 @@ def export(vendor_ra2: Path) -> Path:
 
 def main() -> None:
     p = argparse.ArgumentParser()
-    p.add_argument("--vendor", type=Path, default=DEFAULT_VENDOR)
+    p.add_argument(
+        "--vendor",
+        type=Path,
+        default=None,
+        help="openra-ra2 目录；缺省按 QQBOT_VENDOR / ../vendor-openra/ / ./vendor/ 查找",
+    )
     args = p.parse_args()
-    export(args.vendor.resolve())
+    vendor = args.vendor.resolve() if args.vendor else openra_ra2_dir()
+    export(vendor)
 
 
 if __name__ == "__main__":

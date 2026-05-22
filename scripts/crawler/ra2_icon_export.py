@@ -23,8 +23,10 @@ from pathlib import Path
 
 _ROOT = Path(__file__).resolve().parents[2]
 _SRC = _ROOT / "src"
-if str(_SRC) not in sys.path:
-    sys.path.insert(0, str(_SRC))
+_SCRIPTS = _ROOT / "scripts"
+for _p in (_SRC, _SCRIPTS):
+    if str(_p) not in sys.path:
+        sys.path.insert(0, str(_p))
 
 from plugins.games.ra2_battle.icon_map import build_icon_map  # noqa: E402
 from plugins.games.ra2_battle.openra_yaml import load_rules_dir  # noqa: E402
@@ -33,8 +35,8 @@ from plugins.games.ra2_battle.shp_ts import (  # noqa: E402
     frame_to_rgba,
     load_jasc_pal,
 )
+from _vendor_path import openra_ra2_dir  # noqa: E402
 
-DEFAULT_VENDOR = _ROOT / "vendor" / "openra-ra2"
 OUT_DIR = _ROOT / "resources" / "ra2" / "icons"
 ICON_MAP_PATH = _ROOT / "data" / "ra2" / "icon_map.json"
 ACTORS_PATH = _ROOT / "data" / "ra2" / "actors.json"
@@ -135,7 +137,12 @@ def export_icons(
 
 def main() -> None:
     p = argparse.ArgumentParser()
-    p.add_argument("--vendor", type=Path, default=DEFAULT_VENDOR)
+    p.add_argument(
+        "--vendor",
+        type=Path,
+        default=None,
+        help="openra-ra2 目录；缺省按 QQBOT_VENDOR / ../vendor-openra/ / ./vendor/ 查找",
+    )
     p.add_argument(
         "--ra2-dir",
         type=Path,
@@ -151,7 +158,7 @@ def main() -> None:
         raise SystemExit("请先运行 openra_ra2_export.py 生成 data/ra2/actors.json")
 
     actor_ids = set(json.loads(ACTORS_PATH.read_text(encoding="utf-8")).keys())
-    vendor = args.vendor.resolve()
+    vendor = args.vendor.resolve() if args.vendor else openra_ra2_dir()
 
     raw_rules = load_rules_dir(vendor / "mods" / "ra2" / "rules")
     icon_map = build_icon_map(vendor, actor_ids, raw_rules)

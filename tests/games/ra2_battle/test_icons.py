@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import json
 import struct
+import sys
 from pathlib import Path
 
 import pytest
@@ -13,7 +14,12 @@ from plugins.games.ra2_battle.icons import get_icon_path, load_icon_map
 from plugins.games.ra2_battle.shp_ts import decode_shp_ts_first_frame
 
 _ROOT = Path(__file__).resolve().parents[3]
-_VENDOR = _ROOT / "vendor" / "openra-ra2"
+_SCRIPTS = _ROOT / "scripts"
+if str(_SCRIPTS) not in sys.path:
+    sys.path.insert(0, str(_SCRIPTS))
+from _vendor_path import openra_ra2_dir  # noqa: E402
+
+_VENDOR = openra_ra2_dir()
 _ICON_MAP = _ROOT / "data" / "ra2" / "icon_map.json"
 _ACTORS = _ROOT / "data" / "ra2" / "actors.json"
 _ICONS_DIR = _ROOT / "resources" / "ra2" / "icons"
