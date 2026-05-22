@@ -1,0 +1,12 @@
+{
+  "firepower_veteran": 110,
+  "firepower_elite": 130,
+  "damage_received_veteran": 90,
+  "damage_received_elite": 75,
+  "speed_veteran": 120,
+  "speed_elite": 140,
+  "reload_delay_veteran": 90,
+  "reload_delay_elite": 75,
+  "regen_step": 2,
+  "regen_delay": 100
+}

@@ -44,7 +44,11 @@ Thumbs.db
 htmlcov/
 
 # Data / Logs
-data/
+# data/ 默认忽略；ra2 提取的精炼 JSON（~190KB）需要入库给服务器用
+data/*
+!data/ra2/
+data/ra2/*
+!data/ra2/*.json
 logs/
 *.log
 *.db
@@ -53,6 +57,10 @@ logs/
 
 # NapCat volumes (dev)
 napcat/data/
+
+# OpenRA 参考源码（scripts/setup_openra_vendor 可重新克隆）
+vendor/openra/
+vendor/openra-ra2/
 
 # Misc
 *.bak

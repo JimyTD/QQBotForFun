@@ -38,6 +38,7 @@ HELP_TEXT = render.text_card(
         "海龟汤          情景推理（AI主持）",
         "趣味问答        六类线索猜答案",
         "斗蛐蛐          帝国3兵种对战押注",
+        "红警斗蛐蛐      红警2兵种对战（OpenRA数据）",
         "",
         "━━━ 🐢 海龟汤 ━━━",
         "直接提问        向汤主提问",
@@ -53,6 +54,9 @@ HELP_TEXT = render.text_card(
         "斗蛐蛐 单挑     1v1 模式",
         "斗蛐蛐 乱斗     黑名单乱斗（怪物/英雄互殴）",
         "斗蛐蛐 5000     自定义资源（1000-50000，默认10000）",
+        "红警斗蛐蛐      红警2押注（默认预算5000）",
+        "红警斗蛐蛐 单挑 红警2 1v1",
+        "红警斗蛐蛐 3000 自定义造价（500-50000）",
         "1 / 2           押注红/蓝方",
         "开战            跳过等待直接开打",
         "结束            终止对局",
@@ -100,6 +104,7 @@ async def _(matcher: Matcher, event: MessageEvent) -> None:
         "turtle_soup": "@我 海龟汤",
         "trivia": "@我 趣味问答",
         "aoe3_battle": "@我 斗蛐蛐",
+        "ra2_battle": "@我 红警斗蛐蛐",
     }
 
     games = list_games()
@@ -162,7 +167,7 @@ async def _(matcher: Matcher, event: MessageEvent) -> None:
     coin = await economy.balance(qq_id, "coin")
     footer = [
         f"💰 金币：{coin}",
-        "🎮 开始游戏：@我 海龟汤 / @我 趣味问答 / @我 斗蛐蛐",
+        "🎮 开始游戏：@我 海龟汤 / @我 趣味问答 / @我 斗蛐蛐 / @我 红警斗蛐蛐",
         "📜 @我 帮助 查看帮助",
     ]
 

@@ -151,6 +151,43 @@ async def _(matcher: Matcher, event: GroupMessageEvent, args: Message = CommandA
     )
 
 
+# -------------------- 快捷开局：红警2斗蛐蛐（独立于帝国斗蛐蛐）--------------------
+_quick_ra2_battle = on_command(
+    "红警斗蛐蛐",
+    aliases={"ra2_battle", "红警2斗蛐蛐", "ra2斗蛐蛐"},
+    rule=to_me(),
+    priority=3,
+    block=True,
+)
+
+@_quick_ra2_battle.handle()
+async def _ra2_battle_launch(
+    matcher: Matcher, event: GroupMessageEvent, args: Message = CommandArg()
+) -> None:
+    arg_text = args.extract_plain_text().strip()
+    mode_id = "bet"
+    budget = None
+
+    for part in arg_text.split():
+        if part in ("单挑", "1v1", "duel", "红警单挑"):
+            mode_id = "duel"
+        elif part.isdigit():
+            budget = int(part)
+
+    config: dict = {"mode": mode_id}
+    if budget is not None:
+        config["budget"] = budget
+
+    await _launch_game(
+        matcher,
+        group_id=int(event.group_id),
+        initiator_id=int(event.user_id),
+        game_id="ra2_battle",
+        mode_id=mode_id,
+        extra_config=config,
+    )
+
+
 # -------------------- /结束 --------------------
 _quit = on_command(
     "结束",

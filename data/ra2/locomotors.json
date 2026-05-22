@@ -1,0 +1,61 @@
+{
+  "foot": {
+    "name": "foot",
+    "shares_cell": true,
+    "crushes": [
+      "crate"
+    ]
+  },
+  "swimsuit": {
+    "name": "swimsuit",
+    "shares_cell": true,
+    "crushes": [
+      "crate"
+    ]
+  },
+  "flameguy": {
+    "name": "flameguy",
+    "shares_cell": true,
+    "crushes": [
+      "crate"
+    ]
+  },
+  "wheeled": {
+    "name": "wheeled",
+    "shares_cell": false,
+    "crushes": [
+      "crate"
+    ]
+  },
+  "tracked": {
+    "name": "tracked",
+    "shares_cell": false,
+    "crushes": [
+      "crate",
+      "infantry"
+    ]
+  },
+  "heavytracked": {
+    "name": "heavytracked",
+    "shares_cell": false,
+    "crushes": [
+      "wall",
+      "crate",
+      "infantry"
+    ]
+  },
+  "naval": {
+    "name": "naval",
+    "shares_cell": false,
+    "crushes": [
+      "crate"
+    ]
+  },
+  "lcraft": {
+    "name": "lcraft",
+    "shares_cell": false,
+    "crushes": [
+      "crate"
+    ]
+  }
+}
