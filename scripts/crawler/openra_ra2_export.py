@@ -29,6 +29,8 @@ from plugins.games.ra2_battle.openra_yaml import (  # noqa: E402
     trait_blocks,
 )
 
+from plugins.games.ra2_battle.icon_map import build_icon_map  # noqa: E402
+
 DEFAULT_VENDOR = _ROOT / "vendor" / "openra-ra2"
 OUT_DIR = _ROOT / "data" / "ra2"
 
@@ -437,6 +439,7 @@ def export(vendor_ra2: Path) -> Path:
     weapons = _export_weapons(raw_weapons)
     actors = _export_actors(raw_rules, locomotors)
     veterancy = _export_veterancy_rules(raw_rules)
+    icon_map = build_icon_map(vendor_ra2, set(actors.keys()), raw_rules)
 
     OUT_DIR.mkdir(parents=True, exist_ok=True)
     for name, payload in (
@@ -444,6 +447,7 @@ def export(vendor_ra2: Path) -> Path:
         ("weapons.json", weapons),
         ("actors.json", actors),
         ("veterancy.json", veterancy),
+        ("icon_map.json", icon_map),
     ):
         path = OUT_DIR / name
         path.write_text(json.dumps(payload, ensure_ascii=False, indent=2), encoding="utf-8")

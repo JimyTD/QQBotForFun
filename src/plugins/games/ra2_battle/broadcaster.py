@@ -4,7 +4,19 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
+from .locale import localized_actor_name, localized_weapon_label
+from .repo import load_actors
 from .simulator import BattleResult, EventType, Side
+
+
+def _label_actor(actor_id: str) -> str:
+    actors = load_actors()
+    a = actors.get(actor_id)
+    return localized_actor_name(actor_id, a.name if a else actor_id)
+
+
+def _label_weapon(weapon_id: str) -> str:
+    return localized_weapon_label(weapon_id)
 
 
 @dataclass
@@ -45,10 +57,13 @@ class Broadcaster:
             p = ev.payload
             if ev.type == EventType.ATTACK and p.get("target_hp", 1) == 0:
                 lines.append(
-                    f"💥 {p['attacker']} 击毁 {p['target']}（{p['weapon']}）"
+                    f"💥 {_label_actor(p['attacker'])} 击毁 "
+                    f"{_label_actor(p['target'])}（{_label_weapon(p['weapon'])}）"
                 )
             elif ev.type == EventType.CRUSH:
-                lines.append(f"🛞 {p['crusher']} 碾压 {p['victim']}")
+                lines.append(
+                    f"🛞 {_label_actor(p['crusher'])} 碾压 {_label_actor(p['victim'])}"
+                )
             elif ev.type == EventType.DEATH and ev.tick > 0:
                 pass  # 已在 ATTACK 0hp 报过
 
@@ -58,8 +73,8 @@ class Broadcaster:
                     continue
                 p = ev.payload
                 lines.append(
-                    f"⚔ {p['attacker']} → {p['target']} -{p['damage']} "
-                    f"(剩{p['target_hp']}HP)"
+                    f"⚔ {_label_actor(p['attacker'])} → {_label_actor(p['target'])} "
+                    f"-{p['damage']} (剩{p['target_hp']}HP)"
                 )
                 if len(lines) >= self.max_lines:
                     break
@@ -68,7 +83,5 @@ class Broadcaster:
             text = "━━━ 战斗速递 ━━━\n" + "\n".join(lines[: self.max_lines])
             segs.append(BroadcastSegment(text, should_sleep=True))
 
-        segs.append(
-            BroadcastSegment(format_battle_report(self.result), should_sleep=False)
-        )
+        # 战报 + 押注结算由 game._run_battle 合并为一条发送（避免与结算重复）
         return segs

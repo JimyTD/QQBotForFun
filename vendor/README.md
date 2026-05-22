@@ -14,4 +14,13 @@ git clone --depth 1 https://github.com/OpenRA/OpenRA.git vendor/openra
 uv run python scripts/crawler/openra_ra2_export.py
 ```
 
-产出：`data/ra2/manifest.json`（及 actors/weapons/locomotors 等）。
+产出：`data/ra2/manifest.json`（及 actors/weapons/locomotors、icon_map 等）。
+
+QQ 兵种 icon（需原版 `cameo.mix`）：
+
+```bash
+uv pip install ra2mix Pillow
+uv run python scripts/crawler/ra2_icon_export.py --ra2-dir "你的RA2安装目录"
+```
+
+产出：`resources/ra2/icons/{actor_id}.png`。

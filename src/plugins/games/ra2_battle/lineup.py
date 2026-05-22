@@ -17,15 +17,12 @@ from dataclasses import dataclass, field
 
 
 from .display import (
-
+    display_name,
     format_attack_summary,
-
     format_description_blurb,
-
     format_unit_role,
-
 )
-
+from .locale import localized_actor_name
 from .battle_pool import is_lineup_eligible, lineup_eligible_actors
 
 from .repo import ActorDef, load_actors, load_battle_pool_actors
@@ -326,18 +323,16 @@ def _generate_side_lineup(
 
         count = max(1, budget // costs[0])
 
-        slots = [UnitSlot(chosen[0].id, chosen[0].name, count, costs[0])]
+        a0 = chosen[0]
+        slots = [UnitSlot(a0.id, display_name(a0), count, costs[0])]
 
     else:
 
         counts = greedy_fill(budget, costs)
 
         slots = [
-
-            UnitSlot(a.id, a.name, c, a.cost)
-
+            UnitSlot(a.id, display_name(a), c, a.cost)
             for a, c in zip(chosen, counts)
-
         ]
 
 
@@ -494,9 +489,9 @@ def generate_duel_lineup(
 
     return MatchLineup(
 
-        red=SideLineup([UnitSlot(a.id, a.name, 1, a.cost)]),
+        red=SideLineup([UnitSlot(a.id, display_name(a), 1, a.cost)]),
 
-        blue=SideLineup([UnitSlot(b.id, b.name, 1, b.cost)]),
+        blue=SideLineup([UnitSlot(b.id, display_name(b), 1, b.cost)]),
 
         mode="duel",
 
@@ -566,7 +561,8 @@ def format_side_panel(
 
         actor = actors.get(s.actor_id)
 
-        lines.append(f"{emoji} {label} · {s.name} · {star_tag}")
+        show = localized_actor_name(s.actor_id, s.name) if actor else s.name
+        lines.append(f"{emoji} {label} · {show} · {star_tag}")
 
         if actor:
 
@@ -582,7 +578,8 @@ def format_side_panel(
 
         actor = actors.get(s.actor_id)
 
-        lines.append(f"{emoji} {label} · {s.name} ×{s.count} · {star_tag}")
+        show = localized_actor_name(s.actor_id, s.name) if actor else s.name
+        lines.append(f"{emoji} {label} · {show} ×{s.count} · {star_tag}")
 
         if actor:
 
@@ -606,7 +603,8 @@ def format_side_panel(
 
         lines.append(f"  {'─' * 18}")
 
-        lines.append(f"  {s.name} ×{s.count}  (${s.unit_cost}×{s.count})")
+        show = localized_actor_name(s.actor_id, s.name)
+        lines.append(f"  {show} ×{s.count}  (${s.unit_cost}×{s.count})")
 
         if actor:
 

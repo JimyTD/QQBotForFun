@@ -87,6 +87,60 @@ DDT 假冒 PNG**。
 
 ---
 
+## 🖼️ 红警2斗蛐蛐：导出兵种 icon（`ra2_battle`）
+
+**现象**：红警斗蛐蛐开局只有中文文字面板，**没有**帝国斗蛐蛐那种兵种头像图。
+代码已接通（`game.py` 用 `broadcast_rich` 发图 + 文字），但 `resources/ra2/icons/`
+目前**只有 README，没有 PNG**。
+
+**背景**（2026-05-22 确认）：
+
+- GitHub [OpenRA/ra2](https://github.com/OpenRA/ra2) **能独立运行**（装 OpenRA + 导入原版资源后），
+  但仓库里**不能**分发原版美术（版权）；头像在 `language.mix` → `cameo.mix` 里的
+  `giicon.shp` 等，不在 git 里。
+- `data/ra2/icon_map.json`（45 条 actor → shp 文件名）已由 `openra_ra2_export.py`
+  从 sequences 自动生成，**无需**游戏文件。
+- 中文名在 `data/ra2/locale_zh.json`；结算战报重复发送已修（2026-05-22）。
+
+**待办**（需要本机已有原版 RA2 或 OpenRA 已导入内容）：
+
+1. **安装导出依赖**
+   ```bash
+   uv pip install ra2mix Pillow
+   ```
+
+2. **从 cameo.mix 导出 PNG**（任选其一目录，需含 `cameo.mix` + `cameo.pal`）
+   ```bash
+   # Steam 原版
+   uv run python scripts/crawler/ra2_icon_export.py --ra2-dir "你的红警2安装目录"
+
+   # 或 OpenRA 已导入的内容目录（常见）
+   uv run python scripts/crawler/ra2_icon_export.py --ra2-dir "%LocalAppData%\OpenRA\Content\ra2"
+   ```
+   也可：`--cameo-mix` / `--palette` 直接指定文件；或环境变量 `RA2_DIR`。
+
+   产出：`resources/ra2/icons/{actor_id}.png`（脚本默认缩到 128×128）。
+
+3. **验收**
+   - 约 45 个 PNG，`file` 头为 `\x89PNG\r\n\x1a\n`
+   - 单文件尽量 ≤ 50KB（过大可参考 `scripts/compress_aoe3_icons.py` 改目录跑一遍）
+   - **部署到 bot 服务器**（与代码一起），群里开 `@我 红警斗蛐蛐` 应看到红/蓝方各槽位头像
+
+**已落地**：
+
+- 导出：`scripts/crawler/ra2_icon_export.py`（SHP 解码对齐 OpenRA `ShpTSLoader`）
+- 读取：`src/plugins/games/ra2_battle/icons.py`（坏 PNG magic 校验，缺图只发文字）
+- 说明：`resources/ra2/icons/README.md`、`docs/games/ra2-battle.md` §8.3
+
+**相关文件**：
+
+- `data/ra2/icon_map.json`
+- `src/plugins/games/ra2_battle/icon_map.py`（`dog`→`adog` 等序列名别名）
+
+**优先级**：高 / 体验向 —— 与帝国斗蛐蛐展示对齐，缺图不影响开战。
+
+---
+
 ## 🐎 沙漠突袭者反兵攻击缺失（aoe3 数据）
 
 **单位**：`deoutlawdesertraider` Desert Raider 沙漠突袭者

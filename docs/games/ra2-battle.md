@@ -483,9 +483,11 @@ for tick in 0..max_ticks:
 
 ### 8.3 对阵面板（话术）
 
-结构对齐帝国（🔴1号 / 🔵2号、VS 条、押注提示），内容用红警数据：
+结构对齐帝国（🔴1号 / 🔵2号、VS 条、押注提示）。**群消息展示用中文**（`data/ra2/locale_zh.json` + `locale.py`），数值仍来自 OpenRA 导出；英文 yaml 的 `Tooltip.Name` / `Description` 仅作兜底。
 
-- `display.format_description_blurb` — OpenRA `Buildable.Description`（强/弱项原文）
+- `locale_zh.json` — 45 个导出单位的中文名与说明
+- `resources/ra2/icons/{actor_id}.png` — 兵种 cameo 图（对齐帝国斗蛐蛐；见 `resources/ra2/icons/README.md`）
+- `display.format_description_blurb` — 优先中文说明，无条目时英译兜底
 - `display.format_attack_summary` — 主武器伤害与射程（格）
 - `display.format_unit_role` — 步兵/车辆、护甲、可碾压等
 
@@ -502,6 +504,7 @@ for tick in 0..max_ticks:
 | `game.py`（押注结算同帝国） | ✅ |
 | `commands.py`（1/2/开战） | ✅ |
 | `game_launcher` + `bot.py` | ✅ |
+| 阵容 icon 图片广播 | ✅（需 `ra2_icon_export.py` 生成 PNG） |
 | 单位图标 | ⏳ 远期 |
 
 ---

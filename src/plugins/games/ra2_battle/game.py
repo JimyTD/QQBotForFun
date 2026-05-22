@@ -98,17 +98,36 @@ class Ra2BattleGame(GameBase):
         self._battle_task: asyncio.Task[Any] | None = None
 
     async def on_start(self, ctx: GameContext) -> None:
+        import base64
+
+        from nonebot.adapters.onebot.v11 import Message, MessageSegment
+
+        from .icons import get_icon_path
+
         match = self._match
         mode = ctx.state["mode"]
         stars = int(ctx.state.get("initial_stars", 0))
-        await session.broadcast(
-            ctx.group_id,
-            format_side_panel(match.red, "red", mode, initial_stars=stars),
-        )
-        await session.broadcast(
-            ctx.group_id,
-            format_side_panel(match.blue, "blue", mode, initial_stars=stars),
-        )
+
+        red_text = format_side_panel(match.red, "red", mode, initial_stars=stars)
+        red_msg = Message()
+        for slot in match.red.slots:
+            icon_path = get_icon_path(slot.actor_id)
+            if icon_path:
+                b64 = base64.b64encode(icon_path.read_bytes()).decode()
+                red_msg.append(MessageSegment.image(f"base64://{b64}"))
+        red_msg.append(MessageSegment.text(red_text))
+        await session.broadcast_rich(ctx.group_id, red_msg, red_text)
+
+        blue_text = format_side_panel(match.blue, "blue", mode, initial_stars=stars)
+        blue_msg = Message()
+        for slot in match.blue.slots:
+            icon_path = get_icon_path(slot.actor_id)
+            if icon_path:
+                b64 = base64.b64encode(icon_path.read_bytes()).decode()
+                blue_msg.append(MessageSegment.image(f"base64://{b64}"))
+        blue_msg.append(MessageSegment.text(blue_text))
+        await session.broadcast_rich(ctx.group_id, blue_msg, blue_text)
+
         await session.broadcast(ctx.group_id, format_vs_banner(match))
         logger.info(
             "[ra2_battle] 对局 %s 开始 mode=%s 🔴 %s vs 🔵 %s",

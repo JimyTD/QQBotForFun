@@ -1,0 +1,185 @@
+{
+  "actors": {
+    "aegis": {
+      "name": "神盾巡洋舰",
+      "description": "防空舰艇。\n强对：飞行器\n弱对：地面单位"
+    },
+    "amcv": {
+      "name": "盟军基地车",
+      "description": "可展开为建造厂。"
+    },
+    "apoc": {
+      "name": "天启坦克",
+      "description": "苏军重型双管坦克，带防空。\n强对：车辆、建筑\n弱对：步兵、飞行器"
+    },
+    "asw": {
+      "name": "反潜机",
+      "description": "航母舰载反潜机（战中生成）。"
+    },
+    "carrier": {
+      "name": "航空母舰",
+      "description": "可搭载舰载机。\n强对：坦克、建筑\n弱对：潜艇、飞行器"
+    },
+    "ccomand": {
+      "name": "超时空突击队",
+      "description": "精英突击队，冲锋枪+C4。\n强对：步兵、建筑\n弱对：车辆、飞行器\n特殊：超时空移动"
+    },
+    "civan": {
+      "name": "超时空伊文",
+      "description": "可安放炸弹，可超时空传送。"
+    },
+    "cleg": {
+      "name": "超时空军团兵",
+      "description": "高科技步兵。\n强对：步兵、车辆\n弱对：飞行器"
+    },
+    "cmin": {
+      "name": "超时空采矿车",
+      "description": "采集矿石，无武器。\n特殊：可传送回基地"
+    },
+    "deso": {
+      "name": "辐射工兵",
+      "description": "辐射武器，可部署范围伤害。\n强对：步兵\n弱对：车辆、飞行器"
+    },
+    "dest": {
+      "name": "驱逐舰",
+      "description": "盟军主力舰，炮击+反潜机。\n强对：舰艇\n弱对：潜艇"
+    },
+    "dlph": {
+      "name": "海豚",
+      "description": "声波攻击舰艇。\n强对：舰艇"
+    },
+    "dog": {
+      "name": "警犬",
+      "description": "反步兵，可识破间谍与隐形。\n强对：步兵"
+    },
+    "dron": {
+      "name": "恐怖机器人",
+      "description": "钻入车辆内部破坏。\n强对：步兵、车辆\n弱对：飞行器"
+    },
+    "dtruck": {
+      "name": "自爆卡车",
+      "description": "装载核弹，接近后自爆。"
+    },
+    "e1": {
+      "name": "美国大兵",
+      "description": "通用步兵，可部署碉堡。\n强对：步兵\n弱对：车辆、飞行器"
+    },
+    "e2": {
+      "name": "动员兵",
+      "description": "廉价步枪步兵。\n强对：步兵\n弱对：车辆、飞行器"
+    },
+    "engineer": {
+      "name": "工程师",
+      "description": "占领敌方建筑，无武器。"
+    },
+    "flakt": {
+      "name": "防空步兵",
+      "description": "对空对步兵。\n强对：飞行器、步兵"
+    },
+    "fv": {
+      "name": "多功能步兵车",
+      "description": "可搭载步兵改变武器。\n无乘客时偏反步兵"
+    },
+    "ghost": {
+      "name": "海豹突击队",
+      "description": "精英突击队，冲锋枪+C4。\n强对：步兵、建筑\n弱对：车辆、飞行器"
+    },
+    "harv": {
+      "name": "武装采矿车",
+      "description": "采集矿石，带机枪。\n强对：步兵\n弱对：车辆、飞行器"
+    },
+    "hornet": {
+      "name": "黄蜂战机",
+      "description": "航母舰载机（战中生成）。"
+    },
+    "htk": {
+      "name": "防空履带车",
+      "description": "运兵+防空。\n强对：飞行器、步兵"
+    },
+    "htnk": {
+      "name": "犀牛坦克",
+      "description": "苏军主战坦克。\n强对：车辆\n弱对：步兵、飞行器"
+    },
+    "hyd": {
+      "name": "海蝎",
+      "description": "防空反步兵舰艇。\n强对：飞行器、步兵"
+    },
+    "ivan": {
+      "name": "疯狂伊文",
+      "description": "可在目标上安放炸弹。"
+    },
+    "lcrf": {
+      "name": "登陆艇",
+      "description": "两栖运输，无武器。"
+    },
+    "mgtk": {
+      "name": "幻影坦克",
+      "description": "可伪装成树木。\n强对：步兵、车辆"
+    },
+    "mtnk": {
+      "name": "灰熊坦克",
+      "description": "盟军主战坦克。\n强对：车辆、舰艇\n弱对：步兵、飞行器"
+    },
+    "ptroop": {
+      "name": "心灵突击队",
+      "description": "可心灵控制敌方单位。\n强对：步兵、车辆、建筑"
+    },
+    "sapc": {
+      "name": "装甲运兵船",
+      "description": "两栖运输，无武器。"
+    },
+    "shk": {
+      "name": "磁能步兵",
+      "description": "电击步兵。\n强对：步兵、车辆"
+    },
+    "smcv": {
+      "name": "苏联基地车",
+      "description": "可展开为建造厂。"
+    },
+    "snipe": {
+      "name": "狙击手",
+      "description": "专精反步兵。\n强对：步兵\n弱对：车辆、飞行器"
+    },
+    "spy": {
+      "name": "间谍",
+      "description": "潜入建筑，无战斗能力。"
+    },
+    "sqd": {
+      "name": "巨型乌贼",
+      "description": "近身缠击舰艇。\n强对：舰艇"
+    },
+    "sref": {
+      "name": "光棱坦克",
+      "description": "光棱束攻击。\n强对：步兵、车辆"
+    },
+    "sub": {
+      "name": "台风级攻击潜艇",
+      "description": "水下鱼雷。\n强对：舰艇"
+    },
+    "tany": {
+      "name": "谭雅",
+      "description": "精英英雄，双枪+C4。\n强对：步兵、建筑"
+    },
+    "terror": {
+      "name": "恐怖分子",
+      "description": "身上绑 C4 自杀式攻击。"
+    },
+    "tnkd": {
+      "name": "坦克杀手",
+      "description": "反装甲。\n强对：车辆、舰艇"
+    },
+    "ttnk": {
+      "name": "磁能坦克",
+      "description": "特斯拉线圈坦克。\n强对：车辆"
+    },
+    "yuri": {
+      "name": "尤里",
+      "description": "可心灵控制，可部署。\n强对：步兵、车辆"
+    },
+    "yuripr": {
+      "name": "尤里改",
+      "description": "强化心灵控制，射程更远。"
+    }
+  },
+  "weapons": {}
+}

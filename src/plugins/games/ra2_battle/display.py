@@ -5,6 +5,11 @@ from __future__ import annotations
 import re
 
 from .constants import CELL_WDIST
+from .locale import (
+    localized_actor_description,
+    localized_actor_name,
+    localized_weapon_label,
+)
 from .repo import ActorDef, resolve_weapon
 from .targeting import armament_allowed
 
@@ -48,8 +53,10 @@ def _primary_weapon(actor: ActorDef):
 
 
 def format_attack_summary(actor: ActorDef) -> str:
-    """主武器伤害与射程（斗蛐蛐展示用）。"""
+    """主武器伤害与射程（斗蛐蛐展示用，中文标签）。"""
     parts: list[str] = []
+    labels = ("主武器", "副武器")
+    idx = 0
     for arm in actor.armaments:
         if not armament_allowed(arm):
             continue
@@ -58,28 +65,33 @@ def format_attack_summary(actor: ActorDef) -> str:
             continue
         dmg = max(wh.damage for wh in w.warheads)
         rng = _cells_from_wdist(w.range)
-        parts.append(f"{arm.weapon} {dmg}伤/{rng}格")
-    if len(parts) > 1:
+        wlabel = localized_weapon_label(arm.weapon)
+        slot = labels[idx] if idx < len(labels) else f"武器{idx + 1}"
+        parts.append(f"{slot}·{wlabel} {dmg}伤/{rng}格")
+        idx += 1
+    if len(parts) > 2:
         return "；".join(parts[:2])
     return parts[0] if parts else "无武器"
 
 
 def format_description_blurb(actor: ActorDef, max_lines: int = 2) -> str:
-    """游戏内 Buildable.Description，整理为群消息可读简介。"""
-    raw = (actor.description or "").strip()
-    if not raw:
+    """兵种说明（优先 locale_zh，否则英译兜底）。"""
+    text = localized_actor_description(actor.id, actor.description or "")
+    if not text.strip():
         return ""
-    text = raw.replace("\\n", "\n")
     lines: list[str] = []
-    for part in text.split("\n"):
-        part = part.strip()
+    for part in text.replace("\\n", "\n").split("\n"):
+        part = re.sub(r"\s+", " ", part.strip())
         if not part:
             continue
-        part = re.sub(r"\s+", " ", part)
         lines.append(part)
         if len(lines) >= max_lines:
             break
     return " / ".join(lines)
+
+
+def display_name(actor: ActorDef) -> str:
+    return localized_actor_name(actor.id, actor.name)
 
 
 def format_unit_role(actor: ActorDef) -> str:
