@@ -11,7 +11,7 @@
   python scripts/crawler/aoe3_bar_extractor.py [--bar-path PATH]
 
 默认 BAR 路径: E:\\SteamLibrary\\steamapps\\common\\AoE3DE\\Game\\Data\\Data.bar
-输出目录: scripts/crawler/_extracted/
+输出目录: E:\\aoe3_extracted (可通过环境变量 AOE3_EXTRACTED_DIR 覆盖)
 
 依赖: pip install lz4
 """
@@ -25,7 +25,7 @@ import sys
 sys.setrecursionlimit(100000)
 
 DEFAULT_BAR = r"E:\SteamLibrary\steamapps\common\AoE3DE\Game\Data\Data.bar"
-OUTPUT_DIR = os.path.join(os.path.dirname(__file__), "_extracted")
+OUTPUT_DIR = os.environ.get("AOE3_EXTRACTED_DIR", r"E:\aoe3_extracted")
 
 
 # ============================================================

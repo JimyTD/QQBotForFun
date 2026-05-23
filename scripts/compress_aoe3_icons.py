@@ -53,13 +53,9 @@ def process(path: Path, *, dry_run: bool) -> tuple[str, int, int]:
             # 统一处理：RGBA -> RGBA（保留透明），其他 -> RGBA
             if mode != "RGBA":
                 img = img.convert("RGBA")
-            img.thumbnail(TARGET_SIZE, Image.Resampling.LANCZOS)
-            # 居中 padding 到 128×128（thumbnail 不会放大也不会强制 1:1）
+            # 统一 resize 到 128×128（无论原图更大还是更小）
             if img.size != TARGET_SIZE:
-                canvas = Image.new("RGBA", TARGET_SIZE, (0, 0, 0, 0))
-                canvas.paste(img, ((TARGET_SIZE[0] - img.width) // 2,
-                                   (TARGET_SIZE[1] - img.height) // 2))
-                img = canvas
+                img = img.resize(TARGET_SIZE, Image.Resampling.LANCZOS)
             img.save(path, "PNG", optimize=True)
     except UnidentifiedImageError:
         return ("broken", before_kb, before_kb)

@@ -632,52 +632,72 @@ AOE3 有三种伤害类型，每种只被对应的抗性减免：
 
 #### 核心概念：攻击模式 vs 伤害类型（正交！）
 
-这是两个**独立维度**，**绝不能混淆**：
+这是两个**完全独立的维度**，**绝不能混淆**：
 
 | 维度 | 取值 | 由谁决定 | 影响 |
 |------|------|---------|------|
-| **攻击模式** | `ranged` / `melee` | 战斗时距离 + 是否锁敌 | 出手动作（远程射 / 近战砍） |
+| **攻击模式（动作名）** | `HandAttack` / `RangedAttack` / `BuildingAttack` 等 | 引擎按动作名硬编码绑定行为 | 动画、弹道、是否停步、是否触发闪避 |
 | **伤害类型** | `Ranged` / `Hand` / `Siege` | protoaction 的 `damagetype` 字段 | 吃哪种护甲（armor_ranged / armor_melee / armor_siege）|
 
-**关键**：**伤害类型属于具体那条 protoaction**，与该 protoaction 是远程还是近战**无关**：
+**关键认知**：AoE3 引擎**不存在"远程/近战"的概念划分**。引擎只知道当前要执行哪个动作名
+（Defend/Stagger/Volley 姿态 × Hand/Ranged 距离 × Building/Rocket/Guardian 等特殊），
+每次激活一种攻击模式就行。我们斗蛐蛐模拟器的 ranged/melee/siege 三槽位划分是**人为简化**，
+不是游戏本身的机制。
 
-- ✅ **远程攻击 + Siege 伤害**：鹰炮主炮（`attack_ranged=80, damage_type_ranged=Siege`）
-- ✅ **近战攻击 + Siege 伤害**：某些重炮的近战拆建筑动作（`damage_type_melee=Siege`）
-- ✅ **远程攻击 + Hand 伤害**：极少数斥候/标枪兵
+**举例**（伤害类型属于具体 protoaction，与该 protoaction 是远程还是近战无关）：
+
+- ✅ **远程攻击 + Siege 伤害**：鹰炮主炮（`CannonAttack, damage_type=Siege`）
+- ✅ **近战攻击 + Siege 伤害**：沙漠突袭者（`MeleeHandAttack, damage_type=Siege`）
+- ✅ **远程攻击 + Hand 伤害**：战斧兵投斧、飞刀手（`RangedAttack, damage_type=Hand`）
 - ✅ **近战攻击 + Hand 伤害**：绝大多数近战兵（默认情况）
+- ✅ **全 Siege 多模式**：火兵有 10 种攻击模式全部 `damagetype=Siege`
 
 > 因此 parser 的"槽位归类"和"伤害类型识别"是**两套独立判断**：
-> - 归 melee/ranged 槽位 → 看 `maxrange`（决定它是远程攻击还是近战攻击）
+> - 归 melee/ranged 槽位 → 看**动作名标签**（引擎行为的唯一真实依据）
 > - `damage_type_*` 字段 → 直接抄 protoaction 的 `damagetype`（决定它打哪种护甲）
+>
+> **绝对禁止**用 `damagetype` 来判断攻击归属哪个槽位。
 
 **实现位置**：`scripts/crawler/aoe3_gamedata_parser.py :: _parse_attacks`
 
 
 
-**设计原则**（与旧版 merge_supplement 的关键差异）：
+**设计原则**：
 - **type / multipliers.vs 直接存游戏原始标签**（`AbstractCavalry`、`AbstractHeavyInfantry` 等），不翻译
 - **倍率天然匹配**：`damagebonus.type` 和 `unit.type` 来自同一份 XML 同一套字符串，倍率匹配 = 字符串相等比对，不需要映射表
 - **翻译只在展示层**：`i18n_zh.json` 负责 `AbstractXxx → 中文`，与数据/匹配逻辑解耦
 
 #### 第一步：分类 ranged / melee / siege
 
-每个 protoaction 按以下规则归入三个槽位之一：
+每个 protoaction 按以下规则归入三个槽位之一（**只看动作名 + 射程兜底，不看 damagetype**）：
 
-- `damagetype = "Hand"` 或 `maxrange ≤ 2` → **melee**（近战）
-- `damagetype = "Siege"` 且 `maxrange > 6` → **ranged**（攻城类远程炮击，如鹰炮主炮）
-- `damagetype` 为 `Ranged` / `Siege`（其他情况）且 `maxrange > 2` → **ranged**
-- 标签包含 `BuildingAttack` 或攻击专门用于打建筑 → **siege**（独立第三槽位）
+1. 动作名含 `BuildingAttack` → **siege**（拆建筑专用）
+2. 动作名含 `HandAttack` → **melee**（引擎近战行为，不管 maxrange 和 damagetype）
+3. 动作名含 `RangedAttack` → **ranged**（引擎远程行为，不管 damagetype）
+4. 以上均不匹配时，按射程兜底：`maxrange < 6` → melee，`maxrange >= 6` → ranged
 
-> 阈值 6 的依据：AOE3 中近战武器最大 range 约 4~6（长矛、流星锤等），远程炮击通常 range ≥ 10。
+> 为什么信任动作名？因为 AoE3 引擎通过动作名硬编码绑定行为（动画/弹道/停步等），
+> 这些名字是引擎代码里的字符串常量，不可能随意命名。射程只是参数，不驱动行为。
+>
+> 兜底阈值 6 的依据：AoE3 近战武器最大 maxrange 约 4~5（流星锤兵 4.0、翼骑兵 3.75），
+> 最短远程射击从 6 开始（火绳枪骑兵 6.0）。
 
 #### 第二步：选代表攻击
 
-每个槽位可能有多个候选攻击（如鹰炮的 `Cannon Attack` / `Bombard Attack` / `Case Shot Attack`
+每个槽位可能有多个候选攻击（如鹰炮的 `CannonAttack` / `BombardAttack` / `CaseShotAttack`
 都属于 ranged）。按 `ATTACK_PRIORITY` 常量选**优先级最高的一条**作为该槽位的代表，
 该 protoaction 的所有字段（damage / range / rof / aoe / multipliers）整体写入对应字段族。
 
+优先级设计原则：**选日常打兵的标准姿态**，而非特殊/拆建筑模式：
+- 步兵/骑兵：`DefendXxxAttack > StaggerXxxAttack > VolleyXxxAttack > MeleeHandAttack > HandAttack`
+- 炮兵：`BarrageAttack > RepeatingAttack > CannonAttack > BombardAttack > CaseShotAttack`
+  - BarrageAttack = 迫击炮打兵模式（AOE 大、伤害低、有负倍率）
+  - RepeatingAttack = 加特林连射模式（rof=0.5，极高 DPS）
+  - CannonAttack = 标准远程炮击（鹰炮/长管炮的主力）
+  - BombardAttack = 旧版强攻/半程射程
+  - CaseShotAttack = 散弹（1/10 伤害）
+
 > **铁律**：只能整体选用一个 protoaction，不能把 A 的 damage 和 B 的 multipliers 拼在一起。
-> 旧版 merge_supplement 的合并脚本同样遵守这一点，新版直接从 XML 解析后行为一致。
 
 #### 写入 units.json 的字段
 
@@ -720,9 +740,9 @@ def has_attack(self) -> bool:
 - 木制牛 `deeggwoodcattle`（彩蛋单位）
 - 审判官 `desalooninquisitor`（治疗师，只有拆建筑攻击）
 
-> ⚠️ **副作用警告**：如果一个真正能打兵的单位被 parser 误归类（`damagetype=Hand` 的近战
-> 攻击因为名字含 `BuildingAttack` 被丢进 siege 桶），它会被 `has_attack` 一起误排除。
-> 修法是**改 parser**（按 damagetype + maxrange 而非动作名归类），
+> ⚠️ **副作用警告**：如果一个真正能打兵的单位被 parser 误归类（如近战攻击
+> 因为动作名不含 `HandAttack` 且 maxrange >= 6 被丢进 ranged 桶），它的 melee 槽位
+> 可能为空。修法是**在 `ATTACK_PRIORITY` 中加入该动作名**或调整兜底阈值，
 > **不要**在 `has_attack` 加例外白名单。
 
 

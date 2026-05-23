@@ -5844,17 +5844,20 @@
     "los": 40.0,
     "armor_melee": 0.0,
     "armor_ranged": 0.5,
-    "attack_siege": 500.0,
-    "range_siege": 0.0,
-    "rof_siege": 3.0,
+    "attack_melee": 500.0,
+    "range_melee": 0.0,
+    "rof_melee": 3.0,
+    "damage_type_melee": "Siege",
+    "aoe_radius_melee": 2,
     "multipliers": {
-      "siege": [
+      "melee": [
         {
           "vs": "Building",
           "value": 2.5
         }
       ]
-    }
+    },
+    "aoe_radius": 2
   },
   {
     "id": "demaltesemusketeer",
@@ -6332,25 +6335,33 @@
     "los": 44.0,
     "armor_melee": 0.0,
     "armor_ranged": 0.75,
-    "attack_ranged": 416.67,
-    "range": 40.0,
+    "attack_ranged": 25.0,
+    "range": 30.0,
     "range_min": 4.0,
     "rof_ranged": 6.0,
     "damage_type_ranged": "Siege",
-    "aoe_radius_ranged": 1,
+    "aoe_radius_ranged": 4,
     "multipliers": {
       "ranged": [
         {
-          "vs": "AbstractWall",
-          "value": 1.25
+          "vs": "AbstractArtillery",
+          "value": 0.75
         },
         {
-          "vs": "Ship",
-          "value": 0.75
+          "vs": "AbstractCavalry",
+          "value": 0.4
+        },
+        {
+          "vs": "AbstractLightInfantry",
+          "value": 0.4
+        },
+        {
+          "vs": "AbstractVillager",
+          "value": 0.4
         }
       ]
     },
-    "aoe_radius": 1
+    "aoe_radius": 4
   },
   {
     "id": "demercdhow",
@@ -6635,6 +6646,11 @@
     "los": 16.0,
     "armor_melee": 0.4,
     "armor_ranged": 0.0,
+    "attack_ranged": 25.0,
+    "range": 0.0,
+    "range_min": 3.0,
+    "rof_ranged": 3.0,
+    "damage_type_ranged": "Ranged",
     "attack_melee": 22.0,
     "range_melee": 0.0,
     "rof_melee": 1.5,
@@ -10443,11 +10459,26 @@
     "los": 16.0,
     "armor_melee": 0.0,
     "armor_ranged": 0.15,
-    "attack_melee": 9.0,
-    "range_melee": 0.0,
-    "rof_melee": 1.0,
-    "damage_type_melee": "Hand",
+    "attack_ranged": 9.0,
+    "range": 13.0,
+    "range_min": 4.0,
+    "rof_ranged": 2.5,
+    "damage_type_ranged": "Hand",
     "multipliers": {
+      "ranged": [
+        {
+          "vs": "AbstractHeavyInfantry",
+          "value": 2.5
+        },
+        {
+          "vs": "AbstractHeavyCavalry",
+          "value": 0.5
+        },
+        {
+          "vs": "AbstractCoyoteMan",
+          "value": 0.5
+        }
+      ],
       "melee": [
         {
           "vs": "AbstractHeavyInfantry",
@@ -10463,6 +10494,10 @@
         }
       ]
     },
+    "attack_melee": 9.0,
+    "range_melee": 0.0,
+    "rof_melee": 1.0,
+    "damage_type_melee": "Hand",
     "attack_siege": 8.0,
     "range_siege": 0.0,
     "rof_siege": 3.0
@@ -12174,11 +12209,26 @@
     "los": 16.0,
     "armor_melee": 0.0,
     "armor_ranged": 0.15,
-    "attack_melee": 9.0,
-    "range_melee": 0.0,
-    "rof_melee": 1.0,
-    "damage_type_melee": "Hand",
+    "attack_ranged": 9.0,
+    "range": 13.0,
+    "range_min": 4.0,
+    "rof_ranged": 2.5,
+    "damage_type_ranged": "Hand",
     "multipliers": {
+      "ranged": [
+        {
+          "vs": "AbstractHeavyInfantry",
+          "value": 2.5
+        },
+        {
+          "vs": "AbstractHeavyCavalry",
+          "value": 0.5
+        },
+        {
+          "vs": "AbstractCoyoteMan",
+          "value": 0.5
+        }
+      ],
       "melee": [
         {
           "vs": "AbstractHeavyInfantry",
@@ -12194,6 +12244,10 @@
         }
       ]
     },
+    "attack_melee": 9.0,
+    "range_melee": 0.0,
+    "rof_melee": 1.0,
+    "damage_type_melee": "Hand",
     "attack_siege": 8.0,
     "range_siege": 0.0,
     "rof_siege": 3.0
@@ -13262,7 +13316,11 @@
     "los": 15.0,
     "armor_melee": 0.0,
     "armor_ranged": 0.2,
-    "attack_siege": 26.0,
+    "attack_melee": 26.0,
+    "range_melee": 0.0,
+    "rof_melee": 1.5,
+    "damage_type_melee": "Siege",
+    "attack_siege": 15.0,
     "range_siege": 0.0,
     "rof_siege": 1.5
   },
@@ -16386,11 +16444,12 @@
     "los": 12.0,
     "armor_melee": 0.2,
     "armor_ranged": 0.0,
-    "attack_siege": 15.0,
-    "range_siege": 0.0,
-    "rof_siege": 1.5,
+    "attack_melee": 15.0,
+    "range_melee": 0.0,
+    "rof_melee": 1.5,
+    "damage_type_melee": "Siege",
     "multipliers": {
-      "siege": [
+      "melee": [
         {
           "vs": "AbstractVillager",
           "value": 1.5
@@ -16404,7 +16463,10 @@
           "value": 10.0
         }
       ]
-    }
+    },
+    "attack_siege": 30.0,
+    "range_siege": 0.0,
+    "rof_siege": 3.0
   },
   {
     "id": "desaloonoutlawafricanspearman",
@@ -16877,11 +16939,26 @@
     "los": 18.0,
     "armor_melee": 0.0,
     "armor_ranged": 0.2,
-    "attack_melee": 9.0,
-    "range_melee": 0.0,
-    "rof_melee": 1.5,
-    "damage_type_melee": "Hand",
+    "attack_ranged": 15.0,
+    "range": 12.0,
+    "range_min": 2.0,
+    "rof_ranged": 1.5,
+    "damage_type_ranged": "Hand",
     "multipliers": {
+      "ranged": [
+        {
+          "vs": "AbstractHeavyCavalry",
+          "value": 3.0
+        },
+        {
+          "vs": "AbstractCoyoteMan",
+          "value": 2.0
+        },
+        {
+          "vs": "AbstractVillager",
+          "value": 0.5
+        }
+      ],
       "melee": [
         {
           "vs": "AbstractHeavyCavalry",
@@ -16893,6 +16970,10 @@
         }
       ]
     },
+    "attack_melee": 9.0,
+    "range_melee": 0.0,
+    "rof_melee": 1.5,
+    "damage_type_melee": "Hand",
     "attack_siege": 4.0,
     "range_siege": 0.0,
     "rof_siege": 1.5
@@ -21777,25 +21858,33 @@
     "los": 44.0,
     "armor_melee": 0.0,
     "armor_ranged": 0.75,
-    "attack_ranged": 500.0,
-    "range": 40.0,
+    "attack_ranged": 30.0,
+    "range": 30.0,
     "range_min": 4.0,
     "rof_ranged": 6.0,
     "damage_type_ranged": "Siege",
-    "aoe_radius_ranged": 1,
+    "aoe_radius_ranged": 4,
     "multipliers": {
       "ranged": [
         {
-          "vs": "AbstractWall",
-          "value": 1.25
+          "vs": "AbstractArtillery",
+          "value": 0.4
         },
         {
-          "vs": "Ship",
-          "value": 0.75
+          "vs": "AbstractCavalry",
+          "value": 0.4
+        },
+        {
+          "vs": "AbstractLightInfantry",
+          "value": 0.4
+        },
+        {
+          "vs": "AbstractVillager",
+          "value": 0.4
         }
       ]
     },
-    "aoe_radius": 1
+    "aoe_radius": 4
   },
   {
     "id": "musketeer",
@@ -24049,11 +24138,22 @@
     "los": 12.0,
     "armor_melee": 0.0,
     "armor_ranged": 0.1,
-    "attack_melee": 8.0,
-    "range_melee": 0.0,
-    "rof_melee": 1.5,
-    "damage_type_melee": "Hand",
+    "attack_ranged": 16.0,
+    "range": 10.0,
+    "range_min": 0.0,
+    "rof_ranged": 3.0,
+    "damage_type_ranged": "Hand",
     "multipliers": {
+      "ranged": [
+        {
+          "vs": "AbstractCavalry",
+          "value": 2.0
+        },
+        {
+          "vs": "AbstractLightInfantry",
+          "value": 1.6
+        }
+      ],
       "melee": [
         {
           "vs": "AbstractCavalry",
@@ -24065,6 +24165,10 @@
         }
       ]
     },
+    "attack_melee": 8.0,
+    "range_melee": 0.0,
+    "rof_melee": 1.5,
+    "damage_type_melee": "Hand",
     "attack_siege": 10.0,
     "range_siege": 0.0,
     "rof_siege": 3.0
@@ -25942,11 +26046,12 @@
     "los": 54.0,
     "armor_melee": 0.0,
     "armor_ranged": 0.5,
-    "attack_siege": 900.0,
-    "range_siege": 0.0,
-    "rof_siege": 3.0,
+    "attack_melee": 900.0,
+    "range_melee": 0.0,
+    "rof_melee": 3.0,
+    "damage_type_melee": "Siege",
     "multipliers": {
-      "siege": [
+      "melee": [
         {
           "vs": "SPCFountainOfYouth",
           "value": 2.0
@@ -27323,7 +27428,7 @@
     "attack_ranged": 30.0,
     "range": 24.0,
     "range_min": 0.0,
-    "rof_ranged": 4.0,
+    "rof_ranged": 0.5,
     "damage_type_ranged": "Siege",
     "aoe_radius_ranged": 2,
     "multipliers": {
@@ -31591,25 +31696,33 @@
     "los": 44.0,
     "armor_melee": 0.0,
     "armor_ranged": 0.75,
-    "attack_ranged": 500.0,
-    "range": 40.0,
+    "attack_ranged": 30.0,
+    "range": 30.0,
     "range_min": 4.0,
     "rof_ranged": 6.0,
     "damage_type_ranged": "Siege",
-    "aoe_radius_ranged": 1,
+    "aoe_radius_ranged": 4,
     "multipliers": {
       "ranged": [
         {
-          "vs": "AbstractWall",
-          "value": 1.25
+          "vs": "AbstractArtillery",
+          "value": 0.4
         },
         {
-          "vs": "Ship",
-          "value": 0.75
+          "vs": "AbstractCavalry",
+          "value": 0.4
+        },
+        {
+          "vs": "AbstractLightInfantry",
+          "value": 0.4
+        },
+        {
+          "vs": "AbstractVillager",
+          "value": 0.4
         }
       ]
     },
-    "aoe_radius": 1
+    "aoe_radius": 4
   },
   {
     "id": "ypconsulateninja",
@@ -32767,17 +32880,20 @@
     "los": 40.0,
     "armor_melee": 0.0,
     "armor_ranged": 0.5,
-    "attack_siege": 500.0,
-    "range_siege": 0.0,
-    "rof_siege": 3.0,
+    "attack_melee": 500.0,
+    "range_melee": 0.0,
+    "rof_melee": 3.0,
+    "damage_type_melee": "Siege",
+    "aoe_radius_melee": 2,
     "multipliers": {
-      "siege": [
+      "melee": [
         {
           "vs": "Building",
           "value": 2.5
         }
       ]
-    }
+    },
+    "aoe_radius": 2
   },
   {
     "id": "ypfishingboatasian",
@@ -35200,9 +35316,13 @@
         }
       ]
     },
-    "attack_siege": 15.0,
-    "range_siege": 0.0,
-    "rof_siege": 1.5,
+    "attack_melee": 15.0,
+    "range_melee": 0.0,
+    "rof_melee": 1.5,
+    "damage_type_melee": "Siege",
+    "attack_siege": 140.0,
+    "range_siege": 12.0,
+    "rof_siege": 3.0,
     "aoe_radius": 3
   },
   {
@@ -36188,25 +36308,33 @@
     "los": 44.0,
     "armor_melee": 0.0,
     "armor_ranged": 0.75,
-    "attack_ranged": 385.0,
-    "range": 40.0,
+    "attack_ranged": 19.0,
+    "range": 28.0,
     "range_min": 4.0,
     "rof_ranged": 6.0,
     "damage_type_ranged": "Siege",
-    "aoe_radius_ranged": 1,
+    "aoe_radius_ranged": 4,
     "multipliers": {
       "ranged": [
         {
-          "vs": "AbstractWall",
-          "value": 1.25
+          "vs": "AbstractArtillery",
+          "value": 0.4
         },
         {
-          "vs": "Ship",
-          "value": 0.5
+          "vs": "AbstractCavalry",
+          "value": 0.4
+        },
+        {
+          "vs": "AbstractLightInfantry",
+          "value": 0.4
+        },
+        {
+          "vs": "AbstractVillager",
+          "value": 0.4
         }
       ]
     },
-    "aoe_radius": 1
+    "aoe_radius": 4
   },
   {
     "id": "ypnaginatarider",

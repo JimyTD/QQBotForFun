@@ -2,7 +2,7 @@
 
 - **Module ID**: `aoe3`
 - **Status**: Design v0.1
-- **Last Updated**: 2026-05-21
+- **Last Updated**: 2026-05-23
 
 ---
 
@@ -25,7 +25,7 @@
 | `seeds/aoe3/units.json` | 单位属性（含 type / 攻击 / 倍率 / AOE） | 游戏文件 `protoy.xml` 直接解析 |
 | `seeds/aoe3/technologies.json` | 改良技术 | 游戏文件解析 |
 | `seeds/aoe3/i18n_zh.json` | `AbstractXxx` → 中文显示名映射（仅展示层用） | 手工维护 |
-| `resources/aoe3/icons/{id}.png` | 单位头像 (268px) | Fandom Wiki CDN 下载 |
+| `resources/aoe3/icons/{id}.png` | 单位头像 (128×128) | 游戏 BAR 包提取 + Wiki 补充 |
 
 **解析脚本**：`scripts/crawler/aoe3_gamedata_parser.py`
 
@@ -200,8 +200,8 @@ class UnitRepo:
 ## 6. 资源文件
 
 - icon 图片存 `resources/aoe3/icons/{unit.id}.png`
-- 缩略图尺寸 268x270px，单个约 15KB，总计约 6.5MB
-- `units.json` 中记录 `icon_url`（Fandom CDN），本地不存在时可 fallback
+- 统一尺寸 128×128px，单个 ≤50KB（经 `compress_aoe3_icons.py` 压缩）
+- 来源：主要从游戏 `ArtUnitsTextures*.bar` / `UIResources1.bar` 直接提取 RTS3 DDT 格式图标（`aoe3_icon_extractor.py`）；少量 DE DLC 单位因自研纹理格式无法解码，改从 AoE3 Wiki API 下载或用同类单位图标替代
 
 ---
 

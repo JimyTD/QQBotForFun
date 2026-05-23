@@ -17,6 +17,7 @@
 from __future__ import annotations
 
 import json
+import os
 import re
 import xml.etree.ElementTree as ET
 from pathlib import Path
@@ -26,7 +27,7 @@ from typing import Any
 # 路径
 # ============================================================
 PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent
-EXTRACTED_DIR = Path(__file__).resolve().parent / "_extracted"
+EXTRACTED_DIR = Path(os.environ.get("AOE3_EXTRACTED_DIR", r"E:\aoe3_extracted"))
 SEEDS_DIR = PROJECT_ROOT / "seeds" / "aoe3"
 
 PROTOY_PATH = EXTRACTED_DIR / "protoy.xml"
@@ -53,20 +54,31 @@ KEEP_TYPE_EXACT = {
 
 # ============================================================
 # 攻击动作名优先级（选择"标准"姿态）
+# 数字越小越优先；不在列表中的 = 99
+#
+# 设计原则：
+#   - 攻击类型（ranged/melee/siege 槽位）和伤害类型（damagetype）正交
+#   - 槽位判定只看 maxrange + 动作名，不看 damagetype
+#   - 优先选"打兵"模式（BarrageAttack/RepeatingAttack）而非"打建筑"（CannonAttack）
 # ============================================================
 ATTACK_PRIORITY = {
+    # --- 远程姿态 ---
     "DefendRangedAttack": 1,
     "StaggerRangedAttack": 2,
     "VolleyRangedAttack": 3,
     "RangedAttack": 4,
-    "CannonAttack": 1,
-    "BombardAttack": 2,
-    "CaseShotAttack": 3,
+    "BarrageAttack": 5,         # 迫击炮打兵模式（优先于 CannonAttack）
+    "RepeatingAttack": 6,       # 加特林连射模式（优先于 CannonAttack）
+    "CannonAttack": 7,          # 标准炮击（鹰炮等的主攻）
+    "BombardAttack": 8,         # 旧版强攻模式，射程减半
+    "CaseShotAttack": 9,        # 散弹，伤害极低
+    # --- 近战姿态 ---
     "DefendHandAttack": 1,
     "StaggerHandAttack": 2,
     "VolleyHandAttack": 3,
     "MeleeHandAttack": 4,
     "HandAttack": 5,
+    # --- 拆建筑（归 siege 桶）---
     "BuildingAttack": 10,
 }
 
@@ -345,20 +357,23 @@ def _parse_attacks(el: ET.Element) -> dict[str, dict]:
             "priority": ATTACK_PRIORITY.get(name, 99),
         }
 
-        # Categorize
-        is_building_attack = "BuildingAttack" in name
-        if is_building_attack:
+        # Categorize — 只看动作名 + maxrange，不看 damagetype
+        # （攻击类型与伤害类型正交：近战骑兵可以打 Siege 伤害，远程炮可以打 Hand 伤害）
+        # 判定优先级：动作名 > 射程阈值
+        #   - 含 BuildingAttack → siege
+        #   - 含 HandAttack → melee（长矛/流星锤 range 可达 4~5 仍为近战）
+        #   - 含 RangedAttack → ranged（火绳枪骑兵 range=6 为远程射击）
+        #   - 其余按 maxrange < 6 → melee，>= 6 → ranged
+        if "BuildingAttack" in name:
             siege_candidates.append(info)
-        elif damagetype == "Siege" and maxrange > 6:
-            ranged_candidates.append(info)
-        elif damagetype == "Siege":
-            siege_candidates.append(info)
-        elif damagetype == "Hand" or maxrange <= 2:
+        elif "HandAttack" in name:
             melee_candidates.append(info)
-        elif maxrange > 2:
+        elif "RangedAttack" in name:
             ranged_candidates.append(info)
+        elif maxrange < 6:
+            melee_candidates.append(info)
         else:
-            melee_candidates.append(info)
+            ranged_candidates.append(info)
 
     result = {}
     if ranged_candidates:

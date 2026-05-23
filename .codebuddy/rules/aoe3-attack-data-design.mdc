@@ -1,0 +1,34 @@
+---
+description: 
+alwaysApply: true
+enabled: true
+updatedAt: 2026-05-22T00:00:00.000Z
+provider: 
+---
+
+【AoE3 攻击模式与伤害类型设计铁律】
+
+AoE3 引擎中「攻击类型」（动作名：HandAttack/RangedAttack/BuildingAttack 等）
+和「伤害类型」（damagetype: Hand/Ranged/Siege）是**完全正交的两个维度**：
+
+- **动作名**：引擎硬编码绑定行为（动画、弹道、是否停步、是否触发闪避）
+- **damagetype**：只决定伤害吃哪种护甲，与远程/近战无关
+
+AoE3 引擎**不存在"远程 vs 近战"的概念划分**。它只有：
+  姿态(Defend/Stagger/Volley) × 距离(Hand/Ranged) × 特殊(Building/Rocket/Guardian)
+每次激活一种攻击模式。我们斗蛐蛐的 ranged/melee/siege 三槽位是**人为简化**。
+
+**Parser 分类规则**（`aoe3_gamedata_parser.py :: _parse_attacks`）：
+1. 动作名含 `BuildingAttack` → siege
+2. 动作名含 `HandAttack` → melee（不管 maxrange 和 damagetype）
+3. 动作名含 `RangedAttack` → ranged（不管 damagetype）
+4. 以上均不匹配时：maxrange < 6 → melee，>= 6 → ranged
+
+**绝对禁止**用 `damagetype` 来判断攻击归属哪个槽位。
+
+经典反例：
+- 沙漠突袭者：`MeleeHandAttack, damagetype=Siege` → 近战攻击打攻城伤害
+- 战斧兵/飞刀手：`RangedAttack, damagetype=Hand` → 远程投掷打近战伤害
+- 火兵：10 种攻击模式全部 `damagetype=Siege`，有远程有近战
+
+详见 docs/games/aoe3-battle.md §3.9。

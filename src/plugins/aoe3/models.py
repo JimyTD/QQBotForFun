@@ -89,11 +89,6 @@ class Unit:
         没有 melee/ranged，它在斗蛐蛐里就是个站桩木桩，必须排除：
           - 木制牛 ``deeggwoodcattle`` —— 彩蛋单位，attack_siege=20000
           - 审判官 ``desalooninquisitor`` —— 治疗师，仅有拆建筑攻击
-
-        > ⚠️ 已知遗漏：沙漠突袭者 ``deoutlawdesertraider`` 当前数据里也只有 attack_siege，
-        > 但游戏里它**确实能打兵**——疑似 parser 的 BuildingAttack 名字识别误把它的
-        > 真攻击丢进了 siege 桶（见 ``TODO.md`` 中"沙漠突袭者反兵攻击缺失"条目）。
-        > 修好 parser 后它会自然回到战斗池，不需要单独加白名单。
         """
         return bool(self.attack_ranged or self.attack_melee)
 
@@ -121,25 +116,16 @@ class Unit:
     @classmethod
     def from_dict(cls, d: dict[str, Any]) -> Unit:
         """从 units.json 的字典构造。"""
-        # 旧格式 fallback：multipliers: {ranged: [...], melee: [...], siege: [...]}
-        mults_legacy = d.get("multipliers", {})
+        mults = d.get("multipliers", {})
 
         def _parse_mults(lst: list[dict] | None) -> list[Multiplier]:
             if not lst:
                 return []
             return [Multiplier(vs=m["vs"], value=m["value"]) for m in lst]
 
-        # 优先用顶层 multipliers_ranged/melee/siege（supplement 合并后写入）
-        # fallback 到旧的 multipliers.ranged/melee/siege
-        mults_ranged = d.get("multipliers_ranged") or (
-            mults_legacy.get("ranged") if isinstance(mults_legacy, dict) else None
-        )
-        mults_melee = d.get("multipliers_melee") or (
-            mults_legacy.get("melee") if isinstance(mults_legacy, dict) else None
-        )
-        mults_siege = d.get("multipliers_siege") or (
-            mults_legacy.get("siege") if isinstance(mults_legacy, dict) else None
-        )
+        mults_ranged = mults.get("ranged") if isinstance(mults, dict) else None
+        mults_melee = mults.get("melee") if isinstance(mults, dict) else None
+        mults_siege = mults.get("siege") if isinstance(mults, dict) else None
 
         return cls(
             id=d.get("id", ""),

@@ -425,86 +425,67 @@ class TestMultiplierDataIntegrity:
         from plugins.aoe3.repository import UnitRepo
         self.repo = UnitRepo.get()
 
-    def test_no_abstract_prefix_in_multipliers(self):
-        """units.json 中不应有 Abstract 前缀的倍率标签（已知坏数据除外）。"""
+    def test_no_bare_abstract_in_multipliers(self):
+        """multipliers 的 vs 不应出现只有 'Abstract' 而无后缀的坏数据。"""
         for unit in self.repo.all_units:
             for m in unit.multipliers_ranged + unit.multipliers_melee:
-                # 'Abstract' 单独出现是 cuerudo 的已知坏数据（supplement 缺 label）
-                if m.vs == "Abstract":
-                    continue
-                assert not m.vs.startswith("Abstract"), (
-                    f"{unit.name} 的倍率 vs='{m.vs}' 含有 Abstract 前缀！"
-                    f"应使用可读标签（如 'Cavalry' 而非 'AbstractCavalry'）"
+                assert m.vs != "Abstract", (
+                    f"{unit.name} 的倍率 vs='Abstract' 是坏数据（缺 label 后缀）"
                 )
 
     def test_common_counters_have_matching_types(self):
         """常见克制倍率的 vs 标签必须在某些兵种的 type 中存在。"""
         # 收集所有 unit.type 标签
-        all_types_lower: set[str] = set()
+        all_types: set[str] = set()
         for unit in self.repo.all_units:
             for t in unit.type:
-                all_types_lower.add(t.lower())
+                all_types.add(t)
 
         # 这些是战斗中最重要的克制标签，必须能匹配到
         must_match = [
-            "Cavalry", "Heavy cavalry", "Heavy infantry",
-            "Light infantry", "Infantry", "Artillery",
-            "Shock infantry", "Ranged shock infantry",
-            "Siege trooper", "Light ranged cavalry",
+            "AbstractCavalry", "AbstractHeavyCavalry", "AbstractHeavyInfantry",
+            "AbstractLightInfantry", "AbstractInfantry", "AbstractArtillery",
+            "AbstractCoyoteMan", "AbstractRangedShockInfantry",
+            "AbstractSiegeTrooper",
         ]
         for label in must_match:
-            assert label.lower() in all_types_lower, (
+            assert label in all_types, (
                 f"倍率标签 '{label}' 在所有兵种的 type 中找不到匹配！"
             )
 
     def test_multiplier_vs_labels_are_matchable(self):
         """所有实际使用的 vs 标签中，战斗相关的应该在 type 池中可匹配。"""
         # 收集所有 type
-        all_types_lower: set[str] = set()
+        all_types: set[str] = set()
         for unit in self.repo.all_units:
             for t in unit.type:
-                all_types_lower.add(t.lower())
+                all_types.add(t)
 
         # 非战斗标签（对建筑/动物等的倍率，斗蛐蛐中不参与战斗）
         non_combat = {
-            "building", "wall", "dock", "ship", "training ship",
-            "villager", "guardian", "huntable", "hunted resource",
-            "llama", "pet", "hero", "resource enclosure",
-            "logical type land economy", "logical type land military",
-            "abstract",  # 坏数据残留
-            # 旧 wiki 残留格式
-            "hunted animals", "herdable animals",
-            "dock and port", "recruiting ship",
-            "villager (cover mode)", "villager (until the commerce age)",
-            "hero (until the commerce age)",
+            "Building", "AbstractWall", "AbstractDock", "Ship",
+            "AbstractVillager", "Guardian", "Huntable", "Herdable",
+            "Llama", "AbstractPet", "Hero", "AbstractResourceEnclosure",
+            "LogicalTypeLandEconomy", "LogicalTypeLandMilitary",
+            "Abstract",  # 坏数据残留
+            "TradingPost", "SPCFountainOfYouth",
         }
 
-        # 特定兵种专属倍率（不在通用 type 池中，只对特定 unit_id 生效）
+        # 特定兵种专属倍率（不在通用 type 池中，只对特定 unit 生效）
         specific_unit_vs = {
-            "rifle rider", "mounted granadero",
-            "counter-skirmishers", "counter skirmisher",
+            "xpArrowKnight", "xpLakotaWarchief", "deIncaWarChief",
+            "deMalteseGun", "deMercGatlingCamel", "deREVGranadero",
         }
 
         # 收集所有 vs 标签
         unmatched: list[tuple[str, str]] = []
         for unit in self.repo.all_units:
             for m in unit.multipliers_ranged + unit.multipliers_melee:
-                vs_lower = m.vs.lower()
-                if vs_lower in non_combat:
+                if m.vs in non_combat:
                     continue
-                # de/xp/yp 是特定兵种专属倍率，跳过
-                if vs_lower.startswith(("de ", "xp ", "yp ")):
+                if m.vs in specific_unit_vs:
                     continue
-                # merc type2 也是特殊
-                if "merc" in vs_lower:
-                    continue
-                # 模拟器会 strip " *" 后缀再匹配，测试也应如此
-                vs_clean = m.vs.rstrip(" *").lower()
-                if vs_clean in non_combat:
-                    continue
-                if vs_clean in specific_unit_vs:
-                    continue
-                if vs_clean not in all_types_lower:
+                if m.vs not in all_types:
                     unmatched.append((unit.name, m.vs))
 
         assert not unmatched, (
