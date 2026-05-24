@@ -32,9 +32,9 @@ def _load() -> None:
 def t(category: str, key: str) -> str:
     """翻译：返回中文，找不到则原样返回英文。
 
-    >>> t("type", "Heavy infantry")
-    '重步兵'
-    >>> t("type", "UnknownType")
+    >>> t("tags", "AbstractHeavyInfantry")
+    '重装步兵'
+    >>> t("tags", "UnknownType")
     'UnknownType'
     """
     _load()
@@ -90,14 +90,14 @@ def t_age(age_raw: str) -> str:
 
 def t_mult_vs(vs: str) -> str:
     """翻译倍率目标。"""
-    return t("multiplier_vs", vs)
+    return t("tags", vs)
 
 
 def reverse_lookup(category: str, zh_text: str) -> str | None:
     """中文反查英文，用于搜索。找不到返回 None。
 
-    >>> reverse_lookup("type", "重步兵")
-    'Heavy infantry'
+    >>> reverse_lookup("tags", "重装步兵")
+    'AbstractHeavyInfantry'
     """
     _load()
     rev = _REVERSE.get(category, {})

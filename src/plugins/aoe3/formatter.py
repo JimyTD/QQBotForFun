@@ -243,8 +243,8 @@ def render_compare(a: Unit, b: Unit) -> str:
 
     # ── 类型 ──
     lines.append("")
-    type_a = " / ".join(t_list("type", a.type)) if a.type else "-"
-    type_b = " / ".join(t_list("type", b.type)) if b.type else "-"
+    type_a = " / ".join(t_list("tags", a.type)) if a.type else "-"
+    type_b = " / ".join(t_list("tags", b.type)) if b.type else "-"
     lines.append(f"类型A: {type_a}")
     lines.append(f"类型B: {type_b}")
 

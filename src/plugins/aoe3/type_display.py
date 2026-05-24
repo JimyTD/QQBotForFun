@@ -99,7 +99,7 @@ def format_unit_types(unit: Unit) -> list[str]:
     for tag in unit.type:
         if tag in TYPE_DISPLAY_SKIP:
             continue
-        zh = t("type", tag)
+        zh = t("tags", tag)
         if zh in seen:
             continue
         seen.add(zh)

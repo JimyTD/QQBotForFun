@@ -38,6 +38,12 @@ cd /root/qqbot && docker compose stop bot && docker compose rm -f bot && cp -r /
 **禁止：**
 - ❌ 在新临时目录里执行 docker compose（会启新容器栈，造成混乱）
 - ❌ docker compose down（杀 NapCat，需重新扫码）
+- ❌ rsync --delete 或任何可能删除/覆盖 `.env`、`logs/`、`uploads/` 的命令
+- ❌ 部署命令中出现 `.env` 以外的全量同步方式
+
+**`.env` 保护**：
+- `.env` 在服务器上一次配置后永不需要再动，部署流程不涉及它
+- 备份位置：`/root/.env_qqbot_backup`（出事时 `cp /root/.env_qqbot_backup /root/qqbot/.env`）
 
 ## 排查：机器人没反应
 

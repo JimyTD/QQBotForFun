@@ -919,7 +919,7 @@ def _find_counter_relations(
                 if best_adv is None or m.value > best_adv[1]:
                     best_adv = (vs_clean, m.value)
         if best_adv:
-            vs_zh = t("type", best_adv[0])
+            vs_zh = t("tags", best_adv[0])
             advantages.append(f"克制 {opp.name}({vs_zh} x{best_adv[1]:g})")
 
         # 对方克制己方：对方的倍率 vs 匹配我的 type
@@ -931,7 +931,7 @@ def _find_counter_relations(
                 if best_dis is None or m.value > best_dis[1]:
                     best_dis = (vs_clean, m.value)
         if best_dis:
-            vs_zh = t("type", best_dis[0])
+            vs_zh = t("tags", best_dis[0])
             disadvantages.append(f"被 {opp.name} 克制({vs_zh} x{best_dis[1]:g})")
 
     return advantages, disadvantages
