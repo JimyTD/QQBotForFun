@@ -12,12 +12,12 @@ RUN apt-get update \
  && apt-get install -y --no-install-recommends curl ca-certificates \
  && rm -rf /var/lib/apt/lists/*
 
-# 安装 uv
-RUN pip install uv
+# 安装 uv（使用国内源加速）
+RUN pip install uv -i https://mirrors.aliyun.com/pypi/simple/
 
-# 拷贝依赖清单并安装
-COPY pyproject.toml ./
-RUN uv pip install --system .
+# 拷贝依赖清单并安装（使用国内源加速）
+COPY pyproject.toml README.md ./
+RUN uv pip install --system --index-url https://mirrors.aliyun.com/pypi/simple/ .
 
 # 拷贝源码
 COPY . .
