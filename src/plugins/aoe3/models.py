@@ -52,12 +52,14 @@ class Unit:
     range: float = 0.0
     range_min: float = 0.0
     rof_ranged: float = 0.0
+    num_projectiles_ranged: int = 1  # 弹丸数（来自 tactics displayednumberprojectiles）
     multipliers_ranged: list[Multiplier] = field(default_factory=list)
 
     # 近战攻击
     attack_melee: float = 0.0
     range_melee: float = 0.0            # 近战射程（0 表示使用模拟器默认值 1.5）
     rof_melee: float = 0.0
+    num_projectiles_melee: int = 1   # 弹丸数（近战极少用到）
     multipliers_melee: list[Multiplier] = field(default_factory=list)
 
     # 攻城攻击
@@ -151,10 +153,12 @@ class Unit:
             range=d.get("range", 0.0),
             range_min=d.get("range_min", 0.0),
             rof_ranged=d.get("rof_ranged", 0.0),
+            num_projectiles_ranged=d.get("num_projectiles_ranged", 1),
             multipliers_ranged=_parse_mults(mults_ranged),
             attack_melee=d.get("attack_melee", 0.0),
             range_melee=d.get("range_melee", 0.0),
             rof_melee=d.get("rof_melee", 0.0),
+            num_projectiles_melee=d.get("num_projectiles_melee", 1),
             multipliers_melee=_parse_mults(mults_melee),
             attack_siege=d.get("attack_siege", 0.0),
             range_siege=d.get("range_siege", 0.0),

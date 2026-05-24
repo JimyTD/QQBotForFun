@@ -197,6 +197,31 @@ TARGETS = {
 }
 
 
+def extract_tactics(bar_path: str, output_dir: str, entries: list[dict]) -> int:
+    """Extract all tactics/*.tactics.XMB files from BAR archive.
+
+    Returns number of tactics files extracted.
+    """
+    tactics_dir = os.path.join(output_dir, "tactics")
+    os.makedirs(tactics_dir, exist_ok=True)
+
+    tactics_entries = [e for e in entries if e['name'].lower().endswith('.tactics.xmb')]
+    count = 0
+    for entry in tactics_entries:
+        try:
+            xmb_data = extract_file_data(bar_path, entry)
+            xml_text = decode_xmb_to_xml(xmb_data)
+            # e.g. "tactics\chukonu.tactics.XMB" -> "chukonu.tactics"
+            out_name = entry['name'].split('\\')[-1].replace('.XMB', '')
+            out_path = os.path.join(tactics_dir, out_name)
+            with open(out_path, 'w', encoding='utf-8') as f:
+                f.write(xml_text)
+            count += 1
+        except Exception as ex:
+            print(f"    WARNING: failed to extract {entry['name']}: {ex}")
+    return count
+
+
 def main():
     parser = argparse.ArgumentParser(description="Extract game data from AoE3 DE Data.bar")
     parser.add_argument("--bar-path", default=DEFAULT_BAR, help="Path to Data.bar")
@@ -223,6 +248,11 @@ def main():
         with open(out_path, 'w', encoding='utf-8') as f:
             f.write(xml_text)
         print(f"    -> {out_path} ({os.path.getsize(out_path)/1024/1024:.1f} MB)")
+
+    # Extract tactics files
+    print(f"\n  Extracting tactics files...")
+    tactics_count = extract_tactics(args.bar_path, args.output_dir, entries)
+    print(f"    -> {tactics_count} tactics files extracted to {args.output_dir}/tactics/")
 
     print("\nDone!")
 

@@ -58,78 +58,43 @@
 
 ---
 
-## 🔫 多弹丸 / 连射兵种 DPS 严重低估（aoe3 数据 + simulator）
+## ✅ 多弹丸 / 连射兵种 DPS 严重低估（aoe3 数据 + simulator）— 已修复
 
-**现象**：加特林机枪、连弩兵这种**一次攻击循环打多发**的热门单位，斗蛐蛐里
-DPS 被算成实际值的 1/3 ~ 1/10，对线表现完全脱离游戏直觉。
+**修复日期**：2026-05-24
 
-**问题对照**：
+**根因（修正后）**：
 
-| 单位 | id | 当前数据 | 游戏实际 | 偏差 |
-|------|----|--------|--------|------|
-| 加特林机枪 | `xpgatlinggun` / `defortgatlinggunbatch` | `attack_ranged=20`, `rof_ranged=3.0`，单发 | 一次攻击循环连射 5~10 发，每发 ~10-20 | DPS ≈ 1/5 ~ 1/10 |
-| 中国连弩兵 | `ypchukonu` | `attack_ranged=5`, `rof_ranged=3.0`，单发 | 一次攻击 3 连发 × 5 伤害 = 15 总伤害 | DPS ≈ 1/3 |
-| 飞行乌鸦 | `Flying Crow`（火箭车） | 同上单发 | 一次齐射多发火箭 | 偏弱 |
+AoE3 的多弹丸信息不在 protoy.xml 中（`numberprojectiles` 全文为 1），
+而是在 **tactics 文件**的 `<displayednumberprojectiles>` 字段，按**攻击动作名**绑定。
 
-（这两个都是热门单位，**不是冷门兵**——加特林机枪是中国进入工业的核心远程，
-连弩兵是中国全程主力 skirm）
+引擎有两种"快射"机制：
+- **机制 A（极短 ROF）**：如加特林机枪的 `RepeatingAttack` rof=0.5 → 爬虫已正确处理
+- **机制 B（多弹丸齐射）**：如连弩 disp=3、管风琴炮 disp=6 → 之前完全缺失
 
-**根因**：
+**修复内容**：
 
-1. **数据侧**：`seeds/aoe3/units.json` 没有"弹丸数 / 连射数"字段。
-   游戏 protoy.xml 里这些信息在 protoaction 节点的 `<NumberProjectiles>` /
-   `<NumRangedAttacks>` 之类的字段，**爬虫 (`aoe3_gamedata_parser.py`)
-   完全没读**。
-2. **模拟器侧**：`simulator.py` 也没有 burst / multi-projectile 处理逻辑
-   （grep `projectile|burst|shots` 0 命中），完全按"一次开火 = 一发命中"
-   计算。即使数据有了字段，simulator 也得改才能用上。
+1. `aoe3_bar_extractor.py`：新增 `extract_tactics()` 批量提取 432 个 tactics 文件
+2. `aoe3_gamedata_parser.py`：
+   - 新增 `_load_tactics()` 解析 tactics 文件的 displayednumberprojectiles
+   - `_parse_attacks()` 按动作名匹配读取弹丸数，写入 `info["num_projectiles"]`
+   - 输出 `num_projectiles_ranged` / `num_projectiles_melee` 字段（仅当 > 1）
+3. `models.py`：`Unit` 新增 `num_projectiles_ranged: int = 1` / `num_projectiles_melee: int = 1`
+4. `simulator.py`：`_calc_damage` 中 `damage = base_atk * num_proj * mult * (1 - armor)`
+5. `lineup.py`：战力估算和展示层都乘弹丸数，展示格式 "5×3发"
 
-**修复方案**（需要装了 AoE3 DE 的机器拆包验证）：
+**修复后受影响单位**（自动检测，非特判）：
 
-1. **拆包确认弹丸字段名**
-   - `scripts/crawler/_extracted/protoy.xml` 搜
-     `<unit name="xpGatlingGun">` / `<unit name="ypChuKoNu">` 的
-     `<protoaction>` 节点
-   - 看连射相关字段叫什么（`NumberProjectiles` / `NumRangedAttacks` /
-     `RangedAttackBurst` / 类似），记下精确字段名
-   - 看 RoF 是"整个 burst 的间隔"还是"单发间隔"——这决定了乘法该怎么算
+| 单位 | 弹丸数 | 修正前 DPS | 修正后 DPS |
+|------|--------|-----------|-----------|
+| 连弩兵 ypChuKoNu | 3 | 1.7 | 5.0 |
+| 管风琴炮 OrganGun | 6 | 8.2 | 49.5 |
+| 加特林骆驼 deMercGatlingCamel | 6 | 4.8 | 29.0 |
+| 皮衣牛仔 deREVVaquero | 4 | 1.3 | 5.3 |
+| 战斗独木舟 deBattleCanoe | 5 | 8.7 | 43.3 |
+| 钦查木筏 deChincharaft | 3 | 12.5 | 37.5 |
+| 加特林骆驼(legacy) | 6 | 50 | 300 |
 
-2. **爬虫补字段**
-   修改 `scripts/crawler/aoe3_gamedata_parser.py :: _parse_attacks`，把弹丸数
-   读出来塞进每个攻击模式的 dict，最终落到 `units.json`：
-   ```json
-   "attack_ranged": 20,
-   "rof_ranged": 3.0,
-   "num_projectiles_ranged": 8,   // ← 新增
-   ```
-   注意：和迫击炮 multipliers 问题一样要遵守 MEMORY.md ID 54955007 的铁律
-   ——弹丸数必须和当前选定的代表攻击属于**同一个攻击模式**，不能跨模式拼。
-
-3. **simulator 支持连发**
-   `simulator.py :: _resolve_ranged` 一带，开火时按 `num_projectiles` 处理。
-   两种实现方案：
-   - **简化版**：伤害 × 弹丸数（一次结算）。最简单，但 AOE / 暴毙判定
-     不准（实际是多发独立命中，会重复触发 AOE）。
-   - **精确版**：拆成 N 次独立命中，每次走完整的伤害结算流程。
-     更准但要小心 CD：N 发都已"打出"后才进入 RoF 间隔。
-   - 推荐先做简化版，跑通后再决定要不要升级。
-
-4. **验收**
-   - `seeds/aoe3/units.json` 里加特林机枪、连弩兵、飞行乌鸦都有
-     `num_projectiles_ranged` 字段
-   - `/帝国3 加特林机枪` 详情页显示弹丸数（renderer 也得加）
-   - 斗蛐蛐里 10 加特林机枪 vs 10 步兵线，加特林应该明显占优；
-     现在大概率打输（DPS 被低估 5x）
-
-**相关文件**：
-- 爬虫：`scripts/crawler/aoe3_gamedata_parser.py`（`_parse_attacks`）
-- 数据：`seeds/aoe3/units.json`
-- 模拟：`src/plugins/games/aoe3_battle/simulator.py`
-- 详情渲染：`src/plugins/aoe3/render.py`（如果加了字段也要在详情里展示）
-
-**优先级**：中-高 / 平衡向 —— 影响两个热门兵种在斗蛐蛐里的判定，群里玩家
-对加特林机枪 / 连弩兵的体感会很违和。但工作量较大（拆包 + 爬虫 + simulator
-三处都要动），不是小修。
+**未受影响**：加特林机枪（ROF=0.5 已正确编码）、鹰炮/长管炮（CaseShot 非主攻模式）
 
 ---
 

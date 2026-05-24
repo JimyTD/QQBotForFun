@@ -826,6 +826,7 @@ class BattleSimulator:
         """计算单次攻击伤害。"""
         if mode == AttackMode.MELEE:
             base_atk = attacker.unit.attack_melee
+            num_proj = attacker.unit.num_projectiles_melee
             multipliers = attacker.unit.multipliers_melee
             # 近战伤害类型通常是 Hand → 吃近战护甲
             dtype = attacker.unit.damage_type_melee
@@ -837,6 +838,7 @@ class BattleSimulator:
                 armor = target.unit.armor_melee
         elif mode in (AttackMode.RANGED, AttackMode.RANGED_PENALIZED):
             base_atk = attacker.unit.attack_ranged
+            num_proj = attacker.unit.num_projectiles_ranged
             multipliers = attacker.unit.multipliers_ranged
             # 根据 damage_type_ranged 选护甲
             dtype = attacker.unit.damage_type_ranged
@@ -852,7 +854,8 @@ class BattleSimulator:
         # 倍率叠乘
         mult = self._calc_multiplier(multipliers, target)
 
-        damage = base_atk * mult * (1.0 - armor)
+        # 弹丸数合并结算：多弹丸锁定同一目标，直接×N
+        damage = base_atk * num_proj * mult * (1.0 - armor)
 
         # 贴脸惩罚
         if mode == AttackMode.RANGED_PENALIZED:
@@ -862,11 +865,11 @@ class BattleSimulator:
         damage = max(1.0, damage)
 
         logger.debug(
-            "tick=%d 伤害计算 %s#%d→%s#%d mode=%s base=%.1f mult=%.2f "
+            "tick=%d 伤害计算 %s#%d→%s#%d mode=%s base=%.1f proj=%d mult=%.2f "
             "armor=%.2f penalty=%s → dmg=%.1f",
             self._tick, attacker.name, attacker.id,
             target.name, target.id, mode.value,
-            base_atk, mult, armor,
+            base_atk, num_proj, mult, armor,
             "Y" if mode == AttackMode.RANGED_PENALIZED else "N",
             damage,
         )
@@ -1066,7 +1069,10 @@ class BattleSimulator:
         max_splash = round(aoe_radius)
 
         # 基础攻击力（用于 DamageCap）
-        base_atk = attacker.unit.attack_ranged
+        if mode == AttackMode.MELEE:
+            base_atk = attacker.unit.attack_melee * attacker.unit.num_projectiles_melee
+        else:
+            base_atk = attacker.unit.attack_ranged * attacker.unit.num_projectiles_ranged
         damage_cap = base_atk * 2.0
 
         # 筛选溅射候选：与主目标距离 ≤ aoe_radius 的存活敌方（排除主目标，二分优化）

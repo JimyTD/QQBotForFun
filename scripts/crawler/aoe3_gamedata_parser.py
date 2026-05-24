@@ -33,6 +33,7 @@ SEEDS_DIR = PROJECT_ROOT / "seeds" / "aoe3"
 PROTOY_PATH = EXTRACTED_DIR / "protoy.xml"
 STRING_EN_PATH = EXTRACTED_DIR / "stringtabley_en.xml"
 STRING_ZH_PATH = EXTRACTED_DIR / "stringtabley_zh.xml"
+TACTICS_DIR = EXTRACTED_DIR / "tactics"
 
 OUTPUT_UNITS_PATH = SEEDS_DIR / "units.json"
 OUTPUT_I18N_PATH = SEEDS_DIR / "i18n_zh.json"
@@ -200,7 +201,8 @@ def parse_unit(el: ET.Element, strings_en: dict, strings_zh: dict) -> dict | Non
             armor_siege = round(aval, 4)
 
     # --- Attacks ---
-    attacks = _parse_attacks(el)
+    tactics_filename = el.findtext("tactics", "").strip()
+    attacks = _parse_attacks(el, tactics_filename)
     ranged = attacks.get("ranged")
     melee = attacks.get("melee")
     siege = attacks.get("siege")
@@ -231,6 +233,8 @@ def parse_unit(el: ET.Element, strings_en: dict, strings_zh: dict) -> dict | Non
         result["range_min"] = ranged["minrange"]
         result["rof_ranged"] = ranged["rof"]
         result["damage_type_ranged"] = ranged["damagetype"]
+        if ranged.get("num_projectiles", 1) > 1:
+            result["num_projectiles_ranged"] = ranged["num_projectiles"]
         if ranged["aoe_radius"] > 0:
             result["aoe_radius_ranged"] = ranged["aoe_radius"]
         if ranged["multipliers"]:
@@ -241,6 +245,8 @@ def parse_unit(el: ET.Element, strings_en: dict, strings_zh: dict) -> dict | Non
         result["range_melee"] = melee["maxrange"]
         result["rof_melee"] = melee["rof"]
         result["damage_type_melee"] = melee["damagetype"]
+        if melee.get("num_projectiles", 1) > 1:
+            result["num_projectiles_melee"] = melee["num_projectiles"]
         if melee["aoe_radius"] > 0:
             result["aoe_radius_melee"] = melee["aoe_radius"]
         if melee["multipliers"]:
@@ -309,8 +315,56 @@ def _age_num_to_name(age_num: str) -> str:
     }.get(n, "")
 
 
-def _parse_attacks(el: ET.Element) -> dict[str, dict]:
-    """Parse protoaction elements, categorize and select best per slot."""
+# ============================================================
+# Tactics loader — 读取 displayednumberprojectiles
+# ============================================================
+# 缓存：tactics filename → {action_name → num_projectiles}
+_tactics_cache: dict[str, dict[str, int]] = {}
+
+
+def _load_tactics(tactics_filename: str) -> dict[str, int]:
+    """Load a tactics file and return {action_name: displayednumberprojectiles}.
+
+    结果被缓存。如果 tactics 文件不存在或解析失败，返回空 dict。
+    """
+    if tactics_filename in _tactics_cache:
+        return _tactics_cache[tactics_filename]
+
+    result: dict[str, int] = {}
+    tactics_path = TACTICS_DIR / tactics_filename
+    if not tactics_path.exists():
+        _tactics_cache[tactics_filename] = result
+        return result
+
+    try:
+        tree = ET.parse(tactics_path)
+        root = tree.getroot()
+        for action in root.findall("action"):
+            aname = action.findtext("name", "").strip()
+            dnp = action.findtext("displayednumberprojectiles", "")
+            if aname and dnp:
+                try:
+                    val = int(dnp.strip())
+                    if val > 1:
+                        result[aname] = val
+                except ValueError:
+                    pass
+    except ET.ParseError:
+        pass
+
+    _tactics_cache[tactics_filename] = result
+    return result
+
+
+def _parse_attacks(el: ET.Element, tactics_filename: str = "") -> dict[str, dict]:
+    """Parse protoaction elements, categorize and select best per slot.
+
+    tactics_filename: 该单位引用的 tactics 文件名（如 "chukonu.tactics"），
+    用于读取 displayednumberprojectiles（每次攻击的弹丸数）。
+    """
+    # Load tactics projectile data
+    tactics_proj = _load_tactics(tactics_filename) if tactics_filename else {}
+
     ranged_candidates = []
     melee_candidates = []
     siege_candidates = []
@@ -327,6 +381,9 @@ def _parse_attacks(el: ET.Element) -> dict[str, dict]:
         minrange = round(float(action.findtext("minrange", "0") or "0"), 2)
         damagearea = round(float(action.findtext("damagearea", "0") or "0"), 2)
         aoe_radius = round(damagearea) if damagearea > 0 else 0
+
+        # Projectile count from tactics (displayednumberprojectiles)
+        num_projectiles = tactics_proj.get(name, 1)
 
         # Damage bonuses — store raw type directly
         multipliers = []
@@ -353,6 +410,7 @@ def _parse_attacks(el: ET.Element) -> dict[str, dict]:
             "maxrange": maxrange,
             "minrange": minrange,
             "aoe_radius": aoe_radius,
+            "num_projectiles": num_projectiles,
             "multipliers": multipliers,
             "priority": ATTACK_PRIORITY.get(name, 99),
         }

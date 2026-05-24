@@ -473,10 +473,10 @@ def power_score(unit: Unit) -> float:
     rof_r = unit.rof_ranged or 3.0
     rof_m = unit.rof_melee or 1.5
 
-    hit_r = (unit.attack_ranged or 0.0) * (
+    hit_r = (unit.attack_ranged or 0.0) * (unit.num_projectiles_ranged or 1) * (
         1.0 + (unit.aoe_radius_ranged or 0) * BLACKLIST_AOE_DPS_MULT
     )
-    hit_m = (unit.attack_melee or 0.0) * (
+    hit_m = (unit.attack_melee or 0.0) * (unit.num_projectiles_melee or 1) * (
         1.0 + (unit.aoe_radius_melee or 0) * BLACKLIST_AOE_DPS_MULT
     )
     eff_hit_r = _soft_diminish(hit_r, HIT_BASELINE)
@@ -850,7 +850,10 @@ def _atk_summary(u: Unit) -> str:
         dtype_tag = ""
         if u.damage_type_ranged and u.damage_type_ranged != "Ranged":
             dtype_tag = f",{_dtype_label.get(u.damage_type_ranged, u.damage_type_ranged)}"
-        parts.append(f"远程{u.attack_ranged:.0f}({rng_str}, {u.rof_ranged}s{dtype_tag})")
+        atk_str = f"{u.attack_ranged:.0f}"
+        if u.num_projectiles_ranged > 1:
+            atk_str = f"{u.attack_ranged:.0f}×{u.num_projectiles_ranged}发"
+        parts.append(f"远程{atk_str}({rng_str}, {u.rof_ranged}s{dtype_tag})")
     if u.attack_melee:
         dtype_tag = ""
         if u.damage_type_melee and u.damage_type_melee != "Hand":

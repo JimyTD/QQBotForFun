@@ -1561,6 +1561,7 @@
     "range_min": 0.0,
     "rof_ranged": 1.5,
     "damage_type_ranged": "Siege",
+    "num_projectiles_ranged": 5,
     "multipliers": {
       "ranged": [
         {
@@ -2284,6 +2285,7 @@
     "range_min": 0.0,
     "rof_ranged": 2.0,
     "damage_type_ranged": "Siege",
+    "num_projectiles_ranged": 3,
     "aoe_radius_ranged": 1,
     "multipliers": {
       "ranged": [
@@ -6439,6 +6441,7 @@
     "range_min": 0.0,
     "rof_ranged": 3.0,
     "damage_type_ranged": "Siege",
+    "num_projectiles_ranged": 6,
     "aoe_radius_ranged": 2,
     "multipliers": {
       "ranged": [
@@ -15531,6 +15534,7 @@
     "range_min": 2.0,
     "rof_ranged": 3.0,
     "damage_type_ranged": "Ranged",
+    "num_projectiles_ranged": 4,
     "multipliers": {
       "ranged": [
         {
@@ -20583,6 +20587,7 @@
     "range_min": 10.0,
     "rof_ranged": 1.0,
     "damage_type_ranged": "Siege",
+    "num_projectiles_ranged": 6,
     "aoe_radius_ranged": 10,
     "attack_melee": 1.0,
     "range_melee": 0.0,
@@ -24345,6 +24350,7 @@
     "range_min": 0.0,
     "rof_ranged": 4.0,
     "damage_type_ranged": "Siege",
+    "num_projectiles_ranged": 6,
     "aoe_radius_ranged": 2,
     "multipliers": {
       "ranged": [
@@ -29437,6 +29443,7 @@
     "range_min": 2.0,
     "rof_ranged": 3.0,
     "damage_type_ranged": "Ranged",
+    "num_projectiles_ranged": 3,
     "multipliers": {
       "ranged": [
         {
