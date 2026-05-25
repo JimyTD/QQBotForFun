@@ -1,7 +1,7 @@
 # 红警2斗蛐蛐 —— 工程文档
 
-- **Status**: Draft v11（YR 全量数据 + 斗蛐蛐降级规则）
-- **Last Updated**: 2026-05-22
+- **Status**: Draft v12（+ Preset 策展对阵 WIP 记录）
+- **Last Updated**: 2026-05-25
 - **Game ID**: `ra2_battle`
 - **权威数据**: [cookgreen/Yuris-Revenge](https://github.com/cookgreen/Yuris-Revenge) `mods/yr`（经 `vendor/yuris-revenge` 导出）；[OpenRA/ra2](https://github.com/OpenRA/ra2) 仅作对照
 
@@ -543,6 +543,106 @@ for tick in 0..max_ticks:
 | `game_launcher` + `bot.py` | ✅ |
 | 阵容 icon 图片广播 | ✅（需 `ra2_icon_export.py` 生成 PNG） |
 | 单位图标 | ⏳ 远期 |
+| **Preset 策展对阵**（§8.5） | 🔶 草稿验收中，**未接** `lineup.py` |
+
+### 8.5 Preset 策展对阵（WIP，2026-05-25）
+
+> **Bot 行为未变**：仍从 58 池随机（§8.2）。本节记录「用策展编制替换随机池」的设计与半成品，供后续接手。
+
+#### 目标（已对齐，未实现接入）
+
+| 项 | 约定 |
+|----|------|
+| 指令 | **不增**；仍 `@我 红警斗蛐蛐` |
+| 编制 | 红蓝兵种与**数量写死**，不要求预算/LCM 相等 |
+| 规模 | 单局总单位宜 **20–60+**（陆战为主；海/空由 preset 自带） |
+| 池 | 一条 preset 表随机抽；**替换**默认 58 池，不是 1v1 单挑模式 |
+
+#### 两类对阵标准（验收脚本用）
+
+| 类型 | 条件 |
+|------|------|
+| **宿敌** `rival` | 胜方余量 **25–40%**；胜方伤亡 **≥55%**；败方歼灭 **≥85%** |
+| **表演赛** `spectacle` | 专克方胜率 **≥85%**；被克方歼灭 **≥90%** |
+
+#### 产物文件
+
+| 路径 | 说明 |
+|------|------|
+| `data/ra2/lineup_presets.json` | **14 条**候选 preset（草稿） |
+| `scripts/ra2_preset_scan.py` | 单条/扫比例/批量 sweep/写 JSON |
+| `scripts/_validate_pool.py` | 对 JSON 全表复验（临时脚本） |
+
+#### 当前 JSON 草稿（14 条，**未全量复验**）
+
+| id | 类型 | 编制 | 总单位 |
+|----|------|------|--------|
+| `rival_tank_s` | 宿敌 | htnk×12 vs mtnk×16 | 28 |
+| `rival_tank_m` | 宿敌 | htnk×15 vs mtnk×22 | 37 |
+| `rival_tank_m_grizzly` | 宿敌 | htnk×12 vs mtnk×18 | 30 |
+| `rival_tank_l` | 宿敌 | htnk×16 vs mtnk×26 | 42 |
+| `rival_tank_xl` | 宿敌 | htnk×16 vs mtnk×28 | 44 |
+| `rival_inf_s` | 宿敌 | e1×20 vs e2×27 | 47 |
+| `rival_inf_m` | 宿敌 | e1×25 vs e2×32 | 57 |
+| `rival_inf_l` | 宿敌 | e1×30 vs e2×35 | 65 |
+| `rival_inf_ggi_m` | 宿敌 | ggi×18 vs e1×24 | 42 |
+| `rival_tank_light_m` | 宿敌 | ltnk×18 vs htnk×10 | 28 |
+| `rival_nav_sub_m` | 宿敌 | sub×5 vs dest×8 | 13 |
+| `rival_nav_sub_s` | 宿敌 | sub×3 vs dest×5 | 8 |
+| `spec_asw_hyd` | 表演 | hyd×8 vs dlph×20（专克红） | 28 |
+| `spec_boris_inf` | 表演 | boris×2 vs e1×35（专克红） | 37 |
+
+#### 已单独验收 PASS 的编制（6 seeds）
+
+以下在开发中**逐条跑过 PASS**（与 JSON 大部分重合；JSON 含若干 sweep 推导档，**14 条整表复验未完成**）：
+
+- 主战：`htnk×15 vs mtnk×22`
+- 步兵：`e1×25 vs e2×32`；`ggi×18 vs e1×24`
+- 轻坦：`ltnk×18 vs htnk×10`
+- 海战：`sub×5 vs dest×8`；`sub×3 vs dest×5`
+- 表演：`hyd×8 vs dlph×20`；`boris×2 vs e1×35`
+
+#### `--batch-sweep` 穷举扫（调参工具，非交付物）
+
+对 9 组 archetype **自动试数量组合**（约 **190+** 组 × 6 seeds），只输出 PASS。例：犀牛 vs 灰熊 ≈ 30 组。
+
+**已扫出、未精简入库**：主战 htnk/mtnk **≥11 组** PASS；步兵 e1/e2 **≥5 组** PASS。任务在步兵段运行 **~80min 后被中断**；磁能/光棱/幻影/天启等 **未扫完**。
+
+#### 不宜入池（sim 未对齐）
+
+防空 vs 飞机、警犬、辐射、天启/磁能/狂兽人/航母等。
+
+#### 验收耗时（2026-05-25 本地）
+
+| 场景 | 6 seeds 串行 |
+|------|----------------|
+| 主战 15v22 | ~37s |
+| 步兵 25v32 | ~107s |
+| JSON 14 条全表 | ~15min（**未跑完**） |
+| 全盘 batch-sweep | ~3–4h（**勿作交付路径**） |
+
+验收脚本**串行**；局间无依赖，**可**多进程并行，尚未实现。
+
+#### 未完成 / 接手顺序
+
+1. 14 条整表复验 → 删/改 FAIL。  
+2. 勿再全盘 sweep；从已知 PASS **精选 15–20 条**。  
+3. 确认后改 `lineup.py` 读 JSON 替换 `generate_bet_lineup`。  
+
+```bash
+uv run python scripts/ra2_preset_scan.py --match htnk:15,mtnk:22 --seeds 6
+uv run python scripts/_validate_pool.py
+uv run python scripts/ra2_preset_scan.py --batch-sweep --seeds 6   # 仅调参，很慢
+```
+
+#### 过程说明（为何耗时远超预期）
+
+| 原因 | 说明 |
+|------|------|
+| 路径选错 | 应用 **15min 验 14 条** 收尾，却跑了 **3–4h 穷举 sweep** |
+| 脚本串行 | preset 与 seed 均未并行 |
+| 长跑中断 | sweep 与全表复验均未跑完 |
+| Bot 未动 | 按约定先验配兵，**未改** `lineup.py` |
 
 ---
 
@@ -665,6 +765,7 @@ uv run python scripts/ra2_battle_bench.py
 | **Phase 3 — YR 降级** | `battle_armament.py` Tier B/C + 心控容量 3 | ✅ 完成 |
 | **Phase 4 — Icon PNG** | YR cameo.mix → `resources/ra2/icons/` | ⏳ 待 mix |
 | **Phase 5 — 体验** | 战斗日志、自定义预算 | ⏳ 远期 |
+| **Phase 5.1 — Preset 池** | 策展对阵 JSON + 验收；替换 §8.2 随机池 | 🔶 草稿（§8.5），Bot 未接 |
 
 ---
 

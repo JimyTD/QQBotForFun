@@ -58,6 +58,37 @@
 
 ---
 
+## 📜 AoE3 兵种查询：补单位 tooltip 描述
+
+**现象**：`aoe3 <兵种名>` 卡片只有数值属性，**没有**游戏里鼠标悬停时的那段官方描述文案。
+
+**背景**（2026-05-25 确认）：
+
+- 官方中文**单位名**已在 `seeds/aoe3/units.json` 的 `name` 字段（来自 `stringtabley_zh.xml`），标题行有展示。
+- **Tooltip 描述**游戏里有，但当前 pipeline **未提取、未入库、未展示**。
+- 解包后（`aoe3_bar_extractor.py` → 默认 `E:\aoe3_extracted`，不入 git）：
+  - `protoy.xml`：`RolloverTextID` / `ShortRolloverTextID` 指向 stringtable 条目
+  - `stringtabley_en.xml` / `stringtabley_zh.xml`：含对应中英文描述文本
+- 解析器 `aoe3_gamedata_parser.py` 目前只读 `displaynameid`（名字），没读 rollover 字段。
+
+**待办**（需本机有 AoE3DE，能跑 extractor + parser）：
+
+1. `aoe3_gamedata_parser.py`：解析 `rollovertextid`（及可选 `shortrollovertextid`），写入 `units.json` 新字段（如 `description` / `description_en`）
+2. `models.py` + `Unit.from_dict`：接新字段
+3. `formatter.py` `render_unit_card`：卡片末尾展示 tooltip（优先中文，过长可截断或换行）
+4. 重跑 parser 更新 `seeds/aoe3/units.json` 并提交
+
+**相关文件**：
+
+- `scripts/crawler/aoe3_bar_extractor.py`
+- `scripts/crawler/aoe3_gamedata_parser.py`
+- `seeds/aoe3/units.json`
+- `src/plugins/aoe3/models.py`、`formatter.py`
+
+**优先级**：中 / 体验向 —— 纯展示增强，不影响查询与斗蛐蛐逻辑。
+
+---
+
 ## ✅ 多弹丸 / 连射兵种 DPS 严重低估（aoe3 数据 + simulator）— 已修复
 
 **修复日期**：2026-05-24

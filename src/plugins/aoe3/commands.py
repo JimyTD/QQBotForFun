@@ -2,10 +2,12 @@
 
 from __future__ import annotations
 
+import asyncio
+import base64
 from pathlib import Path
 
-from nonebot import on_command
-from nonebot.adapters.onebot.v11 import Bot, GroupMessageEvent, MessageSegment
+from nonebot import logger, on_command
+from nonebot.adapters.onebot.v11 import Bot, GroupMessageEvent, Message, MessageSegment
 from nonebot.rule import to_me
 
 from .formatter import (
@@ -13,11 +15,52 @@ from .formatter import (
     render_compare,
     render_unit_card,
 )
+from .models import Unit
 from .repository import UnitRepo
 
 # ── 主命令 ──────────────────────────────────────────────
 
 aoe3_cmd = on_command("aoe3", aliases={"帝国3", "aoe"}, rule=to_me(), priority=3, block=True)
+
+
+async def _send_with_icons(
+    bot: Bot,
+    event: GroupMessageEvent,
+    text: str,
+    icon_paths: list[Path],
+) -> None:
+    """发送 icon 图片 + 文字；无可用 icon 或图片发送失败时降级为纯文本。"""
+    if not icon_paths:
+        await bot.send(event, text)
+        return
+
+    msg = Message()
+    for icon_path in icon_paths:
+        b64 = base64.b64encode(icon_path.read_bytes()).decode()
+        msg.append(MessageSegment.image(f"base64://{b64}"))
+    msg.append(MessageSegment.text(text))
+
+    for attempt in range(1, 3):
+        try:
+            await bot.send(event, msg)
+            return
+        except Exception:  # noqa: BLE001
+            if attempt < 2:
+                logger.debug("[aoe3] 图片发送第 %d 次失败，重试", attempt)
+                await asyncio.sleep(1)
+    logger.warning("[aoe3] 图片发送失败，降级为纯文本")
+    await bot.send(event, text)
+
+
+def _icon_paths(repo: UnitRepo, units: Unit | list[Unit]) -> list[Path]:
+    if isinstance(units, Unit):
+        units = [units]
+    paths: list[Path] = []
+    for unit in units:
+        icon_path = repo.get_icon_path(unit)
+        if icon_path:
+            paths.append(icon_path)
+    return paths
 
 
 @aoe3_cmd.handle()
@@ -51,8 +94,10 @@ async def _handle_aoe3(bot: Bot, event: GroupMessageEvent) -> None:
             await aoe3_cmd.finish(f"未找到「{parts[0]}」")
         if not b_list:
             await aoe3_cmd.finish(f"未找到「{parts[1]}」")
-        msg = render_compare(a_list[0], b_list[0])
-        await aoe3_cmd.finish(msg)
+        unit_a, unit_b = a_list[0], b_list[0]
+        msg = render_compare(unit_a, unit_b)
+        await _send_with_icons(bot, event, msg, _icon_paths(repo, [unit_a, unit_b]))
+        await aoe3_cmd.finish()
 
     # ── 文明 ──
     if text.startswith("文明"):
@@ -71,36 +116,12 @@ async def _handle_aoe3(bot: Bot, event: GroupMessageEvent) -> None:
     unit = results[0]
     is_fuzzy = repo.search_is_fuzzy(text)
 
-    # 发 icon + 文字卡片
-    import asyncio
-    import base64
-
-    from nonebot import logger
-
     card_text = render_unit_card(unit)
     if is_fuzzy:
         name = unit.name if unit.name != unit.name_en else unit.name_en
         card_text = f"💡 未精确匹配「{text}」，为你找到最接近的：{name}\n\n" + card_text
 
-    icon_path = repo.get_icon_path(unit)
-    if icon_path:
-        b64 = base64.b64encode(icon_path.read_bytes()).decode()
-        rich_msg = MessageSegment.image(f"base64://{b64}") + MessageSegment.text(card_text)
-        sent = False
-        for attempt in range(1, 3):
-            try:
-                await bot.send(event, rich_msg)
-                sent = True
-                break
-            except Exception:  # noqa: BLE001
-                if attempt < 2:
-                    logger.debug("[aoe3] 图片发送第 %d 次失败，重试", attempt)
-                    await asyncio.sleep(1)
-        if not sent:
-            logger.warning("[aoe3] 图片发送失败，降级为纯文本")
-            await bot.send(event, card_text)
-    else:
-        await bot.send(event, card_text)
+    await _send_with_icons(bot, event, card_text, _icon_paths(repo, unit))
 
     # 如果搜索到多个结果，提示
     if len(results) > 1:
