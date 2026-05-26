@@ -7,6 +7,7 @@
 
 - **面向群友的娱乐机器人**：在工作/学习间隙，群内随时开局、异步等待、不打断节奏
 - **多游戏平台**：每个小游戏是独立插件，彼此隔离，公用一套 Core 能力层
+- **实用工具集**：签到、吃什么、查资料、工作提醒、游戏王查卡等日常小工具
 - **LLM 原生**：大模型作为汤主、NPC、判定者等
 
 ## ⚠️ 核心开发铁律
@@ -21,14 +22,29 @@
 ## 🎯 已上线游戏
 
 - **海龟汤**（`turtle_soup`）：纯 LLM 汤主模式 · 玩家自由提问 · LLM 判定
-- **趣味问答**（`trivia`）：听线索猜答案 · 6 类（国家/城市/美食/人物/动物/成语）· **题库驱动**（580 道 × 2 套线索）· 10 题一局 · 结算入 score 榜
+- **趣味问答**（`trivia`）：听线索猜答案 · 6 类（国家/城市/美食/人物/动物/成语）· 题库驱动（580+ 道 × 2 套线索）· 10 题一局 · 结算入 score 榜
+- **帝国3斗蛐蛐**（`aoe3_battle`）：一维自研模拟器 · 真实 AoE3 数据 · 押注/单挑模式
+- **红警2斗蛐蛐**（`ra2_battle`）：二维战场 · OpenRA 数据 · 押注/单挑模式
+
+## 🛠️ 已上线工具
+
+- **每日签到**（`checkin`）：连续签到阶梯加成 · 名人寄语运势
+- **吃什么**（`food`）：随机推荐一道菜
+- **查资料**（`ask_ai`）：单轮 AI 问答 + 联网搜索
+- **工作提醒**（`reminder`）：工作日随机时段提醒活动/休息/下班
+- **游戏王查卡**（`yugioh_card`）：模糊搜索 / 密码精确查 / 随机卡
+- **帝国3百科**（`aoe3`）：查兵种属性 / 对比 / 文明兵种列表
 
 ## 🏛️ 架构一图流
 
 ```
 ┌───────────────────────────────────────────────────────────┐
 │  Games Layer   各小游戏，彼此隔离                          │
-│  turtle_soup  /  guess_number  /  gomoku  /  ...          │
+│  turtle_soup / trivia / aoe3_battle / ra2_battle          │
+├───────────────────────────────────────────────────────────┤
+│  Tools Layer   实用工具                                    │
+│  checkin / food / ask_ai / reminder / web_search /        │
+│  yugioh_card / aoe3（百科）                                │
 ├───────────────────────────────────────────────────────────┤
 │  Core Layer    共享能力                                    │
 │  session · user · economy · render · llm ·                │
@@ -83,7 +99,7 @@ uv sync
 ### 3. 配置
 ```powershell
 copy .env.example .env
-# 编辑 .env：填入 ADMIN_QQ / ZHIPU_API_KEY / SILICONFLOW_API_KEY / ONEBOT_ACCESS_TOKEN
+# 编辑 .env：填入 ADMIN_QQ / ZHIPU_API_KEY / LONGCAT_API_KEY / ONEBOT_ACCESS_TOKEN
 notepad .env
 ```
 
@@ -118,12 +134,13 @@ uv run python -m src.bot
 
 ### 7. 验证
 在测试群里（已拉机器人小号进群）发送：
-- `/ping` → 回复 `pong 🏓`
-- `/menu` → 显示游戏大厅
-- `/play turtle_soup` → 开始一局海龟汤
-- `/开始 trivia` → 开一局趣味问答（跟引导选类型）
-- `/开始 trivia 猜动物` → 直接开猜动物局
-- `/榜` → 查看全服趣味分排行榜
+- `@机器人 测试` → 回复 `pong 🏓`
+- `@机器人 菜单` → 显示游戏大厅
+- `@机器人 海龟汤` → 开始一局海龟汤
+- `@机器人 趣味问答` → 开一局趣味问答
+- `@机器人 斗蛐蛐` → 帝国3斗蛐蛐
+- `@机器人 签到` → 每日签到
+- `@机器人 榜` → 查看全服积分排行榜
 
 ---
 
@@ -163,38 +180,34 @@ uv run pytest
 - [`06-configuration.md`](./docs/06-configuration.md) — 配置
 - [`07-database-schema.md`](./docs/07-database-schema.md) — 数据库
 - [`08-llm-integration.md`](./docs/08-llm-integration.md) — LLM 网关
+- [`free-llm-vendors.md`](./docs/free-llm-vendors.md) — 免费 API 厂商调研（活动追踪）
 - [`09-conventions.md`](./docs/09-conventions.md) — 编码规范
-- [`10-roadmap.md`](./docs/10-roadmap.md) — **实施清单（不可偏移基线）**
+- [`10-roadmap.md`](./docs/10-roadmap.md) — 路线图与版本变更
 - [`11-ui-style.md`](./docs/11-ui-style.md) — 文本 UI 规范
 - [`12-local-testing.md`](./docs/12-local-testing.md) — **本地端到端测试指南**
 - [`13-cli-bot-parity.md`](./docs/13-cli-bot-parity.md) — **CLI ↔ Bot 一致性铁律**（开发必读）
+- [`commands.md`](./docs/commands.md) — 完整指令列表
+- [`ops-guide.md`](./docs/ops-guide.md) — Agent 运维手册
 
 ### 游戏设计
-- [`games/turtle-soup.md`](./docs/games/turtle-soup.md)
-- [`games/trivia.md`](./docs/games/trivia.md)
-- [`games/trivia-bank.md`](./docs/games/trivia-bank.md) — 趣味问答题库子系统设计
+- [`games/turtle-soup.md`](./docs/games/turtle-soup.md) — 海龟汤
+- [`games/trivia.md`](./docs/games/trivia.md) — 趣味问答
+- [`games/trivia-bank.md`](./docs/games/trivia-bank.md) — 趣味问答题库子系统
+- [`games/aoe3-battle.md`](./docs/games/aoe3-battle.md) — 帝国3斗蛐蛐
+- [`games/ra2-battle.md`](./docs/games/ra2-battle.md) — 红警2斗蛐蛐
+- [`games/terra-survival.md`](./docs/games/terra-survival.md) — 群峦求生（设计中）
+
+### 工具设计
+- [`tools/checkin.md`](./docs/tools/checkin.md) — 每日签到
+- [`tools/food.md`](./docs/tools/food.md) — 吃什么
+- [`tools/web-search.md`](./docs/tools/web-search.md) — 联网搜索
+- [`tools/work-reminder.md`](./docs/tools/work-reminder.md) — 工作提醒
+- [`tools/yugioh-card.md`](./docs/tools/yugioh-card.md) — 游戏王查卡
 
 ### ADR
 - [`adr/0001-protocol-choice.md`](./docs/adr/0001-protocol-choice.md) — NapCat
 - [`adr/0002-framework-choice.md`](./docs/adr/0002-framework-choice.md) — NoneBot2
 - [`adr/0003-llm-gateway.md`](./docs/adr/0003-llm-gateway.md) — LLM 网关
-
----
-
-## ✅ 交付验收清单
-
-照着本清单逐项自查。对应 `docs/10-roadmap.md` 的基线。
-
-- [x] 文档：13 篇（总览 + 11 篇专题 + 海龟汤设计）
-- [x] ADR：3 篇（协议 / 框架 / LLM）
-- [x] 脚手架：`pyproject.toml`、`.env.example`、`.gitignore`、`config/llm.yaml`、`settings.py`
-- [x] Core 层：`errors` / `types` / `storage` / `user` / `session` / `economy` / `permission` / `scheduler` / `llm` / `render` / `game_base`
-- [x] 系统插件：`core_commands` / `game_launcher` / `admin` / `message_router`
-- [x] 海龟汤游戏：`models` / `config` / `prompts` / `puzzle_service` / `game` / `commands`
-- [x] 数据：`seeds/turtle_soup.json`（5 道）+ `scripts/seed_turtle_soup.py` + `scripts/generate_soup_with_llm.py`
-- [x] Alembic：`alembic.ini` + `migrations/env.py` + `migrations/versions/0001_init.py`
-- [x] 部署：`Dockerfile` + `docker-compose.yml` + `docker-compose.dev.yml` + `napcat/config.example.json`
-- [x] 测试：`conftest.py` + `test_economy` + `test_render` + `test_permission` + `test_llm` + `test_game_base` + `test_classify` + `test_flow` + `harness.py`
 
 ---
 
@@ -204,5 +217,5 @@ uv run pytest
 
 ## 📝 状态
 
-- **Status**: MVP framework complete
-- **Last Updated**: 2026-04-30
+- **Status**: Production
+- **Last Updated**: 2026-05-26

@@ -63,11 +63,10 @@ LLM_CONFIG_PATH=./config/llm.yaml
 
 # 各供应商的 API Key
 ZHIPU_API_KEY=your_key
-SILICONFLOW_API_KEY=your_key
+LONGCAT_API_KEY=your_key
 # 可选
 OPENAI_API_KEY=
 OPENROUTER_API_KEY=
-DEEPSEEK_API_KEY=
 ```
 
 ### 2.6 海龟汤配置
@@ -102,10 +101,10 @@ providers:
     base_url: https://open.bigmodel.cn/api/paas/v4
     api_key: ${ZHIPU_API_KEY}
     timeout_seconds: 60
-  siliconflow:
-    base_url: https://api.siliconflow.cn/v1
-    api_key: ${SILICONFLOW_API_KEY}
-    timeout_seconds: 60
+  longcat:
+    base_url: https://api.longcat.chat/openai
+    api_key: ${LONGCAT_API_KEY}
+    timeout_seconds: 30
   # 未来可加：
   # openrouter:
   #   base_url: https://openrouter.ai/api/v1
@@ -117,32 +116,32 @@ defaults:
   backoff_base_seconds: 1.0
   backoff_max_seconds: 10.0
 
-# 场景 → 模型 映射
+# 场景 → 模型 映射（详见 config/llm.yaml 顶部注释）
 scenes:
   default:
     provider: zhipu
-    model: glm-4-flash
+    model: glm-4-flash-250414
     temperature: 0.7
     max_tokens: 1024
 
-  turtle_soup_host:          # 出题：需要创意与完整性
-    provider: siliconflow
-    model: Qwen/Qwen2.5-72B-Instruct
+  turtle_soup_host:
+    provider: zhipu
+    model: glm-4-flash-250414
     temperature: 0.9
     max_tokens: 2048
     json_mode_default: true
 
-  turtle_soup_judge:         # 判定：高频、低延迟
-    provider: zhipu
-    model: glm-4-flash
+  turtle_soup_judge:
+    provider: longcat
+    model: LongCat-Flash-Chat
     temperature: 0.1
     max_tokens: 256
     json_mode_default: true
     timeout_seconds: 30
 
-  turtle_soup_claim:         # 宣告判定
-    provider: zhipu
-    model: glm-4-flash
+  turtle_soup_claim:
+    provider: longcat
+    model: LongCat-Flash-Chat
     temperature: 0.2
     max_tokens: 512
     json_mode_default: true
@@ -160,8 +159,8 @@ scenes:
     provider: zhipu
     model: glm-4-flash
     fallback:
-      - provider: siliconflow
-        model: Qwen/Qwen2.5-7B-Instruct
+      - provider: longcat
+        model: LongCat-Flash-Lite
 ```
 当主模型失败达重试上限后，自动切换到 fallback。v1 暂不启用。
 

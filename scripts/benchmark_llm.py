@@ -1,15 +1,7 @@
-"""LLM 模型可用性 & 延迟 & 稳定性测试
+"""LLM 生产模型 ping 测试。
 
-针对我们的供应商（智谱 / 龙猫）的多个模型，做三轮调用：
-1. 简单 chat（"你好"）
-2. JSON 判定场景（模拟 turtle_soup_judge）
-3. 并发 3 次（模拟高频率场景看是否限速）
-
-输出每个模型：
-- 可用 / 不可用 + 错误码
-- 平均延迟
-- JSON 输出能力
-- 是否触发 429 / 1302 / 1305
+仅测 config/llm.yaml 中在用的候选模型。
+不可用或明显淘汰的模型不在此列表，避免无效对比。
 
 用法：
     uv run --no-sync python scripts/benchmark_llm.py
@@ -24,7 +16,6 @@ import time
 from dataclasses import dataclass, field
 from pathlib import Path
 
-# Windows UTF-8
 if sys.platform == "win32":
     try:
         sys.stdout.reconfigure(encoding="utf-8")  # type: ignore[attr-defined]
@@ -44,54 +35,40 @@ from openai import AsyncOpenAI  # noqa: E402
 from src.settings import get_settings  # noqa: E402
 
 
-# ============ 测试矩阵 ============
 @dataclass
 class ModelSpec:
-    provider: str       # zhipu / longcat
+    provider: str
     model: str
-    note: str = ""
+    role: str
 
 
-MODELS: list[ModelSpec] = [
-    # --- 智谱 ---
-    ModelSpec("zhipu", "glm-4-flash", "老版永久免费，额度宽松"),
-    ModelSpec("zhipu", "glm-4-flashx", "flash 增强版（当前主力）"),
-    ModelSpec("zhipu", "glm-4-flash-250414", "2025-04 新版 flash，免费"),
-    ModelSpec("zhipu", "glm-4.5-flash", "2026 年中版本"),
-    ModelSpec("zhipu", "glm-4.7-flash", "2026-01 新版，30B 免费"),
-    # --- 龙猫（美团） ---
-    ModelSpec("longcat", "LongCat-Flash-Chat", "通用对话，500万tokens/天免费"),
-    ModelSpec("longcat", "LongCat-Flash-Lite", "轻量MoE，5000万tokens/天免费"),
-]
+def production_models() -> list[ModelSpec]:
+    """与 llm.yaml 对齐的生产模型。"""
+    return [
+        ModelSpec("longcat", "LongCat-Flash-Chat", "海龟汤 judge/claim"),
+        ModelSpec("longcat", "LongCat-Flash-Lite", "查资料 / 高额度"),
+        ModelSpec("zhipu", "glm-4-flash-250414", "出题 / 兜底"),
+    ]
 
 
-# ============ 简单 API 配置 ============
 PROVIDERS = {
-    "zhipu": {
-        "base_url": "https://open.bigmodel.cn/api/paas/v4",
-    },
-    "longcat": {
-        "base_url": "https://api.longcat.chat/openai",
-    },
+    "zhipu": "https://open.bigmodel.cn/api/paas/v4",
+    "longcat": "https://api.longcat.chat/openai",
 }
 
 
-def get_client(provider: str) -> AsyncOpenAI:
+def get_client(provider: str) -> AsyncOpenAI | None:
     settings = get_settings()
     key_map = {
         "zhipu": "zhipu_api_key",
         "longcat": "longcat_api_key",
     }
-    key_attr = key_map[provider]
-    api_key = getattr(settings, key_attr, "") or ""
-    return AsyncOpenAI(
-        base_url=PROVIDERS[provider]["base_url"],
-        api_key=api_key,
-        timeout=30.0,
-    )
+    api_key = getattr(settings, key_map[provider], "") or ""
+    if not api_key or provider not in PROVIDERS:
+        return None
+    return AsyncOpenAI(base_url=PROVIDERS[provider], api_key=api_key, timeout=30.0)
 
 
-# ============ 三类测试 ============
 SIMPLE_MESSAGES = [{"role": "user", "content": "你好"}]
 
 JUDGE_SYSTEM = """你是海龟汤汤主，根据以下信息判定玩家问题。
@@ -142,15 +119,7 @@ async def call_once(
         return Result(ok=True, latency_ms=latency, content_sample=content[:80])
     except Exception as e:  # noqa: BLE001
         latency = int((time.monotonic() - start) * 1000)
-        msg = str(e)
-        # 提取关键错误码
-        for code in ("1301", "1302", "1303", "1304", "1305", "429", "401", "404", "400", "500", "503"):
-            if code in msg:
-                msg = f"[{code}] " + msg.split("'message':")[-1].split("'}")[0].strip(" '") if "'message'" in msg else f"[{code}] " + msg[:100]
-                break
-        else:
-            msg = msg[:100]
-        return Result(ok=False, latency_ms=latency, error=msg)
+        return Result(ok=False, latency_ms=latency, error=str(e)[:100])
 
 
 @dataclass
@@ -161,18 +130,8 @@ class ModelReport:
     concurrent: list[Result] = field(default_factory=list)
 
     @property
-    def status(self) -> str:
-        if not self.simple.ok:
-            return "❌ 不可用"
-        if not self.judge.ok:
-            return "⚠️ 仅基础"
-        ok_count = sum(1 for r in self.concurrent if r.ok)
-        total = len(self.concurrent)
-        if ok_count == total:
-            return "✅ 稳定"
-        if ok_count >= total // 2:
-            return f"🟡 限速 ({ok_count}/{total})"
-        return f"🔴 严重限速 ({ok_count}/{total})"
+    def ok(self) -> bool:
+        return self.simple.ok and self.judge.ok and all(r.ok for r in self.concurrent)
 
     @property
     def avg_latency(self) -> int:
@@ -180,80 +139,53 @@ class ModelReport:
         return sum(lats) // len(lats) if lats else 0
 
 
-async def test_model(spec: ModelSpec) -> ModelReport:
-    print(f"\n  [test] {spec.provider:12} / {spec.model}")
+async def test_model(spec: ModelSpec) -> ModelReport | None:
     client = get_client(spec.provider)
+    if client is None:
+        return None
+
     report = ModelReport(spec=spec)
-
-    # 第 1 轮：简单
     report.simple = await call_once(client, spec.model, SIMPLE_MESSAGES)
-    tag = "✓" if report.simple.ok else "✗"
-    print(f"    [1] simple : {tag} {report.simple.latency_ms}ms "
-          f"{report.simple.error or report.simple.content_sample[:50]}")
     if not report.simple.ok:
-        return report
+        return None
 
-    # 第 2 轮：JSON 判定
     report.judge = await call_once(client, spec.model, JUDGE_MESSAGES, json_mode=True)
-    tag = "✓" if report.judge.ok else "✗"
-    print(f"    [2] judge  : {tag} {report.judge.latency_ms}ms "
-          f"{report.judge.error or report.judge.content_sample[:50]}")
+    if not report.judge.ok:
+        return None
 
-    # 第 3 轮：并发 3 次
-    tasks = [call_once(client, spec.model, SIMPLE_MESSAGES) for _ in range(3)]
-    report.concurrent = await asyncio.gather(*tasks)
-    oks = sum(1 for r in report.concurrent if r.ok)
-    print(f"    [3] concur : {oks}/3 ok")
-    for i, r in enumerate(report.concurrent, 1):
-        tag = "✓" if r.ok else "✗"
-        print(f"          #{i} {tag} {r.latency_ms}ms {r.error[:60] if not r.ok else ''}")
+    report.concurrent = list(await asyncio.gather(*[
+        call_once(client, spec.model, SIMPLE_MESSAGES) for _ in range(3)
+    ]))
+    if not all(r.ok for r in report.concurrent):
+        return None
 
+    print(f"  ✓ {spec.provider}/{spec.model} ({spec.role}) avg={report.avg_latency}ms")
     return report
 
 
-# ============ 主流程 ============
 async def main() -> None:
-    print("=" * 70)
-    print(" LLM 模型可用性全面测试")
-    print("=" * 70)
+    print("=" * 60)
+    print(" LLM 生产模型 ping（仅可用模型会出现在汇总）")
+    print("=" * 60)
 
     reports: list[ModelReport] = []
-    for spec in MODELS:
-        try:
-            r = await test_model(spec)
+    for spec in production_models():
+        r = await test_model(spec)
+        if r is not None:
             reports.append(r)
-        except Exception as e:  # noqa: BLE001
-            print(f"  [CRASH] {spec.model}: {e}")
 
-    # 汇总表
-    print("\n" + "=" * 70)
+    print("\n" + "=" * 60)
     print(" 汇总")
-    print("=" * 70)
-    header = f"{'状态':<14} {'供应商':<13} {'模型':<35} {'平均延迟':>8}  说明"
-    print(header)
-    print("-" * 100)
-    for r in reports:
-        print(
-            f"{r.status:<14} "
-            f"{r.spec.provider:<13} "
-            f"{r.spec.model:<35} "
-            f"{r.avg_latency:>6}ms  "
-            f"{r.spec.note}"
-        )
+    print("=" * 60)
+    if not reports:
+        print("  无可用模型，请检查 API Key / 网络")
+        return
 
-    # 推荐
-    print("\n" + "=" * 70)
-    print(" 推荐配置")
-    print("=" * 70)
-    stable = [r for r in reports if r.status.startswith("✅")]
-    if not stable:
-        print("  ⚠️ 没有 ✅ 稳定的模型，请检查 key / 网络")
-    else:
-        stable.sort(key=lambda r: r.avg_latency)
-        print(f"  最快稳定模型: {stable[0].spec.provider} / {stable[0].spec.model} ({stable[0].avg_latency}ms)")
-        print("  可用稳定模型（按延迟升序）:")
-        for r in stable:
-            print(f"    - {r.spec.provider:12} / {r.spec.model:35} {r.avg_latency:>5}ms")
+    reports.sort(key=lambda r: r.avg_latency)
+    print(f"{'延迟':>8}  {'模型':<28}  {'用途'}")
+    print("-" * 60)
+    for r in reports:
+        print(f"{r.avg_latency:>6}ms  {r.spec.model:<28}  {r.spec.role}")
 
 
 if __name__ == "__main__":

@@ -1,232 +1,175 @@
-# 10 · 路线图与实施清单
+# 10 · 路线图与版本变更
 
-- **Status**: Baseline v1（**不可偏移，任何新增/调整必须更新本文件**）
-- **Last Updated**: 2026-04-28
+- **Status**: Stable（项目已进入稳定维护期）
+- **Last Updated**: 2026-05-26
 - **Owner**: @owner
 
-> 本文件是项目"完整框架"交付的**权威清单**。
-> 所有项必须完成，不允许"分批交付"或"先留 TODO 后面再补"。
-> 如遇阻塞或决定裁掉某项，必须在本文件显式标注原因。
+> 本文件记录项目的演进历程和当前状态。
+> 初期的"从零搭建"清单已全部完成，现转为版本变更日志 + 未来方向。
 
-## 0. 交付原则
+## 0. 项目状态
 
-1. **完整**：清单内所有项必须实现，不留 `pass` / `raise NotImplementedError`
-2. **可运行**：按 README 指引，最终能在本地和云端跑通完整海龟汤对局
-3. **可观测**：所有模块有日志，失败有明确错误信息
-4. **文档同步**：代码变更对应更新文档，不留过期描述
+项目已完成 MVP 框架搭建，进入**稳定运行 + 增量迭代**阶段：
+
+- ✅ 完整的分层架构（Core / Games / Tools / Plugins）
+- ✅ 4 款游戏上线（海龟汤 / 趣味问答 / 帝国3斗蛐蛐 / 红警2斗蛐蛐）
+- ✅ 5 款工具上线（签到 / 今天吃什么 / 上班提醒 / 联网搜索 / 游戏王查卡）
+- ✅ CLI 测试器与 QQ Bot 1:1 对齐
+- ✅ Docker 生产部署稳定运行
+- ✅ 完整文档体系（13 篇专题 + ADR + 游戏设计 + 工具设计 + 运维手册）
 
 ## 1. 文档清单
 
-| ID | 文件 | 状态 | 说明 |
-|---|---|---|---|
-| D1 | `README.md` | ✅ 首版 | 结尾会补充启动说明 |
-| D2 | `docs/01-architecture.md` | ✅ | 分层架构 |
-| D3 | `docs/02-tech-stack.md` | ✅ | 技术选型 |
-| D4 | `docs/03-core-api.md` | ✅ | Core API 契约 |
-| D5 | `docs/04-game-development.md` | ✅ | 游戏开发指南 |
-| D6 | `docs/05-deployment.md` | ⬜ | 部署指南（dev + prod） |
-| D7 | `docs/06-configuration.md` | ⬜ | 配置说明 |
-| D8 | `docs/07-database-schema.md` | ⬜ | 数据库设计 |
-| D9 | `docs/08-llm-integration.md` | ⬜ | LLM 网关详解 + scene 清单 |
-| D10 | `docs/09-conventions.md` | ⬜ | 编码与文档规范 |
-| D11 | `docs/10-roadmap.md` | ✅ 本文件 | |
-| D12 | `docs/11-ui-style.md` | ⬜ | 全文本 UI 排版规范 |
-| D13 | `docs/games/turtle-soup.md` | ✅ | 海龟汤设计 |
-| D14 | `docs/adr/0001-protocol-choice.md` | ✅ | |
-| D15 | `docs/adr/0002-framework-choice.md` | ✅ | |
-| D16 | `docs/adr/0003-llm-gateway.md` | ✅ | |
-| D17 | `docs/12-local-testing.md` | ✅ | 本地端到端测试指南 |
-| D18 | `docs/13-cli-bot-parity.md` | ✅ | **CLI ↔ Bot 一致性铁律** |
+| ID | 文件 | 状态 |
+|---|---|---|
+| D1 | `README.md` | ✅ |
+| D2 | `docs/01-architecture.md` | ✅ |
+| D3 | `docs/02-tech-stack.md` | ✅ |
+| D4 | `docs/03-core-api.md` | ✅ |
+| D5 | `docs/04-game-development.md` | ✅ |
+| D6 | `docs/05-deployment.md` | ✅ |
+| D7 | `docs/06-configuration.md` | ✅ |
+| D8 | `docs/07-database-schema.md` | ✅ |
+| D9 | `docs/08-llm-integration.md` | ✅ |
+| D10 | `docs/09-conventions.md` | ✅ |
+| D11 | `docs/10-roadmap.md` | ✅ 本文件 |
+| D12 | `docs/11-ui-style.md` | ✅ |
+| D13 | `docs/12-local-testing.md` | ✅ |
+| D14 | `docs/13-cli-bot-parity.md` | ✅ |
+| D15 | `docs/ops-guide.md` | ✅ |
+| D16 | `docs/commands.md` | ✅ |
+| D17 | `docs/games/*.md` | ✅ 海龟汤 / 趣味问答 / 帝国3 / 红警2 / 群峦求生(设计中) |
+| D18 | `docs/tools/*.md` | ✅ 签到 / 今天吃什么 / 上班提醒 / 联网搜索 / 游戏王查卡 |
+| D19 | `docs/adr/0001~0003` | ✅ |
 
-## 2. 目录结构（最终态）
+## 2. 当前目录结构
 
 ```
 QQBotForFun/
 ├─ .env.example
 ├─ .gitignore
 ├─ pyproject.toml
-├─ uv.lock                              (生成)
+├─ uv.lock
 ├─ README.md
+├─ LICENSE
 ├─ Dockerfile
 ├─ docker-compose.yml                   (prod)
-├─ docker-compose.dev.yml               (本地 NapCat + Redis)
+├─ docker-compose.dev.yml               (本地 NapCat)
 ├─ alembic.ini
-├─ migrations/                          (Alembic)
+├─ migrations/
 │  ├─ env.py
 │  └─ versions/
-├─ docs/                                (见第 1 节)
+├─ docs/
+│  ├─ 01~13 专题文档
+│  ├─ ops-guide.md / commands.md
+│  ├─ games/                            (游戏设计文档)
+│  ├─ tools/                            (工具设计文档)
+│  ├─ adr/                              (架构决策记录)
+│  └─ test-runs/                        (验收流水归档)
+├─ config/
+│  ├─ llm.yaml
+│  └─ searxng/
 ├─ scripts/
-│  ├─ seed_turtle_soup.py
-│  └─ generate_soup_with_llm.py
+│  ├─ play_cli.py                       (CLI 统一入口)
+│  ├─ cli_adapters/                     (各游戏/工具 CLI 适配器)
+│  ├─ crawler/                          (数据爬取/解析脚本)
+│  ├─ seed_*.py / generate_*.py         (种子数据 & 生成脚本)
+│  ├─ aoe3_battle_sim.py / ra2_battle_sim.py  (模拟器独立运行)
+│  └─ test_*_variety.py                 (LLM 产出验收脚本)
 ├─ seeds/
-│  └─ turtle_soup.json                  (3-5 道内置题)
+│  ├─ aoe3/                             (帝国3单位数据 + i18n)
+│  ├─ trivia_bank/                      (趣味问答题库 6 类)
+│  ├─ turtle_soup.json                  (海龟汤题库)
+│  ├─ turtle_soup_facts.json
+│  └─ foods.json                        (今天吃什么菜品库)
+├─ resources/
+│  ├─ aoe3/                             (帝国3图标)
+│  ├─ ra2/                              (红警2图标)
+│  ├─ checkin/                          (签到素材)
+│  ├─ foods/                            (菜品图片)
+│  └─ reminders/                        (提醒素材)
+├─ vendor/
+│  └─ (OpenRA RA2 数据)
 ├─ src/
 │  ├─ bot.py                            (入口)
-│  ├─ settings.py                       (pydantic-settings)
+│  ├─ settings.py
 │  ├─ core/
-│  │  ├─ __init__.py
-│  │  ├─ types.py
-│  │  ├─ errors.py
-│  │  ├─ storage.py
-│  │  ├─ user.py
-│  │  ├─ session.py
-│  │  ├─ economy.py
-│  │  ├─ permission.py
-│  │  ├─ scheduler.py
-│  │  ├─ llm.py
-│  │  ├─ render.py
-│  │  └─ game_base.py
+│  │  ├─ errors.py / types.py
+│  │  ├─ storage.py / user.py / session.py
+│  │  ├─ economy.py / permission.py / scheduler.py
+│  │  ├─ llm.py / render.py / game_base.py
+│  │  └─ ...
 │  ├─ plugins/
-│  │  ├─ core_commands/
-│  │  │  ├─ __init__.py
-│  │  │  └─ handlers.py
-│  │  ├─ game_launcher/
-│  │  │  ├─ __init__.py
-│  │  │  └─ handlers.py
-│  │  ├─ admin/
-│  │  │  ├─ __init__.py
-│  │  │  └─ handlers.py
-│  │  └─ games/
-│  │     └─ turtle_soup/
-│  │        ├─ __init__.py
-│  │        ├─ game.py
-│  │        ├─ prompts.py
-│  │        ├─ models.py
-│  │        ├─ config.py
-│  │        ├─ puzzle_service.py
-│  │        └─ README.md
+│  │  ├─ core_commands/                 (基础命令)
+│  │  ├─ game_launcher/                 (游戏启动器)
+│  │  ├─ admin/                         (管理员命令)
+│  │  ├─ aoe3/                          (帝国3查询插件)
+│  │  ├─ message_router.py             (消息路由)
+│  │  ├─ games/
+│  │  │  ├─ turtle_soup/
+│  │  │  ├─ trivia/
+│  │  │  ├─ aoe3_battle/
+│  │  │  └─ ra2_battle/
+│  │  └─ tools/
+│  │     ├─ ask_ai/
+│  │     ├─ checkin/
+│  │     ├─ food/
+│  │     ├─ reminder/
+│  │     ├─ web_search/
+│  │     └─ yugioh_card/
 │  └─ testing/
-│     └─ harness.py                     (GameTestHarness)
+│     └─ harness.py
 ├─ tests/
 │  ├─ conftest.py
 │  ├─ core/
-│  │  ├─ test_economy.py
-│  │  ├─ test_session.py
-│  │  ├─ test_permission.py
-│  │  ├─ test_llm.py
-│  │  ├─ test_render.py
-│  │  └─ test_game_base.py
-│  └─ games/
-│     └─ turtle_soup/
-│        ├─ test_flow.py
-│        └─ test_classify.py
+│  ├─ games/
+│  ├─ tools/
+│  └─ eval/
 └─ napcat/
-   └─ config.example.json               (NapCat 配置样例)
+   └─ config.example.json
 ```
 
-## 3. 实施清单（按顺序）
+## 3. 初期实施清单（已全部完成）
 
-### 阶段 A · 文档补齐（先于代码）
+> 以下为项目从零搭建时的阶段清单，所有项目均已完成，保留作为历史记录。
 
-| ID | 任务 | 验收 |
-|---|---|---|
-| A1 | 写 `docs/10-roadmap.md`（本文件） | 文件存在 |
-| A2 | 写 `docs/11-ui-style.md` | 全文本排版规范、emoji 清单、卡片/菜单/列表模板 |
-| A3 | 写 `docs/09-conventions.md` | 命名、日志、错误处理、git/提交规范 |
-| A4 | 写 `docs/06-configuration.md` | 所有 env 变量、scene 配置示例 |
-| A5 | 写 `docs/07-database-schema.md` | 核心表 + 游戏表前缀约定、ER 关系说明 |
-| A6 | 写 `docs/08-llm-integration.md` | scene 清单、prompt 版本管理、成本估算 |
-| A7 | 写 `docs/05-deployment.md` | 本地 dev + 云端 prod 步骤、NapCat 登录 |
-
-### 阶段 B · 脚手架
-
-| ID | 任务 | 验收 |
-|---|---|---|
-| B1 | `pyproject.toml`（uv 管理，依赖列表齐全） | `uv sync` 可成功 |
-| B2 | `.env.example`、`.gitignore` | env.example 字段与 settings.py 一致 |
-| B3 | `src/settings.py`（pydantic-settings） | 启动时加载 `.env`，缺必填项报错 |
-| B4 | 目录骨架（全部 `__init__.py`） | 目录结构与第 2 节一致 |
-| B5 | `alembic.ini` + `migrations/env.py` | `alembic upgrade head` 可执行 |
-
-### 阶段 C · Core 层（按依赖顺序）
-
-| ID | 任务 | 验收 |
-|---|---|---|
-| C1 | `core.errors`、`core.types` | 所有异常类与数据结构定义完整 |
-| C2 | `core.storage` | Base、register_model、async session、表名前缀校验 |
-| C3 | `core.user` | `get/get_many/get_group_members/get_group_info` 全实现，60s 缓存 |
-| C4 | `core.permission` | cooldown/rate_limit 装饰器 + 函数式 API，dev 走内存，prod 走 Redis |
-| C5 | `core.economy` | balance/add/deduct/transfer/道具全实现，流水表 |
-| C6 | `core.scheduler` | schedule_once / schedule_cron / cancel / start_turn_timer |
-| C7 | `core.session` | broadcast/whisper/reply/ask/choose/wait_any/register_game_session 完整 |
-| C8 | `core.llm` | OpenAI 兼容、scene 路由、重试退避、JSON 模式、流式、日志 |
-| C9 | `core.render` | text_card/menu/list/result/header/divider 等排版原语 |
-| C10 | `core.game_base` | GameBase/@register_game/GameContext/EndReason/状态持久化/崩溃恢复 |
-
-### 阶段 D · 系统插件
-
-| ID | 任务 | 验收 |
-|---|---|---|
-| D1 | `plugins.core_commands` | `/help` `/menu` `/profile` `/balance` 可用 |
-| D2 | `plugins.game_launcher` | `/games` `/play <id>` `/quit` 覆盖开局到结束流程 |
-| D3 | `plugins.admin` | `/admin grant` `/admin ban` `/admin reload` 等基础命令 |
-
-### 阶段 E · 海龟汤游戏
-
-| ID | 任务 | 验收 |
-|---|---|---|
-| E1 | `models.py`（SoupPuzzle / SoupSession / SoupQuestion） | 表名带 `game_turtle_soup_` 前缀 |
-| E2 | `prompts.py`（出题/判定/宣告 3 个 prompt，带版本号） | 独立文件，无散落硬编码 |
-| E3 | `puzzle_service.py`（题库抽取 + LLM 生成 + 兜底） | 配置开关决定策略，失败降级 |
-| E4 | `game.py`（状态机、消息分类、判定、宣告、结束） | 覆盖设计文档 §4 的所有流程 |
-| E5 | `config.py` + `README.md` | 环境变量 `GAME_TURTLE_SOUP_*` 生效 |
-
-### 阶段 F · 数据与脚本
-
-| ID | 任务 | 验收 |
-|---|---|---|
-| F1 | `seeds/turtle_soup.json`（3-5 道内置题） | JSON 合法、字段完整 |
-| F2 | `scripts/seed_turtle_soup.py` | 读取 JSON 写入数据库，幂等 |
-| F3 | `scripts/generate_soup_with_llm.py` | 调用 LLM 批量生成题目，写入数据库 |
-| F4 | Alembic 首次迁移 | `alembic upgrade head` 从零建出所有表 |
-
-### 阶段 G · 部署
-
-| ID | 任务 | 验收 |
-|---|---|---|
-| G1 | `Dockerfile`（bot 服务） | `docker build` 成功 |
-| G2 | `docker-compose.yml`（prod：bot + postgres + redis） | `docker compose up` 可拉起 |
-| G3 | `docker-compose.dev.yml`（napcat + redis 本地跑） | Windows/Linux 本地均能用 |
-| G4 | `napcat/config.example.json` | 含 WebSocket 连接 NoneBot 的配置 |
-
-### 阶段 H · 测试
-
-| ID | 任务 | 验收 |
-|---|---|---|
-| H1 | `src/testing/harness.py`（GameTestHarness） | 可在无真实 QQ/LLM 的情况下驱动一局游戏 |
-| H2 | Core 关键模块单测（economy/session/permission/llm/render/game_base） | `pytest` 全绿 |
-| H3 | 海龟汤集成测试（LLM mock）：赢局/投降/超时/退出/恢复 | `pytest` 全绿 |
-
-### 阶段 I · 收尾
-
-| ID | 任务 | 验收 |
-|---|---|---|
-| I1 | 更新 `README.md` 的"启动"与"验收"章节 | 从克隆到跑通的完整步骤 |
-| I2 | 最终自查本文件所有清单项 | 每项 ✅ 或显式标注"裁掉+原因" |
+- ✅ **阶段 A** · 文档补齐（13 篇专题 + 3 篇 ADR）
+- ✅ **阶段 B** · 脚手架（pyproject.toml / .env / settings / alembic）
+- ✅ **阶段 C** · Core 层（errors / types / storage / user / session / economy / permission / scheduler / llm / render / game_base）
+- ✅ **阶段 D** · 系统插件（core_commands / game_launcher / admin / message_router）
+- ✅ **阶段 E** · 海龟汤游戏（models / prompts / puzzle_service / game / commands）
+- ✅ **阶段 F** · 数据与脚本（seeds / seed scripts / generate scripts / alembic migration）
+- ✅ **阶段 G** · 部署（Dockerfile / docker-compose / napcat config）
+- ✅ **阶段 H** · 测试（harness / core 单测 / 海龟汤集成测试）
+- ✅ **阶段 I** · 收尾（README 完善 / 全清单自查）
 
 ## 4. 明确不做的范围
 
-避免未来回看时混淆：
-
-- ~~第二个游戏~~ → 2026-04-30 已开工 `trivia`（趣味问答），见 `docs/games/trivia.md`
 - 段位 / 积分榜 UI（仅全文本 `/榜` 指令，不做图片榜单、段位系统）
 - Web 管理后台
 - 真人出题模式
 - Sentry / Prometheus 监控
 - CI/CD Workflow（可留示例文件但不默认启用）
-- HTML→图片渲染（改为全文本 UI）
+- HTML→图片渲染（全文本 UI）
 - Pillow 绘图
 - 美术资源（Logo / 插画 / 字体文件）
 
-> 2026-04-30 备注：新增的 `/榜` 指令与 `economy.top_balances` 属于
-> 基础查询能力（跨游戏通用），不含段位/榜单 UI/周月榜等复杂形态，
-> 不违基线。详见 `docs/03-core-api.md §4.4`。
-
-## 5. 版本与变更
+## 5. 版本变更日志
 
 | 版本 | 日期 | 变更 |
 |---|---|---|
-| v1 | 2026-04-28 | 初版基线 |
-| v1.1 | 2026-04-30 | `economy` 追加榜单 helper；`/榜` 指令加入基础命令集；`score` 作为跨游戏积分货币默认注册。 |
-| v1.2 | 2026-04-30 | 第二款游戏 `trivia`（趣味问答）落地：6 类线索题、LLM 生成、宽松字符串判定、10 题自动结算、入 score 榜。详见 `docs/games/trivia.md`。 |
-| v1.3 | 2026-05-06 | `trivia` 题库化重构（v1.4）：运行时改为纯题库（650 道 × 2 套线索），不再调 LLM；新增 `seeds/trivia_bank/`（6 类 JSON）；验收通过（单题 <1ms，跨局重复 <30%）。详见 `docs/games/trivia-bank.md`。 |
+| v1 | 2026-04-28 | 初版基线：完整框架 + 海龟汤 |
+| v1.1 | 2026-04-30 | `economy` 追加榜单 helper；`/榜` 指令；`score` 跨游戏积分 |
+| v1.2 | 2026-04-30 | 第二款游戏 `trivia`（趣味问答）上线 |
+| v1.3 | 2026-05-06 | `trivia` 题库化重构：650 道 × 2 套线索，运行时不调 LLM |
+| v1.4 | 2026-05-09 | 工具层上线：签到 / 今天吃什么 / 上班提醒 |
+| v1.5 | 2026-05-11 | 游戏王查卡工具上线 |
+| v1.6 | 2026-05-15 | 帝国3斗蛐蛐上线（一维自研模拟器） |
+| v1.7 | 2026-05-18 | 红警2斗蛐蛐上线（二维 OpenRA 数据） |
+| v1.8 | 2026-05-26 | 联网搜索工具上线；文档体系清理与更新 |
+
+## 6. 未来方向（非承诺）
+
+- 群峦求生（`terra_survival`）：TFC/GT 风格持久化沙盘，设计文档已完成，待启动开发
+- AOE3 tooltip 解包与展示
+- 海龟汤 Agent 优化（持续迭代 prompt 质量）

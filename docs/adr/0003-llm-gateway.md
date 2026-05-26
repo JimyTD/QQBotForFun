@@ -17,7 +17,7 @@
 
 另外：
 - 2026 年 LLM 供应商变化快，需要**易于切换**
-- 绝大多数供应商（DeepSeek、通义、Kimi、Moonshot、硅基流动、OpenRouter、Claude via 代理等）都兼容 **OpenAI Chat Completions 协议**
+- 绝大多数供应商（DeepSeek、通义、Kimi、Moonshot、龙猫、OpenRouter、Claude via 代理等）都兼容 **OpenAI Chat Completions 协议**
 - 自托管（ollama、vllm）也支持 OpenAI 兼容接口
 
 ## 决策

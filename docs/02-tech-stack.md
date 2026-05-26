@@ -50,7 +50,7 @@
 
 | 项 | 选型 | 说明 |
 |---|---|---|
-| 调用协议 | **OpenAI 兼容** | DeepSeek、通义、Kimi、硅基流动、OpenRouter 均兼容 |
+| 调用协议 | **OpenAI 兼容** | DeepSeek、通义、Kimi、龙猫、OpenRouter 均兼容 |
 | SDK | `openai` 官方 Python SDK | 通过 `base_url` 切换供应商 |
 | 抽象层 | 自研 `core.llm` | 见 [`adr/0003-llm-gateway.md`](./adr/0003-llm-gateway.md) |
 | 场景化配置 | 每个"场景"独立配模型 | 如 `soup_host`, `soup_judge`, `summary` |

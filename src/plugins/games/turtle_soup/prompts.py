@@ -128,18 +128,7 @@ def build_host_system_prompt(category: str, difficulty: int) -> str:
 # ------------------------------------------------------------------
 # 判定提问
 # ------------------------------------------------------------------
-JUDGE_SYSTEM = """你是海龟汤汤主，严格按规则判定玩家问题。
-
-【汤面】
-{surface}
-
-【汤底】
-{truth}
-
-【关键线索】
-{key_clues}
-
-判定类型（5 选 1）：
+_JUDGE_SYSTEM_BODY = """判定类型（5 选 1）：
 
 - **claim_detected**：玩家在"提问"里实际上完整复述了汤底核心真相 → 走宣告流程
 - **key**：问题**精准、直接**命中某条关键线索（标准见下）
@@ -205,7 +194,87 @@ hint 控制在 1 句话（≤20 字），不要复述线索原文。
 }}
 """
 
+JUDGE_SYSTEM_V12 = """你是海龟汤汤主，严格按规则判定玩家问题。
+
+【汤面】
+{surface}
+
+【汤底】
+{truth}
+
+【关键线索】
+{key_clues}
+
+""" + _JUDGE_SYSTEM_BODY
+
+JUDGE_SYSTEM = """你是海龟汤汤主，严格按规则判定玩家问题。
+
+═══ 读题原则（最重要，先读再判）═══
+
+- **汤面**是误导性谜面，只描述表面现象，常省略或掩盖真相。
+- **汤底**才是真实世界；**所有 yes/no/key 判定必须以汤底为准**，不得仅因汤面未提及就判 irrelevant 或 no。
+- 玩家问的是「背后真实世界」里的事实；汤底成立即可 yes/key，不要求汤面里出现过。
+
+反例（必须判对）：
+  汤面只写「对着第二杯咖啡哭了」，未提父亲或死亡；
+  汤底明确「父亲已去世，第二杯是给已故父亲的」；
+  玩家问「陈默的父亲已经去世了吗？」→ **key 或 yes**（依据汤底），**不可**判 irrelevant。
+
+若汤面与汤底在字面上矛盾（如汤面写「调慢」、汤底是「调快」），**以汤底为准**。
+
+{facts_block}
+
+【汤面】
+{surface}
+
+【汤底】
+{truth}
+
+【关键线索】
+{key_clues}
+
+""" + _JUDGE_SYSTEM_BODY
+
 JUDGE_USER = "玩家问题：{question}"
+
+
+def _format_facts_block(
+    canonical_facts: list[str] | None,
+    surface_gloss: str | None,
+) -> str:
+    parts: list[str] = []
+    if surface_gloss and surface_gloss.strip():
+        parts.append(f"【表象与真相】\n{surface_gloss.strip()}")
+    if canonical_facts:
+        lines = "\n".join(f"- {f}" for f in canonical_facts if f.strip())
+        if lines:
+            parts.append(f"【直白事实表】（判定时优先对照）\n{lines}")
+    if not parts:
+        return ""
+    return "\n".join(parts) + "\n\n"
+
+
+def build_judge_system_prompt(
+    *,
+    surface: str,
+    truth: str,
+    key_clues: list[str],
+    canonical_facts: list[str] | None = None,
+    surface_gloss: str | None = None,
+    version: str | None = None,
+) -> str:
+    """组装 judge system prompt。version='1.2' 用于 eval baseline。"""
+    ver = version or TURTLE_SOUP_JUDGE_PROMPT_VERSION
+    template = JUDGE_SYSTEM_V12 if ver == "1.2" else JUDGE_SYSTEM
+    facts_block = ""
+    if ver != "1.2":
+        facts_block = _format_facts_block(canonical_facts, surface_gloss)
+    return template.format(
+        surface=surface,
+        truth=truth,
+        key_clues=format_clues(key_clues),
+        facts_block=facts_block,
+    )
 
 
 # ------------------------------------------------------------------

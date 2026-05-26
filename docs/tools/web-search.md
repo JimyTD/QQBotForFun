@@ -23,7 +23,7 @@ httpx GET 搜狗网页搜索
   ↓ 解析 HTML 提取 top 5 结果（标题 + 摘要）
 拼入 LLM prompt
   ↓
-LLM（glm-4-flashx, temperature=0.3）总结输出 ≤300 字
+LLM（LongCat-Flash-Lite, temperature=0.3）总结输出 ≤300 字
   ↓
 回复用户（含来源列表）
 ```

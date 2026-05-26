@@ -19,8 +19,8 @@ from .models import SoupQuestion, SoupSessionRecord
 from .prompts import (
     CLAIM_SYSTEM,
     CLAIM_USER,
-    JUDGE_SYSTEM,
     JUDGE_USER,
+    build_judge_system_prompt,
     format_clues,
 )
 from .puzzle_service import PuzzleData, mark_win, obtain_puzzle, record_last_puzzle
@@ -117,6 +117,8 @@ class TurtleSoupGame(GameBase):
             "surface": puzzle.surface,
             "truth": puzzle.truth,
             "key_clues": puzzle.key_clues,
+            "canonical_facts": puzzle.canonical_facts,
+            "surface_gloss": puzzle.surface_gloss,
             "difficulty": puzzle.difficulty,
             "source": puzzle.source,
         }
@@ -249,10 +251,11 @@ class TurtleSoupGame(GameBase):
                 messages=[
                     llm.LLMMessage(
                         role="system",
-                        content=JUDGE_SYSTEM.format(
+                        content=build_judge_system_prompt(
                             surface=puzzle["surface"],
                             truth=puzzle["truth"],
-                            key_clues=format_clues(puzzle.get("key_clues", [])),
+                            key_clues=puzzle.get("key_clues", []),
+                            version="1.2",
                         ),
                     ),
                     llm.LLMMessage(role="user", content=JUDGE_USER.format(question=question)),

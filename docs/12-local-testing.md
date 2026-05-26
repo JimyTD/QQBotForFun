@@ -121,7 +121,7 @@ Start-Process -FilePath cmd -ArgumentList '/k','cd /d i:\QQBotForFun && C:\Users
 | 测试群 | 用主号拉小号进去 | 必需 |
 | Docker Desktop | 跑 NapCat 容器 | 必需 |
 | 代码环境 | `uv sync` 已跑过 | 必需 |
-| `.env` 已配好 | ADMIN_QQ、ZHIPU_API_KEY、SILICONFLOW_API_KEY | 必需 |
+| `.env` 已配好 | ADMIN_QQ、ZHIPU_API_KEY、LONGCAT_API_KEY（查资料兜底） | 必需 |
 | 题库已导入 | `python scripts/seed_turtle_soup.py` | 必需 |
 
 ---
@@ -226,7 +226,7 @@ uv run --no-sync python -m src.bot
 
 ```
 [bot] startup: init llm config...
-[llm] init ok. providers=['zhipu', 'siliconflow'] scenes=[...]
+[llm] init ok. providers=['zhipu', 'longcat'] scenes=[...]
 [bot] startup: init database...
 [bot] startup: recover active sessions...
 [bot] ready.

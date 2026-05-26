@@ -40,10 +40,7 @@ class Settings(BaseSettings):
     zhipu_api_key: str = ""
     openai_api_key: str = ""
     openrouter_api_key: str = ""
-    deepseek_api_key: str = ""
     longcat_api_key: str = ""  # 美团龙猫，https://longcat.chat
-    # 已移除（硅基流动免费额度 2026-04 耗尽）：
-    siliconflow_api_key: str = ""  # 保留字段以避免 .env 残留报错
 
     # ---------- Turtle Soup ----------
     game_turtle_soup_max_questions: int = 50

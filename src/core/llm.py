@@ -3,7 +3,7 @@
 OpenAI 兼容 LLM 统一网关。
 
 核心概念：
-- Provider：一个后端（zhipu / siliconflow / openrouter...）
+- Provider：一个后端（zhipu / longcat / openrouter...）
 - Scene：业务使用场景（turtle_soup_host 等），映射到某个 provider + model + 参数
 
 详见 docs/08-llm-integration.md 和 docs/adr/0003-llm-gateway.md。

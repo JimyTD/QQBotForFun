@@ -1,7 +1,7 @@
 # 08 · LLM 网关详解
 
-- **Status**: Draft v1
-- **Last Updated**: 2026-04-28
+- **Status**: v2
+- **Last Updated**: 2026-05-26
 - **Owner**: @owner
 
 > 配合 [`adr/0003-llm-gateway.md`](./adr/0003-llm-gateway.md) 和 [`06-configuration.md`](./06-configuration.md) 一起看。
@@ -37,12 +37,17 @@ vec = await llm.embedding("文本", scene="default")
 
 所有使用场景**必须**在此登记。
 
-| Scene | 用途 | 推荐模型 | JSON | 特点 |
-|---|---|---|---|---|
-| `default` | 通用兜底 | `glm-4-flash` | ✗ | 免费、快 |
-| `turtle_soup_host` | 海龟汤出题 | `Qwen2.5-72B-Instruct` | ✓ | 强创意 |
-| `turtle_soup_judge` | 海龟汤提问判定 | `glm-4-flash` | ✓ | 高频低延迟 |
-| `turtle_soup_claim` | 海龟汤宣告判定 | `glm-4-flash` | ✓ | 中等强度 |
+| Scene | 用途 | 模型 | Provider | JSON | 备注 |
+|---|---|---|---|---|---|
+| `turtle_soup_judge` | 海龟汤提问判定（高频） | `LongCat-Flash-Chat` | 龙猫 | ✓ | temp=0.1，判题最优 |
+| `turtle_soup_claim` | 海龟汤宣告判定 | `LongCat-Flash-Chat` | 龙猫 | ✓ | temp=0.2 |
+| `web_search` | 查资料 · 搜索总结 | `LongCat-Flash-Lite` | 龙猫 | ✗ | temp=0.3 |
+| `ask_ai` | 查资料 · 纯 LLM 兜底 | `LongCat-Flash-Lite` | 龙猫 | ✗ | temp=0.7 |
+| `turtle_soup_host` | 海龟汤 LLM 出题（少用） | `glm-4-flash-250414` | 智谱 | ✓ | temp=0.9，创意型 |
+| `trivia_host` | 趣味问答 LLM 补题 | `glm-4-flash-250414` | 智谱 | ✓ | temp=0.9，创意型 |
+| `default` | 通用兜底 | `glm-4-flash-250414` | 智谱 | ✗ | temp=0.7 |
+
+厂商活动调研见 [`free-llm-vendors.md`](./free-llm-vendors.md)。
 
 **新增场景流程**：
 1. 在 `config/llm.yaml` 的 `scenes:` 下新增
@@ -92,7 +97,7 @@ llm.chat(scene="turtle_soup_judge")
   ↓
  查 scenes[turtle_soup_judge]
   ↓
- 得到 provider=zhipu, model=glm-4-flash, ...
+ 得到 provider=zhipu, model=glm-4-flash-250414, ...
   ↓
  查 providers[zhipu]
   ↓
@@ -127,7 +132,7 @@ llm.chat(scene="turtle_soup_judge")
 ### 4.6 日志
 每次调用 INFO 日志包含：
 ```
-scene=turtle_soup_judge provider=zhipu model=glm-4-flash
+scene=turtle_soup_judge provider=zhipu model=glm-4-flash-250414
 prompt_tokens=345 completion_tokens=28 total_tokens=373
 latency_ms=620 status=ok
 ```
@@ -139,7 +144,7 @@ scene=... status=error error_type=LLMJSONParseError retries_exhausted=true ...
 
 ## 5. 成本预估（海龟汤参考值）
 
-基于 glm-4-flash **免费**、硅基流动免费额度：
+基于智谱 `glm-4-flash-250414` **免费档**：
 
 | 操作 | 预估 tokens | 次数 | 说明 |
 |---|---|---|---|
@@ -147,8 +152,7 @@ scene=... status=error error_type=LLMJSONParseError retries_exhausted=true ...
 | 提问判定 | 500 in + 50 out | 20-50/局 | 高频 |
 | 宣告判定 | 400 in + 80 out | 1-3/局 | 低频 |
 
-**单局总成本**（LLM 生成模式，最坏情况）：约 30k tokens。
-**GLM-4-Flash 永久免费**，硅基流动 2000 万 token ≈ 600+ 局出题，远超早期测试需求。
+**单局总成本**（题库模式，典型）：约 15–25k tokens，均在智谱 Flash 免费额度内。
 
 ## 6. 错误分类
 
@@ -177,3 +181,4 @@ scene=... status=error error_type=LLMJSONParseError retries_exhausted=true ...
 | 版本 | 日期 | 变更 |
 |---|---|---|
 | v1 | 2026-04-28 | 初版 |
+| v2 | 2026-05-26 | Scene 表格补充备注列；修正 provider 信息与 llm.yaml 对齐 |

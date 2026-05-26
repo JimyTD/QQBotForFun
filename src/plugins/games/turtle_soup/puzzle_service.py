@@ -5,6 +5,7 @@ from __future__ import annotations
 import random
 import time
 from dataclasses import dataclass
+from pathlib import Path
 
 from nonebot import logger
 from sqlalchemy import func, select
@@ -32,6 +33,49 @@ class PuzzleData:
     key_clues: list[str]
     difficulty: int
     source: str
+    canonical_facts: list[str] | None = None
+    surface_gloss: str | None = None
+
+
+# ------------------------------------------------------------------
+# 离线蒸馏事实（seeds/turtle_soup_facts.json，按 title 索引）
+# ------------------------------------------------------------------
+_FACTS_BY_TITLE: dict[str, dict[str, object]] | None = None
+
+
+def _facts_file_path() -> Path:
+    return Path(__file__).resolve().parents[4] / "seeds" / "turtle_soup_facts.json"
+
+
+def load_facts_by_title() -> dict[str, dict[str, object]]:
+    global _FACTS_BY_TITLE
+    if _FACTS_BY_TITLE is not None:
+        return _FACTS_BY_TITLE
+    path = _facts_file_path()
+    if not path.exists():
+        _FACTS_BY_TITLE = {}
+        return _FACTS_BY_TITLE
+    import json
+
+    with open(path, encoding="utf-8") as f:
+        data = json.load(f)
+    _FACTS_BY_TITLE = data if isinstance(data, dict) else {}
+    return _FACTS_BY_TITLE
+
+
+def facts_for_title(title: str) -> tuple[list[str], str]:
+    """返回 (canonical_facts, surface_gloss)；无则空。"""
+    block = load_facts_by_title().get(title) or {}
+    facts = block.get("canonical_facts") or []
+    gloss = str(block.get("surface_gloss") or "")
+    if not isinstance(facts, list):
+        facts = []
+    return [str(x) for x in facts if str(x).strip()], gloss
+
+
+def _merge_puzzle_facts(row: SoupPuzzle) -> tuple[list[str], str]:
+    facts, gloss = facts_for_title(row.title)
+    return facts, gloss
 
 
 # ------------------------------------------------------------------
@@ -194,6 +238,8 @@ async def _pick_from_library() -> PuzzleData:
         chosen.play_count += 1
         await sess.flush()
 
+        facts, gloss = _merge_puzzle_facts(chosen)
+
         return PuzzleData(
             id=chosen.id,
             title=chosen.title,
@@ -203,6 +249,8 @@ async def _pick_from_library() -> PuzzleData:
             key_clues=list(chosen.key_clues or []),
             difficulty=chosen.difficulty,
             source=chosen.source,
+            canonical_facts=facts or None,
+            surface_gloss=gloss or None,
         )
 
 

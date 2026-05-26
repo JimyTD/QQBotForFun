@@ -57,7 +57,7 @@ copy .env.example .env
 #   ONEBOT_ACCESS_TOKEN（与 NapCat 一致）
 #   ADMIN_QQ（你的主号）
 #   ZHIPU_API_KEY
-#   SILICONFLOW_API_KEY
+#   LONGCAT_API_KEY（查资料兜底，可选）
 notepad .env
 ```
 
