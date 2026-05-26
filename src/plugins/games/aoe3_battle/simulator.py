@@ -25,7 +25,7 @@ logger = logging.getLogger("aoe3_battle.simulator")
 # =====================================================================
 TICK_INTERVAL = 0.1          # 秒/tick
 MAX_TICKS = 1200             # 最大 tick 数（120 秒）
-FIELD_LENGTH = 30.0          # 中间空地长度（双方阵地在两侧展开）
+FIELD_LENGTH = 36.0          # 中间空地长度（双方阵地在两侧展开）
 MELEE_RANGE = 1.5            # 近战射程（默认值，有 range_melee 数据时以数据为准）
 CLOSE_RANGE_PENALTY = 0.5    # 贴脸惩罚伤害系数
 DEFAULT_ROF_RANGED = 3.0     # 远程 ROF 缺失默认值
