@@ -229,10 +229,10 @@ class TriviaGame(GameBase):
     # ---------- 玩家消息 ----------
     async def on_player_action(
         self, ctx: GameContext, player_id: int, message: str
-    ) -> None:
+    ) -> bool:
         kind = _classify_message(message)
         if kind == "chat":
-            return
+            return False
 
         ctx.state["last_activity_ts"] = datetime.utcnow().isoformat()
 
@@ -242,6 +242,16 @@ class TriviaGame(GameBase):
             await self._handle_skip(ctx, player_id)
         elif kind == "answer":
             await self._handle_answer(ctx, player_id, message)
+        return True
+
+    def in_game_hint(self, ctx: GameContext) -> str:
+        idx = int(ctx.state.get("current_index", 0))
+        total = int(ctx.state.get("total", 10))
+        return (
+            f"{EMOJI} 趣味问答进行中 · 第 {idx + 1}/{total} 题\n"
+            "💡 群里直接猜答案 · @我 发「线索」「跳过」\n"
+            "💡 @我 问答状态 / 结束"
+        )
 
     # ---------- 核心流程 ----------
     async def _prepare_next_puzzle(self, ctx: GameContext) -> None:

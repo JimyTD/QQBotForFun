@@ -39,6 +39,7 @@ from .lineup import (
     format_vs_banner,
     generate_bet_lineup,
     generate_blacklist_lineup,
+    generate_custom_lineup,
     generate_duel_lineup,
 )
 from .simulator import ArmySlot, BattleResult, BattleSimulator, Side
@@ -261,7 +262,7 @@ class AoE3BattleGame(GameBase):
 
     id = "aoe3_battle"
     name = "帝国3斗蛐蛐"
-    description = "兵种对战模拟 · 押注 / 单挑 / 黑名单乱斗"
+    description = "兵种对战模拟 · 押注 / 单挑 / 黑名单乱斗 / 自选"
     min_players = 0            # 无人押注也能打
     max_players = 50
     version = "1.0"
@@ -287,6 +288,12 @@ class AoE3BattleGame(GameBase):
             description="怪物 / 战役英雄 / 作弊码兵互殴，战力分平衡",
             aliases=("黑名单", "乱斗", "黑名单乱斗", "blacklist"),
         ),
+        GameMode(
+            id="custom",
+            name="自选模式",
+            description="自选 1~2 种兵对决，相同资源",
+            aliases=("自选",),
+        ),
     ]
 
     # ---- 生命周期 ----
@@ -304,6 +311,14 @@ class AoE3BattleGame(GameBase):
             match = generate_duel_lineup(repo, rng=rng)
         elif mode_id == "blacklist":
             match = generate_blacklist_lineup(repo, rng=rng)
+        elif mode_id == "custom":
+            unit_names = (ctx.config or {}).get("unit_names", [])
+            result = generate_custom_lineup(repo, unit_names, budget=budget, rng=rng)
+            if isinstance(result, str):
+                # 生成失败，广播错误信息并抛异常让框架结束对局
+                await session.broadcast(ctx.group_id, result)
+                raise ValueError(result)
+            match = result
         else:
             match = generate_bet_lineup(repo, rng=rng, budget=budget)
 
@@ -385,14 +400,27 @@ class AoE3BattleGame(GameBase):
 
     async def on_player_action(
         self, ctx: GameContext, player_id: int, message: str
-    ) -> None:
+    ) -> bool:
         """处理群消息：押注1 / 押注2 / 开战。"""
         text = message.strip()
         phase = ctx.state.get("phase", "ended")
 
         if phase == "betting":
-            await self._handle_betting(ctx, player_id, text)
-        # fighting / ended 阶段不处理玩家消息
+            return await self._handle_betting(ctx, player_id, text)
+        return False
+
+    def in_game_hint(self, ctx: GameContext) -> str:
+        phase = ctx.state.get("phase", "ended")
+        if phase == "fighting":
+            return (
+                "⚔️ 斗蛐蛐战斗进行中，请稍候…\n"
+                "💡 播报结束后 @我 结束 可开新局"
+            )
+        return (
+            "⚔️ 斗蛐蛐押注中\n"
+            "💡 @我 押注1 / 押注2 / 开战\n"
+            "💡 @我 结束 可终止本局"
+        )
 
     async def on_timeout(self, ctx: GameContext) -> None:
         """整局超时。"""
@@ -414,7 +442,7 @@ class AoE3BattleGame(GameBase):
     # ================================================================
     async def _handle_betting(
         self, ctx: GameContext, player_id: int, text: str
-    ) -> None:
+    ) -> bool:
         """处理押注阶段的玩家消息。"""
         bets: dict[str, str] = ctx.state.get("bets", {})
         pid_str = str(player_id)
@@ -426,11 +454,11 @@ class AoE3BattleGame(GameBase):
                     "⚠️ 你已经押过了（锁死第一笔）",
                     at=player_id,
                 )
-                return
+                return True
             # 扣入场券
             ok = await self._charge_entry_fee(ctx, player_id)
             if not ok:
-                return
+                return True
             bets[pid_str] = "red"
             ctx.state["bets"] = bets
             await session.broadcast(
@@ -442,18 +470,19 @@ class AoE3BattleGame(GameBase):
                 "[aoe3_battle] %s 玩家 %d 押注红方",
                 ctx.session_id, player_id,
             )
+            return True
 
-        elif text == "押注2":
+        if text == "押注2":
             if pid_str in bets:
                 await session.broadcast(
                     ctx.group_id,
                     "⚠️ 你已经押过了（锁死第一笔）",
                     at=player_id,
                 )
-                return
+                return True
             ok = await self._charge_entry_fee(ctx, player_id)
             if not ok:
-                return
+                return True
             bets[pid_str] = "blue"
             ctx.state["bets"] = bets
             await session.broadcast(
@@ -465,10 +494,13 @@ class AoE3BattleGame(GameBase):
                 "[aoe3_battle] %s 玩家 %d 押注蓝方",
                 ctx.session_id, player_id,
             )
+            return True
 
-        elif text == "开战":
-            # 任意群友可发开战
+        if text == "开战":
             await self._start_battle(ctx)
+            return True
+
+        return False
 
     async def _charge_entry_fee(
         self, ctx: GameContext, player_id: int

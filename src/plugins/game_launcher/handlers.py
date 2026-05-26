@@ -125,11 +125,17 @@ async def _(matcher: Matcher, event: GroupMessageEvent, args: Message = CommandA
         await set_group_config(int(event.group_id), "aoe3_battle.broadcast_mode", "brief")
         await matcher.finish("✅ 已切换为【极简播报】模式（只显示开战和战报，帝国/红警通用）")
 
+    # ---- 自选模式："斗蛐蛐 自选 火枪手 散兵 15000" ----
+    parts = arg_text.split()
+    if parts and parts[0] == "自选":
+        await _handle_custom_battle(matcher, event, " ".join(parts[1:]))
+        return
+
     mode_id = "bet"  # 默认押注模式
     budget = None     # None = 使用默认值
 
     # 解析参数：可以是模式（单挑/黑名单乱斗）或资源数字
-    for part in arg_text.split():
+    for part in parts:
         if part in ("单挑", "1v1", "duel"):
             mode_id = "duel"
         elif part in ("黑名单", "乱斗", "黑名单乱斗", "blacklist"):
@@ -147,6 +153,77 @@ async def _(matcher: Matcher, event: GroupMessageEvent, args: Message = CommandA
         initiator_id=int(event.user_id),
         game_id="aoe3_battle",
         mode_id=mode_id,
+        extra_config=config,
+    )
+
+
+# -------------------- 快捷开局：斗蛐蛐自选 --------------------
+_quick_battle_custom = on_command(
+    "斗蛐蛐自选",
+    rule=to_me(),
+    priority=2,       # 比普通"斗蛐蛐"优先级高，避免被吃掉
+    block=True,
+)
+
+@_quick_battle_custom.handle()
+async def _(matcher: Matcher, event: GroupMessageEvent, args: Message = CommandArg()) -> None:
+    """自选兵种对决：@bot 斗蛐蛐自选 火枪手 散兵 15000"""
+    arg_text = args.extract_plain_text().strip()
+    await _handle_custom_battle(matcher, event, arg_text)
+
+
+async def _handle_custom_battle(
+    matcher: Matcher, event: GroupMessageEvent, arg_text: str
+) -> None:
+    """自选兵种对决的公共处理逻辑（供 '斗蛐蛐自选' 和 '斗蛐蛐 自选' 共用）。"""
+    if not arg_text:
+        await matcher.finish(
+            "🎯 斗蛐蛐自选用法：\n"
+            "  @我 斗蛐蛐自选 兵种名\n"
+            "  @我 斗蛐蛐自选 兵种A 兵种B\n"
+            "  @我 斗蛐蛐自选 兵种A 兵种B 15000\n"
+            "（末尾数字为自定义预算，默认 10000）"
+        )
+        return
+
+    parts = arg_text.split()
+    unit_names: list[str] = []
+    budget = None
+
+    for part in parts:
+        if part.isdigit():
+            budget = int(part)
+        else:
+            unit_names.append(part)
+
+    if not unit_names:
+        await matcher.finish("⚠️ 请至少指定一个兵种名")
+        return
+
+    if len(unit_names) > 2:
+        await matcher.finish("⚠️ 最多选 2 个兵种")
+        return
+
+    # 预验证兵种名（避免无效请求进入 game 流程）
+    from src.plugins.games.aoe3_battle.lineup import resolve_unit_name
+    from src.plugins.aoe3.repository import UnitRepo
+    repo = UnitRepo.get()
+    for name in unit_names:
+        u = resolve_unit_name(repo, name)
+        if u is None:
+            await matcher.finish(f"⚠️ 找不到兵种「{name}」（需要有攻击力的战斗单位）")
+            return
+
+    config: dict = {"mode": "custom", "unit_names": unit_names}
+    if budget is not None:
+        config["budget"] = budget
+
+    await _launch_game(
+        matcher,
+        group_id=int(event.group_id),
+        initiator_id=int(event.user_id),
+        game_id="aoe3_battle",
+        mode_id="custom",
         extra_config=config,
     )
 

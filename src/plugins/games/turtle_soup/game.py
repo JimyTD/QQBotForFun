@@ -220,10 +220,10 @@ class TurtleSoupGame(GameBase):
     # ---------- 玩家消息 ----------
     async def on_player_action(
         self, ctx: GameContext, player_id: int, message: str
-    ) -> None:
+    ) -> bool:
         kind = _classify_message(message)
         if kind == "command":
-            return
+            return False
 
         # 软上限
         max_q = int(ctx.state.get("max_questions", 50))
@@ -234,12 +234,25 @@ class TurtleSoupGame(GameBase):
                 "⚠️ 已达提问上限，请宣告汤底或 @我 结束 投降。",
                 at=player_id,
             )
-            return
+            return True
 
         if kind == "question":
             await self._handle_question(ctx, player_id, message)
         elif kind == "claim":
             await self._handle_claim(ctx, player_id, message)
+        return True
+
+    def in_game_hint(self, ctx: GameContext) -> str:
+        puzzle = ctx.state.get("puzzle", {})
+        title = puzzle.get("title", "")
+        head = f"{EMOJI} 海龟汤进行中"
+        if title:
+            head += f" ·《{title}》"
+        return (
+            f"{head}\n"
+            "💡 @我 直接提问 · 汤底:xxx 宣告答案\n"
+            "💡 @我 状态 / 提示 / 汤面 / 结束"
+        )
 
     # ---------- 问答判定 ----------
     async def _handle_question(

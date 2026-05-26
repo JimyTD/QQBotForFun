@@ -1052,6 +1052,10 @@ def format_vs_banner(lineup: MatchLineup) -> str:
         title = "⚔️ 帝国3斗蛐蛐 · 单挑"
         red_str = f"🔴 {r.unit.name}"
         blue_str = f"🔵 {b.unit.name}"
+    elif lineup.mode == "custom":
+        title = "🎯 帝国3斗蛐蛐 · 自选对决"
+        red_str = f"🔴 {r.unit.name} ×{r.count}"
+        blue_str = f"🔵 {b.unit.name} ×{b.count}"
     elif lineup.mode == "blacklist":
         title = "🎪 帝国3斗蛐蛐 · 黑名单乱斗"
         if r.is_multi or b.is_multi:
@@ -1194,3 +1198,105 @@ def format_formation_panel(lineup: MatchLineup) -> str:
 
     gap = "      ─── 空地 ───"
     return f"{red_text}\n{gap}\n{blue_text}"
+
+
+# =====================================================================
+# 自选兵种对决
+# =====================================================================
+
+def resolve_unit_name(repo: UnitRepo, name: str) -> Unit | None:
+    """根据玩家输入的兵种名解析为 Unit 对象。
+
+    匹配策略：精确优先 → 模糊匹配，取第一个结果。
+    玩家可以选黑名单兵种（不做限制），但必须有攻击力和 HP。
+    """
+    results = repo.search(name, limit=1)
+    if not results:
+        return None
+    u = results[0]
+    # 必须有攻击力和 HP（否则模拟器跑不动）
+    if not u.has_attack or u.hp <= 0:
+        return None
+    return u
+
+
+def generate_custom_lineup(
+    repo: UnitRepo,
+    unit_names: list[str],
+    *,
+    budget: int = BUDGET,
+    rng: random.Random | None = None,
+) -> MatchLineup | str:
+    """生成自选兵种对决阵容。
+
+    参数：
+      unit_names: 玩家输入的 1~2 个兵种名
+      budget: 资源预算（双方共用）
+      rng: 随机数生成器
+
+    返回：
+      成功 → MatchLineup
+      失败 → str（错误提示文本）
+
+    规则：
+      - 选 1 种：玩家选的 = 红方，系统从正常池随机 1 种 = 蓝方
+      - 选 2 种：第一个 = 红方，第二个 = 蓝方
+      - 双方使用相同预算，数量 = budget ÷ cost（向下取整）
+      - 双方都是单兵种时使用 LCM 算法平衡资源
+      - 玩家可选黑名单兵种；系统随机时排除黑名单
+    """
+    if rng is None:
+        rng = random.Random()
+
+    if not unit_names or len(unit_names) > 2:
+        return "⚠️ 请指定 1~2 个兵种名"
+
+    # 解析玩家选的兵种
+    resolved_units: list[Unit] = []
+    for name in unit_names:
+        u = resolve_unit_name(repo, name)
+        if u is None:
+            return f"⚠️ 找不到兵种「{name}」（需要有攻击力的战斗单位）"
+        resolved_units.append(u)
+
+    # 红方 = 第一个兵种
+    red_unit = resolved_units[0]
+
+    if len(resolved_units) == 2:
+        # 选了 2 种：直接对打
+        blue_unit = resolved_units[1]
+    else:
+        # 选了 1 种：系统从正常池随机对手
+        pool = get_bet_pool(repo)
+        # 排除玩家已选的兵种（不镜像对决）
+        pool = [u for u in pool if u.id != red_unit.id]
+        if not pool:
+            return "⚠️ 兵种池为空，无法生成对手"
+        blue_unit = rng.choice(pool)
+
+    # 计算数量：使用 LCM 算法平衡资源（双方都是单兵种）
+    cost_a = _unit_cost(red_unit)
+    cost_b = _unit_cost(blue_unit)
+
+    if cost_a <= 0:
+        return f"⚠️ 兵种「{red_unit.name}」没有资源消耗数据，无法参战"
+    if cost_b <= 0:
+        return f"⚠️ 兵种「{blue_unit.name}」没有资源消耗数据，无法参战"
+
+    lcm_budget = approx_lcm_budget(cost_a, cost_b, budget)
+
+    red_count = max(1, lcm_budget // cost_a)
+    blue_count = max(1, lcm_budget // cost_b)
+
+    red = Lineup(slots=[UnitSlot(unit=red_unit, count=red_count)])
+    blue = Lineup(slots=[UnitSlot(unit=blue_unit, count=blue_count)])
+
+    logger.info(
+        "自选阵容：LCM预算 %d → %d，🔴 %s ×%d (%d) vs 🔵 %s ×%d (%d) 差=%d",
+        budget, lcm_budget,
+        red_unit.name, red_count, red.total_cost,
+        blue_unit.name, blue_count, blue.total_cost,
+        abs(red.total_cost - blue.total_cost),
+    )
+
+    return MatchLineup(red=red, blue=blue, mode="custom")

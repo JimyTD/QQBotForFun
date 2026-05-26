@@ -145,10 +145,24 @@ class Ra2BattleGame(GameBase):
 
     async def on_player_action(
         self, ctx: GameContext, player_id: int, message: str
-    ) -> None:
+    ) -> bool:
         text = message.strip()
         if ctx.state.get("phase") == "betting":
-            await self._handle_betting(ctx, player_id, text)
+            return await self._handle_betting(ctx, player_id, text)
+        return False
+
+    def in_game_hint(self, ctx: GameContext) -> str:
+        phase = ctx.state.get("phase", "ended")
+        if phase == "fighting":
+            return (
+                "⚔️ 红警斗蛐蛐战斗进行中，请稍候…\n"
+                "💡 播报结束后 @我 结束 可开新局"
+            )
+        return (
+            "⚔️ 红警斗蛐蛐押注中\n"
+            "💡 @我 押注1 / 押注2 / 开战\n"
+            "💡 @我 结束 可终止本局"
+        )
 
     async def on_timeout(self, ctx: GameContext) -> None:
         if ctx.state.get("phase") == "betting":
@@ -159,7 +173,7 @@ class Ra2BattleGame(GameBase):
 
     async def _handle_betting(
         self, ctx: GameContext, player_id: int, text: str
-    ) -> None:
+    ) -> bool:
         bets: dict[str, str] = ctx.state.get("bets", {})
         pid_str = str(player_id)
 
@@ -170,9 +184,9 @@ class Ra2BattleGame(GameBase):
                     "⚠️ 你已经押过了（锁死第一笔）",
                     at=player_id,
                 )
-                return
+                return True
             if not await self._charge_entry_fee(ctx, player_id):
-                return
+                return True
             bets[pid_str] = "red"
             ctx.state["bets"] = bets
             await session.broadcast(
@@ -181,17 +195,18 @@ class Ra2BattleGame(GameBase):
                 at=player_id,
             )
             logger.info("[ra2_battle] %s 玩家 %d 押注红方", ctx.session_id, player_id)
+            return True
 
-        elif text == "押注2":
+        if text == "押注2":
             if pid_str in bets:
                 await session.broadcast(
                     ctx.group_id,
                     "⚠️ 你已经押过了（锁死第一笔）",
                     at=player_id,
                 )
-                return
+                return True
             if not await self._charge_entry_fee(ctx, player_id):
-                return
+                return True
             bets[pid_str] = "blue"
             ctx.state["bets"] = bets
             await session.broadcast(
@@ -200,9 +215,13 @@ class Ra2BattleGame(GameBase):
                 at=player_id,
             )
             logger.info("[ra2_battle] %s 玩家 %d 押注蓝方", ctx.session_id, player_id)
+            return True
 
-        elif text == "开战":
+        if text == "开战":
             await self._start_battle(ctx)
+            return True
+
+        return False
 
     async def _charge_entry_fee(self, ctx: GameContext, player_id: int) -> bool:
         try:

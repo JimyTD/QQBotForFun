@@ -44,7 +44,7 @@ class ActiveGameSession:
     game_id: str
     group_id: int
     player_ids: set[int]
-    on_player_action: Callable[[int, str], Awaitable[None]] | None = None
+    on_player_action: Callable[[int, str], Awaitable[bool]] | None = None
     # 正在等待的 futures: key 为 (qq_id, group_id|None) 或 ("group", group_id)
     waiters: dict[tuple, asyncio.Future[tuple[int, str]]] = dataclasses.field(default_factory=dict)
 
@@ -64,7 +64,7 @@ def get_active(group_id: int) -> ActiveGameSession | None:
 
 async def register_game_session(
     ctx: GameContext,
-    on_player_action: Callable[[int, str], Awaitable[None]] | None = None,
+    on_player_action: Callable[[int, str], Awaitable[bool]] | None = None,
 ) -> None:
     """向 session 路由器注册活跃对局。"""
     if ctx.group_id in _active_by_group:
@@ -425,9 +425,10 @@ async def route_incoming_message(
     # 2b. 游戏 on_player_action（事件驱动范式）
     if active.on_player_action is not None:
         try:
-            await active.on_player_action(qq_id, text)
+            handled = await active.on_player_action(qq_id, text)
+            if handled:
+                consumed = True
         except Exception as e:  # noqa: BLE001
             logger.exception(f"[session] on_player_action error: {e}")
-        consumed = True
 
     return consumed

@@ -1,8 +1,9 @@
 """全局消息入站路由。
 
-处理优先级（priority=5，低于命令的 priority=3）：
+处理优先级（priority=5，在命令 priority=3 之后执行）：
   1. @机器人 的消息转 `core.session.route_incoming_message`（游戏内提问等）
-  2. 若未消费，回复帮助信息（兜底）
+  2. 有活跃游戏但未处理 → 游戏情境提示
+  3. 否则 → 兜底「没听懂」
 """
 
 from __future__ import annotations
@@ -16,7 +17,7 @@ from nonebot.adapters.onebot.v11 import (
 from nonebot.matcher import Matcher
 from nonebot.rule import Rule
 
-from core import session as csession
+from core import game_base, session as csession
 
 _matcher = on_message(
     rule=Rule(),
@@ -79,11 +80,18 @@ async def _route(event: MessageEvent, matcher: Matcher) -> None:
         await matcher.finish(_FALLBACK_HELP)
         return
 
-    # 1) 常规路由（游戏内提问 / ask 等待）
+    # 1) 游戏内提问 / ask 等待
     consumed = await csession.route_incoming_message(qq_id, group_id, text)
     if consumed:
         matcher.stop_propagation()
         return
 
-    # 2) 兜底：@机器人 但没被任何命令或游戏消费 → 回复帮助
+    # 2) 有活跃游戏但未识别 → 情境提示
+    if group_id is not None and csession.is_in_game(group_id):
+        hint = game_base.in_game_hint_for_group(group_id)
+        if hint:
+            await matcher.finish(hint)
+            return
+
+    # 3) 兜底：无对局且无法识别 → 通用帮助
     await matcher.finish(_FALLBACK_HELP)

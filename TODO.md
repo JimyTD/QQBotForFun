@@ -89,44 +89,41 @@
 
 ---
 
-## ✅ 多弹丸 / 连射兵种 DPS 严重低估（aoe3 数据 + simulator）— 已修复
+## 💥 AoE3 斗蛐蛐：从解包读取 `damagecap`（溅射伤害池）
 
-**修复日期**：2026-05-24
+**现象**：斗蛐蛐 AOE 溅射伤害可能偏强/不准；`damage_cap` 在文档里被标成「已解决」，但代码里**尚未**从游戏数据读取。
 
-**根因（修正后）**：
+**背景**（2026-05-26 确认，来源均为 AoE3 / DE，非 AoE2）：
 
-AoE3 的多弹丸信息不在 protoy.xml 中（`numberprojectiles` 全文为 1），
-而是在 **tactics 文件**的 `<displayednumberprojectiles>` 字段，按**攻击动作名**绑定。
+- 解包 `protoy.xml`（`aoe3_bar_extractor.py` → 默认 `E:\aoe3_extracted`）中，带溅射的 `<protoaction>` 同时有：
+  - `<damagearea>` — 溅射半径（**已在用**）
+  - `<damagecap>` — 溅射**总伤害池**（不含主目标全额伤害；**尚未读取**）
+- 社区 / proto 对照（如 AoE3 Heaven 专帖）：掷弹兵手榴弹 base=16、`damagearea=3`、**`damagecap=36`**（不是简单 `2×16=32`）；溅射常 11～14/人，非满 base。
+- **斗蛐蛐有意简化**：一维线性、无体积，同排单位都能进溅射；`round(aoe_radius)` 当「最多溅射 N 人」是简化，**不是**引擎原义（原版还有距离衰减等）。此简化可保留，但 cap 应用 proto 值会更贴 DE。
+- 当前链路断层：
+  - `aoe3_gamedata_parser.py` 只 `findtext("damagearea")` → `aoe_radius_*`，无 `damagecap`
+  - `seeds/aoe3/units.json` 有 `aoe_radius_ranged` / `aoe_radius_melee`（如 `grenadier`：3 / 1），**无** `damage_cap_*`
+  - `simulator.py` 写死 `damage_cap = base_atk * 2.0`
+  - `docs/games/aoe3-battle.md` §四 写「damage_cap 已通过解析器补全」——**与代码不符**，实现时需改文档
 
-引擎有两种"快射"机制：
-- **机制 A（极短 ROF）**：如加特林机枪的 `RepeatingAttack` rof=0.5 → 爬虫已正确处理
-- **机制 B（多弹丸齐射）**：如连弩 disp=3、管风琴炮 disp=6 → 之前完全缺失
+**待办**（需本机有 AoE3DE，能跑 extractor + parser；**先记录，暂不改代码**）：
 
-**修复内容**：
+1. `aoe3_gamedata_parser.py`：解析 `damagecap`，与对应攻击槽位一并写入 `units.json`（如 `damage_cap_ranged` / `damage_cap_melee`；无 cap 或 0 时可省略字段）
+2. `models.py` + `Unit.from_dict`：接新字段
+3. `simulator.py` `_apply_aoe_splash`：优先用 proto `damage_cap_*`；缺省再 fallback `2×基础攻`（与 Wiki「多数 2×」一致）
+4. 重跑 parser 更新 `seeds/aoe3/units.json`；抽样验收 `grenadier` 远程 cap=36、Hand cap 与解包一致
+5. 修正 `docs/games/aoe3-battle.md`：区分「已读 damagearea」与「待读 damagecap」；注明 `round(aoe_radius)` 为一维简化
 
-1. `aoe3_bar_extractor.py`：新增 `extract_tactics()` 批量提取 432 个 tactics 文件
-2. `aoe3_gamedata_parser.py`：
-   - 新增 `_load_tactics()` 解析 tactics 文件的 displayednumberprojectiles
-   - `_parse_attacks()` 按动作名匹配读取弹丸数，写入 `info["num_projectiles"]`
-   - 输出 `num_projectiles_ranged` / `num_projectiles_melee` 字段（仅当 > 1）
-3. `models.py`：`Unit` 新增 `num_projectiles_ranged: int = 1` / `num_projectiles_melee: int = 1`
-4. `simulator.py`：`_calc_damage` 中 `damage = base_atk * num_proj * mult * (1 - armor)`
-5. `lineup.py`：战力估算和展示层都乘弹丸数，展示格式 "5×3发"
+**可选后续**（非必须）：距离衰减（DE 霰弹：0.25 半径内近满伤）、锥形 vs 圆形溅射形状——一维场地上优先级低于 cap。
 
-**修复后受影响单位**（自动检测，非特判）：
+**相关文件**：
 
-| 单位 | 弹丸数 | 修正前 DPS | 修正后 DPS |
-|------|--------|-----------|-----------|
-| 连弩兵 ypChuKoNu | 3 | 1.7 | 5.0 |
-| 管风琴炮 OrganGun | 6 | 8.2 | 49.5 |
-| 加特林骆驼 deMercGatlingCamel | 6 | 4.8 | 29.0 |
-| 皮衣牛仔 deREVVaquero | 4 | 1.3 | 5.3 |
-| 战斗独木舟 deBattleCanoe | 5 | 8.7 | 43.3 |
-| 钦查木筏 deChincharaft | 3 | 12.5 | 37.5 |
-| 加特林骆驼(legacy) | 6 | 50 | 300 |
+- `scripts/crawler/aoe3_bar_extractor.py`
+- `scripts/crawler/aoe3_gamedata_parser.py`
+- `seeds/aoe3/units.json`
+- `src/plugins/aoe3/models.py`
+- `src/plugins/games/aoe3_battle/simulator.py`
+- `docs/games/aoe3-battle.md`
 
-**未受影响**：加特林机枪（ROF=0.5 已正确编码）、鹰炮/长管炮（CaseShot 非主攻模式）
-
----
-
+**优先级**：中 / 平衡向 —— 主要影响带 AOE 兵种（掷弹兵、胸甲骑兵等）；一维简化可保留，cap 对齐后溅射强度会更贴 DE。
 

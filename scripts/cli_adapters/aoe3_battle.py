@@ -26,6 +26,7 @@ from plugins.games.aoe3_battle.lineup import (
     format_vs_banner,
     generate_bet_lineup,
     generate_blacklist_lineup,
+    generate_custom_lineup,
     generate_duel_lineup,
 )
 from plugins.games.aoe3_battle.simulator import BattleResult, BattleSimulator, Side
@@ -51,6 +52,12 @@ MODES = [
         name="黑名单乱斗",
         description="怪物 / 战役英雄 / 作弊码兵互殴，战力分平衡",
         aliases=("黑名单", "乱斗", "黑名单乱斗"),
+    ),
+    GameMode(
+        id="custom",
+        name="自选模式",
+        description="自选 1~2 种兵对决，相同资源",
+        aliases=("自选",),
     ),
 ]
 
@@ -80,6 +87,32 @@ class AoE3BattleCLIAdapter:
             if budget_str.isdigit():
                 self._budget = max(1000, min(50000, int(budget_str)))
             info(f"本局资源预算：{self._budget}")
+
+        # 自选模式：让玩家输入兵种名
+        if mode_id == "custom":
+            info("自选模式：输入 1~2 个兵种名（空格分隔）")
+            names_str = prompt("兵种名（如：火枪手 散兵）> ").strip()
+            if not names_str:
+                info("未输入兵种名，退出")
+                return
+            unit_names = names_str.split()
+            if len(unit_names) > 2:
+                info("⚠️ 最多选 2 个兵种，只取前 2 个")
+                unit_names = unit_names[:2]
+
+            budget_str = prompt("资源预算（直接回车默认 10000）> ").strip()
+            if budget_str.isdigit():
+                self._budget = max(1000, min(50000, int(budget_str)))
+            info(f"本局资源预算：{self._budget}")
+
+            result = generate_custom_lineup(
+                self._repo, unit_names, budget=self._budget, rng=random.Random()
+            )
+            if isinstance(result, str):
+                info(f"生成失败：{result}")
+                return
+            self._match = result
+            return
 
         # 生成阵容
         rng = random.Random()

@@ -17,6 +17,6 @@ except Exception:
 
 __plugin_meta__ = PluginMetadata(
     name="aoe3_battle",
-    description="帝国3电子斗蛐蛐（兵种对战模拟 · 押注/单挑）",
-    usage="@我 斗蛐蛐 / @我 斗蛐蛐 单挑",
+    description="帝国3电子斗蛐蛐（兵种对战模拟 · 押注/单挑/自选）",
+    usage="@我 斗蛐蛐 / @我 斗蛐蛐 单挑 / @我 斗蛐蛐自选 火枪手",
 )

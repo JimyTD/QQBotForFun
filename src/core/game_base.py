@@ -101,8 +101,17 @@ class GameBase(ABC):
 
     async def on_player_action(
         self, ctx: GameContext, player_id: int, message: str
-    ) -> None:
-        """玩家在游戏中发言（仅 event_driven=True 时由 Core 驱动）。"""
+    ) -> bool:
+        """玩家在游戏中发言（仅 event_driven=True 时由 Core 驱动）。
+
+        Returns:
+            True 表示本游戏认领并处理了该消息；False 则交给 router 提示或命令。
+        """
+        return False
+
+    def in_game_hint(self, ctx: GameContext) -> str:
+        """@机器人 但本局未能识别输入时的情境提示。"""
+        return f"🎮 {self.name}进行中\n💡 @我 结束 可终止本局"
 
     async def on_timeout(self, ctx: GameContext) -> None:
         """整局超时。"""
@@ -223,14 +232,16 @@ class GameRunner:
         self._idle_task: asyncio.Task[Any] | None = None
         self._session_task: asyncio.Task[Any] | None = None
 
-    async def _on_player_action_dispatch(self, qq_id: int, message: str) -> None:
+    async def _on_player_action_dispatch(self, qq_id: int, message: str) -> bool:
         if self._action_lock is not None:
             async with self._action_lock:
-                await self.game.on_player_action(self.ctx, qq_id, message)
+                handled = await self.game.on_player_action(self.ctx, qq_id, message)
         else:
-            await self.game.on_player_action(self.ctx, qq_id, message)
-        # 每次玩家有动作，都算一次活跃；idle 计时器由外层重置
-        _idle_activity[self.ctx.session_id] = datetime.utcnow()
+            handled = await self.game.on_player_action(self.ctx, qq_id, message)
+        if handled:
+            # 每次玩家有动作，都算一次活跃；idle 计时器由外层重置
+            _idle_activity[self.ctx.session_id] = datetime.utcnow()
+        return handled
 
     async def start(self, *, session_timeout_seconds: float | None = None) -> None:
         ctx = self.ctx
@@ -306,6 +317,14 @@ def get_runner(session_id: str) -> GameRunner | None:
 
 def get_runner_by_group(group_id: int) -> GameRunner | None:
     return _runner_by_group.get(group_id)
+
+
+def in_game_hint_for_group(group_id: int) -> str | None:
+    """活跃对局的情境提示；无对局时返回 None。"""
+    runner = _runner_by_group.get(group_id)
+    if runner is None:
+        return None
+    return runner.game.in_game_hint(runner.ctx)
 
 
 async def create_and_start(
