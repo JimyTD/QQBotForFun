@@ -6,13 +6,13 @@ from __future__ import annotations
 
 
 
+import json
 import logging
-
 import math
-
 import random
-
 from dataclasses import dataclass, field
+from pathlib import Path
+from typing import Any
 
 
 
@@ -23,8 +23,13 @@ from .display import (
     format_unit_role,
 )
 from .locale import localized_actor_name
-from .battle_pool import is_lineup_eligible, lineup_eligible_actors
-
+from .battle_pool import (
+    THEATER_LABELS,
+    Theater,
+    lineup_eligible_actors,
+    lineup_eligible_by_theater,
+    theater_of,
+)
 from .repo import ActorDef, load_actors, load_battle_pool_actors
 
 
@@ -48,6 +53,16 @@ LCM_BUDGET_TOLERANCE = 0.3
 MAX_DRAW_RETRIES = 30
 
 INITIAL_STAR_OPTIONS = (0, 1, 3)
+
+# 押注模式：先抽 theater，再在子池随机；空战 sim 未对齐，暂不入池
+THEATER_WEIGHTS: tuple[tuple[Theater, int], ...] = (("land", 75), ("naval", 25))
+
+# 经典固定编制插播概率（其余为同 theater 随机 + LCM）
+CLASSIC_SCENARIO_CHANCE = 0.25
+
+_CLASSIC_SCENARIOS_PATH = (
+    Path(__file__).resolve().parents[4] / "data" / "ra2" / "classic_scenarios.json"
+)
 
 
 
@@ -167,6 +182,10 @@ class MatchLineup:
 
     initial_stars: int = 0
 
+    theater: Theater = "land"
+
+    scenario_title: str | None = None
+
 
 
 
@@ -174,6 +193,151 @@ class MatchLineup:
 def _battle_pool(actors: dict[str, ActorDef]) -> list[ActorDef]:
 
     return lineup_eligible_actors(actors)
+
+
+def _pick_theater(rng: random.Random) -> Theater:
+
+    theaters, weights = zip(*THEATER_WEIGHTS)
+
+    return rng.choices(theaters, weights=weights, k=1)[0]
+
+
+def _load_classic_scenarios() -> list[dict[str, Any]]:
+
+    if not _CLASSIC_SCENARIOS_PATH.is_file():
+
+        return []
+
+    data = json.loads(_CLASSIC_SCENARIOS_PATH.read_text(encoding="utf-8"))
+
+    return list(data.get("scenarios") or [])
+
+
+def _side_from_army(
+    army: list[tuple[str, int]],
+    actors: dict[str, ActorDef],
+) -> SideLineup:
+
+    slots: list[UnitSlot] = []
+
+    for actor_id, count in army:
+
+        actor = actors[actor_id]
+
+        slots.append(
+            UnitSlot(actor.id, display_name(actor), max(1, count), actor.cost)
+        )
+
+    return SideLineup(slots=slots)
+
+
+def _parse_army(raw: list[list[Any]]) -> list[tuple[str, int]]:
+
+    return [(str(row[0]), int(row[1])) for row in raw]
+
+
+def _try_classic_lineup(
+    actors: dict[str, ActorDef],
+    rng: random.Random,
+) -> MatchLineup | None:
+
+    scenarios = _load_classic_scenarios()
+
+    if not scenarios:
+
+        return None
+
+    weights = [int(s.get("weight") or 10) for s in scenarios]
+
+    pick = rng.choices(scenarios, weights=weights, k=1)[0]
+
+    try:
+
+        red_army = _parse_army(pick["red"])
+
+        blue_army = _parse_army(pick["blue"])
+
+        theater = pick["theater"]
+
+    except (KeyError, TypeError, ValueError, IndexError):
+
+        logger.warning("经典场景 JSON 格式错误 id=%s", pick.get("id"))
+
+        return None
+
+    for actor_id, _ in red_army + blue_army:
+
+        actor = actors.get(actor_id)
+
+        if actor is None or theater_of(actor) != theater:
+
+            logger.warning(
+
+                "经典场景单位无效 id=%s actor=%s theater=%s",
+
+                pick.get("id"),
+
+                actor_id,
+
+                theater,
+
+            )
+
+            return None
+
+    red = _side_from_army(red_army, actors)
+
+    blue = _side_from_army(blue_army, actors)
+
+    scale_cost = red.total_cost + blue.total_cost
+
+    logger.info(
+
+        "经典局 %s (%s) 🔴$%d vs 🔵$%d 总$%d",
+
+        pick.get("id"),
+
+        pick.get("title"),
+
+        red.total_cost,
+
+        blue.total_cost,
+
+        scale_cost,
+
+    )
+
+    return MatchLineup(
+
+        red=red,
+
+        blue=blue,
+
+        mode="bet",
+
+        budget=scale_cost,
+
+        theater=theater,
+
+        scenario_title=str(pick.get("title") or ""),
+
+    )
+
+
+def _theater_pool(
+    theater: Theater,
+    actors: dict[str, ActorDef],
+) -> list[ActorDef]:
+
+    pool = lineup_eligible_by_theater(theater, actors)
+
+    if len(pool) >= 2:
+
+        return pool
+
+    logger.warning("theater=%s 池不足 %d，回退全池", theater, len(pool))
+
+    return _battle_pool(actors)
 
 
 
@@ -445,26 +609,52 @@ def generate_bet_lineup(
 
     actors = load_actors()
 
-    pool = _battle_pool(actors)
-
-    if len(pool) < 2:
+    if len(_battle_pool(actors)) < 2:
 
         raise RuntimeError("斗蛐蛐池单位不足，请先运行 openra_ra2_export.py")
 
-
-
     initial_stars = roll_initial_stars(rng)
+
+    if rng.random() < CLASSIC_SCENARIO_CHANCE:
+
+        classic = _try_classic_lineup(actors, rng)
+
+        if classic is not None:
+
+            classic.initial_stars = initial_stars
+
+            return classic
+
+    theater = _pick_theater(rng)
+
+    pool = _theater_pool(theater, actors)
+
     red = _generate_side_lineup(pool, budget, rng)
+
     blue = _generate_side_lineup(pool, budget, rng)
+
     effective_budget = budget
+
     if not red.is_multi and not blue.is_multi:
+
         red, blue, effective_budget = _apply_lcm_single_vs_single(red, blue, budget)
+
+    logger.info("随机局 theater=%s 预算=%d", theater, effective_budget)
+
     return MatchLineup(
+
         red=red,
+
         blue=blue,
+
         mode="bet",
+
         budget=effective_budget,
+
         initial_stars=initial_stars,
+
+        theater=theater,
+
     )
 
 
@@ -481,7 +671,11 @@ def generate_duel_lineup(
 
     rng = rng or random.Random(seed)
 
-    pool = _battle_pool(load_battle_pool_actors())
+    actors = load_battle_pool_actors()
+
+    theater = _pick_theater(rng)
+
+    pool = _theater_pool(theater, actors)
 
     a, b = rng.sample(pool, 2)
 
@@ -498,6 +692,8 @@ def generate_duel_lineup(
         budget=0,
 
         initial_stars=initial_stars,
+
+        theater=theater,
 
     )
 
@@ -658,9 +854,13 @@ def format_vs_banner(match: MatchLineup) -> str:
 
 
 
+    theater_line = f"🗺 本局战场：{THEATER_LABELS.get(match.theater, match.theater)}"
+
     lines = [
 
         title,
+
+        theater_line,
 
         star_line,
 
@@ -668,9 +868,19 @@ def format_vs_banner(match: MatchLineup) -> str:
 
     ]
 
+    if match.scenario_title:
+
+        lines.insert(2, f"📜 经典局：{match.scenario_title}")
+
     if match.mode == "bet":
 
-        lines.append(f"💰本局造价预算 ${match.budget}")
+        if match.scenario_title:
+
+            lines.append(f"💰双方总造价约 ${match.budget}")
+
+        else:
+
+            lines.append(f"💰本局造价预算 ${match.budget}")
 
     lines.extend([
 

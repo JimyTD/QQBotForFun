@@ -1,0 +1,52 @@
+{
+  "scenarios": [
+    {
+      "id": "land_htnk_mtnk",
+      "theater": "land",
+      "title": "苏盟主战",
+      "weight": 12,
+      "red": [["htnk", 15]],
+      "blue": [["mtnk", 22]]
+    },
+    {
+      "id": "land_inf_blob",
+      "theater": "land",
+      "title": "步兵海",
+      "weight": 10,
+      "red": [["e1", 25]],
+      "blue": [["e2", 32]]
+    },
+    {
+      "id": "land_ggi_e1",
+      "theater": "land",
+      "title": "重装对射",
+      "weight": 8,
+      "red": [["ggi", 18]],
+      "blue": [["e1", 24]]
+    },
+    {
+      "id": "land_ltank_htnk",
+      "theater": "land",
+      "title": "轻坦换命",
+      "weight": 8,
+      "red": [["ltnk", 18]],
+      "blue": [["htnk", 10]]
+    },
+    {
+      "id": "naval_sub_dest",
+      "theater": "naval",
+      "title": "水下猎杀",
+      "weight": 10,
+      "red": [["sub", 5]],
+      "blue": [["dest", 8]]
+    },
+    {
+      "id": "naval_hyd_dlph",
+      "theater": "naval",
+      "title": "海蝎屠海豚",
+      "weight": 8,
+      "red": [["hyd", 8]],
+      "blue": [["dlph", 20]]
+    }
+  ]
+}

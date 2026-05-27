@@ -2,7 +2,17 @@
 
 from __future__ import annotations
 
+from typing import Literal
+
 from .repo import ActorDef, load_actors
+
+Theater = Literal["land", "naval", "air"]
+
+THEATER_LABELS: dict[Theater, str] = {
+    "land": "陆战",
+    "naval": "海战",
+    "air": "空战",
+}
 
 # 明确不参与斗蛐蛐随机/押注阵容的 actor_id → 原因（文档 §3.4 同步）
 LINEUP_BLACKLIST: dict[str, str] = {
@@ -51,3 +61,19 @@ def lineup_eligible_actors(
 
 def lineup_eligible_ids(actors: dict[str, ActorDef] | None = None) -> tuple[str, ...]:
     return tuple(a.id for a in lineup_eligible_actors(actors))
+
+
+def theater_of(actor: ActorDef) -> Theater:
+    """按 locomotor 划分战场（陆 / 海 / 空）；同局红蓝必须同 theater。"""
+    if actor.locomotor == "naval":
+        return "naval"
+    if actor.locomotor == "aircraft":
+        return "air"
+    return "land"
+
+
+def lineup_eligible_by_theater(
+    theater: Theater,
+    actors: dict[str, ActorDef] | None = None,
+) -> list[ActorDef]:
+    return [a for a in lineup_eligible_actors(actors) if theater_of(a) == theater]

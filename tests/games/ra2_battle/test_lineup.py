@@ -1,4 +1,4 @@
-"""阵容随机：槽位数、LCM、出战星级。"""
+"""阵容随机：槽位数、LCM、出战星级、theater 分流、经典局。"""
 
 from __future__ import annotations
 
@@ -6,12 +6,15 @@ from pathlib import Path
 
 import pytest
 
+from plugins.games.ra2_battle.battle_pool import theater_of
 from plugins.games.ra2_battle.lineup import (
     INITIAL_STAR_OPTIONS,
     approx_lcm_budget,
     generate_bet_lineup,
+    generate_duel_lineup,
     roll_initial_stars,
 )
+from plugins.games.ra2_battle.repo import load_actors
 
 _DATA = Path(__file__).resolve().parents[3] / "data" / "ra2" / "actors.json"
 
@@ -55,3 +58,34 @@ def test_approx_lcm_budget_within_tolerance():
     base = 5000
     actual = approx_lcm_budget(900, 1500, base)
     assert int(base * 0.7) <= actual <= int(base * 1.3)
+
+
+def _assert_match_theater(match) -> None:
+    actors = load_actors()
+    for slot in match.red.slots + match.blue.slots:
+        assert theater_of(actors[slot.actor_id]) == match.theater
+
+
+def test_bet_lineup_same_theater(require_export):
+    for seed in range(80):
+        m = generate_bet_lineup(budget=5000, seed=seed)
+        _assert_match_theater(m)
+
+
+def test_duel_lineup_same_theater(require_export):
+    for seed in range(50):
+        m = generate_duel_lineup(seed=seed)
+        _assert_match_theater(m)
+
+
+def test_classic_scenario_appears(require_export):
+    seen = False
+    for seed in range(300):
+        m = generate_bet_lineup(budget=5000, seed=seed)
+        if m.scenario_title:
+            seen = True
+            assert m.scenario_title
+            assert m.theater in ("land", "naval")
+            _assert_match_theater(m)
+            break
+    assert seen, "300 seed 内应至少命中一次经典局"

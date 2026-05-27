@@ -1,7 +1,7 @@
 # 红警2斗蛐蛐 —— 工程文档
 
 - **Status**: Draft v12（+ Preset 策展对阵 WIP 记录）
-- **Last Updated**: 2026-05-25
+- **Last Updated**: 2026-05-27
 - **Game ID**: `ra2_battle`
 - **权威数据**: [cookgreen/Yuris-Revenge](https://github.com/cookgreen/Yuris-Revenge) `mods/yr`（经 `vendor/yuris-revenge` 导出）；[OpenRA/ra2](https://github.com/OpenRA/ra2) 仅作对照
 
@@ -96,12 +96,14 @@ QQBotForFun/
 │   ├── weapons.json
 │   ├── locomotors.json
 │   ├── locale_zh.json
-│   └── icon_map.json
+│   ├── icon_map.json
+│   └── classic_scenarios.json           # 经典局编制（Bot 读）
 ├── scripts/
 │   ├── setup_openra_vendor.ps1          # 克隆 vendor 仓库（Windows）
 │   ├── crawler/
 │   │   └── openra_ra2_export.py         # yaml → JSON 导出
-│   └── ra2_battle_sim.py                # 无 GUI CLI 对战
+│   ├── ra2_battle_sim.py                # 无 GUI CLI 对战
+│   └── ra2_lineup_audit.py              # 阵容/theater 抽样审计
 ├── tests/games/ra2_battle/
 │   ├── test_basic.py                    # 伤害 / 对战 smoke test
 │   └── test_weapons.py                  # 武器 ValidTargets / 用途
@@ -510,13 +512,18 @@ for tick in 0..max_ticks:
 
 | 项 | 规则 |
 |----|------|
-| 兵种池 | `battle_pool.is_lineup_eligible()`（约 **58** 个，见 §3.4） |
-| 单方兵种数 | **1 种 / 2 种 各 50%**（不再随机 3 种） |
+| **战场 theater** | 先抽 `land`（75%）/ `naval`（25%）；**空战暂不入池**（sim 未对齐） |
+| 同局约束 | 红蓝单位必须同属一个 theater，**禁止海陆空混搭** |
+| 经典局 | **25%** 概率从 `data/ra2/classic_scenarios.json` 抽固定编制（6 条）；其余在同 theater 子池随机 |
+| 兵种池 | `battle_pool.lineup_eligible_by_theater()`（陆 ~41 / 海 9） |
+| 单方兵种数 | **1 种 / 2 种 各 50%** |
 | 多方数量 | `greedy_fill`：每种保底 1，剩余预算均分 + 零头补最便宜兵种 |
-| 单方单兵种 | `预算 // 单价` 取整数量 |
-| **单 vs 单 LCM** | 双方各 1 种兵时，`approx_lcm_budget` 调整共用有效预算（±30%），使红蓝**总造价接近**（对齐帝国斗蛐蛐） |
-| 出战星级 | 每局 `roll_initial_stars()`：**0 / 1 / 3 等概率**，红蓝**相同**（0=无星，1=一星老兵，3=三星精英） |
-| 话术 | VS 条：`⭐ 本局出战：★ 一星（红蓝相同）`；面板标题带星标 |
+| **单 vs 单 LCM** | 随机局且双方各 1 种兵时，`approx_lcm_budget` 调整有效预算（±30%） |
+| 经典局预算 | 编制写死，面板展示「双方总造价约 $…」 |
+| 出战星级 | 每局 `roll_initial_stars()`：**0 / 1 / 3 等概率**，红蓝**相同** |
+| 单挑 | 同样先抽 theater，再子池随机 2 单位各 1 个 |
+
+**经典场景表**（`classic_scenarios.json`）：苏盟主战、步兵海、重装对射、轻坦换命、水下猎杀、海蝎屠海豚。
 
 ### 8.3 对阵面板（话术）
 
@@ -542,107 +549,18 @@ for tick in 0..max_ticks:
 | `commands.py`（1/2/开战） | ✅ |
 | `game_launcher` + `bot.py` | ✅ |
 | 阵容 icon 图片广播 | ✅（需 `ra2_icon_export.py` 生成 PNG） |
-| 单位图标 | ⏳ 远期 |
-| **Preset 策展对阵**（§8.5） | 🔶 草稿验收中，**未接** `lineup.py` |
+| 单位图标 PNG | ⏳ 待 mix 导出 |
+| theater + 经典局 | ✅（§8.2 / `classic_scenarios.json`） |
 
-### 8.5 Preset 策展对阵（WIP，2026-05-25）
+### 8.5 阵容设计说明（2026-05-27）
 
-> **Bot 行为未变**：仍从 58 池随机（§8.2）。本节记录「用策展编制替换随机池」的设计与半成品，供后续接手。
+1. **Theater 分流**：陆/海分开随机，杜绝「潜艇 vs 犀牛」类混搭。  
+2. **同 theater 随机 + LCM**：保留原有押注体验，池子变小后组合更合理。  
+3. **经典局插播**：`data/ra2/classic_scenarios.json` 固定 6 条可读性高的对阵，25% 权重。
 
-#### 目标（已对齐，未实现接入）
+新增经典局：编辑 `classic_scenarios.json`，字段 `theater` / `title` / `weight` / `red` / `blue`。验收：`scripts/ra2_lineup_audit.py --classic-only --sim-seeds 6`（见 §9.6）。
 
-| 项 | 约定 |
-|----|------|
-| 指令 | **不增**；仍 `@我 红警斗蛐蛐` |
-| 编制 | 红蓝兵种与**数量写死**，不要求预算/LCM 相等 |
-| 规模 | 单局总单位宜 **20–60+**（陆战为主；海/空由 preset 自带） |
-| 池 | 一条 preset 表随机抽；**替换**默认 58 池，不是 1v1 单挑模式 |
-
-#### 两类对阵标准（验收脚本用）
-
-| 类型 | 条件 |
-|------|------|
-| **宿敌** `rival` | 胜方余量 **25–40%**；胜方伤亡 **≥55%**；败方歼灭 **≥85%** |
-| **表演赛** `spectacle` | 专克方胜率 **≥85%**；被克方歼灭 **≥90%** |
-
-#### 产物文件
-
-| 路径 | 说明 |
-|------|------|
-| `data/ra2/lineup_presets.json` | **14 条**候选 preset（草稿） |
-| `scripts/ra2_preset_scan.py` | 单条/扫比例/批量 sweep/写 JSON |
-| `scripts/_validate_pool.py` | 对 JSON 全表复验（临时脚本） |
-
-#### 当前 JSON 草稿（14 条，**未全量复验**）
-
-| id | 类型 | 编制 | 总单位 |
-|----|------|------|--------|
-| `rival_tank_s` | 宿敌 | htnk×12 vs mtnk×16 | 28 |
-| `rival_tank_m` | 宿敌 | htnk×15 vs mtnk×22 | 37 |
-| `rival_tank_m_grizzly` | 宿敌 | htnk×12 vs mtnk×18 | 30 |
-| `rival_tank_l` | 宿敌 | htnk×16 vs mtnk×26 | 42 |
-| `rival_tank_xl` | 宿敌 | htnk×16 vs mtnk×28 | 44 |
-| `rival_inf_s` | 宿敌 | e1×20 vs e2×27 | 47 |
-| `rival_inf_m` | 宿敌 | e1×25 vs e2×32 | 57 |
-| `rival_inf_l` | 宿敌 | e1×30 vs e2×35 | 65 |
-| `rival_inf_ggi_m` | 宿敌 | ggi×18 vs e1×24 | 42 |
-| `rival_tank_light_m` | 宿敌 | ltnk×18 vs htnk×10 | 28 |
-| `rival_nav_sub_m` | 宿敌 | sub×5 vs dest×8 | 13 |
-| `rival_nav_sub_s` | 宿敌 | sub×3 vs dest×5 | 8 |
-| `spec_asw_hyd` | 表演 | hyd×8 vs dlph×20（专克红） | 28 |
-| `spec_boris_inf` | 表演 | boris×2 vs e1×35（专克红） | 37 |
-
-#### 已单独验收 PASS 的编制（6 seeds）
-
-以下在开发中**逐条跑过 PASS**（与 JSON 大部分重合；JSON 含若干 sweep 推导档，**14 条整表复验未完成**）：
-
-- 主战：`htnk×15 vs mtnk×22`
-- 步兵：`e1×25 vs e2×32`；`ggi×18 vs e1×24`
-- 轻坦：`ltnk×18 vs htnk×10`
-- 海战：`sub×5 vs dest×8`；`sub×3 vs dest×5`
-- 表演：`hyd×8 vs dlph×20`；`boris×2 vs e1×35`
-
-#### `--batch-sweep` 穷举扫（调参工具，非交付物）
-
-对 9 组 archetype **自动试数量组合**（约 **190+** 组 × 6 seeds），只输出 PASS。例：犀牛 vs 灰熊 ≈ 30 组。
-
-**已扫出、未精简入库**：主战 htnk/mtnk **≥11 组** PASS；步兵 e1/e2 **≥5 组** PASS。任务在步兵段运行 **~80min 后被中断**；磁能/光棱/幻影/天启等 **未扫完**。
-
-#### 不宜入池（sim 未对齐）
-
-防空 vs 飞机、警犬、辐射、天启/磁能/狂兽人/航母等。
-
-#### 验收耗时（2026-05-25 本地）
-
-| 场景 | 6 seeds 串行 |
-|------|----------------|
-| 主战 15v22 | ~37s |
-| 步兵 25v32 | ~107s |
-| JSON 14 条全表 | ~15min（**未跑完**） |
-| 全盘 batch-sweep | ~3–4h（**勿作交付路径**） |
-
-验收脚本**串行**；局间无依赖，**可**多进程并行，尚未实现。
-
-#### 未完成 / 接手顺序
-
-1. 14 条整表复验 → 删/改 FAIL。  
-2. 勿再全盘 sweep；从已知 PASS **精选 15–20 条**。  
-3. 确认后改 `lineup.py` 读 JSON 替换 `generate_bet_lineup`。  
-
-```bash
-uv run python scripts/ra2_preset_scan.py --match htnk:15,mtnk:22 --seeds 6
-uv run python scripts/_validate_pool.py
-uv run python scripts/ra2_preset_scan.py --batch-sweep --seeds 6   # 仅调参，很慢
-```
-
-#### 过程说明（为何耗时远超预期）
-
-| 原因 | 说明 |
-|------|------|
-| 路径选错 | 应用 **15min 验 14 条** 收尾，却跑了 **3–4h 穷举 sweep** |
-| 脚本串行 | preset 与 seed 均未并行 |
-| 长跑中断 | sweep 与全表复验均未跑完 |
-| Bot 未动 | 按约定先验配兵，**未改** `lineup.py` |
+> 原宿敌 preset + `batch-sweep` 穷举方案已移除（2026-05-27），不再维护 `lineup_presets.json` / `ra2_preset_scan.py`。
 
 ---
 
@@ -727,6 +645,10 @@ uv run pytest tests/games/ra2_battle/test_coverage.py -v
 
 # 性能 + 固定/随机阵容报告
 uv run python scripts/ra2_battle_bench.py
+
+# 阵容 theater / 经典局 / 随机抽样 + 胜方余量（较慢，步兵海单局可达 10s+）
+uv run python scripts/ra2_lineup_audit.py --classic-only --sim-seeds 6
+uv run python scripts/ra2_lineup_audit.py --bet-seeds 15 --sim-seeds 1 --duel-seeds 10
 ```
 
 **出战星级**：`generate_bet_lineup` / `generate_duel_lineup` 随机 `0/1/3`（红蓝相同）；`ctx.config.initial_stars` 可覆盖（调试用）。
@@ -753,6 +675,42 @@ uv run python scripts/ra2_battle_bench.py
 - 极端阵容或「打不死」组合可能顶满 `MAX_TICKS=15000`（600s 上限，实际约 0.6–2s CPU 即返回平局）——需后续优化移速与索敌。  
 - 群内 `_run_battle` 会打日志 `模拟完成 ticks=… 耗时=…ms` 便于线上观察。
 
+### 9.6 阵容抽样审计（`scripts/ra2_lineup_audit.py`，2026-05-27）
+
+**怎么跑**（本地；全量较慢，建议先 classic-only）：
+
+```bash
+uv run python scripts/ra2_lineup_audit.py --classic-only --sim-seeds 6
+uv run python scripts/ra2_lineup_audit.py --bet-seeds 15 --sim-seeds 1 --duel-seeds 10
+```
+
+**经典局（6 seed × 6 条，预算编制固定，含 0/1/3 星轮换）**
+
+| 场景 | 胜负 (R/B) | 胜方余量 | 胜方伤亡 | 结论 |
+|------|------------|----------|----------|------|
+| 苏盟主战 | 6/0 | ~33% | ~67% | 红（犀牛）稳胜，**惨胜感正常**，可留 |
+| 步兵海 | 0/6 | ~56% | ~44% | 蓝（动员兵）稳胜，余量健康 |
+| 重装对射 | 2/4 | ~50% | ~50% | **最接近均势**，可留 |
+| 轻坦换命 | 6/0 | ~39% | ~61% | 红（轻坦）稳胜 |
+| 水下猎杀 | 6/0 | ~47% | ~53% | 红（潜艇）稳胜，余量正常 |
+| 海蝎屠海豚 | 6/0 | ~100% | ~0% | **表演赛**，专克方满编存活，符合预期 |
+
+**随机押注（15 lineup × 1 sim，theater 分流后）**
+
+| 分组 | 平局 | 胜方余量（均） | 备注 |
+|------|------|----------------|------|
+| random/land | ~11% | 偏高（~100% 常见） | 随机双兵种仍易出「一边倒」；非 theater 回归 |
+| random/naval | 0% | ~88% | 样本少；海战单局 ~4–10s |
+| classic 插播 | 0% | 因场景而异 | 与上表一致 |
+
+**已知边缘（非阻塞上线）**
+
+- `ccomand` vs `ptroop` 等少数组合会顶满 `MAX_TICKS` → **平局**（与 §9.5 旧结论相同）。
+- 随机陆战仍可能抽到 `tany×N vs init×N`、`apoc×N vs virus×N` 等碾压局——theater 只防海陆混，**不防陆池内极端克制**；若要改善可后续加「随机黑名单对位」。
+- 审计脚本全量（50 lineup × 3 sim）本地约 **15–25 分钟**（步兵海/海战拖慢），勿在 CI 默认跑。
+
+**总评**：theater 分流 + 经典局 **无大问题**；经典编制余量合理；随机池偶有一边倒与平局属预期范围，不挡当前收尾。
+
 ---
 
 ## 十、路线图
@@ -765,7 +723,7 @@ uv run python scripts/ra2_battle_bench.py
 | **Phase 3 — YR 降级** | `battle_armament.py` Tier B/C + 心控容量 3 | ✅ 完成 |
 | **Phase 4 — Icon PNG** | YR cameo.mix → `resources/ra2/icons/` | ⏳ 待 mix |
 | **Phase 5 — 体验** | 战斗日志、自定义预算 | ⏳ 远期 |
-| **Phase 5.1 — Preset 池** | 策展对阵 JSON + 验收；替换 §8.2 随机池 | 🔶 草稿（§8.5），Bot 未接 |
+| **Phase 5.1 — 阵容** | theater 分流 + 经典局 JSON | ✅ 完成（§8.2 / §8.5） |
 
 ---
 
