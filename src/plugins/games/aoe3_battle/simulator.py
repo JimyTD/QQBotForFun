@@ -65,6 +65,60 @@ class AttackMode(str, Enum):
     RANGED_PENALIZED = "ranged_penalized"  # 贴脸惩罚
 
 
+@dataclass(frozen=True)
+class CombatSlotStats:
+    """斗蛐蛐战斗槽位整包数据（parser 选定的 ranged / melee 代表攻击）。
+
+    与 AttackMode 的关系：运行时 AttackMode 决定**本次出手用哪个槽位**；
+    RANGED_PENALIZED 仍用 ranged 槽（仅主伤害乘贴脸系数）。
+    siege 槽不参与斗蛐蛐（无建筑可拆）。详见 .cursor/rules/aoe3-attack-data-design.mdc
+    """
+
+    slot: str  # "ranged" | "melee"
+    base_damage: float
+    num_projectiles: int
+    multipliers: list
+    damage_type: str
+    aoe_radius: int
+    damage_cap_proto: float  # protoy damagecap；0 表示缺字段，模拟器用 2×合并基础攻
+
+
+def _combat_slot_stats(unit: Unit, mode: AttackMode) -> CombatSlotStats | None:
+    """按 AttackMode 映射到 ranged/melee **数据槽位**（非 damagetype）。"""
+    if mode == AttackMode.MELEE:
+        return CombatSlotStats(
+            slot="melee",
+            base_damage=unit.attack_melee,
+            num_projectiles=unit.num_projectiles_melee,
+            multipliers=unit.multipliers_melee,
+            damage_type=unit.damage_type_melee,
+            aoe_radius=unit.aoe_radius_melee,
+            damage_cap_proto=unit.damage_cap_melee,
+        )
+    if mode in (AttackMode.RANGED, AttackMode.RANGED_PENALIZED):
+        return CombatSlotStats(
+            slot="ranged",
+            base_damage=unit.attack_ranged,
+            num_projectiles=unit.num_projectiles_ranged,
+            multipliers=unit.multipliers_ranged,
+            damage_type=unit.damage_type_ranged,
+            aoe_radius=unit.aoe_radius_ranged,
+            damage_cap_proto=unit.damage_cap_ranged,
+        )
+    return None
+
+
+def _armor_for_damage_type(dtype: str, target: "Soldier") -> float:
+    """按 damagetype 选目标护甲（与槽位正交）。"""
+    if dtype == "Siege":
+        return target.unit.armor_siege
+    if dtype == "Hand":
+        return target.unit.armor_melee
+    if dtype == "Ranged":
+        return target.unit.armor_ranged
+    return target.unit.armor_ranged
+
+
 class BattlePhase(str, Enum):
     """战况阶段（供播报层选词用）。"""
     APPROACHING = "approaching"  # 接近期：尚无任何攻击事件
@@ -824,38 +878,13 @@ class BattleSimulator:
         mode: AttackMode,
     ) -> float:
         """计算单次攻击伤害。"""
-        if mode == AttackMode.MELEE:
-            base_atk = attacker.unit.attack_melee
-            num_proj = attacker.unit.num_projectiles_melee
-            multipliers = attacker.unit.multipliers_melee
-            # 近战伤害类型通常是 Hand → 吃近战护甲
-            dtype = attacker.unit.damage_type_melee
-            if dtype == "Ranged":
-                armor = target.unit.armor_ranged
-            elif dtype == "Siege":
-                armor = target.unit.armor_siege
-            else:
-                armor = target.unit.armor_melee
-        elif mode in (AttackMode.RANGED, AttackMode.RANGED_PENALIZED):
-            base_atk = attacker.unit.attack_ranged
-            num_proj = attacker.unit.num_projectiles_ranged
-            multipliers = attacker.unit.multipliers_ranged
-            # 根据 damage_type_ranged 选护甲
-            dtype = attacker.unit.damage_type_ranged
-            if dtype == "Siege":
-                armor = target.unit.armor_siege
-            elif dtype == "Hand":
-                armor = target.unit.armor_melee
-            else:
-                armor = target.unit.armor_ranged
-        else:
+        stats = _combat_slot_stats(attacker.unit, mode)
+        if stats is None:
             return 0.0
 
-        # 倍率叠乘
-        mult = self._calc_multiplier(multipliers, target)
-
-        # 弹丸数合并结算：多弹丸锁定同一目标，直接×N
-        damage = base_atk * num_proj * mult * (1.0 - armor)
+        mult = self._calc_multiplier(stats.multipliers, target)
+        armor = _armor_for_damage_type(stats.damage_type, target)
+        damage = stats.base_damage * stats.num_projectiles * mult * (1.0 - armor)
 
         # 贴脸惩罚
         if mode == AttackMode.RANGED_PENALIZED:
@@ -869,7 +898,7 @@ class BattleSimulator:
             "armor=%.2f penalty=%s → dmg=%.1f",
             self._tick, attacker.name, attacker.id,
             target.name, target.id, mode.value,
-            base_atk, num_proj, mult, armor,
+            stats.base_damage, stats.num_projectiles, mult, armor,
             "Y" if mode == AttackMode.RANGED_PENALIZED else "N",
             damage,
         )
@@ -964,13 +993,10 @@ class BattleSimulator:
                 # 目标活着 → 正常扣血
                 self._apply_damage(s, target, damage, mode)
 
-                # AOE 溅射：命中活目标才爆炸
-                if mode == AttackMode.MELEE:
-                    aoe = s.unit.aoe_radius_melee
-                else:
-                    aoe = s.unit.aoe_radius_ranged
-                if aoe > 0:
-                    self._process_aoe(s, target, mode, aoe_override=aoe)
+                # AOE 溅射：命中活目标才爆炸（与本次出手同一 ranged/melee 槽位）
+                slot = _combat_slot_stats(s.unit, mode)
+                if slot and slot.aoe_radius > 0:
+                    self._process_aoe(s, target, mode, slot_stats=slot)
             else:
                 # 目标已死（被本轮其他人打死了）→ 打尸体，伤害浪费
                 # 不触发 AOE，不计入伤害统计
@@ -1057,23 +1083,23 @@ class BattleSimulator:
 
     # ---- AOE 溅射 ----
     def _process_aoe(
-        self, attacker: Soldier, main_target: Soldier, mode: AttackMode,
-        *, aoe_override: int = 0,
+        self,
+        attacker: Soldier,
+        main_target: Soldier,
+        mode: AttackMode,
+        *,
+        slot_stats: CombatSlotStats | None = None,
     ) -> None:
-        """处理 AOE 溅射伤害。"""
-        aoe_radius = aoe_override or attacker.unit.aoe_radius
-        if aoe_radius <= 0:
+        """处理 AOE 溅射伤害（使用与本次 AttackMode 对应的 ranged/melee 槽位整包）。"""
+        stats = slot_stats or _combat_slot_stats(attacker.unit, mode)
+        if stats is None or stats.aoe_radius <= 0:
             return
 
-        # 溅射目标数上限 = round(aoe_radius)
+        aoe_radius = stats.aoe_radius
         max_splash = round(aoe_radius)
 
-        # 基础攻击力（用于 DamageCap）
-        if mode == AttackMode.MELEE:
-            base_atk = attacker.unit.attack_melee * attacker.unit.num_projectiles_melee
-        else:
-            base_atk = attacker.unit.attack_ranged * attacker.unit.num_projectiles_ranged
-        damage_cap = base_atk * 2.0
+        base_atk = stats.base_damage * stats.num_projectiles
+        damage_cap = stats.damage_cap_proto if stats.damage_cap_proto > 0 else base_atk * 2.0
 
         # 筛选溅射候选：与主目标距离 ≤ aoe_radius 的存活敌方（排除主目标，二分优化）
         enemies, positions = self._sorted_enemies(attacker.side)
@@ -1103,27 +1129,8 @@ class BattleSimulator:
         )
 
         for t in splash_targets:
-            # 溅射伤害也应用倍率和抗性（根据 damage_type 选护甲）
-            if mode == AttackMode.MELEE:
-                multipliers = attacker.unit.multipliers_melee
-                dtype = attacker.unit.damage_type_melee
-                if dtype == "Ranged":
-                    armor = t.unit.armor_ranged
-                elif dtype == "Siege":
-                    armor = t.unit.armor_siege
-                else:
-                    armor = t.unit.armor_melee
-            else:
-                multipliers = attacker.unit.multipliers_ranged
-                dtype = attacker.unit.damage_type_ranged
-                if dtype == "Siege":
-                    armor = t.unit.armor_siege
-                elif dtype == "Hand":
-                    armor = t.unit.armor_melee
-                else:
-                    armor = t.unit.armor_ranged
-
-            mult = self._calc_multiplier(multipliers, t)
+            mult = self._calc_multiplier(stats.multipliers, t)
+            armor = _armor_for_damage_type(stats.damage_type, t)
             final_splash = max(1.0, splash_dmg_each * mult * (1.0 - armor))
 
             self._emit(EventType.AOE_SPLASH, {

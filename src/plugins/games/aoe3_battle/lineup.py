@@ -13,6 +13,7 @@ import random
 from dataclasses import dataclass, field
 from typing import Sequence
 
+from src.plugins.aoe3.formatter import append_unit_tooltip
 from src.plugins.aoe3.models import Unit
 from src.plugins.aoe3.repository import UnitRepo, is_excluded_unit
 
@@ -1010,7 +1011,7 @@ def format_side_panel(
 
 
 def _append_extras(lines: list[str], u: Unit, indent: str = "") -> None:
-    """追加抗性 + AOE 信息行。"""
+    """追加抗性 + AOE + 官方 tooltip。"""
     extras = []
     armor = _armor_str(u)
     if armor:
@@ -1028,6 +1029,7 @@ def _append_extras(lines: list[str], u: Unit, indent: str = "") -> None:
         extras.append(f"💥AOE{u.aoe_radius}")
     if extras:
         lines.append(f"{indent}{' '.join(extras)}")
+    append_unit_tooltip(lines, u, indent=indent)
 
 
 def _append_counter_info(

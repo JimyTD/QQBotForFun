@@ -171,5 +171,5 @@ QQBotForFun/
 ## 6. 未来方向（非承诺）
 
 - 群峦求生（`terra_survival`）：TFC/GT 风格持久化沙盘，设计文档已完成，待启动开发
-- AOE3 tooltip 解包与展示
+- ~~AOE3 tooltip 解包与展示~~ ✅（2026-05-27）
 - 海龟汤 Agent 优化（持续迭代 prompt 质量）

@@ -1,0 +1,32 @@
+---
+description: AoE3 攻击槽位与数据铁律（parser / 斗蛐蛐模拟器）
+alwaysApply: true
+---
+
+# AoE3 攻击数据铁律
+
+## 正交维度
+
+- **动作名**（HandAttack / RangedAttack / BuildingAttack…）：引擎行为；parser 据此归入 ranged / melee / siege 槽。
+- **damagetype**（Hand / Ranged / Siege）：只决定吃哪种护甲；**禁止**用 damagetype 判断归属哪个槽。
+
+详见 `.codebuddy/rules/aoe3-attack-data-design.mdc` 与 `docs/games/aoe3-battle.md` §3.9。
+
+## 数据第一
+
+每个槽位的 `attack_*`、`aoe_radius_*`、`damage_cap_*`、`damage_type_*`、倍率必须来自**同一条** parser 选定的代表 `protoaction`，禁止拆条拼接。
+
+## 模拟器选槽
+
+运行时 `AttackMode` 只表示「本 tick 用远程槽还是近战槽」：
+
+- `MELEE` → 近战槽整包
+- `RANGED` / `RANGED_PENALIZED` → 远程槽整包（贴脸只折主伤害，不换槽）
+
+溅射与 `_calc_damage` 必须用**同一槽**字段（`CombatSlotStats` / `_combat_slot_stats`）。
+
+## damagecap
+
+- 有 `damage_cap_*`（protoy `damagecap`）→ 必须用该值，**不得**用 2× 覆盖。
+- 有溅射半径但 JSON 无 `damage_cap_*` → fallback：`合并基础攻 × 2`（`damage × num_projectiles × 2`）。
+- 禁止砍掉 AOE 作为「无 cap」的处理方式。

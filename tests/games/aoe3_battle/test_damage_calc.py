@@ -30,6 +30,7 @@ from plugins.games.aoe3_battle.simulator import (
     Side,
     Soldier,
     ArmySlot,
+    _combat_slot_stats,
     _create_soldier,
 )
 
@@ -56,6 +57,10 @@ def _make_unit(
     armor_siege: float = 0.0,
     multipliers_ranged: list[Multiplier] | None = None,
     multipliers_melee: list[Multiplier] | None = None,
+    aoe_radius_ranged: int = 0,
+    aoe_radius_melee: int = 0,
+    damage_cap_ranged: float = 0.0,
+    damage_cap_melee: float = 0.0,
 ) -> Unit:
     """创建测试用 Unit。"""
     return Unit(
@@ -77,6 +82,10 @@ def _make_unit(
         armor_siege=armor_siege,
         multipliers_ranged=multipliers_ranged or [],
         multipliers_melee=multipliers_melee or [],
+        aoe_radius_ranged=aoe_radius_ranged,
+        aoe_radius_melee=aoe_radius_melee,
+        damage_cap_ranged=damage_cap_ranged,
+        damage_cap_melee=damage_cap_melee,
     )
 
 
@@ -578,3 +587,78 @@ class TestMultiplierDataIntegrity:
             f"以下倍率标签无法匹配任何兵种 type（计算将失效）:\n"
             + "\n".join(f"  {name}: vs='{vs}'" for name, vs in unmatched[:20])
         )
+
+
+# =====================================================================
+# AOE DamageCap（protoy damagecap + 2× fallback）
+# =====================================================================
+
+class TestAoeDamageCap:
+    """验证溅射：同槽 proto damage_cap 优先；缺字段时 2× 合并基础攻 fallback。"""
+
+    def _splash_raw_damages(self, sim: BattleSimulator) -> list[float]:
+        return [
+            e.data["splash_damage"]
+            for e in sim._events
+            if e.event_type == EventType.AOE_SPLASH
+        ]
+
+    def test_proto_cap_mortar_splash_pool(self):
+        """迫击炮 Barrage：cap=90（非 2×30=60），溅 3 人时每人 30。"""
+        mortar = _make_unit(
+            name="Mortar",
+            attack_ranged=30.0,
+            range_=30.0,
+            damage_type_ranged="Siege",
+            aoe_radius_ranged=4,
+            damage_cap_ranged=90.0,
+        )
+        musk = _make_unit(name="Musk", hp=5000, armor_ranged=0.0)
+        sim = BattleSimulator(
+            red_unit=mortar, red_count=1,
+            blue_unit=musk, blue_count=4,
+            seed=0,
+        )
+        sim._init_soldiers()
+        sim._rebuild_sorted_cache()
+        red = next(s for s in sim._soldiers if s.side == Side.RED)
+        blues = [s for s in sim._soldiers if s.side == Side.BLUE]
+        slot = _combat_slot_stats(red.unit, AttackMode.RANGED)
+        sim._process_aoe(red, blues[0], AttackMode.RANGED, slot_stats=slot)
+        splashes = self._splash_raw_damages(sim)
+        assert len(splashes) == 3
+        assert all(d == pytest.approx(30.0) for d in splashes)
+
+    def test_fallback_2x_when_cap_missing(self):
+        """无 damage_cap 字段时 fallback 合并基础攻 × 2。"""
+        cannon = _make_unit(
+            name="Cannon",
+            attack_ranged=10.0,
+            range_=20.0,
+            aoe_radius_ranged=2,
+            damage_cap_ranged=0.0,
+        )
+        target = _make_unit(name="Target", hp=5000)
+        sim = BattleSimulator(
+            red_unit=cannon, red_count=1,
+            blue_unit=target, blue_count=2,
+            seed=0,
+        )
+        sim._init_soldiers()
+        sim._rebuild_sorted_cache()
+        red = next(s for s in sim._soldiers if s.side == Side.RED)
+        blue = next(s for s in sim._soldiers if s.side == Side.BLUE)
+        slot = _combat_slot_stats(red.unit, AttackMode.RANGED)
+        sim._process_aoe(red, blue, AttackMode.RANGED, slot_stats=slot)
+        splashes = self._splash_raw_damages(sim)
+        # 无 proto cap → fallback 池=20；范围内 1 人 → min(20/1, base10)=10
+        assert splashes == [pytest.approx(10.0)]
+
+    def test_mortar_in_seeds_has_proto_cap(self):
+        """数据管线：seeds 迫击炮含 damage_cap_ranged=90。"""
+        from plugins.aoe3.repository import UnitRepo
+
+        mortar = UnitRepo.get().get_by_id("mortar")
+        assert mortar is not None
+        assert mortar.damage_cap_ranged == pytest.approx(90.0)
+        assert mortar.aoe_radius_ranged == 4

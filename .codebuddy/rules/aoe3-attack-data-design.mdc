@@ -32,3 +32,8 @@ AoE3 引擎**不存在"远程 vs 近战"的概念划分**。它只有：
 - 火兵：10 种攻击模式全部 `damagetype=Siege`，有远程有近战
 
 详见 docs/games/aoe3-battle.md §3.9。
+
+**damagecap（溅射池）**：
+- 与 `damage` / `damagearea` 同条 protoaction 写入 `damage_cap_ranged` 或 `damage_cap_melee`。
+- 模拟器按**本次出手槽位整包**读取；有 proto 值必须用 proto，无字段才 fallback `合并基础攻×2`。
+- 不得用 2× 覆盖已有 proto cap。
