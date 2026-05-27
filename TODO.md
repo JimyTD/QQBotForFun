@@ -76,7 +76,7 @@
 
 ---
 
-## 📜 AoE3 兵种查询：补单位 tooltip 描述
+## 📜 AoE3 兵种查询：补单位 tooltip 描述 ✅
 
 **现象**：`aoe3 <兵种名>` 卡片只有数值属性，**没有**游戏里鼠标悬停时的那段官方描述文案。
 
@@ -91,10 +91,9 @@
 
 **待办**（需本机有 AoE3DE，能跑 extractor + parser）：
 
-1. `aoe3_gamedata_parser.py`：解析 `rollovertextid`（及可选 `shortrollovertextid`），写入 `units.json` 新字段（如 `description` / `description_en`）
-2. `models.py` + `Unit.from_dict`：接新字段
-3. `formatter.py` `render_unit_card`：卡片末尾展示 tooltip（优先中文，过长可截断或换行）
-4. 重跑 parser 更新 `seeds/aoe3/units.json` 并提交
+1. ~~`aoe3_gamedata_parser.py`：解析 `rollovertextid` / `shortrollovertextid`~~ ✅
+2. ~~`models.py` + `formatter.py` 展示~~ ✅
+3. ~~重跑 parser 更新 `seeds/aoe3/units.json`~~ ✅（与 damagecap 同次 `aoe3_gamedata_parser.py`）
 
 **相关文件**：
 
@@ -107,9 +106,9 @@
 
 ---
 
-## 💥 AoE3 斗蛐蛐：从解包读取 `damagecap`（溅射伤害池）
+## 💥 AoE3 斗蛐蛐：从解包读取 `damagecap`（溅射伤害池）✅
 
-**现象**：斗蛐蛐 AOE 溅射伤害可能偏强/不准；`damage_cap` 在文档里被标成「已解决」，但代码里**尚未**从游戏数据读取。
+**现象**（已修复 2026-05-27）：模拟器按同槽 `damage_cap_*` 读 protoy；无字段仍 2× fallback。
 
 **背景**（2026-05-26 确认，来源均为 AoE3 / DE，非 AoE2）：
 
@@ -124,15 +123,15 @@
   - `simulator.py` 写死 `damage_cap = base_atk * 2.0`
   - `docs/games/aoe3-battle.md` §四 写「damage_cap 已通过解析器补全」——**与代码不符**，实现时需改文档
 
-**待办**（需本机有 AoE3DE，能跑 extractor + parser；**先记录，暂不改代码**）：
+**待办**（需本机有 AoE3DE，能跑 extractor + parser）：
 
-1. `aoe3_gamedata_parser.py`：解析 `damagecap`，与对应攻击槽位一并写入 `units.json`（如 `damage_cap_ranged` / `damage_cap_melee`；无 cap 或 0 时可省略字段）
-2. `models.py` + `Unit.from_dict`：接新字段
-3. `simulator.py` `_apply_aoe_splash`：优先用 proto `damage_cap_*`；缺省再 fallback `2×基础攻`（与 Wiki「多数 2×」一致）
-4. 重跑 parser 更新 `seeds/aoe3/units.json`；抽样验收 `grenadier` 远程 cap=36、Hand cap 与解包一致
-5. 修正 `docs/games/aoe3-battle.md`：区分「已读 damagearea」与「待读 damagecap」；注明 `round(aoe_radius)` 为一维简化
+1. ~~`aoe3_gamedata_parser.py`：解析 `damagecap`~~ ✅
+2. ~~`models.py` + `simulator.py`：读 `damage_cap_*`，fallback `2×`~~ ✅
+3. ~~**重跑 parser** 更新 `seeds/aoe3/units.json`~~ ✅
+4. ~~修正 `docs/games/aoe3-battle.md`~~ ✅
+5. ~~审计清单~~ ✅ [`docs/aoe3-damagecap-audit.md`](docs/aoe3-damagecap-audit.md)（**48** 槽溅射池变化；`basedamagecap`：**勿**改 fallback 为 1×）
 
-**可选后续**（非必须）：距离衰减（DE 霰弹：0.25 半径内近满伤）、锥形 vs 圆形溅射形状——一维场地上优先级低于 cap。
+**可选后续**：距离衰减、Bolos 弹跳——引擎公式不在解包 XML。
 
 **相关文件**：
 

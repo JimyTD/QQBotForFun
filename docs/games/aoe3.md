@@ -29,6 +29,15 @@
 
 **解析脚本**：`scripts/crawler/aoe3_gamedata_parser.py`
 
+**本机游戏路径**（不入 git，见 `aoe3_bar_extractor.py`）：
+
+| 项 | 默认路径 |
+|----|----------|
+| `Data.bar` | `E:\SteamLibrary\steamapps\common\AoE3DE\Game\Data\Data.bar` |
+| 解包输出 | `E:\aoe3_extracted`（环境变量 `AOE3_EXTRACTED_DIR` 可覆盖） |
+
+解包含 `protoy.xml`、`stringtabley_zh.xml`、`tactics/*.tactics` 等；AOE 半径/cap 在 **protoy 的 protoaction**；距离衰减等在 **tactics**（`outerdamageareadistance/factor`），斗蛐蛐未模拟。
+
 **核心设计原则**：
 - `unit.type` 与 `multipliers.vs` 直接存游戏原始标签（`AbstractCavalry` 等），不翻译
 - 倍率天然匹配：`damagebonus.type` 和 `unit.type` 来自同一份 XML 同一套字符串，不需要映射表

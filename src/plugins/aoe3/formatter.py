@@ -29,6 +29,26 @@ def _unit_display_name(u: Unit) -> str:
     return u.name if u.name != u.name_en else u.name_en
 
 
+_DESCRIPTION_MAX_LEN = 320
+
+
+def format_unit_tooltip(unit: Unit, *, max_len: int = _DESCRIPTION_MAX_LEN) -> str | None:
+    """游戏内 rollover 描述，优先中文。查询卡片与斗蛐蛐阵容共用。"""
+    text = (unit.description or unit.description_en or "").strip()
+    if not text:
+        return None
+    if len(text) > max_len:
+        return text[: max_len - 1] + "…"
+    return text
+
+
+def append_unit_tooltip(lines: list[str], unit: Unit, indent: str = "") -> None:
+    """向面板行列表追加 tooltip（有则追加一行）。"""
+    text = format_unit_tooltip(unit)
+    if text:
+        lines.append(f"{indent}📜 {text}")
+
+
 def render_unit_card(unit: Unit) -> str:
     """渲染完整属性卡片文本。"""
     lines: list[str] = []
@@ -131,6 +151,12 @@ def render_unit_card(unit: Unit) -> str:
             lines.append(f"📋 类型：{' / '.join(types_zh)}")
     if unit.civs:
         lines.append(f"文明：{'、'.join(t_list('civs', unit.civs))}")
+
+    tooltip = format_unit_tooltip(unit)
+    if tooltip:
+        lines.append("")
+        lines.append("📜 说明")
+        lines.append(tooltip)
 
     return "\n".join(lines)
 

@@ -73,8 +73,14 @@ class Unit:
     aoe_radius_ranged: int = 0       # 远程攻击 AOE 半径
     aoe_radius_melee: int = 0        # 近战攻击 AOE 半径
     aoe_radius_siege: int = 0        # 攻城攻击 AOE 半径
+    damage_cap_ranged: float = 0.0   # 远程溅射总伤害池（protoy damagecap）
+    damage_cap_melee: float = 0.0    # 近战溅射总伤害池
     damage_type_ranged: str = ""     # "Ranged" / "Siege" / "Hand"
     damage_type_melee: str = ""      # "Hand" / 其他
+
+    # 官方 tooltip（stringtable ← protoy rollovertextid）
+    description: str = ""
+    description_en: str = ""
 
     # 杂项
     internal_name: str = ""
@@ -168,7 +174,11 @@ class Unit:
             aoe_radius_ranged=d.get("aoe_radius_ranged", 0),
             aoe_radius_melee=d.get("aoe_radius_melee", 0),
             aoe_radius_siege=d.get("aoe_radius_siege", 0),
+            damage_cap_ranged=d.get("damage_cap_ranged", 0.0),
+            damage_cap_melee=d.get("damage_cap_melee", 0.0),
             damage_type_ranged=d.get("damage_type_ranged", ""),
             damage_type_melee=d.get("damage_type_melee", ""),
+            description=d.get("description", ""),
+            description_en=d.get("description_en", ""),
             internal_name=d.get("internal_name", ""),
         )

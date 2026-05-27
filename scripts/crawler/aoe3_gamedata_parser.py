@@ -147,6 +147,15 @@ def parse_unit(el: ET.Element, strings_en: dict, strings_zh: dict) -> dict | Non
     name_en = strings_en.get(display_name_id, internal_name)
     name_zh = strings_zh.get(display_name_id, name_en)
 
+    rollover_id = el.findtext("rollovertextid", "").strip()
+    short_rollover_id = el.findtext("shortrollovertextid", "").strip()
+    description_en = strings_en.get(rollover_id, "").strip() if rollover_id else ""
+    description_zh = strings_zh.get(rollover_id, "").strip() if rollover_id else ""
+    if not description_en and short_rollover_id:
+        description_en = strings_en.get(short_rollover_id, "").strip()
+    if not description_zh and short_rollover_id:
+        description_zh = strings_zh.get(short_rollover_id, "").strip()
+
     # --- Type tags (filtered) ---
     type_tags = sorted(t for t in all_types if should_keep_type(t))
 
@@ -227,6 +236,11 @@ def parse_unit(el: ET.Element, strings_en: dict, strings_zh: dict) -> dict | Non
     if armor_siege > 0:
         result["armor_siege"] = armor_siege
 
+    if description_en:
+        result["description_en"] = description_en
+    if description_zh:
+        result["description"] = description_zh
+
     if ranged:
         result["attack_ranged"] = ranged["damage"]
         result["range"] = ranged["maxrange"]
@@ -237,6 +251,8 @@ def parse_unit(el: ET.Element, strings_en: dict, strings_zh: dict) -> dict | Non
             result["num_projectiles_ranged"] = ranged["num_projectiles"]
         if ranged["aoe_radius"] > 0:
             result["aoe_radius_ranged"] = ranged["aoe_radius"]
+        if ranged.get("damage_cap", 0) > 0:
+            result["damage_cap_ranged"] = ranged["damage_cap"]
         if ranged["multipliers"]:
             result.setdefault("multipliers", {})["ranged"] = ranged["multipliers"]
 
@@ -249,6 +265,8 @@ def parse_unit(el: ET.Element, strings_en: dict, strings_zh: dict) -> dict | Non
             result["num_projectiles_melee"] = melee["num_projectiles"]
         if melee["aoe_radius"] > 0:
             result["aoe_radius_melee"] = melee["aoe_radius"]
+        if melee.get("damage_cap", 0) > 0:
+            result["damage_cap_melee"] = melee["damage_cap"]
         if melee["multipliers"]:
             result.setdefault("multipliers", {})["melee"] = melee["multipliers"]
 
@@ -381,6 +399,7 @@ def _parse_attacks(el: ET.Element, tactics_filename: str = "") -> dict[str, dict
         minrange = round(float(action.findtext("minrange", "0") or "0"), 2)
         damagearea = round(float(action.findtext("damagearea", "0") or "0"), 2)
         aoe_radius = round(damagearea) if damagearea > 0 else 0
+        damagecap = round(float(action.findtext("damagecap", "0") or "0"), 2)
 
         # Projectile count from tactics (displayednumberprojectiles)
         num_projectiles = tactics_proj.get(name, 1)
@@ -410,6 +429,7 @@ def _parse_attacks(el: ET.Element, tactics_filename: str = "") -> dict[str, dict
             "maxrange": maxrange,
             "minrange": minrange,
             "aoe_radius": aoe_radius,
+            "damage_cap": damagecap,
             "num_projectiles": num_projectiles,
             "multipliers": multipliers,
             "priority": ATTACK_PRIORITY.get(name, 99),
@@ -578,6 +598,8 @@ def main():
     print(f"  Ranged: {sum(1 for u in units if u.get('attack_ranged'))}")
     print(f"  Melee: {sum(1 for u in units if u.get('attack_melee'))}")
     print(f"  AOE: {sum(1 for u in units if u.get('aoe_radius'))}")
+    print(f"  damage_cap: {sum(1 for u in units if u.get('damage_cap_ranged') or u.get('damage_cap_melee'))}")
+    print(f"  description: {sum(1 for u in units if u.get('description'))}")
 
     # Verify multiplier matching
     all_types = set()
