@@ -22,8 +22,9 @@
 
 | 文档 | Game ID | 说明 |
 |------|---------|------|
-| [terra-survival.md](terra-survival.md) | `terra_survival` | 群峦求生（搁置，未实现代码） |
-| [terra-survival-tfc-gt-research.md](terra-survival-tfc-gt-research.md) | — | 群峦求生 TFC/GT 调研笔记 |
+| [terra-survival.md](terra-survival.md) | `terra_survival` | 群峦求生（搁置 · 归档索引） |
+| [terra-survival-tfc-gt-research.md](terra-survival-tfc-gt-research.md) | — | TFC/GT 调研参考库（已归档） |
+| [terra-survival-archive-v5.md](terra-survival-archive-v5.md) | — | v5 详细草案（已 superseded） |
 
 ---
 
