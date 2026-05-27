@@ -131,6 +131,14 @@ async def _(matcher: Matcher, event: GroupMessageEvent, args: Message = CommandA
         await _handle_custom_battle(matcher, event, " ".join(parts[1:]))
         return
 
+    # ---- 隐式自选：参数中有非模式关键词且非纯数字 → 当作兵种名 ----
+    _MODE_KEYWORDS = {"单挑", "1v1", "duel", "黑名单", "乱斗", "黑名单乱斗", "blacklist"}
+    unknown_words = [p for p in parts if p not in _MODE_KEYWORDS and not p.isdigit()]
+    if unknown_words:
+        # 有无法识别为模式的词 → 视为兵种名，走自选逻辑
+        await _handle_custom_battle(matcher, event, arg_text)
+        return
+
     mode_id = "bet"  # 默认押注模式
     budget = None     # None = 使用默认值
 

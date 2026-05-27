@@ -26,6 +26,7 @@ from plugins.games.aoe3_battle.simulator import (
     CLOSE_RANGE_PENALTY,
     AttackMode,
     BattleSimulator,
+    EventType,
     Side,
     Soldier,
     ArmySlot,
@@ -423,6 +424,69 @@ class TestRealUnitDamage:
         assert damage == pytest.approx(expected)
         # 步兵攻城抗性通常为 0，所以伤害 = base × mult
         assert musketeer.armor_siege == 0.0
+
+    def test_abus_gunner_vs_iron_troop_bypasses_ranged_resist(self):
+        """奥斯曼枪手(Siege)打铁军 → 无视 60% 远程抗性，用 armor_siege=0。"""
+        abus = self.repo.get_by_id("abusgun")
+        iron = self.repo.get_by_id("ypmercirontroop")
+        assert abus and iron
+
+        assert abus.damage_type_ranged == "Siege"
+        assert iron.armor_ranged == pytest.approx(0.6)
+        assert iron.armor_siege == 0.0
+
+        attacker = _make_soldier(abus)
+        target = _make_soldier(iron, side=Side.BLUE)
+
+        damage = self.sim._calc_damage(attacker, target, AttackMode.RANGED)
+        mult = self.sim._calc_multiplier(abus.multipliers_ranged, target)
+        expected = abus.attack_ranged * abus.num_projectiles_ranged * mult * (
+            1 - iron.armor_siege
+        )
+        assert damage == pytest.approx(expected)
+        assert damage == pytest.approx(36.0)
+
+        # 若错误地使用远程抗性，伤害会被严重低估
+        wrong = abus.attack_ranged * mult * (1 - iron.armor_ranged)
+        assert wrong == pytest.approx(14.4)
+        assert damage != pytest.approx(wrong)
+
+    def test_iron_troop_vs_abus_gunner_uses_ranged_resist(self):
+        """反向：铁军(Ranged)打枪手 → 正常吃 20% 远程抗性。"""
+        abus = self.repo.get_by_id("abusgun")
+        iron = self.repo.get_by_id("ypmercirontroop")
+        assert abus and iron
+
+        attacker = _make_soldier(iron)
+        target = _make_soldier(abus, side=Side.RED)
+
+        damage = self.sim._calc_damage(attacker, target, AttackMode.RANGED)
+        mult = self.sim._calc_multiplier(iron.multipliers_ranged, target)
+        expected = iron.attack_ranged * iron.num_projectiles_ranged * mult * (
+            1 - abus.armor_ranged
+        )
+        assert damage == pytest.approx(expected)
+        assert damage == pytest.approx(20.0)
+
+    def test_abus_vs_iron_battle_applies_full_siege_damage(self):
+        """整局模拟：枪手每一发远程命中铁军均为 36（非 14.4）。"""
+        from plugins.aoe3.repository import UnitRepo
+
+        repo = UnitRepo.get()
+        abus = repo.get_by_id("abusgun")
+        iron = repo.get_by_id("ypmercirontroop")
+        assert abus and iron
+
+        result = BattleSimulator(abus, 1, iron, 1, seed=0).run()
+        abus_hits = [
+            ev.data["damage"]
+            for ev in result.events
+            if ev.event_type == EventType.ATTACK
+            and ev.data.get("attacker_name") == abus.name
+            and ev.data.get("damage_type") == "Siege"
+        ]
+        assert abus_hits, "应有枪手 Siege 远程命中记录"
+        assert all(d == pytest.approx(36.0) for d in abus_hits)
 
 
 # =====================================================================

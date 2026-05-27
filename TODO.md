@@ -4,6 +4,24 @@
 
 ---
 
+## 🖼️ AoE3：审计 Wiki/复制补图（28 + 68）
+
+**背景**（commit `83dcaa0`）：全量 icon 重建时，绝大多数来自游戏 BAR 解包；另有约 **28** 张走 AoE3 Wiki API（BAR 解不出）、约 **68** 张从基础兵种复制给变体。这批最容易「图和兵对不上」。
+
+**现状**：当时补图脚本/名单**未提交进 git**，仓库里无法还原精确的 28、68 个 `unit_id`。
+
+**待办**（需本机 AoE3DE + 跑 extractor）：
+
+1. 给 `scripts/crawler/aoe3_icon_extractor.py` 增加导出 `icon_manifest.json`（字段如 `source: bar | wiki_api | variant_copy`，复制项记 `copy_from`）
+2. 重跑提取后，**只审** manifest 里标记为 `wiki_api` 与 `variant_copy` 的条目（对照游戏内头像 / 斗蛐蛐展示）
+3. 错图优先改 BAR/portrait 或 `data/aoe3/icon_overrides.json`，避免再批量爬 Wiki
+
+**相关**：`resources/aoe3/icons/`、`docs/games/aoe3.md` §6
+
+**优先级**：中 / 体验向 —— 主流程 BAR 图质量已够，仅少数补图需人工验收。
+
+---
+
 ## 🖼️ 红警2斗蛐蛐：导出兵种 icon（`ra2_battle`）
 
 **现象**：红警斗蛐蛐开局只有中文文字面板，**没有**帝国斗蛐蛐那种兵种头像图。
