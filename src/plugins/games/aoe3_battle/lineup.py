@@ -1207,17 +1207,22 @@ def format_formation_panel(lineup: MatchLineup) -> str:
 def resolve_unit_name(repo: UnitRepo, name: str) -> Unit | None:
     """根据玩家输入的兵种名解析为 Unit 对象。
 
-    匹配策略：精确优先 → 模糊匹配，取第一个结果。
-    玩家可以选黑名单兵种（不做限制），但必须有攻击力和 HP。
+    匹配策略：精确优先 → 模糊匹配；在候选里取第一个可参战单位。
+    玩家可以选 ``BATTLE_BLACKLIST`` 彩蛋兵，但不可选：
+    - ``is_excluded_unit``（含 ``_EXCLUDED_IDS``、yphc 战役村民等）
+    - 村民（``AbstractVillager``，与押注池一致）
+    必须有攻击力和 HP。
     """
-    results = repo.search(name, limit=1)
-    if not results:
-        return None
-    u = results[0]
-    # 必须有攻击力和 HP（否则模拟器跑不动）
-    if not u.has_attack or u.hp <= 0:
-        return None
-    return u
+    results = repo.search(name, limit=8)
+    for u in results:
+        if is_excluded_unit(u):
+            continue
+        if _is_villager(u):
+            continue
+        if not u.has_attack or u.hp <= 0:
+            continue
+        return u
+    return None
 
 
 def generate_custom_lineup(
@@ -1256,7 +1261,10 @@ def generate_custom_lineup(
     for name in unit_names:
         u = resolve_unit_name(repo, name)
         if u is None:
-            return f"⚠️ 找不到兵种「{name}」（需要有攻击力的战斗单位）"
+            return (
+                f"⚠️ 找不到兵种「{name}」"
+                "（需可训练战斗单位；村民/战役专属/占位符不可自选）"
+            )
         resolved_units.append(u)
 
     # 红方 = 第一个兵种

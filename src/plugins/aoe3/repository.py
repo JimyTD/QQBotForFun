@@ -37,7 +37,9 @@ _ICONS_DIR = _ROOT / "resources" / "aoe3" / "icons"
 # 战役 / 剧情专属条目，全局排除（搜索 + 对战池都不出现）。
 #
 # 筛选标准（2026-05-21 复审）：
-#   spc / despc / ypspc / xpspc 前缀 = 战役专属，普通对战玩家造不到。
+#   spc / despc / ypspc / xpspc / yphc 前缀 = 战役专属，普通对战玩家造不到。
+#   yphc* = 主城/剧情战役用的村民换皮（如 yphcjapanesesamurai「日本武士」），
+#   与可训练的 ypkensei 等同名，由 ``is_excluded_unit`` 前缀规则排除。
 #   按"是否够格当怪物"分两类：
 #   - **菜鸡战役兵**（普通兵换皮 / 数据偏弱）→ 全局排除（这里）
 #   - **怪物战役兵**（hp ≥ 500 或攻击数据离谱、有名有姓的英雄/大名/酋长/特殊机械）
@@ -106,12 +108,16 @@ def is_excluded_unit(unit: "Unit") -> bool:
        + 菜鸡战役兵（普通一人口兵换皮，没资格进黑名单乱斗）。
        够格当怪物的战役兵（hp ≥ 500、英雄/大名/酋长 等）保留在
        ``BATTLE_BLACKLIST``，由黑名单乱斗模式专用。
+    7. id 以 ``yphc`` 开头 —— 战役主城村民/剧情角色换皮（``AbstractVillager``），
+       玩家正常造不到；避免与可训练军事单位中文名撞车。
     """
     if unit.id.endswith("batch"):
         return True
     if unit.id.endswith("armyspawn"):
         return True
     if unit.id.startswith("igc"):
+        return True
+    if unit.id.startswith("yphc"):
         return True
     if "Guardian" in unit.type:
         return True

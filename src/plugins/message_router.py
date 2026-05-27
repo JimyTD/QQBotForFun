@@ -42,6 +42,17 @@ def _strip_at(event: MessageEvent) -> str:
     return "".join(parts).strip()
 
 
+# 斗蛐蛐对局内口令（无对局时应明确提示，而非静默或泛泛兜底）
+_BATTLE_INGAME_CMDS = frozenset({
+    "开战", "start", "go",
+    "1", "2", "押1", "押2", "押注1", "押注2",
+})
+
+_NO_BATTLE_HINT = (
+    "⚠️ 当前没有进行中的斗蛐蛐对局\n"
+    "💡 先 @我 斗蛐蛐 或 @我 红警斗蛐蛐 开局"
+)
+
 # 兜底帮助文案（当 @机器人 但无法识别指令时回复）
 _FALLBACK_HELP = (
     "🤖 我没听懂，试试以下指令吧：\n"
@@ -93,5 +104,10 @@ async def _route(event: MessageEvent, matcher: Matcher) -> None:
             await matcher.finish(hint)
             return
 
-    # 3) 兜底：无对局且无法识别 → 通用帮助
+    # 3) 斗蛐蛐对局内口令，但当前无斗蛐蛐对局
+    if text in _BATTLE_INGAME_CMDS:
+        await matcher.finish(_NO_BATTLE_HINT)
+        return
+
+    # 4) 兜底：无对局且无法识别 → 通用帮助
     await matcher.finish(_FALLBACK_HELP)

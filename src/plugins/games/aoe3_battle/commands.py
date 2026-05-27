@@ -12,9 +12,17 @@ from __future__ import annotations
 from nonebot import on_command
 from nonebot.adapters.onebot.v11 import GroupMessageEvent
 from nonebot.matcher import Matcher
-from nonebot.rule import to_me
+from nonebot.rule import Rule, to_me
 
-from core import game_base, session
+from core import game_base
+
+
+async def _is_aoe3_battle(event: GroupMessageEvent) -> bool:
+    runner = game_base.get_runner_by_group(int(event.group_id))
+    return runner is not None and runner.ctx.game_id == "aoe3_battle"
+
+
+_AOE3_BATTLE = Rule(_is_aoe3_battle)
 
 
 def _get_battle_runner(group_id: int):
@@ -29,7 +37,7 @@ def _get_battle_runner(group_id: int):
 _bet_red = on_command(
     "1",
     aliases={"押1", "押注1"},
-    rule=to_me(),
+    rule=to_me() & _AOE3_BATTLE,
     priority=3,
     block=True,
 )
@@ -52,7 +60,7 @@ async def _(matcher: Matcher, event: GroupMessageEvent) -> None:
 _bet_blue = on_command(
     "2",
     aliases={"押2", "押注2"},
-    rule=to_me(),
+    rule=to_me() & _AOE3_BATTLE,
     priority=3,
     block=True,
 )
@@ -75,7 +83,7 @@ async def _(matcher: Matcher, event: GroupMessageEvent) -> None:
 _start_fight = on_command(
     "开战",
     aliases={"start", "go"},
-    rule=to_me(),
+    rule=to_me() & _AOE3_BATTLE,
     priority=3,
     block=True,
 )
