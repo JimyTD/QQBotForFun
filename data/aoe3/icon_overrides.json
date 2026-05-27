@@ -1,0 +1,9 @@
+{
+  "_comment": "AoE3 单位 icon 手动覆盖。extractor 在 variant_copy 之前读取。force_copy_from：从已有 unit_id 的 PNG 复制；block_wiki：禁止 Wiki 回退。",
+  "overrides": {
+    "ypmandarinarmy": {
+      "force_copy_from": "ypmercirontroop",
+      "_note": "BAR 无 mandarin_army_icon_64；临时用铁军 merc 图标，待人工核对"
+    }
+  }
+}

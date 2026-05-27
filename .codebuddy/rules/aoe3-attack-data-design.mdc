@@ -11,8 +11,8 @@ provider:
 AoE3 引擎中「攻击类型」（动作名：HandAttack/RangedAttack/BuildingAttack 等）
 和「伤害类型」（damagetype: Hand/Ranged/Siege）是**完全正交的两个维度**：
 
-- **动作名**：引擎硬编码绑定行为（动画、弹道、是否停步、是否触发闪避）
-- **damagetype**：只决定伤害吃哪种护甲，与远程/近战无关
+- **动作名**：引擎硬编码绑定行为（**动画、抬手/windup**、弹道、弹丸数、是否停步、是否触发闪避）
+- **damagetype**：只决定伤害吃哪种护甲，与远程/近战/anim/windup **无关**
 
 AoE3 引擎**不存在"远程 vs 近战"的概念划分**。它只有：
   姿态(Defend/Stagger/Volley) × 距离(Hand/Ranged) × 特殊(Building/Rocket/Guardian)
@@ -32,6 +32,13 @@ AoE3 引擎**不存在"远程 vs 近战"的概念划分**。它只有：
 - 火兵：10 种攻击模式全部 `damagetype=Siege`，有远程有近战
 
 详见 docs/games/aoe3-battle.md §3.9。
+
+**只选动作，不选属性（整包）**
+
+- **唯一决策**：`ATTACK_PRIORITY` 在每个 ranged/melee/siege 桶里选**一条代表动作名**。
+- damage / rof / damagetype / aoe / damagecap / 倍率 / num_projectiles / **windup** 都是该动作名的一体数据；**禁止**为 windup、ROF、伤害类型等单独做「选哪条」逻辑。
+- Parser 对**每个动作名**从 protoy、tactics、anim 解属性；桶里 `*_ranged` 等字段只因代表动作是谁而写入，不是另选 windup。
+- **禁止**：`<tactic>Volley` 拼桶；把优先级说成「选抬手」；用 damagetype 推 anim/windup/槽位。
 
 **damagecap（溅射池）**：
 - 与 `damage` / `damagearea` 同条 protoaction 写入 `damage_cap_ranged` 或 `damage_cap_melee`。

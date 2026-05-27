@@ -78,6 +78,11 @@ class Unit:
     damage_type_ranged: str = ""     # "Ranged" / "Siege" / "Hand"
     damage_type_melee: str = ""      # "Hand" / 其他
 
+    # 抬手（秒）：逐动作名全量；windup_ranged/melee 为代表动作整包字段
+    windups: dict[str, float] = field(default_factory=dict)
+    windup_ranged: float = 0.0
+    windup_melee: float = 0.0
+
     # 官方 tooltip（stringtable ← protoy rollovertextid）
     description: str = ""
     description_en: str = ""
@@ -178,6 +183,9 @@ class Unit:
             damage_cap_melee=d.get("damage_cap_melee", 0.0),
             damage_type_ranged=d.get("damage_type_ranged", ""),
             damage_type_melee=d.get("damage_type_melee", ""),
+            windups={k: float(v) for k, v in d.get("windups", {}).items()},
+            windup_ranged=float(d.get("windup_ranged", 0) or 0),
+            windup_melee=float(d.get("windup_melee", 0) or 0),
             description=d.get("description", ""),
             description_en=d.get("description_en", ""),
             internal_name=d.get("internal_name", ""),

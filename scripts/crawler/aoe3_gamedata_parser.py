@@ -38,6 +38,11 @@ TACTICS_DIR = EXTRACTED_DIR / "tactics"
 OUTPUT_UNITS_PATH = SEEDS_DIR / "units.json"
 OUTPUT_I18N_PATH = SEEDS_DIR / "i18n_zh.json"
 
+ART_UNITS_BAR = Path(os.environ.get(
+    "AOE3_ART_UNITS_BAR",
+    r"E:\SteamLibrary\steamapps\common\AoE3DE\Game\Art\ArtUnits.bar",
+))
+
 
 # ============================================================
 # 应保留的 unittype 标签前缀/名称（分类标签）
@@ -277,6 +282,15 @@ def parse_unit(el: ET.Element, strings_en: dict, strings_zh: dict) -> dict | Non
         if siege["multipliers"]:
             result.setdefault("multipliers", {})["siege"] = siege["multipliers"]
 
+    # --- Windup（逐动作名；不展示，供模拟器/数据用）---
+    windups = _parse_windups(el, tactics_filename)
+    if windups:
+        result["windups"] = windups
+        if ranged and ranged["name"] in windups:
+            result["windup_ranged"] = windups[ranged["name"]]
+        if melee and melee["name"] in windups:
+            result["windup_melee"] = windups[melee["name"]]
+
     # AOE radius (max across attacks)
     aoe_vals = [result.get("aoe_radius_ranged", 0), result.get("aoe_radius_melee", 0)]
     max_aoe = max(aoe_vals)
@@ -334,21 +348,18 @@ def _age_num_to_name(age_num: str) -> str:
 
 
 # ============================================================
-# Tactics loader — 读取 displayednumberprojectiles
+# Tactics loader — displayednumberprojectiles + anim 名
 # ============================================================
-# 缓存：tactics filename → {action_name → num_projectiles}
-_tactics_cache: dict[str, dict[str, int]] = {}
+# 缓存：tactics filename → {action_name → {"anim": str, "projectiles": int}}
+_tactics_cache: dict[str, dict[str, dict[str, Any]]] = {}
 
 
-def _load_tactics(tactics_filename: str) -> dict[str, int]:
-    """Load a tactics file and return {action_name: displayednumberprojectiles}.
-
-    结果被缓存。如果 tactics 文件不存在或解析失败，返回空 dict。
-    """
+def _load_tactics_actions(tactics_filename: str) -> dict[str, dict[str, Any]]:
+    """Load tactics file → {action_name: {anim, projectiles?}}."""
     if tactics_filename in _tactics_cache:
         return _tactics_cache[tactics_filename]
 
-    result: dict[str, int] = {}
+    result: dict[str, dict[str, Any]] = {}
     tactics_path = TACTICS_DIR / tactics_filename
     if not tactics_path.exists():
         _tactics_cache[tactics_filename] = result
@@ -359,19 +370,121 @@ def _load_tactics(tactics_filename: str) -> dict[str, int]:
         root = tree.getroot()
         for action in root.findall("action"):
             aname = action.findtext("name", "").strip()
+            if not aname:
+                continue
+            entry: dict[str, Any] = {}
+            anim = action.findtext("anim", "").strip()
+            if anim:
+                entry["anim"] = anim
             dnp = action.findtext("displayednumberprojectiles", "")
-            if aname and dnp:
+            if dnp:
                 try:
                     val = int(dnp.strip())
                     if val > 1:
-                        result[aname] = val
+                        entry["projectiles"] = val
                 except ValueError:
                     pass
+            if entry:
+                result[aname] = entry
     except ET.ParseError:
         pass
 
     _tactics_cache[tactics_filename] = result
     return result
+
+
+def _load_tactics(tactics_filename: str) -> dict[str, int]:
+    """Load a tactics file and return {action_name: displayednumberprojectiles}."""
+    actions = _load_tactics_actions(tactics_filename)
+    return {
+        name: meta["projectiles"]
+        for name, meta in actions.items()
+        if meta.get("projectiles")
+    }
+
+
+# ============================================================
+# Anim windup — ArtUnits.bar → tag type=Attack（秒）
+# ============================================================
+_anim_bar_entries: dict[str, dict] | None = None
+_anim_xml_cache: dict[str, str] = {}
+
+
+def _get_anim_units_entries() -> dict[str, dict]:
+    global _anim_bar_entries
+    if _anim_bar_entries is not None:
+        return _anim_bar_entries
+    if not ART_UNITS_BAR.exists():
+        _anim_bar_entries = {}
+        return _anim_bar_entries
+    from aoe3_bar_extractor import read_bar_entries
+    _anim_bar_entries = {e["name"]: e for e in read_bar_entries(str(ART_UNITS_BAR))}
+    return _anim_bar_entries
+
+
+def _animfile_to_bar_path(animfile: str) -> str:
+    return animfile.replace("/", "\\") + ".XMB"
+
+
+def _load_unit_anim_xml(animfile: str) -> str | None:
+    if not animfile or not ART_UNITS_BAR.exists():
+        return None
+    bar_path = _animfile_to_bar_path(animfile)
+    if bar_path in _anim_xml_cache:
+        return _anim_xml_cache[bar_path]
+    entries = _get_anim_units_entries()
+    entry = entries.get(bar_path)
+    if not entry:
+        _anim_xml_cache[bar_path] = ""
+        return None
+    from aoe3_bar_extractor import decode_xmb_to_xml, extract_file_data
+    xml_text = decode_xmb_to_xml(extract_file_data(str(ART_UNITS_BAR), entry))
+    _anim_xml_cache[bar_path] = xml_text
+    return xml_text
+
+
+def _extract_windup_sec(anim_xml: str, anim_name: str) -> float | None:
+    """从 unit anim XML 读取指定 <anim> 块内 tag type=Attack 的秒数。"""
+    pattern = re.compile(
+        rf"<anim>\s*{re.escape(anim_name)}\s*(.*?)</anim>",
+        re.IGNORECASE | re.DOTALL,
+    )
+    m = pattern.search(anim_xml)
+    if not m:
+        return None
+    tag_m = re.search(r'<tag\s+type="Attack">([^<]+)</tag>', m.group(1))
+    if not tag_m:
+        return None
+    try:
+        return round(float(tag_m.group(1).strip()), 4)
+    except ValueError:
+        return None
+
+
+def _parse_windups(el: ET.Element, tactics_filename: str) -> dict[str, float]:
+    """对每个 protoaction 动作名，从 tactics→anim 解 windup；解不出则省略该动作。"""
+    if not tactics_filename:
+        return {}
+    animfile = (el.findtext("animfile") or "").strip()
+    if not animfile:
+        return {}
+    anim_xml = _load_unit_anim_xml(animfile)
+    if not anim_xml:
+        return {}
+
+    tactics_actions = _load_tactics_actions(tactics_filename)
+    windups: dict[str, float] = {}
+    for action in el.findall("protoaction"):
+        name = action.findtext("name", "").strip()
+        if not name:
+            continue
+        meta = tactics_actions.get(name)
+        if not meta or not meta.get("anim"):
+            continue
+        sec = _extract_windup_sec(anim_xml, meta["anim"])
+        if sec is not None:
+            windups[name] = sec
+    return windups
 
 
 def _parse_attacks(el: ET.Element, tactics_filename: str = "") -> dict[str, dict]:
@@ -600,6 +713,9 @@ def main():
     print(f"  AOE: {sum(1 for u in units if u.get('aoe_radius'))}")
     print(f"  damage_cap: {sum(1 for u in units if u.get('damage_cap_ranged') or u.get('damage_cap_melee'))}")
     print(f"  description: {sum(1 for u in units if u.get('description'))}")
+    print(f"  windups: {sum(1 for u in units if u.get('windups'))}")
+    windup_actions = sum(len(u.get('windups', {})) for u in units)
+    print(f"  windup action entries: {windup_actions}")
 
     # Verify multiplier matching
     all_types = set()

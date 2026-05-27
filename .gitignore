@@ -44,11 +44,14 @@ Thumbs.db
 htmlcov/
 
 # Data / Logs
-# data/ 默认忽略；ra2 提取的精炼 JSON（~190KB）需要入库给服务器用
+# data/ 默认忽略；ra2 / aoe3 提取的精炼 JSON 需要入库
 data/*
 !data/ra2/
 data/ra2/*
 !data/ra2/*.json
+!data/aoe3/
+data/aoe3/*
+!data/aoe3/*.json
 logs/
 *.log
 *.db

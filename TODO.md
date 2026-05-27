@@ -1,24 +1,40 @@
 # TODO
 
 > 待办事项列表 —— 需要在本机 / 装了游戏的机器上验证或处理的事项。
+>
+> **2026-05-28 进度**：AoE3 icon 提取器重写 + manifest/回补完成；windup 全量写入 `units.json`（parser ✅，模拟器待接）。
 
 ---
 
-## 🖼️ AoE3：审计 Wiki/复制补图（28 + 68）
+## 🖼️ AoE3：审计 Wiki/复制补图
+
+**机制** ✅（2026-05-28）：`aoe3_icon_extractor.py` 重写完毕；`icon_manifest.json` / `icon_overrides.json` 产出（`data/aoe3/`，本机生成）。
 
 **背景**（commit `83dcaa0`）：全量 icon 重建时，绝大多数来自游戏 BAR 解包；另有约 **28** 张走 AoE3 Wiki API（BAR 解不出）、约 **68** 张从基础兵种复制给变体。这批最容易「图和兵对不上」。
 
-**现状**：当时补图脚本/名单**未提交进 git**，仓库里无法还原精确的 28、68 个 `unit_id`。
+**现状**（2026-05-28，`aoe3_icon_extractor.py` 已重写）：
 
-**待办**（需本机 AoE3DE + 跑 extractor）：
+- 产出 `data/aoe3/icon_manifest.json`（`source`: bar | bar_alt | bar_portrait | wiki_api | variant_copy | missing；复制项记 `copy_from`）
+- 手动覆盖：`data/aoe3/icon_overrides.json`（`force_copy_from` / `block_wiki`）
+- 已跑 BAR 全量 + `--backfill-only` 回补：**2002** PNG；manifest 统计 **1870 bar + 33 bar_alt + 97 variant_copy + 1 wiki_api + 23 missing**
+- 剩余 **23** 个 missing 多为 DE 彩蛋/编辑器占位（`deeggpenguin`、`testobject` 等）或 BAR 内伪 PNG（非标准 PNG/DDT，无法解码）；斗蛐蛐种子单位仅 `ypmandarinarmy` 已通过 override 临时复制
 
-1. 给 `scripts/crawler/aoe3_icon_extractor.py` 增加导出 `icon_manifest.json`（字段如 `source: bar | wiki_api | variant_copy`，复制项记 `copy_from`）
-2. 重跑提取后，**只审** manifest 里标记为 `wiki_api` 与 `variant_copy` 的条目（对照游戏内头像 / 斗蛐蛐展示）
-3. 错图优先改 BAR/portrait 或 `data/aoe3/icon_overrides.json`，避免再批量爬 Wiki
+**待办**（人工验收）：
+
+1. 对照 `icon_manifest.json` → `audit.wiki_api`（1 条：`shrine`）与 `audit.variant_copy`（97 条），在游戏内或斗蛐蛐面板核对是否错图
+2. 错图写入 `data/aoe3/icon_overrides.json`，再跑 `uv run python scripts/crawler/aoe3_icon_extractor.py --backfill-only`
+3. 缺 BAR 解码器的伪 PNG 格式（如 `beast_icon.png`）若需精确图，需另找解包方案或手工 PNG，勿再批量爬 Wiki
+
+**命令**：
+
+```bash
+uv run python scripts/crawler/aoe3_icon_extractor.py          # 全量 BAR + wiki/复制
+uv run python scripts/crawler/aoe3_icon_extractor.py --backfill-only  # 仅补 missing
+```
 
 **相关**：`resources/aoe3/icons/`、`docs/games/aoe3.md` §6
 
-**优先级**：中 / 体验向 —— 主流程 BAR 图质量已够，仅少数补图需人工验收。
+**优先级**：中 / 体验向 —— 主流程 BAR 图质量已够；重点审 variant_copy 清单。
 
 ---
 
@@ -76,76 +92,6 @@
 
 ---
 
-## 📜 AoE3 兵种查询：补单位 tooltip 描述 ✅
-
-**现象**：`aoe3 <兵种名>` 卡片只有数值属性，**没有**游戏里鼠标悬停时的那段官方描述文案。
-
-**背景**（2026-05-25 确认）：
-
-- 官方中文**单位名**已在 `seeds/aoe3/units.json` 的 `name` 字段（来自 `stringtabley_zh.xml`），标题行有展示。
-- **Tooltip 描述**游戏里有，但当前 pipeline **未提取、未入库、未展示**。
-- 解包后（`aoe3_bar_extractor.py` → 默认 `E:\aoe3_extracted`，不入 git）：
-  - `protoy.xml`：`RolloverTextID` / `ShortRolloverTextID` 指向 stringtable 条目
-  - `stringtabley_en.xml` / `stringtabley_zh.xml`：含对应中英文描述文本
-- 解析器 `aoe3_gamedata_parser.py` 目前只读 `displaynameid`（名字），没读 rollover 字段。
-
-**待办**（需本机有 AoE3DE，能跑 extractor + parser）：
-
-1. ~~`aoe3_gamedata_parser.py`：解析 `rollovertextid` / `shortrollovertextid`~~ ✅
-2. ~~`models.py` + `formatter.py` 展示~~ ✅
-3. ~~重跑 parser 更新 `seeds/aoe3/units.json`~~ ✅（与 damagecap 同次 `aoe3_gamedata_parser.py`）
-
-**相关文件**：
-
-- `scripts/crawler/aoe3_bar_extractor.py`
-- `scripts/crawler/aoe3_gamedata_parser.py`
-- `seeds/aoe3/units.json`
-- `src/plugins/aoe3/models.py`、`formatter.py`
-
-**优先级**：中 / 体验向 —— 纯展示增强，不影响查询与斗蛐蛐逻辑。
-
----
-
-## 💥 AoE3 斗蛐蛐：从解包读取 `damagecap`（溅射伤害池）✅
-
-**现象**（已修复 2026-05-27）：模拟器按同槽 `damage_cap_*` 读 protoy；无字段仍 2× fallback。
-
-**背景**（2026-05-26 确认，来源均为 AoE3 / DE，非 AoE2）：
-
-- 解包 `protoy.xml`（`aoe3_bar_extractor.py` → 默认 `E:\aoe3_extracted`）中，带溅射的 `<protoaction>` 同时有：
-  - `<damagearea>` — 溅射半径（**已在用**）
-  - `<damagecap>` — 溅射**总伤害池**（不含主目标全额伤害；**尚未读取**）
-- 社区 / proto 对照（如 AoE3 Heaven 专帖）：掷弹兵手榴弹 base=16、`damagearea=3`、**`damagecap=36`**（不是简单 `2×16=32`）；溅射常 11～14/人，非满 base。
-- **斗蛐蛐有意简化**：一维线性、无体积，同排单位都能进溅射；`round(aoe_radius)` 当「最多溅射 N 人」是简化，**不是**引擎原义（原版还有距离衰减等）。此简化可保留，但 cap 应用 proto 值会更贴 DE。
-- 当前链路断层：
-  - `aoe3_gamedata_parser.py` 只 `findtext("damagearea")` → `aoe_radius_*`，无 `damagecap`
-  - `seeds/aoe3/units.json` 有 `aoe_radius_ranged` / `aoe_radius_melee`（如 `grenadier`：3 / 1），**无** `damage_cap_*`
-  - `simulator.py` 写死 `damage_cap = base_atk * 2.0`
-  - `docs/games/aoe3-battle.md` §四 写「damage_cap 已通过解析器补全」——**与代码不符**，实现时需改文档
-
-**待办**（需本机有 AoE3DE，能跑 extractor + parser）：
-
-1. ~~`aoe3_gamedata_parser.py`：解析 `damagecap`~~ ✅
-2. ~~`models.py` + `simulator.py`：读 `damage_cap_*`，fallback `2×`~~ ✅
-3. ~~**重跑 parser** 更新 `seeds/aoe3/units.json`~~ ✅
-4. ~~修正 `docs/games/aoe3-battle.md`~~ ✅
-5. ~~审计清单~~ ✅ [`docs/aoe3-damagecap-audit.md`](docs/aoe3-damagecap-audit.md)（**48** 槽溅射池变化；`basedamagecap`：**勿**改 fallback 为 1×）
-
-**可选后续**：距离衰减、Bolos 弹跳——引擎公式不在解包 XML。
-
-**相关文件**：
-
-- `scripts/crawler/aoe3_bar_extractor.py`
-- `scripts/crawler/aoe3_gamedata_parser.py`
-- `seeds/aoe3/units.json`
-- `src/plugins/aoe3/models.py`
-- `src/plugins/games/aoe3_battle/simulator.py`
-- `docs/games/aoe3-battle.md`
-
-**优先级**：中 / 平衡向 —— 主要影响带 AOE 兵种（掷弹兵、胸甲骑兵等）；一维简化可保留，cap 对齐后溅射强度会更贴 DE。
-
----
-
 ## ⏱️ AoE3 斗蛐蛐：调研 tactics / 动画能否解出「抬手时间」
 
 **现象**：斗蛐蛐模拟**不算抬手（前摇）**——士兵进射程后**立即开火**（初始 CD=0），冷却只用 `protoy.xml` 的 `rof_*`（秒）。长抬手兵种偏强、短抬手兵种偏弱。
@@ -176,20 +122,17 @@
   - Heaven 老帖也提到：长弓有拉弓动画才出箭、散兵弹丸即中，历史上影响 hit-and-run 手感（[Longbow vs Skirm](https://aoe3.heavengames.com/cgi-bin/forums/display.cgi?action=st&fn=15&tn=29856)）。
 - **当前模拟器**（`simulator.py` + `docs/games/aoe3-battle.md` §3.3/§3.5）：CD = ROF；首次 CD=0；**无** windup 状态。
 
-**调研结论（暂）**：
+**调研结论（2026-05-28，本机 AoE3DE 跑通）** ✅ parser 数据已落地：
 
-1. **只能走解包链路**（与弹丸数同一思路，无手工填表）：`proto <tactics>` → `tactics <action><anim>` → `art/` anim 里 `tag Attack` 比例 × 动画 `length` → 写入 `units.json` 新字段（如 `windup_ranged`）。
-2. **比 `displayednumberprojectiles` 多一步**：弹丸数纯 tactics；抬手还必须解 `art/`（当前 extractor 只导 tactics，anim 需扩 BAR 解包或确认已有路径）。
-3. **parser 需定规则**：斗蛐蛐默认 Volley 姿态 → 只导 `VolleyRangedAttack` / `VolleyHandAttack` 等对应该 `<anim>` 的 tag；Volley/Defend/Stagger/Melee 多套 anim 由 parser 按 tactic 名筛选，不是人工挑单位。
-4. **解不出就不写**：某单位 anim 缺失或 tag 解析失败 → 该字段省略，模拟器沿用现有默认（与缺 ROF 走默认值同一原则）；**不做** fallback 表、不手工补数。
+1. **只选动作，不选抬手** ✅ — 逐动作名写入 `windups`；`windup_ranged`/`windup_melee` 为代表动作整包
+2. anim 在 **ArtUnits.bar** ✅
+3. DE `<tag type="Attack">` 值已是秒数 ✅
+4. `aoe3_gamedata_parser.py` 全量 windup ✅ — 661/756 单位有 `windups`，已重跑 `seeds/aoe3/units.json`
 
-**待办**（需本机 AoE3DE + BAR 解包 tactics **与** art/anim；**先调研 extractor/parser，暂不改模拟器**）：
+**待办**（模拟器 + 文档）：
 
-1. 确认/扩展 `aoe3_bar_extractor.py`：能否从 BAR 批量解 `art/**/*.xml`（或单位 anim 引用路径）
-2. 抽样走通解包链：`longbowman` / `skirmisher` / `musketeer` / `chukonu` —— proto → tactics → anim → 算出秒数
-3. 核对：解包结果是否接近 Fandom/ESO 抽样值（~0.98 / ~0.46 / ~0.48s），仅作**校验**，不作数据来源
-4. `aoe3_gamedata_parser.py`：实现 anim windup 解析（Volley 默认攻击动作）；重跑生成 `units.json`
-5. 若解包链可靠：`models.py` + `simulator.py` + `docs/games/aoe3-battle.md`（ROF=reload、windup 单独字段）
+1. `simulator.py`：首次 CD = 代表动作 windup（不展示在面板）
+2. `docs/games/aoe3-battle.md` §3.3/§3.5 补 windup 说明
 
 **参考链接**：
 
@@ -201,7 +144,8 @@
 
 **相关文件**：
 
-- `scripts/crawler/aoe3_bar_extractor.py`（`extract_tactics`；anim 可能还要从 BAR 解 `art/`）
+- `scripts/aoe3_windup_research.py`（调研脚本；本机跑抽样/覆盖率）
+- `scripts/crawler/aoe3_bar_extractor.py`（Data.bar + tactics；anim 在 **ArtUnits.bar**）
 - `scripts/crawler/aoe3_gamedata_parser.py`（`_load_tactics` / `_parse_attacks`）
 - `seeds/aoe3/units.json`
 - `src/plugins/aoe3/models.py`
@@ -225,7 +169,7 @@
 
 **与现有 TODO 的关系**：
 
-- §「`damagecap`」：对齐溅射**伤害池**上限（proto 值），不解决「圆里人数打满」。
+- `damagecap`（已完成）：对齐溅射**伤害池**上限（proto 值），不解决「圆里人数打满」。
 - 本条：对齐「圆里**能命中几个**」——一维简化下缺体积与宽度，是炮兵失衡的主因之一。
 
 **架构（建议拆包，避免 `simulator.py` 继续膨胀）**：
@@ -234,7 +178,7 @@
 |---|---|
 | 数据 | `aoe3_gamedata_parser.py` + `models.py`：调研/解析单位占地（`protoy.xml` 里 `selectionradius`、`unitradius`、`obstruction` 等，需本机解包核对字段名）→ `footprint` 或 `collision_radius` |
 | 布阵 | `aoe3_battle/formation.py`（新）：`pos` 纵深 + `y` 阵线宽度（按每排人数、`footprint` 展开） |
-| AOE | `aoe3_battle/aoe.py`（新）：圆内候选、可选「大单位占 2 格名额」；读 `damage_cap_*`（与 damagecap TODO 汇合） |
+| AOE | `aoe3_battle/aoe.py`（新）：圆内候选、可选「大单位占 2 格名额」；读 `damage_cap_*`（已实现） |
 | 模拟器 | `simulator.py`：只调 `formation` + `aoe`，主循环不变 |
 
 **待办**（**先记 TODO，暂不改模拟器**）：

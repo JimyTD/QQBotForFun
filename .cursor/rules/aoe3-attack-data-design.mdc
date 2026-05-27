@@ -12,9 +12,26 @@ alwaysApply: true
 
 详见 `.codebuddy/rules/aoe3-attack-data-design.mdc` 与 `docs/games/aoe3-battle.md` §3.9。
 
+## 只选动作，不选属性（整包）
+
+**唯一的人为决策**：在每个 ranged / melee / siege 桶里，用 `ATTACK_PRIORITY` **选一条代表动作名**（如 `DefendRangedAttack`）。
+
+**禁止**为下列字段单独做优先级、fallback 表或「选哪条」逻辑——它们都是该动作名在数据里的**一体属性**，随代表动作整包进出 `units.json` / 模拟器：
+
+- `damage` / `attack_*`
+- `rof_*`
+- `damagetype` → `damage_type_*`（伤害类型，只吃护甲）
+- `damagearea` / `damagecap` / 倍率
+- `displayednumberprojectiles` → `num_projectiles_*`（tactics 按**动作名**查）
+- **windup**（tactics[动作名].anim → Attack tag；每个动作名各自解，解不出则该动作无此字段）
+
+Parser：**对每个动作名**从 protoy / tactics / anim 解出其属性；**不**存在「选抬手 / 选 ROF / 选伤害类型」。斗蛐蛐桶里写哪套 `*_ranged`，是因为选了哪条代表**动作**，不是另选了一套 windup。
+
+**禁止**：从 `<tactic>Volley` 另挑动作拼进桶；把 `ATTACK_PRIORITY` 说成在「选 windup」；用 `damagetype` 推 anim / windup / 槽位。
+
 ## 数据第一
 
-每个槽位的 `attack_*`、`aoe_radius_*`、`damage_cap_*`、`damage_type_*`、倍率必须来自**同一条** parser 选定的代表 `protoaction`，禁止拆条拼接。
+每个槽位的 `attack_*`、`aoe_radius_*`、`damage_cap_*`、`damage_type_*`、倍率、`num_projectiles_*`、**`windup_*`** 必须来自**同一条** parser 选定的代表 `protoaction`（同一动作名），禁止拆条拼接。
 
 ## 模拟器选槽
 
