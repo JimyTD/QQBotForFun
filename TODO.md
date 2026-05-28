@@ -4,24 +4,6 @@
 
 ---
 
-## 🖼️ AoE3：审计 Wiki/复制补图
-
-**待办**（人工验收）：
-
-1. 对照 `data/aoe3/icon_manifest.json` → `audit.wiki_api`（1 条：`shrine`）与 `audit.variant_copy`（97 条），在游戏内或斗蛐蛐面板核对是否错图
-2. 错图写入 `data/aoe3/icon_overrides.json`，再跑 `uv run python scripts/crawler/aoe3_icon_extractor.py --backfill-only`
-3. 缺 BAR 解码器的伪 PNG（如 `beast_icon.png`）若需精确图，另找解包或手工 PNG，勿再批量爬 Wiki
-
-```bash
-uv run python scripts/crawler/aoe3_icon_extractor.py --backfill-only
-```
-
-**相关**：`resources/aoe3/icons/`、`docs/games/aoe3.md` §6
-
-**优先级**：中
-
----
-
 ## 📐 AoE3 斗蛐蛐：阵线宽度 + 兵种碰撞体积（AOE 打不满）
 
 炮兵及大范围 AOE 在一维共线模型里几乎每发溅射打满；需阵线宽度 + footprint，仅 AOE 结算用二维圆。

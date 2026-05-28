@@ -1,10 +1,10 @@
 {
   "_comment": "由 aoe3_icon_extractor.py 生成。优先审 audit.wiki_api 与 audit.variant_copy。",
-  "generated_at": "2026-05-27T17:32:46.737830+00:00",
+  "generated_at": "2026-05-28T09:24:21.080300+00:00",
   "stats": {
     "bar_alt": 33,
-    "bar": 1870,
-    "variant_copy": 97,
+    "bar": 1869,
+    "variant_copy": 98,
     "missing": 23,
     "wiki_api": 1
   },
@@ -109,7 +109,8 @@
       "ypspctreasureshipstage1",
       "ypspctreasureshipstage2",
       "ypspctreasureshipstage3",
-      "ypwaywardronin"
+      "ypwaywardronin",
+      "dedeli"
     ]
   },
   "entries": {
@@ -906,9 +907,11 @@
       "bar_entry": "resources\\art\\units\\animals\\alligator\\alligator_icon_64x64.png"
     },
     "dedeli": {
-      "source": "bar",
+      "source": "variant_copy",
       "proto_icon": "resources/art/units/cavalry/deli/deli_icon.png",
-      "bar_entry": "resources\\art\\units\\cavalry\\deli\\deli_icon.png"
+      "bar_entry": "resources\\art\\units\\cavalry\\deli\\deli_icon.png",
+      "copy_from": "hussar",
+      "note": "icon_overrides.json: 手动覆盖，BAR deli_icon 占位与火枪兵同图"
     },
     "dedepot": {
       "source": "bar",

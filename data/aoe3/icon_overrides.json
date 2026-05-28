@@ -4,6 +4,10 @@
     "ypmandarinarmy": {
       "force_copy_from": "ypmercirontroop",
       "_note": "BAR 无 mandarin_army_icon_64；临时用铁军 merc 图标，待人工核对"
+    },
+    "dedeli": {
+      "force_copy_from": "hussar",
+      "_note": "手动覆盖(2026-05-28)：BAR deli_icon 解出与火枪兵同图；暂用 hussar(轻骑兵) 避免误导"
     }
   }
 }

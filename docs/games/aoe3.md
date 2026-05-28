@@ -211,6 +211,7 @@ class UnitRepo:
 - icon 图片存 `resources/aoe3/icons/{unit.id}.png`
 - 统一尺寸 128×128px，单个 ≤50KB（经 `compress_aoe3_icons.py` 压缩）
 - 来源：主要从游戏 `ArtUnitsTextures*.bar` / `UIResources1.bar` 直接提取 RTS3 DDT 格式图标（`aoe3_icon_extractor.py`）；少量 DE DLC 单位因自研纹理格式无法解码，改从 AoE3 Wiki API 下载或用同类单位图标替代
+- 个别 BAR 占位/错图：`data/aoe3/icon_overrides.json` 手动 `force_copy_from`，再跑 `aoe3_icon_extractor.py --backfill-only`（或直拷 PNG）同步 `resources/aoe3/icons/`
 
 ---
 
