@@ -125,14 +125,24 @@ async def _(matcher: Matcher, event: GroupMessageEvent, args: Message = CommandA
         await set_group_config(int(event.group_id), "aoe3_battle.broadcast_mode", "brief")
         await matcher.finish("✅ 已切换为【极简播报】模式（只显示开战和战报，帝国/红警通用）")
 
-    # ---- 自选模式："斗蛐蛐 自选 火枪手 散兵 15000" ----
+    # ---- 王中王："斗蛐蛐 王中王" / "斗蛐蛐 王中王 散兵 15000" ----
     parts = arg_text.split()
+    _RIVAL_KEYWORDS = {"王中王", "宿敌", "宿敌挑战", "rival"}
+    if parts and parts[0] in _RIVAL_KEYWORDS:
+        await _handle_rival_battle(matcher, event, " ".join(parts[1:]))
+        return
+
+    # ---- 自选模式："斗蛐蛐 自选 火枪手 散兵 15000" ----
     if parts and parts[0] == "自选":
         await _handle_custom_battle(matcher, event, " ".join(parts[1:]))
         return
 
     # ---- 隐式自选：参数中有非模式关键词且非纯数字 → 当作兵种名 ----
-    _MODE_KEYWORDS = {"单挑", "1v1", "duel", "黑名单", "乱斗", "黑名单乱斗", "blacklist"}
+    _MODE_KEYWORDS = {
+        "单挑", "1v1", "duel",
+        "黑名单", "乱斗", "黑名单乱斗", "blacklist",
+        "王中王", "宿敌", "宿敌挑战", "rival",
+    }
     unknown_words = [p for p in parts if p not in _MODE_KEYWORDS and not p.isdigit()]
     if unknown_words:
         # 有无法识别为模式的词 → 视为兵种名，走自选逻辑
@@ -236,6 +246,49 @@ async def _handle_custom_battle(
     )
 
 
+async def _handle_rival_battle(
+    matcher: Matcher, event: GroupMessageEvent, arg_text: str
+) -> None:
+    """王中王：无参数 → 随机 3 主题 + 表情选；有主题名 → 直接开局。"""
+    from src.plugins.games.aoe3_battle.rival_pick import (
+        launch_rival_direct,
+        start_theme_pick,
+    )
+
+    group_id = int(event.group_id)
+    initiator_id = int(event.user_id)
+
+    theme_token: str | None = None
+    budget: int | None = None
+    for part in arg_text.split():
+        if part.isdigit():
+            budget = int(part)
+        elif theme_token is None:
+            theme_token = part
+        else:
+            await matcher.finish("⚠️ 王中王快捷开局只能指定一个主题")
+            return
+
+    if theme_token:
+        err = await launch_rival_direct(
+            group_id=group_id,
+            initiator_id=initiator_id,
+            theme_token=theme_token,
+            budget=budget,
+        )
+        if err:
+            await matcher.finish(err)
+        return
+
+    err = await start_theme_pick(
+        group_id=group_id,
+        initiator_id=initiator_id,
+        budget=budget,
+    )
+    if err:
+        await matcher.finish(err)
+
+
 # -------------------- 快捷开局：红警2斗蛐蛐（独立于帝国斗蛐蛐）--------------------
 _quick_ra2_battle = on_command(
     "红警斗蛐蛐",
@@ -295,6 +348,11 @@ _quit = on_command(
 @_quit.handle()
 async def _(matcher: Matcher, event: GroupMessageEvent) -> None:
     group_id = int(event.group_id)
+
+    from src.plugins.games.aoe3_battle.rival_pick import cancel_pending
+    if cancel_pending(group_id):
+        await matcher.finish("🏳 已取消王中王选主题。")
+        return
 
     ok = await game_base.abort_by_group(group_id)
     if ok:

@@ -1,7 +1,7 @@
 # 帝国3电子斗蛐蛐 —— 设计文档
 
-- **Status**: Draft v10（黑名单乱斗模式封板）
-- **Last Updated**: 2026-05-21
+- **Status**: Draft v11（王中王模式已实现）
+- **Last Updated**: 2026-05-27
 - **Game ID**: `aoe3_battle`
 
 ---
@@ -37,14 +37,47 @@
 4. 押注 / 战斗 / 结算流程完全复用模式 A
 5. **节目效果优先于公平**：怪兽 vs 民兵就是悬殊，独苗 vs 几只小弟也照样看戏
 
-### 三种模式核心差异
+### 模式 D：王中王（已实现）
 
-| 维度 | 模式 A 押注 | 模式 B 单挑 | 模式 C 黑名单乱斗 |
-|---|---|---|---|
-| 单位数量 | **群殴**：按预算算 | **1v1** | **群殴**：按战力分算 |
-| 兵种数量 | 1~3 种 | 单一 | 1~3 种 |
-| 兵种池 | 普通可训练（详见 §2.2.2） | 所有有攻击的（详见 §2.3） | 仅 `BATTLE_BLACKLIST`（详见 §2.4） |
-| 平衡逻辑 | 资源 LCM/贪心 | 不平衡 | 战力分 `min × r`，节目效果优先 |
+> 对外名称 **王中王**；内部 `GameMode.id = "rival"`。  
+> 从固定 **10 个职能主题** 里抽兵对决，主题用 tag 并集/交集筛池（详见 §2.5）。
+
+#### 入口 A：表情选主题（主路径）
+
+1. 玩家 `@机器人 斗蛐蛐 王中王`（别名 `宿敌` / `宿敌挑战` 可选）
+2. **尚未开局**——进入「选主题」阶段，**不占用** `GameRunner` slot
+3. 系统从 10 个主题中 **随机抽 3 个**，发一条选单消息
+4. 为该消息挂载 **3 个表情**（NapCat 消息表情回应）；群友 **点击表情** 即选定对应主题
+5. **任一群友点选即生效**（第一个有效表情回应锁定主题），随后 **正式 `create_and_start` 开局**
+6. 选单 **超时**（建议 60s）：提示超时并清除 pending，不开局
+7. **文字兜底**：对同一条选单消息回复 `1` / `2` / `3` 等价于点第 1/2/3 个表情（CLI 同样用 1/2/3，见 `docs/13-cli-bot-parity.md`）
+
+#### 入口 B：指定主题（快捷）
+
+1. 玩家 `@机器人 斗蛐蛐 王中王 散兵`（或 `火枪`、`近战骑` 等主题别名）
+2. **跳过选主题**，直接用该主题开局
+3. 可选末尾预算数字：`斗蛐蛐 王中王 散兵 15000`（范围 1000~50000，默认 10000）
+
+#### 对阵与后续流程
+
+- 红蓝双方各 **随机 1 个兵种**（均从该主题池抽取），数量用 **LCM 平衡资源**——**与自选模式（2 个指定兵）逻辑一致**，不是单挑 1v1
+- 押注 / 开战 / 模拟 / 结算 **完全复用模式 A**
+- VS 面板标题示例：`⚔️ 帝国3斗蛐蛐 · 王中王 · 散兵王`
+
+### 模式 E：自选（已实现，简述）
+
+- `@机器人 斗蛐蛐 自选 …` / `@机器人 斗蛐蛐自选 …`
+- 玩家指定 1~2 个兵种名，LCM 平衡；详见 `lineup.py :: generate_custom_lineup`
+
+### 模式核心差异
+
+| 维度 | A 押注 | B 单挑 | C 黑名单 | D 王中王 | E 自选 |
+|---|---|---|---|---|---|
+| 单位数量 | 群殴 | **1v1** | 群殴 | 群殴（LCM） | 群殴（LCM） |
+| 兵种数量 | 1~3 种 | 1 种 | 1~3 种 | **各 1 种** | 1~2 种（指定） |
+| 兵种池 | 押注池 §2.2.2 | 单挑池 §2.3 | 黑名单 §2.4 | **主题子池 §2.5** | 玩家指定 + 押注池 |
+| 平衡 | LCM/贪心 | 无 | 战力分 | LCM | LCM |
+| 开局前交互 | 无 | 无 | 无 | **随机 3 主题 + 表情选** | 无 |
 
 ### 关键词冲突处理
 
@@ -362,7 +395,112 @@ ramp。**无个体数上限**——与押注/单挑模式一致（§3.2），数
 | 池里某 id `has_attack=False` | 模拟器无法处理 | 同上跳过 + WARNING（如 3 辆怪兽卡车）|
 | 克制翻盘 | armor 0.9 melee 让大名群打不动镭射熊 | 接受——克制由模拟器自然发挥，不在公式里事前修正 |
 
-### 2.5 面板展示
+### 2.5 王中王模式
+
+#### 2.5.1 基础池
+
+- 所有主题池 = **`get_bet_pool()`**（§2.2.2）再按主题规则过滤
+- 池内不足 2 个兵种 → 不开局，提示错误
+
+#### 2.5.2 主题表（封板 10 个）
+
+筛选语法：
+
+| 写法 | 含义 |
+|---|---|
+| 单 tag | 单位 `type` 含该 tag |
+| `A \| B` | 并集（去重） |
+| `A & B` | 交集 |
+| `!T` | 排除含 tag T 的单位 |
+
+| id | 展示名 | 规则 | 约池大小 | 职能 |
+|---|---|---|---:|---|
+| `skirmisher` | 散兵王 | `AbstractSkirmisher` | 93 | 远射反重 |
+| `musketeer` | 火枪王 | `AbstractMusketeer` | 59 | 重装火枪 |
+| `melee_heavy` | 近战重步王 | `AbstractHandInfantry` & `AbstractHeavyInfantry` | 67 | 贴脸重装步（长矛/弯刀/骑士等） |
+| `archer` | 弓手王 | (`AbstractFootArcher` \| `AbstractArcher`) & `!AbstractRangedCavalry` | 45 | 步弓/弩（**排除弓骑兵**） |
+| `grenadier` | 掷弹王 | `AbstractGrenadier` | 16 | 掷弹 |
+| `hand_cavalry` | 近战骑王 | `AbstractHandCavalry` | 91 | 贴脸骑 |
+| `ranged_cavalry` | 远程骑王 | `AbstractRangedCavalry` | 70 | 骑射/龙骑/火枪骑（**不拆**弓骑子池） |
+| `artillery` | 炮王 | `AbstractArtillery` | 34 | 炮兵 |
+| `outlaw` | 亡命徒王 | `AbstractOutlaw` | 51 | 亡命徒线 |
+| `mercenary` | 佣兵王 | `Mercenary` | 59 | 酒馆佣兵（**不是** `AbstractHand*Merc`） |
+
+**刻意不进表**：
+
+- `AbstractLightInfantry`：引擎语义 = 突击游击线（~15），≠ 玩家口中的「轻步兵/散兵」
+- `AbstractHeavy/LightCavalry`、`AbstractLancer`、`AbstractGunpowderCavalry`：与近战骑/远程骑高度重叠或是其子集
+- `AbstractInfantry` / `AbstractCavalry` 等顶层 tag：过宽
+- 象兵等过小或职能混杂的 tag
+
+主题 **无** 「娱乐局」特殊标注；亡命徒/佣兵与其他主题同等展示。
+
+#### 2.5.3 主题别名（快捷开局）
+
+实现于 `rival_themes.py`。每个主题至少支持：
+
+| 主题 | 可接受别名（示例） |
+|---|---|
+| 散兵王 | `散兵`, `散兵王`, `skirmisher` |
+| 火枪王 | `火枪`, `火枪王`, `musketeer` |
+| 近战重步王 | `近战重步`, `近战重步王`, `重步` |
+| 弓手王 | `弓手`, `弓手王`, `archer` |
+| 掷弹王 | `掷弹`, `掷弹王`, `grenadier` |
+| 近战骑王 | `近战骑`, `近战骑王` |
+| 远程骑王 | `远程骑`, `远程骑王` |
+| 炮王 | `炮`, `炮王`, `炮兵`, `artillery` |
+| 亡命徒王 | `亡命徒`, `亡命徒王`, `outlaw` |
+| 佣兵王 | `佣兵`, `佣兵王`, `mercenary` |
+
+#### 2.5.4 阵容生成
+
+```python
+# 概念流程（实现在 generate_rival_lineup）
+pool = filter_theme_pool(get_bet_pool(repo), theme_id)
+red_unit, blue_unit = rng.sample(pool, 2)   # 可抽到同一兵种，允许镜像局
+lcm_budget = approx_lcm_budget(cost(red), cost(blue), budget)
+red_count  = max(1, lcm_budget // cost(red))
+blue_count = max(1, lcm_budget // cost(blue))
+# mode="rival", 面板走单兵种 LCM 样式（同 custom）
+```
+
+- **不是** `generate_duel_lineup`（真 1v1）
+- **不是** `generate_bet_lineup`（1~3 随机种）
+
+#### 2.5.5 选主题阶段（表情交互）
+
+**状态机**（不占 GameRunner）：
+
+```
+[ idle ]
+  │  @bot 斗蛐蛐 王中王
+  ▼
+[ pending_pick ]  ── 60s 超时 ──► [ idle ] + 提示
+  │  发消息 + 挂 3 emoji + 记录 message_id ↔ 3 themes
+  │  群友点 emoji / 回复 1|2|3
+  ▼
+[ create_and_start rival ]  ──► 与普通斗蛐蛐相同 betting → fighting
+```
+
+**选单文案示例**：
+
+```
+⚔️ 王中王 · 点表情选主题（60 秒内有效）
+🎯 散兵王  |  🔫 火枪王  |  ⚔️ 近战骑王
+回复 1 / 2 / 3 亦可
+```
+
+- 从 10 个主题 **`random.sample(themes, 3)`**，不重复
+- 每个选项固定映射：**主题 id + 展示 emoji**（实现时写死表，保证 NapCat 可渲染）
+- **并发**：已有 `pending_pick` 或已有 GameRunner → 拒绝新开选单
+- **实现**：`rival_pick.py`（NapCat `set_msg_emoji_like` + `notice.group_msg_emoji_like`；文字 `1/2/3` 兜底）
+
+#### 2.5.6 关键词冲突
+
+- `王中王` / `宿敌` / `宿敌挑战` 列入 launcher 模式关键词，避免 `斗蛐蛐 王中王 散兵` 被误判为自选兵种名
+- `斗蛐蛐 火枪手`（无王中王前缀）仍走自选逻辑
+
+### 2.6 面板展示
 
 #### 单兵种（v1）
 
@@ -1283,3 +1421,16 @@ def has_attack(self) -> bool:
 - ✅ **3 辆怪兽卡车暂时进不了池**：parser 把它们的攻击误归到 `attack_siege` 槽（`has_attack=False`），
   `get_blacklist_pool` 自动剔除 + WARNING。等 parser 修了自然回到池里（类似沙漠突袭者）
 - 验证：seed=42 跑 20 局，总人数稳定在 1~30，模拟时长 5~50 秒，节目效果（碾压 / 平衡 / 神仙打架）三种局面均有出现
+
+### 2026-05-27 追加决议（王中王模式规格，详见 §一 模式 D、§2.5）
+
+> 群友从「职能一致」的子池里随机抽兵对决；主路径为 **随机 3 主题 + 消息表情选主题**，不是文字列 10 项。
+
+- ✅ **对外名称「王中王」**：`@bot 斗蛐蛐 王中王`；内部 `GameMode.id = "rival"`
+- ✅ **入口 A**：随机 3 主题 → 发选单 → NapCat 表情回应 → **任一群友点选即开局**；pending 不占 GameRunner
+- ✅ **入口 B**：`斗蛐蛐 王中王 <主题别名>` 跳过投票直接开
+- ✅ **对阵**：红蓝各 1 兵种 + LCM（同自选），**不是**单挑 1v1
+- ✅ **主题 10 个封板**：散兵/火枪/近战重步/弓手(排除弓骑)/掷弹/近战骑/远程骑/炮/亡命徒/佣兵(`Mercenary`)
+- ✅ **筛选语法**：单 tag、并集 `|`、交集 `&`、排除 `!`（弓手王 = 弓 tag 并集且非 `RangedCavalry`）
+- ✅ **文字/CLI 兜底**：选单下 `1/2/3`；CLI parity 同 `docs/13-cli-bot-parity.md`
+- ✅ **已实现**（2026-05-27）：`rival_themes.py`、`rival_pick.py`、`generate_rival_lineup`、launcher / game / CLI、`tests/games/aoe3_battle/test_rival.py`

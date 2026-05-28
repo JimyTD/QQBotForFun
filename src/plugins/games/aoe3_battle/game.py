@@ -41,6 +41,7 @@ from .lineup import (
     generate_blacklist_lineup,
     generate_custom_lineup,
     generate_duel_lineup,
+    generate_rival_lineup,
 )
 from .simulator import ArmySlot, BattleResult, BattleSimulator, Side
 
@@ -262,7 +263,7 @@ class AoE3BattleGame(GameBase):
 
     id = "aoe3_battle"
     name = "帝国3斗蛐蛐"
-    description = "兵种对战模拟 · 押注 / 单挑 / 黑名单乱斗 / 自选"
+    description = "兵种对战模拟 · 押注 / 单挑 / 黑名单乱斗 / 自选 / 王中王"
     min_players = 0            # 无人押注也能打
     max_players = 50
     version = "1.0"
@@ -294,6 +295,12 @@ class AoE3BattleGame(GameBase):
             description="自选 1~2 种兵对决，相同资源",
             aliases=("自选",),
         ),
+        GameMode(
+            id="rival",
+            name="王中王",
+            description="职能主题对决 · 表情选主题或指定主题",
+            aliases=("王中王", "宿敌", "宿敌挑战"),
+        ),
     ]
 
     # ---- 生命周期 ----
@@ -316,6 +323,13 @@ class AoE3BattleGame(GameBase):
             result = generate_custom_lineup(repo, unit_names, budget=budget, rng=rng)
             if isinstance(result, str):
                 # 生成失败，广播错误信息并抛异常让框架结束对局
+                await session.broadcast(ctx.group_id, result)
+                raise ValueError(result)
+            match = result
+        elif mode_id == "rival":
+            theme_id = (ctx.config or {}).get("rival_theme_id", "")
+            result = generate_rival_lineup(repo, theme_id, budget=budget, rng=rng)
+            if isinstance(result, str):
                 await session.broadcast(ctx.group_id, result)
                 raise ValueError(result)
             match = result

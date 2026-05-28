@@ -60,6 +60,7 @@ _FALLBACK_HELP = (
     "🎮 @我 海龟汤\n"
     "🎮 @我 趣味问答\n"
     "⚔️ @我 斗蛐蛐\n"
+    "⚔️ @我 斗蛐蛐 王中王\n"
     "⚔️ @我 红警斗蛐蛐\n"
     "🍱 @我 吃什么\n"
     "🃏 @我 查卡 卡名\n"
@@ -97,14 +98,25 @@ async def _route(event: MessageEvent, matcher: Matcher) -> None:
         matcher.stop_propagation()
         return
 
-    # 2) 有活跃游戏但未识别 → 情境提示
+    # 2) 王中王选主题中
+    if group_id is not None:
+        from src.plugins.games.aoe3_battle.rival_pick import has_pending
+        if has_pending(group_id):
+            await matcher.finish(
+                "⚔️ 王中王选主题中\n"
+                "💡 点选单消息上的表情，或回复 1 / 2 / 3\n"
+                "💡 @我 结束 可取消"
+            )
+            return
+
+    # 3) 有活跃游戏但未识别 → 情境提示
     if group_id is not None and csession.is_in_game(group_id):
         hint = game_base.in_game_hint_for_group(group_id)
         if hint:
             await matcher.finish(hint)
             return
 
-    # 3) 斗蛐蛐对局内口令，但当前无斗蛐蛐对局
+    # 4) 斗蛐蛐对局内口令，但当前无斗蛐蛐对局
     if text in _BATTLE_INGAME_CMDS:
         await matcher.finish(_NO_BATTLE_HINT)
         return

@@ -28,6 +28,13 @@ from plugins.games.aoe3_battle.lineup import (
     generate_blacklist_lineup,
     generate_custom_lineup,
     generate_duel_lineup,
+    generate_rival_lineup,
+)
+from plugins.games.aoe3_battle.rival_themes import (
+    RIVAL_THEMES,
+    filter_theme_pool,
+    pick_random_themes,
+    resolve_theme,
 )
 from plugins.games.aoe3_battle.simulator import BattleResult, BattleSimulator, Side
 
@@ -58,6 +65,12 @@ MODES = [
         name="自选模式",
         description="自选 1~2 种兵对决，相同资源",
         aliases=("自选",),
+    ),
+    GameMode(
+        id="rival",
+        name="王中王",
+        description="职能主题对决 · 随机 3 主题选 1 或指定主题",
+        aliases=("王中王", "宿敌", "宿敌挑战"),
     ),
 ]
 
@@ -107,6 +120,32 @@ class AoE3BattleCLIAdapter:
 
             result = generate_custom_lineup(
                 self._repo, unit_names, budget=self._budget, rng=random.Random()
+            )
+            if isinstance(result, str):
+                info(f"生成失败：{result}")
+                return
+            self._match = result
+            return
+
+        if mode_id == "rival":
+            options = pick_random_themes(count=3)
+            info("王中王 · 随机 3 主题，请选一个：")
+            for i, t in enumerate(options, start=1):
+                info(f"  {i}. {t.title}")
+            choice = prompt("输入 1/2/3（或主题名直接指定）> ").strip()
+            theme = resolve_theme(choice)
+            if theme is None and choice in ("1", "2", "3"):
+                idx = int(choice) - 1
+                if idx < len(options):
+                    theme = options[idx]
+            if theme is None:
+                info("未选择有效主题，退出")
+                return
+            budget_str = prompt("资源预算（直接回车默认 10000）> ").strip()
+            if budget_str.isdigit():
+                self._budget = max(1000, min(50000, int(budget_str)))
+            result = generate_rival_lineup(
+                self._repo, theme.id, budget=self._budget, rng=random.Random(),
             )
             if isinstance(result, str):
                 info(f"生成失败：{result}")

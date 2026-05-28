@@ -240,7 +240,8 @@ class MatchLineup:
     """一局对阵的双方阵容。"""
     red: Lineup
     blue: Lineup
-    mode: str                  # "bet" | "duel"
+    mode: str                  # "bet" | "duel" | "rival" | ...
+    rival_theme: str | None = None   # 王中王展示名，如「散兵王」
 
 
 # =====================================================================
@@ -965,7 +966,7 @@ def format_side_panel(
             _append_counter_info(lines, u, opponent)
 
     elif not lineup.is_multi:
-        # 单兵种押注模式 / 黑名单乱斗单兵种：紧凑
+        # 单兵种押注 / 自选 / 王中王 / 黑名单单兵种：紧凑
         lines.append(f"{emoji} {label} · {lineup.unit.name} ×{lineup.count}")
         u = lineup.unit
         lines.append(f"类型：{_type_str_zh(u)}")
@@ -1056,6 +1057,11 @@ def format_vs_banner(lineup: MatchLineup) -> str:
         blue_str = f"🔵 {b.unit.name}"
     elif lineup.mode == "custom":
         title = "🎯 帝国3斗蛐蛐 · 自选对决"
+        red_str = f"🔴 {r.unit.name} ×{r.count}"
+        blue_str = f"🔵 {b.unit.name} ×{b.count}"
+    elif lineup.mode == "rival":
+        theme = lineup.rival_theme or "王中王"
+        title = f"⚔️ 帝国3斗蛐蛐 · 王中王 · {theme}"
         red_str = f"🔴 {r.unit.name} ×{r.count}"
         blue_str = f"🔵 {b.unit.name} ×{b.count}"
     elif lineup.mode == "blacklist":
@@ -1310,3 +1316,51 @@ def generate_custom_lineup(
     )
 
     return MatchLineup(red=red, blue=blue, mode="custom")
+
+
+def generate_rival_lineup(
+    repo: UnitRepo,
+    theme_id: str,
+    *,
+    budget: int = BUDGET,
+    rng: random.Random | None = None,
+) -> MatchLineup | str:
+    """生成王中王阵容：主题池内随机两兵种 + LCM（同自选）。"""
+    from .rival_themes import filter_theme_pool, get_theme_by_id
+
+    if rng is None:
+        rng = random.Random()
+
+    theme = get_theme_by_id(theme_id)
+    if theme is None:
+        return f"⚠️ 未知王中王主题 id：{theme_id}"
+
+    pool = filter_theme_pool(get_bet_pool(repo), theme)
+    if len(pool) < 2:
+        return f"⚠️ 主题「{theme.title}」兵种池不足（仅 {len(pool)} 个）"
+
+    red_unit, blue_unit = rng.sample(pool, 2)
+
+    cost_a = _unit_cost(red_unit)
+    cost_b = _unit_cost(blue_unit)
+    if cost_a <= 0:
+        return f"⚠️ 兵种「{red_unit.name}」没有资源消耗数据，无法参战"
+    if cost_b <= 0:
+        return f"⚠️ 兵种「{blue_unit.name}」没有资源消耗数据，无法参战"
+
+    lcm_budget = approx_lcm_budget(cost_a, cost_b, budget)
+    red_count = max(1, lcm_budget // cost_a)
+    blue_count = max(1, lcm_budget // cost_b)
+
+    red = Lineup(slots=[UnitSlot(unit=red_unit, count=red_count)])
+    blue = Lineup(slots=[UnitSlot(unit=blue_unit, count=blue_count)])
+
+    logger.info(
+        "王中王阵容 [%s]：LCM %d → 🔴 %s ×%d vs 🔵 %s ×%d",
+        theme.title, lcm_budget,
+        red_unit.name, red_count, blue_unit.name, blue_count,
+    )
+
+    return MatchLineup(
+        red=red, blue=blue, mode="rival", rival_theme=theme.title,
+    )
