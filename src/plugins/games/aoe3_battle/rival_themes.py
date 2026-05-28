@@ -18,12 +18,18 @@ class PickSlotEmoji:
     id: str
     hint: str
 
+    @property
+    def emoji_type(self) -> str:
+        """NapCat：短 id 为系统脸(type=1)，长 id / Unicode 为 emoji(type=2)。"""
+        return "2" if len(self.id) > 3 else "1"
 
-# 顺序 = 消息下方表情栏从左到右（QQ EmojiType=2，U+2460/U+2461/U+2462）
+
+# 顺序 = 消息下方表情栏从左到右（QQ EmojiType=1，NapCat 实测可挂）
+# hint 必须与客户端该 emoji_id 的表态图标一致，正文与下方槽位逐字对应
 PICK_SLOT_EMOJIS: tuple[PickSlotEmoji, PickSlotEmoji, PickSlotEmoji] = (
-    PickSlotEmoji("9312", "1️⃣"),
-    PickSlotEmoji("9313", "2️⃣"),
-    PickSlotEmoji("9314", "3️⃣"),
+    PickSlotEmoji("120", "👊"),  # /拳头
+    PickSlotEmoji("129", "👋"),  # /挥手
+    PickSlotEmoji("137", "🧧"),  # /鞭炮
 )
 PICK_SLOT_EMOJI_IDS: tuple[str, str, str] = tuple(s.id for s in PICK_SLOT_EMOJIS)
 
@@ -146,13 +152,14 @@ def pick_random_themes(*, count: int = 3, rng: random.Random | None = None) -> l
 
 
 def format_pick_message(options: list[RivalTheme]) -> str:
-    """生成选主题消息正文。"""
+    """生成选主题消息正文。每行前缀 = 下方同位置表态图标（与 PICK_SLOT_EMOJIS 一致）。"""
+    slots = PICK_SLOT_EMOJIS[: len(options)]
+    bar = " ".join(s.hint for s in slots)
     lines = [
-        "⚔️ 王中王 · 点消息下方 1️⃣ 2️⃣ 3️⃣ 选主题（从左到右）",
+        f"⚔️ 王中王 · 点消息下方 {bar} 选主题（从左到右）",
         "",
     ]
-    for i, theme in enumerate(options):
-        slot = PICK_SLOT_EMOJIS[i]
+    for i, (theme, slot) in enumerate(zip(options, slots, strict=True)):
         lines.append(f"{slot.hint}  {i + 1}. {theme.title}")
     lines.extend([
         "",

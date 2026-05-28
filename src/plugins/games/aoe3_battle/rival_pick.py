@@ -127,34 +127,41 @@ async def start_theme_pick(
         message_id = int(resp["message_id"])
 
     emoji_to_index: dict[str, int] = {}
-    for idx, slot in enumerate(PICK_SLOT_EMOJIS[: len(rng_options)]):
+    slots = PICK_SLOT_EMOJIS[: len(rng_options)]
+    for idx, slot in enumerate(slots):
         emoji_to_index[slot.id] = idx
-        # notice 有时回传 Unicode 字符而非十进制 id
-        emoji_to_index[("①", "②", "③")[idx]] = idx
 
-        pending = _PendingPick(
-            group_id=group_id,
-            initiator_id=initiator_id,
-            message_id=message_id,
-            options=rng_options,
-            emoji_to_index=emoji_to_index,
-            budget=budget,
-            picks_enabled=False,
-        )
-        _pending[group_id] = pending
+    pending = _PendingPick(
+        group_id=group_id,
+        initiator_id=initiator_id,
+        message_id=message_id,
+        options=rng_options,
+        emoji_to_index=emoji_to_index,
+        budget=budget,
+        picks_enabled=False,
+    )
+    _pending[group_id] = pending
 
-    for slot in PICK_SLOT_EMOJIS[: len(pending.options)]:
+    mounted = 0
+    for slot in slots:
         try:
             await bot.call_api(  # type: ignore[attr-defined]
                 "set_msg_emoji_like",
                 message_id=pending.message_id,
                 emoji_id=slot.id,
+                emoji_type=slot.emoji_type,
             )
+            mounted += 1
         except Exception as e:  # noqa: BLE001
             logger.warning(
-                "[rival_pick] set_msg_emoji_like failed gid=%s msg=%s emoji=%s: %s",
-                group_id, pending.message_id, slot.id, e,
+                "[rival_pick] set_msg_emoji_like failed gid=%s msg=%s emoji=%s type=%s: %s",
+                group_id, pending.message_id, slot.id, slot.emoji_type, e,
             )
+    if mounted == 0:
+        logger.warning(
+            "[rival_pick] no emoji slots mounted gid=%s msg=%s — use reply 1/2/3",
+            group_id, pending.message_id,
+        )
 
     # 给 bot 挂载 notice 一点时间，在 picks_enabled=False 时写入 like_counts
     await asyncio.sleep(0.25)
