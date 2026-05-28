@@ -614,9 +614,11 @@ class BattleSimulator:
                     # 退出渗透，停下来锁定目标
                     s.infiltrating = False
                     s.stopped = True
+                    # 渗透退出一定是近战模式，设 windup_melee
+                    s.attack_cd = s.unit.windup_melee
                     logger.debug(
-                        "tick=%d %s#%d 退出渗透 pos=%.2f（找到 CAP 未满目标）",
-                        self._tick, s.name, s.id, s.pos,
+                        "tick=%d %s#%d 退出渗透 pos=%.2f（找到 CAP 未满目标, windup=%.3f）",
+                        self._tick, s.name, s.id, s.pos, s.attack_cd,
                     )
                     continue
 
@@ -638,11 +640,17 @@ class BattleSimulator:
                 continue
 
             # 检查是否能攻击任意敌方（F2A 停止条件）
-            if self._can_attack_any_enemy(s):
+            stop_mode = self._resolve_stop_mode(s)
+            if stop_mode is not None:
                 s.stopped = True
+                # 根据停下时的攻击模式设 windup
+                if stop_mode == AttackMode.MELEE:
+                    s.attack_cd = s.unit.windup_melee
+                else:
+                    s.attack_cd = s.unit.windup_ranged
                 logger.debug(
-                    "tick=%d %s#%d 停止移动 pos=%.2f（F2A：能攻击敌方）",
-                    self._tick, s.name, s.id, s.pos,
+                    "tick=%d %s#%d 停止移动 pos=%.2f（F2A：%s, windup=%.3f）",
+                    self._tick, s.name, s.id, s.pos, stop_mode.value, s.attack_cd,
                 )
                 continue
 
@@ -674,9 +682,18 @@ class BattleSimulator:
         远程攻击有效区间：[range_min, range]（range_min 未配置视为 0）。
         近战攻击有效区间：[0, melee_range]。
         """
+        return self._resolve_stop_mode(s) is not None
+
+    def _resolve_stop_mode(self, s: Soldier) -> AttackMode | None:
+        """判断士兵应该以哪种模式停下。返回 None 表示不该停。
+
+        优先级：远程射程更远，先够到就先停（远程优先）。
+        如果只有近战射程内有敌人，则返回 MELEE。
+        如果远程和近战同时够到（初始距离很近），近战优先（与 _determine_attack_mode 一致）。
+        """
         enemies, positions = self._sorted_enemies(s.side)
         if not enemies:
-            return False
+            return None
 
         # 确定最大攻击距离
         max_range = 0.0
@@ -685,24 +702,32 @@ class BattleSimulator:
         if s.has_melee:
             max_range = max(max_range, s.effective_melee_range)
         if max_range <= 0:
-            return False
+            return None
 
         # 二分查找 [pos - max_range, pos + max_range] 窗口
         lo = bisect.bisect_left(positions, s.pos - max_range)
         hi = bisect.bisect_right(positions, s.pos + max_range)
 
+        has_ranged_target = False
+        has_melee_target = False
         for i in range(lo, hi):
             e = enemies[i]
             if not e.alive:
                 continue
             dist = abs(s.pos - e.pos)
-            # 远程有效区间：[range_min, range]
-            if s.has_ranged and s.effective_ranged_range_min <= dist <= s.effective_ranged_range:
-                return True
             # 近战有效区间：[0, melee_range]
             if s.has_melee and dist <= s.effective_melee_range:
-                return True
-        return False
+                has_melee_target = True
+                break  # 近战优先，直接返回
+            # 远程有效区间：[range_min, range]
+            if s.has_ranged and s.effective_ranged_range_min <= dist <= s.effective_ranged_range:
+                has_ranged_target = True
+
+        if has_melee_target:
+            return AttackMode.MELEE
+        if has_ranged_target:
+            return AttackMode.RANGED
+        return None
 
     # ---- 目标锁定 ----
     def _acquire_target(self, s: Soldier) -> None:

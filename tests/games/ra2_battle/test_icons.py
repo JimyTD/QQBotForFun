@@ -46,6 +46,7 @@ def test_build_icon_map_from_vendor():
     assert "e1" in m and m["e1"] == "giicon.shp"
     assert "ccomand" in m and m["ccomand"] == "ccomicon.shp"
     assert m.get("dog") == "adogicon.shp"
+    assert m.get("ltnk") == "ltnkicon.shp", "YR yuri-vehicles 应覆盖 vehicles.yaml 的 xxicon 占位"
 
 
 def test_get_icon_path_validates_png():

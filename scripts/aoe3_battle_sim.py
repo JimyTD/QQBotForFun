@@ -414,6 +414,121 @@ def parse_unit_spec(repo: UnitRepo, spec: str) -> tuple[Unit, int] | None:
     return unit, count
 
 
+
+
+# =====================================================================
+# 靶机模式
+# =====================================================================
+def run_dummy_mode(repo: UnitRepo, args) -> None:
+    """靶机模式：红方攻击不动不攻击的靶机，用于验证 windup/DPS 等数据。"""
+    from dataclasses import replace as dc_replace
+
+    # 解析攻击方
+    spec = parse_unit_spec(repo, args.dummy)
+    if spec is None:
+        return
+    atk_unit, atk_count = spec
+
+    # 创建靶机 Unit（HP 极高、不攻击、不移动）
+    dummy_unit = Unit(
+        id="__dummy__",
+        name="靶机",
+        name_en="TargetDummy",
+        hp=args.dummy_hp,
+        speed=0.0,
+        attack_ranged=0.0,
+        attack_melee=0.0,
+        attack_siege=0.0,
+    )
+
+    print(f"\n{C.B}{'═' * 60}{C.R}")
+    print(f"{C.B}  🎯 靶机模式{C.R}")
+    print(f"{C.B}{'═' * 60}{C.R}")
+    print(f"\n  {C.RED}🔴 攻击方{C.R}: {atk_unit.name} ({atk_unit.name_en}) ×{atk_count}")
+    print(f"      攻击(远程)={atk_unit.attack_ranged}  射程={atk_unit.range}")
+    print(f"      攻击(近战)={atk_unit.attack_melee}")
+    print(f"      windup_ranged={atk_unit.windup_ranged}s  windup_melee={atk_unit.windup_melee}s")
+    print(f"      rof_ranged={atk_unit.rof_ranged}s  rof_melee={atk_unit.rof_melee}s")
+    print(f"      speed={atk_unit.speed}")
+    print(f"\n  {C.BLUE}🔵 靶机{C.R}: HP={args.dummy_hp} ×{args.dummy_count}")
+    print(f"      不攻击、不移动")
+
+    # 运行模拟
+    sim = BattleSimulator(
+        red_army=[(atk_unit, atk_count)],
+        blue_army=[(dummy_unit, args.dummy_count)],
+        seed=args.seed,
+    )
+    result = sim.run()
+
+    # 统计分析
+    print(f"\n{C.B}{'─' * 60}{C.R}")
+    print(f"{C.B}  📊 统计结果{C.R}")
+    print(f"{C.B}{'─' * 60}{C.R}")
+
+    # 找首发时间
+    first_attack_tick = None
+    total_damage = 0.0
+    attack_count = 0
+    last_attack_tick = 0
+    first_attack_per_soldier: dict[int, int] = {}
+
+    for ev in result.events:
+        if ev.event_type != EventType.ATTACK:
+            continue
+        d = ev.data
+        if d.get("attacker_side") != "red":
+            continue
+        tick = ev.tick
+        sid = d.get("attacker_id", 0)
+        if first_attack_tick is None:
+            first_attack_tick = tick
+        if sid not in first_attack_per_soldier:
+            first_attack_per_soldier[sid] = tick
+        total_damage += d.get("damage", 0)
+        attack_count += 1
+        last_attack_tick = tick
+
+    from plugins.games.aoe3_battle.simulator import TICK_INTERVAL
+
+    if first_attack_tick is not None:
+        first_attack_time = first_attack_tick * TICK_INTERVAL
+        duration = (last_attack_tick - first_attack_tick) * TICK_INTERVAL
+        print(f"\n  首发时间: tick={first_attack_tick} ({first_attack_time:.2f}s)")
+
+        # 预期首发时间 = 移动时间 + windup
+        # 场地长度 36，红方从 0 出发，蓝方在 36
+        # 移动时间 ≈ (36 - range) / speed
+        if atk_unit.range > 0 and atk_unit.speed > 0:
+            move_time = max(0, (36.0 - atk_unit.range) / atk_unit.speed)
+            expected_first = move_time + atk_unit.windup_ranged
+            print(f"  预期首发: 移动{move_time:.2f}s + windup{atk_unit.windup_ranged}s = {expected_first:.2f}s")
+        elif atk_unit.speed > 0:
+            move_time = max(0, (36.0 - 1.5) / atk_unit.speed)
+            expected_first = move_time + atk_unit.windup_melee
+            print(f"  预期首发: 移动{move_time:.2f}s + windup{atk_unit.windup_melee}s = {expected_first:.2f}s")
+
+        print(f"\n  总攻击次数: {attack_count}")
+        print(f"  总伤害: {total_damage:.1f}")
+        if duration > 0:
+            dps = total_damage / duration
+            print(f"  DPS（首发后）: {dps:.1f}")
+        print(f"  靶机剩余 HP: {args.dummy_hp - total_damage:.1f}")
+
+        # 每个士兵的首发时间
+        if len(first_attack_per_soldier) > 1:
+            print(f"\n  各士兵首发时间:")
+            for sid, tick in sorted(first_attack_per_soldier.items()):
+                t = tick * TICK_INTERVAL
+                print(f"    #{sid}: tick={tick} ({t:.2f}s)")
+    else:
+        print(f"\n  ⚠️ 没有发生攻击事件！")
+
+    print(f"\n  战斗时长: {result.duration}s ({result.ticks} ticks)")
+    print(f"  结果: {'超时' if result.ticks >= 1200 else '结束'}")
+    print(f"\n{C.CYAN}{'═' * 60}{C.R}")
+
+
 # =====================================================================
 # 主入口
 # =====================================================================
@@ -440,6 +555,18 @@ def main() -> None:
     parser.add_argument(
         "--debug", action="store_true", help="启用 DEBUG 级别日志"
     )
+    parser.add_argument(
+        "--dummy", type=str, default=None,
+        help="靶机模式：指定攻击方兵种:数量（如 musketeer:5），蓝方为不动不攻击的靶机"
+    )
+    parser.add_argument(
+        "--dummy-hp", type=int, default=99999,
+        help="靶机 HP（默认 99999）"
+    )
+    parser.add_argument(
+        "--dummy-count", type=int, default=1,
+        help="靶机数量（默认 1）"
+    )
     args = parser.parse_args()
 
     # 日志配置
@@ -459,6 +586,11 @@ def main() -> None:
 
     import random as _random
     rng = _random.Random(args.seed)
+
+    if args.dummy:
+        # 靶机模式
+        run_dummy_mode(repo, args)
+        return
 
     if args.random or args.duel or args.blacklist:
         # 随机阵容模式

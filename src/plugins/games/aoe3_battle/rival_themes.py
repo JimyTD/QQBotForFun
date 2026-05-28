@@ -10,10 +10,22 @@ from dataclasses import dataclass
 
 from src.plugins.aoe3.models import Unit
 
-# NapCat set_msg_emoji_like 用的 QQ 表情 id（三个选项槽位，与文案 1/2/3 对应）
-PICK_SLOT_EMOJI_IDS: tuple[str, str, str] = ("128", "129", "137")
 
-PICK_TIMEOUT_SECONDS = 60
+@dataclass(frozen=True)
+class PickSlotEmoji:
+    """NapCat set_msg_emoji_like 槽位：QQ emoji_id 与选单文案里的对应符号。"""
+
+    id: str
+    hint: str
+
+
+# 顺序即消息下方表情栏从左到右；hint 须与客户端渲染一致，便于对照
+PICK_SLOT_EMOJIS: tuple[PickSlotEmoji, PickSlotEmoji, PickSlotEmoji] = (
+    PickSlotEmoji("128", "😀"),
+    PickSlotEmoji("129", "🐧"),
+    PickSlotEmoji("137", "🧧"),
+)
+PICK_SLOT_EMOJI_IDS: tuple[str, str, str] = tuple(s.id for s in PICK_SLOT_EMOJIS)
 
 
 @dataclass(frozen=True)
@@ -136,11 +148,12 @@ def pick_random_themes(*, count: int = 3, rng: random.Random | None = None) -> l
 def format_pick_message(options: list[RivalTheme]) -> str:
     """生成选主题消息正文。"""
     lines = [
-        "⚔️ 王中王 · 点表情选主题（60 秒内有效）",
+        "⚔️ 王中王 · 点消息下方表情选主题",
         "",
     ]
-    for i, theme in enumerate(options, start=1):
-        lines.append(f"{i}. {theme.title}")
+    for i, theme in enumerate(options):
+        slot = PICK_SLOT_EMOJIS[i]
+        lines.append(f"{slot.hint}  {i + 1}. {theme.title}")
     lines.extend([
         "",
         "回复 1 / 2 / 3 亦可（无需 @）",

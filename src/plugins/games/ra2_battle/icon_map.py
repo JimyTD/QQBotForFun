@@ -34,16 +34,20 @@ def _icon_shp_name(icon: Any) -> str | None:
 
 
 def _scan_sequence_icon(seq_dir: Path, seq_id: str) -> str | None:
-    """逐文件扫描 icon，避免 voxels 合并覆盖掉 vehicles 里的 cameo。"""
+    """逐文件扫描 icon；后续 yaml 中的专用 cameo 覆盖先前的 xxicon 占位。"""
+    placeholder = "xxicon.shp"
+    best: str | None = None
     for path in sorted(seq_dir.glob("*.yaml")):
         chunk = load_miniyaml_file(path)
         node = chunk.get(seq_id)
         if not isinstance(node, dict):
             continue
         fn = _icon_shp_name(node.get("icon"))
-        if fn:
-            return fn
-    return None
+        if not fn:
+            continue
+        if fn != placeholder:
+            best = fn
+    return best
 
 
 def _sequence_lookup_id(actor_id: str, raw_rules: dict[str, dict]) -> str:

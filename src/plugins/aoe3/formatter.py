@@ -105,6 +105,8 @@ def render_unit_card(unit: Unit) -> str:
             atk_parts.append(f"射程{rng}")
         if unit.rof_ranged:
             atk_parts.append(f"射速{unit.rof_ranged:g}s")
+        if unit.windup_ranged:
+            atk_parts.append(f"前摇{unit.windup_ranged:g}s")
         if unit.aoe_radius_ranged:
             atk_parts.append(f"AOE{unit.aoe_radius_ranged}")
         lines.append(" | ".join(atk_parts))
@@ -119,6 +121,8 @@ def render_unit_card(unit: Unit) -> str:
         atk_parts = [f"  {unit.attack_melee:g}伤害"]
         if unit.rof_melee:
             atk_parts.append(f"射速{unit.rof_melee:g}s")
+        if unit.windup_melee:
+            atk_parts.append(f"前摇{unit.windup_melee:g}s")
         if unit.aoe_radius_melee:
             atk_parts.append(f"AOE{unit.aoe_radius_melee}")
         lines.append(" | ".join(atk_parts))
@@ -232,6 +236,8 @@ def render_compare(a: Unit, b: Unit) -> str:
         lines.append(_row("  射程", f"{a.range:g}", f"{b.range:g}"))
         if a.rof_ranged or b.rof_ranged:
             lines.append(_row("  射速", f"{a.rof_ranged:g}s", f"{b.rof_ranged:g}s"))
+        if a.windup_ranged or b.windup_ranged:
+            lines.append(_row("  前摇", f"{a.windup_ranged:g}s", f"{b.windup_ranged:g}s"))
         if a.aoe_radius_ranged or b.aoe_radius_ranged:
             lines.append(_row("  AOE", str(a.aoe_radius_ranged or "-"), str(b.aoe_radius_ranged or "-")))
         mult_lines = _fmt_compare_mults(a.multipliers_ranged, b.multipliers_ranged)
@@ -246,6 +252,8 @@ def render_compare(a: Unit, b: Unit) -> str:
         lines.append(_row("  伤害", f"{a.attack_melee:g}", f"{b.attack_melee:g}"))
         if a.rof_melee or b.rof_melee:
             lines.append(_row("  射速", f"{a.rof_melee:g}s", f"{b.rof_melee:g}s"))
+        if a.windup_melee or b.windup_melee:
+            lines.append(_row("  前摇", f"{a.windup_melee:g}s", f"{b.windup_melee:g}s"))
         if a.aoe_radius_melee or b.aoe_radius_melee:
             lines.append(_row("  AOE", str(a.aoe_radius_melee or "-"), str(b.aoe_radius_melee or "-")))
         mult_lines = _fmt_compare_mults(a.multipliers_melee, b.multipliers_melee)

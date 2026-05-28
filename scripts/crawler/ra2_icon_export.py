@@ -127,21 +127,65 @@ def _read_nested_mix(outer: Path, inner_names: tuple[str, ...]) -> dict[str, byt
     return {}
 
 
-def _pick_palette(search_dirs: list[Path]) -> bytes:
+def _find_palette_blob(search_dirs: list[Path], pal_name: str) -> bytes | None:
+    """在目录或嵌套 mix 中查找调色板（如 cameo.pal）。"""
     import ra2mix
 
+    target = pal_name.lower()
+    outer_mixes = ("ra2.mix", "ra2md.mix", "multi.mix", "multimd.mix")
+    cache_mixes = ("cache.mix", "cachemd.mix")
+
     for d in search_dirs:
-        pal = d / "cameo.pal"
-        if pal.is_file():
-            return pal.read_bytes()
+        direct = d / pal_name
+        if direct.is_file():
+            return direct.read_bytes()
+
         lang = d / "language.mix"
         if lang.is_file():
             files = ra2mix.read(str(lang))
-            blob = files.get("cameo.pal") or files.get("CAMEO.PAL")
-            if blob:
-                return blob
+            for key, blob in files.items():
+                if key.lower() == target:
+                    return blob
+
+        for outer_name in outer_mixes:
+            outer_path = d / outer_name
+            if not outer_path.is_file():
+                continue
+            try:
+                outer_files = ra2mix.read(str(outer_path))
+            except Exception:
+                continue
+            for key, blob in outer_files.items():
+                if key.lower() == target:
+                    return blob
+            for cache_name in cache_mixes:
+                cache_blob = None
+                for key, blob in outer_files.items():
+                    if key.lower() == cache_name.lower():
+                        cache_blob = blob
+                        break
+                if not cache_blob:
+                    continue
+                tmp = d / f"_nested_{cache_name.replace('.', '_')}.mix"
+                tmp.write_bytes(cache_blob)
+                try:
+                    inner = ra2mix.read(str(tmp))
+                    for key, blob in inner.items():
+                        if key.lower() == target:
+                            return blob
+                finally:
+                    tmp.unlink(missing_ok=True)
+    return None
+
+
+def _pick_palette(search_dirs: list[Path]) -> bytes:
+    for name in ("cameo.pal", "tscameo.pal"):
+        blob = _find_palette_blob(search_dirs, name)
+        if blob:
+            print(f"palette: {name} ({len(blob)} bytes)")
+            return blob
     raise FileNotFoundError(
-        "未找到 cameo.pal（请确认 RA2 安装或 OpenRA Content/ra2 含 language.mix）"
+        "未找到 cameo.pal / tscameo.pal（已查 language.mix 与 ra2.mix/cache.mix 等嵌套 mix）"
     )
 
 

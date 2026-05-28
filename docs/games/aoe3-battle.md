@@ -49,7 +49,7 @@
 3. 系统从 10 个主题中 **随机抽 3 个**，发一条选单消息
 4. 为该消息挂载 **3 个表情**（NapCat 消息表情回应）；群友 **点击表情** 即选定对应主题
 5. **任一群友点选即生效**（第一个有效表情回应锁定主题），随后 **正式 `create_and_start` 开局**
-6. 选单 **超时**（建议 60s）：提示超时并清除 pending，不开局
+6. **不设倒计时**：群友可随时点选；`@结束` 可取消 pending
 7. **文字兜底**：对同一条选单消息回复 `1` / `2` / `3` 等价于点第 1/2/3 个表情（CLI 同样用 1/2/3，见 `docs/13-cli-bot-parity.md`）
 
 #### 入口 B：指定主题（快捷）
@@ -475,9 +475,9 @@ blue_count = max(1, lcm_budget // cost(blue))
 [ idle ]
   │  @bot 斗蛐蛐 王中王
   ▼
-[ pending_pick ]  ── 60s 超时 ──► [ idle ] + 提示
+[ pending_pick ]  ── @结束 ──► [ idle ] + 提示
   │  发消息 + 挂 3 emoji + 记录 message_id ↔ 3 themes
-  │  群友点 emoji / 回复 1|2|3
+  │  群友点 emoji / 回复 1|2|3（不限时）
   ▼
 [ create_and_start rival ]  ──► 与普通斗蛐蛐相同 betting → fighting
 ```
@@ -485,8 +485,8 @@ blue_count = max(1, lcm_budget // cost(blue))
 **选单文案示例**：
 
 ```
-⚔️ 王中王 · 点表情选主题（60 秒内有效）
-🎯 散兵王  |  🔫 火枪王  |  ⚔️ 近战骑王
+⚔️ 王中王 · 点消息下方表情选主题
+😀 1. 散兵王  |  🐧 2. 火枪王  |  🧧 3. 近战骑王
 回复 1 / 2 / 3 亦可
 ```
 
@@ -644,11 +644,45 @@ blue_count = max(1, lcm_budget // cost(blue))
 - **不是**：距离衰减曲线 / miss 率 / 装填中断（这些机制本游戏均**不实现**）
 - **数据来源**：50% 是建模参数，AoE3 官方未公布对应数据。若未来找到真实数据可调整
 
-#### 首次攻击
+#### 攻击抬手（Windup）
 
-- **立即开火**（初始 CD = 0），本轮结算后进入 CD = ROF 秒
+一次完整的攻击动画可拆分为三个阶段：
+- 远程攻击：攻击前摇 → 投掷物发射 → 攻击后摇
+- 近战攻击：攻击前摇 → 攻击命中 → 攻击后摇
+
+**ROF = 前摇 + 命中/发射 + 后摇**（三段加起来就是面板显示的攻击频率）。
+
+**Windup（抬手）不包含在 ROF 里**——它是"从静止状态进入攻击循环"的额外延迟：
+
+```
+移动中 → 射程内有敌人 → 停下 → attack_cd = windup → 等待抬手 → 开火
+→ CD = ROF → 开火 → CD = ROF → ...（连续攻击不重复抬手）
+```
+
+**核心规则**：
+1. **停下 = 开始抬手**：士兵 `stopped` 从 False 变为 True 的那一刻，根据初始攻击模式设 `attack_cd = windup_ranged` 或 `windup_melee`
+2. **连续攻击不重复 windup**：站着打就是纯 ROF 循环
+3. **中断攻击（移动）后再攻击要重新 windup**：在线性对冲模型中，中断攻击 = 移动（射程内没人了 → 继续前进 → 再次停下时重新抬手）
+4. **转火不重新 windup**：目标死亡后重新锁定新目标，只要 `stopped` 没变就不重新抬手
+5. **抬手期间目标死了**：windup CD 归零后正常走锁定→开火。如果射程内还有活目标则转火命中；如果射程内无人则火力浪费（这是长弓手等慢抬手单位的天然劣势）
+
+**windup 值确定时机**：在停下的那一刻就能确定——因为 `_can_attack_any_enemy` 已经知道是远程射程够到了还是近战射程够到了。
+
+**数据来源**：`units.json` 中的 `windup_ranged` / `windup_melee` 字段（秒），由 parser 从 anim 文件解析。
+
+**影响评估**：
+- 长弓手（windup=0.98s）：首发延迟近 1 秒，DPS 窗口显著缩短
+- 散兵/火枪（windup≈0.46-0.48s）：首发延迟约半秒
+- 炮兵（windup≈0.02-0.06s）：几乎无影响
+- 近战兵（windup≈0.27-0.5s）：贴脸后多等 0.3-0.5s
+
+**面板展示**：查兵种面板展示 windup 数据，斗蛐蛐战前面板和播报不展示。
+
+#### ROF（攻击间隔）
+
 - ROF 直接使用 `units.json` 中的真实数据（`rof_ranged` / `rof_melee` / `rof_siege`）
   - **rof_* 字段单位 = 秒（攻击间隔）**，不是攻击频率（RPS/RPM）。即 `rof_ranged=3.0` 表示每 3 秒攻击一次
+- 攻击当帧结算（不模拟弹道飞行时间），伤害立即生效
 
 #### 缺失 ROF 的处理
 
@@ -963,9 +997,13 @@ def has_attack(self) -> bool:
 
 - 脚本位置：`scripts/aoe3_battle_sim.py`（独立 CLI，与 `play_cli.py` 解耦）
 - 调用方式：`uv run python scripts/aoe3_battle_sim.py`
-- 提供两种运行方式：
+- 提供三种运行方式：
   - **交互式**：菜单选兵种 → 输数量 → 跑
   - **参数式**：`--red musketeer:10 --blue pikeman:8`，便于回归测试和脚本批跑
+  - **靶机模式**：`--dummy musketeer:5`，蓝方为不动不攻击的高 HP 靶机，用于验证 windup/DPS 等数据
+    - `uv run python scripts/aoe3_battle_sim.py --dummy musketeer:5 --debug`
+    - `uv run python scripts/aoe3_battle_sim.py --dummy longbowman:10 --dummy-hp 50000 --dummy-count 3`
+    - 输出：首发时间、预期首发（移动+windup）、总伤害、DPS、各士兵首发 tick
 
 ### 6.3 输出
 

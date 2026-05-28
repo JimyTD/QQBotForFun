@@ -164,7 +164,7 @@ uv run python scripts/crawler/openra_ra2_export.py --vendor path/to/yuris-reveng
 2. 合并 `^BaseWorld` 导出 **Locomotor**（`world.yaml`）
 3. 遍历武器：合并继承 → 导出 `Warhead@*Dam`（含 `Versus`）
 4. 遍历 actor：应用 `_is_battle_pool()` 过滤 → 导出作战单位；`CarrierMaster` 子机标记 `spawn_only`
-5. 生成 `icon_map.json`（YR sequences；PNG 导出暂缓）
+5. 生成 `icon_map.json`（YR sequences）；PNG 由 `ra2_icon_export.py` 导出
 
 **入池过滤 `_is_battle_pool()`**（同时满足）：
 
@@ -280,7 +280,7 @@ yaml **未写** `ValidTargets` 时，运行时按 OpenRA `WeaponInfo` 默认 **`
 | Trait 对照 | **`OpenRA.Mods.YR/`** C# 源码（与 `openra` 引擎并列） |
 | 对照源 | `openra-ra2` 保留；`--legacy-ra2` 可单独导出 diff |
 | 运行时 | Bot **只读** `data/ra2/*.json`；不依赖 vendor |
-| Icon PNG | **暂缓**（本机暂无 YR mix）；`icon_map.json` + `locale_zh.json` 已就绪 |
+| Icon PNG | ✅ `ra2_icon_export.py` → `resources/ra2/icons/`（73 张，2026-05-28）；`icon_map.json` + `locale_zh.json` 已就绪 |
 
 **同 id 覆盖规则**：`actor_id` 冲突时以 YR yaml 为准（如 `htnk` 炮塔 `TurnSpeed=5`、YR 再平衡 HP/造价）。
 
@@ -549,7 +549,7 @@ for tick in 0..max_ticks:
 | `commands.py`（1/2/开战） | ✅ |
 | `game_launcher` + `bot.py` | ✅ |
 | 阵容 icon 图片广播 | ✅（需 `ra2_icon_export.py` 生成 PNG） |
-| 单位图标 PNG | ⏳ 待 mix 导出 |
+| 单位图标 PNG | ✅（`resources/ra2/icons/`，73 张） |
 | theater + 经典局 | ✅（§8.2 / `classic_scenarios.json`） |
 
 ### 8.5 阵容设计说明（2026-05-27）
@@ -721,7 +721,7 @@ uv run python scripts/ra2_lineup_audit.py --bet-seeds 15 --sim-seeds 1 --duel-se
 | **Phase 1 — MVP Bot** | `game.py` + 指令 + 押注/开战 + 简要播报 | ✅ 完成 |
 | **Phase 2 — YR 数据** | cookgreen/Yuris-Revenge 导出 + 58 池 + locale/icon_map | ✅ 完成 |
 | **Phase 3 — YR 降级** | `battle_armament.py` Tier B/C + 心控容量 3 | ✅ 完成 |
-| **Phase 4 — Icon PNG** | YR cameo.mix → `resources/ra2/icons/` | ⏳ 待 mix |
+| **Phase 4 — Icon PNG** | YR cameo.mix → `resources/ra2/icons/` | ✅ 完成（73 PNG，2026-05-28） |
 | **Phase 5 — 体验** | 战斗日志、自定义预算 | ⏳ 远期 |
 | **Phase 5.1 — 阵容** | theater 分流 + 经典局 JSON | ✅ 完成（§8.2 / §8.5） |
 
