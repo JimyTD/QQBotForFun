@@ -1,4 +1,4 @@
-"""红警2斗蛐蛐 —— 群玩法（押注规则对齐 aoe3_battle，面板为红警 OpenRA 简介）。"""
+"""红警2斗蛐蛐 —— 群玩法（押注规则对齐 aoe3_battle）。"""
 
 from __future__ import annotations
 
@@ -25,7 +25,6 @@ from .lineup import (
     BUDGET_MAX,
     BUDGET_MIN,
     MatchLineup,
-    SideLineup,
     format_side_panel,
     format_vs_banner,
     generate_bet_lineup,
@@ -40,65 +39,13 @@ PARTICIPATION_REWARD = 1
 BROADCAST_SLEEP = 2.0
 
 
-async def _broadcast_side_panel(
-    group_id: int,
-    side: SideLineup,
-    *,
-    color: str,
-    mode: str,
-    initial_stars: int,
-) -> None:
-    """发送单方阵容：每个兵种 icon 单独一条消息，再发文字详情。
-
-    NapCat 对「多图 + 长文」合成一条消息易失败并静默降级为纯文本；
-    拆开发送更稳，也与帝国斗蛐蛐「先看头像再看属性」的阅读顺序一致。
-    """
-    import base64
-
-    from nonebot.adapters.onebot.v11 import Message, MessageSegment
-
-    from .icons import get_icon_path
-
-    missing: list[str] = []
-    sent = 0
-    for slot in side.slots:
-        icon_path = get_icon_path(slot.actor_id)
-        if icon_path is None:
-            missing.append(slot.actor_id)
-            continue
-        b64 = base64.b64encode(icon_path.read_bytes()).decode()
-        img_msg = Message(MessageSegment.image(f"base64://{b64}"))
-        try:
-            await session.broadcast(group_id, img_msg)
-            sent += 1
-        except Exception:
-            logger.warning(
-                "[ra2_battle] icon 发送失败 side=%s actor=%s path=%s",
-                color, slot.actor_id, icon_path,
-                exc_info=True,
-            )
-
-    text = format_side_panel(side, color, mode, initial_stars=initial_stars)
-    await session.broadcast(group_id, text)
-
-    logger.info(
-        "[ra2_battle] 面板 %s icons=%d/%d missing=%s",
-        color, sent, len(side.slots), missing or "-",
-    )
-    if missing:
-        logger.warning(
-            "[ra2_battle] 缺 PNG（resources/ra2/icons/{{id}}.png）: %s",
-            ", ".join(missing),
-        )
-
-
 @register_game
 class Ra2BattleGame(GameBase):
-    """红警2斗蛐蛐（OpenRA 数据 · 二维战场）。"""
+    """红警2斗蛐蛐。"""
 
     id = "ra2_battle"
     name = "红警2斗蛐蛐"
-    description = "OpenRA 数据 · 二维空旷战场 · 押注 / 单挑"
+    description = "押注 / 单挑"
     min_players = 0
     max_players = 50
     version = "0.2"
@@ -109,7 +56,7 @@ class Ra2BattleGame(GameBase):
         GameMode(
             id="bet",
             name="押注模式",
-            description="随机双方阵容，二维对冲",
+            description="随机双方阵容",
             aliases=("红警斗蛐蛐", "红警", "默认"),
         ),
         GameMode(
@@ -157,18 +104,36 @@ class Ra2BattleGame(GameBase):
         self._battle_task: asyncio.Task[Any] | None = None
 
     async def on_start(self, ctx: GameContext) -> None:
+        """广播对阵面板（图片+详情+VS总览），进入押注阶段。"""
+        import base64
+
+        from nonebot.adapters.onebot.v11 import Message, MessageSegment
+
+        from .icons import get_icon_path
+
         match = self._match
         mode = ctx.state["mode"]
         stars = int(ctx.state.get("initial_stars", 0))
 
-        await _broadcast_side_panel(
-            ctx.group_id, match.red,
-            color="red", mode=mode, initial_stars=stars,
-        )
-        await _broadcast_side_panel(
-            ctx.group_id, match.blue,
-            color="blue", mode=mode, initial_stars=stars,
-        )
+        red_text = format_side_panel(match.red, "red", mode, initial_stars=stars)
+        red_msg = Message()
+        for slot in match.red.slots:
+            icon_path = get_icon_path(slot.actor_id)
+            if icon_path:
+                b64 = base64.b64encode(icon_path.read_bytes()).decode()
+                red_msg.append(MessageSegment.image(f"base64://{b64}"))
+        red_msg.append(MessageSegment.text(red_text))
+        await session.broadcast_rich(ctx.group_id, red_msg, red_text)
+
+        blue_text = format_side_panel(match.blue, "blue", mode, initial_stars=stars)
+        blue_msg = Message()
+        for slot in match.blue.slots:
+            icon_path = get_icon_path(slot.actor_id)
+            if icon_path:
+                b64 = base64.b64encode(icon_path.read_bytes()).decode()
+                blue_msg.append(MessageSegment.image(f"base64://{b64}"))
+        blue_msg.append(MessageSegment.text(blue_text))
+        await session.broadcast_rich(ctx.group_id, blue_msg, blue_text)
 
         await session.broadcast(ctx.group_id, format_vs_banner(match))
         logger.info(

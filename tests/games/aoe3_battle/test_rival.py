@@ -81,14 +81,14 @@ def test_pick_random_themes_unique():
 def test_format_pick_message_shows_emoji_hints():
     opts = pick_random_themes(count=3, rng=random.Random(0))
     text = format_pick_message(opts)
-    assert "😀" in text and "🐧" in text and "🧧" in text
+    assert "1️⃣" in text and "2️⃣" in text and "3️⃣" in text
     for i, theme in enumerate(opts, start=1):
-        assert f"{i}. {theme.title}" in text
+        assert f"{i}." in text and theme.title in text
 
 
 def test_resolve_pick_index_mount_phase_does_not_consume():
-    emoji_to_index = {"128": 0, "129": 1, "137": 2}
-    likes = [{"emoji_id": "128", "count": 1}]
+    emoji_to_index = {"9312": 0, "9313": 1, "9314": 2}
+    likes = [{"emoji_id": "9312", "count": 1}]
     idx, counts = resolve_pick_index_from_likes(
         emoji_to_index=emoji_to_index,
         like_counts={},
@@ -96,16 +96,16 @@ def test_resolve_pick_index_mount_phase_does_not_consume():
         picks_enabled=False,
     )
     assert idx is None
-    assert counts == {"128": 1}
+    assert counts == {"9312": 1}
 
 
 def test_resolve_pick_index_user_click_uses_count_delta():
-    emoji_to_index = {"128": 0, "129": 1, "137": 2}
-    base = {"128": 1, "129": 1, "137": 1}
+    emoji_to_index = {"9312": 0, "9313": 1, "9314": 2, "②": 1}
+    base = {"9312": 1, "9313": 1, "9314": 1}
     likes = [
-        {"emoji_id": "128", "count": 1},
-        {"emoji_id": "129", "count": 2},
-        {"emoji_id": "137", "count": 1},
+        {"emoji_id": "9312", "count": 1},
+        {"emoji_id": "9313", "count": 2},
+        {"emoji_id": "9314", "count": 1},
     ]
     idx, counts = resolve_pick_index_from_likes(
         emoji_to_index=emoji_to_index,
@@ -114,13 +114,13 @@ def test_resolve_pick_index_user_click_uses_count_delta():
         picks_enabled=True,
     )
     assert idx == 1
-    assert counts["129"] == 2
+    assert counts["9313"] == 2
 
 
 def test_resolve_pick_index_bot_replay_after_mount_no_consume():
-    emoji_to_index = {"128": 0, "129": 1, "137": 2}
-    base = {"128": 1, "129": 1, "137": 1}
-    likes = [{"emoji_id": "128", "count": 1}]
+    emoji_to_index = {"9312": 0, "9313": 1, "9314": 2}
+    base = {"9312": 1, "9313": 1, "9314": 1}
+    likes = [{"emoji_id": "9312", "count": 1}]
     idx, counts = resolve_pick_index_from_likes(
         emoji_to_index=emoji_to_index,
         like_counts=base,
@@ -128,12 +128,12 @@ def test_resolve_pick_index_bot_replay_after_mount_no_consume():
         picks_enabled=True,
     )
     assert idx is None
-    assert counts["128"] == 1
+    assert counts["9312"] == 1
 
 
 def test_resolve_pick_index_first_user_click_from_zero():
-    emoji_to_index = {"128": 0, "129": 1, "137": 2}
-    likes = [{"emoji_id": "129", "count": 1}]
+    emoji_to_index = {"9312": 0, "9313": 1, "9314": 2}
+    likes = [{"emoji_id": "9313", "count": 1}]
     idx, counts = resolve_pick_index_from_likes(
         emoji_to_index=emoji_to_index,
         like_counts={},
@@ -141,24 +141,24 @@ def test_resolve_pick_index_first_user_click_from_zero():
         picks_enabled=True,
     )
     assert idx == 1
-    assert counts["129"] == 1
+    assert counts["9313"] == 1
 
 
 def test_resolve_pick_index_ambiguous_multi_delta_skips():
-    emoji_to_index = {"128": 0, "129": 1, "137": 2}
+    emoji_to_index = {"9312": 0, "9313": 1, "9314": 2}
     likes = [
-        {"emoji_id": "128", "count": 2},
-        {"emoji_id": "129", "count": 2},
+        {"emoji_id": "9312", "count": 2},
+        {"emoji_id": "9313", "count": 2},
     ]
     idx, counts = resolve_pick_index_from_likes(
         emoji_to_index=emoji_to_index,
-        like_counts={"128": 1, "129": 1},
+        like_counts={"9312": 1, "9313": 1},
         likes=likes,
         picks_enabled=True,
     )
     assert idx is None
-    assert counts["128"] == 2
-    assert counts["129"] == 2
+    assert counts["9312"] == 2
+    assert counts["9313"] == 2
 
 
 def test_generate_rival_lineup(repo):

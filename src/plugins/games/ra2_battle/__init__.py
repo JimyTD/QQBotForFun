@@ -1,4 +1,4 @@
-"""红警2斗蛐蛐 —— 独立于帝国3斗蛐蛐（OpenRA 数据 · 二维模拟）。"""
+"""红警2斗蛐蛐 —— 独立于帝国3斗蛐蛐。"""
 
 from __future__ import annotations
 
@@ -16,6 +16,6 @@ except Exception:
 
 __plugin_meta__ = PluginMetadata(
     name="ra2_battle",
-    description="红警2斗蛐蛐（OpenRA/ra2 数据 · 二维战场）",
+    description="红警2斗蛐蛐",
     usage="@我 红警斗蛐蛐 / @我 红警斗蛐蛐 单挑",
 )

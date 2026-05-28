@@ -31,7 +31,7 @@ provider:
 1. `deploy_project_preparation` 上传项目 → 得到 `/root/QQBotForFun_<ts>`
 2. 执行：
 ```
-cd /root/qqbot && docker compose stop bot && docker compose rm -f bot && cp -r /root/QQBotForFun_<ts>/{src,seeds,scripts,docs,pyproject.toml} /root/qqbot/ && docker compose up -d --build bot
+cd /root/qqbot && docker compose stop bot && docker compose rm -f bot && cp -r /root/QQBotForFun_<ts>/{src,seeds,scripts,docs,resources,pyproject.toml} /root/qqbot/ && docker compose up -d --build bot
 ```
 3. 确认：`cd /root/qqbot && docker compose logs bot --tail=5`（看到 `[bot] ready.`）
 

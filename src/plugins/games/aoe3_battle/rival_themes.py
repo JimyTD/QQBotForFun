@@ -13,17 +13,17 @@ from src.plugins.aoe3.models import Unit
 
 @dataclass(frozen=True)
 class PickSlotEmoji:
-    """NapCat set_msg_emoji_like 槽位：QQ emoji_id 与选单文案里的对应符号。"""
+    """NapCat set_msg_emoji_like 槽位（QQ 官方 emoji_id + 选单对照符号）。"""
 
     id: str
     hint: str
 
 
-# 顺序即消息下方表情栏从左到右；hint 须与客户端渲染一致，便于对照
+# 顺序 = 消息下方表情栏从左到右（QQ EmojiType=2，U+2460/U+2461/U+2462）
 PICK_SLOT_EMOJIS: tuple[PickSlotEmoji, PickSlotEmoji, PickSlotEmoji] = (
-    PickSlotEmoji("128", "😀"),
-    PickSlotEmoji("129", "🐧"),
-    PickSlotEmoji("137", "🧧"),
+    PickSlotEmoji("9312", "1️⃣"),
+    PickSlotEmoji("9313", "2️⃣"),
+    PickSlotEmoji("9314", "3️⃣"),
 )
 PICK_SLOT_EMOJI_IDS: tuple[str, str, str] = tuple(s.id for s in PICK_SLOT_EMOJIS)
 
@@ -148,7 +148,7 @@ def pick_random_themes(*, count: int = 3, rng: random.Random | None = None) -> l
 def format_pick_message(options: list[RivalTheme]) -> str:
     """生成选主题消息正文。"""
     lines = [
-        "⚔️ 王中王 · 点消息下方表情选主题",
+        "⚔️ 王中王 · 点消息下方 1️⃣ 2️⃣ 3️⃣ 选主题（从左到右）",
         "",
     ]
     for i, theme in enumerate(options):

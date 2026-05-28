@@ -54,7 +54,7 @@ NapCat WebUI: http://106.55.228.236:6099
 
 ```bash
 cd /root/qqbot && docker compose stop bot && docker compose rm -f bot
-cp -r /root/QQBotForFun_<ts>/{src,seeds,scripts,docs,pyproject.toml} /root/qqbot/
+cp -r /root/QQBotForFun_<ts>/{src,seeds,scripts,docs,resources,pyproject.toml} /root/qqbot/
 cd /root/qqbot && docker compose up -d --build bot
 ```
 

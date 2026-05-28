@@ -883,15 +883,9 @@ def format_vs_banner(match: MatchLineup) -> str:
             lines.append(f"💰本局造价预算 ${match.budget}")
 
     lines.extend([
-
         "━━━━━━━━━━━━━━━━━━━━━━━━",
-
         "@我 1 / 押注1 押红方 | @我 2 / 押注2 押蓝方",
-
         "入场券 5 金币 · @我 开战 直接开打",
-
-        "（二维空旷战场 · 数据来自 OpenRA/ra2）",
-
     ])
 
     return "\n".join(lines)

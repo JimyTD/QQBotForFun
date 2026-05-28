@@ -126,9 +126,11 @@ async def start_theme_pick(
         )
         message_id = int(resp["message_id"])
 
-        emoji_to_index: dict[str, int] = {}
-        for idx, slot in enumerate(PICK_SLOT_EMOJIS[: len(rng_options)]):
-            emoji_to_index[slot.id] = idx
+    emoji_to_index: dict[str, int] = {}
+    for idx, slot in enumerate(PICK_SLOT_EMOJIS[: len(rng_options)]):
+        emoji_to_index[slot.id] = idx
+        # notice 有时回传 Unicode 字符而非十进制 id
+        emoji_to_index[("①", "②", "③")[idx]] = idx
 
         pending = _PendingPick(
             group_id=group_id,
