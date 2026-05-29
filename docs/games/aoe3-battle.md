@@ -871,8 +871,9 @@ AOE3 有三种伤害类型，每种只被对应的抗性减免：
 都属于 ranged）。按 `ATTACK_PRIORITY` 常量选**优先级最高的一条**作为该槽位的代表，
 该 protoaction 的所有字段（damage / range / rof / aoe / multipliers）整体写入对应字段族。
 
-优先级设计原则：**选日常打兵的标准姿态**，而非特殊/拆建筑模式：
-- 步兵/骑兵：`DefendXxxAttack > StaggerXxxAttack > VolleyXxxAttack > MeleeHandAttack > HandAttack`
+优先级设计原则：**远程步兵/弓弩/火枪等选齐射（Volley）姿态**；炮兵等特殊单位另定（打兵模式优先于打建筑）：
+- 远程步兵/弓弩/火枪：`VolleyRangedAttack > StaggerRangedAttack > DefendRangedAttack > RangedAttack`
+- 近战槽（刺刀等）：`VolleyHandAttack > StaggerHandAttack > DefendHandAttack > MeleeHandAttack > HandAttack`
 - 炮兵：`BarrageAttack > RepeatingAttack > CannonAttack > BombardAttack > CaseShotAttack`
   - BarrageAttack = 迫击炮打兵模式（AOE 大、伤害低、有负倍率）
   - RepeatingAttack = 加特林连射模式（rof=0.5，极高 DPS）

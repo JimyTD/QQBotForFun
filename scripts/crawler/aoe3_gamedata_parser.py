@@ -68,20 +68,20 @@ KEEP_TYPE_EXACT = {
 #   - 优先选"打兵"模式（BarrageAttack/RepeatingAttack）而非"打建筑"（CannonAttack）
 # ============================================================
 ATTACK_PRIORITY = {
-    # --- 远程姿态 ---
-    "DefendRangedAttack": 1,
+    # --- 远程姿态（步兵/弓弩/火枪等：游戏默认齐射 Volley）---
+    "VolleyRangedAttack": 1,
     "StaggerRangedAttack": 2,
-    "VolleyRangedAttack": 3,
+    "DefendRangedAttack": 3,
     "RangedAttack": 4,
     "BarrageAttack": 5,         # 迫击炮打兵模式（优先于 CannonAttack）
     "RepeatingAttack": 6,       # 加特林连射模式（优先于 CannonAttack）
     "CannonAttack": 7,          # 标准炮击（鹰炮等的主攻）
     "BombardAttack": 8,         # 旧版强攻模式，射程减半
     "CaseShotAttack": 9,        # 散弹，伤害极低
-    # --- 近战姿态 ---
-    "DefendHandAttack": 1,
+    # --- 近战姿态（与齐射配对的刺刀/白刃等）---
+    "VolleyHandAttack": 1,
     "StaggerHandAttack": 2,
-    "VolleyHandAttack": 3,
+    "DefendHandAttack": 3,
     "MeleeHandAttack": 4,
     "HandAttack": 5,
     # --- 拆建筑（归 siege 桶）---
@@ -568,8 +568,11 @@ def _parse_attacks(el: ET.Element, tactics_filename: str = "") -> dict[str, dict
 
     result = {}
     if ranged_candidates:
-        ranged_candidates.sort(key=lambda x: x["priority"])
-        result["ranged"] = ranged_candidates[0]
+        # maxrange<=0 的 *RangedAttack 在 protoy 里是占位/继承，不能作远程槽代表。
+        valid_ranged = [c for c in ranged_candidates if c["maxrange"] > 0]
+        if valid_ranged:
+            valid_ranged.sort(key=lambda x: x["priority"])
+            result["ranged"] = valid_ranged[0]
     if melee_candidates:
         melee_candidates.sort(key=lambda x: x["priority"])
         result["melee"] = melee_candidates[0]
