@@ -1,25 +1,22 @@
-"""AoE3 DE Game Data Parser — 从游戏原始文件生成 seeds/aoe3/units.json。
+"""AoE3 DE Game Data Parser — 从 data/aoe3/raw/ 生成 seeds/aoe3/units.json。
 
-数据源（由 aoe3_bar_extractor.py 从 Data.bar 提取）：
-  - protoy.xml          (单位原型定义)
-  - stringtabley_en.xml (英文名)
-  - stringtabley_zh.xml (中文名)
-
-设计原则：
-  - 数据第一：type/multiplier.vs 直接存游戏原始标签，不翻译
-  - 倍率天然匹配：damagebonus type 和 unit.type 使用同一命名空间
-  - 翻译只在展示层：i18n_zh.json 负责 AbstractXxx → 中文
+权威源（入库 git，由 extractor 从游戏 BAR 灌库）：
+  - data/aoe3/raw/protoy.xml
+  - data/aoe3/raw/tactics/*.tactics
+  - data/aoe3/raw/anims/**/*.xml
+  - data/aoe3/raw/stringtabley_*.xml
 
 用法:
-  1. 先运行 aoe3_bar_extractor.py 提取 XML
-  2. 再运行本脚本生成 seeds/aoe3/units.json + seeds/aoe3/i18n_zh.json
+  uv run python scripts/crawler/aoe3_gamedata_parser.py
 """
 from __future__ import annotations
 
 import json
 import os
 import re
+import subprocess
 import xml.etree.ElementTree as ET
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
@@ -27,16 +24,20 @@ from typing import Any
 # 路径
 # ============================================================
 PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent
-EXTRACTED_DIR = Path(os.environ.get("AOE3_EXTRACTED_DIR", r"E:\aoe3_extracted"))
+DEFAULT_RAW_DIR = PROJECT_ROOT / "data" / "aoe3" / "raw"
+EXTRACTED_DIR = Path(os.environ.get("AOE3_EXTRACTED_DIR", str(DEFAULT_RAW_DIR)))
 SEEDS_DIR = PROJECT_ROOT / "seeds" / "aoe3"
+DATA_AOE3_DIR = PROJECT_ROOT / "data" / "aoe3"
 
 PROTOY_PATH = EXTRACTED_DIR / "protoy.xml"
 STRING_EN_PATH = EXTRACTED_DIR / "stringtabley_en.xml"
 STRING_ZH_PATH = EXTRACTED_DIR / "stringtabley_zh.xml"
 TACTICS_DIR = EXTRACTED_DIR / "tactics"
+ANIMS_DIR = EXTRACTED_DIR / "anims"
 
 OUTPUT_UNITS_PATH = SEEDS_DIR / "units.json"
 OUTPUT_I18N_PATH = SEEDS_DIR / "i18n_zh.json"
+OUTPUT_MANIFEST_PATH = DATA_AOE3_DIR / "manifest.json"
 
 ART_UNITS_BAR = Path(os.environ.get(
     "AOE3_ART_UNITS_BAR",
@@ -65,7 +66,8 @@ KEEP_TYPE_EXACT = {
 # 远程/近战统一层级：
 #   齐射 Volley > 交错 Stagger > 具名主攻击（无 Volley/Stagger 后缀的主循环）
 #   > 防御 Defend（手动阵型，置底）
-# 步兵默认 Volley；纯远程骑兵默认 Stagger；兼有两种 tag 仍 Volley
+# 全员统一 Volley > Stagger；多数纯骑兵 protoy 仅有 StaggerRangedAttack，
+# 无齐射动作时自然落回交错，与「骑兵常用交错」一致。
 # 炮兵等另表（打兵模式优先于打建筑）
 # ============================================================
 
@@ -73,17 +75,23 @@ TIER_VOLLEY = 20
 TIER_STAGGER = 21
 TIER_NAMED_RANGED = 22   # + 在 NAMED_RANGED_ATTACK_ORDER 中的下标
 TIER_DEFEND_RANGED = 32
-# 具名远程：多数单位无 Volley/Stagger，靠本层作主输出；待 protoy 核实是否含一次性技能（见 TODO）
+# 具名远程：无 Volley/Stagger 后缀的常态主武器（弓骑 Bow、火枪 Rifle、船 Ranged 等）
 NAMED_RANGED_ATTACK_ORDER = [
     "BowAttack",
     "RifleAttack",
     "BlunderbussAttack",
-    "SharpshooterAttack",
-    "CrackshotAttack",
     "LongRangeAttack",
-    "SwashbucklerAttack",
     "RangedAttack",
 ]
+# 英雄技 / 一次性射击 / 召唤类 — 不进斗蛐蛐 DPS 循环
+NON_DPS_RANGED_ATTACKS = frozenset({
+    "SharpshooterAttack",
+    "CrackshotAttack",
+    "SwashbucklerAttack",
+    "HeavenlyFireBomb",
+    "Stun",
+    "Chaos",
+})
 
 ARTILLERY_RANGED_PRIORITY = {
     "BarrageAttack": 40,
@@ -107,13 +115,7 @@ NAMED_MELEE_ATTACK_ORDER = [
 
 
 def _primary_ranged_stances(unit_types: set[str]) -> tuple[str, str]:
-    """返回 (第一优先姿态, 第二优先姿态)。"""
-    has_inf = "AbstractRangedInfantry" in unit_types
-    has_cav = "AbstractRangedCavalry" in unit_types
-    if has_inf:
-        return ("VolleyRangedAttack", "StaggerRangedAttack")
-    if has_cav:
-        return ("StaggerRangedAttack", "VolleyRangedAttack")
+    """返回 (第一优先姿态, 第二优先姿态)。全员齐射 > 交错。"""
     return ("VolleyRangedAttack", "StaggerRangedAttack")
 
 
@@ -308,6 +310,7 @@ def parse_unit(el: ET.Element, strings_en: dict, strings_zh: dict) -> dict | Non
         result["description"] = description_zh
 
     if ranged:
+        result["protoaction_ranged"] = ranged["name"]
         result["attack_ranged"] = ranged["damage"]
         result["range"] = ranged["maxrange"]
         result["range_min"] = ranged["minrange"]
@@ -323,6 +326,7 @@ def parse_unit(el: ET.Element, strings_en: dict, strings_zh: dict) -> dict | Non
             result.setdefault("multipliers", {})["ranged"] = ranged["multipliers"]
 
     if melee:
+        result["protoaction_melee"] = melee["name"]
         result["attack_melee"] = melee["damage"]
         result["range_melee"] = melee["maxrange"]
         result["rof_melee"] = melee["rof"]
@@ -416,7 +420,7 @@ _tactics_cache: dict[str, dict[str, dict[str, Any]]] = {}
 
 
 def _load_tactics_actions(tactics_filename: str) -> dict[str, dict[str, Any]]:
-    """Load tactics file → {action_name: {anim, projectiles?}}."""
+    """Load tactics file → {action_name: {anim, projectiles?, maxrange?, minrange?}}."""
     if tactics_filename in _tactics_cache:
         return _tactics_cache[tactics_filename]
 
@@ -445,6 +449,16 @@ def _load_tactics_actions(tactics_filename: str) -> dict[str, dict[str, Any]]:
                         entry["projectiles"] = val
                 except ValueError:
                     pass
+            for range_key in ("maxrange", "minrange"):
+                raw = action.findtext(range_key, "").strip()
+                if not raw:
+                    continue
+                try:
+                    val = round(float(raw), 2)
+                    if val > 0:
+                        entry[range_key] = val
+                except ValueError:
+                    pass
             if entry:
                 result[aname] = entry
     except ET.ParseError:
@@ -465,10 +479,14 @@ def _load_tactics(tactics_filename: str) -> dict[str, int]:
 
 
 # ============================================================
-# Anim windup — ArtUnits.bar → tag type=Attack（秒）
+# Anim windup — data/aoe3/raw/anims/ 优先，ArtUnits.bar 回退
 # ============================================================
 _anim_bar_entries: dict[str, dict] | None = None
 _anim_xml_cache: dict[str, str] = {}
+
+
+def _animfile_local_path(animfile: str) -> Path:
+    return ANIMS_DIR / animfile.replace("\\", "/")
 
 
 def _get_anim_units_entries() -> dict[str, dict]:
@@ -488,19 +506,31 @@ def _animfile_to_bar_path(animfile: str) -> str:
 
 
 def _load_unit_anim_xml(animfile: str) -> str | None:
-    if not animfile or not ART_UNITS_BAR.exists():
+    if not animfile:
         return None
+    if animfile in _anim_xml_cache:
+        cached = _anim_xml_cache[animfile]
+        return cached or None
+
+    local_path = _animfile_local_path(animfile)
+    if local_path.is_file():
+        xml_text = local_path.read_text(encoding="utf-8")
+        _anim_xml_cache[animfile] = xml_text
+        return xml_text
+
+    if not ART_UNITS_BAR.exists():
+        _anim_xml_cache[animfile] = ""
+        return None
+
     bar_path = _animfile_to_bar_path(animfile)
-    if bar_path in _anim_xml_cache:
-        return _anim_xml_cache[bar_path]
     entries = _get_anim_units_entries()
     entry = entries.get(bar_path)
     if not entry:
-        _anim_xml_cache[bar_path] = ""
+        _anim_xml_cache[animfile] = ""
         return None
     from aoe3_bar_extractor import decode_xmb_to_xml, extract_file_data
     xml_text = decode_xmb_to_xml(extract_file_data(str(ART_UNITS_BAR), entry))
-    _anim_xml_cache[bar_path] = xml_text
+    _anim_xml_cache[animfile] = xml_text
     return xml_text
 
 
@@ -559,8 +589,12 @@ def _parse_attacks(
     """
     if unit_types is None:
         unit_types = set()
-    # Load tactics projectile data
-    tactics_proj = _load_tactics(tactics_filename) if tactics_filename else {}
+    tactics_actions = _load_tactics_actions(tactics_filename) if tactics_filename else {}
+    tactics_proj = {
+        name: meta["projectiles"]
+        for name, meta in tactics_actions.items()
+        if meta.get("projectiles")
+    }
 
     ranged_candidates = []
     melee_candidates = []
@@ -576,6 +610,11 @@ def _parse_attacks(
         rof = round(float(action.findtext("rof", "3.0") or "3.0"), 4)
         maxrange = round(float(action.findtext("maxrange", "0") or "0"), 2)
         minrange = round(float(action.findtext("minrange", "0") or "0"), 2)
+        tact = tactics_actions.get(name, {})
+        if maxrange <= 0 and tact.get("maxrange", 0) > 0:
+            maxrange = round(float(tact["maxrange"]), 2)
+        if minrange <= 0 and tact.get("minrange", 0) > 0:
+            minrange = round(float(tact["minrange"]), 2)
         damagearea = round(float(action.findtext("damagearea", "0") or "0"), 2)
         aoe_radius = round(damagearea) if damagearea > 0 else 0
         damagecap = round(float(action.findtext("damagecap", "0") or "0"), 2)
@@ -594,8 +633,10 @@ def _parse_attacks(
             if mult_val != 1.0 and vs_type:
                 multipliers.append({"vs": vs_type, "value": mult_val})
 
-        # Skip non-combat actions
+        # Skip non-combat actions and hero skills (斗蛐蛐只用常态 DPS 循环)
         if any(kw in name for kw in ("Charge", "Trample", "Ability", "AutoGather", "Heal")):
+            continue
+        if name in NON_DPS_RANGED_ATTACKS:
             continue
         if "Build" in name and "Attack" not in name:
             continue
@@ -754,10 +795,49 @@ def generate_i18n() -> dict:
 
 
 # ============================================================
+# Manifest
+# ============================================================
+def _git_head() -> str:
+    try:
+        out = subprocess.check_output(
+            ["git", "rev-parse", "--short", "HEAD"],
+            cwd=PROJECT_ROOT,
+            stderr=subprocess.DEVNULL,
+            text=True,
+        )
+        return out.strip()
+    except (subprocess.CalledProcessError, FileNotFoundError):
+        return ""
+
+
+def write_manifest(units_count: int) -> None:
+    anim_files = list(ANIMS_DIR.rglob("*.xml")) if ANIMS_DIR.is_dir() else []
+    tactics_files = list(TACTICS_DIR.glob("*.tactics")) if TACTICS_DIR.is_dir() else []
+    manifest = {
+        "raw_dir": str(EXTRACTED_DIR.relative_to(PROJECT_ROOT)).replace("\\", "/"),
+        "generated_at": datetime.now(timezone.utc).isoformat(),
+        "git_head": _git_head(),
+        "combat_units": units_count,
+        "protoy_bytes": PROTOY_PATH.stat().st_size if PROTOY_PATH.is_file() else 0,
+        "tactics_files": len(tactics_files),
+        "anim_files": len(anim_files),
+    }
+    DATA_AOE3_DIR.mkdir(parents=True, exist_ok=True)
+    OUTPUT_MANIFEST_PATH.write_text(
+        json.dumps(manifest, ensure_ascii=False, indent=2),
+        encoding="utf-8",
+    )
+
+
+# ============================================================
 # Main
 # ============================================================
 def main():
-    print("=== AoE3 DE Game Data Parser ===\n")
+    print("=== AoE3 DE Game Data Parser ===")
+    print(f"Raw dir: {EXTRACTED_DIR}\n")
+
+    if not PROTOY_PATH.is_file():
+        raise SystemExit(f"protoy.xml not found: {PROTOY_PATH}")
 
     strings_en = load_string_table(STRING_EN_PATH)
     strings_zh = load_string_table(STRING_ZH_PATH)
@@ -768,6 +848,7 @@ def main():
 
     # Write units.json
     print(f"\nWriting {OUTPUT_UNITS_PATH}...")
+    SEEDS_DIR.mkdir(parents=True, exist_ok=True)
     with open(OUTPUT_UNITS_PATH, "w", encoding="utf-8") as f:
         json.dump(units, f, ensure_ascii=False, indent=2)
     print(f"  {len(units)} units, {OUTPUT_UNITS_PATH.stat().st_size / 1024:.0f} KB")
@@ -778,6 +859,9 @@ def main():
     with open(OUTPUT_I18N_PATH, "w", encoding="utf-8") as f:
         json.dump(i18n, f, ensure_ascii=False, indent=2)
     print("  Done!")
+
+    write_manifest(len(units))
+    print(f"Writing {OUTPUT_MANIFEST_PATH}...")
 
     # Stats
     print(f"\n=== Stats ===")

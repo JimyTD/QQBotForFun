@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="utf-8"?>
+<animfile>
+  <definebone>Bone_rt_foot</definebone>
+  <definebone>Bone_lt_foot</definebone>
+  <component>ModelComp
+    <assetreference type="GrannyModel">
+      <file>units\animals\wolf\wolf</file>
+    </assetreference>
+    <decal>
+      <effecttype>default</effecttype>
+      <texture isfakeshadow="1">shadows_selections\shadow_circle_64x64</texture>
+      <selectedtexture>shadows_selections\selection_oval_32x64</selectedtexture>
+      <width>1.0</width>
+      <height>1.75</height>
+      <zoffset>-0.20</zoffset>
+    </decal>
+  </component>
+  <anim>Idle
+    <assetreference type="GrannyAnim">
+      <file>animation_library\quads\wolf_idlea</file>
+    </assetreference>
+    <component>ModelComp</component>
+  </anim>
+  <anim>Bored
+    <assetreference type="GrannyAnim">
+      <file>animation_library\quads\wolf_boreda</file>
+    </assetreference>
+    <assetreference type="GrannyAnim">
+      <file>animation_library\quads\wolf_boredb</file>
+    </assetreference>
+    <component>ModelComp</component>
+  </anim>
+  <anim>Walk
+    <assetreference type="GrannyAnim">
+      <file>animation_library\quads\wolf_walka</file>
+      <tag type="FootstepLeft" footprinttype="AnimalLeft" footprintbone="BONE_LT_FOOT">0.93</tag>
+      <tag type="FootstepRight" footprinttype="AnimalRight" footprintbone="BONE_RT_FOOT">0.13</tag>
+    </assetreference>
+    <component>ModelComp</component>
+  </anim>
+  <anim>HandAttack
+    <assetreference type="GrannyAnim">
+      <file>animation_library\quads\wolf_attacka</file>
+      <tag type="Attack">0.60</tag>
+    </assetreference>
+    <component>ModelComp</component>
+  </anim>
+  <anim>Death
+    <assetreference type="GrannyAnim">
+      <file>animation_library\quads\wolf_deatha</file>
+      <tag type="SpecificSoundSet" checkvisible="1" set="RagdollImpact">0.78</tag>
+    </assetreference>
+    <component>ModelComp</component>
+  </anim>
+  <anim>Wolf_Treebent_Wolf_Idle
+    <assetreference type="GrannyAnim">
+      <file>nuggets\wolf_treebent\wolf_treebent_wolf_all</file>
+    </assetreference>
+    <component>ModelComp</component>
+  </anim>
+  <anim>Wolf_Treebent_Wolf_Exit
+    <assetreference type="GrannyAnim">
+      <file>nuggets\wolf_treebent\wolf_treebent_wolf_exit</file>
+    </assetreference>
+    <component>ModelComp</component>
+  </anim>
+  <anim>Wolf_Wagon_WolfA_Idle
+    <assetreference type="GrannyAnim">
+      <file>nuggets\wolf_wagon\wolf_wagon_wolfa_all</file>
+    </assetreference>
+    <component>ModelComp</component>
+  </anim>
+  <anim>Wolf_Wagon_WolfA_Exit
+    <assetreference type="GrannyAnim">
+      <file>nuggets\wolf_wagon\wolf_wagon_wolfa_exit</file>
+    </assetreference>
+    <component>ModelComp</component>
+  </anim>
+  <anim>Wolf_Wagon_WolfB_Idle
+    <assetreference type="GrannyAnim">
+      <file>nuggets\wolf_wagon\wolf_wagon_wolfb_all</file>
+    </assetreference>
+    <component>ModelComp</component>
+  </anim>
+  <anim>Wolf_Wagon_WolfB_Exit
+    <assetreference type="GrannyAnim">
+      <file>nuggets\wolf_wagon\wolf_wagon_wolfb_exit</file>
+    </assetreference>
+    <component>ModelComp</component>
+  </anim>
+  <anim>Nugget_wolfA_idle
+    <assetreference type="GrannyAnim">
+      <file>nuggets\wolf_rock\wolf_rock_wolfa_idle</file>
+    </assetreference>
+    <component>ModelComp</component>
+  </anim>
+  <anim>Nugget_wolfA_exit
+    <assetreference type="GrannyAnim">
+      <file>nuggets\wolf_rock\wolf_wagon_wolfa_exit</file>
+    </assetreference>
+    <component>ModelComp</component>
+  </anim>
+  <anim>Nugget_wolfB_idle
+    <assetreference type="GrannyAnim">
+      <file>nuggets\wolf_rock\wolf_rock_wolfb_idle</file>
+    </assetreference>
+    <component>ModelComp</component>
+  </anim>
+  <anim>Nugget_wolfB_exit
+    <assetreference type="GrannyAnim">
+      <file>nuggets\wolf_rock\wolf_rock_wolfb_exit</file>
+    </assetreference>
+    <component>ModelComp</component>
+  </anim>
+  <anim>Nugget_Missionary
+    <assetreference type="GrannyAnim">
+      <file>nuggets\wolf_missionary\wolf_A</file>
+    </assetreference>
+    <assetreference type="GrannyAnim">
+      <file>nuggets\wolf_missionary\wolf_B</file>
+    </assetreference>
+    <assetreference type="GrannyAnim">
+      <file>nuggets\wolf_missionary\wolf_C</file>
+    </assetreference>
+    <assetreference type="GrannyAnim">
+      <file>nuggets\wolf_missionary\wolf_D</file>
+    </assetreference>
+    <component>ModelComp</component>
+  </anim>
+</animfile>

@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="utf-8"?>
+<animfile>
+  <definebone>Bone08</definebone>
+  <definebone>Bone04</definebone>
+  <component>ModelComp
+    <assetreference type="GrannyModel">
+      <file>units\animals\rhino\rhino</file>
+    </assetreference>
+    <decal>
+      <effecttype>default</effecttype>
+      <texture isfakeshadow="1">shadows_selections\shadow_circle_64x64</texture>
+      <selectedtexture>shadows_selections\selection_oval_32x64</selectedtexture>
+      <width>2.00</width>
+      <height>3.25</height>
+      <zoffset>-0.35</zoffset>
+    </decal>
+  </component>
+  <anim>Idle
+    <assetreference type="GrannyAnim">
+      <file>units\animals\rhino\rhino_idle_a</file>
+      <weight>40</weight>
+    </assetreference>
+    <assetreference type="GrannyAnim">
+      <file>units\animals\rhino\rhino_idle_a</file>
+      <weight>40</weight>
+    </assetreference>
+    <assetreference type="GrannyAnim">
+      <file>units\animals\rhino\rhino_idle_a</file>
+      <weight>40</weight>
+    </assetreference>
+    <assetreference type="GrannyAnim">
+      <file>units\animals\rhino\rhino_idle_b</file>
+      <weight>10</weight>
+    </assetreference>
+    <assetreference type="GrannyAnim">
+      <file>units\animals\rhino\rhino_idle_c</file>
+      <weight>10</weight>
+    </assetreference>
+    <component>ModelComp</component>
+  </anim>
+  <anim>Bored
+    <assetreference type="GrannyAnim">
+      <file>units\animals\rhino\rhino_idle_a</file>
+      <weight>40</weight>
+    </assetreference>
+    <assetreference type="GrannyAnim">
+      <file>units\animals\rhino\rhino_idle_c</file>
+      <weight>20</weight>
+    </assetreference>
+    <assetreference type="GrannyAnim">
+      <file>units\animals\rhino\rhino_idle_b</file>
+      <weight>20</weight>
+    </assetreference>
+    <component>ModelComp</component>
+  </anim>
+  <anim>Walk
+    <assetreference type="GrannyAnim">
+      <file>units\animals\rhino\rhino_walk_a</file>
+      <tag type="FootstepLeft" footprinttype="AnimalLeft" footprintbone="BONE08">0.93</tag>
+      <tag type="FootstepRight" footprinttype="AnimalRight" footprintbone="BONE04">0.68</tag>
+    </assetreference>
+    <component>ModelComp</component>
+  </anim>
+  <anim>HandAttack
+    <assetreference type="GrannyAnim">
+      <file>units\animals\rhino\rhino_attack_a</file>
+      <tag type="Attack">0.47</tag>
+    </assetreference>
+    <assetreference type="GrannyAnim">
+      <file>units\animals\rhino\rhino_attack_b</file>
+      <tag type="Attack">0.47</tag>
+    </assetreference>
+    <assetreference type="GrannyAnim">
+      <file>units\animals\rhino\rhino_attack_c</file>
+      <tag type="Attack">0.47</tag>
+    </assetreference>
+    <component>ModelComp</component>
+  </anim>
+  <anim>Death
+    <assetreference type="GrannyAnim">
+      <file>units\animals\rhino\rhino_death_a</file>
+      <tag type="SpecificSoundSet" checkvisible="1" set="RagdollImpact">0.67</tag>
+    </assetreference>
+    <component>ModelComp</component>
+  </anim>
+  <anim>Flail
+    <assetreference type="GrannyAnim">
+      <file>units\animals\rhino\rhino_attack_a</file>
+      <tag type="FootstepLeft">0.30</tag>
+      <tag type="FootstepRight">0.80</tag>
+    </assetreference>
+    <assetreference type="GrannyAnim">
+      <file>units\animals\rhino\rhino_attack_b</file>
+      <tag type="Attack">0.47</tag>
+    </assetreference>
+    <assetreference type="GrannyAnim">
+      <file>units\animals\rhino\rhino_attack_c</file>
+      <tag type="Attack">0.47</tag>
+    </assetreference>
+    <component>ModelComp</component>
+  </anim>
+  <anim>Bear_Tree_Bear_Idle
+    <assetreference type="GrannyAnim">
+      <file>units\animals\rhino\rhino_idle_c</file>
+    </assetreference>
+    <component>ModelComp</component>
+  </anim>
+  <anim>Bear_Tree_Bear_Exit
+    <assetreference type="GrannyAnim">
+      <file>units\animals\rhino\rhino_tree_exit</file>
+    </assetreference>
+    <component>ModelComp</component>
+  </anim>
+  <anim>Bear_campsite_idle
+    <assetreference type="GrannyAnim">
+      <file>units\animals\rhino\rhino_idle_c</file>
+      <weight>60</weight>
+    </assetreference>
+    <assetreference type="GrannyAnim">
+      <file>units\animals\rhino\rhino_idle_a</file>
+      <weight>10</weight>
+    </assetreference>
+    <assetreference type="GrannyAnim">
+      <file>units\animals\rhino\rhino_idle_c</file>
+      <weight>10</weight>
+    </assetreference>
+    <component>ModelComp</component>
+  </anim>
+  <anim>Treebent_Idle
+    <assetreference type="GrannyAnim">
+      <file>units\animals\rhino\rhino_treebent_idle</file>
+    </assetreference>
+    <component>ModelComp</component>
+  </anim>
+  <anim>Treebent_Exit
+    <assetreference type="GrannyAnim">
+      <file>units\animals\rhino\rhino_treebent_exit</file>
+    </assetreference>
+    <component>ModelComp</component>
+  </anim>
+  <anim>Wagon_Idle01
+    <assetreference type="GrannyAnim">
+      <file>units\animals\rhino\rhino_idle_a</file>
+      <weight>40</weight>
+    </assetreference>
+    <assetreference type="GrannyAnim">
+      <file>units\animals\rhino\rhino_idle_b</file>
+      <weight>40</weight>
+    </assetreference>
+    <assetreference type="GrannyAnim">
+      <file>units\animals\rhino\rhino_idle_b</file>
+      <weight>40</weight>
+    </assetreference>
+    <component>ModelComp</component>
+  </anim>
+</animfile>

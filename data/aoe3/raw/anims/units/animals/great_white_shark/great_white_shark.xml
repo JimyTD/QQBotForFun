@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="utf-8"?>
+<animfile>
+  <definebone>bone_neck</definebone>
+  <definebone>bone_tail</definebone>
+  <definebone>bone_spine</definebone>
+  <definebone>bone_fx01</definebone>
+  <attachment>fishTrail_Shark
+    <component>enter
+      <assetreference type="popcornFx">
+        <file>units\animals\bass_fish\FishTrail_shark.pkfx</file>
+      </assetreference>
+    </component>
+    <anim>Idle
+      <component>enter</component>
+    </anim>
+  </attachment>
+  <attachment>sharkWake
+    <component>emitter
+      <assetreference type="popcornFx">
+        <file>water_effects\shark_wake.pkfx</file>
+      </assetreference>
+    </component>
+    <anim>None
+      <component>emitter</component>
+    </anim>
+  </attachment>
+  <attachment>wake
+    <component>emitter
+      <assetreference type="ParticleSystem">
+        <file>effects\animal particles\whale_minke_wake.particle</file>
+      </assetreference>
+    </component>
+    <anim>None
+      <component>emitter</component>
+    </anim>
+  </attachment>
+  <attachment>foam ring
+    <component>large foam ring
+      <assetreference type="ParticleSystem">
+        <file>effects\water_effects\large_foam_ring.particle</file>
+      </assetreference>
+    </component>
+    <anim>Idle
+      <component>large foam ring</component>
+    </anim>
+  </attachment>
+  <attachment>splash ring
+    <component>large splash ring
+      <assetreference type="ParticleSystem">
+        <file>effects\water_effects\large_splash_ring.particle</file>
+      </assetreference>
+    </component>
+    <anim>Idle
+      <component>large splash ring</component>
+    </anim>
+  </attachment>
+  <component>ModelComp
+    <assetreference type="GrannyModel">
+      <file>units\animals\great_white_shark\shark_0</file>
+    </assetreference>
+    <decal>
+      <effecttype>default</effecttype>
+      <selectedtexture>shadows_selections\selection_circle_128x128</selectedtexture>
+      <width>6.00</width>
+      <height>6.00</height>
+      <zoffset>0.20</zoffset>
+    </decal>
+  </component>
+  <anim>Idle
+    <assetreference type="GrannyAnim">
+      <file>units\animals\great_white_shark\shark_idle00</file>
+      <weight>15</weight>
+    </assetreference>
+    <attach a="fishTrail_Shark" frombone="ATTACHPOINT" tobone="bone_neck" syncanims="0"/>
+    <component>ModelComp</component>
+  </anim>
+  <anim>HandAttack
+    <assetreference type="GrannyAnim">
+      <file>units\animals\great_white_shark\shark_attack00</file>
+      <tag type="Attack">0.40</tag>
+    </assetreference>
+    <assetreference type="GrannyAnim">
+      <file>units\animals\great_white_shark\shark_attack01</file>
+      <tag type="Attack">0.40</tag>
+    </assetreference>
+    <component>ModelComp</component>
+    <attach a="sharkWake" frombone="ATTACHPOINT" tobone="bone_neck" syncanims="0"/>
+    <attach a="sharkWake" frombone="ATTACHPOINT" tobone="bone_head" syncanims="0"/>
+  </anim>
+  <anim>Walk
+    <assetreference type="GrannyAnim">
+      <file>units\animals\great_white_shark\shark_walk00</file>
+    </assetreference>
+    <component>ModelComp</component>
+    <attach a="sharkWake" frombone="ATTACHPOINT" tobone="bone_tail" syncanims="0"/>
+    <attach a="sharkWake" frombone="ATTACHPOINT" tobone="bone_head" syncanims="0"/>
+  </anim>
+  <anim>Death
+    <assetreference type="GrannyAnim">
+      <file>units\animals\great_white_shark\shark_death00</file>
+    </assetreference>
+    <component>ModelComp</component>
+    <attach a="sharkWake" frombone="ATTACHPOINT" tobone="bone_tail" syncanims="0"/>
+    <attach a="sharkWake" frombone="ATTACHPOINT" tobone="bone_head" syncanims="0"/>
+  </anim>
+</animfile>

@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="utf-8"?>
+<animfile>
+  <definebone>Bone08</definebone>
+  <definebone>Bone04</definebone>
+  <component>ModelComp
+    <assetreference type="GrannyModel">
+      <file>units\animals\bear\bear_polar</file>
+    </assetreference>
+    <decal>
+      <effecttype>default</effecttype>
+      <texture isfakeshadow="1">shadows_selections\shadow_circle_64x64</texture>
+      <selectedtexture>shadows_selections\selection_oval_32x64</selectedtexture>
+      <width>2.00</width>
+      <height>3.25</height>
+      <zoffset>-0.35</zoffset>
+    </decal>
+  </component>
+  <anim>Idle
+    <assetreference type="GrannyAnim">
+      <file>animation_library\quads\bear_idleA</file>
+      <weight>40</weight>
+    </assetreference>
+    <assetreference type="GrannyAnim">
+      <file>animation_library\quads\bear_idleB</file>
+      <weight>20</weight>
+    </assetreference>
+    <assetreference type="GrannyAnim">
+      <file>animation_library\quads\bear_idleC</file>
+      <weight>10</weight>
+    </assetreference>
+    <assetreference type="GrannyAnim">
+      <file>animation_library\quads\bear_idleD</file>
+      <weight>10</weight>
+    </assetreference>
+    <assetreference type="GrannyAnim">
+      <file>animation_library\quads\bear_idleE</file>
+      <weight>20</weight>
+    </assetreference>
+    <component>ModelComp</component>
+  </anim>
+  <anim>Bored
+    <assetreference type="GrannyAnim">
+      <file>animation_library\quads\bear_boredA</file>
+      <weight>30</weight>
+    </assetreference>
+    <assetreference type="GrannyAnim">
+      <file>animation_library\quads\bear_boredB</file>
+      <weight>30</weight>
+    </assetreference>
+    <assetreference type="GrannyAnim">
+      <file>animation_library\quads\bear_idleA</file>
+      <weight>40</weight>
+    </assetreference>
+    <component>ModelComp</component>
+  </anim>
+  <anim>Walk
+    <assetreference type="GrannyAnim">
+      <file>animation_library\quads\bear_runA</file>
+      <tag type="FootstepLeft" footprinttype="AnimalLeft" footprintbone="BONE08">0.93</tag>
+      <tag type="FootstepRight" footprinttype="AnimalRight" footprintbone="BONE04">0.68</tag>
+    </assetreference>
+    <component>ModelComp</component>
+  </anim>
+  <anim>HandAttack
+    <assetreference type="GrannyAnim">
+      <file>animation_library\quads\bear_attackA</file>
+      <tag type="Attack">0.47</tag>
+    </assetreference>
+    <assetreference type="GrannyAnim">
+      <file>animation_library\quads\bear_attackb</file>
+      <tag type="Attack">0.47</tag>
+    </assetreference>
+    <component>ModelComp</component>
+  </anim>
+  <anim>Death
+    <assetreference type="GrannyAnim">
+      <file>animation_library\quads\bear_deathA</file>
+      <tag type="SpecificSoundSet" checkvisible="1" set="RagdollImpact">0.67</tag>
+    </assetreference>
+    <component>ModelComp</component>
+  </anim>
+  <anim>Flail
+    <assetreference type="GrannyAnim">
+      <file>animation_library\quads\bear_flailA</file>
+      <tag type="FootstepLeft">0.30</tag>
+      <tag type="FootstepRight">0.80</tag>
+    </assetreference>
+    <component>ModelComp</component>
+  </anim>
+  <anim>Bear_Tree_Bear_Idle
+    <assetreference type="GrannyAnim">
+      <file>nuggets\bear_tree\bear_tree_bear_all_polar</file>
+    </assetreference>
+    <component>ModelComp</component>
+  </anim>
+  <anim>Bear_Tree_Bear_Exit
+    <assetreference type="GrannyAnim">
+      <file>nuggets\bear_tree\bear_tree_bear_exit</file>
+    </assetreference>
+    <component>ModelComp</component>
+  </anim>
+  <anim>Bear_campsite_idle
+    <assetreference type="GrannyAnim">
+      <file>nuggets\bear_campsite\bear_campsite_idleA</file>
+      <weight>60</weight>
+    </assetreference>
+    <assetreference type="GrannyAnim">
+      <file>nuggets\bear_campsite\bear_campsite_idleB</file>
+      <weight>20</weight>
+    </assetreference>
+    <assetreference type="GrannyAnim">
+      <file>nuggets\bear_campsite\bear_campsite_idleC</file>
+      <weight>20</weight>
+    </assetreference>
+    <component>ModelComp</component>
+  </anim>
+</animfile>

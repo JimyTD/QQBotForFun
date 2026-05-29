@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="utf-8"?>
+<animfile>
+  <definebone>bone_gc00</definebone>
+  <definebone>bone_gc02</definebone>
+  <attachment>flameThrow
+    <component>emitter
+      <assetreference type="popcornFx">
+        <file>units\george_crushington\flameThrow.pkfx</file>
+      </assetreference>
+    </component>
+    <anim>None
+      <component>emitter</component>
+    </anim>
+  </attachment>
+  <component>g_crushington
+    <assetreference type="GrannyModel">
+      <file>units\george_crushington\g_crushington</file>
+    </assetreference>
+    <decal>
+      <effecttype>default</effecttype>
+      <texture isfakeshadow="1">shadows_selections\shadow_circle_128x128</texture>
+      <selectedtexture>shadows_selections\selection_square_128x128</selectedtexture>
+      <width>1.00</width>
+      <height>1.00</height>
+    </decal>
+  </component>
+  <anim>Idle
+    <assetreference type="GrannyAnim">
+      <file>animation_library\special\george_crushington\idle</file>
+    </assetreference>
+    <component>g_crushington</component>
+  </anim>
+  <anim>Bored
+    <assetreference type="GrannyAnim">
+      <file>animation_library\special\george_crushington\bored</file>
+    </assetreference>
+    <component>g_crushington</component>
+  </anim>
+  <anim>Walk
+    <assetreference type="GrannyAnim">
+      <file>animation_library\special\george_crushington\walk</file>
+      <tag type="Particles" particlename="units\george_crushington\walkDust.particle">0.70</tag>
+      <tag type="SpecificSoundSet" checkvisible="1" set="Thud">0.80</tag>
+    </assetreference>
+    <component>g_crushington</component>
+  </anim>
+  <anim>Attack_melee
+    <assetreference type="GrannyAnim">
+      <file>animation_library\special\george_crushington\attackA</file>
+      <tag type="Attack">0.34</tag>
+      <tag type="Particles" particlename="units\george_crushington\meleeblam.particle">0.34</tag>
+      <tag type="Particles" particlename="units\george_crushington\pow.particle">0.34</tag>
+      <tag type="SpecificSoundSet" checkvisible="1" set="Thud">0.34</tag>
+      <tag type="SpecificSoundSet" checkvisible="1" set="GeorgeCrushingtonBlam">0.35</tag>
+      <tag type="SpecificSoundSet" checkvisible="1" set="Swoosh">0.23</tag>
+    </assetreference>
+    <component>g_crushington</component>
+  </anim>
+  <anim>Attack_trample
+    <assetreference type="GrannyAnim">
+      <file>animation_library\special\george_crushington\attack_trample</file>
+      <tag type="Attack">0.23</tag>
+      <tag type="Particles" particlename="units\george_crushington\blam.particle">0.23</tag>
+      <tag type="Particles" particlename="units\george_crushington\blam.particle">0.30</tag>
+      <tag type="Particles" particlename="units\george_crushington\blam.particle">0.36</tag>
+      <tag type="Particles" particlename="units\george_crushington\threePows.particle">0.23</tag>
+      <tag type="SpecificSoundSet" checkvisible="1" set="Thud">0.23</tag>
+      <tag type="SpecificSoundSet" checkvisible="1" set="Thud">0.30</tag>
+      <tag type="SpecificSoundSet" checkvisible="1" set="Thud">0.37</tag>
+      <tag type="SpecificSoundSet" checkvisible="1" set="Thud">0.51</tag>
+      <tag type="SpecificSoundSet" checkvisible="1" set="GeorgeCrushingtonBlam">0.23</tag>
+    </assetreference>
+    <component>g_crushington</component>
+  </anim>
+  <anim>Death_by_melee
+    <assetreference type="GrannyAnim">
+      <file>animation_library\special\george_crushington\death</file>
+      <tag type="SpecificSoundSet" checkvisible="1" set="Thud">0.33</tag>
+      <tag type="SpecificSoundSet" checkvisible="1" set="CannonImpactStone">0.33</tag>
+    </assetreference>
+    <component>g_crushington</component>
+  </anim>
+  <anim>Death_by_range
+    <assetreference type="GrannyAnim">
+      <file>animation_library\special\george_crushington\death</file>
+      <tag type="SpecificSoundSet" checkvisible="1" set="CannonImpactStone">0.33</tag>
+      <tag type="SpecificSoundSet" checkvisible="1" set="Thud">0.33</tag>
+    </assetreference>
+    <component>g_crushington</component>
+  </anim>
+  <anim>Death_by_havoc
+    <assetreference type="GrannyAnim">
+      <file>animation_library\special\george_crushington\death</file>
+      <tag type="SpecificSoundSet" checkvisible="1" set="Thud">0.33</tag>
+      <tag type="SpecificSoundSet" checkvisible="1" set="CannonImpactStone">0.33</tag>
+    </assetreference>
+    <component>g_crushington</component>
+  </anim>
+  <anim>Raze_idle
+    <assetreference type="GrannyAnim">
+      <file>animation_library\special\george_crushington\idle</file>
+    </assetreference>
+    <component>g_crushington</component>
+  </anim>
+  <anim>Raze_attack
+    <assetreference type="GrannyAnim">
+      <file>animation_library\special\george_crushington\raze_attack</file>
+      <tag type="Attack">0.41</tag>
+      <tag type="SpecificSoundSet" checkvisible="1" set="TorchSwing">0.39</tag>
+      <tag type="SpecificSoundSet" checkvisible="1" set="GeorgeCrushingtonBrag">0.00</tag>
+    </assetreference>
+    <component>g_crushington</component>
+    <attach a="flameThrow" frombone="ATTACHPOINT" tobone="bone_gc02" syncanims="0"/>
+  </anim>
+</animfile>

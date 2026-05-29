@@ -1,0 +1,345 @@
+<?xml version="1.0" encoding="utf-8"?>
+<animfile>
+  <definebone>HS Bone Hoof Frnt Lt</definebone>
+  <definebone>HS Bone Hoof Frnt Rt</definebone>
+  <definebone>HS Bone Hoof Back Lt</definebone>
+  <definebone>HS Bone Hoof Back Rt</definebone>
+  <definebone>bone_launchpoint</definebone>
+  <definebone>bone_attachpoint</definebone>
+  <definebone>Bip01_R_Hand</definebone>
+  <attachment>rider
+    <include>units\africans\hausa\emir\emir_rider.xml</include>
+  </attachment>
+  <component>ModelComp
+    <assetreference type="GrannyModel">
+      <file>units\africans\hausa\emir\emir_camel</file>
+    </assetreference>
+    <decal>
+      <effecttype>default</effecttype>
+      <texture isfakeshadow="1">shadows_selections\shadow_circle_128x128</texture>
+      <selectedtexture>shadows_selections\selection_oval_32x64</selectedtexture>
+      <width>2.00</width>
+      <height>3.0</height>
+      <zoffset>-0.10</zoffset>
+    </decal>
+    <attach a="rider" frombone="hotspot" tobone="bone_attachpoint" syncanims="1"/>
+  </component>
+  <anim>Walk
+    <assetreference type="GrannyAnim">
+      <file>units\africans\hausa\emir\emir_camel_walk00</file>
+      <tag type="FootstepLeft" footprinttype="Horse" footprintbone="HS BONE HOOF FRNT LT">1.00</tag>
+      <tag type="FootstepLeft" footprinttype="Horse" footprintbone="HS BONE HOOF BACK LT">0.83</tag>
+      <tag type="FootstepRight" footprinttype="Horse" footprintbone="HS BONE HOOF FRNT RT">0.70</tag>
+      <tag type="FootstepRight" footprinttype="Horse" footprintbone="HS BONE HOOF BACK RT">0.50</tag>
+    </assetreference>
+    <component>ModelComp</component>
+  </anim>
+  <anim>Jog
+    <assetreference type="GrannyAnim">
+      <file>units\africans\hausa\emir\emir_camel_jog00</file>
+      <tag type="FootstepLeft" footprinttype="Horse" footprintbone="HS BONE HOOF FRNT LT">0.80</tag>
+      <tag type="FootstepLeft" footprinttype="Horse" footprintbone="HS BONE HOOF BACK LT">0.50</tag>
+      <tag type="FootstepRight" footprinttype="Horse" footprintbone="HS BONE HOOF FRNT RT">0.95</tag>
+      <tag type="FootstepRight" footprinttype="Horse" footprintbone="HS BONE HOOF BACK RT">0.75</tag>
+    </assetreference>
+    <component>ModelComp</component>
+  </anim>
+  <anim>Run
+    <assetreference type="GrannyAnim">
+      <file>units\africans\hausa\emir\emir_camel_run00</file>
+      <tag type="FootstepLeft" footprinttype="Horse" footprintbone="HS BONE HOOF FRNT LT">0.73</tag>
+      <tag type="FootstepLeft" footprinttype="Horse" footprintbone="HS BONE HOOF BACK LT">0.50</tag>
+      <tag type="FootstepRight" footprinttype="Horse" footprintbone="HS BONE HOOF FRNT RT">1.00</tag>
+      <tag type="FootstepRight" footprinttype="Horse" footprintbone="HS BONE HOOF BACK RT">0.70</tag>
+    </assetreference>
+    <component>ModelComp</component>
+  </anim>
+  <anim>Idle
+    <assetreference type="GrannyAnim">
+      <file>units\africans\hausa\emir\emir_camel_idle01</file>
+      <weight>10</weight>
+    </assetreference>
+    <assetreference type="GrannyAnim">
+      <file>units\africans\hausa\emir\emir_camel_idle02</file>
+      <weight>10</weight>
+    </assetreference>
+    <assetreference type="GrannyAnim">
+      <file>units\africans\hausa\emir\emir_camel_idle03</file>
+      <weight>10</weight>
+    </assetreference>
+    <assetreference type="GrannyAnim">
+      <file>units\africans\hausa\emir\emir_camel_idle05</file>
+      <weight>10</weight>
+    </assetreference>
+    <assetreference type="GrannyAnim">
+      <file>units\africans\hausa\emir\emir_camel_idle06</file>
+      <weight>10</weight>
+    </assetreference>
+    <assetreference type="GrannyAnim">
+      <file>units\africans\hausa\emir\emir_camel_idle00</file>
+      <weight>40</weight>
+    </assetreference>
+    <component>ModelComp</component>
+  </anim>
+  <anim>Bored
+    <assetreference type="GrannyAnim">
+      <file>units\africans\hausa\emir\emir_camel_attackMelee02</file>
+      <weight>10</weight>
+    </assetreference>
+    <assetreference type="GrannyAnim">
+      <file>units\africans\hausa\emir\emir_camel_attackMelee02</file>
+      <weight>10</weight>
+    </assetreference>
+    <assetreference type="GrannyAnim">
+      <file>units\africans\hausa\emir\emir_camel_idle06</file>
+      <weight>10</weight>
+    </assetreference>
+    <component>ModelComp</component>
+  </anim>
+  <anim>Attack_ranged
+    <assetreference type="GrannyAnim">
+      <file>units\africans\hausa\emir\emir_camel_ranged_attack</file>
+      <weight>40</weight>
+      <tag type="Attack">0.43</tag>
+      <tag type="SpecificSoundSet" checkvisible="1" set="PistolShot">0.42</tag>
+      <tag type="Particles" particlename="pistolshot_right">0.42</tag>
+    </assetreference>
+    <component>ModelComp</component>
+  </anim>
+  <anim>Attack_ranged_reload
+    <assetreference type="GrannyAnim">
+      <file>units\africans\hausa\emir\emir_camel_reload</file>
+    </assetreference>
+    <component>ModelComp</component>
+  </anim>
+  <anim>Attack_trample
+    <assetreference type="GrannyAnim">
+      <file>units\africans\hausa\emir\emir_camel_attackMelee02</file>
+      <weight>40</weight>
+      <tag type="Attack">0.57</tag>
+      <tag type="SpecificSoundSet" checkvisible="1" set="Swoosh">0.47</tag>
+    </assetreference>
+    <component>ModelComp</component>
+  </anim>
+  <anim>Attack_melee
+    <assetreference type="GrannyAnim">
+      <file>units\africans\hausa\emir\emir_camel_attackMelee00</file>
+      <weight>40</weight>
+      <tag type="Attack">0.54</tag>
+      <tag type="SpecificSoundSet" checkvisible="1" set="Swoosh">0.46</tag>
+    </assetreference>
+    <assetreference type="GrannyAnim">
+      <file>units\africans\hausa\emir\emir_camel_attackMelee01</file>
+      <weight>10</weight>
+      <tag type="Attack">0.54</tag>
+      <tag type="SpecificSoundSet" checkvisible="1" set="Swoosh">0.46</tag>
+    </assetreference>
+    <assetreference type="GrannyAnim">
+      <file>units\africans\hausa\emir\emir_camel_attackMelee02</file>
+      <weight>40</weight>
+      <tag type="Attack">0.57</tag>
+      <tag type="SpecificSoundSet" checkvisible="1" set="Swoosh">0.47</tag>
+    </assetreference>
+    <component>ModelComp</component>
+  </anim>
+  <anim>Death_by_melee
+    <assetreference type="GrannyAnim">
+      <file>units\asians\indians\sowar\sowarCamel_death00</file>
+      <tag type="SpecificSoundSet" checkvisible="1" set="RagdollImpact">0.63</tag>
+    </assetreference>
+    <assetreference type="GrannyAnim">
+      <file>units\asians\indians\sowar\sowarCamel_death01</file>
+      <tag type="SpecificSoundSet" checkvisible="1" set="RagdollImpact">0.47</tag>
+      <tag type="SpecificSoundSet" checkvisible="1" set="RagdollImpact">0.78</tag>
+    </assetreference>
+    <assetreference type="GrannyAnim">
+      <file>units\asians\indians\sowar\sowarCamel_death02</file>
+      <tag type="SpecificSoundSet" checkvisible="1" set="RagdollImpact">0.53</tag>
+    </assetreference>
+    <component>ModelComp</component>
+  </anim>
+  <anim>Death_by_range
+    <assetreference type="GrannyAnim">
+      <file>units\asians\indians\sowar\sowarCamel_death00</file>
+      <tag type="SpecificSoundSet" checkvisible="1" set="RagdollImpact">0.63</tag>
+    </assetreference>
+    <assetreference type="GrannyAnim">
+      <file>units\asians\indians\sowar\sowarCamel_death01</file>
+      <tag type="SpecificSoundSet" checkvisible="1" set="RagdollImpact">0.47</tag>
+      <tag type="SpecificSoundSet" checkvisible="1" set="RagdollImpact">0.78</tag>
+    </assetreference>
+    <assetreference type="GrannyAnim">
+      <file>units\asians\indians\sowar\sowarCamel_death02</file>
+      <tag type="SpecificSoundSet" checkvisible="1" set="RagdollImpact">0.53</tag>
+    </assetreference>
+    <component>ModelComp</component>
+  </anim>
+  <anim>Death_by_havoc
+    <assetreference type="GrannyAnim">
+      <file>animation_library\cavalry\camel_death_front</file>
+    </assetreference>
+    <assetreference type="GrannyAnim">
+      <file>units\asians\indians\sowar\sowarCamel_death_behind</file>
+    </assetreference>
+    <assetreference type="GrannyAnim">
+      <file>units\asians\indians\sowar\sowarCamel_death_left</file>
+    </assetreference>
+    <assetreference type="GrannyAnim">
+      <file>units\asians\indians\sowar\sowarCamel_death_right</file>
+    </assetreference>
+    <assetreference type="GrannyAnim">
+      <file>units\asians\indians\sowar\sowarCamel_death_run</file>
+    </assetreference>
+    <component>ModelComp</component>
+  </anim>
+  <anim>Cheer
+    <assetreference type="GrannyAnim">
+      <file>units\asians\indians\sowar\sowarCamel_attackMelee02</file>
+    </assetreference>
+    <assetreference type="GrannyAnim">
+      <file>units\asians\indians\sowar\sowarCamel_idle01</file>
+    </assetreference>
+    <assetreference type="GrannyAnim">
+      <file>units\asians\indians\sowar\sowarCamel_attackMelee02</file>
+    </assetreference>
+    <assetreference type="GrannyAnim">
+      <file>units\asians\indians\sowar\sowarCamel_attackMelee02</file>
+    </assetreference>
+    <component>ModelComp</component>
+  </anim>
+  <anim>Raze_idle
+    <assetreference type="GrannyAnim">
+      <file>units\africans\hausa\emir\emir_camel_idle00</file>
+      <weight>40</weight>
+    </assetreference>
+    <assetreference type="GrannyAnim">
+      <file>units\africans\hausa\emir\emir_camel_idle02</file>
+      <weight>10</weight>
+    </assetreference>
+    <assetreference type="GrannyAnim">
+      <file>units\africans\hausa\emir\emir_camel_idle03</file>
+      <weight>10</weight>
+    </assetreference>
+    <assetreference type="GrannyAnim">
+      <file>units\africans\hausa\emir\emir_camel_idle06</file>
+      <weight>10</weight>
+    </assetreference>
+    <component>ModelComp</component>
+  </anim>
+  <anim>Raze_attack
+    <assetreference type="GrannyAnim">
+      <file>units\africans\hausa\emir\emir_camel_razeAttack00</file>
+      <tag type="Attack">0.13</tag>
+      <tag type="SpecificSoundSet" checkvisible="1" set="TorchSwing">0.13</tag>
+    </assetreference>
+    <component>ModelComp</component>
+  </anim>
+  <anim animlengthoverride="3.333333">Pickup
+    <assetreference type="GrannyAnim">
+      <file>units\asians\indians\sowar\sowarcamel_pickup_treasure</file>
+      <tag type="SpecificSoundSet" checkvisible="1" set="GatherFruit">0.37</tag>
+      <weight>10</weight>
+    </assetreference>
+    <component>ModelComp</component>
+  </anim>
+  <anim>Build
+    <assetreference type="GrannyAnim">
+      <file>units\asians\indians\sowar\sowarCamel_idle00</file>
+      <weight>90</weight>
+      <tag type="SpecificSoundSet" checkvisible="1" set="Build">0.36</tag>
+      <tag type="SpecificSoundSet" checkvisible="1" set="Build">0.66</tag>
+      <tag type="SpecificSoundSet" checkvisible="1" set="Build">1.00</tag>
+    </assetreference>
+    <assetreference type="GrannyAnim">
+      <file>units\asians\indians\sowar\sowarCamel_idle00</file>
+      <weight>10</weight>
+    </assetreference>
+    <assetreference type="GrannyAnim">
+      <file>units\asians\indians\sowar\sowarCamel_idle00</file>
+      <weight>10</weight>
+    </assetreference>
+    <component>ModelComp</component>
+  </anim>
+  <anim>BuildLifting
+    <assetreference type="GrannyAnim">
+      <file>units\asians\indians\sowar\sowarCamel_idle00</file>
+      <weight>90</weight>
+      <tag type="SpecificSoundSet" checkvisible="1" set="Build">0.36</tag>
+      <tag type="SpecificSoundSet" checkvisible="1" set="Build">0.66</tag>
+      <tag type="SpecificSoundSet" checkvisible="1" set="Build">1.00</tag>
+    </assetreference>
+    <assetreference type="GrannyAnim">
+      <file>units\asians\indians\sowar\sowarCamel_idle00</file>
+      <weight>10</weight>
+    </assetreference>
+    <assetreference type="GrannyAnim">
+      <file>units\asians\indians\sowar\sowarCamel_idle00</file>
+      <weight>10</weight>
+    </assetreference>
+    <component>ModelComp</component>
+  </anim>
+  <anim>BuildSaw
+    <assetreference type="GrannyAnim">
+      <file>units\asians\indians\sowar\sowarCamel_idle00</file>
+      <weight>90</weight>
+      <tag type="SpecificSoundSet" checkvisible="1" set="Build">0.36</tag>
+      <tag type="SpecificSoundSet" checkvisible="1" set="Build">0.66</tag>
+      <tag type="SpecificSoundSet" checkvisible="1" set="Build">1.00</tag>
+    </assetreference>
+    <assetreference type="GrannyAnim">
+      <file>units\asians\indians\sowar\sowarCamel_idle00</file>
+      <weight>10</weight>
+    </assetreference>
+    <assetreference type="GrannyAnim">
+      <file>units\asians\indians\sowar\sowarCamel_idle00</file>
+      <weight>10</weight>
+    </assetreference>
+    <component>ModelComp</component>
+  </anim>
+  <anim>BuildStaking
+    <assetreference type="GrannyAnim">
+      <file>units\asians\indians\sowar\sowarCamel_idle00</file>
+      <weight>90</weight>
+      <tag type="SpecificSoundSet" checkvisible="1" set="Build">0.36</tag>
+      <tag type="SpecificSoundSet" checkvisible="1" set="Build">0.66</tag>
+      <tag type="SpecificSoundSet" checkvisible="1" set="Build">1.00</tag>
+    </assetreference>
+    <assetreference type="GrannyAnim">
+      <file>units\asians\indians\sowar\sowarCamel_idle00</file>
+      <weight>10</weight>
+    </assetreference>
+    <assetreference type="GrannyAnim">
+      <file>units\asians\indians\sowar\sowarCamel_idle00</file>
+      <weight>10</weight>
+    </assetreference>
+    <component>ModelComp</component>
+  </anim>
+  <anim>Heal
+    <assetreference type="GrannyAnim">
+      <file>units\asians\indians\sowar\sowarCamel_idle00</file>
+    </assetreference>
+    <component>ModelComp</component>
+    <attach a="HealRays" frombone="ATTACHPOINT" tobone="ATTACHPOINT" syncanims="0"/>
+  </anim>
+  <anim>Idle_Trample
+    <assetreference type="GrannyAnim">
+      <file>units\africans\hausa\emir\emir_camel_trample_idle</file>
+      <weight>40</weight>
+    </assetreference>
+    <component>ModelComp</component>
+  </anim>
+  <anim>Walk_Trample
+    <assetreference type="GrannyAnim">
+      <file>units\africans\hausa\emir\emir_camel_trample_walk01</file>
+      <weight>40</weight>
+    </assetreference>
+    <component>ModelComp</component>
+  </anim>
+  <anim>CastPower
+    <assetreference type="GrannyAnim">
+      <file>units\africans\hausa\emir\emir_camel_razeAttack00</file>
+      <tag type="Attack">0.13</tag>
+    </assetreference>
+    <component>ModelComp</component>
+  </anim>
+</animfile>

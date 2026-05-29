@@ -873,10 +873,10 @@ AOE3 有三种伤害类型，每种只被对应的抗性减免：
 
 优先级设计原则（**Volley/Stagger > 具名主攻击 > Defend**；Defend 为手动防御阵型）：
 
-- **远程**：`VolleyRanged` / `StaggerRanged`（步兵默认齐射，纯骑兵默认交错）→ 具名主攻击（`BowAttack` 等，多数单位无齐射/交错后缀）→ `DefendRanged`（置底）
+- **远程**：`VolleyRanged` / `StaggerRanged`（统一齐射 > 交错；多数纯骑兵 protoy 仅有交错动作，自然落回）→ 具名主攻击（`BowAttack` 等，多数单位无齐射/交错后缀）→ `DefendRanged`（置底）
 - **近战**：`VolleyHand` / `StaggerHand` → 具名（`MeleeHandAttack` / `BayonetAttack` / `HandAttack`）→ `DefendHand`（置底）
 - **炮兵**：`BarrageAttack > RepeatingAttack > CannonAttack > …`（独立表）
-- 具名表内条目待 protoy 核实是否含一次性英雄技能（见 `TODO.md`）；斗蛐蛐只用常态 DPS 循环，不用每枪开技能
+- 具名表已核实（2026-05-29）：`SharpshooterAttack` / `CrackshotAttack` / `SwashbucklerAttack` 为英雄技，parser 排除；`BowAttack` / `RifleAttack` 等常态主武器保留。审计脚本 `scripts/aoe3_named_attack_audit.py`
 
 **外部参考**（人工核对单位数值）：[AOE 3 Home City — 军事单位](https://aoe3homecity.com/zh-CN/units?type=military)（如[雇佣兵列表](https://aoe3homecity.com/zh-CN/units?type=military&tags=Mercenary)）
 

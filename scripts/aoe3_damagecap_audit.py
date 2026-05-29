@@ -15,7 +15,9 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 
 UNITS_PATH = ROOT / "seeds" / "aoe3" / "units.json"
-PROTOY_PATH = Path(__import__("os").environ.get("AOE3_EXTRACTED_DIR", r"E:\aoe3_extracted")) / "protoy.xml"
+PROTOY_PATH = ROOT / "data" / "aoe3" / "raw" / "protoy.xml"
+if not PROTOY_PATH.is_file():
+    PROTOY_PATH = Path(__import__("os").environ.get("AOE3_EXTRACTED_DIR", r"E:\aoe3_extracted")) / "protoy.xml"
 
 
 def _slot_cap_old_new(u: dict, slot: str) -> dict | None:

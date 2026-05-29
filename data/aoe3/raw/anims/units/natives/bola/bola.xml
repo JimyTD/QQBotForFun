@@ -1,0 +1,300 @@
+<?xml version="1.0" encoding="utf-8"?>
+<animfile>
+  <definebone>bip01Prop1</definebone>
+  <definebone>bone_shield</definebone>
+  <definebone>Bip01 L ForeArm</definebone>
+  <definebone>bone_sling_launchpoint</definebone>
+  <definebone>bone_sling</definebone>
+  <attachment>bolas
+    <component>bolas</component>
+    <include>units\natives\inca\bolas_warrior\bolas.xml</include>
+  </attachment>
+  <attachment>shields
+    <component>shields
+      <assetreference type="GrannyModel">
+        <file>units\natives\attachment_bola_shield</file>
+      </assetreference>
+    </component>
+    <anim>Idle
+      <component>shields</component>
+    </anim>
+  </attachment>
+  <attachment>torch
+    <include>effects\projectiles\torch.xml</include>
+  </attachment>
+  <component>ModelComp
+    <assetreference type="GrannyModel">
+      <file>units\natives\bola\bola</file>
+    </assetreference>
+    <attach a="bolas" frombone="ATTACHPOINT" tobone="R_HAND" syncanims="1"/>
+    <attach a="shields" frombone="bone_shield" tobone="Bip01 L ForeArm" syncanims="1"/>
+    <decal>
+      <effecttype>default</effecttype>
+      <texture isfakeshadow="1">shadows_selections\shadow_circle_32x32</texture>
+      <selectedtexture>shadows_selections\selection_circle_32x32</selectedtexture>
+      <width>1.0</width>
+      <height>1.0</height>
+    </decal>
+  </component>
+  <anim>Charge_Attack
+    <assetreference type="GrannyAnim">
+      <file>animation_library\natives\inca\bolas_warrior_charge_attack_1</file>
+      <tag type="Attack">0.32</tag>
+      <tag type="SpecificSoundSet" checkvisible="1" set="Swoosh">0.29</tag>
+    </assetreference>
+    <assetreference type="GrannyAnim">
+      <file>animation_library\natives\inca\bolas_warrior_charge_attack_2</file>
+      <tag type="Attack">0.35</tag>
+      <tag type="SpecificSoundSet" checkvisible="1" set="Swoosh">0.32</tag>
+    </assetreference>
+    <component>ModelComp</component>
+  </anim>
+  <anim>Volley_standing_attack
+    <assetreference type="GrannyAnim">
+      <file>animation_library\natives\inca\bolas_warrior_volley_attack_2</file>
+      <tag type="Attack">0.15</tag>
+      <tag type="SpecificSoundSet" checkvisible="1" set="Swoosh">0.10</tag>
+    </assetreference>
+    <component>ModelComp</component>
+  </anim>
+  <anim>Volley_standing_reload
+    <assetreference type="GrannyAnim">
+      <file>animation_library\natives\inca\bolas_warrior_volley_reload</file>
+    </assetreference>
+    <assetreference type="GrannyAnim">
+      <file>animation_library\natives\inca\bolas_warrior_volley_reload_2</file>
+    </assetreference>
+    <component>ModelComp</component>
+  </anim>
+  <anim>Death_by_melee
+    <assetreference type="GrannyAnim">
+      <file>animation_library\natives\inca\bolas_warrior_death_a</file>
+      <tag type="SpecificSoundSet" checkvisible="1" set="RagdollImpact">0.52</tag>
+    </assetreference>
+    <assetreference type="GrannyAnim">
+      <file>animation_library\natives\inca\bolas_warrior_death_b</file>
+      <tag type="SpecificSoundSet" checkvisible="1" set="RagdollImpact">0.19</tag>
+    </assetreference>
+    <assetreference type="GrannyAnim">
+      <file>animation_library\natives\inca\bolas_warrior_death_c</file>
+      <tag type="SpecificSoundSet" checkvisible="1" set="RagdollImpact">0.73</tag>
+    </assetreference>
+    <component>ModelComp</component>
+  </anim>
+  <anim>Death_by_range
+    <assetreference type="GrannyAnim">
+      <file>animation_library\natives\inca\bolas_warrior_death_a</file>
+      <tag type="SpecificSoundSet" checkvisible="1" set="RagdollImpact">0.52</tag>
+    </assetreference>
+    <assetreference type="GrannyAnim">
+      <file>animation_library\natives\inca\bolas_warrior_death_b</file>
+      <tag type="SpecificSoundSet" checkvisible="1" set="RagdollImpact">0.19</tag>
+    </assetreference>
+    <assetreference type="GrannyAnim">
+      <file>animation_library\natives\inca\bolas_warrior_death_c</file>
+      <tag type="SpecificSoundSet" checkvisible="1" set="RagdollImpact">0.73</tag>
+    </assetreference>
+    <component>ModelComp</component>
+  </anim>
+  <anim>Death_by_havoc
+    <assetreference type="GrannyAnim">
+      <file>animation_library\natives\inca\bolas_warrior_havoc_death</file>
+    </assetreference>
+    <assetreference type="GrannyAnim">
+      <file>animation_library\natives\inca\bolas_warrior_havoc_deathb</file>
+    </assetreference>
+    <assetreference type="GrannyAnim">
+      <file>animation_library\natives\inca\bolas_warrior_havoc_deathc</file>
+    </assetreference>
+    <assetreference type="GrannyAnim">
+      <file>animation_library\natives\inca\bolas_warrior_havoc_deathd</file>
+    </assetreference>
+    <component>ModelComp</component>
+  </anim>
+  <anim>Death_havoc_flail
+    <assetreference type="GrannyAnim">
+      <file>animation_library\natives\macehuatlin\havoc_flail</file>
+    </assetreference>
+    <component>ModelComp</component>
+  </anim>
+  <anim>Death_havoc_spin
+    <assetreference type="GrannyAnim">
+      <file>animation_library\natives\macehuatlin\havoc_spin</file>
+    </assetreference>
+    <component>ModelComp</component>
+  </anim>
+  <anim>Cheer
+    <assetreference type="GrannyAnim">
+      <file>animation_library\natives\inca\bolas_warrior_cheer_a</file>
+    </assetreference>
+    <assetreference type="GrannyAnim">
+      <file>animation_library\natives\inca\bolas_warrior_cheer_b</file>
+    </assetreference>
+    <assetreference type="GrannyAnim">
+      <file>animation_library\natives\inca\bolas_warrior_cheer_c</file>
+    </assetreference>
+    <assetreference type="GrannyAnim">
+      <file>animation_library\natives\inca\bolas_warrior_cheer_d</file>
+    </assetreference>
+    <assetreference type="GrannyAnim">
+      <file>animation_library\natives\inca\bolas_warrior_cheer_e</file>
+    </assetreference>
+    <component>ModelComp</component>
+  </anim>
+  <anim>Recoil
+    <assetreference type="GrannyAnim">
+      <file>animation_library\natives\inca\bolas_warrior_recoil_a</file>
+    </assetreference>
+    <assetreference type="GrannyAnim">
+      <file>animation_library\natives\inca\bolas_warrior_recoil_c</file>
+    </assetreference>
+    <assetreference type="GrannyAnim">
+      <file>animation_library\natives\inca\bolas_warrior_recoil_e</file>
+    </assetreference>
+    <assetreference type="GrannyAnim">
+      <file>animation_library\natives\inca\bolas_warrior_recoil_g</file>
+    </assetreference>
+    <component>ModelComp</component>
+  </anim>
+  <anim>Raze_Idle
+    <assetreference type="GrannyAnim">
+      <file>animation_library\natives\inca\bolas_warrior_torch_throw_idle</file>
+    </assetreference>
+    <component>ModelComp</component>
+    <attach a="torch" frombone="ATTACHPOINT" tobone="L HAND" syncanims="0"/>
+  </anim>
+  <anim>Raze_Attack
+    <assetreference type="GrannyAnim">
+      <file>animation_library\natives\inca\bolas_warrior_torch_throwa</file>
+      <tag type="Attack">0.56</tag>
+      <tag type="SpecificSoundSet" checkvisible="1" set="TorchSwing">0.40</tag>
+    </assetreference>
+    <assetreference type="GrannyAnim">
+      <file>animation_library\natives\inca\bolas_warrior_torch_throwb</file>
+      <tag type="Attack">0.61</tag>
+      <tag type="SpecificSoundSet" checkvisible="1" set="TorchSwing">0.47</tag>
+    </assetreference>
+    <component>ModelComp</component>
+    <attach a="torch" frombone="ATTACHPOINT" tobone="L HAND" syncanims="0"/>
+  </anim>
+  <anim>Cover_Ranged_Idle
+    <assetreference type="GrannyAnim">
+      <file>animation_library\natives\inca\bolas_warrior_cover_idle</file>
+    </assetreference>
+    <component>ModelComp</component>
+  </anim>
+  <anim>Cover_Bored
+    <assetreference type="GrannyAnim">
+      <file>animation_library\natives\inca\bolas_warrior_cover_bored</file>
+    </assetreference>
+    <component>ModelComp</component>
+  </anim>
+  <anim>Cover_Walk
+    <assetreference type="GrannyAnim">
+      <file>animation_library\natives\inca\bolas_warrior_cover_walk</file>
+      <tag type="FootstepLeft" footprinttype="HumanLeft">0.20</tag>
+      <tag type="FootstepRight" footprinttype="HumanRight">0.70</tag>
+    </assetreference>
+    <component>ModelComp</component>
+  </anim>
+  <anim>Cover_Jog
+    <assetreference type="GrannyAnim">
+      <file>animation_library\natives\inca\bolas_warrior_jog</file>
+      <tag type="FootstepLeft" footprinttype="HumanLeft">0.09</tag>
+      <tag type="FootstepRight" footprinttype="HumanRight">0.52</tag>
+    </assetreference>
+    <component>ModelComp</component>
+  </anim>
+  <anim>Cover_Run
+    <assetreference type="GrannyAnim">
+      <file>animation_library\natives\inca\bolas_warrior_walk</file>
+      <tag type="FootstepLeft" footprinttype="HumanLeft">0.05</tag>
+      <tag type="FootstepRight" footprinttype="HumanRight">0.52</tag>
+    </assetreference>
+    <component>ModelComp</component>
+  </anim>
+  <anim>Volley_standing_idle
+    <assetreference type="GrannyAnim">
+      <file>animation_library\natives\inca\bolas_warrior_volley_idle</file>
+    </assetreference>
+    <component>ModelComp</component>
+  </anim>
+  <anim>Volley_standing_bored
+    <assetreference type="GrannyAnim">
+      <file>animation_library\natives\macehuatlin\volley_idle</file>
+    </assetreference>
+    <component>ModelComp</component>
+  </anim>
+  <anim>Volley_Walk
+    <assetreference type="GrannyAnim">
+      <file>animation_library\natives\inca\bolas_warrior_walk</file>
+      <tag type="FootstepLeft" footprinttype="HumanLeft">0.03</tag>
+      <tag type="FootstepRight" footprinttype="HumanRight">0.53</tag>
+    </assetreference>
+    <component>ModelComp</component>
+  </anim>
+  <anim>Volley_Jog
+    <assetreference type="GrannyAnim">
+      <file>animation_library\natives\inca\bolas_warrior_jog</file>
+      <tag type="FootstepLeft" footprinttype="HumanLeft">0.09</tag>
+      <tag type="FootstepRight" footprinttype="HumanRight">0.52</tag>
+    </assetreference>
+    <component>ModelComp</component>
+  </anim>
+  <anim>Volley_Run
+    <assetreference type="GrannyAnim">
+      <file>animation_library\natives\inca\bolas_warrior_run</file>
+      <tag type="FootstepLeft" footprinttype="HumanLeft">0.05</tag>
+      <tag type="FootstepRight" footprinttype="HumanRight">0.52</tag>
+    </assetreference>
+    <component>ModelComp</component>
+  </anim>
+  <anim>Defend_Idle
+    <assetreference type="GrannyAnim">
+      <file>animation_library\natives\inca\bolas_warrior_defend_idle</file>
+    </assetreference>
+    <component>ModelComp</component>
+  </anim>
+  <anim>Defend_Bored
+    <assetreference type="GrannyAnim">
+      <file>animation_library\natives\inca\bolas_warrior_defend_bored</file>
+    </assetreference>
+    <component>ModelComp</component>
+  </anim>
+  <anim>Charge_Idle
+    <assetreference type="GrannyAnim">
+      <file>animation_library\natives\inca\bolas_warrior_charge_idle</file>
+    </assetreference>
+    <component>ModelComp</component>
+  </anim>
+  <anim>Charge_Bored
+    <assetreference type="GrannyAnim">
+      <file>animation_library\natives\inca\bolas_warrior_charge_idle</file>
+    </assetreference>
+    <component>ModelComp</component>
+  </anim>
+  <anim>Charge_Walk
+    <assetreference type="GrannyAnim">
+      <file>animation_library\natives\inca\bolas_warrior_walk</file>
+      <tag type="FootstepLeft" footprinttype="HumanLeft">0.03</tag>
+      <tag type="FootstepRight" footprinttype="HumanRight">0.53</tag>
+    </assetreference>
+    <component>ModelComp</component>
+  </anim>
+  <anim>Charge_Jog
+    <assetreference type="GrannyAnim">
+      <file>animation_library\natives\inca\bolas_warrior_jog</file>
+      <tag type="FootstepLeft" footprinttype="HumanLeft">0.09</tag>
+      <tag type="FootstepRight" footprinttype="HumanRight">0.52</tag>
+    </assetreference>
+    <component>ModelComp</component>
+  </anim>
+  <anim>Charge_Run
+    <assetreference type="GrannyAnim">
+      <file>animation_library\natives\inca\bolas_warrior_run</file>
+      <tag type="FootstepLeft" footprinttype="HumanLeft">0.05</tag>
+      <tag type="FootstepRight" footprinttype="HumanRight">0.52</tag>
+    </assetreference>
+    <component>ModelComp</component>
+  </anim>
+</animfile>

@@ -14,7 +14,7 @@ alwaysApply: true
 
 ## 只选动作，不选属性（整包）
 
-**唯一的人为决策**：在每个 ranged / melee / siege 桶里，用 `ATTACK_PRIORITY` **选一条代表动作名**——层级为 **Volley/Stagger > 具名主攻击 > Defend**（Defend 为手动防御阵型）；远程步兵默认齐射、纯远程骑兵默认交错。
+**唯一的人为决策**：在每个 ranged / melee / siege 桶里，用 `ATTACK_PRIORITY` **选一条代表动作名**——层级为 **Volley/Stagger > 具名主攻击 > Defend**（Defend 为手动防御阵型）；远程统一齐射 > 交错（多数纯骑兵 protoy 仅有交错动作时自然落回）。
 
 **禁止**为下列字段单独做优先级、fallback 表或「选哪条」逻辑——它们都是该动作名在数据里的**一体属性**，随代表动作整包进出 `units.json` / 模拟器：
 

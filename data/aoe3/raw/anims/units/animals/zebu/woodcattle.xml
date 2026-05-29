@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="utf-8"?>
+<animfile>
+  <component>ModelComp
+    <assetreference type="GrannyModel">
+      <file>units\animals\zebu\zebu_fat</file>
+      <materialvariant index="1"/>
+    </assetreference>
+    <decal>
+      <effecttype>default</effecttype>
+      <texture isfakeshadow="1">shadows_selections\shadow_circle_64x64</texture>
+      <selectedtexture>shadows_selections\selection_oval_32x64</selectedtexture>
+      <width>1.50</width>
+      <height>2.50</height>
+      <zoffset>-0.40</zoffset>
+    </decal>
+  </component>
+  <anim>Idle
+    <assetreference type="GrannyAnim">
+      <file>animation_library\quads\sanga_IdleA</file>
+      <weight>30</weight>
+    </assetreference>
+    <assetreference type="GrannyAnim">
+      <file>animation_library\quads\sanga_IdleB</file>
+      <weight>10</weight>
+    </assetreference>
+    <assetreference type="GrannyAnim">
+      <file>animation_library\quads\sanga_IdleC</file>
+      <weight>10</weight>
+    </assetreference>
+    <assetreference type="GrannyAnim">
+      <file>animation_library\quads\sanga_IdleD</file>
+      <weight>10</weight>
+    </assetreference>
+    <assetreference type="GrannyAnim">
+      <file>animation_library\quads\sanga_IdleE</file>
+      <weight>20</weight>
+    </assetreference>
+    <assetreference type="GrannyAnim">
+      <file>animation_library\quads\sanga_IdleF</file>
+      <weight>10</weight>
+    </assetreference>
+    <component>ModelComp</component>
+  </anim>
+  <anim>Walk
+    <assetreference type="GrannyAnim">
+      <file>animation_library\quads\sanga_walk</file>
+    </assetreference>
+    <component>ModelComp</component>
+  </anim>
+  <anim>Death
+    <assetreference type="GrannyAnim">
+      <file>animation_library\quads\sanga_death</file>
+      <tag type="SpecificSoundSet" checkvisible="1" set="RagdollImpact">0.58</tag>
+    </assetreference>
+    <component>ModelComp</component>
+  </anim>
+  <anim>GatherFarm
+    <assetreference type="GrannyAnim">
+      <file>animation_library\quads\sanga_grazeIdleA</file>
+      <weight>33</weight>
+    </assetreference>
+    <assetreference type="GrannyAnim">
+      <file>animation_library\quads\sanga_grazeIdleB</file>
+      <weight>33</weight>
+    </assetreference>
+    <assetreference type="GrannyAnim">
+      <file>animation_library\quads\sanga_grazeIdleC</file>
+      <weight>33</weight>
+    </assetreference>
+    <component>ModelComp</component>
+  </anim>
+  <anim>LayDown
+    <assetreference type="GrannyAnim">
+      <file>animation_library\quads\sanga_intoGraze</file>
+    </assetreference>
+    <component>ModelComp</component>
+  </anim>
+  <anim>LayDownIdle
+    <assetreference type="GrannyAnim">
+      <file>animation_library\quads\sanga_grazeIdleA</file>
+      <weight>33</weight>
+    </assetreference>
+    <assetreference type="GrannyAnim">
+      <file>animation_library\quads\sanga_grazeIdleB</file>
+      <weight>33</weight>
+    </assetreference>
+    <assetreference type="GrannyAnim">
+      <file>animation_library\quads\sanga_grazeIdleC</file>
+      <weight>33</weight>
+    </assetreference>
+    <component>ModelComp</component>
+  </anim>
+  <anim>GetUp
+    <assetreference type="GrannyAnim">
+      <file>animation_library\quads\sanga_outofGraze</file>
+    </assetreference>
+    <component>ModelComp</component>
+  </anim>
+  <anim>Raze_attack
+    <assetreference type="GrannyAnim">
+      <file>animation_library\quads\sanga_IdleA</file>
+      <tag type="CameraShake">0.50</tag>
+      <tag type="Attack">1.00</tag>
+      <tag type="SpecificSoundSet" checkvisible="1" set="WoodCattleExplosion">0.00</tag>
+      <tag type="SpecificSoundSet" checkvisible="1" set="GrenadeLight">0.90</tag>
+      <tag type="Particles" particlename="wclargeexp">1.00</tag>
+      <tag type="Particles" particlename="shockwaveSlow">1.00</tag>
+      <tag type="Particles" particlename="fire_column_tumble1">1.00</tag>
+    </assetreference>
+    <component>ModelComp</component>
+  </anim>
+</animfile>

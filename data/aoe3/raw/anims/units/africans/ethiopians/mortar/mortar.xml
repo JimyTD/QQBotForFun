@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<animfile>
+  <definebone>bone_PLUNGER</definebone>
+  <definebone>bone_BULLET</definebone>
+  <definebone>bone_SCREWPOLE</definebone>
+  <definebone>bone_launchpoint</definebone>
+  <definebone>Bip05 R Foot</definebone>
+  <definebone>Bip05 L Foot</definebone>
+  <definebone>Bip03 R Foot</definebone>
+  <definebone>Bip03 L Foot</definebone>
+  <definebone>bone_hat</definebone>
+  <definebone>Bip03 Head</definebone>
+  <definebone>Bip04 Head</definebone>
+  <definebone>Bip05 Head</definebone>
+  <attachment>attachment_smoke_puff
+    <component>smoke_puff
+      <assetreference type="ParticleSystem">
+        <file>units\artillery\cannon\smoke_puff.particle</file>
+      </assetreference>
+    </component>
+    <anim>Idle
+      <component>smoke_puff</component>
+    </anim>
+  </attachment>
+  <component>mortar
+    <assetreference type="GrannyModel">
+      <file>units\africans\ethiopians\mortar\mortar</file>
+    </assetreference>
+    <decal>
+      <effecttype>default</effecttype>
+      <texture isfakeshadow="1">shadows_selections\shadow_circle_64x64</texture>
+      <selectedtexture>shadows_selections\selection_circle_64x64</selectedtexture>
+      <width>4.00</width>
+      <height>4.00</height>
+    </decal>
+  </component>
+  <anim>Bombard_ranged_attack
+    <assetreference type="GrannyAnim">
+      <file>units\africans\ethiopians\mortar\mortar_attack</file>
+      <tag type="Attack">0.11</tag>
+      <tag type="SpecificSoundSet" checkvisible="1" set="MortarShot">0.11</tag>
+      <tag type="Particles" particlename="greatbombardmuzzlefx">0.11</tag>
+      <tag type="Particles" particlename="BattleField_Smoke_Light">0.11</tag>
+    </assetreference>
+    <component>mortar</component>
+  </anim>
+  <anim>Bombard_reload
+    <assetreference type="GrannyAnim">
+      <file>units\africans\ethiopians\mortar\mortar_reload</file>
+    </assetreference>
+    <component>mortar</component>
+  </anim>
+  <anim>Walk
+    <assetreference type="GrannyAnim">
+      <file>units\africans\ethiopians\mortar\mortar_idle_walk</file>
+    </assetreference>
+    <component>mortar</component>
+  </anim>
+  <anim>Idle
+    <assetreference type="GrannyAnim">
+      <file>units\africans\ethiopians\mortar\mortar_idle</file>
+    </assetreference>
+    <component>mortar</component>
+  </anim>
+  <anim>Bored
+    <assetreference type="GrannyAnim">
+      <file>units\africans\ethiopians\mortar\mortar_bored</file>
+    </assetreference>
+    <component>mortar</component>
+  </anim>
+  <anim>Cheer
+    <assetreference type="GrannyAnim">
+      <file>units\africans\ethiopians\mortar\mortar_cheer</file>
+    </assetreference>
+    <component>mortar</component>
+  </anim>
+  <anim>Death
+    <assetreference type="GrannyAnim">
+      <file>units\africans\ethiopians\mortar\mortar_death</file>
+    </assetreference>
+    <component>mortar</component>
+  </anim>
+</animfile>

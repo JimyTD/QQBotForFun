@@ -52,6 +52,8 @@ data/ra2/*
 !data/aoe3/
 data/aoe3/*
 !data/aoe3/*.json
+!data/aoe3/raw/
+!data/aoe3/raw/**
 logs/
 *.log
 *.db

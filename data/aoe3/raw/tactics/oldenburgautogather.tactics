@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<tactics>
+  <action>
+    <name stringid="43019">AutoGatherOldenburg</name>
+    <type>AutoGather</type>
+    <persistent>1</persistent>
+  </action>
+</tactics>

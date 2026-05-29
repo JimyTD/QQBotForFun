@@ -1,0 +1,302 @@
+<?xml version="1.0" encoding="utf-8"?>
+<animfile>
+  <definebone>Pikeman Prop2</definebone>
+  <definebone>Pikeman_AttachRt</definebone>
+  <definebone>Pikeman Prop1</definebone>
+  <definebone>bone_pike</definebone>
+  <definebone>bone_hat</definebone>
+  <definebone>bone_sword</definebone>
+  <attachment>torch
+    <include>effects\projectiles\torch.xml</include>
+  </attachment>
+  <attachment>flame
+    <component>fire_torch_A
+      <assetreference type="ParticleSystem">
+        <file>effects\fire\fire_torch_a.particle</file>
+      </assetreference>
+    </component>
+    <anim>Idle
+      <component>fire_torch_A</component>
+    </anim>
+  </attachment>
+  <attachment>smokeA
+    <component>smoke
+      <assetreference type="ParticleSystem">
+        <file>effects\smoke\white_smoke_a.particle</file>
+      </assetreference>
+    </component>
+    <anim>Idle
+      <component>smoke</component>
+    </anim>
+  </attachment>
+  <attachment>sword
+    <component>sword
+      <assetreference type="GrannyModel">
+        <file>units\attachments\sword</file>
+      </assetreference>
+    </component>
+    <anim>Idle
+      <component>sword</component>
+    </anim>
+  </attachment>
+  <attachment>pikes
+    <include>units\infantry\pikeman\pikeman_pikes.xml</include>
+  </attachment>
+  <attachment>hats
+    <include>units\infantry\pikeman\pikeman_hats.xml</include>
+  </attachment>
+  <component>ModelComp
+    <logic type="Tech">
+      <none>
+        <assetreference type="GrannyModel">
+          <file>units\infantry\pikeman\pikeman_2age</file>
+        </assetreference>
+        <attach a="hats" frombone="bone_hat" tobone="HEAD" syncanims="0"/>
+      </none>
+      <veteranpikemen>
+        <assetreference type="GrannyModel">
+          <file>units\infantry\pikeman\pikeman_3age</file>
+        </assetreference>
+        <attach a="hats" frombone="bone_hat" tobone="HEAD" syncanims="0"/>
+      </veteranpikemen>
+      <guardpikemen>
+        <assetreference type="GrannyModel">
+          <file>units\infantry\pikeman\pikeman_4age</file>
+        </assetreference>
+        <attach a="hats" frombone="bone_hat" tobone="HEAD" syncanims="0"/>
+      </guardpikemen>
+      <rgdalkarl>
+        <assetreference type="GrannyModel">
+          <file>units\infantry\pikeman\dalkarl</file>
+        </assetreference>
+      </rgdalkarl>
+      <rgtercio>
+        <assetreference type="GrannyModel">
+          <file>units\infantry\pikeman\tercio</file>
+        </assetreference>
+      </rgtercio>
+      <dehcrevpickets>
+        <assetreference type="GrannyModel">
+          <file>units\infantry\pikeman\picket</file>
+        </assetreference>
+        <attach a="hats" frombone="bone_hat" tobone="HEAD" syncanims="0"/>
+      </dehcrevpickets>
+      <rgordinancepikemen>
+        <assetreference type="GrannyModel">
+          <file>units\infantry\pikeman\pikeman_ordenanca</file>
+        </assetreference>
+      </rgordinancepikemen>
+    </logic>
+    <attach a="pikes" frombone="bone_pike" tobone="Pikeman Prop1" syncanims="0"/>
+    <decal>
+      <effecttype>default</effecttype>
+      <texture isfakeshadow="1">shadows_selections\shadow_circle_32x32</texture>
+      <selectedtexture>shadows_selections\selection_circle_32x32</selectedtexture>
+      <width>1.0</width>
+      <height>1.0</height>
+    </decal>
+  </component>
+  <anim>Death_by_melee
+    <assetreference type="GrannyAnim">
+      <file>animation_library\shared\human_sword_death_a_pikeman</file>
+      <tag type="SpecificSoundSet" checkvisible="1" set="RagdollImpact">0.83</tag>
+    </assetreference>
+    <component>ModelComp</component>
+  </anim>
+  <anim>Death_by_range
+    <assetreference type="GrannyAnim">
+      <file>animation_library\shared\human_death_shot_front_a_pikeman</file>
+      <tag type="SpecificSoundSet" checkvisible="1" set="RagdollImpact">0.56</tag>
+    </assetreference>
+    <assetreference type="GrannyAnim">
+      <file>animation_library\shared\human_death_shot_back_a_pikeman</file>
+      <tag type="SpecificSoundSet" checkvisible="1" set="RagdollImpact">0.83</tag>
+    </assetreference>
+    <component>ModelComp</component>
+  </anim>
+  <anim>Death_by_havoc
+    <assetreference type="GrannyAnim">
+      <file>animation_library\range\havoc_death_pikeman</file>
+    </assetreference>
+    <assetreference type="GrannyAnim">
+      <file>animation_library\range\havoc_deathB_pikeman</file>
+    </assetreference>
+    <assetreference type="GrannyAnim">
+      <file>animation_library\range\havoc_deathC_pikeman</file>
+    </assetreference>
+    <assetreference type="GrannyAnim">
+      <file>animation_library\range\havoc_deathD_pikeman</file>
+    </assetreference>
+    <component>ModelComp</component>
+  </anim>
+  <anim>Death_havoc_flail
+    <assetreference type="GrannyAnim">
+      <file>animation_library\range\havoc_flail_pikeman</file>
+    </assetreference>
+    <component>ModelComp</component>
+  </anim>
+  <anim>Death_havoc_spin
+    <assetreference type="GrannyAnim">
+      <file>animation_library\range\havoc_spin_pikeman</file>
+    </assetreference>
+    <component>ModelComp</component>
+  </anim>
+  <anim>Cheer
+    <assetreference type="GrannyAnim">
+      <file>animation_library\shared\cheer_A_pikeman</file>
+    </assetreference>
+    <assetreference type="GrannyAnim">
+      <file>animation_library\shared\cheer_B_pikeman</file>
+    </assetreference>
+    <assetreference type="GrannyAnim">
+      <file>animation_library\shared\cheer_C_pikeman</file>
+    </assetreference>
+    <assetreference type="GrannyAnim">
+      <file>animation_library\shared\cheer_D_pikeman</file>
+    </assetreference>
+    <assetreference type="GrannyAnim">
+      <file>animation_library\shared\cheer_E_pikeman</file>
+    </assetreference>
+    <component>ModelComp</component>
+  </anim>
+  <anim>Recoil
+    <assetreference type="GrannyAnim">
+      <file>animation_library\shared\recoil_A_pikeman</file>
+    </assetreference>
+    <assetreference type="GrannyAnim">
+      <file>animation_library\shared\recoil_C_pikeman</file>
+    </assetreference>
+    <assetreference type="GrannyAnim">
+      <file>animation_library\shared\recoil_E_pikeman</file>
+    </assetreference>
+    <assetreference type="GrannyAnim">
+      <file>animation_library\shared\recoil_G_pikeman</file>
+    </assetreference>
+    <component>ModelComp</component>
+  </anim>
+  <anim>HC_openDoor
+    <assetreference type="GrannyAnim">
+      <file>animation_library\shared\doorOpen_pikeman</file>
+    </assetreference>
+    <component>ModelComp</component>
+  </anim>
+  <anim>HC_closeDoor
+    <assetreference type="GrannyAnim">
+      <file>animation_library\shared\doorClose_pikeman</file>
+    </assetreference>
+    <component>ModelComp</component>
+  </anim>
+  <anim>Raze_idle
+    <assetreference type="GrannyAnim">
+      <file>animation_library\shared\torch_throw_idle_pikeman</file>
+    </assetreference>
+    <component>ModelComp</component>
+    <attach a="torch" frombone="ATTACHPOINT" tobone="L HAND" syncanims="0"/>
+  </anim>
+  <anim>Raze_attack
+    <assetreference type="GrannyAnim">
+      <file>animation_library\shared\torch_throwA_pikeman</file>
+      <tag type="Attack">0.61</tag>
+      <tag type="SpecificSoundSet" checkvisible="1" set="TorchSwing">0.43</tag>
+    </assetreference>
+    <assetreference type="GrannyAnim">
+      <file>animation_library\shared\torch_throwB_pikeman</file>
+      <tag type="Attack">0.56</tag>
+      <tag type="SpecificSoundSet" checkvisible="1" set="TorchSwing">0.43</tag>
+    </assetreference>
+    <component>ModelComp</component>
+    <attach a="torch" frombone="ATTACHPOINT" tobone="L HAND" syncanims="0"/>
+  </anim>
+  <anim>Cover_bored
+    <assetreference type="GrannyAnim">
+      <file>animation_library\infantry\Cover\pikemen_cover_bored_pikeman</file>
+    </assetreference>
+    <component>ModelComp</component>
+  </anim>
+  <anim>Cover_Idle
+    <assetreference type="GrannyAnim">
+      <file>animation_library\infantry\Cover\pikemen_cover_idle_pikeman</file>
+    </assetreference>
+    <component>ModelComp</component>
+  </anim>
+  <anim>Cover_walk
+    <assetreference type="GrannyAnim">
+      <file>animation_library\infantry\Cover\pikemen_cover_walk_pikeman</file>
+      <tag type="FootstepLeft" footprinttype="HumanLeft">0.20</tag>
+      <tag type="FootstepRight" footprinttype="HumanRight">0.70</tag>
+    </assetreference>
+    <component>ModelComp</component>
+  </anim>
+  <anim>Defend_idle
+    <assetreference type="GrannyAnim">
+      <file>animation_library\infantry\Defend\pikemen_defend_idle_pikeman</file>
+    </assetreference>
+    <component>ModelComp</component>
+  </anim>
+  <anim>Defend_bored
+    <assetreference type="GrannyAnim">
+      <file>animation_library\infantry\Defend\pikemen_defend_bored_pikeman</file>
+    </assetreference>
+    <assetreference type="GrannyAnim">
+      <file>animation_library\infantry\Defend\pikemen_defend_boredB_pikeman</file>
+    </assetreference>
+    <component>ModelComp</component>
+  </anim>
+  <anim>Charge_idle
+    <assetreference type="GrannyAnim">
+      <file>animation_library\infantry\Charge\pikemen_charge_idle_pikeman</file>
+    </assetreference>
+    <component>ModelComp</component>
+  </anim>
+  <anim>Charge_bored
+    <assetreference type="GrannyAnim">
+      <file>animation_library\infantry\Charge\pikemen_charge_bored_pikeman</file>
+    </assetreference>
+    <component>ModelComp</component>
+  </anim>
+  <anim>Charge_attack
+    <assetreference type="GrannyAnim">
+      <file>animation_library\infantry\Charge\pikemen_charge_attackA_pikeman</file>
+      <tag type="Attack">0.52</tag>
+    </assetreference>
+    <assetreference type="GrannyAnim">
+      <file>animation_library\infantry\Charge\pikemen_charge_attackB_pikeman</file>
+      <tag type="Attack">0.52</tag>
+    </assetreference>
+    <assetreference type="GrannyAnim">
+      <file>animation_library\infantry\Charge\pikemen_charge_attackC_pikeman</file>
+      <tag type="Attack">0.38</tag>
+      <tag type="SpecificSoundSet" checkvisible="1" set="Swoosh">0.31</tag>
+    </assetreference>
+    <assetreference type="GrannyAnim">
+      <file>animation_library\infantry\Charge\pikemen_charge_attackD_pikeman</file>
+      <tag type="Attack">0.57</tag>
+      <tag type="SpecificSoundSet" checkvisible="1" set="Swoosh">0.48</tag>
+    </assetreference>
+    <component>ModelComp</component>
+  </anim>
+  <anim>Charge_walk
+    <assetreference type="GrannyAnim">
+      <file>animation_library\infantry\Charge\pikemen_charge_walk_pikeman</file>
+      <tag type="FootstepLeft" footprinttype="HumanLeft">0.76</tag>
+      <tag type="FootstepRight" footprinttype="HumanRight">0.30</tag>
+    </assetreference>
+    <component>ModelComp</component>
+  </anim>
+  <anim>Charge_jog
+    <assetreference type="GrannyAnim">
+      <file>animation_library\infantry\Charge\pikemen_charge_jog_pikeman</file>
+      <tag type="FootstepLeft" footprinttype="HumanLeft">0.76</tag>
+      <tag type="FootstepRight" footprinttype="HumanRight">0.23</tag>
+    </assetreference>
+    <component>ModelComp</component>
+  </anim>
+  <anim>Charge_run
+    <assetreference type="GrannyAnim">
+      <file>animation_library\infantry\Charge\pikemen_charge_run_pikeman</file>
+      <tag type="FootstepLeft" footprinttype="HumanLeft">0.75</tag>
+      <tag type="FootstepRight" footprinttype="HumanRight">0.20</tag>
+    </assetreference>
+    <component>ModelComp</component>
+  </anim>
+</animfile>

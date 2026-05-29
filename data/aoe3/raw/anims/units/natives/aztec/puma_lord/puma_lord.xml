@@ -1,0 +1,299 @@
+<?xml version="1.0" encoding="utf-8"?>
+<animfile>
+  <definebone>bone_shield</definebone>
+  <definebone>bone_spear</definebone>
+  <definebone>Bip01 Prop1</definebone>
+  <definebone>Bip01_Spine1</definebone>
+  <definebone>bone_bannersupport</definebone>
+  <attachment>torch
+    <include>effects\projectiles\torch.xml</include>
+  </attachment>
+  <attachment>spear_age1
+    <component>spear_age1
+      <assetreference type="GrannyModel">
+        <file>units\natives\aztec\puma_lord\puma_spear_age1</file>
+      </assetreference>
+    </component>
+    <anim>None
+      <component>spear_age1</component>
+    </anim>
+  </attachment>
+  <attachment>spear_age2
+    <component>spear_age2
+      <assetreference type="GrannyModel">
+        <file>units\natives\aztec\puma_lord\puma_spear_age2</file>
+      </assetreference>
+    </component>
+    <anim>None
+      <component>spear_age2</component>
+    </anim>
+  </attachment>
+  <attachment>spear_age3
+    <component>spear_age3
+      <assetreference type="GrannyModel">
+        <file>units\natives\aztec\puma_lord\puma_spear_age3</file>
+      </assetreference>
+    </component>
+    <anim>None
+      <component>spear_age3</component>
+    </anim>
+  </attachment>
+  <attachment>spear_age4
+    <component>spear_age4
+      <assetreference type="GrannyModel">
+        <file>units\natives\aztec\puma_lord\puma_spear_age3</file>
+        <materialvariant index="1"/>
+      </assetreference>
+    </component>
+    <anim>None
+      <component>spear_age4</component>
+    </anim>
+  </attachment>
+  <attachment>banner_age3
+    <component>banner_age3
+      <assetreference type="GrannyModel">
+        <file>units\natives\aztec\puma_lord\puma_banner_age3</file>
+      </assetreference>
+    </component>
+    <anim>None
+      <component>banner_age3</component>
+    </anim>
+  </attachment>
+  <attachment>banner_age4
+    <component>banner_age4
+      <assetreference type="GrannyModel">
+        <file>units\natives\aztec\puma_lord\puma_banner_age3</file>
+        <materialvariant index="1"/>
+      </assetreference>
+    </component>
+    <anim>None
+      <component>banner_age4</component>
+    </anim>
+  </attachment>
+  <component>ModelComp
+    <logic type="Tech">
+      <none>
+        <assetreference type="GrannyModel">
+          <file>units\natives\aztec\puma_lord\puma_lord_age1</file>
+        </assetreference>
+        <attach a="spear_age1" frombone="bone_spear" tobone="Bip01 Prop1" syncanims="0"/>
+      </none>
+      <elitepumamen>
+        <assetreference type="GrannyModel">
+          <file>units\natives\aztec\puma_lord\puma_lord_age2</file>
+        </assetreference>
+        <attach a="spear_age2" frombone="bone_spear" tobone="Bip01 Prop1" syncanims="0"/>
+      </elitepumamen>
+      <championpumamen>
+        <assetreference type="GrannyModel">
+          <file>units\natives\aztec\puma_lord\puma_lord_age3</file>
+        </assetreference>
+        <attach a="spear_age3" frombone="bone_spear" tobone="Bip01 Prop1" syncanims="0"/>
+        <attach a="banner_age3" frombone="bone_bannersupport" tobone="HEAD" syncanims="0"/>
+      </championpumamen>
+      <implegendarypumamen>
+        <assetreference type="GrannyModel">
+          <file>units\natives\aztec\puma_lord\puma_lord_age3</file>
+        </assetreference>
+        <attach a="spear_age4" frombone="bone_spear" tobone="Bip01 Prop1" syncanims="0"/>
+        <attach a="banner_age4" frombone="bone_bannersupport" tobone="HEAD" syncanims="0"/>
+      </implegendarypumamen>
+    </logic>
+    <decal>
+      <effecttype>default</effecttype>
+      <texture isfakeshadow="1">shadows_selections\shadow_circle_32x32</texture>
+      <selectedtexture>shadows_selections\selection_circle_32x32</selectedtexture>
+      <width>1.0</width>
+      <height>1.0</height>
+    </decal>
+  </component>
+  <anim>Charge_Attack
+    <assetreference type="GrannyAnim">
+      <file>animation_library\natives\puma_lord\alt\charge_attack1</file>
+      <tag type="Attack">0.45</tag>
+    </assetreference>
+    <assetreference type="GrannyAnim">
+      <file>animation_library\natives\puma_lord\alt\charge_attack2</file>
+      <tag type="Attack">0.57</tag>
+    </assetreference>
+    <assetreference type="GrannyAnim">
+      <file>animation_library\natives\puma_lord\alt\charge_attack3</file>
+      <tag type="Attack">0.47</tag>
+    </assetreference>
+    <assetreference type="GrannyAnim">
+      <file>animation_library\natives\puma_lord\alt\charge_attack4</file>
+      <tag type="Attack">0.50</tag>
+    </assetreference>
+    <component>ModelComp</component>
+  </anim>
+  <anim>Death_by_melee
+    <assetreference type="GrannyAnim">
+      <file>animation_library\shared\human_sword_death_a</file>
+      <tag type="SpecificSoundSet" checkvisible="1" set="RagdollImpact">0.83</tag>
+    </assetreference>
+    <component>ModelComp</component>
+  </anim>
+  <anim>Death_by_range
+    <assetreference type="GrannyAnim">
+      <file>animation_library\shared\human_death_shot_front_a</file>
+      <tag type="SpecificSoundSet" checkvisible="1" set="RagdollImpact">0.58</tag>
+    </assetreference>
+    <assetreference type="GrannyAnim">
+      <file>animation_library\shared\human_death_shot_back_a</file>
+      <tag type="SpecificSoundSet" checkvisible="1" set="RagdollImpact">0.85</tag>
+    </assetreference>
+    <component>ModelComp</component>
+  </anim>
+  <anim>Death_by_havoc
+    <assetreference type="GrannyAnim">
+      <file>animation_library\range\havoc_death</file>
+    </assetreference>
+    <assetreference type="GrannyAnim">
+      <file>animation_library\range\havoc_deathB</file>
+    </assetreference>
+    <assetreference type="GrannyAnim">
+      <file>animation_library\range\havoc_deathC</file>
+    </assetreference>
+    <assetreference type="GrannyAnim">
+      <file>animation_library\range\havoc_deathD</file>
+    </assetreference>
+    <component>ModelComp</component>
+  </anim>
+  <anim>Death_havoc_flail
+    <assetreference type="GrannyAnim">
+      <file>animation_library\range\havoc_flail</file>
+    </assetreference>
+    <component>ModelComp</component>
+  </anim>
+  <anim>Death_havoc_spin
+    <assetreference type="GrannyAnim">
+      <file>animation_library\range\havoc_spin</file>
+    </assetreference>
+    <component>ModelComp</component>
+  </anim>
+  <anim>Cheer
+    <assetreference type="GrannyAnim">
+      <file>animation_library\shared\cheer_C</file>
+    </assetreference>
+    <component>ModelComp</component>
+  </anim>
+  <anim>Recoil
+    <assetreference type="GrannyAnim">
+      <file>animation_library\shared\recoil_A</file>
+    </assetreference>
+    <assetreference type="GrannyAnim">
+      <file>animation_library\shared\recoil_C</file>
+    </assetreference>
+    <assetreference type="GrannyAnim">
+      <file>animation_library\shared\recoil_E</file>
+    </assetreference>
+    <assetreference type="GrannyAnim">
+      <file>animation_library\shared\recoil_G</file>
+    </assetreference>
+    <component>ModelComp</component>
+  </anim>
+  <anim>Raze_Idle
+    <assetreference type="GrannyAnim">
+      <file>animation_library\shared\torch_throw_idle</file>
+    </assetreference>
+    <component>ModelComp</component>
+    <attach a="torch" frombone="ATTACHPOINT" tobone="L HAND" syncanims="0"/>
+  </anim>
+  <anim>Raze_Attack
+    <assetreference type="GrannyAnim">
+      <file>animation_library\shared\torch_throwB</file>
+      <tag type="Attack">0.56</tag>
+      <tag type="SpecificSoundSet" checkvisible="1" set="TorchSwing">0.43</tag>
+    </assetreference>
+    <assetreference type="GrannyAnim">
+      <file>animation_library\shared\torch_throwA</file>
+      <tag type="Attack">0.61</tag>
+      <tag type="SpecificSoundSet" checkvisible="1" set="TorchSwing">0.52</tag>
+    </assetreference>
+    <component>ModelComp</component>
+    <attach a="torch" frombone="ATTACHPOINT" tobone="L HAND" syncanims="0"/>
+  </anim>
+  <anim>Cover_Idle
+    <assetreference type="GrannyAnim">
+      <file>animation_library\natives\puma_lord\alt\charge_idle</file>
+    </assetreference>
+    <assetreference type="GrannyAnim">
+      <file>animation_library\natives\puma_lord\alt\charge_idle2</file>
+    </assetreference>
+    <component>ModelComp</component>
+  </anim>
+  <anim>Cover_Bored
+    <assetreference type="GrannyAnim">
+      <file>animation_library\natives\puma_lord\alt\charge_idle</file>
+    </assetreference>
+    <component>ModelComp</component>
+  </anim>
+  <anim>Cover_Walk
+    <assetreference type="GrannyAnim">
+      <file>animation_library\range\cover\cover_walk</file>
+      <tag type="FootstepLeft" footprinttype="HumanLeft">0.28</tag>
+      <tag type="FootstepRight" footprinttype="HumanRight">0.80</tag>
+    </assetreference>
+    <component>ModelComp</component>
+  </anim>
+  <anim>Cover_Jog
+    <assetreference type="GrannyAnim">
+      <file>animation_library\natives\puma_lord\alt\charge_jog</file>
+    </assetreference>
+    <component>ModelComp</component>
+  </anim>
+  <anim>Cover_Run
+    <assetreference type="GrannyAnim">
+      <file>animation_library\natives\puma_lord\alt\charge_run</file>
+    </assetreference>
+    <component>ModelComp</component>
+  </anim>
+  <anim>Defend_Idle
+    <assetreference type="GrannyAnim">
+      <file>animation_library\natives\puma_lord\alt\defend_idle</file>
+    </assetreference>
+    <assetreference type="GrannyAnim">
+      <file>animation_library\natives\puma_lord\alt\defend_idle2</file>
+    </assetreference>
+    <component>ModelComp</component>
+  </anim>
+  <anim>Defend_Bored
+    <assetreference type="GrannyAnim">
+      <file>animation_library\natives\puma_lord\alt\defend_bored</file>
+    </assetreference>
+    <component>ModelComp</component>
+  </anim>
+  <anim>Charge_Idle
+    <assetreference type="GrannyAnim">
+      <file>animation_library\natives\puma_lord\alt\charge_idle</file>
+    </assetreference>
+    <assetreference type="GrannyAnim">
+      <file>animation_library\natives\puma_lord\alt\charge_idle2</file>
+    </assetreference>
+    <component>ModelComp</component>
+  </anim>
+  <anim>Charge_Bored
+    <assetreference type="GrannyAnim">
+      <file>animation_library\natives\puma_lord\alt\charge_idle2</file>
+    </assetreference>
+    <component>ModelComp</component>
+  </anim>
+  <anim>Charge_Walk
+    <assetreference type="GrannyAnim">
+      <file>animation_library\natives\puma_lord\alt\charge_walk</file>
+    </assetreference>
+    <component>ModelComp</component>
+  </anim>
+  <anim>Charge_Jog
+    <assetreference type="GrannyAnim">
+      <file>animation_library\natives\puma_lord\alt\charge_jog</file>
+    </assetreference>
+    <component>ModelComp</component>
+  </anim>
+  <anim>Charge_Run
+    <assetreference type="GrannyAnim">
+      <file>animation_library\natives\puma_lord\alt\charge_run</file>
+    </assetreference>
+    <component>ModelComp</component>
+  </anim>
+</animfile>

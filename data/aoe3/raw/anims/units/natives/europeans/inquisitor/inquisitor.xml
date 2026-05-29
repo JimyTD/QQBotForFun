@@ -1,0 +1,420 @@
+<?xml version="1.0" encoding="utf-8"?>
+<animfile>
+  <definebone>Bip01 Prop2</definebone>
+  <definebone>bone_gun</definebone>
+  <definebone>bone_hat</definebone>
+  <definebone>bone_book</definebone>
+  <definebone>Bip01 Prop1</definebone>
+  <definebone>Bip01_L_Hand</definebone>
+  <attachment>torch
+    <include>effects\projectiles\torch.xml</include>
+  </attachment>
+  <attachment>torch2
+    <include>effects\projectiles\torch_flipped.xml</include>
+  </attachment>
+  <attachment>HealRays
+    <component>HealFXEmitter
+      <assetreference type="PopcornFx">
+        <file>units\explorers\heal_rays.pkfx</file>
+      </assetreference>
+    </component>
+    <anim>None
+      <component>HealFXEmitter</component>
+    </anim>
+  </attachment>
+  <attachment>staff
+    <component>staff
+      <assetreference type="GrannyModel">
+        <file>units\natives\europeans\inquisitor\inquisitor_staff</file>
+      </assetreference>
+    </component>
+    <anim>Idle
+      <component>staff</component>
+    </anim>
+  </attachment>
+  <attachment>torch_out
+    <component>torch_out
+      <assetreference type="GrannyModel">
+        <file>effects\projectiles\torch</file>
+      </assetreference>
+    </component>
+    <anim>Idle
+      <component>torch_out</component>
+    </anim>
+  </attachment>
+  <attachment>torch_out2
+    <component>torch_out
+      <assetreference type="GrannyModel">
+        <file>effects\projectiles\torch_flipped</file>
+      </assetreference>
+    </component>
+    <anim>Idle
+      <component>torch_out</component>
+    </anim>
+  </attachment>
+  <component>ModelComp
+    <assetreference type="GrannyModel">
+      <file>units\natives\europeans\inquisitor\inquisitor</file>
+    </assetreference>
+    <decal>
+      <effecttype>default</effecttype>
+      <texture isfakeshadow="1">shadows_selections\shadow_circle_32x32</texture>
+      <selectedtexture>shadows_selections\selection_circle_32x32</selectedtexture>
+      <width>1.0</width>
+      <height>1.0</height>
+    </decal>
+  </component>
+  <anim>Death_by_melee
+    <assetreference type="GrannyAnim">
+      <file>animation_library\range\cover\cover_death</file>
+      <tag type="SpecificSoundSet" checkvisible="1" set="RagdollImpact">0.80</tag>
+      <tag type="SpecificSoundSet" checkvisible="1" set="RagdollImpact">1.10</tag>
+    </assetreference>
+    <assetreference type="GrannyAnim">
+      <file>animation_library\range\volley\volley_kneeling_deathbyrangedA</file>
+      <tag type="SpecificSoundSet" checkvisible="1" set="RagdollImpact">0.30</tag>
+    </assetreference>
+    <assetreference type="GrannyAnim">
+      <file>animation_library\range\volley\volley_kneeling_deathbyrangedB</file>
+      <tag type="SpecificSoundSet" checkvisible="1" set="RagdollImpact">0.40</tag>
+    </assetreference>
+    <assetreference type="GrannyAnim">
+      <file>animation_library\range\volley\volley_kneeling_deathbyrangedC</file>
+      <tag type="SpecificSoundSet" checkvisible="1" set="RagdollImpact">0.60</tag>
+      <tag type="SpecificSoundSet" checkvisible="1" set="RagdollImpact">1.20</tag>
+    </assetreference>
+    <assetreference type="GrannyAnim">
+      <file>animation_library\shared\human_sword_death_a</file>
+      <tag type="SpecificSoundSet" checkvisible="1" set="RagdollImpact">0.87</tag>
+    </assetreference>
+    <assetreference type="GrannyAnim">
+      <file>animation_library\range\death_kneeling_rifleman_A</file>
+      <tag type="SpecificSoundSet" checkvisible="1" set="RagdollImpact">0.50</tag>
+      <tag type="SpecificSoundSet" checkvisible="1" set="RagdollImpact">1.60</tag>
+    </assetreference>
+    <assetreference type="GrannyAnim">
+      <file>animation_library\range\death_standing_rifleman_A</file>
+      <tag type="SpecificSoundSet" checkvisible="1" set="RagdollImpact">0.51</tag>
+    </assetreference>
+    <assetreference type="GrannyAnim">
+      <file>animation_library\range\death_standing_rifleman_C</file>
+      <tag type="SpecificSoundSet" checkvisible="1" set="RagdollImpact">0.73</tag>
+    </assetreference>
+    <component>ModelComp</component>
+  </anim>
+  <anim>Death_by_range
+    <assetreference type="GrannyAnim">
+      <file>animation_library\range\cover\cover_death</file>
+      <tag type="SpecificSoundSet" checkvisible="1" set="RagdollImpact">0.80</tag>
+      <tag type="SpecificSoundSet" checkvisible="1" set="RagdollImpact">1.10</tag>
+    </assetreference>
+    <assetreference type="GrannyAnim">
+      <file>animation_library\range\volley\volley_kneeling_deathbyrangedA</file>
+      <tag type="SpecificSoundSet" checkvisible="1" set="RagdollImpact">0.30</tag>
+    </assetreference>
+    <assetreference type="GrannyAnim">
+      <file>animation_library\range\volley\volley_kneeling_deathbyrangedB</file>
+      <tag type="SpecificSoundSet" checkvisible="1" set="RagdollImpact">0.40</tag>
+    </assetreference>
+    <assetreference type="GrannyAnim">
+      <file>animation_library\range\volley\volley_kneeling_deathbyrangedC</file>
+      <tag type="SpecificSoundSet" checkvisible="1" set="RagdollImpact">0.60</tag>
+      <tag type="SpecificSoundSet" checkvisible="1" set="RagdollImpact">1.20</tag>
+    </assetreference>
+    <assetreference type="GrannyAnim">
+      <file>animation_library\shared\human_sword_death_a</file>
+      <tag type="SpecificSoundSet" checkvisible="1" set="RagdollImpact">0.87</tag>
+    </assetreference>
+    <assetreference type="GrannyAnim">
+      <file>animation_library\range\death_kneeling_rifleman_A</file>
+      <tag type="SpecificSoundSet" checkvisible="1" set="RagdollImpact">0.50</tag>
+      <tag type="SpecificSoundSet" checkvisible="1" set="RagdollImpact">1.60</tag>
+    </assetreference>
+    <assetreference type="GrannyAnim">
+      <file>animation_library\range\death_standing_rifleman_A</file>
+      <tag type="SpecificSoundSet" checkvisible="1" set="RagdollImpact">0.51</tag>
+    </assetreference>
+    <assetreference type="GrannyAnim">
+      <file>animation_library\range\death_standing_rifleman_C</file>
+      <tag type="SpecificSoundSet" checkvisible="1" set="RagdollImpact">0.73</tag>
+    </assetreference>
+    <component>ModelComp</component>
+  </anim>
+  <anim>Death_by_havoc
+    <assetreference type="GrannyAnim">
+      <file>animation_library\range\havoc_death</file>
+    </assetreference>
+    <assetreference type="GrannyAnim">
+      <file>animation_library\range\havoc_deathB</file>
+    </assetreference>
+    <assetreference type="GrannyAnim">
+      <file>animation_library\range\havoc_deathC</file>
+    </assetreference>
+    <assetreference type="GrannyAnim">
+      <file>animation_library\range\havoc_deathD</file>
+    </assetreference>
+    <component>ModelComp</component>
+  </anim>
+  <anim>Death_havoc_flail
+    <assetreference type="GrannyAnim">
+      <file>animation_library\range\havoc_flail</file>
+    </assetreference>
+    <component>ModelComp</component>
+  </anim>
+  <anim>Death_havoc_spin
+    <assetreference type="GrannyAnim">
+      <file>animation_library\range\havoc_spin</file>
+    </assetreference>
+    <component>ModelComp</component>
+  </anim>
+  <anim>Recoil
+    <assetreference type="GrannyAnim">
+      <file>animation_library\shared\recoil_A</file>
+    </assetreference>
+    <assetreference type="GrannyAnim">
+      <file>animation_library\shared\recoil_C</file>
+    </assetreference>
+    <assetreference type="GrannyAnim">
+      <file>animation_library\shared\recoil_E</file>
+    </assetreference>
+    <assetreference type="GrannyAnim">
+      <file>animation_library\shared\recoil_G</file>
+    </assetreference>
+    <component>ModelComp</component>
+  </anim>
+  <anim>HC_openDoor
+    <assetreference type="GrannyAnim">
+      <file>animation_library\shared\doorOpen</file>
+    </assetreference>
+    <component>ModelCompNoSword</component>
+  </anim>
+  <anim>HC_closeDoor
+    <assetreference type="GrannyAnim">
+      <file>animation_library\shared\doorClose</file>
+    </assetreference>
+    <component>ModelCompNoSword</component>
+  </anim>
+  <anim>Raze_Idle
+    <assetreference type="GrannyAnim">
+      <file>animation_library\shared\torch_throw_idle</file>
+    </assetreference>
+    <component>ModelComp</component>
+    <attach a="torch" frombone="ATTACHPOINT" tobone="Bip01_L_Hand" syncanims="0"/>
+  </anim>
+  <anim>Raze_Attack
+    <assetreference type="GrannyAnim">
+      <file>animation_library\shared\torch_throwA</file>
+      <tag type="Attack">0.61</tag>
+      <tag type="SpecificSoundSet" checkvisible="1" set="TorchSwing">0.48</tag>
+    </assetreference>
+    <assetreference type="GrannyAnim">
+      <file>animation_library\shared\torch_throwB</file>
+      <tag type="Attack">0.56</tag>
+      <tag type="SpecificSoundSet" checkvisible="1" set="TorchSwing">0.45</tag>
+    </assetreference>
+    <component>ModelComp</component>
+    <attach a="torch" frombone="ATTACHPOINT" tobone="Bip01_L_Hand" syncanims="0"/>
+  </anim>
+  <anim>Cover_In
+    <assetreference type="GrannyAnim">
+      <file>animation_library\mercs\spy\cover_in</file>
+    </assetreference>
+    <component>ModelComp</component>
+    <attach a="torch_out" frombone="ATTACHPOINT" tobone="Bip01_L_Hand" syncanims="0"/>
+  </anim>
+  <anim>Cover_bored
+    <assetreference type="GrannyAnim">
+      <file>animation_library\infantry\Defend\dopplesoldner_defend_bored</file>
+    </assetreference>
+    <component>ModelComp</component>
+    <attach a="torch" frombone="ATTACHPOINT" tobone="Bip01_L_Hand" syncanims="0"/>
+  </anim>
+  <anim>Cover_Idle
+    <assetreference type="GrannyAnim">
+      <file>animation_library\infantry\Defend\dopplesoldner_defend_idle</file>
+    </assetreference>
+    <component>ModelComp</component>
+    <attach a="torch" frombone="ATTACHPOINT" tobone="Bip01_L_Hand" syncanims="0"/>
+  </anim>
+  <anim>Cover_Walk
+    <assetreference type="GrannyAnim">
+      <file>animation_library\range\cover\longbow_cover_walk</file>
+      <tag type="FootstepLeft" footprinttype="HumanLeft">0.16</tag>
+      <tag type="FootstepRight" footprinttype="HumanRight">0.56</tag>
+    </assetreference>
+    <component>ModelComp</component>
+    <attach a="torch" frombone="ATTACHPOINT" tobone="Bip01_L_Hand" syncanims="0"/>
+  </anim>
+  <anim>Cover_Jog
+    <assetreference type="GrannyAnim">
+      <file>animation_library\range\cover\longbow_cover_walk</file>
+      <tag type="FootstepLeft" footprinttype="HumanLeft">0.16</tag>
+      <tag type="FootstepRight" footprinttype="HumanRight">0.56</tag>
+    </assetreference>
+    <component>ModelComp</component>
+    <attach a="torch" frombone="ATTACHPOINT" tobone="Bip01_L_Hand" syncanims="0"/>
+  </anim>
+  <anim animlengthoverride="0.5">Cover_Run
+    <assetreference type="GrannyAnim">
+      <file>animation_library\range\cover\longbow_cover_walk</file>
+      <tag type="FootstepLeft" footprinttype="HumanLeft">0.16</tag>
+      <tag type="FootstepRight" footprinttype="HumanRight">0.56</tag>
+    </assetreference>
+    <component>ModelComp</component>
+    <attach a="torch" frombone="ATTACHPOINT" tobone="Bip01_L_Hand" syncanims="0"/>
+  </anim>
+  <anim>Cover_Out
+    <assetreference type="GrannyAnim">
+      <file>animation_library\mercs\spy\cover_out</file>
+    </assetreference>
+    <component>ModelComp</component>
+    <attach a="torch_out" frombone="ATTACHPOINT" tobone="Bip01_L_Hand" syncanims="0"/>
+  </anim>
+  <anim>Pickup
+    <assetreference type="GrannyAnim">
+      <file>animation_library\explorer\pickup_explorer_A</file>
+      <tag type="SpecificSoundSet" checkvisible="1" set="GatherFruit">0.31</tag>
+    </assetreference>
+    <component>ModelComp</component>
+  </anim>
+  <anim>Heal
+    <assetreference type="GrannyAnim">
+      <file>animation_library\natives\priest\heal</file>
+    </assetreference>
+    <assetreference type="GrannyAnim">
+      <file>animation_library\natives\priest\heal2</file>
+    </assetreference>
+    <component>ModelComp</component>
+    <attach a="HealRays" frombone="ATTACHPOINT" tobone="ATTACHPOINT" syncanims="0"/>
+    <attach a="staff" frombone="bone_staff" tobone="Bip01 Prop1" syncanims="0"/>
+    <attach a="torch" frombone="ATTACHPOINT" tobone="Bip01_L_Hand" syncanims="0"/>
+  </anim>
+  <anim>Charge_idle
+    <assetreference type="GrannyAnim">
+      <file>units\asians\spc\arsonist\arsonist_idle00</file>
+    </assetreference>
+    <component>ModelComp</component>
+    <attach a="torch" frombone="ATTACHPOINT" tobone="Bip01_L_Hand" syncanims="0"/>
+  </anim>
+  <anim>Charge_bored
+    <assetreference type="GrannyAnim">
+      <file>units\asians\spc\arsonist\arsonist_bored01</file>
+    </assetreference>
+    <assetreference type="GrannyAnim">
+      <file>units\asians\spc\arsonist\arsonist_bored00</file>
+    </assetreference>
+    <component>ModelComp</component>
+    <attach a="torch" frombone="ATTACHPOINT" tobone="Bip01_L_Hand" syncanims="0"/>
+  </anim>
+  <anim>Charge_Attack
+    <assetreference type="GrannyAnim">
+      <file>animation_library\range\defend\longbow_defend_melee_A</file>
+      <tag type="Attack">0.52</tag>
+      <tag type="SpecificSoundSet" checkvisible="1" set="Inflame">0.52</tag>
+    </assetreference>
+    <component>ModelComp</component>
+    <attach a="torch2" frombone="ATTACHPOINT" tobone="R HAND" syncanims="0"/>
+  </anim>
+  <anim>Charge_walk
+    <assetreference type="GrannyAnim">
+      <file>animation_library\range\charge\longbow_charge_walk</file>
+      <tag type="FootstepLeft" footprinttype="HumanLeft">0.60</tag>
+      <tag type="FootstepRight" footprinttype="HumanRight">0.08</tag>
+    </assetreference>
+    <assetreference type="GrannyAnim">
+      <file>units\asians\spc\arsonist\arsonist_walk00</file>
+      <tag type="FootstepLeft" footprinttype="HumanLeft">0.08</tag>
+      <tag type="FootstepRight" footprinttype="HumanRight">0.60</tag>
+    </assetreference>
+    <component>ModelComp</component>
+    <attach a="torch2" frombone="ATTACHPOINT" tobone="R HAND" syncanims="0"/>
+  </anim>
+  <anim>Charge_jog
+    <assetreference type="GrannyAnim">
+      <file>animation_library\shared\jog_generic</file>
+      <tag type="FootstepLeft" footprinttype="HumanLeft">0.60</tag>
+      <tag type="FootstepRight" footprinttype="HumanRight">0.10</tag>
+    </assetreference>
+    <assetreference type="GrannyAnim">
+      <file>animation_library\range\charge\longbow_charge_jog</file>
+      <tag type="FootstepLeft" footprinttype="HumanLeft">0.69</tag>
+      <tag type="FootstepRight" footprinttype="HumanRight">0.15</tag>
+    </assetreference>
+    <component>ModelComp</component>
+    <attach a="torch2" frombone="ATTACHPOINT" tobone="R HAND" syncanims="0"/>
+  </anim>
+  <anim>Charge_run
+    <assetreference type="GrannyAnim">
+      <file>animation_library\shared\jog_generic</file>
+      <tag type="FootstepLeft" footprinttype="HumanLeft">0.60</tag>
+      <tag type="FootstepRight" footprinttype="HumanRight">0.10</tag>
+    </assetreference>
+    <assetreference type="GrannyAnim">
+      <file>animation_library\range\charge\longbow_charge_run</file>
+      <tag type="FootstepLeft" footprinttype="HumanLeft">0.68</tag>
+      <tag type="FootstepRight" footprinttype="HumanRight">0.13</tag>
+    </assetreference>
+    <assetreference type="GrannyAnim">
+      <file>animation_library\infantry\Charge\swordmen_charge_run</file>
+      <tag type="FootstepLeft" footprinttype="HumanLeft">0.76</tag>
+      <tag type="FootstepRight" footprinttype="HumanRight">0.20</tag>
+    </assetreference>
+    <assetreference type="GrannyAnim">
+      <file>animation_library\infantry\Charge\swordmen_charge_runB</file>
+      <tag type="FootstepLeft" footprinttype="HumanLeft">0.76</tag>
+      <tag type="FootstepRight" footprinttype="HumanRight">0.20</tag>
+    </assetreference>
+    <assetreference type="GrannyAnim">
+      <file>animation_library\infantry\Charge\swordmen_charge_runC</file>
+      <tag type="FootstepLeft" footprinttype="HumanLeft">0.76</tag>
+      <tag type="FootstepRight" footprinttype="HumanRight">0.20</tag>
+    </assetreference>
+    <component>ModelComp</component>
+    <attach a="torch2" frombone="ATTACHPOINT" tobone="R HAND" syncanims="0"/>
+  </anim>
+  <anim>Stealth_bored
+    <assetreference type="GrannyAnim">
+      <file>animation_library\mercs\spy\cover_bored</file>
+    </assetreference>
+    <assetreference type="GrannyAnim">
+      <file>animation_library\mercs\spy\cover_bored2</file>
+    </assetreference>
+    <component>ModelComp</component>
+    <attach a="torch_out2" frombone="ATTACHPOINT" tobone="R HAND" syncanims="0"/>
+  </anim>
+  <anim>Stealth_Idle
+    <assetreference type="GrannyAnim">
+      <file>animation_library\infantry\Defend\dopplesoldner_defend_idle</file>
+    </assetreference>
+    <component>ModelComp</component>
+    <attach a="torch_out2" frombone="ATTACHPOINT" tobone="R HAND" syncanims="0"/>
+  </anim>
+  <anim>Stealth_walk
+    <assetreference type="GrannyAnim">
+      <file>animation_library\range\walk_crossbow_upper</file>
+      <file>animation_library\range\walk_water_rifleman_lower</file>
+      <tag type="FootstepLeft" footprinttype="HumanLeft">0.14</tag>
+      <tag type="FootstepRight" footprinttype="HumanRight">0.61</tag>
+    </assetreference>
+    <component>ModelComp</component>
+    <attach a="torch_out" frombone="ATTACHPOINT" tobone="Bip01_L_Hand" syncanims="0"/>
+  </anim>
+  <anim>Stealth_jog
+    <assetreference type="GrannyAnim">
+      <file>animation_library\mercs\spy\cover_jog</file>
+      <tag type="FootstepLeft" footprinttype="HumanLeft">0.06</tag>
+      <tag type="FootstepRight" footprinttype="HumanRight">0.53</tag>
+    </assetreference>
+    <component>ModelComp</component>
+    <attach a="torch_out" frombone="ATTACHPOINT" tobone="Bip01_L_Hand" syncanims="0"/>
+  </anim>
+  <anim>Stealth_run
+    <assetreference type="GrannyAnim">
+      <file>animation_library\mercs\spy\cover_run</file>
+      <tag type="FootstepLeft" footprinttype="HumanLeft">0.17</tag>
+      <tag type="FootstepRight" footprinttype="HumanRight">0.64</tag>
+    </assetreference>
+    <component>ModelComp</component>
+    <attach a="torch_out" frombone="ATTACHPOINT" tobone="Bip01_L_Hand" syncanims="0"/>
+  </anim>
+</animfile>

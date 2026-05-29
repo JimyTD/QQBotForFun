@@ -22,21 +22,36 @@
 
 | 文件 | 内容 | 来源 |
 |------|------|------|
-| `seeds/aoe3/units.json` | 单位属性（含 type / 攻击 / 倍率 / AOE） | 游戏文件 `protoy.xml` 直接解析 |
-| `seeds/aoe3/technologies.json` | 改良技术 | 游戏文件解析 |
-| `seeds/aoe3/i18n_zh.json` | `AbstractXxx` → 中文显示名映射（仅展示层用） | 手工维护 |
+| `data/aoe3/raw/` | 权威解包源（protoy、tactics、anims、stringtable） | 游戏 BAR，**入库 git**（≈20 MB） |
+| `data/aoe3/manifest.json` | 灌库/生成元数据 | parser 自动生成 |
+| `seeds/aoe3/units.json` | 单位属性（斗蛐蛐/卡片用派生视图） | parser 从 raw 生成 |
+| `seeds/aoe3/i18n_zh.json` | `AbstractXxx` → 中文显示名映射（仅展示层用） | parser 生成 + 手工维护 tags |
 | `resources/aoe3/icons/{id}.png` | 单位头像 (128×128) | 游戏 BAR 包提取 + Wiki 补充 |
 
-**解析脚本**：`scripts/crawler/aoe3_gamedata_parser.py`
+**灌库（仅初次或自愿刷新快照，需本机游戏）**：
 
-**本机游戏路径**（不入 git，见 `aoe3_bar_extractor.py`）：
+```bash
+uv run python scripts/crawler/aoe3_bar_extractor.py
+uv run python scripts/crawler/aoe3_anim_extractor.py
+uv run python scripts/crawler/aoe3_gamedata_parser.py
+```
+
+**日常 derive（任意机器，无需游戏）**：
+
+```bash
+uv run python scripts/crawler/aoe3_gamedata_parser.py
+```
+
+**游戏 BAR 路径**（不入 git，仅灌库时用）：
 
 | 项 | 默认路径 |
 |----|----------|
 | `Data.bar` | `E:\SteamLibrary\steamapps\common\AoE3DE\Game\Data\Data.bar` |
-| 解包输出 | `E:\aoe3_extracted`（环境变量 `AOE3_EXTRACTED_DIR` 可覆盖） |
+| `ArtUnits.bar` | `E:\SteamLibrary\steamapps\common\AoE3DE\Game\Art\ArtUnits.bar` |
 
-解包含 `protoy.xml`、`stringtabley_zh.xml`、`tactics/*.tactics` 等；AOE 半径/cap 在 **protoy 的 protoaction**；距离衰减等在 **tactics**（`outerdamageareadistance/factor`），斗蛐蛐未模拟。
+权威 raw 默认读 `data/aoe3/raw/`（环境变量 `AOE3_EXTRACTED_DIR` 可覆盖）。
+
+解包含 `protoy.xml`、`stringtabley_zh.xml`、`tactics/*.tactics`、`anims/**/*.xml` 等；AOE 半径/cap 在 **protoy 的 protoaction**；protoy 缺射程时从 **tactics** 回填；windup 从 **anims** 的 `tag Attack` 解析。
 
 **人工核对参考**：[AOE 3 Home City](https://aoe3homecity.com/zh-CN/units?type=military)（单位面板数值较可靠；如 [雇佣兵](https://aoe3homecity.com/zh-CN/units?type=military&tags=Mercenary)）。权威仍以 `protoy.xml` 解析为准。
 

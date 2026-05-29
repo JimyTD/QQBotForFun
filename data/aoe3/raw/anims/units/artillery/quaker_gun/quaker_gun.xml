@@ -1,0 +1,682 @@
+<?xml version="1.0" encoding="utf-8"?>
+<animfile>
+  <definebone>bone_launchpoint</definebone>
+  <definebone>bone_fuse</definebone>
+  <definebone>bone_cart</definebone>
+  <definebone>bone_wheelcannonR</definebone>
+  <definebone>bone_wheelcannonL</definebone>
+  <definebone>bone_hat</definebone>
+  <definebone>Bip01 Head</definebone>
+  <definebone>Bip02 Head</definebone>
+  <definebone>bone_PLUNGER</definebone>
+  <definebone>bone_BULLET</definebone>
+  <definebone>bone_SCREWPOLE</definebone>
+  <definebone>Bip05 R Foot</definebone>
+  <definebone>Bip05 L Foot</definebone>
+  <definebone>Bip03 R Foot</definebone>
+  <definebone>Bip03 L Foot</definebone>
+  <definebone>Bip03 Head</definebone>
+  <definebone>Bip04 Head</definebone>
+  <definebone>Bip05 Head</definebone>
+  <definebone>bone_ammo</definebone>
+  <definebone>bone_muzzle</definebone>
+  <attachment>attachment_battlefield_smoke
+    <component>battlefield_smoke
+      <assetreference type="ParticleSystem">
+        <file>units\artillery\cannon\battlefield_smoke.particle</file>
+      </assetreference>
+    </component>
+    <anim>Idle
+      <component>battlefield_smoke</component>
+    </anim>
+  </attachment>
+  <attachment>attachment_smoke_puff
+    <component>smoke_puff
+      <assetreference type="ParticleSystem">
+        <file>units\artillery\cannon\smoke_puff.particle</file>
+      </assetreference>
+    </component>
+    <anim>Idle
+      <component>smoke_puff</component>
+    </anim>
+  </attachment>
+  <attachment>hats
+    <include>units\artillery\falconet\gunner_hats.xml</include>
+  </attachment>
+  <attachment>ht_hats
+    <component>hat
+      <assetreference type="GrannyModel">
+        <file>units\artillery\horse_artillery\horse_artillery_hat</file>
+      </assetreference>
+    </component>
+    <anim>Idle
+      <component>hat</component>
+    </anim>
+  </attachment>
+  <attachment>ammo_magazine
+    <include>units\artillery\gatling_gun\ammo_magazine.xml</include>
+  </attachment>
+  <attachment>gt_hat
+    <include>units\artillery\gatling_gun\gatling_hats.xml</include>
+  </attachment>
+  <attachment>mortar_guy
+    <include>units\artillery\quaker_gun\quake_mortar_guy.xml</include>
+  </attachment>
+  <component>culverin_stripped
+    <linksection>
+      <linkoffset>0</linkoffset>
+      <linkcomponent>culverin</linkcomponent>
+      <linkcomponent>gunner_a</linkcomponent>
+      <linkcomponent>gunner_hats</linkcomponent>
+      <linkconstraint>1</linkconstraint>
+    </linksection>
+    <logic type="LowPoly">
+      <normal>
+        <logic type="Tech">
+          <none>
+            <assetreference type="GrannyModel">
+              <file>units\artillery\culverin\culverin_stripped</file>
+            </assetreference>
+          </none>
+          <grapeshot>
+            <assetreference type="GrannyModel">
+              <file>units\artillery\culverin\culverin_stripped</file>
+            </assetreference>
+            <attach a="hats" frombone="bone_hat" tobone="Bip01 Head" syncanims="0"/>
+          </grapeshot>
+        </logic>
+      </normal>
+    </logic>
+    <decal>
+      <effecttype>default</effecttype>
+      <texture>shadows_selections\shadow_circle_128x128</texture>
+      <selectedtexture>shadows_selections\selection_oval_32x64</selectedtexture>
+      <width>2.00</width>
+      <height>4.00</height>
+    </decal>
+    <watersplash>
+      <texture>units\artillery\cannon\wheel_B</texture>
+      <width>1.75</width>
+      <height>2.00</height>
+    </watersplash>
+  </component>
+  <component>falconet Stripped
+    <linksection>
+      <linkoffset>.1</linkoffset>
+      <linkcomponent>horse</linkcomponent>
+      <linkconstraint>0</linkconstraint>
+    </linksection>
+    <linksection>
+      <linkoffset>-0.8</linkoffset>
+      <linkcomponent>gunner</linkcomponent>
+      <linkconstraint>1</linkconstraint>
+    </linksection>
+    <linksection>
+      <linkoffset>-0.8</linkoffset>
+      <linkcomponent>screw_pole</linkcomponent>
+      <linkconstraint>1</linkconstraint>
+    </linksection>
+    <linksection>
+      <linkoffset>-1.6</linkoffset>
+      <linkcomponent>falconet</linkcomponent>
+      <linkconstraint>1</linkconstraint>
+    </linksection>
+    <logic type="LowPoly">
+      <normal>
+        <logic type="Tech">
+          <none>
+            <assetreference type="GrannyModel">
+              <file>units\artillery\falconet\falconet_stripped model</file>
+            </assetreference>
+          </none>
+          <fieldgun>
+            <assetreference type="GrannyModel">
+              <file>units\artillery\falconet\falconet_stripped model</file>
+            </assetreference>
+            <attach a="hats" frombone="bone_hat" tobone="Bip01 Head" syncanims="0"/>
+          </fieldgun>
+          <swedishleathercannonshadow>
+            <assetreference type="GrannyModel">
+              <file>units\artillery\falconet\falconet_stripped model</file>
+            </assetreference>
+          </swedishleathercannonshadow>
+          <swedishfalconet>
+            <assetreference type="GrannyModel">
+              <file>units\artillery\falconet\falconet_stripped model</file>
+            </assetreference>
+          </swedishfalconet>
+        </logic>
+      </normal>
+    </logic>
+    <decal>
+      <effecttype>default</effecttype>
+      <texture>shadows_selections\shadow_circle_128x128</texture>
+      <selectedtexture>shadows_selections\selection_oval_32x64</selectedtexture>
+      <width>2.00</width>
+      <height>4.00</height>
+    </decal>
+    <watersplash>
+      <texture>units\artillery\cannon\wheel_B</texture>
+      <width>1.75</width>
+      <height>2.00</height>
+    </watersplash>
+  </component>
+  <component>mortar
+    <logic type="LowPoly">
+      <normal>
+        <logic type="Tech">
+          <none>
+            <assetreference type="GrannyModel">
+              <file>units\artillery\mortar\mortar</file>
+            </assetreference>
+          </none>
+          <howitzer>
+            <assetreference type="GrannyModel">
+              <file>units\artillery\mortar\mortar</file>
+            </assetreference>
+            <attach a="hats" frombone="bone_hat" tobone="Bip03 Head" syncanims="0"/>
+            <attach a="hats" frombone="bone_hat" tobone="Bip04 Head" syncanims="0"/>
+            <attach a="hats" frombone="bone_hat" tobone="Bip05 Head" syncanims="0"/>
+          </howitzer>
+        </logic>
+      </normal>
+    </logic>
+    <decal>
+      <effecttype>default</effecttype>
+      <texture isfakeshadow="1">shadows_selections\shadow_circle_64x64</texture>
+      <selectedtexture>shadows_selections\selection_circle_64x64</selectedtexture>
+      <width>4.00</width>
+      <height>4.00</height>
+    </decal>
+    <attach a="mortar_guy" frombone="hotspot" tobone="bone_master" syncanims="1"/>
+  </component>
+  <component>horseart Stripped
+    <linksection>
+      <linkoffset>-0.8</linkoffset>
+      <linkcomponent>gunner</linkcomponent>
+      <linkcomponent>gunner_hats</linkcomponent>
+      <linkcomponent>screw_pole</linkcomponent>
+      <linkcomponent>cannon</linkcomponent>
+      <linkconstraint>1</linkconstraint>
+    </linksection>
+    <linksection>
+      <linkoffset>.1</linkoffset>
+      <linkcomponent>horse</linkcomponent>
+      <linkconstraint>0</linkconstraint>
+    </linksection>
+    <logic type="LowPoly">
+      <normal>
+        <logic type="Tech">
+          <none>
+            <assetreference type="GrannyModel">
+              <file>units\artillery\horse_artillery\horse_artillery_stripped</file>
+            </assetreference>
+          </none>
+          <heavyhorseartillery>
+            <assetreference type="GrannyModel">
+              <file>units\artillery\horse_artillery\horse_artillery_stripped</file>
+            </assetreference>
+            <attach a="ht_hats" frombone="bone_hat" tobone="Bip01 Head" syncanims="0"/>
+          </heavyhorseartillery>
+        </logic>
+      </normal>
+    </logic>
+    <decal>
+      <effecttype>default</effecttype>
+      <texture isfakeshadow="1">shadows_selections\shadow_circle_128x128</texture>
+      <selectedtexture>shadows_selections\selection_oval_32x64</selectedtexture>
+      <width>2.00</width>
+      <height>4.00</height>
+    </decal>
+    <watersplash>
+      <texture>units\artillery\cannon\wheel_B</texture>
+      <width>1.75</width>
+      <height>2.00</height>
+    </watersplash>
+  </component>
+  <component>gatling_gun
+    <logic type="Tech">
+      <none>
+        <assetreference type="GrannyModel">
+          <file>units\artillery\gatling_gun\gatling_gun_age3</file>
+        </assetreference>
+        <attach a="ammo_magazine" frombone="hotspot" tobone="bone_master" syncanims="1"/>
+        <attach a="gt_hat" frombone="bone_hat" tobone="Bip01 Head" syncanims="0"/>
+        <attach a="gt_hat" frombone="bone_hat" tobone="Bip02 Head" syncanims="0"/>
+      </none>
+      <heavygatlinggun>
+        <assetreference type="GrannyModel">
+          <file>units\artillery\gatling_gun\gatling_gun_age4</file>
+        </assetreference>
+        <attach a="ammo_magazine" frombone="hotspot" tobone="bone_master" syncanims="1"/>
+        <attach a="gt_hat" frombone="bone_hat" tobone="Bip01 Head" syncanims="0"/>
+        <attach a="gt_hat" frombone="bone_hat" tobone="Bip02 Head" syncanims="0"/>
+      </heavygatlinggun>
+      <imperialgatlinggun>
+        <assetreference type="GrannyModel">
+          <file>units\artillery\gatling_gun\gatling_gun_age5</file>
+        </assetreference>
+        <attach a="ammo_magazine" frombone="hotspot" tobone="bone_master" syncanims="1"/>
+        <attach a="gt_hat" frombone="bone_hat" tobone="Bip02 Head" syncanims="0"/>
+      </imperialgatlinggun>
+    </logic>
+    <decal>
+      <effecttype>default</effecttype>
+      <texture isfakeshadow="1">shadows_selections\shadow_circle_64x64</texture>
+      <selectedtexture>shadows_selections\selection_circle_64x64</selectedtexture>
+      <width>2.50</width>
+      <height>3.00</height>
+      <xoffset>0.00</xoffset>
+      <zoffset>0.15</zoffset>
+    </decal>
+    <watersplash>
+      <texture>units\artillery\cannon\wheel_B</texture>
+      <width>1.75</width>
+      <height>2.00</height>
+    </watersplash>
+  </component>
+  <component>cannon stripped
+    <logic type="LowPoly">
+      <normal>
+        <assetreference type="GrannyModel">
+          <file>units\artillery\cannon\cannon_stripped_model</file>
+        </assetreference>
+      </normal>
+    </logic>
+    <decal>
+      <effecttype>default</effecttype>
+      <texture isfakeshadow="1">shadows_selections\shadow_circle_128x128</texture>
+      <selectedtexture>shadows_selections\selection_oval_32x64</selectedtexture>
+      <width>2.00</width>
+      <height>4.00</height>
+    </decal>
+    <watersplash>
+      <texture>units\artillery\cannon\wheel_B</texture>
+      <width>1.75</width>
+      <height>2.00</height>
+    </watersplash>
+  </component>
+  <anim>Culverin_idle
+    <assetreference type="GrannyAnim">
+      <file>units\artillery\culverin\culverin_combatidle_a</file>
+    </assetreference>
+    <component>culverin_stripped</component>
+  </anim>
+  <anim>Culverin_attack
+    <assetreference type="GrannyAnim">
+      <file>units\artillery\culverin\culverin_attack_a</file>
+      <tag type="Attack">0.00</tag>
+      <tag type="SpecificSoundSet" checkvisible="1" set="CulverinShoot">0.00</tag>
+      <tag type="Particles" particlename="smallcannonmuzzle">0.00</tag>
+      <tag type="Particles" particlename="BattleField_Smoke_Small">0.00</tag>
+      <tag type="WindEffect" effectname="SmallArtilleryFire" effectbone="bone_launchpoint">0.00</tag>
+    </assetreference>
+    <component>culverin_stripped</component>
+  </anim>
+  <anim>Culverin_reload
+    <assetreference type="GrannyAnim">
+      <file>units\artillery\culverin\culverin_reload_a</file>
+    </assetreference>
+    <component>culverin_stripped</component>
+  </anim>
+  <anim>Culverin_bored
+    <assetreference type="GrannyAnim">
+      <file>units\artillery\culverin\culverin_combatidle_a</file>
+    </assetreference>
+    <component>culverin_stripped</component>
+  </anim>
+  <anim>Culverin_walk
+    <assetreference type="GrannyAnim">
+      <file>units\artillery\culverin\culverin_bombard_walk</file>
+    </assetreference>
+    <component>culverin_stripped</component>
+  </anim>
+  <anim>Culverin_jog
+    <assetreference type="GrannyAnim">
+      <file>units\artillery\culverin\culverin_bombard_walk</file>
+    </assetreference>
+    <component>culverin_stripped</component>
+  </anim>
+  <anim>Culverin_run
+    <assetreference type="GrannyAnim">
+      <file>units\artillery\culverin\culverin_bombard_walk</file>
+    </assetreference>
+    <component>culverin_stripped</component>
+  </anim>
+  <anim>Culverin_death
+    <assetreference type="GrannyAnim">
+      <file>units\artillery\culverin\culverin_death_a</file>
+      <tag type="SpecificSoundSet" checkvisible="1" set="CartBreak">0.51</tag>
+      <tag type="SpecificSoundSet" checkvisible="1" set="Thud">0.54</tag>
+      <tag type="SpecificSoundSet" checkvisible="1" set="RagdollImpact">0.63</tag>
+    </assetreference>
+    <component>culverin_stripped</component>
+  </anim>
+  <anim>Falconet_idle
+    <assetreference type="GrannyAnim">
+      <file>units\artillery\falconet\falconet_combatidle</file>
+    </assetreference>
+    <component>falconet Stripped</component>
+  </anim>
+  <anim>Falconet_attack
+    <assetreference type="GrannyAnim">
+      <file>units\artillery\falconet\falconet_attack</file>
+      <tag type="Attack">0.00</tag>
+      <tag type="SpecificSoundSet" checkvisible="1" set="FalconetShoot">0.00</tag>
+      <tag type="Particles" particlename="smallcannonmuzzle">0.00</tag>
+      <tag type="Particles" particlename="BattleField_Smoke_Small">0.00</tag>
+      <tag type="WindEffect" effectname="MediumArtilleryFire" effectbone="bone_launchpoint">0.00</tag>
+    </assetreference>
+    <component>falconet Stripped</component>
+  </anim>
+  <anim>Falconet_reload
+    <assetreference type="GrannyAnim">
+      <file>units\artillery\falconet\falconet_reload</file>
+    </assetreference>
+    <component>falconet Stripped</component>
+  </anim>
+  <anim>Falconet_bored
+    <assetreference type="GrannyAnim">
+      <file>units\artillery\falconet\falconet_bombard_bored</file>
+    </assetreference>
+    <component>falconet Stripped</component>
+  </anim>
+  <anim>Falconet_walk
+    <assetreference type="GrannyAnim">
+      <file>units\artillery\falconet\falconet_bombard_walk</file>
+    </assetreference>
+    <component>falconet Stripped</component>
+  </anim>
+  <anim>Falconet_jog
+    <assetreference type="GrannyAnim">
+      <file>units\artillery\falconet\falconet_bombard_walk</file>
+    </assetreference>
+    <component>falconet Stripped</component>
+  </anim>
+  <anim>Falconet_run
+    <assetreference type="GrannyAnim">
+      <file>units\artillery\falconet\falconet_bombard_walk</file>
+    </assetreference>
+    <component>falconet Stripped</component>
+  </anim>
+  <anim>Falconet_death
+    <assetreference type="GrannyAnim">
+      <file>units\artillery\falconet\falconet_combatdeath</file>
+      <tag type="SpecificSoundSet" checkvisible="1" set="RagdollImpact">0.63</tag>
+      <tag type="SpecificSoundSet" checkvisible="1" set="CartBreak">0.46</tag>
+      <tag type="SpecificSoundSet" checkvisible="1" set="Thud">0.60</tag>
+    </assetreference>
+    <component>falconet Stripped</component>
+  </anim>
+  <anim>Mortar_idle
+    <assetreference type="GrannyAnim">
+      <file>units\artillery\mortar\mortar_unlimber_idle_a</file>
+    </assetreference>
+    <component>mortar</component>
+  </anim>
+  <anim>Mortar_attack
+    <assetreference type="GrannyAnim">
+      <file>units\artillery\mortar\mortar_rangedattack_a</file>
+      <tag type="Attack">0.51</tag>
+      <tag type="SpecificSoundSet" checkvisible="1" set="MortarShot">0.50</tag>
+      <tag type="Particles" particlename="mortarmuzzlefx">0.50</tag>
+      <tag type="Particles" particlename="BattleField_Smoke_Light">0.50</tag>
+    </assetreference>
+    <component>mortar</component>
+  </anim>
+  <anim>Mortar_reload
+    <assetreference type="GrannyAnim">
+      <file>units\artillery\mortar\mortar_reload_a</file>
+    </assetreference>
+    <component>mortar</component>
+  </anim>
+  <anim>Mortar_bored
+    <assetreference type="GrannyAnim">
+      <file>units\artillery\mortar\mortar_unlimber_idle_a</file>
+    </assetreference>
+    <component>mortar</component>
+  </anim>
+  <anim>Mortar_walk
+    <assetreference type="GrannyAnim">
+      <file>units\artillery\mortar\mortar_unlimber_walk_a</file>
+    </assetreference>
+    <component>mortar</component>
+  </anim>
+  <anim>Mortar_jog
+    <assetreference type="GrannyAnim">
+      <file>units\artillery\mortar\mortar_unlimber_walk_a</file>
+    </assetreference>
+    <component>mortar</component>
+  </anim>
+  <anim>Mortar_run
+    <assetreference type="GrannyAnim">
+      <file>units\artillery\mortar\mortar_unlimber_walk_a</file>
+      <tag type="FootstepLeft" footprinttype="HumanLeft" footprintbone="BIP05 L FOOT">0.21</tag>
+      <tag type="FootstepLeft" footprinttype="HumanLeft" footprintbone="BIP03 L FOOT">0.66</tag>
+      <tag type="FootstepRight" footprinttype="HumanRight" footprintbone="BIP05 R FOOT">0.59</tag>
+      <tag type="FootstepRight" footprinttype="HumanRight" footprintbone="BIP03 R FOOT">0.14</tag>
+    </assetreference>
+    <component>mortar</component>
+  </anim>
+  <anim>Mortar_Death
+    <assetreference type="GrannyAnim">
+      <file>units\artillery\mortar\mortar_death_a</file>
+      <tag type="SpecificSoundSet" checkvisible="1" set="RagdollImpact">0.59</tag>
+      <tag type="SpecificSoundSet" checkvisible="1" set="RagdollImpact">0.81</tag>
+      <tag type="SpecificSoundSet" checkvisible="1" set="RagdollImpact">0.45</tag>
+      <tag type="SpecificSoundSet" checkvisible="1" set="Thud">0.27</tag>
+      <tag type="SpecificSoundSet" checkvisible="1" set="Thud">0.55</tag>
+    </assetreference>
+    <component>mortar</component>
+  </anim>
+  <anim>horseart_idle
+    <assetreference type="GrannyAnim">
+      <file>animation_library\artillery\horse_artillery\horse_artillery_combatidle</file>
+    </assetreference>
+    <component>horseart Stripped</component>
+  </anim>
+  <anim>horseart_attack
+    <assetreference type="GrannyAnim">
+      <file>animation_library\artillery\horse_artillery\bombard_attack</file>
+      <tag type="Attack">0.00</tag>
+      <tag type="SpecificSoundSet" checkvisible="1" set="FalconetShoot">0.00</tag>
+      <tag type="Particles" particlename="smallcannonmuzzle">0.00</tag>
+      <tag type="Particles" particlename="BattleField_Smoke_Small">0.00</tag>
+      <tag type="WindEffect" effectname="SmallArtilleryFire" effectbone="bone_launchpoint">0.00</tag>
+    </assetreference>
+    <component>horseart Stripped</component>
+  </anim>
+  <anim>horseart_reload
+    <assetreference type="GrannyAnim">
+      <file>animation_library\artillery\horse_artillery\bombard_reload</file>
+    </assetreference>
+    <component>horseart Stripped</component>
+  </anim>
+  <anim>horseart_bored
+    <assetreference type="GrannyAnim">
+      <file>animation_library\artillery\horse_artillery\horse_artillery_bored</file>
+    </assetreference>
+    <component>horseart Stripped</component>
+  </anim>
+  <anim>horseart_walk
+    <assetreference type="GrannyAnim">
+      <file>animation_library\artillery\horse_artillery\horse_artillery_bombard_walk</file>
+    </assetreference>
+    <component>horseart Stripped</component>
+  </anim>
+  <anim>horseart_jog
+    <assetreference type="GrannyAnim">
+      <file>animation_library\artillery\horse_artillery\horse_artillery_bombard_walk</file>
+    </assetreference>
+    <component>horseart Stripped</component>
+  </anim>
+  <anim>horseart_run
+    <assetreference type="GrannyAnim">
+      <file>animation_library\artillery\horse_artillery\horse_artillery_bombard_walk</file>
+    </assetreference>
+    <component>horseart Stripped</component>
+  </anim>
+  <anim>horseart_death
+    <assetreference type="GrannyAnim">
+      <file>animation_library\artillery\horse_artillery\horse_artillery_combatdeath</file>
+      <tag type="SpecificSoundSet" checkvisible="1" set="RagdollImpact">0.63</tag>
+      <tag type="SpecificSoundSet" checkvisible="1" set="CartBreak">0.46</tag>
+      <tag type="SpecificSoundSet" checkvisible="1" set="Thud">0.60</tag>
+    </assetreference>
+    <component>horseart Stripped</component>
+  </anim>
+  <anim>Gatling_idle
+    <assetreference type="GrannyAnim">
+      <file>animation_library\artillery\gatling_gun\bombard_idle</file>
+    </assetreference>
+    <component>gatling_gun</component>
+    <attach a="ammo_attach" frombone="ATTACHPOINT" tobone="MASTER" syncanims="0"/>
+  </anim>
+  <anim>Gatling_attack
+    <assetreference type="GrannyAnim">
+      <file>animation_library\artillery\gatling_gun\bombard_attack</file>
+      <tag type="Attack">0.27</tag>
+      <tag type="Attack">0.41</tag>
+      <tag type="Attack">0.55</tag>
+      <tag type="Attack">0.68</tag>
+      <tag type="Attack">0.74</tag>
+      <tag type="Attack">0.81</tag>
+      <tag type="SpecificSoundSet" checkvisible="1" set="GatlingGunShoot">0.27</tag>
+      <tag type="Particles" particlename="organgunmuzzle01">0.27</tag>
+      <tag type="Particles" particlename="organgunmuzzle01">0.34</tag>
+      <tag type="Particles" particlename="organgunmuzzle01">0.40</tag>
+      <tag type="Particles" particlename="organgunmuzzle01">0.47</tag>
+      <tag type="Particles" particlename="organgunmuzzle01">0.54</tag>
+      <tag type="Particles" particlename="organgunmuzzle01">0.60</tag>
+      <tag type="Particles" particlename="organgunmuzzle01">0.67</tag>
+      <tag type="Particles" particlename="organgunmuzzle01">0.73</tag>
+      <tag type="Particles" particlename="organgunmuzzle01">0.80</tag>
+    </assetreference>
+    <component>gatling_gun</component>
+    <attach a="ammo_attach" frombone="ATTACHPOINT" tobone="MASTER" syncanims="0"/>
+  </anim>
+  <anim>Gatling_repeating_attack
+    <assetreference type="GrannyAnim">
+      <file>animation_library\artillery\gatling_gun\repeating_attack</file>
+      <tag type="Attack">0.25</tag>
+      <tag type="Attack">0.35</tag>
+      <tag type="Attack">0.45</tag>
+      <tag type="Attack">0.55</tag>
+      <tag type="Attack">0.65</tag>
+      <tag type="Attack">0.85</tag>
+      <tag type="Attack">0.99</tag>
+      <tag type="SpecificSoundSet" checkvisible="1" set="GatlingGunShoot">0.25</tag>
+      <tag type="Particles" particlename="organgunmuzzle01">0.25</tag>
+      <tag type="Particles" particlename="organgunmuzzle01">0.35</tag>
+      <tag type="Particles" particlename="organgunmuzzle01">0.40</tag>
+      <tag type="Particles" particlename="organgunmuzzle01">0.47</tag>
+      <tag type="Particles" particlename="organgunmuzzle01">0.54</tag>
+      <tag type="Particles" particlename="organgunmuzzle01">0.60</tag>
+      <tag type="Particles" particlename="organgunmuzzle01">0.67</tag>
+      <tag type="Particles" particlename="organgunmuzzle01">0.73</tag>
+      <tag type="Particles" particlename="organgunmuzzle01">0.80</tag>
+    </assetreference>
+    <component>gatling_gun</component>
+    <attach a="ammo_attach" frombone="ATTACHPOINT" tobone="MASTER" syncanims="0"/>
+  </anim>
+  <anim>Gatling_reload
+    <assetreference type="GrannyAnim">
+      <file>animation_library\artillery\gatling_gun\bombard_reload</file>
+    </assetreference>
+    <component>gatling_gun</component>
+    <attach a="ammo_attach" frombone="ATTACHPOINT" tobone="MASTER" syncanims="0"/>
+  </anim>
+  <anim>Gatling_bored
+    <assetreference type="GrannyAnim">
+      <file>animation_library\artillery\gatling_gun\bombard_idle</file>
+    </assetreference>
+    <component>gatling_gun</component>
+    <attach a="ammo_attach" frombone="ATTACHPOINT" tobone="MASTER" syncanims="0"/>
+  </anim>
+  <anim>Gatling_walk
+    <assetreference type="GrannyAnim">
+      <file>animation_library\artillery\gatling_gun\bombard_walk</file>
+    </assetreference>
+    <component>gatling_gun</component>
+  </anim>
+  <anim>Gatling_jog
+    <assetreference type="GrannyAnim">
+      <file>animation_library\artillery\gatling_gun\bombard_walk</file>
+    </assetreference>
+    <component>gatling_gun</component>
+  </anim>
+  <anim>Gatling_run
+    <assetreference type="GrannyAnim">
+      <file>animation_library\artillery\gatling_gun\bombard_walk</file>
+    </assetreference>
+    <component>gatling_gun</component>
+  </anim>
+  <anim>Gatling_Death
+    <assetreference type="GrannyAnim">
+      <file>animation_library\artillery\gatling_gun\bombard_death</file>
+      <tag type="SpecificSoundSet" checkvisible="1" set="Thud">0.11</tag>
+      <tag type="SpecificSoundSet" checkvisible="1" set="BuildingPartImpact">0.05</tag>
+      <tag type="SpecificSoundSet" checkvisible="1" set="BuildingPartImpact">0.08</tag>
+      <tag type="SpecificSoundSet" checkvisible="1" set="RagdollImpact">0.12</tag>
+      <tag type="SpecificSoundSet" checkvisible="1" set="RagdollImpact">0.16</tag>
+    </assetreference>
+    <component>gatling_gun</component>
+  </anim>
+  <anim>cannon_idle
+    <assetreference type="GrannyAnim">
+      <file>units\artillery\cannon\cannon_combat_idlea</file>
+    </assetreference>
+    <component>cannon stripped</component>
+  </anim>
+  <anim>cannon_attack
+    <assetreference type="GrannyAnim">
+      <file>units\artillery\cannon\cannon_attacka</file>
+      <tag type="Attack">0.00</tag>
+      <tag type="SpecificSoundSet" checkvisible="1" set="CannonShoot">0.00</tag>
+      <tag type="Particles" particlename="smallCannonMuzzle">0.00</tag>
+      <tag type="Particles" particlename="BattleField_Smoke_Small">0.00</tag>
+      <tag type="WindEffect" effectname="MediumArtilleryFire" effectbone="Bone_launchpoint">0.00</tag>
+    </assetreference>
+    <component>cannon stripped</component>
+  </anim>
+  <anim>cannon_reload
+    <assetreference type="GrannyAnim">
+      <file>units\artillery\cannon\cannon_reloada</file>
+    </assetreference>
+    <component>cannon stripped</component>
+  </anim>
+  <anim>cannon_bored
+    <assetreference type="GrannyAnim">
+      <file>units\artillery\cannon\cannon_combat_idlea</file>
+    </assetreference>
+    <component>cannon stripped</component>
+  </anim>
+  <anim>cannon_walk
+    <assetreference type="GrannyAnim">
+      <file>units\artillery\cannon\cannon_bombard_walk</file>
+    </assetreference>
+    <component>cannon stripped</component>
+  </anim>
+  <anim>cannon_jog
+    <assetreference type="GrannyAnim">
+      <file>units\artillery\cannon\cannon_bombard_walk</file>
+    </assetreference>
+    <component>cannon stripped</component>
+  </anim>
+  <anim>cannon_run
+    <assetreference type="GrannyAnim">
+      <file>units\artillery\cannon\cannon_bombard_walk</file>
+    </assetreference>
+    <component>cannon stripped</component>
+  </anim>
+  <anim>cannon_death
+    <assetreference type="GrannyAnim">
+      <file>units\artillery\cannon\cannon_combat_deatha</file>
+      <tag type="SpecificSoundSet" checkvisible="1" set="BuildingPartImpact">0.03</tag>
+      <tag type="SpecificSoundSet" checkvisible="1" set="BuildingPartImpact">0.15</tag>
+      <tag type="SpecificSoundSet" checkvisible="1" set="Thud">0.15</tag>
+      <tag type="SpecificSoundSet" checkvisible="1" set="RagdollImpact">0.42</tag>
+    </assetreference>
+    <component>cannon stripped</component>
+  </anim>
+</animfile>

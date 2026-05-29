@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<animfile>
+  <definebone>head</definebone>
+  <component>ModelComp
+    <assetreference type="GrannyModel">
+      <file>units\animals\monitor_lizard\monitor_lizard</file>
+    </assetreference>
+    <decal>
+      <effecttype>default</effecttype>
+      <texture isfakeshadow="1">shadows_selections\shadow_circle_64x64</texture>
+      <selectedtexture>shadows_selections\selection_oval_32x64</selectedtexture>
+      <width>1.0</width>
+      <height>2.00</height>
+    </decal>
+  </component>
+  <anim>Idle
+    <assetreference type="GrannyAnim">
+      <file>units\animals\monitor_lizard\monitor_lizard_idle01</file>
+    </assetreference>
+    <assetreference type="GrannyAnim">
+      <file>units\animals\monitor_lizard\monitor_lizard_idle02</file>
+    </assetreference>
+    <component>ModelComp</component>
+  </anim>
+  <anim>Bored
+    <assetreference type="GrannyAnim">
+      <file>units\animals\monitor_lizard\monitor_lizard_bored01</file>
+    </assetreference>
+    <component>ModelComp</component>
+  </anim>
+  <anim>Walk
+    <assetreference type="GrannyAnim">
+      <file>units\animals\monitor_lizard\monitor_lizard_walk</file>
+      <tag type="FootstepLeft">0.68</tag>
+      <tag type="FootstepRight">0.18</tag>
+    </assetreference>
+    <component>ModelComp</component>
+  </anim>
+  <anim>HandAttack
+    <assetreference type="GrannyAnim">
+      <file>units\animals\monitor_lizard\monitor_lizard_attack01</file>
+      <weight>3</weight>
+      <tag type="Attack">0.39</tag>
+    </assetreference>
+    <assetreference type="GrannyAnim">
+      <file>units\animals\monitor_lizard\monitor_lizard_attack04</file>
+      <tag type="Attack">0.39</tag>
+    </assetreference>
+    <assetreference type="GrannyAnim">
+      <file>units\animals\monitor_lizard\monitor_lizard_attack05</file>
+      <tag type="Attack">0.39</tag>
+    </assetreference>
+    <component>ModelComp</component>
+  </anim>
+  <anim>Death
+    <assetreference type="GrannyAnim">
+      <file>units\animals\monitor_lizard\monitor_lizard_death</file>
+    </assetreference>
+    <component>ModelComp</component>
+  </anim>
+  <anim>Flail
+    <assetreference type="GrannyAnim">
+      <file>units\animals\monitor_lizard\monitor_lizard_flail</file>
+    </assetreference>
+    <component>ModelComp</component>
+  </anim>
+  <anim>Wagon_Idle01
+    <assetreference type="GrannyAnim">
+      <file>units\animals\monitor_lizard\monitor_lizard_bored01</file>
+    </assetreference>
+    <component>ModelComp</component>
+  </anim>
+  <anim>Wagon_Exit01
+    <assetreference type="GrannyAnim">
+      <file>units\animals\monitor_lizard\monitor_lizard_idle01</file>
+    </assetreference>
+    <component>ModelComp</component>
+  </anim>
+</animfile>

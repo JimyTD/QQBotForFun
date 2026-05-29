@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<animfile>
+  <definebone>Bone_rt_foot</definebone>
+  <definebone>Bone_lt_foot</definebone>
+  <component>jaguar
+    <assetreference type="GrannyModel">
+      <file>units\animals\white_tiger\White_Tiger_0</file>
+    </assetreference>
+    <decal>
+      <effecttype>default</effecttype>
+      <texture isfakeshadow="1">shadows_selections\shadow_circle_64x64</texture>
+      <selectedtexture>shadows_selections\selection_oval_32x64</selectedtexture>
+      <width>1.0</width>
+      <height>2.00</height>
+    </decal>
+  </component>
+  <anim>HandAttack
+    <assetreference type="GrannyAnim">
+      <file>animation_library\quads\cougar_attackA</file>
+      <tag type="Attack">0.20</tag>
+    </assetreference>
+    <component>jaguar</component>
+  </anim>
+  <anim>Idle
+    <assetreference type="GrannyAnim">
+      <file>animation_library\quads\cougar_idleA</file>
+    </assetreference>
+    <component>jaguar</component>
+  </anim>
+  <anim>Death
+    <assetreference type="GrannyAnim">
+      <file>animation_library\quads\cougar_deathA</file>
+      <tag type="SpecificSoundSet" checkvisible="1" set="RagdollImpact">0.73</tag>
+    </assetreference>
+    <component>jaguar</component>
+  </anim>
+  <anim>Walk
+    <assetreference type="GrannyAnim">
+      <file>animation_library\quads\cougar_walkA</file>
+      <tag type="FootstepLeft" footprinttype="AnimalLeft" footprintbone="BONE_LT_FOOT">0.13</tag>
+      <tag type="FootstepRight" footprinttype="AnimalRight" footprintbone="BONE_RT_FOOT">0.56</tag>
+    </assetreference>
+    <component>jaguar</component>
+  </anim>
+  <anim>Bored
+    <assetreference type="GrannyAnim">
+      <file>animation_library\quads\cougar_boredA</file>
+    </assetreference>
+    <assetreference type="GrannyAnim">
+      <file>animation_library\quads\cougar_boredB</file>
+    </assetreference>
+    <component>jaguar</component>
+  </anim>
+</animfile>

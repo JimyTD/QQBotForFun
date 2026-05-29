@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<animfile>
+  <component>ModelComp
+    <assetreference type="GrannyModel">
+      <file>units\animals\warthog\warthog</file>
+      <materialvariant index="1"/>
+    </assetreference>
+    <decal>
+      <effecttype>default</effecttype>
+      <texture isfakeshadow="1">shadows_selections\shadow_circle_64x64</texture>
+      <selectedtexture>shadows_selections\selection_oval_32x64</selectedtexture>
+      <width>1.50</width>
+      <height>2.00</height>
+    </decal>
+  </component>
+  <anim>Idle
+    <assetreference type="GrannyAnim">
+      <file>units\animals\warthog\warthog_idleA</file>
+    </assetreference>
+    <component>ModelComp</component>
+  </anim>
+  <anim>Bored
+    <assetreference type="GrannyAnim">
+      <file>units\animals\warthog\warthog_boredA</file>
+    </assetreference>
+    <assetreference type="GrannyAnim">
+      <file>units\animals\warthog\warthog_boredB</file>
+    </assetreference>
+    <component>ModelComp</component>
+  </anim>
+  <anim animlengthoverride="0.6000">Walk
+    <assetreference type="GrannyAnim">
+      <file>units\animals\warthog\warthog_runA</file>
+      <tag type="FootstepLeft">0.30</tag>
+      <tag type="FootstepRight">0.80</tag>
+    </assetreference>
+    <component>ModelComp</component>
+  </anim>
+  <anim>HandAttack
+    <assetreference type="GrannyAnim">
+      <file>units\animals\warthog\warthog_attackA</file>
+      <tag type="Attack">0.45</tag>
+    </assetreference>
+    <component>ModelComp</component>
+  </anim>
+  <anim>Death
+    <assetreference type="GrannyAnim">
+      <file>units\animals\warthog\warthog_deathA</file>
+    </assetreference>
+    <assetreference type="GrannyAnim">
+      <file>units\animals\warthog\warthog_deathB</file>
+    </assetreference>
+    <component>ModelComp</component>
+  </anim>
+  <anim>Run
+    <assetreference type="GrannyAnim">
+      <file>units\animals\warthog\warthog_runA</file>
+      <tag type="FootstepLeft">0.30</tag>
+      <tag type="FootstepRight">0.80</tag>
+    </assetreference>
+    <component>ModelComp</component>
+  </anim>
+</animfile>

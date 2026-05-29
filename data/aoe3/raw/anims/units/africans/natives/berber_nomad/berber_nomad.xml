@@ -1,0 +1,1418 @@
+<?xml version="1.0" encoding="utf-8"?>
+<animfile>
+  <definebone>Bip01 Prop1</definebone>
+  <definebone>Bip01 Prop2</definebone>
+  <submodel>Ber_Villager
+    <attachment>torch
+      <include>effects\projectiles\torch.xml</include>
+    </attachment>
+    <attachment>pickaxe
+      <component>pickaxe
+        <assetreference type="GrannyModel">
+          <file>units\attachments\pickaxe_villager</file>
+        </assetreference>
+      </component>
+      <anim>Idle
+        <component>pickaxe</component>
+      </anim>
+    </attachment>
+    <attachment>axe
+      <component>axe
+        <assetreference type="GrannyModel">
+          <file>units\attachments\axe_villager</file>
+        </assetreference>
+      </component>
+      <anim>Idle
+        <component>axe</component>
+      </anim>
+    </attachment>
+    <attachment>hoe
+      <component>hoe
+        <assetreference type="GrannyModel">
+          <file>units\attachments\hoe_villager</file>
+        </assetreference>
+      </component>
+      <anim>Idle
+        <component>hoe</component>
+      </anim>
+    </attachment>
+    <attachment>hammer
+      <component>hammer
+        <assetreference type="GrannyModel">
+          <file>units\attachments\hammer_villager</file>
+        </assetreference>
+      </component>
+      <anim>Idle
+        <component>hammer</component>
+      </anim>
+    </attachment>
+    <attachment>bowl
+      <component>bowl
+        <assetreference type="GrannyModel">
+          <file>units\attachments\bowl_villager</file>
+        </assetreference>
+      </component>
+      <anim>Idle
+        <component>bowl</component>
+      </anim>
+    </attachment>
+    <attachment>knife
+      <component>knife
+        <logic type="Tech">
+          <none>
+            <assetreference type="GrannyModel">
+              <file>units\attachments\knife_villager</file>
+            </assetreference>
+          </none>
+          <denatberberdesertkings>
+            <assetreference type="GrannyModel">
+              <file>units\asians\natives\war_elephant\war_elephant_spear</file>
+            </assetreference>
+          </denatberberdesertkings>
+        </logic>
+      </component>
+      <anim>Idle
+        <component>knife</component>
+      </anim>
+    </attachment>
+    <attachment>bucket
+      <component>bucket
+        <assetreference type="GrannyModel">
+          <file>units\attachments\bucket_villager</file>
+        </assetreference>
+      </component>
+      <anim>Idle
+        <component>bucket</component>
+      </anim>
+    </attachment>
+    <attachment>bow
+      <component>bow
+        <assetreference type="GrannyModel">
+          <file>units\asians\mercenaries\blind_monk\yumi_monk_bow</file>
+        </assetreference>
+      </component>
+      <anim>Idle
+        <component>bow</component>
+      </anim>
+    </attachment>
+    <attachment>tanning_rack
+      <component>tanning_rack
+        <assetreference type="GrannyModel">
+          <file>units\attachments\tanning_rack</file>
+        </assetreference>
+      </component>
+      <anim>TraderLodge_Tanner
+        <assetreference type="GrannyAnim">
+          <file>units\attachments\tanning_rack_idle</file>
+        </assetreference>
+        <component>tanning_rack</component>
+      </anim>
+    </attachment>
+    <attachment>hide_roll
+      <component>hide_roll
+        <assetreference type="GrannyModel">
+          <file>units\attachments\hide_roll</file>
+        </assetreference>
+      </component>
+      <anim>Idle
+        <component>hide_roll</component>
+      </anim>
+    </attachment>
+    <attachment>arrow_attachment
+      <anim>Idle
+        <component/>
+      </anim>
+      <include>units\asians\consulate\shinobi\arrow.xml</include>
+    </attachment>
+    <component>ModelComp
+      <assetreference type="GrannyModel">
+        <file>units\africans\natives\berber_nomad\male_nomad</file>
+      </assetreference>
+      <decal>
+        <effecttype>default</effecttype>
+        <texture isfakeshadow="1">shadows_selections\shadow_circle_32x32</texture>
+        <selectedtexture>shadows_selections\selection_circle_32x32</selectedtexture>
+        <width>1.0</width>
+        <height>1.0</height>
+      </decal>
+    </component>
+    <anim>Idle
+      <assetreference type="GrannyAnim">
+        <file>animation_library\villager\generic_idle</file>
+      </assetreference>
+      <component>ModelComp</component>
+    </anim>
+    <anim>Bored
+      <assetreference type="GrannyAnim">
+        <file>animation_library\villager\generic_bored</file>
+      </assetreference>
+      <component>ModelComp</component>
+    </anim>
+    <anim>Walk
+      <assetreference type="GrannyAnim">
+        <file>animation_library\shared\walk_generic</file>
+        <tag type="FootstepLeft" footprinttype="HumanLeft">0.14</tag>
+        <tag type="FootstepRight" footprinttype="HumanRight">0.61</tag>
+      </assetreference>
+      <component>ModelComp</component>
+    </anim>
+    <anim>Raze_Idle
+      <assetreference type="GrannyAnim">
+        <file>animation_library\shared\torch_throw_idle</file>
+      </assetreference>
+      <component>ModelComp</component>
+      <attach a="torch" frombone="ATTACHPOINT" tobone="L HAND" syncanims="0"/>
+    </anim>
+    <anim>Raze_Attack
+      <assetreference type="GrannyAnim">
+        <file>animation_library\shared\torch_throwB</file>
+        <tag type="Attack">0.56</tag>
+        <tag type="SpecificSoundSet" checkvisible="1" set="TorchSwing">0.43</tag>
+      </assetreference>
+      <assetreference type="GrannyAnim">
+        <file>animation_library\shared\torch_throwA</file>
+        <tag type="Attack">0.61</tag>
+        <tag type="SpecificSoundSet" checkvisible="1" set="TorchSwing">0.47</tag>
+      </assetreference>
+      <component>ModelComp</component>
+      <attach a="torch" frombone="ATTACHPOINT" tobone="L HAND" syncanims="0"/>
+    </anim>
+    <anim>Build
+      <assetreference type="GrannyAnim">
+        <file>animation_library\villager\villager_male_build1</file>
+        <weight>90</weight>
+        <tag type="SpecificSoundSet" checkvisible="1" set="Build">0.36</tag>
+        <tag type="SpecificSoundSet" checkvisible="1" set="Build">0.66</tag>
+        <tag type="SpecificSoundSet" checkvisible="1" set="Build">1.00</tag>
+      </assetreference>
+      <assetreference type="GrannyAnim">
+        <file>animation_library\2_leg_task\Build_b</file>
+        <weight>10</weight>
+      </assetreference>
+      <assetreference type="GrannyAnim">
+        <file>animation_library\2_leg_task\Build_c</file>
+        <weight>10</weight>
+      </assetreference>
+      <assetreference type="GrannyAnim">
+        <file>animation_library\2_leg_task\Build_d</file>
+        <weight>10</weight>
+      </assetreference>
+      <assetreference type="GrannyAnim">
+        <file>animation_library\2_leg_task\Build_e</file>
+        <weight>10</weight>
+      </assetreference>
+      <assetreference type="GrannyAnim">
+        <file>animation_library\2_leg_task\Build_f</file>
+        <weight>10</weight>
+      </assetreference>
+      <component>ModelComp</component>
+      <attach a="hammer" frombone="MASTER" tobone="Bip01 Prop1" syncanims="0"/>
+      <attach a="measure tape" frombone="MASTER" tobone="Bip01 Prop2" syncanims="0"/>
+    </anim>
+    <anim>BuildLifting
+      <assetreference type="GrannyAnim">
+        <file>animation_library\2_leg_task\BuildLifting</file>
+        <weight>90</weight>
+        <tag type="Attack">0.66</tag>
+        <tag type="SpecificSoundSet" checkvisible="1" set="Build">0.39</tag>
+        <tag type="SpecificSoundSet" checkvisible="1" set="Build">0.69</tag>
+        <tag type="SpecificSoundSet" checkvisible="1" set="Build">1.00</tag>
+      </assetreference>
+      <assetreference type="GrannyAnim">
+        <file>animation_library\2_leg_task\human_build_standing_idlea</file>
+        <weight>10</weight>
+        <tag type="Attack">0.66</tag>
+      </assetreference>
+      <component>ModelComp</component>
+      <attach a="hammer" frombone="MASTER" tobone="Bip01 Prop1" syncanims="0"/>
+    </anim>
+    <anim>BuildSaw
+      <assetreference type="GrannyAnim">
+        <file>animation_library\2_leg_task\human_saw_standing</file>
+        <weight>90</weight>
+        <tag type="SpecificSoundSet" checkvisible="1" set="BuildSaw">0.07</tag>
+        <tag type="SpecificSoundSet" checkvisible="1" set="BuildSaw">0.34</tag>
+        <tag type="SpecificSoundSet" checkvisible="1" set="BuildSaw">0.73</tag>
+      </assetreference>
+      <assetreference type="GrannyAnim">
+        <file>animation_library\2_leg_task\human_saw_standing_idlea</file>
+        <weight>10</weight>
+      </assetreference>
+      <component>ModelComp</component>
+      <attach a="saw" frombone="MASTER" tobone="Bip01 Prop1" syncanims="0"/>
+    </anim>
+    <anim>BuildStaking
+      <assetreference type="GrannyAnim">
+        <file>animation_library\2_leg_task\human_saw_a</file>
+        <weight>90</weight>
+      </assetreference>
+      <assetreference type="GrannyAnim">
+        <file>animation_library\2_leg_task\human_saw_idlea</file>
+        <weight>10</weight>
+      </assetreference>
+      <component>ModelComp</component>
+      <attach a="saw" frombone="MASTER" tobone="Bip01 Prop1" syncanims="0"/>
+    </anim>
+    <anim>GatherChop
+      <assetreference type="GrannyAnim">
+        <file>animation_library\villager\choptree_side</file>
+        <tag type="Attack">0.60</tag>
+        <tag type="SpecificSoundSet" checkvisible="1" set="GatherWood">0.60</tag>
+      </assetreference>
+      <component>ModelComp</component>
+      <attach a="axe" frombone="MASTER" tobone="Bip01 Prop1" syncanims="0"/>
+    </anim>
+    <anim>GatherMine
+      <assetreference type="GrannyAnim">
+        <file>animation_library\villager\villager_mine</file>
+        <tag type="SpecificSoundSet" checkvisible="1" set="GatherCoin">0.90</tag>
+      </assetreference>
+      <component>ModelComp</component>
+      <attach a="pickaxe" frombone="MASTER" tobone="Bip01 Prop1" syncanims="0"/>
+    </anim>
+    <anim>GatherFarm
+      <assetreference type="GrannyAnim">
+        <file>animation_library\villager\villager_harvest</file>
+        <tag type="SpecificSoundSet" checkvisible="1" set="GatherFarm">0.33</tag>
+        <tag type="SpecificSoundSet" checkvisible="1" set="GatherFarm">0.81</tag>
+      </assetreference>
+      <component>ModelComp</component>
+      <attach a="hoe" frombone="MASTER" tobone="Bip01 Prop1" syncanims="0"/>
+    </anim>
+    <anim>GatherHunt
+      <assetreference type="GrannyAnim">
+        <file>animation_library\villager\villager_gatherhunt</file>
+        <tag type="SpecificSoundSet" checkvisible="1" set="GatherMeat">0.49</tag>
+      </assetreference>
+      <component>ModelComp</component>
+      <attach a="knife" frombone="MASTER" tobone="Bip01 Prop1" syncanims="0"/>
+    </anim>
+    <anim>HandAttack
+      <assetreference type="GrannyAnim">
+        <file>animation_library\infantry\Charge\swordmen_charge_attackA</file>
+        <tag type="Attack">0.51</tag>
+        <tag type="SpecificSoundSet" checkvisible="1" set="Swoosh">0.45</tag>
+      </assetreference>
+      <assetreference type="GrannyAnim">
+        <file>animation_library\infantry\Charge\swordmen_charge_attackA</file>
+        <tag type="Attack">0.51</tag>
+        <tag type="SpecificSoundSet" checkvisible="1" set="Swoosh">0.45</tag>
+      </assetreference>
+      <assetreference type="GrannyAnim">
+        <file>animation_library\infantry\Charge\swordmen_charge_attackA</file>
+        <tag type="Attack">0.51</tag>
+        <tag type="SpecificSoundSet" checkvisible="1" set="Swoosh">0.45</tag>
+      </assetreference>
+      <assetreference type="GrannyAnim">
+        <file>animation_library\africa\charge_attack_a</file>
+        <tag type="Attack">0.51</tag>
+        <tag type="SpecificSoundSet" checkvisible="1" set="Swoosh">0.45</tag>
+      </assetreference>
+      <assetreference type="GrannyAnim">
+        <file>animation_library\africa\charge_attack_b</file>
+        <tag type="Attack">0.51</tag>
+        <tag type="SpecificSoundSet" checkvisible="1" set="Swoosh">0.45</tag>
+      </assetreference>
+      <assetreference type="GrannyAnim">
+        <file>animation_library\africa\charge_attack_c</file>
+        <tag type="Attack">0.51</tag>
+        <tag type="SpecificSoundSet" checkvisible="1" set="Swoosh">0.45</tag>
+      </assetreference>
+      <component>ModelComp</component>
+      <attach a="knife" frombone="bone_knife" tobone="Bip01 Prop1" syncanims="0"/>
+    </anim>
+    <anim>RangedAttack
+      <assetreference type="GrannyAnim">
+        <file>animation_library\africa\bow\bow_hunt_attack_a</file>
+        <tag type="Attack">0.10</tag>
+        <tag type="SpecificSoundSet" checkvisible="1" set="Arrows">0.10</tag>
+      </assetreference>
+      <component>ModelComp</component>
+      <attach a="arrow_attachment" frombone="MASTER" tobone="Bip01 Prop2" syncanims="0"/>
+      <attach a="bow" frombone="bone_bow" tobone="Bip01 Prop1" syncanims="0"/>
+    </anim>
+    <anim>Reload
+      <assetreference type="GrannyAnim">
+        <file>animation_library\africa\bow\bow_hunt_reload</file>
+      </assetreference>
+      <component>ModelComp</component>
+      <attach a="arrow_attachment" frombone="MASTER" tobone="Bip01 Prop2" syncanims="0"/>
+      <attach a="bow" frombone="bone_bow" tobone="Bip01 Prop1" syncanims="0"/>
+    </anim>
+    <anim>Aim
+      <assetreference type="GrannyAnim">
+        <file>animation_library\africa\bow\bow_hunt_reload</file>
+      </assetreference>
+      <component>ModelComp</component>
+      <attach a="arrow_attachment" frombone="MASTER" tobone="Bip01 Prop2" syncanims="0"/>
+      <attach a="bow" frombone="bone_bow" tobone="Bip01 Prop1" syncanims="0"/>
+    </anim>
+    <anim>Death
+      <assetreference type="GrannyAnim">
+        <file>animation_library\villager\generic_death_b</file>
+        <tag type="SpecificSoundSet" checkvisible="1" set="RagdollImpact">0.89</tag>
+      </assetreference>
+      <component>ModelComp</component>
+    </anim>
+    <anim>Death_by_havoc
+      <assetreference type="GrannyAnim">
+        <file>animation_library\range\havoc_death</file>
+      </assetreference>
+      <assetreference type="GrannyAnim">
+        <file>animation_library\range\havoc_deathB</file>
+      </assetreference>
+      <assetreference type="GrannyAnim">
+        <file>animation_library\range\havoc_deathC</file>
+      </assetreference>
+      <assetreference type="GrannyAnim">
+        <file>animation_library\range\havoc_deathD</file>
+      </assetreference>
+      <component>ModelComp</component>
+    </anim>
+    <anim>Death_havoc_flail
+      <assetreference type="GrannyAnim">
+        <file>animation_library\range\havoc_flail</file>
+      </assetreference>
+      <component>ModelComp</component>
+    </anim>
+    <anim>Death_havoc_spin
+      <assetreference type="GrannyAnim">
+        <file>animation_library\range\havoc_spin</file>
+      </assetreference>
+      <component>ModelComp</component>
+    </anim>
+    <anim>GatherBush
+      <assetreference type="GrannyAnim">
+        <file>animation_library\villager\villager_gathefruit</file>
+        <tag type="SpecificSoundSet" checkvisible="1" set="GatherFruit">0.33</tag>
+        <tag type="SpecificSoundSet" checkvisible="1" set="GatherFruit">0.57</tag>
+      </assetreference>
+      <component>ModelComp</component>
+      <attach a="bowl" frombone="" tobone="bip01 prop2" syncanims="0"/>
+    </anim>
+    <anim>GatherFruit
+      <assetreference type="GrannyAnim">
+        <file>animation_library\villager\villager_gathefruit</file>
+        <tag type="SpecificSoundSet" checkvisible="1" set="GatherFruit">0.53</tag>
+        <tag type="SpecificSoundSet" checkvisible="1" set="GatherFruit">0.23</tag>
+      </assetreference>
+      <component>ModelComp</component>
+      <attach a="bowl" frombone="MASTER" tobone="Bip01 Prop2" syncanims="0"/>
+    </anim>
+    <anim>GatherCrate
+      <assetreference type="GrannyAnim">
+        <file>animation_library\villager\villager_gathercrate</file>
+        <tag type="SpecificSoundSet" checkvisible="1" set="GatherFruit">0.53</tag>
+      </assetreference>
+      <component>ModelComp</component>
+    </anim>
+    <anim>GatherCrateAttack
+      <assetreference type="GrannyAnim">
+        <file>animation_library\villager\villager_gathercrate</file>
+        <tag type="SpecificSoundSet" checkvisible="1" set="GatherFruit">0.53</tag>
+      </assetreference>
+      <component>ModelComp</component>
+    </anim>
+    <anim>Extinguish_Fire
+      <assetreference type="GrannyAnim">
+        <file>animation_library\IGC\villager\IGC_villager_extinguish_fire</file>
+      </assetreference>
+      <component>ModelComp</component>
+      <attach a="bucket" frombone="MASTER" tobone="Bip01 Prop2" syncanims="0"/>
+    </anim>
+    <anim>OpenDoor
+      <assetreference type="GrannyAnim">
+        <file>animation_library\shared\doorOpen</file>
+      </assetreference>
+      <component>ModelComp</component>
+    </anim>
+    <anim>CloseDoor
+      <assetreference type="GrannyAnim">
+        <file>animation_library\shared\doorClose</file>
+      </assetreference>
+      <component>ModelComp</component>
+    </anim>
+    <anim>Havoc_death
+      <assetreference type="GrannyAnim">
+        <file>animation_library\range\havoc_death</file>
+      </assetreference>
+      <assetreference type="GrannyAnim">
+        <file>animation_library\range\havoc_deathB</file>
+      </assetreference>
+      <assetreference type="GrannyAnim">
+        <file>animation_library\range\havoc_deathC</file>
+      </assetreference>
+      <assetreference type="GrannyAnim">
+        <file>animation_library\range\havoc_deathD</file>
+      </assetreference>
+      <component>ModelComp</component>
+    </anim>
+    <anim>Havoc_flail
+      <assetreference type="GrannyAnim">
+        <file>animation_library\range\havoc_flail</file>
+      </assetreference>
+      <component>ModelComp</component>
+    </anim>
+    <anim>jog
+      <assetreference type="GrannyAnim">
+        <file>animation_library\shared\jog_generic</file>
+        <tag type="FootstepLeft" footprinttype="HumanLeft">0.60</tag>
+        <tag type="FootstepRight" footprinttype="HumanRight">0.10</tag>
+      </assetreference>
+      <component>ModelComp</component>
+    </anim>
+    <anim>run
+      <assetreference type="GrannyAnim">
+        <file>animation_library\shared\run_generic</file>
+        <tag type="FootstepLeft" footprinttype="HumanLeft">0.08</tag>
+        <tag type="FootstepRight" footprinttype="HumanRight">0.60</tag>
+      </assetreference>
+      <component>ModelComp</component>
+    </anim>
+    <anim>Pickup
+      <assetreference type="GrannyAnim">
+        <file>animation_library\explorer\pickup_explorer_A</file>
+        <tag type="SpecificSoundSet" checkvisible="1" set="GatherFruit">0.31</tag>
+      </assetreference>
+      <component>ModelComp</component>
+    </anim>
+    <anim>TraderLodge
+      <assetreference type="GrannyAnim">
+        <file>animation_library\villager\villager_talk_angry</file>
+      </assetreference>
+      <assetreference type="GrannyAnim">
+        <file>animation_library\villager\villager_talk_question</file>
+      </assetreference>
+      <assetreference type="GrannyAnim">
+        <file>animation_library\villager\villager_male_gatherhunt1</file>
+      </assetreference>
+      <assetreference type="GrannyAnim">
+        <file>animation_library\villager\trading_lodge_idle3</file>
+      </assetreference>
+      <component>ModelComp</component>
+    </anim>
+    <anim>TraderLodge_Tanner
+      <assetreference type="GrannyAnim">
+        <file>animation_library\villager\trading_lodge_idle2</file>
+      </assetreference>
+      <attach a="tanning_rack" frombone="bone_master" tobone="Bip01" syncanims="1"/>
+      <component>ModelComp</component>
+    </anim>
+    <anim>TraderLodge_GatherBush
+      <assetreference type="GrannyAnim">
+        <file>animation_library\villager\villager_gathefruit</file>
+      </assetreference>
+      <component>ModelComp</component>
+      <attach a="bowl" frombone="" tobone="Bip01 Prop2" syncanims="0"/>
+    </anim>
+    <anim>TraderLodge_GatherHide
+      <assetreference type="GrannyAnim">
+        <file>animation_library\villager\trading_lodge_idle4</file>
+      </assetreference>
+      <assetreference type="GrannyAnim">
+        <file>animation_library\villager\trading_lodge_idle5</file>
+      </assetreference>
+      <assetreference type="GrannyAnim">
+        <file>animation_library\villager\trading_lodge_idle6</file>
+      </assetreference>
+      <assetreference type="GrannyAnim">
+        <file>animation_library\villager\trading_lodge_idle7</file>
+      </assetreference>
+      <component>ModelComp</component>
+      <attach a="hide_roll" frombone="" tobone="Bip01 Prop1" syncanims="0"/>
+    </anim>
+    <anim>StoryTeller_SittingIdle
+      <assetreference type="GrannyAnim">
+        <file>animation_library\villager\villager_plaza_storyteller_sit_a</file>
+      </assetreference>
+      <assetreference type="GrannyAnim">
+        <file>animation_library\villager\villager_plaza_storyteller_sit_b</file>
+      </assetreference>
+      <assetreference type="GrannyAnim">
+        <file>animation_library\villager\villager_plaza_storyteller_sit_c</file>
+      </assetreference>
+      <component>ModelComp</component>
+    </anim>
+    <anim>StoryTeller_StandingIdle
+      <assetreference type="GrannyAnim">
+        <file>animation_library\villager\villager_plaza_storyteller_stand_a</file>
+      </assetreference>
+      <assetreference type="GrannyAnim">
+        <file>animation_library\villager\villager_plaza_storyteller_stand_b</file>
+      </assetreference>
+      <assetreference type="GrannyAnim">
+        <file>animation_library\villager\villager_plaza_storyteller_stand_c</file>
+      </assetreference>
+      <component>ModelComp</component>
+    </anim>
+    <anim>StoryTeller_Stand
+      <assetreference type="GrannyAnim">
+        <file>animation_library\villager\villager_plaza_storyteller_sit_stand</file>
+      </assetreference>
+      <component>ModelComp</component>
+    </anim>
+    <anim>StoryTeller_Sit
+      <assetreference type="GrannyAnim">
+        <file>animation_library\villager\villager_plaza_storyteller_stand_sit</file>
+      </assetreference>
+      <component>ModelComp</component>
+    </anim>
+    <anim>Plaza_Idle
+      <assetreference type="GrannyAnim">
+        <file>animation_library\villager\villager_plaza_idle_a</file>
+      </assetreference>
+      <assetreference type="GrannyAnim">
+        <file>animation_library\villager\villager_plaza_idle_b</file>
+      </assetreference>
+      <assetreference type="GrannyAnim">
+        <file>animation_library\villager\villager_plaza_idle_c</file>
+      </assetreference>
+      <assetreference type="GrannyAnim">
+        <file>animation_library\villager\villager_plaza_idle_d</file>
+      </assetreference>
+      <assetreference type="GrannyAnim">
+        <file>animation_library\villager\villager_plaza_idle_e</file>
+      </assetreference>
+      <component>ModelComp</component>
+    </anim>
+    <anim>Plaza_Standing_Idle
+      <assetreference type="GrannyAnim">
+        <file>animation_library\villager\villager_plaza_standing_a</file>
+      </assetreference>
+      <assetreference type="GrannyAnim">
+        <file>animation_library\villager\villager_plaza_standing_b</file>
+      </assetreference>
+      <assetreference type="GrannyAnim">
+        <file>animation_library\villager\villager_plaza_standing_c</file>
+      </assetreference>
+      <assetreference type="GrannyAnim">
+        <file>animation_library\villager\villager_plaza_standing_d</file>
+      </assetreference>
+      <assetreference type="GrannyAnim">
+        <file>animation_library\villager\villager_plaza_standing_e</file>
+      </assetreference>
+      <component>ModelComp</component>
+    </anim>
+    <anim>Plaza_Sitting_Idle
+      <assetreference type="GrannyAnim">
+        <file>animation_library\villager\villager_plaza_sitting_a</file>
+      </assetreference>
+      <assetreference type="GrannyAnim">
+        <file>animation_library\villager\villager_plaza_sitting_b</file>
+      </assetreference>
+      <assetreference type="GrannyAnim">
+        <file>animation_library\villager\villager_plaza_sitting_c</file>
+      </assetreference>
+      <assetreference type="GrannyAnim">
+        <file>animation_library\villager\villager_plaza_sitting_d</file>
+      </assetreference>
+      <assetreference type="GrannyAnim">
+        <file>animation_library\villager\villager_plaza_sitting_e</file>
+      </assetreference>
+      <component>ModelComp</component>
+    </anim>
+    <anim>Plaza_Stand
+      <assetreference type="GrannyAnim">
+        <file>animation_library\villager\villager_plaza_sit_to_standing</file>
+      </assetreference>
+      <component>ModelComp</component>
+    </anim>
+    <anim>Plaza_Sit
+      <assetreference type="GrannyAnim">
+        <file>animation_library\villager\villager_plaza_standing_to_sit</file>
+      </assetreference>
+      <component>ModelComp</component>
+    </anim>
+    <anim>Nugget_rock_idle
+      <assetreference type="GrannyAnim">
+        <file>nuggets\wolf_rock\rock_captive_idleA</file>
+        <weight>70</weight>
+      </assetreference>
+      <assetreference type="GrannyAnim">
+        <file>nuggets\wolf_rock\rock_captive_boredA</file>
+        <weight>20</weight>
+      </assetreference>
+      <assetreference type="GrannyAnim">
+        <file>nuggets\wolf_rock\rock_captive_boredB</file>
+        <weight>10</weight>
+      </assetreference>
+      <component>ModelComp</component>
+    </anim>
+    <anim>Nugget_rock_exit
+      <assetreference type="GrannyAnim">
+        <file>nuggets\wolf_rock\rock_captive_exit</file>
+      </assetreference>
+      <component>ModelComp</component>
+    </anim>
+    <anim>kidnap_hostageA_idle
+      <assetreference type="GrannyAnim">
+        <file>nuggets\outlaw_kidnap\kidnap_hostageA_idleD</file>
+        <weight>40</weight>
+      </assetreference>
+      <assetreference type="GrannyAnim">
+        <file>nuggets\outlaw_kidnap\kidnap_hostageA_idleB</file>
+        <weight>20</weight>
+      </assetreference>
+      <assetreference type="GrannyAnim">
+        <file>nuggets\outlaw_kidnap\kidnap_hostageA_idleC</file>
+        <weight>20</weight>
+      </assetreference>
+      <assetreference type="GrannyAnim">
+        <file>nuggets\outlaw_kidnap\kidnap_hostageA_idleA</file>
+        <weight>20</weight>
+      </assetreference>
+      <component>ModelComp</component>
+    </anim>
+    <anim>kidnap_hostageA_exit
+      <assetreference type="GrannyAnim">
+        <file>nuggets\outlaw_kidnap\kidnap_hostageA_exit</file>
+      </assetreference>
+      <component>ModelComp</component>
+    </anim>
+    <anim>Wolf_Treebent_Captive_Idle
+      <assetreference type="GrannyAnim">
+        <file>nuggets\wolf_treebent\wolf_treebent_captive_idle1</file>
+      </assetreference>
+      <assetreference type="GrannyAnim">
+        <file>nuggets\wolf_treebent\wolf_treebent_captive_idle2</file>
+      </assetreference>
+      <assetreference type="GrannyAnim">
+        <file>nuggets\wolf_treebent\wolf_treebent_captive_idle3</file>
+      </assetreference>
+      <component>ModelComp</component>
+    </anim>
+    <anim>Wolf_Treebent_Captive_Exit
+      <assetreference type="GrannyAnim">
+        <file>nuggets\wolf_treebent\wolf_treebent_captive_exit</file>
+      </assetreference>
+      <component>ModelComp</component>
+    </anim>
+    <anim>Bear_Tree_Captive_Idle
+      <assetreference type="GrannyAnim">
+        <file>nuggets\bear_tree\bear_tree_captive_idle1</file>
+      </assetreference>
+      <assetreference type="GrannyAnim">
+        <file>nuggets\bear_tree\bear_tree_captive_idle2</file>
+      </assetreference>
+      <component>ModelComp</component>
+    </anim>
+    <anim>Bear_Tree_Captive_Exit
+      <assetreference type="GrannyAnim">
+        <file>nuggets\bear_tree\bear_tree_captive_exit</file>
+      </assetreference>
+      <component>ModelComp</component>
+    </anim>
+  </submodel>
+  <submodel>Ber_Villager_Female
+    <attachment>torch
+      <include>effects\projectiles\torch.xml</include>
+    </attachment>
+    <attachment>pickaxe
+      <component>pickaxe
+        <assetreference type="GrannyModel">
+          <file>units\attachments\pickaxe_villager</file>
+        </assetreference>
+      </component>
+      <anim>Idle
+        <component>pickaxe</component>
+      </anim>
+    </attachment>
+    <attachment>axe
+      <component>axe
+        <assetreference type="GrannyModel">
+          <file>units\attachments\axe_villager</file>
+        </assetreference>
+      </component>
+      <anim>Idle
+        <component>axe</component>
+      </anim>
+    </attachment>
+    <attachment>hoe
+      <component>hoe
+        <assetreference type="GrannyModel">
+          <file>units\attachments\hoe_villager</file>
+        </assetreference>
+      </component>
+      <anim>Idle
+        <component>hoe</component>
+      </anim>
+    </attachment>
+    <attachment>hammer
+      <component>hammer
+        <assetreference type="GrannyModel">
+          <file>units\attachments\hammer_villager</file>
+        </assetreference>
+      </component>
+      <anim>Idle
+        <component>hammer</component>
+      </anim>
+    </attachment>
+    <attachment>bowl
+      <component>bowl
+        <assetreference type="GrannyModel">
+          <file>units\attachments\bowl_villager</file>
+        </assetreference>
+      </component>
+      <anim>Idle
+        <component>bowl</component>
+      </anim>
+    </attachment>
+    <attachment>knife
+      <component>knife
+        <logic type="Tech">
+          <none>
+            <assetreference type="GrannyModel">
+              <file>units\attachments\knife_villager</file>
+            </assetreference>
+          </none>
+          <denatberberdesertkings>
+            <assetreference type="GrannyModel">
+              <file>units\asians\natives\war_elephant\war_elephant_spear</file>
+            </assetreference>
+          </denatberberdesertkings>
+        </logic>
+      </component>
+      <anim>Idle
+        <component>knife</component>
+      </anim>
+    </attachment>
+    <attachment>bucket
+      <component>bucket
+        <assetreference type="GrannyModel">
+          <file>units\attachments\bucket_villager</file>
+        </assetreference>
+      </component>
+      <anim>Idle
+        <component>bucket</component>
+      </anim>
+    </attachment>
+    <attachment>bow
+      <component>bow
+        <assetreference type="GrannyModel">
+          <file>units\asians\mercenaries\blind_monk\yumi_monk_bow</file>
+        </assetreference>
+      </component>
+      <anim>Idle
+        <component>bow</component>
+      </anim>
+    </attachment>
+    <attachment>tanning_rack
+      <component>tanning_rack
+        <assetreference type="GrannyModel">
+          <file>units\attachments\tanning_rack</file>
+        </assetreference>
+      </component>
+      <anim>TraderLodge_Tanner
+        <assetreference type="GrannyAnim">
+          <file>units\attachments\tanning_rack_idle</file>
+        </assetreference>
+        <component>tanning_rack</component>
+      </anim>
+    </attachment>
+    <attachment>hide_roll
+      <component>hide_roll
+        <assetreference type="GrannyModel">
+          <file>units\attachments\hide_roll</file>
+        </assetreference>
+      </component>
+      <anim>Idle
+        <component>hide_roll</component>
+      </anim>
+    </attachment>
+    <attachment>arrow_attachment
+      <anim>Idle
+        <component/>
+      </anim>
+      <include>units\asians\consulate\shinobi\arrow.xml</include>
+    </attachment>
+    <component>ModelComp
+      <assetreference type="GrannyModel">
+        <file>units\africans\natives\berber_nomad\female_nomad</file>
+      </assetreference>
+      <decal>
+        <effecttype>default</effecttype>
+        <texture isfakeshadow="1">shadows_selections\shadow_circle_32x32</texture>
+        <selectedtexture>shadows_selections\selection_circle_32x32</selectedtexture>
+        <width>1.0</width>
+        <height>1.0</height>
+      </decal>
+    </component>
+    <anim>Idle
+      <assetreference type="GrannyAnim">
+        <file>animation_library\villager\generic_idle</file>
+      </assetreference>
+      <component>ModelComp</component>
+    </anim>
+    <anim>Bored
+      <assetreference type="GrannyAnim">
+        <file>animation_library\villager\generic_bored</file>
+      </assetreference>
+      <component>ModelComp</component>
+    </anim>
+    <anim>Walk
+      <assetreference type="GrannyAnim">
+        <file>animation_library\shared\walk_generic</file>
+        <tag type="FootstepLeft" footprinttype="HumanLeft">0.14</tag>
+        <tag type="FootstepRight" footprinttype="HumanRight">0.61</tag>
+      </assetreference>
+      <component>ModelComp</component>
+    </anim>
+    <anim>Raze_Idle
+      <assetreference type="GrannyAnim">
+        <file>animation_library\shared\torch_throw_idle</file>
+      </assetreference>
+      <component>ModelComp</component>
+      <attach a="torch" frombone="ATTACHPOINT" tobone="L HAND" syncanims="0"/>
+    </anim>
+    <anim>Raze_Attack
+      <assetreference type="GrannyAnim">
+        <file>animation_library\shared\torch_throwB</file>
+        <tag type="Attack">0.56</tag>
+        <tag type="SpecificSoundSet" checkvisible="1" set="TorchSwing">0.43</tag>
+      </assetreference>
+      <assetreference type="GrannyAnim">
+        <file>animation_library\shared\torch_throwA</file>
+        <tag type="Attack">0.61</tag>
+        <tag type="SpecificSoundSet" checkvisible="1" set="TorchSwing">0.47</tag>
+      </assetreference>
+      <component>ModelComp</component>
+      <attach a="torch" frombone="ATTACHPOINT" tobone="L HAND" syncanims="0"/>
+    </anim>
+    <anim>Build
+      <assetreference type="GrannyAnim">
+        <file>animation_library\villager\villager_male_build1</file>
+        <weight>90</weight>
+        <tag type="SpecificSoundSet" checkvisible="1" set="Build">0.36</tag>
+        <tag type="SpecificSoundSet" checkvisible="1" set="Build">0.66</tag>
+        <tag type="SpecificSoundSet" checkvisible="1" set="Build">1.00</tag>
+      </assetreference>
+      <assetreference type="GrannyAnim">
+        <file>animation_library\2_leg_task\Build_b</file>
+        <weight>10</weight>
+      </assetreference>
+      <assetreference type="GrannyAnim">
+        <file>animation_library\2_leg_task\Build_c</file>
+        <weight>10</weight>
+      </assetreference>
+      <assetreference type="GrannyAnim">
+        <file>animation_library\2_leg_task\Build_d</file>
+        <weight>10</weight>
+      </assetreference>
+      <assetreference type="GrannyAnim">
+        <file>animation_library\2_leg_task\Build_e</file>
+        <weight>10</weight>
+      </assetreference>
+      <assetreference type="GrannyAnim">
+        <file>animation_library\2_leg_task\Build_f</file>
+        <weight>10</weight>
+      </assetreference>
+      <component>ModelComp</component>
+      <attach a="hammer" frombone="MASTER" tobone="Bip01 Prop1" syncanims="0"/>
+      <attach a="measure tape" frombone="MASTER" tobone="Bip01 Prop2" syncanims="0"/>
+    </anim>
+    <anim>BuildLifting
+      <assetreference type="GrannyAnim">
+        <file>animation_library\2_leg_task\BuildLifting</file>
+        <weight>90</weight>
+        <tag type="Attack">0.66</tag>
+        <tag type="SpecificSoundSet" checkvisible="1" set="Build">0.39</tag>
+        <tag type="SpecificSoundSet" checkvisible="1" set="Build">0.69</tag>
+        <tag type="SpecificSoundSet" checkvisible="1" set="Build">1.00</tag>
+      </assetreference>
+      <assetreference type="GrannyAnim">
+        <file>animation_library\2_leg_task\human_build_standing_idlea</file>
+        <weight>10</weight>
+        <tag type="Attack">0.66</tag>
+      </assetreference>
+      <component>ModelComp</component>
+      <attach a="hammer" frombone="MASTER" tobone="Bip01 Prop1" syncanims="0"/>
+    </anim>
+    <anim>BuildSaw
+      <assetreference type="GrannyAnim">
+        <file>animation_library\2_leg_task\human_saw_standing</file>
+        <weight>90</weight>
+        <tag type="SpecificSoundSet" checkvisible="1" set="BuildSaw">0.07</tag>
+        <tag type="SpecificSoundSet" checkvisible="1" set="BuildSaw">0.34</tag>
+        <tag type="SpecificSoundSet" checkvisible="1" set="BuildSaw">0.73</tag>
+      </assetreference>
+      <assetreference type="GrannyAnim">
+        <file>animation_library\2_leg_task\human_saw_standing_idlea</file>
+        <weight>10</weight>
+      </assetreference>
+      <component>ModelComp</component>
+      <attach a="saw" frombone="MASTER" tobone="Bip01 Prop1" syncanims="0"/>
+    </anim>
+    <anim>BuildStaking
+      <assetreference type="GrannyAnim">
+        <file>animation_library\2_leg_task\human_saw_a</file>
+        <weight>90</weight>
+      </assetreference>
+      <assetreference type="GrannyAnim">
+        <file>animation_library\2_leg_task\human_saw_idlea</file>
+        <weight>10</weight>
+      </assetreference>
+      <component>ModelComp</component>
+      <attach a="saw" frombone="MASTER" tobone="Bip01 Prop1" syncanims="0"/>
+    </anim>
+    <anim>GatherBush
+      <assetreference type="GrannyAnim">
+        <file>animation_library\villager\villager_gathefruit</file>
+        <tag type="SpecificSoundSet" checkvisible="1" set="GatherFruit">0.33</tag>
+        <tag type="SpecificSoundSet" checkvisible="1" set="GatherFruit">0.57</tag>
+      </assetreference>
+      <component>ModelComp</component>
+      <attach a="bowl" frombone="" tobone="bip01 prop2" syncanims="0"/>
+    </anim>
+    <anim>GatherChop
+      <assetreference type="GrannyAnim">
+        <file>animation_library\villager\choptree_side</file>
+        <tag type="Attack">0.60</tag>
+        <tag type="SpecificSoundSet" checkvisible="1" set="GatherWood">0.60</tag>
+      </assetreference>
+      <component>ModelComp</component>
+      <attach a="axe" frombone="MASTER" tobone="Bip01 Prop1" syncanims="0"/>
+    </anim>
+    <anim>GatherMine
+      <assetreference type="GrannyAnim">
+        <file>animation_library\villager\villager_mine</file>
+        <tag type="SpecificSoundSet" checkvisible="1" set="GatherCoin">0.90</tag>
+      </assetreference>
+      <component>ModelComp</component>
+      <attach a="pickaxe" frombone="MASTER" tobone="Bip01 Prop1" syncanims="0"/>
+    </anim>
+    <anim>GatherFarm
+      <assetreference type="GrannyAnim">
+        <file>animation_library\villager\villager_harvest</file>
+        <tag type="SpecificSoundSet" checkvisible="1" set="GatherFarm">0.33</tag>
+        <tag type="SpecificSoundSet" checkvisible="1" set="GatherFarm">0.81</tag>
+      </assetreference>
+      <component>ModelComp</component>
+      <attach a="hoe" frombone="MASTER" tobone="Bip01 Prop1" syncanims="0"/>
+    </anim>
+    <anim>GatherHunt
+      <assetreference type="GrannyAnim">
+        <file>animation_library\villager\villager_gatherhunt</file>
+        <tag type="SpecificSoundSet" checkvisible="1" set="GatherMeat">0.49</tag>
+      </assetreference>
+      <component>ModelComp</component>
+      <attach a="knife" frombone="MASTER" tobone="Bip01 Prop1" syncanims="0"/>
+    </anim>
+    <anim>HandAttack
+      <assetreference type="GrannyAnim">
+        <file>animation_library\infantry\Charge\swordmen_charge_attackA</file>
+        <tag type="Attack">0.51</tag>
+        <tag type="SpecificSoundSet" checkvisible="1" set="Swoosh">0.45</tag>
+      </assetreference>
+      <assetreference type="GrannyAnim">
+        <file>animation_library\infantry\Charge\swordmen_charge_attackA</file>
+        <tag type="Attack">0.51</tag>
+        <tag type="SpecificSoundSet" checkvisible="1" set="Swoosh">0.45</tag>
+      </assetreference>
+      <assetreference type="GrannyAnim">
+        <file>animation_library\infantry\Charge\swordmen_charge_attackA</file>
+        <tag type="Attack">0.51</tag>
+        <tag type="SpecificSoundSet" checkvisible="1" set="Swoosh">0.45</tag>
+      </assetreference>
+      <assetreference type="GrannyAnim">
+        <file>animation_library\africa\charge_attack_a</file>
+        <tag type="Attack">0.51</tag>
+        <tag type="SpecificSoundSet" checkvisible="1" set="Swoosh">0.45</tag>
+      </assetreference>
+      <assetreference type="GrannyAnim">
+        <file>animation_library\africa\charge_attack_b</file>
+        <tag type="Attack">0.51</tag>
+        <tag type="SpecificSoundSet" checkvisible="1" set="Swoosh">0.45</tag>
+      </assetreference>
+      <assetreference type="GrannyAnim">
+        <file>animation_library\africa\charge_attack_c</file>
+        <tag type="Attack">0.51</tag>
+        <tag type="SpecificSoundSet" checkvisible="1" set="Swoosh">0.45</tag>
+      </assetreference>
+      <component>ModelComp</component>
+      <attach a="knife" frombone="bone_knife" tobone="Bip01 Prop1" syncanims="0"/>
+    </anim>
+    <anim>RangedAttack
+      <assetreference type="GrannyAnim">
+        <file>animation_library\africa\bow\bow_hunt_attack_a</file>
+        <tag type="Attack">0.10</tag>
+        <tag type="SpecificSoundSet" checkvisible="1" set="Arrows">0.10</tag>
+      </assetreference>
+      <component>ModelComp</component>
+      <attach a="arrow_attachment" frombone="MASTER" tobone="Bip01 Prop2" syncanims="0"/>
+      <attach a="bow" frombone="bone_bow" tobone="Bip01 Prop1" syncanims="0"/>
+    </anim>
+    <anim>Reload
+      <assetreference type="GrannyAnim">
+        <file>animation_library\africa\bow\bow_hunt_reload</file>
+      </assetreference>
+      <component>ModelComp</component>
+      <attach a="arrow_attachment" frombone="MASTER" tobone="Bip01 Prop2" syncanims="0"/>
+      <attach a="bow" frombone="bone_bow" tobone="Bip01 Prop1" syncanims="0"/>
+    </anim>
+    <anim>Aim
+      <assetreference type="GrannyAnim">
+        <file>animation_library\africa\bow\bow_hunt_reload</file>
+      </assetreference>
+      <component>ModelComp</component>
+      <attach a="arrow_attachment" frombone="MASTER" tobone="Bip01 Prop2" syncanims="0"/>
+      <attach a="bow" frombone="bone_bow" tobone="Bip01 Prop1" syncanims="0"/>
+    </anim>
+    <anim>Death
+      <assetreference type="GrannyAnim">
+        <file>animation_library\villager\generic_death_b</file>
+        <tag type="SpecificSoundSet" checkvisible="1" set="RagdollImpact">0.89</tag>
+      </assetreference>
+      <component>ModelComp</component>
+    </anim>
+    <anim>Death_by_havoc
+      <assetreference type="GrannyAnim">
+        <file>animation_library\range\havoc_death</file>
+      </assetreference>
+      <assetreference type="GrannyAnim">
+        <file>animation_library\range\havoc_deathB</file>
+      </assetreference>
+      <assetreference type="GrannyAnim">
+        <file>animation_library\range\havoc_deathC</file>
+      </assetreference>
+      <assetreference type="GrannyAnim">
+        <file>animation_library\range\havoc_deathD</file>
+      </assetreference>
+      <component>ModelComp</component>
+    </anim>
+    <anim>Death_havoc_flail
+      <assetreference type="GrannyAnim">
+        <file>animation_library\range\havoc_flail</file>
+      </assetreference>
+      <component>ModelComp</component>
+    </anim>
+    <anim>Death_havoc_spin
+      <assetreference type="GrannyAnim">
+        <file>animation_library\range\havoc_spin</file>
+      </assetreference>
+      <component>ModelComp</component>
+    </anim>
+    <anim>GatherFruit
+      <assetreference type="GrannyAnim">
+        <file>animation_library\villager\villager_gathefruit</file>
+        <tag type="SpecificSoundSet" checkvisible="1" set="GatherFruit">0.53</tag>
+        <tag type="SpecificSoundSet" checkvisible="1" set="GatherFruit">0.23</tag>
+      </assetreference>
+      <component>ModelComp</component>
+      <attach a="bowl" frombone="MASTER" tobone="Bip01 Prop2" syncanims="0"/>
+    </anim>
+    <anim>GatherCrate
+      <assetreference type="GrannyAnim">
+        <file>animation_library\villager\villager_gathercrate</file>
+        <tag type="SpecificSoundSet" checkvisible="1" set="GatherFruit">0.53</tag>
+      </assetreference>
+      <component>ModelComp</component>
+    </anim>
+    <anim>GatherCrateAttack
+      <assetreference type="GrannyAnim">
+        <file>animation_library\villager\villager_male_gathercrate1</file>
+        <tag type="Attack">0.47</tag>
+        <tag type="SpecificSoundSet" checkvisible="1" set="GatherFruit">0.56</tag>
+      </assetreference>
+      <component>ModelComp</component>
+    </anim>
+    <anim>Extinguish_Fire
+      <assetreference type="GrannyAnim">
+        <file>animation_library\IGC\villager\IGC_villager_extinguish_fire</file>
+      </assetreference>
+      <component>ModelComp</component>
+      <attach a="bucket" frombone="MASTER" tobone="Bip01 Prop2" syncanims="0"/>
+    </anim>
+    <anim>OpenDoor
+      <assetreference type="GrannyAnim">
+        <file>animation_library\shared\doorOpen</file>
+      </assetreference>
+      <component>ModelComp</component>
+    </anim>
+    <anim>CloseDoor
+      <assetreference type="GrannyAnim">
+        <file>animation_library\shared\doorClose</file>
+      </assetreference>
+      <component>ModelComp</component>
+    </anim>
+    <anim>Havoc_death
+      <assetreference type="GrannyAnim">
+        <file>animation_library\range\havoc_death</file>
+      </assetreference>
+      <assetreference type="GrannyAnim">
+        <file>animation_library\range\havoc_deathB</file>
+      </assetreference>
+      <assetreference type="GrannyAnim">
+        <file>animation_library\range\havoc_deathC</file>
+      </assetreference>
+      <assetreference type="GrannyAnim">
+        <file>animation_library\range\havoc_deathD</file>
+      </assetreference>
+      <component>ModelComp</component>
+    </anim>
+    <anim>Havoc_flail
+      <assetreference type="GrannyAnim">
+        <file>animation_library\range\havoc_flail</file>
+      </assetreference>
+      <component>ModelComp</component>
+    </anim>
+    <anim>jog
+      <assetreference type="GrannyAnim">
+        <file>animation_library\shared\jog_generic</file>
+        <tag type="FootstepLeft" footprinttype="HumanLeft">0.60</tag>
+        <tag type="FootstepRight" footprinttype="HumanRight">0.10</tag>
+      </assetreference>
+      <component>ModelComp</component>
+    </anim>
+    <anim>run
+      <assetreference type="GrannyAnim">
+        <file>animation_library\shared\run_generic</file>
+        <tag type="FootstepLeft" footprinttype="HumanLeft">0.08</tag>
+        <tag type="FootstepRight" footprinttype="HumanRight">0.60</tag>
+      </assetreference>
+      <component>ModelComp</component>
+    </anim>
+    <anim>Pickup
+      <assetreference type="GrannyAnim">
+        <file>animation_library\explorer\pickup_explorer_A</file>
+        <tag type="SpecificSoundSet" checkvisible="1" set="GatherFruit">0.31</tag>
+      </assetreference>
+      <component>ModelComp</component>
+    </anim>
+    <anim>TraderLodge
+      <assetreference type="GrannyAnim">
+        <file>animation_library\villager\villager_talk_angry</file>
+      </assetreference>
+      <assetreference type="GrannyAnim">
+        <file>animation_library\villager\villager_talk_question</file>
+      </assetreference>
+      <assetreference type="GrannyAnim">
+        <file>animation_library\villager\villager_male_gatherhunt1</file>
+      </assetreference>
+      <assetreference type="GrannyAnim">
+        <file>animation_library\villager\trading_lodge_idle3</file>
+      </assetreference>
+      <component>ModelComp</component>
+    </anim>
+    <anim>TraderLodge_Tanner
+      <assetreference type="GrannyAnim">
+        <file>animation_library\villager\trading_lodge_idle2</file>
+      </assetreference>
+      <attach a="tanning_rack" frombone="bone_master" tobone="Bip01" syncanims="1"/>
+      <component>ModelComp</component>
+    </anim>
+    <anim>TraderLodge_GatherBush
+      <assetreference type="GrannyAnim">
+        <file>animation_library\villager\villager_gathefruit</file>
+      </assetreference>
+      <component>ModelComp</component>
+      <attach a="bowl" frombone="" tobone="Bip01 Prop2" syncanims="0"/>
+    </anim>
+    <anim>TraderLodge_GatherHide
+      <assetreference type="GrannyAnim">
+        <file>animation_library\villager\trading_lodge_idle4</file>
+      </assetreference>
+      <assetreference type="GrannyAnim">
+        <file>animation_library\villager\trading_lodge_idle5</file>
+      </assetreference>
+      <assetreference type="GrannyAnim">
+        <file>animation_library\villager\trading_lodge_idle6</file>
+      </assetreference>
+      <assetreference type="GrannyAnim">
+        <file>animation_library\villager\trading_lodge_idle7</file>
+      </assetreference>
+      <component>ModelComp</component>
+      <attach a="hide_roll" frombone="" tobone="Bip01 Prop1" syncanims="0"/>
+    </anim>
+    <anim>StoryTeller_SittingIdle
+      <assetreference type="GrannyAnim">
+        <file>animation_library\villager\villager_plaza_storyteller_sit_a</file>
+      </assetreference>
+      <assetreference type="GrannyAnim">
+        <file>animation_library\villager\villager_plaza_storyteller_sit_b</file>
+      </assetreference>
+      <assetreference type="GrannyAnim">
+        <file>animation_library\villager\villager_plaza_storyteller_sit_c</file>
+      </assetreference>
+      <component>ModelComp</component>
+    </anim>
+    <anim>StoryTeller_StandingIdle
+      <assetreference type="GrannyAnim">
+        <file>animation_library\villager\villager_plaza_storyteller_stand_a</file>
+      </assetreference>
+      <assetreference type="GrannyAnim">
+        <file>animation_library\villager\villager_plaza_storyteller_stand_b</file>
+      </assetreference>
+      <assetreference type="GrannyAnim">
+        <file>animation_library\villager\villager_plaza_storyteller_stand_c</file>
+      </assetreference>
+      <component>ModelComp</component>
+    </anim>
+    <anim>StoryTeller_Stand
+      <assetreference type="GrannyAnim">
+        <file>animation_library\villager\villager_plaza_storyteller_sit_stand</file>
+      </assetreference>
+      <component>ModelComp</component>
+    </anim>
+    <anim>StoryTeller_Sit
+      <assetreference type="GrannyAnim">
+        <file>animation_library\villager\villager_plaza_storyteller_stand_sit</file>
+      </assetreference>
+      <component>ModelComp</component>
+    </anim>
+    <anim>Plaza_Idle
+      <assetreference type="GrannyAnim">
+        <file>animation_library\villager\villager_plaza_idle_a</file>
+      </assetreference>
+      <assetreference type="GrannyAnim">
+        <file>animation_library\villager\villager_plaza_idle_b</file>
+      </assetreference>
+      <assetreference type="GrannyAnim">
+        <file>animation_library\villager\villager_plaza_idle_c</file>
+      </assetreference>
+      <assetreference type="GrannyAnim">
+        <file>animation_library\villager\villager_plaza_idle_d</file>
+      </assetreference>
+      <assetreference type="GrannyAnim">
+        <file>animation_library\villager\villager_plaza_idle_e</file>
+      </assetreference>
+      <component>ModelComp</component>
+    </anim>
+    <anim>Plaza_Standing_Idle
+      <assetreference type="GrannyAnim">
+        <file>animation_library\villager\villager_plaza_standing_a</file>
+      </assetreference>
+      <assetreference type="GrannyAnim">
+        <file>animation_library\villager\villager_plaza_standing_b</file>
+      </assetreference>
+      <assetreference type="GrannyAnim">
+        <file>animation_library\villager\villager_plaza_standing_c</file>
+      </assetreference>
+      <assetreference type="GrannyAnim">
+        <file>animation_library\villager\villager_plaza_standing_d</file>
+      </assetreference>
+      <assetreference type="GrannyAnim">
+        <file>animation_library\villager\villager_plaza_standing_e</file>
+      </assetreference>
+      <component>ModelComp</component>
+    </anim>
+    <anim>Plaza_Sitting_Idle
+      <assetreference type="GrannyAnim">
+        <file>animation_library\villager\villager_plaza_sitting_a</file>
+      </assetreference>
+      <assetreference type="GrannyAnim">
+        <file>animation_library\villager\villager_plaza_sitting_b</file>
+      </assetreference>
+      <assetreference type="GrannyAnim">
+        <file>animation_library\villager\villager_plaza_sitting_c</file>
+      </assetreference>
+      <assetreference type="GrannyAnim">
+        <file>animation_library\villager\villager_plaza_sitting_d</file>
+      </assetreference>
+      <assetreference type="GrannyAnim">
+        <file>animation_library\villager\villager_plaza_sitting_e</file>
+      </assetreference>
+      <component>ModelComp</component>
+    </anim>
+    <anim>Plaza_Stand
+      <assetreference type="GrannyAnim">
+        <file>animation_library\villager\villager_plaza_sit_to_standing</file>
+      </assetreference>
+      <component>ModelComp</component>
+    </anim>
+    <anim>Plaza_Sit
+      <assetreference type="GrannyAnim">
+        <file>animation_library\villager\villager_plaza_standing_to_sit</file>
+      </assetreference>
+      <component>ModelComp</component>
+    </anim>
+    <anim>Nugget_rock_idle
+      <assetreference type="GrannyAnim">
+        <file>nuggets\wolf_rock\rock_captive_idleA</file>
+        <weight>70</weight>
+      </assetreference>
+      <assetreference type="GrannyAnim">
+        <file>nuggets\wolf_rock\rock_captive_boredA</file>
+        <weight>20</weight>
+      </assetreference>
+      <assetreference type="GrannyAnim">
+        <file>nuggets\wolf_rock\rock_captive_boredB</file>
+        <weight>10</weight>
+      </assetreference>
+      <component>ModelComp</component>
+    </anim>
+    <anim>Nugget_rock_exit
+      <assetreference type="GrannyAnim">
+        <file>nuggets\wolf_rock\rock_captive_exit</file>
+      </assetreference>
+      <component>ModelComp</component>
+    </anim>
+    <anim>kidnap_hostageA_idle
+      <assetreference type="GrannyAnim">
+        <file>nuggets\outlaw_kidnap\kidnap_hostageA_idleD</file>
+        <weight>40</weight>
+      </assetreference>
+      <assetreference type="GrannyAnim">
+        <file>nuggets\outlaw_kidnap\kidnap_hostageA_idleB</file>
+        <weight>20</weight>
+      </assetreference>
+      <assetreference type="GrannyAnim">
+        <file>nuggets\outlaw_kidnap\kidnap_hostageA_idleC</file>
+        <weight>20</weight>
+      </assetreference>
+      <assetreference type="GrannyAnim">
+        <file>nuggets\outlaw_kidnap\kidnap_hostageA_idleA</file>
+        <weight>20</weight>
+      </assetreference>
+      <component>ModelComp</component>
+    </anim>
+    <anim>kidnap_hostageA_exit
+      <assetreference type="GrannyAnim">
+        <file>nuggets\outlaw_kidnap\kidnap_hostageA_exit</file>
+      </assetreference>
+      <component>ModelComp</component>
+    </anim>
+    <anim>Wolf_Treebent_Captive_Idle
+      <assetreference type="GrannyAnim">
+        <file>nuggets\wolf_treebent\wolf_treebent_captive_idle1</file>
+      </assetreference>
+      <assetreference type="GrannyAnim">
+        <file>nuggets\wolf_treebent\wolf_treebent_captive_idle2</file>
+      </assetreference>
+      <assetreference type="GrannyAnim">
+        <file>nuggets\wolf_treebent\wolf_treebent_captive_idle3</file>
+      </assetreference>
+      <component>ModelComp</component>
+    </anim>
+    <anim>Wolf_Treebent_Captive_Exit
+      <assetreference type="GrannyAnim">
+        <file>nuggets\wolf_treebent\wolf_treebent_captive_exit</file>
+      </assetreference>
+      <component>ModelComp</component>
+    </anim>
+    <anim>Bear_Tree_Captive_Idle
+      <assetreference type="GrannyAnim">
+        <file>nuggets\bear_tree\bear_tree_captive_idle1</file>
+      </assetreference>
+      <assetreference type="GrannyAnim">
+        <file>nuggets\bear_tree\bear_tree_captive_idle2</file>
+      </assetreference>
+      <component>ModelComp</component>
+    </anim>
+    <anim>Bear_Tree_Captive_Exit
+      <assetreference type="GrannyAnim">
+        <file>nuggets\bear_tree\bear_tree_captive_exit</file>
+      </assetreference>
+      <component>ModelComp</component>
+    </anim>
+  </submodel>
+  <component>
+    <logic type="Variation">
+      <data>
+        <submodelref ref="Ber_Villager"/>
+      </data>
+      <data>
+        <submodelref ref="Ber_Villager_Female"/>
+      </data>
+    </logic>
+  </component>
+</animfile>

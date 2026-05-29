@@ -1,0 +1,288 @@
+<?xml version="1.0" encoding="utf-8"?>
+<animfile>
+  <definebone>bone_launchpoint</definebone>
+  <definebone>bone_fuse</definebone>
+  <definebone>bone_cart</definebone>
+  <definebone>bone_wheelL</definebone>
+  <definebone>bone_wheelR</definebone>
+  <attachment>horses
+    <include>units\artillery\great_bombard\great_bombard_horses.xml</include>
+  </attachment>
+  <component>great_bombard
+    <logic type="LowPoly">
+      <normal>
+        <assetreference type="GrannyModel">
+          <file>units\artillery\great_bombard\great_bombard</file>
+        </assetreference>
+      </normal>
+      <lowpoly>
+        <assetreference type="GrannyModel">
+          <file>units\artillery\great_bombard\lp_great_bombard</file>
+        </assetreference>
+      </lowpoly>
+    </logic>
+    <decal>
+      <effecttype>default</effecttype>
+      <texture>shadows_selections\shadow_circle_128x128</texture>
+      <selectedtexture>shadows_selections\selection_oval_64x128</selectedtexture>
+      <width>3.00</width>
+      <height>6.00</height>
+    </decal>
+    <watersplash>
+      <texture>units\artillery\cannon\wheel_B</texture>
+      <width>1.75</width>
+      <height>2.00</height>
+    </watersplash>
+    <attach a="horses" frombone="MASTER" tobone="MASTER" syncanims="1"/>
+  </component>
+  <anim>Walk
+    <assetreference type="GrannyAnim">
+      <file>units\artillery\great_bombard\great_bombard_walk</file>
+      <tag type="FootstepLeft" footprinttype="Wheel" footprintbone="bone_wheelL">0.00</tag>
+      <tag type="FootstepLeft" footprinttype="Wheel" footprintbone="bone_wheelL">0.10</tag>
+      <tag type="FootstepLeft" footprinttype="Wheel" footprintbone="bone_wheelL">0.20</tag>
+      <tag type="FootstepLeft" footprinttype="Wheel" footprintbone="bone_wheelL">0.30</tag>
+      <tag type="FootstepLeft" footprinttype="Wheel" footprintbone="bone_wheelL">0.40</tag>
+      <tag type="FootstepLeft" footprinttype="Wheel" footprintbone="bone_wheelL">0.50</tag>
+      <tag type="FootstepLeft" footprinttype="Wheel" footprintbone="bone_wheelL">0.60</tag>
+      <tag type="FootstepLeft" footprinttype="Wheel" footprintbone="bone_wheelL">0.70</tag>
+      <tag type="FootstepLeft" footprinttype="Wheel" footprintbone="bone_wheelL">0.80</tag>
+      <tag type="FootstepLeft" footprinttype="Wheel" footprintbone="bone_wheelL">0.90</tag>
+      <tag type="FootstepRight" footprinttype="Wheel" footprintbone="bone_wheelR">0.00</tag>
+      <tag type="FootstepRight" footprinttype="Wheel" footprintbone="bone_wheelR">0.10</tag>
+      <tag type="FootstepRight" footprinttype="Wheel" footprintbone="bone_wheelR">0.20</tag>
+      <tag type="FootstepRight" footprinttype="Wheel" footprintbone="bone_wheelR">0.30</tag>
+      <tag type="FootstepRight" footprinttype="Wheel" footprintbone="bone_wheelR">0.40</tag>
+      <tag type="FootstepRight" footprinttype="Wheel" footprintbone="bone_wheelR">0.50</tag>
+      <tag type="FootstepRight" footprinttype="Wheel" footprintbone="bone_wheelR">0.60</tag>
+      <tag type="FootstepRight" footprinttype="Wheel" footprintbone="bone_wheelR">0.70</tag>
+      <tag type="FootstepRight" footprinttype="Wheel" footprintbone="bone_wheelR">0.80</tag>
+      <tag type="FootstepRight" footprinttype="Wheel" footprintbone="bone_wheelR">0.90</tag>
+    </assetreference>
+    <component>great_bombard</component>
+  </anim>
+  <anim>Jog
+    <assetreference type="GrannyAnim">
+      <file>units\artillery\great_bombard\great_bombard_walk</file>
+      <tag type="FootstepLeft" footprinttype="Wheel" footprintbone="bone_wheelL">0.00</tag>
+      <tag type="FootstepLeft" footprinttype="Wheel" footprintbone="bone_wheelL">0.10</tag>
+      <tag type="FootstepLeft" footprinttype="Wheel" footprintbone="bone_wheelL">0.20</tag>
+      <tag type="FootstepLeft" footprinttype="Wheel" footprintbone="bone_wheelL">0.30</tag>
+      <tag type="FootstepLeft" footprinttype="Wheel" footprintbone="bone_wheelL">0.40</tag>
+      <tag type="FootstepLeft" footprinttype="Wheel" footprintbone="bone_wheelL">0.50</tag>
+      <tag type="FootstepLeft" footprinttype="Wheel" footprintbone="bone_wheelL">0.60</tag>
+      <tag type="FootstepLeft" footprinttype="Wheel" footprintbone="bone_wheelL">0.70</tag>
+      <tag type="FootstepLeft" footprinttype="Wheel" footprintbone="bone_wheelL">0.80</tag>
+      <tag type="FootstepLeft" footprinttype="Wheel" footprintbone="bone_wheelL">0.90</tag>
+      <tag type="FootstepRight" footprinttype="Wheel" footprintbone="bone_wheelR">0.00</tag>
+      <tag type="FootstepRight" footprinttype="Wheel" footprintbone="bone_wheelR">0.10</tag>
+      <tag type="FootstepRight" footprinttype="Wheel" footprintbone="bone_wheelR">0.20</tag>
+      <tag type="FootstepRight" footprinttype="Wheel" footprintbone="bone_wheelR">0.30</tag>
+      <tag type="FootstepRight" footprinttype="Wheel" footprintbone="bone_wheelR">0.40</tag>
+      <tag type="FootstepRight" footprinttype="Wheel" footprintbone="bone_wheelR">0.50</tag>
+      <tag type="FootstepRight" footprinttype="Wheel" footprintbone="bone_wheelR">0.60</tag>
+      <tag type="FootstepRight" footprinttype="Wheel" footprintbone="bone_wheelR">0.70</tag>
+      <tag type="FootstepRight" footprinttype="Wheel" footprintbone="bone_wheelR">0.80</tag>
+      <tag type="FootstepRight" footprinttype="Wheel" footprintbone="bone_wheelR">0.90</tag>
+    </assetreference>
+    <component>great_bombard</component>
+  </anim>
+  <anim>Run
+    <assetreference type="GrannyAnim">
+      <file>units\artillery\great_bombard\great_bombard_walk</file>
+      <tag type="FootstepLeft" footprinttype="Wheel" footprintbone="bone_wheelL">0.00</tag>
+      <tag type="FootstepLeft" footprinttype="Wheel" footprintbone="bone_wheelL">0.10</tag>
+      <tag type="FootstepLeft" footprinttype="Wheel" footprintbone="bone_wheelL">0.20</tag>
+      <tag type="FootstepLeft" footprinttype="Wheel" footprintbone="bone_wheelL">0.30</tag>
+      <tag type="FootstepLeft" footprinttype="Wheel" footprintbone="bone_wheelL">0.40</tag>
+      <tag type="FootstepLeft" footprinttype="Wheel" footprintbone="bone_wheelL">0.50</tag>
+      <tag type="FootstepLeft" footprinttype="Wheel" footprintbone="bone_wheelL">0.60</tag>
+      <tag type="FootstepLeft" footprinttype="Wheel" footprintbone="bone_wheelL">0.70</tag>
+      <tag type="FootstepLeft" footprinttype="Wheel" footprintbone="bone_wheelL">0.80</tag>
+      <tag type="FootstepLeft" footprinttype="Wheel" footprintbone="bone_wheelL">0.90</tag>
+      <tag type="FootstepRight" footprinttype="Wheel" footprintbone="bone_wheelR">0.00</tag>
+      <tag type="FootstepRight" footprinttype="Wheel" footprintbone="bone_wheelR">0.10</tag>
+      <tag type="FootstepRight" footprinttype="Wheel" footprintbone="bone_wheelR">0.20</tag>
+      <tag type="FootstepRight" footprinttype="Wheel" footprintbone="bone_wheelR">0.30</tag>
+      <tag type="FootstepRight" footprinttype="Wheel" footprintbone="bone_wheelR">0.40</tag>
+      <tag type="FootstepRight" footprinttype="Wheel" footprintbone="bone_wheelR">0.50</tag>
+      <tag type="FootstepRight" footprinttype="Wheel" footprintbone="bone_wheelR">0.60</tag>
+      <tag type="FootstepRight" footprinttype="Wheel" footprintbone="bone_wheelR">0.70</tag>
+      <tag type="FootstepRight" footprinttype="Wheel" footprintbone="bone_wheelR">0.80</tag>
+      <tag type="FootstepRight" footprinttype="Wheel" footprintbone="bone_wheelR">0.90</tag>
+    </assetreference>
+    <component>great_bombard</component>
+  </anim>
+  <anim>idle
+    <assetreference type="GrannyAnim">
+      <file>units\artillery\great_bombard\great_bombard_idle</file>
+    </assetreference>
+    <component>great_bombard</component>
+  </anim>
+  <anim>bored
+    <assetreference type="GrannyAnim">
+      <file>units\artillery\great_bombard\great_bombard_idle</file>
+    </assetreference>
+    <component>great_bombard</component>
+  </anim>
+  <anim>Death_by_melee
+    <assetreference type="GrannyAnim">
+      <file>units\artillery\great_bombard\great_bombard_death</file>
+    </assetreference>
+    <component>great_bombard</component>
+  </anim>
+  <anim>Death_by_range
+    <assetreference type="GrannyAnim">
+      <file>units\artillery\great_bombard\great_bombard_death</file>
+    </assetreference>
+    <component>great_bombard</component>
+  </anim>
+  <anim>Cheer
+    <assetreference type="GrannyAnim">
+      <file>units\artillery\great_bombard\great_bombard_idle</file>
+    </assetreference>
+    <component>great_bombard</component>
+  </anim>
+  <anim>Recoil
+    <assetreference type="GrannyAnim">
+      <file>units\artillery\great_bombard\great_bombard_combatidle</file>
+    </assetreference>
+    <component>great_bombard</component>
+  </anim>
+  <anim>Limber
+    <assetreference type="GrannyAnim">
+      <file>units\artillery\great_bombard\great_bombard_limber</file>
+    </assetreference>
+    <component>great_bombard</component>
+  </anim>
+  <anim>Unlimber
+    <assetreference type="GrannyAnim">
+      <file>units\artillery\great_bombard\great_bombard_unlimber</file>
+    </assetreference>
+    <component>great_bombard</component>
+  </anim>
+  <anim>Bombard_ranged_idle
+    <assetreference type="GrannyAnim">
+      <file>units\artillery\great_bombard\great_bombard_combatidle</file>
+    </assetreference>
+    <component>great_bombard</component>
+  </anim>
+  <anim>Bombard_ranged_attack
+    <assetreference type="GrannyAnim">
+      <file>units\artillery\great_bombard\great_bombard_rangedAttack</file>
+      <tag type="Attack">0.10</tag>
+      <tag type="SpecificSoundSet" checkvisible="1" set="CulverinShoot">0.10</tag>
+      <tag type="Particles" particlename="greatbombardmuzzlefx">0.10</tag>
+      <tag type="WindEffect" effectname="LargeArtilleryFire" effectbone="bone_launchpoint">0.10</tag>
+    </assetreference>
+    <component>great_bombard</component>
+  </anim>
+  <anim>Bombard_aim
+    <assetreference type="GrannyAnim">
+      <file>units\artillery\great_bombard\great_bombard_combatidle</file>
+    </assetreference>
+    <component>great_bombard</component>
+  </anim>
+  <anim>Bombard_reload
+    <assetreference type="GrannyAnim">
+      <file>units\artillery\great_bombard\great_bombard_reload</file>
+    </assetreference>
+    <component>great_bombard</component>
+  </anim>
+  <anim>Bombard_bored
+    <assetreference type="GrannyAnim">
+      <file>units\artillery\great_bombard\great_bombard_combatidle</file>
+    </assetreference>
+    <component>great_bombard</component>
+  </anim>
+  <anim>Bombard_walk
+    <assetreference type="GrannyAnim">
+      <file>units\artillery\great_bombard\great_bombard_walk</file>
+      <tag type="FootstepLeft" footprinttype="Wheel" footprintbone="bone_wheelL">0.00</tag>
+      <tag type="FootstepLeft" footprinttype="Wheel" footprintbone="bone_wheelL">0.10</tag>
+      <tag type="FootstepLeft" footprinttype="Wheel" footprintbone="bone_wheelL">0.20</tag>
+      <tag type="FootstepLeft" footprinttype="Wheel" footprintbone="bone_wheelL">0.30</tag>
+      <tag type="FootstepLeft" footprinttype="Wheel" footprintbone="bone_wheelL">0.40</tag>
+      <tag type="FootstepLeft" footprinttype="Wheel" footprintbone="bone_wheelL">0.50</tag>
+      <tag type="FootstepLeft" footprinttype="Wheel" footprintbone="bone_wheelL">0.60</tag>
+      <tag type="FootstepLeft" footprinttype="Wheel" footprintbone="bone_wheelL">0.70</tag>
+      <tag type="FootstepLeft" footprinttype="Wheel" footprintbone="bone_wheelL">0.80</tag>
+      <tag type="FootstepLeft" footprinttype="Wheel" footprintbone="bone_wheelL">0.90</tag>
+      <tag type="FootstepRight" footprinttype="Wheel" footprintbone="bone_wheelR">0.00</tag>
+      <tag type="FootstepRight" footprinttype="Wheel" footprintbone="bone_wheelR">0.10</tag>
+      <tag type="FootstepRight" footprinttype="Wheel" footprintbone="bone_wheelR">0.20</tag>
+      <tag type="FootstepRight" footprinttype="Wheel" footprintbone="bone_wheelR">0.30</tag>
+      <tag type="FootstepRight" footprinttype="Wheel" footprintbone="bone_wheelR">0.40</tag>
+      <tag type="FootstepRight" footprinttype="Wheel" footprintbone="bone_wheelR">0.50</tag>
+      <tag type="FootstepRight" footprinttype="Wheel" footprintbone="bone_wheelR">0.60</tag>
+      <tag type="FootstepRight" footprinttype="Wheel" footprintbone="bone_wheelR">0.70</tag>
+      <tag type="FootstepRight" footprinttype="Wheel" footprintbone="bone_wheelR">0.80</tag>
+      <tag type="FootstepRight" footprinttype="Wheel" footprintbone="bone_wheelR">0.90</tag>
+    </assetreference>
+    <component>great_bombard</component>
+  </anim>
+  <anim>Bombard_jog
+    <assetreference type="GrannyAnim">
+      <file>units\artillery\great_bombard\great_bombard_walk</file>
+      <tag type="FootstepLeft" footprinttype="Wheel" footprintbone="bone_wheelL">0.00</tag>
+      <tag type="FootstepLeft" footprinttype="Wheel" footprintbone="bone_wheelL">0.10</tag>
+      <tag type="FootstepLeft" footprinttype="Wheel" footprintbone="bone_wheelL">0.20</tag>
+      <tag type="FootstepLeft" footprinttype="Wheel" footprintbone="bone_wheelL">0.30</tag>
+      <tag type="FootstepLeft" footprinttype="Wheel" footprintbone="bone_wheelL">0.40</tag>
+      <tag type="FootstepLeft" footprinttype="Wheel" footprintbone="bone_wheelL">0.50</tag>
+      <tag type="FootstepLeft" footprinttype="Wheel" footprintbone="bone_wheelL">0.60</tag>
+      <tag type="FootstepLeft" footprinttype="Wheel" footprintbone="bone_wheelL">0.70</tag>
+      <tag type="FootstepLeft" footprinttype="Wheel" footprintbone="bone_wheelL">0.80</tag>
+      <tag type="FootstepLeft" footprinttype="Wheel" footprintbone="bone_wheelL">0.90</tag>
+      <tag type="FootstepRight" footprinttype="Wheel" footprintbone="bone_wheelR">0.00</tag>
+      <tag type="FootstepRight" footprinttype="Wheel" footprintbone="bone_wheelR">0.10</tag>
+      <tag type="FootstepRight" footprinttype="Wheel" footprintbone="bone_wheelR">0.20</tag>
+      <tag type="FootstepRight" footprinttype="Wheel" footprintbone="bone_wheelR">0.30</tag>
+      <tag type="FootstepRight" footprinttype="Wheel" footprintbone="bone_wheelR">0.40</tag>
+      <tag type="FootstepRight" footprinttype="Wheel" footprintbone="bone_wheelR">0.50</tag>
+      <tag type="FootstepRight" footprinttype="Wheel" footprintbone="bone_wheelR">0.60</tag>
+      <tag type="FootstepRight" footprinttype="Wheel" footprintbone="bone_wheelR">0.70</tag>
+      <tag type="FootstepRight" footprinttype="Wheel" footprintbone="bone_wheelR">0.80</tag>
+      <tag type="FootstepRight" footprinttype="Wheel" footprintbone="bone_wheelR">0.90</tag>
+    </assetreference>
+    <component>great_bombard</component>
+  </anim>
+  <anim>Bombard_run
+    <assetreference type="GrannyAnim">
+      <file>units\artillery\great_bombard\great_bombard_walk</file>
+      <tag type="FootstepLeft" footprinttype="Wheel" footprintbone="bone_wheelL">0.00</tag>
+      <tag type="FootstepLeft" footprinttype="Wheel" footprintbone="bone_wheelL">0.10</tag>
+      <tag type="FootstepLeft" footprinttype="Wheel" footprintbone="bone_wheelL">0.20</tag>
+      <tag type="FootstepLeft" footprinttype="Wheel" footprintbone="bone_wheelL">0.30</tag>
+      <tag type="FootstepLeft" footprinttype="Wheel" footprintbone="bone_wheelL">0.40</tag>
+      <tag type="FootstepLeft" footprinttype="Wheel" footprintbone="bone_wheelL">0.50</tag>
+      <tag type="FootstepLeft" footprinttype="Wheel" footprintbone="bone_wheelL">0.60</tag>
+      <tag type="FootstepLeft" footprinttype="Wheel" footprintbone="bone_wheelL">0.70</tag>
+      <tag type="FootstepLeft" footprinttype="Wheel" footprintbone="bone_wheelL">0.80</tag>
+      <tag type="FootstepLeft" footprinttype="Wheel" footprintbone="bone_wheelL">0.90</tag>
+      <tag type="FootstepRight" footprinttype="Wheel" footprintbone="bone_wheelR">0.00</tag>
+      <tag type="FootstepRight" footprinttype="Wheel" footprintbone="bone_wheelR">0.10</tag>
+      <tag type="FootstepRight" footprinttype="Wheel" footprintbone="bone_wheelR">0.20</tag>
+      <tag type="FootstepRight" footprinttype="Wheel" footprintbone="bone_wheelR">0.30</tag>
+      <tag type="FootstepRight" footprinttype="Wheel" footprintbone="bone_wheelR">0.40</tag>
+      <tag type="FootstepRight" footprinttype="Wheel" footprintbone="bone_wheelR">0.50</tag>
+      <tag type="FootstepRight" footprinttype="Wheel" footprintbone="bone_wheelR">0.60</tag>
+      <tag type="FootstepRight" footprinttype="Wheel" footprintbone="bone_wheelR">0.70</tag>
+      <tag type="FootstepRight" footprinttype="Wheel" footprintbone="bone_wheelR">0.80</tag>
+      <tag type="FootstepRight" footprinttype="Wheel" footprintbone="bone_wheelR">0.90</tag>
+    </assetreference>
+    <component>great_bombard</component>
+  </anim>
+  <anim>Bombard_limber
+    <assetreference type="GrannyAnim">
+      <file>units\artillery\great_bombard\great_bombard_limber</file>
+    </assetreference>
+    <component>great_bombard</component>
+  </anim>
+  <anim>Bombard_unlimber
+    <assetreference type="GrannyAnim">
+      <file>units\artillery\great_bombard\great_bombard_unlimber</file>
+    </assetreference>
+    <component>great_bombard</component>
+  </anim>
+</animfile>

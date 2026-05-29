@@ -23,7 +23,7 @@ sys.path.insert(0, str(PROJECT_ROOT / "scripts" / "crawler"))
 from aoe3_bar_extractor import decode_xmb_to_xml, extract_file_data, read_bar_entries  # noqa: E402
 from aoe3_gamedata_parser import _parse_attacks  # noqa: E402
 
-EXTRACTED_DIR = Path(os.environ.get("AOE3_EXTRACTED_DIR", r"E:\aoe3_extracted"))
+EXTRACTED_DIR = Path(os.environ.get("AOE3_EXTRACTED_DIR", str(PROJECT_ROOT / "data" / "aoe3" / "raw")))
 ART_UNITS_BAR = os.environ.get(
     "AOE3_ART_UNITS_BAR",
     r"E:\SteamLibrary\steamapps\common\AoE3DE\Game\Art\ArtUnits.bar",

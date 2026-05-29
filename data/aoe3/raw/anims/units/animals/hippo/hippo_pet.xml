@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<animfile>
+  <definebone>Bone08</definebone>
+  <definebone>Bone04</definebone>
+  <component>ModelComp
+    <assetreference type="GrannyModel">
+      <file>units\animals\hippo\hippo</file>
+      <materialvariant index="1"/>
+    </assetreference>
+    <decal>
+      <effecttype>default</effecttype>
+      <texture isfakeshadow="1">shadows_selections\shadow_circle_64x64</texture>
+      <selectedtexture>shadows_selections\selection_oval_32x64</selectedtexture>
+      <width>2.00</width>
+      <height>3.25</height>
+      <zoffset>-0.35</zoffset>
+    </decal>
+  </component>
+  <anim>Idle
+    <assetreference type="GrannyAnim">
+      <file>units\animals\hippo\hippo_idle_a</file>
+      <weight>40</weight>
+    </assetreference>
+    <assetreference type="GrannyAnim">
+      <file>units\animals\hippo\hippo_idle_b</file>
+      <weight>10</weight>
+    </assetreference>
+    <assetreference type="GrannyAnim">
+      <file>units\animals\hippo\hippo_idle_c</file>
+      <weight>10</weight>
+    </assetreference>
+    <component>ModelComp</component>
+  </anim>
+  <anim>Walk
+    <assetreference type="GrannyAnim">
+      <file>units\animals\hippo\hippo_run</file>
+      <tag type="FootstepLeft" footprinttype="AnimalLeft" footprintbone="BONE08">0.93</tag>
+      <tag type="FootstepRight" footprinttype="AnimalRight" footprintbone="BONE04">0.68</tag>
+    </assetreference>
+    <component>ModelComp</component>
+  </anim>
+  <anim>Run
+    <assetreference type="GrannyAnim">
+      <file>units\animals\hippo\hippo_run</file>
+      <tag type="FootstepLeft" footprinttype="AnimalLeft" footprintbone="BONE08">0.93</tag>
+      <tag type="FootstepRight" footprinttype="AnimalRight" footprintbone="BONE04">0.68</tag>
+    </assetreference>
+    <component>ModelComp</component>
+  </anim>
+  <anim>HandAttack
+    <assetreference type="GrannyAnim">
+      <file>units\animals\hippo\hippo_attack_a</file>
+      <tag type="Attack">0.47</tag>
+    </assetreference>
+    <component>ModelComp</component>
+  </anim>
+  <anim>Death
+    <assetreference type="GrannyAnim">
+      <file>units\animals\hippo\hippo_death_a</file>
+      <tag type="SpecificSoundSet" checkvisible="1" set="RagdollImpact">0.67</tag>
+    </assetreference>
+    <component>ModelComp</component>
+  </anim>
+</animfile>

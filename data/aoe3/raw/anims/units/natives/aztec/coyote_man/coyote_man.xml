@@ -1,0 +1,311 @@
+<?xml version="1.0" encoding="utf-8"?>
+<animfile>
+  <definebone>bip01 Prop1</definebone>
+  <definebone>bone_club</definebone>
+  <definebone>bone_shield</definebone>
+  <definebone>Bip01 L ForeArm</definebone>
+  <attachment>club_age1
+    <component>club_age1
+      <assetreference type="GrannyModel">
+        <file>units\natives\aztec\coyote_man\coyote_club_age1</file>
+      </assetreference>
+    </component>
+    <anim>Idle
+      <component>club_age1</component>
+    </anim>
+  </attachment>
+  <attachment>torch
+    <include>effects\projectiles\torch.xml</include>
+  </attachment>
+  <attachment>shield_age1
+    <component>shield_age1
+      <assetreference type="GrannyModel">
+        <file>units\natives\aztec\coyote_man\coyote_shield_age1</file>
+      </assetreference>
+    </component>
+    <anim>Idle
+      <component>shield_age1</component>
+    </anim>
+  </attachment>
+  <attachment>club_age2
+    <component>club_age2
+      <assetreference type="GrannyModel">
+        <file>units\natives\aztec\coyote_man\coyote_club_age2</file>
+      </assetreference>
+    </component>
+    <anim>Idle
+      <component>club_age2</component>
+    </anim>
+  </attachment>
+  <attachment>shield_age2
+    <component>shield_age2
+      <assetreference type="GrannyModel">
+        <file>units\natives\aztec\coyote_man\coyote_shield_age2</file>
+      </assetreference>
+    </component>
+    <anim>Idle
+      <component>shield_age2</component>
+    </anim>
+  </attachment>
+  <attachment>club_age3
+    <component>club_age3
+      <assetreference type="GrannyModel">
+        <file>units\natives\aztec\coyote_man\coyote_club_age3</file>
+      </assetreference>
+    </component>
+    <anim>Idle
+      <component>club_age3</component>
+    </anim>
+  </attachment>
+  <attachment>shield_age3
+    <component>shield_age3
+      <assetreference type="GrannyModel">
+        <file>units\natives\aztec\coyote_man\coyote_shield_age3</file>
+      </assetreference>
+    </component>
+    <anim>Idle
+      <component>shield_age3</component>
+    </anim>
+  </attachment>
+  <component>ModelComp
+    <logic type="Tech">
+      <none>
+        <assetreference type="GrannyModel">
+          <file>units\natives\aztec\coyote_man\coyote_man_age1</file>
+        </assetreference>
+        <attach a="club_age1" frombone="bone_club" tobone="bip01 Prop1" syncanims="0"/>
+        <attach a="shield_age1" frombone="bone_shield" tobone="Bip01 L ForeArm" syncanims="0"/>
+      </none>
+      <elitecoyotemen>
+        <assetreference type="GrannyModel">
+          <file>units\natives\aztec\coyote_man\coyote_man_age2</file>
+        </assetreference>
+        <attach a="club_age2" frombone="bone_club" tobone="bip01 Prop1" syncanims="0"/>
+        <attach a="shield_age2" frombone="bone_shield" tobone="Bip01 L ForeArm" syncanims="0"/>
+      </elitecoyotemen>
+      <championcoyotemen>
+        <assetreference type="GrannyModel">
+          <file>units\natives\aztec\coyote_man\coyote_man_age3</file>
+        </assetreference>
+        <attach a="club_age3" frombone="MASTER" tobone="bip01 Prop1" syncanims="0"/>
+        <attach a="shield_age3" frombone="bone_shield" tobone="Bip01 L ForeArm" syncanims="0"/>
+      </championcoyotemen>
+      <implegendarycoyotemen>
+        <assetreference type="GrannyModel">
+          <file>units\natives\aztec\coyote_man\coyote_man_age3</file>
+          <materialvariant index="1"/>
+        </assetreference>
+        <attach a="club_age3" frombone="MASTER" tobone="bip01 Prop1" syncanims="0"/>
+        <attach a="shield_age3" frombone="bone_shield" tobone="Bip01 L ForeArm" syncanims="0"/>
+      </implegendarycoyotemen>
+    </logic>
+    <decal>
+      <effecttype>default</effecttype>
+      <texture isfakeshadow="1">shadows_selections\shadow_circle_32x32</texture>
+      <selectedtexture>shadows_selections\selection_circle_32x32</selectedtexture>
+      <width>1.0</width>
+      <height>1.0</height>
+    </decal>
+  </component>
+  <anim>Death_by_melee
+    <assetreference type="GrannyAnim">
+      <file>animation_library\shared\human_sword_death_a</file>
+      <tag type="SpecificSoundSet" checkvisible="1" set="RagdollImpact">0.87</tag>
+    </assetreference>
+    <component>ModelComp</component>
+  </anim>
+  <anim>Death_by_range
+    <assetreference type="GrannyAnim">
+      <file>animation_library\shared\human_death_shot_front_a</file>
+      <tag type="SpecificSoundSet" checkvisible="1" set="RagdollImpact">0.59</tag>
+    </assetreference>
+    <assetreference type="GrannyAnim">
+      <file>animation_library\shared\human_death_shot_back_a</file>
+      <tag type="SpecificSoundSet" checkvisible="1" set="RagdollImpact">0.82</tag>
+    </assetreference>
+    <component>ModelComp</component>
+  </anim>
+  <anim>Death_by_havoc
+    <assetreference type="GrannyAnim">
+      <file>animation_library\range\havoc_death</file>
+    </assetreference>
+    <assetreference type="GrannyAnim">
+      <file>animation_library\range\havoc_deathB</file>
+    </assetreference>
+    <assetreference type="GrannyAnim">
+      <file>animation_library\range\havoc_deathC</file>
+    </assetreference>
+    <assetreference type="GrannyAnim">
+      <file>animation_library\range\havoc_deathD</file>
+    </assetreference>
+    <component>ModelComp</component>
+  </anim>
+  <anim>Death_havoc_flail
+    <assetreference type="GrannyAnim">
+      <file>animation_library\range\havoc_flail</file>
+    </assetreference>
+    <component>ModelComp</component>
+  </anim>
+  <anim>Death_havoc_spin
+    <assetreference type="GrannyAnim">
+      <file>animation_library\range\havoc_spin</file>
+    </assetreference>
+    <component>ModelComp</component>
+  </anim>
+  <anim>Cheer
+    <assetreference type="GrannyAnim">
+      <file>animation_library\shared\cheer_C</file>
+    </assetreference>
+    <component>ModelComp</component>
+  </anim>
+  <anim>Recoil
+    <assetreference type="GrannyAnim">
+      <file>animation_library\shared\recoil_A</file>
+    </assetreference>
+    <assetreference type="GrannyAnim">
+      <file>animation_library\shared\recoil_C</file>
+    </assetreference>
+    <assetreference type="GrannyAnim">
+      <file>animation_library\shared\recoil_E</file>
+    </assetreference>
+    <assetreference type="GrannyAnim">
+      <file>animation_library\shared\recoil_G</file>
+    </assetreference>
+    <component>ModelComp</component>
+  </anim>
+  <anim>HC_openDoor
+    <assetreference type="GrannyAnim">
+      <file>animation_library\shared\doorOpen</file>
+    </assetreference>
+    <component>ModelComp</component>
+  </anim>
+  <anim>HC_closeDoor
+    <assetreference type="GrannyAnim">
+      <file>animation_library\shared\doorClose</file>
+    </assetreference>
+    <component>ModelComp</component>
+  </anim>
+  <anim>Raze_idle
+    <assetreference type="GrannyAnim">
+      <file>animation_library\shared\torch_throw_idle</file>
+    </assetreference>
+    <component>ModelComp</component>
+    <attach a="torch" frombone="ATTACHPOINT" tobone="L HAND" syncanims="0"/>
+  </anim>
+  <anim>Raze_attack
+    <assetreference type="GrannyAnim">
+      <file>animation_library\shared\torch_throwA</file>
+      <tag type="Attack">0.61</tag>
+      <tag type="SpecificSoundSet" checkvisible="1" set="TorchSwing">0.53</tag>
+    </assetreference>
+    <assetreference type="GrannyAnim">
+      <file>animation_library\shared\torch_throwB</file>
+      <tag type="Attack">0.56</tag>
+      <tag type="SpecificSoundSet" checkvisible="1" set="TorchSwing">0.44</tag>
+    </assetreference>
+    <component>ModelComp</component>
+    <attach a="torch" frombone="ATTACHPOINT" tobone="L HAND" syncanims="0"/>
+  </anim>
+  <anim>Cover_bored
+    <assetreference type="GrannyAnim">
+      <file>animation_library\infantry\Cover\swordmen_cover_bored</file>
+    </assetreference>
+    <component>ModelComp</component>
+  </anim>
+  <anim>Cover_Idle
+    <assetreference type="GrannyAnim">
+      <file>animation_library\infantry\Cover\swordmen_cover_idle</file>
+    </assetreference>
+    <component>ModelComp</component>
+  </anim>
+  <anim>Cover_walk
+    <assetreference type="GrannyAnim">
+      <file>animation_library\infantry\Cover\swordmen_cover_jog</file>
+      <tag type="FootstepLeft" footprinttype="HumanLeft">0.71</tag>
+      <tag type="FootstepRight" footprinttype="HumanRight">0.14</tag>
+    </assetreference>
+    <component>ModelComp</component>
+  </anim>
+  <anim>Cover_jog
+    <assetreference type="GrannyAnim">
+      <file>animation_library\infantry\Cover\swordmen_cover_jog</file>
+      <tag type="FootstepLeft" footprinttype="HumanLeft">0.71</tag>
+      <tag type="FootstepRight" footprinttype="HumanRight">0.14</tag>
+    </assetreference>
+    <component>ModelComp</component>
+  </anim>
+  <anim>Cover_run
+    <assetreference type="GrannyAnim">
+      <file>animation_library\infantry\Cover\swordmen_cover_run</file>
+      <tag type="FootstepLeft" footprinttype="HumanLeft">0.70</tag>
+      <tag type="FootstepRight" footprinttype="HumanRight">0.15</tag>
+    </assetreference>
+    <component>ModelComp</component>
+  </anim>
+  <anim>Defend_idle
+    <assetreference type="GrannyAnim">
+      <file>animation_library\infantry\Defend\swordmen_defend_idle</file>
+    </assetreference>
+    <component>ModelComp</component>
+  </anim>
+  <anim>Defend_bored
+    <assetreference type="GrannyAnim">
+      <file>animation_library\infantry\Defend\swordmen_defend_idle</file>
+    </assetreference>
+    <component>ModelComp</component>
+  </anim>
+  <anim>Charge_idle
+    <assetreference type="GrannyAnim">
+      <file>animation_library\natives\coyote_man\idle</file>
+    </assetreference>
+    <component>ModelComp</component>
+  </anim>
+  <anim>Charge_bored
+    <assetreference type="GrannyAnim">
+      <file>animation_library\natives\coyote_man\idle</file>
+    </assetreference>
+    <component>ModelComp</component>
+  </anim>
+  <anim>Charge_attack
+    <assetreference type="GrannyAnim">
+      <file>animation_library\natives\coyote_man\attack</file>
+      <tag type="Attack">0.32</tag>
+      <tag type="SpecificSoundSet" checkvisible="1" set="Swoosh">0.29</tag>
+    </assetreference>
+    <assetreference type="GrannyAnim">
+      <file>animation_library\natives\coyote_man\attack2</file>
+      <tag type="Attack">0.35</tag>
+      <tag type="SpecificSoundSet" checkvisible="1" set="Swoosh">0.32</tag>
+    </assetreference>
+    <assetreference type="GrannyAnim">
+      <file>animation_library\natives\coyote_man\attack3</file>
+      <tag type="Attack">0.52</tag>
+      <tag type="SpecificSoundSet" checkvisible="1" set="Swoosh">0.50</tag>
+    </assetreference>
+    <component>ModelComp</component>
+  </anim>
+  <anim>Charge_walk
+    <assetreference type="GrannyAnim">
+      <file>animation_library\natives\coyote_man\jog</file>
+      <tag type="FootstepLeft" footprinttype="HumanLeft">0.09</tag>
+      <tag type="FootstepRight" footprinttype="HumanRight">0.52</tag>
+    </assetreference>
+    <component>ModelComp</component>
+  </anim>
+  <anim>Charge_jog
+    <assetreference type="GrannyAnim">
+      <file>animation_library\natives\coyote_man\jog</file>
+      <tag type="FootstepLeft" footprinttype="HumanLeft">0.09</tag>
+      <tag type="FootstepRight" footprinttype="HumanRight">0.52</tag>
+    </assetreference>
+    <component>ModelComp</component>
+  </anim>
+  <anim>Charge_run
+    <assetreference type="GrannyAnim">
+      <file>animation_library\natives\coyote_man\run</file>
+      <tag type="FootstepLeft" footprinttype="HumanLeft">0.05</tag>
+      <tag type="FootstepRight" footprinttype="HumanRight">0.52</tag>
+    </assetreference>
+    <component>ModelComp</component>
+  </anim>
+</animfile>

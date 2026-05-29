@@ -1,0 +1,9 @@
+{
+  "raw_dir": "data/aoe3/raw",
+  "generated_at": "2026-05-29T05:09:37.076054+00:00",
+  "git_head": "2ef17ca",
+  "combat_units": 756,
+  "protoy_bytes": 8260469,
+  "tactics_files": 432,
+  "anim_files": 485
+}

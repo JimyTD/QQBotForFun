@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="utf-8"?>
+<animfile>
+  <definebone>bone_book</definebone>
+  <definebone>HS Bone Hoof Frnt Lt</definebone>
+  <definebone>HS Bone Hoof Frnt Rt</definebone>
+  <definebone>HS Bone Hoof Back Lt</definebone>
+  <definebone>HS Bone Hoof Back Rt</definebone>
+  <attachment>book
+    <component>book
+      <assetreference type="GrannyModel">
+        <file>units\priests\spanish_priest_book</file>
+      </assetreference>
+    </component>
+    <anim>Idle
+      <component>book</component>
+    </anim>
+  </attachment>
+  <attachment>heal_rays
+    <component>heal_fx_emitter
+      <assetreference type="PopcornFx">
+        <file>units\explorers\heal_rays.pkfx</file>
+      </assetreference>
+    </component>
+    <anim>None
+      <component>heal_fx_emitter</component>
+    </anim>
+  </attachment>
+  <component>ModelComp
+    <logic type="LowPoly">
+      <normal>
+        <assetreference type="GrannyModel">
+          <file>units\priests\spanish_priest</file>
+        </assetreference>
+      </normal>
+      <lowpoly>
+        <assetreference type="GrannyModel">
+          <file>units\priests\spanish_priest</file>
+        </assetreference>
+      </lowpoly>
+    </logic>
+    <decal>
+      <effecttype>default</effecttype>
+      <selectedtexture>shadows_selections\selection_oval_32x64</selectedtexture>
+      <width>1.00</width>
+      <height>1.00</height>
+    </decal>
+    <attach a="book" frombone="bone_book" tobone="L FOREARM" syncanims="0"/>
+  </component>
+  <anim>Walk
+    <assetreference type="GrannyAnim">
+      <file>animation_library\missionarys\missionary_walk</file>
+      <tag type="FootstepLeft" footprinttype="Horse" footprintbone="HS BONE HOOF FRNT LT">1.00</tag>
+      <tag type="FootstepLeft" footprinttype="Horse" footprintbone="HS BONE HOOF BACK LT">0.83</tag>
+      <tag type="FootstepRight" footprinttype="Horse" footprintbone="HS BONE HOOF FRNT RT">0.70</tag>
+      <tag type="FootstepRight" footprinttype="Horse" footprintbone="HS BONE HOOF BACK RT">0.50</tag>
+    </assetreference>
+    <component>ModelComp</component>
+  </anim>
+  <anim>Idle
+    <assetreference type="GrannyAnim">
+      <file>animation_library\missionarys\missionary_idle</file>
+    </assetreference>
+    <component>ModelComp</component>
+  </anim>
+  <anim>Heal
+    <assetreference type="GrannyAnim">
+      <file>animation_library\missionarys\missionary_heal</file>
+    </assetreference>
+    <component>ModelComp</component>
+    <attach a="heal_rays" frombone="ATTACHPOINT" tobone="ATTACHPOINT" syncanims="0"/>
+  </anim>
+  <anim>Attack
+    <assetreference type="GrannyAnim">
+      <file>animation_library\missionarys\missionary_attack</file>
+      <tag type="Attack">0.60</tag>
+    </assetreference>
+    <component>ModelComp</component>
+  </anim>
+  <anim>Charge_attack
+    <assetreference type="GrannyAnim">
+      <file>animation_library\missionarys\missionary_attack</file>
+      <tag type="Attack">0.60</tag>
+    </assetreference>
+    <component>ModelComp</component>
+  </anim>
+  <anim>Death
+    <assetreference type="GrannyAnim">
+      <file>animation_library\missionarys\missionary_death</file>
+      <tag type="SpecificSoundSet" checkvisible="1" set="RagdollImpact">0.73</tag>
+    </assetreference>
+    <component>ModelComp</component>
+  </anim>
+  <anim>Nugget_Mount
+    <assetreference type="GrannyAnim">
+      <file>nuggets\wolf_missionary\missionary_mount</file>
+    </assetreference>
+    <component>ModelComp</component>
+  </anim>
+  <anim>Nugget_Idle
+    <assetreference type="GrannyAnim">
+      <file>nuggets\wolf_missionary\missionary_idleB</file>
+    </assetreference>
+    <assetreference type="GrannyAnim">
+      <file>nuggets\wolf_missionary\missionary_idleC</file>
+    </assetreference>
+    <assetreference type="GrannyAnim">
+      <file>nuggets\wolf_missionary\missionary_idleD</file>
+    </assetreference>
+    <assetreference type="GrannyAnim">
+      <file>nuggets\wolf_missionary\missionary_idleE</file>
+    </assetreference>
+    <component>ModelComp</component>
+  </anim>
+</animfile>

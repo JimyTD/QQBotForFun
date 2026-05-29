@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="utf-8"?>
+<animfile>
+  <definebone>bone_FX_FR</definebone>
+  <definebone>bone_FX_FL</definebone>
+  <definebone>bone_FX_RR</definebone>
+  <definebone>bone_FX_RL</definebone>
+  <definebone>bone_flames</definebone>
+  <definebone>bone_body</definebone>
+  <definebone>R Hand</definebone>
+  <attachment>idle_smoke
+    <component>emitter
+      <assetreference type="PopcornFx">
+        <file>units\monster_truck\exhaust_idle.pkfx</file>
+      </assetreference>
+    </component>
+    <anim>None
+      <component>emitter</component>
+    </anim>
+  </attachment>
+  <attachment>flames
+    <component>emitter
+      <assetreference type="PopcornFx">
+        <file>units\monster_truck\exhaustFlame.pkfx</file>
+      </assetreference>
+    </component>
+    <anim>None
+      <component>emitter</component>
+    </anim>
+  </attachment>
+  <attachment>flames_run
+    <component>emitter
+      <assetreference type="PopcornFx">
+        <file>units\monster_truck\exhaustFlame_run.pkfx</file>
+      </assetreference>
+    </component>
+    <anim>None
+      <component>emitter</component>
+    </anim>
+  </attachment>
+  <attachment>dirtRR
+    <component>emitter
+      <assetreference type="PopcornFx">
+        <file>units\monster_truck\flyingDirt.pkfx</file>
+      </assetreference>
+    </component>
+    <anim>None
+      <component>emitter</component>
+    </anim>
+  </attachment>
+  <attachment>dirtRL
+    <component>emitter
+      <assetreference type="PopcornFx">
+        <file>units\monster_truck\flyingDirt.pkfx</file>
+      </assetreference>
+    </component>
+    <anim>None
+      <component>emitter</component>
+    </anim>
+  </attachment>
+  <attachment>dirtFR
+    <component>emitter
+      <assetreference type="PopcornFx">
+        <file>units\monster_truck\flyingDirt.pkfx</file>
+      </assetreference>
+    </component>
+    <anim>None
+      <component>emitter</component>
+    </anim>
+  </attachment>
+  <attachment>dirtFL
+    <component>emitter
+      <assetreference type="PopcornFx">
+        <file>units\monster_truck\flyingDirt.pkfx</file>
+      </assetreference>
+    </component>
+    <anim>None
+      <component>emitter</component>
+    </anim>
+  </attachment>
+  <attachment>backfire
+    <component>emitter
+      <assetreference type="PopcornFx">
+        <file>units\monster_truck\backfire.pkfx</file>
+      </assetreference>
+    </component>
+    <anim>None
+      <component>emitter</component>
+    </anim>
+  </attachment>
+  <attachment>Dust
+    <component>emitter
+      <assetreference type="PopcornFx">
+        <file>units\monster_truck\flyingDust.pkfx</file>
+      </assetreference>
+    </component>
+    <anim>None
+      <component>emitter</component>
+    </anim>
+  </attachment>
+  <component>monster_truck_blue
+    <assetreference type="GrannyModel">
+      <file>units\monster_truck\monster_truck_red</file>
+    </assetreference>
+    <decal>
+      <effecttype>default</effecttype>
+      <texture isfakeshadow="1">shadows_selections\shadow_circle_128x128</texture>
+      <selectedtexture>shadows_selections\selection_square_128x128</selectedtexture>
+      <width>1.00</width>
+      <height>1.00</height>
+    </decal>
+  </component>
+  <anim>Idle
+    <assetreference type="GrannyAnim">
+      <file>animation_library\special\monstertruck\idle</file>
+    </assetreference>
+    <component>monster_truck_blue</component>
+    <attach a="idle_smoke" frombone="ATTACHPOINT" tobone="bone_body" syncanims="0"/>
+  </anim>
+  <anim>Bored
+    <assetreference type="GrannyAnim">
+      <file>animation_library\special\monstertruck\bored</file>
+    </assetreference>
+    <component>monster_truck_blue</component>
+    <attach a="backfire" frombone="ATTACHPOINT" tobone="bone_flames" syncanims="0"/>
+  </anim>
+  <anim>Walk
+    <assetreference type="GrannyAnim">
+      <file>animation_library\special\monstertruck\drag</file>
+    </assetreference>
+    <component>monster_truck_blue</component>
+    <attach a="flames" frombone="ATTACHPOINT" tobone="bone_flames" syncanims="0"/>
+    <attach a="dirtRR" frombone="ATTACHPOINT" tobone="bone_FX_RR" syncanims="0"/>
+    <attach a="dirtRL" frombone="ATTACHPOINT" tobone="bone_FX_RL" syncanims="0"/>
+    <attach a="dirtFL" frombone="ATTACHPOINT" tobone="bone_FX_FL" syncanims="0"/>
+    <attach a="dirtFR" frombone="ATTACHPOINT" tobone="bone_FX_FR" syncanims="0"/>
+    <attach a="Dust" frombone="ATTACHPOINT" tobone="ATTACHPOINT" syncanims="0"/>
+  </anim>
+  <anim>Jog
+    <assetreference type="GrannyAnim">
+      <file>animation_library\special\monstertruck\drag</file>
+    </assetreference>
+    <component>monster_truck_blue</component>
+    <attach a="flames" frombone="ATTACHPOINT" tobone="bone_flames" syncanims="0"/>
+    <attach a="dirtRR" frombone="ATTACHPOINT" tobone="bone_FX_RR" syncanims="0"/>
+    <attach a="dirtFL" frombone="ATTACHPOINT" tobone="bone_FX_FL" syncanims="0"/>
+    <attach a="dirtFR" frombone="ATTACHPOINT" tobone="bone_FX_FR" syncanims="0"/>
+    <attach a="dirtRL" frombone="ATTACHPOINT" tobone="bone_FX_RL" syncanims="0"/>
+    <attach a="Dust" frombone="ATTACHPOINT" tobone="ATTACHPOINT" syncanims="0"/>
+  </anim>
+  <anim>Run
+    <assetreference type="GrannyAnim">
+      <file>animation_library\special\monstertruck\run</file>
+    </assetreference>
+    <component>monster_truck_blue</component>
+    <attach a="flames" frombone="ATTACHPOINT" tobone="bone_flames" syncanims="0"/>
+    <attach a="dirtRR" frombone="ATTACHPOINT" tobone="bone_FX_RR" syncanims="0"/>
+    <attach a="dirtFL" frombone="ATTACHPOINT" tobone="bone_FX_FL" syncanims="0"/>
+    <attach a="dirtFR" frombone="ATTACHPOINT" tobone="bone_FX_FR" syncanims="0"/>
+    <attach a="dirtRL" frombone="ATTACHPOINT" tobone="bone_FX_RL" syncanims="0"/>
+    <attach a="Dust" frombone="ATTACHPOINT" tobone="ATTACHPOINT" syncanims="0"/>
+  </anim>
+</animfile>

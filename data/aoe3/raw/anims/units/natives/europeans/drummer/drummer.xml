@@ -1,0 +1,202 @@
+<?xml version="1.0" encoding="utf-8"?>
+<animfile>
+  <definebone>bone_hat</definebone>
+  <attachment>torch
+    <include>effects\projectiles\torch.xml</include>
+  </attachment>
+  <attachment>heal_rays
+    <component>heal_fx_emitter
+      <assetreference type="PopcornFx">
+        <file>units\explorers\heal_rays.pkfx</file>
+      </assetreference>
+    </component>
+    <anim>None
+      <component>heal_fx_emitter</component>
+    </anim>
+  </attachment>
+  <attachment>pistol
+    <component>pistol
+      <assetreference type="GrannyModel">
+        <file>units\generals\general_gun</file>
+      </assetreference>
+    </component>
+    <anim>Idle
+      <component>pistol</component>
+    </anim>
+  </attachment>
+  <attachment>sword
+    <component>sword
+      <assetreference type="GrannyModel">
+        <file>units\spc\bolivar\bolivar_sword</file>
+      </assetreference>
+    </component>
+    <anim>Idle
+      <component>sword</component>
+    </anim>
+  </attachment>
+  <component>ModelComp
+    <logic type="Variation">
+      <v1>
+        <assetreference type="GrannyModel">
+          <file>units\natives\europeans\drummer\drummer</file>
+        </assetreference>
+      </v1>
+      <v2>
+        <assetreference type="GrannyModel">
+          <file>units\natives\europeans\drummer\drummer_black</file>
+        </assetreference>
+      </v2>
+    </logic>
+    <decal>
+      <effecttype>default</effecttype>
+      <texture isfakeshadow="1">shadows_selections\shadow_circle_32x32</texture>
+      <selectedtexture>shadows_selections\selection_circle_32x32</selectedtexture>
+      <width>1.0</width>
+      <height>1.0</height>
+    </decal>
+  </component>
+  <component>AttackComp
+    <logic type="Variation">
+      <v1>
+        <assetreference type="GrannyModel">
+          <file>units\natives\europeans\drummer\drummer</file>
+          <materialvariant index="1"/>
+        </assetreference>
+      </v1>
+      <v2>
+        <assetreference type="GrannyModel">
+          <file>units\natives\europeans\drummer\drummer_black</file>
+          <materialvariant index="1"/>
+        </assetreference>
+      </v2>
+    </logic>
+    <decal>
+      <effecttype>default</effecttype>
+      <texture isfakeshadow="1">shadows_selections\shadow_circle_32x32</texture>
+      <selectedtexture>shadows_selections\selection_circle_32x32</selectedtexture>
+      <width>1.0</width>
+      <height>1.0</height>
+    </decal>
+  </component>
+  <anim>HandAttack
+    <assetreference type="GrannyAnim">
+      <file>animation_library\mercs\fusilier\charge_attack1</file>
+      <tag type="Attack">0.47</tag>
+      <tag type="SpecificSoundSet" checkvisible="1" set="Swoosh">0.45</tag>
+    </assetreference>
+    <assetreference type="GrannyAnim">
+      <file>animation_library\mercs\fusilier\charge_attack3</file>
+      <tag type="Attack">0.31</tag>
+      <tag type="SpecificSoundSet" checkvisible="1" set="Swoosh">0.26</tag>
+    </assetreference>
+    <assetreference type="GrannyAnim">
+      <file>animation_library\range\defend\longbow_defend_melee_A</file>
+      <tag type="Attack">0.52</tag>
+    </assetreference>
+    <assetreference type="GrannyAnim">
+      <file>animation_library\range\defend\longbow_defend_melee_B</file>
+      <tag type="Attack">0.27</tag>
+      <tag type="SpecificSoundSet" checkvisible="1" set="Swoosh">0.21</tag>
+      <tag type="SpecificSoundSet" checkvisible="1" set="Swoosh">0.56</tag>
+    </assetreference>
+    <component>AttackComp</component>
+    <attach a="sword" frombone="MASTER" tobone="BIP01 PROP2" syncanims="0"/>
+  </anim>
+  <anim>RangedAttack
+    <assetreference type="GrannyAnim">
+      <file>animation_library\SPC\cooper\ranged_attack</file>
+      <tag type="Attack">0.37</tag>
+      <tag type="SpecificSoundSet" checkvisible="1" set="PistolShot">0.37</tag>
+      <tag type="Particles" particlename="pistolshot_right">0.37</tag>
+    </assetreference>
+    <component>ModelComp</component>
+    <attach a="pistol" frombone="MASTER" tobone="BIP01 PROP1" syncanims="1"/>
+  </anim>
+  <anim>Idle
+    <assetreference type="GrannyAnim">
+      <file>units\squad\drummer\drummer_idleA</file>
+    </assetreference>
+    <component>ModelComp</component>
+  </anim>
+  <anim>Bored
+    <assetreference type="GrannyAnim">
+      <file>units\squad\drummer\drummer_boredA</file>
+    </assetreference>
+    <component>ModelComp</component>
+  </anim>
+  <anim>Walk
+    <assetreference type="GrannyAnim">
+      <file>units\squad\drummer\drummer_walktaskA</file>
+      <tag type="SpecificSoundSet" checkvisible="1" set="Snares">0.10</tag>
+      <tag type="FootstepLeft" footprinttype="HumanLeft">0.10</tag>
+      <tag type="FootstepRight" footprinttype="HumanRight">0.36</tag>
+      <tag type="FootstepLeft" footprinttype="HumanLeft">0.60</tag>
+      <tag type="FootstepRight" footprinttype="HumanRight">0.86</tag>
+    </assetreference>
+    <component>ModelComp</component>
+  </anim>
+  <anim>Death
+    <assetreference type="GrannyAnim">
+      <file>units\squad\drummer\drummer_deathA</file>
+    </assetreference>
+    <component>ModelComp</component>
+  </anim>
+  <anim>Empower
+    <assetreference type="GrannyAnim">
+      <file>units\squad\drummer\drummer_idletaskA</file>
+    </assetreference>
+    <component>ModelComp</component>
+  </anim>
+  <anim>EmpowerWalk
+    <assetreference type="GrannyAnim">
+      <file>units\squad\drummer\drummer_walktaskA</file>
+      <tag type="FootstepLeft" footprinttype="HumanLeft">0.10</tag>
+      <tag type="FootstepRight" footprinttype="HumanRight">0.36</tag>
+      <tag type="FootstepLeft" footprinttype="HumanLeft">0.60</tag>
+      <tag type="FootstepRight" footprinttype="HumanRight">0.86</tag>
+    </assetreference>
+    <component>ModelComp</component>
+  </anim>
+  <anim>Attack
+    <assetreference type="GrannyAnim">
+      <file>animation_library\shared\human_attack_generic_A</file>
+      <tag type="Attack">0.58</tag>
+    </assetreference>
+    <component>ModelComp</component>
+  </anim>
+  <anim>Heal
+    <assetreference type="GrannyAnim">
+      <file>units\priests\ottoman_priest_heal_anim</file>
+    </assetreference>
+    <component>heal model</component>
+    <attach a="heal_rays" frombone="ATTACHPOINT" tobone="ATTACHPOINT" syncanims="0"/>
+  </anim>
+  <anim>Reload
+    <assetreference type="GrannyAnim">
+      <file>animation_library\SPC\cooper\reload</file>
+    </assetreference>
+    <component>ModelComp</component>
+    <attach a="pistol" frombone="MASTER" tobone="BIP01 PROP1" syncanims="1"/>
+  </anim>
+  <anim>Raze_Idle
+    <assetreference type="GrannyAnim">
+      <file>animation_library\shared\torch_throw_idle</file>
+    </assetreference>
+    <component>ModelComp</component>
+    <attach a="torch" frombone="ATTACHPOINT" tobone="L HAND" syncanims="0"/>
+  </anim>
+  <anim>Raze_Attack
+    <assetreference type="GrannyAnim">
+      <file>animation_library\shared\torch_throwA</file>
+      <tag type="Attack">0.61</tag>
+      <tag type="SpecificSoundSet" checkvisible="1" set="TorchSwing">0.46</tag>
+    </assetreference>
+    <assetreference type="GrannyAnim">
+      <file>animation_library\shared\torch_throwB</file>
+      <tag type="Attack">0.56</tag>
+      <tag type="SpecificSoundSet" checkvisible="1" set="TorchSwing">0.40</tag>
+    </assetreference>
+    <component>ModelComp</component>
+    <attach a="torch" frombone="ATTACHPOINT" tobone="L HAND" syncanims="0"/>
+  </anim>
+</animfile>

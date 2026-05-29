@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8"?>
+<animfile>
+  <definebone>Bone08</definebone>
+  <definebone>Bone04</definebone>
+  <component>ModelComp
+    <assetreference type="GrannyModel">
+      <file>units\animals\snow_monkey\snow_monkey_0</file>
+    </assetreference>
+    <decal>
+      <effecttype>default</effecttype>
+      <texture isfakeshadow="1">shadows_selections\shadow_circle_64x64</texture>
+      <selectedtexture>shadows_selections\selection_circle_32x32</selectedtexture>
+      <width>1.5</width>
+      <height>1.5</height>
+      <zoffset>-0.20</zoffset>
+    </decal>
+  </component>
+  <anim>Idle
+    <assetreference type="GrannyAnim">
+      <file>units\animals\lion_tailed_macaque\macaque_idle_a</file>
+      <weight>40</weight>
+    </assetreference>
+    <assetreference type="GrannyAnim">
+      <file>units\animals\lion_tailed_macaque\macaque_idle_b</file>
+      <weight>20</weight>
+    </assetreference>
+    <assetreference type="GrannyAnim">
+      <file>units\animals\lion_tailed_macaque\macaque_idle_c</file>
+      <weight>10</weight>
+    </assetreference>
+    <component>ModelComp</component>
+  </anim>
+  <anim>Bored
+    <assetreference type="GrannyAnim">
+      <file>units\animals\lion_tailed_macaque\macaque_idle_a</file>
+      <weight>40</weight>
+    </assetreference>
+    <assetreference type="GrannyAnim">
+      <file>units\animals\lion_tailed_macaque\macaque_idle_b</file>
+      <weight>20</weight>
+    </assetreference>
+    <component>ModelComp</component>
+  </anim>
+  <anim>Walk
+    <assetreference type="GrannyAnim">
+      <file>units\animals\lion_tailed_macaque\macaque_run_a</file>
+      <tag type="FootstepLeft" footprinttype="AnimalLeft" footprintbone="BONE08">0.93</tag>
+      <tag type="FootstepRight" footprinttype="AnimalRight" footprintbone="BONE04">0.68</tag>
+    </assetreference>
+    <component>ModelComp</component>
+  </anim>
+  <anim>HandAttack
+    <assetreference type="GrannyAnim">
+      <file>units\animals\lion_tailed_macaque\macaque_attack_a</file>
+      <tag type="Attack">0.48</tag>
+    </assetreference>
+    <assetreference type="GrannyAnim">
+      <file>units\animals\lion_tailed_macaque\macaque_attack_b</file>
+      <tag type="Attack">0.50</tag>
+    </assetreference>
+    <component>ModelComp</component>
+  </anim>
+  <anim>Death
+    <assetreference type="GrannyAnim">
+      <file>units\animals\lion_tailed_macaque\macaque_death_a</file>
+      <tag type="SpecificSoundSet" checkvisible="1" set="RagdollImpact">0.73</tag>
+    </assetreference>
+    <component>ModelComp</component>
+  </anim>
+  <anim>Wagon_Idle01
+    <assetreference type="GrannyAnim">
+      <file>units\animals\lion_tailed_macaque\macaque_idle_a</file>
+      <weight>40</weight>
+    </assetreference>
+    <assetreference type="GrannyAnim">
+      <file>units\animals\lion_tailed_macaque\macaque_idle_b</file>
+      <weight>20</weight>
+    </assetreference>
+    <assetreference type="GrannyAnim">
+      <file>units\animals\lion_tailed_macaque\macaque_idle_c</file>
+      <weight>10</weight>
+    </assetreference>
+    <component>ModelComp</component>
+  </anim>
+  <anim>Wagon_Exit01
+    <assetreference type="GrannyAnim">
+      <file>units\animals\lion_tailed_macaque\macaque_idle_a</file>
+      <weight>40</weight>
+    </assetreference>
+    <component>ModelComp</component>
+  </anim>
+</animfile>

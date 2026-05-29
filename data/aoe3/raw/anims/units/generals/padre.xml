@@ -1,0 +1,602 @@
+<?xml version="1.0" encoding="utf-8"?>
+<animfile>
+  <definebone>Bip01_AttachLt</definebone>
+  <definebone>Bip01_AttachRt</definebone>
+  <definebone>bip01 Prop1</definebone>
+  <definebone>bip01 Prop2</definebone>
+  <definebone>bone_hat</definebone>
+  <definebone>Bip01 Head</definebone>
+  <definebone>bone_backpack</definebone>
+  <definebone>bone_fur</definebone>
+  <definebone>bone_gun</definebone>
+  <definebone>HITPOINTBAR</definebone>
+  <definebone>bone_chief_aura</definebone>
+  <attachment>torch
+    <include>effects\projectiles\torch.xml</include>
+  </attachment>
+  <attachment>hat
+    <component>hat
+      <assetreference type="GrannyModel">
+        <file>units\generals\padre_hat</file>
+      </assetreference>
+    </component>
+    <anim>Idle
+      <component>hat</component>
+    </anim>
+  </attachment>
+  <attachment>hat_maya
+    <component>hat
+      <assetreference type="GrannyModel">
+        <file>units\generals\padre_hat_maya</file>
+      </assetreference>
+    </component>
+    <anim>Idle
+      <component>hat</component>
+    </anim>
+  </attachment>
+  <attachment>sword
+    <component>sword
+      <assetreference type="GrannyModel">
+        <file>units\spc\bolivar\bolivar_sword</file>
+      </assetreference>
+    </component>
+    <anim>Idle
+      <component>sword</component>
+    </anim>
+  </attachment>
+  <attachment>bag
+    <component>bag
+      <assetreference type="GrannyModel">
+        <file>units\spc\george_washington_x\spc_george_washington_bag</file>
+      </assetreference>
+    </component>
+    <anim>Idle
+      <component>bag</component>
+    </anim>
+  </attachment>
+  <attachment>pistol
+    <component>pistol
+      <assetreference type="GrannyModel">
+        <file>units\generals\general_gun</file>
+      </assetreference>
+    </component>
+    <anim>Idle
+      <component>pistol</component>
+    </anim>
+  </attachment>
+  <attachment>flag
+    <component>flag
+      <assetreference type="GrannyModel">
+        <file>units\explorers\explorer_flag</file>
+      </assetreference>
+    </component>
+    <anim>Idle
+      <component>flag</component>
+    </anim>
+  </attachment>
+  <attachment>musket
+    <component>musket
+      <assetreference type="GrannyModel">
+        <file>units\asians\spc\nanib\nanib_rifle</file>
+      </assetreference>
+    </component>
+    <anim>Idle
+      <component>musket</component>
+    </anim>
+  </attachment>
+  <attachment>tnt
+    <component>tnt
+      <assetreference type="GrannyModel">
+        <file>buildings\props_colony\tnt_barrel</file>
+      </assetreference>
+    </component>
+    <anim>Idle
+      <component>tnt</component>
+    </anim>
+  </attachment>
+  <attachment>HealRays
+    <component>HealFXEmitter
+      <assetreference type="ParticleSystem">
+        <file>units\explorers\heal_rays.particle</file>
+      </assetreference>
+    </component>
+    <anim>None
+      <component>HealFXEmitter</component>
+    </anim>
+  </attachment>
+  <attachment>measure tape
+    <component>measure tape
+      <assetreference type="GrannyModel">
+        <file>units\attachments\measuring_tape</file>
+      </assetreference>
+    </component>
+    <anim>Idle
+      <component>measure tape</component>
+    </anim>
+  </attachment>
+  <attachment>saw
+    <component>saw_villager
+      <assetreference type="GrannyModel">
+        <file>units\attachments\saw_villager</file>
+      </assetreference>
+    </component>
+    <anim>Idle
+      <component>saw_villager</component>
+    </anim>
+  </attachment>
+  <attachment>hammer
+    <component>hammer
+      <assetreference type="GrannyModel">
+        <file>units\attachments\hammer_villager</file>
+      </assetreference>
+    </component>
+    <anim>Idle
+      <component>hammer</component>
+    </anim>
+  </attachment>
+  <attachment>hat
+    <component>hat
+      <assetreference type="GrannyModel">
+        <file>units\generals\padre_hat</file>
+      </assetreference>
+    </component>
+    <anim>Idle
+      <component>hat</component>
+    </anim>
+  </attachment>
+  <component>ModelComp
+    <logic type="Tech">
+      <none>
+        <assetreference type="GrannyModel">
+          <file>units\spc\hidalgo\spc_hidalgo</file>
+        </assetreference>
+        <attach a="bag" frombone="bone_bag" tobone="PELVIS" syncanims="0"/>
+      </none>
+      <derevolutionmxbajacalifornia>
+        <assetreference type="GrannyModel">
+          <file>units\generals\padre</file>
+        </assetreference>
+        <attach a="hat" frombone="Bip01 Head" tobone="HEAD" syncanims="0"/>
+        <attach a="bag" frombone="bone_bag" tobone="PELVIS" syncanims="0"/>
+      </derevolutionmxbajacalifornia>
+      <derevolutionmxcalifornia>
+        <assetreference type="GrannyModel">
+          <file>units\generals\padre</file>
+        </assetreference>
+        <attach a="hat" frombone="Bip01 Head" tobone="HEAD" syncanims="0"/>
+        <attach a="bag" frombone="bone_bag" tobone="PELVIS" syncanims="0"/>
+      </derevolutionmxcalifornia>
+      <derevolutionmxtexas>
+        <assetreference type="GrannyModel">
+          <file>units\generals\padre</file>
+        </assetreference>
+        <attach a="hat" frombone="Bip01 Head" tobone="HEAD" syncanims="0"/>
+        <attach a="bag" frombone="bone_bag" tobone="PELVIS" syncanims="0"/>
+      </derevolutionmxtexas>
+      <dereturnage2>
+        <assetreference type="GrannyModel">
+          <file>units\spc\hidalgo\spc_hidalgo</file>
+        </assetreference>
+        <attach a="bag" frombone="bone_bag" tobone="PELVIS" syncanims="0"/>
+      </dereturnage2>
+      <dereturnage3>
+        <assetreference type="GrannyModel">
+          <file>units\spc\hidalgo\spc_hidalgo</file>
+        </assetreference>
+        <attach a="bag" frombone="bone_bag" tobone="PELVIS" syncanims="0"/>
+      </dereturnage3>
+      <derevolutionmxmaya>
+        <assetreference type="GrannyModel">
+          <file>units\spc\hidalgo\spc_hidalgo</file>
+        </assetreference>
+        <attach a="hat_maya" frombone="Bip01 Head" tobone="HEAD" syncanims="0"/>
+        <attach a="bag" frombone="bone_bag" tobone="PELVIS" syncanims="0"/>
+      </derevolutionmxmaya>
+    </logic>
+    <decal>
+      <effecttype>default</effecttype>
+      <texture isfakeshadow="1">shadows_selections\shadow_circle_32x32</texture>
+      <selectedtexture>shadows_selections\selection_hero_64x64</selectedtexture>
+      <noncinematictexture>shadows_selections\shadow_hero_64x64</noncinematictexture>
+      <width>1.50</width>
+      <height>1.50</height>
+      <selectionextrawidth>1.0</selectionextrawidth>
+      <selectionextraheight>1.0</selectionextraheight>
+    </decal>
+  </component>
+  <anim>Idle
+    <assetreference type="GrannyAnim">
+      <file>animation_library\SPC\Morgan\idle</file>
+    </assetreference>
+    <component>ModelComp</component>
+    <attach a="sword" frombone="MASTER" tobone="bip01 Prop1" syncanims="0"/>
+  </anim>
+  <anim>Bored
+    <assetreference type="GrannyAnim">
+      <file>animation_library\SPC\Morgan\idle</file>
+    </assetreference>
+    <assetreference type="GrannyAnim">
+      <file>animation_library\shared\cheer_A</file>
+    </assetreference>
+    <assetreference type="GrannyAnim">
+      <file>animation_library\shared\cheer_D</file>
+    </assetreference>
+    <assetreference type="GrannyAnim">
+      <file>animation_library\shared\cheer_E</file>
+    </assetreference>
+    <component>ModelComp</component>
+    <attach a="sword" frombone="MASTER" tobone="bip01 Prop1" syncanims="0"/>
+  </anim>
+  <anim>Walk
+    <assetreference type="GrannyAnim">
+      <file>animation_library\natives\priest\walk</file>
+      <tag type="FootstepLeft" footprinttype="HumanLeft">0.18</tag>
+      <tag type="FootstepRight" footprinttype="HumanRight">0.62</tag>
+    </assetreference>
+    <component>ModelComp</component>
+    <attach a="sword" frombone="MASTER" tobone="bip01 Prop1" syncanims="0"/>
+  </anim>
+  <anim>Jog
+    <assetreference type="GrannyAnim">
+      <file>animation_library\infantry\Charge\swordmen_charge_jog</file>
+      <tag type="FootstepLeft" footprinttype="HumanLeft">0.76</tag>
+      <tag type="FootstepRight" footprinttype="HumanRight">0.20</tag>
+    </assetreference>
+    <assetreference type="GrannyAnim">
+      <file>animation_library\infantry\Charge\swordmen_charge_jogB</file>
+      <tag type="FootstepLeft" footprinttype="HumanLeft">0.76</tag>
+      <tag type="FootstepRight" footprinttype="HumanRight">0.20</tag>
+    </assetreference>
+    <assetreference type="GrannyAnim">
+      <file>animation_library\infantry\Charge\swordmen_charge_jogC</file>
+      <tag type="FootstepLeft" footprinttype="HumanLeft">0.76</tag>
+      <tag type="FootstepRight" footprinttype="HumanRight">0.20</tag>
+    </assetreference>
+    <component>ModelComp</component>
+    <attach a="sword" frombone="bone_sword" tobone="Bip01 Prop1" syncanims="0"/>
+  </anim>
+  <anim>Run
+    <assetreference type="GrannyAnim">
+      <file>animation_library\infantry\Charge\swordmen_charge_run</file>
+      <tag type="FootstepLeft" footprinttype="HumanLeft">0.76</tag>
+      <tag type="FootstepRight" footprinttype="HumanRight">0.20</tag>
+    </assetreference>
+    <assetreference type="GrannyAnim">
+      <file>animation_library\infantry\Charge\swordmen_charge_runB</file>
+      <tag type="FootstepLeft" footprinttype="HumanLeft">0.76</tag>
+      <tag type="FootstepRight" footprinttype="HumanRight">0.20</tag>
+    </assetreference>
+    <assetreference type="GrannyAnim">
+      <file>animation_library\infantry\Charge\swordmen_charge_runC</file>
+      <tag type="FootstepLeft" footprinttype="HumanLeft">0.76</tag>
+      <tag type="FootstepRight" footprinttype="HumanRight">0.20</tag>
+    </assetreference>
+    <component>ModelComp</component>
+    <attach a="sword" frombone="bone_sword" tobone="Bip01 Prop1" syncanims="0"/>
+  </anim>
+  <anim>Raze_idle
+    <assetreference type="GrannyAnim">
+      <file>animation_library\natives\warchief_iroquois\torch_throw_idle</file>
+    </assetreference>
+    <component>ModelComp</component>
+    <attach a="torch" frombone="ATTACHPOINT" tobone="L HAND" syncanims="0"/>
+  </anim>
+  <anim>Raze_attack
+    <assetreference type="GrannyAnim">
+      <file>animation_library\natives\warchief_iroquois\torch_throwA</file>
+      <tag type="Attack">0.61</tag>
+      <tag type="SpecificSoundSet" checkvisible="1" set="TorchSwing">0.47</tag>
+    </assetreference>
+    <assetreference type="GrannyAnim">
+      <file>animation_library\natives\warchief_iroquois\torch_throwB</file>
+      <tag type="Attack">0.56</tag>
+      <tag type="SpecificSoundSet" checkvisible="1" set="TorchSwing">0.42</tag>
+    </assetreference>
+    <component>ModelComp</component>
+    <attach a="torch" frombone="ATTACHPOINT" tobone="L HAND" syncanims="0"/>
+  </anim>
+  <anim>HandAttack
+    <assetreference type="GrannyAnim">
+      <file>animation_library\explorer\melee_attack_b</file>
+      <tag type="Attack">0.29</tag>
+      <tag type="SpecificSoundSet" checkvisible="1" set="Swoosh">0.23</tag>
+      <tag type="SpecificSoundSet" checkvisible="1" set="Swoosh">0.57</tag>
+    </assetreference>
+    <component>ModelComp</component>
+    <attach a="sword" frombone="ROOT" tobone="bip01 Prop1" syncanims="0"/>
+  </anim>
+  <anim>RangedAttack
+    <assetreference type="GrannyAnim">
+      <file>animation_library\SPC\cooper\ranged_attack</file>
+      <tag type="Attack">0.37</tag>
+      <tag type="SpecificSoundSet" checkvisible="1" set="PistolShot">0.37</tag>
+      <tag type="Particles" particlename="pistolshot_right">0.37</tag>
+    </assetreference>
+    <component>ModelComp</component>
+    <attach a="pistol" frombone="MASTER" tobone="BIP01 PROP1" syncanims="1"/>
+  </anim>
+  <anim>Reload
+    <assetreference type="GrannyAnim">
+      <file>animation_library\SPC\cooper\reload</file>
+    </assetreference>
+    <component>ModelComp</component>
+    <attach a="pistol" frombone="MASTER" tobone="BIP01 PROP1" syncanims="1"/>
+  </anim>
+  <anim>RangedAttackSharpshoot
+    <assetreference type="GrannyAnim">
+      <file>animation_library\explorer\sharpshooter_fire</file>
+      <tag type="Attack">0.41</tag>
+      <tag type="SpecificSoundSet" checkvisible="1" set="RifleShot">0.41</tag>
+      <tag type="Particles" particlename="musketshot">0.41</tag>
+    </assetreference>
+    <component>ModelComp</component>
+    <attach a="musket" frombone="Bip01_AttachRt" tobone="bip01 Prop1" syncanims="0"/>
+  </anim>
+  <anim>SharpshootIdle
+    <assetreference type="GrannyAnim">
+      <file>animation_library\shared\human_crossbow_idle_a</file>
+    </assetreference>
+    <component>ModelComp</component>
+    <attach a="musket" frombone="Bip01_AttachRt" tobone="bip01 Prop1" syncanims="0"/>
+  </anim>
+  <anim>Death
+    <assetreference type="GrannyAnim">
+      <file>animation_library\natives\warchief_iroquois\death_standing_rifleman_A</file>
+      <tag type="SpecificSoundSet" checkvisible="1" set="RagdollImpact">0.51</tag>
+    </assetreference>
+    <assetreference type="GrannyAnim">
+      <file>animation_library\natives\warchief_iroquois\death_standing_rifleman_B</file>
+      <tag type="SpecificSoundSet" checkvisible="1" set="RagdollImpact">0.18</tag>
+    </assetreference>
+    <assetreference type="GrannyAnim">
+      <file>animation_library\natives\warchief_iroquois\death_standing_rifleman_C</file>
+      <tag type="SpecificSoundSet" checkvisible="1" set="RagdollImpact">0.72</tag>
+    </assetreference>
+    <component>ModelComp</component>
+    <attach a="sword" frombone="ROOT" tobone="bip01 Prop1" syncanims="0"/>
+  </anim>
+  <anim>Pickup
+    <assetreference type="GrannyAnim">
+      <file>animation_library\natives\warchief_iroquois\pickup_explorer_A</file>
+      <tag type="SpecificSoundSet" checkvisible="1" set="GatherFruit">0.33</tag>
+    </assetreference>
+    <component>ModelComp</component>
+  </anim>
+  <anim>Heal
+    <assetreference type="GrannyAnim">
+      <file>animation_library\natives\warchief_iroquois\f_explorer_heal_anim</file>
+      <tag type="SpecificSoundSet" checkvisible="1" set="GatherFruit">0.13</tag>
+    </assetreference>
+    <component>ModelComp</component>
+    <attach a="HealRays" frombone="ATTACHPOINT" tobone="ATTACHPOINT" syncanims="0"/>
+  </anim>
+  <anim>Knockout
+    <assetreference type="GrannyAnim">
+      <file>animation_library\natives\warchief_iroquois\Knockout</file>
+      <tag type="SpecificSoundSet" checkvisible="1" set="RagdollImpact">0.62</tag>
+      <tag type="SpecificSoundSet" checkvisible="1" set="RagdollImpact">0.31</tag>
+    </assetreference>
+    <component>ModelComp</component>
+    <attach a="sword" frombone="MASTER" tobone="Bip01 Prop1" syncanims="1"/>
+  </anim>
+  <anim>Recover
+    <assetreference type="GrannyAnim">
+      <file>animation_library\explorer\knockout_recover</file>
+    </assetreference>
+    <component>ModelComp</component>
+    <attach a="sword" frombone="Bip01_AttachRt" tobone="Bip01 Prop1" syncanims="1"/>
+  </anim>
+  <anim>KnockoutIdle
+    <assetreference type="GrannyAnim">
+      <file>animation_library\natives\warchief_iroquois\knockout_idle</file>
+    </assetreference>
+    <component>ModelComp</component>
+    <attach a="sword" frombone="MASTER" tobone="Bip01 Prop1" syncanims="1"/>
+  </anim>
+  <anim>Physician
+    <assetreference type="GrannyAnim">
+      <file>animation_library\natives\warchief_iroquois\physician</file>
+    </assetreference>
+    <component>ModelComp</component>
+  </anim>
+  <anim>Swashbuckler
+    <assetreference type="GrannyAnim">
+      <file>animation_library\natives\warchief_iroquois\swashbuckler</file>
+      <tag type="Attack">0.70</tag>
+      <tag type="SpecificSoundSet" checkvisible="1" set="Swoosh">0.53</tag>
+    </assetreference>
+    <component>ModelComp</component>
+    <attach a="sword" frombone="MASTER" tobone="Bip01 Prop1" syncanims="1"/>
+  </anim>
+  <anim>SwordStrike
+    <assetreference type="GrannyAnim">
+      <file>animation_library\mercs\fusilier\charge_attack2</file>
+      <tag type="Attack">0.27</tag>
+      <tag type="SpecificSoundSet" checkvisible="1" set="Swoosh">0.23</tag>
+    </assetreference>
+    <component>ModelComp</component>
+    <attach a="sword" frombone="MASTER" tobone="Bip01 Prop2" syncanims="1"/>
+  </anim>
+  <anim>Field_promotion
+    <assetreference type="GrannyAnim">
+      <file>animation_library\natives\warchief_iroquois\salute_rifleman_A</file>
+    </assetreference>
+    <component>ModelComp</component>
+  </anim>
+  <anim>Wildfire_idle
+    <assetreference type="GrannyAnim">
+      <file>animation_library\natives\warchief_iroquois\volley_standing_idle</file>
+    </assetreference>
+    <component>ModelComp</component>
+  </anim>
+  <anim>Wildfire_walk_left
+    <assetreference type="GrannyAnim">
+      <file>animation_library\natives\warchief_iroquois\wildfire_firewalk_left</file>
+      <tag type="FootstepLeft" footprinttype="HumanLeft">0.14</tag>
+      <tag type="FootstepRight" footprinttype="HumanRight">0.61</tag>
+    </assetreference>
+    <component>ModelComp</component>
+  </anim>
+  <anim>Wildfire_walk_right
+    <assetreference type="GrannyAnim">
+      <file>animation_library\natives\warchief_iroquois\wildfire_firewalk_right</file>
+      <tag type="FootstepLeft" footprinttype="HumanLeft">0.14</tag>
+      <tag type="FootstepRight" footprinttype="HumanRight">0.61</tag>
+    </assetreference>
+    <component>ModelComp</component>
+  </anim>
+  <anim>Petard_idle
+    <assetreference type="GrannyAnim">
+      <file>animation_library\natives\warchief_iroquois\human_petard_idleA</file>
+    </assetreference>
+    <component>ModelComp</component>
+    <attach a="tnt" frombone="MASTER" tobone="Bip01 Prop1" syncanims="1"/>
+  </anim>
+  <anim>Petard_bored
+    <assetreference type="GrannyAnim">
+      <file>animation_library\natives\warchief_iroquois\human_petard_boredA</file>
+    </assetreference>
+    <component>ModelComp</component>
+    <attach a="tnt" frombone="MASTER" tobone="Bip01 Prop1" syncanims="1"/>
+  </anim>
+  <anim>Petard_set
+    <assetreference type="GrannyAnim">
+      <file>animation_library\natives\warchief_iroquois\human_petard_set</file>
+    </assetreference>
+    <component>ModelComp</component>
+    <attach a="tnt" frombone="MASTER" tobone="Bip01 Prop1" syncanims="1"/>
+  </anim>
+  <anim>Petard_walk
+    <assetreference type="GrannyAnim">
+      <file>animation_library\natives\warchief_iroquois\human_petard_walk</file>
+      <tag type="FootstepLeft" footprinttype="HumanLeft">0.14</tag>
+      <tag type="FootstepRight" footprinttype="HumanRight">0.61</tag>
+    </assetreference>
+    <component>ModelComp</component>
+    <attach a="tnt" frombone="MASTER" tobone="Bip01 Prop1" syncanims="1"/>
+  </anim>
+  <anim>Petard_jog
+    <assetreference type="GrannyAnim">
+      <file>animation_library\natives\warchief_iroquois\human_petard_jog</file>
+      <tag type="FootstepLeft" footprinttype="HumanLeft">0.14</tag>
+      <tag type="FootstepRight" footprinttype="HumanRight">0.61</tag>
+    </assetreference>
+    <component>ModelComp</component>
+    <attach a="tnt" frombone="MASTER" tobone="Bip01 Prop1" syncanims="1"/>
+  </anim>
+  <anim>BuildLifting
+    <assetreference type="GrannyAnim">
+      <file>animation_library\natives\warchief_iroquois\BuildLifting</file>
+      <weight>90</weight>
+      <tag type="Attack">0.66</tag>
+      <tag type="SpecificSoundSet" checkvisible="1" set="Build">0.38</tag>
+      <tag type="SpecificSoundSet" checkvisible="1" set="Build">0.67</tag>
+      <tag type="SpecificSoundSet" checkvisible="1" set="Build">1.00</tag>
+    </assetreference>
+    <assetreference type="GrannyAnim">
+      <file>animation_library\natives\warchief_iroquois\human_build_standing_idlea</file>
+      <weight>10</weight>
+      <tag type="Attack">0.66</tag>
+    </assetreference>
+    <component>ModelComp</component>
+    <attach a="hammer" frombone="MASTER" tobone="bip01 Prop1" syncanims="0"/>
+  </anim>
+  <anim>BuildSaw
+    <assetreference type="GrannyAnim">
+      <file>animation_library\natives\warchief_iroquois\human_saw_standing</file>
+      <weight>90</weight>
+      <tag type="SpecificSoundSet" checkvisible="1" set="BuildSaw">0.09</tag>
+      <tag type="SpecificSoundSet" checkvisible="1" set="BuildSaw">0.32</tag>
+      <tag type="SpecificSoundSet" checkvisible="1" set="BuildSaw">0.70</tag>
+    </assetreference>
+    <assetreference type="GrannyAnim">
+      <file>animation_library\natives\warchief_iroquois\human_saw_standing_idlea</file>
+      <weight>10</weight>
+    </assetreference>
+    <component>ModelComp</component>
+    <attach a="saw" frombone="MASTER" tobone="Bip01 Prop1" syncanims="0"/>
+  </anim>
+  <anim>BuildStaking
+    <assetreference type="GrannyAnim">
+      <file>animation_library\natives\warchief_iroquois\human_saw_a</file>
+      <weight>90</weight>
+    </assetreference>
+    <assetreference type="GrannyAnim">
+      <file>animation_library\natives\warchief_iroquois\human_saw_idlea</file>
+      <weight>10</weight>
+    </assetreference>
+    <component>ModelComp</component>
+    <attach a="saw" frombone="MASTER" tobone="Bip01 Prop1" syncanims="0"/>
+  </anim>
+  <anim>Build
+    <assetreference type="GrannyAnim">
+      <file>animation_library\natives\warchief_iroquois\villager_male_build1</file>
+      <weight>90</weight>
+      <tag type="SpecificSoundSet" checkvisible="1" set="Build">0.36</tag>
+      <tag type="SpecificSoundSet" checkvisible="1" set="Build">0.66</tag>
+      <tag type="SpecificSoundSet" checkvisible="1" set="Build">1.00</tag>
+    </assetreference>
+    <assetreference type="GrannyAnim">
+      <file>animation_library\natives\warchief_iroquois\Build_b</file>
+      <weight>10</weight>
+    </assetreference>
+    <assetreference type="GrannyAnim">
+      <file>animation_library\natives\warchief_iroquois\Build_c</file>
+      <weight>10</weight>
+    </assetreference>
+    <assetreference type="GrannyAnim">
+      <file>animation_library\natives\warchief_iroquois\Build_d</file>
+      <weight>10</weight>
+    </assetreference>
+    <assetreference type="GrannyAnim">
+      <file>animation_library\natives\warchief_iroquois\villager_male_build1</file>
+      <weight>10</weight>
+    </assetreference>
+    <assetreference type="GrannyAnim">
+      <file>animation_library\natives\warchief_iroquois\Build_d</file>
+      <weight>10</weight>
+    </assetreference>
+    <component>ModelComp</component>
+    <attach a="measure tape" frombone="MASTER" tobone="Bip01 Prop2" syncanims="0"/>
+    <attach a="hammer" frombone="MASTER" tobone="bip01 Prop1" syncanims="0"/>
+  </anim>
+  <anim>AblBeastMaster
+    <assetreference type="GrannyAnim">
+      <file>animation_library\natives\warchief_iroquois\heal2</file>
+      <tag type="SpecificSoundSet" checkvisible="1" set="UI_WarChiefConverting">0.11</tag>
+    </assetreference>
+    <component>ModelComp</component>
+  </anim>
+  <anim>CombatIdle
+    <assetreference type="GrannyAnim">
+      <file>animation_library\explorer\combat_idle_b</file>
+    </assetreference>
+    <component>ModelComp</component>
+    <attach a="sword" frombone="ROOT" tobone="bip01 Prop1" syncanims="0"/>
+  </anim>
+  <anim>CombatIdleRanged
+    <assetreference type="GrannyAnim">
+      <file>animation_library\shared\human_idle_generic_A</file>
+    </assetreference>
+    <component>ModelComp</component>
+    <attach a="pistol" frombone="MASTER" tobone="BIP01 PROP1" syncanims="1"/>
+  </anim>
+  <anim>CombatIdleMelee
+    <assetreference type="GrannyAnim">
+      <file>animation_library\infantry\Charge\dopplesoldner_charge_idle</file>
+    </assetreference>
+    <assetreference type="GrannyAnim">
+      <file>animation_library\infantry\Charge\dopplesoldner_charge_idleB</file>
+    </assetreference>
+    <component>ModelComp</component>
+    <attach a="sword" frombone="MASTER" tobone="BIP01 PROP1" syncanims="1"/>
+  </anim>
+  <anim animlengthoverride="1.500000">PacifyAttack
+    <assetreference type="GrannyAnim">
+      <file>animation_library\natives\warchief_iroquois\human_build_standing_idlea</file>
+      <tag type="Attack">0.66</tag>
+      <tag type="SpecificSoundSet" checkvisible="1" set="PowerStun">0.66</tag>
+    </assetreference>
+    <component>ModelComp</component>
+  </anim>
+</animfile>

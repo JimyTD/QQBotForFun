@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<animfile>
+  <attachment>FX
+    <include>effects\animal particles\tapirFX.xml</include>
+  </attachment>
+  <component>flying_tapir
+    <assetreference type="GrannyModel">
+      <file>units\animals\tapir\flying_purple_tapir</file>
+    </assetreference>
+    <decal>
+      <effecttype>default</effecttype>
+      <texture isfakeshadow="1">shadows_selections\shadow_circle_32x32</texture>
+      <selectedtexture>shadows_selections\selection_circle_16x16</selectedtexture>
+      <width>1.00</width>
+      <height>1.00</height>
+    </decal>
+  </component>
+  <anim>Idle
+    <assetreference type="GrannyAnim">
+      <file>animation_library\quads\flying_purple_tapier_idle</file>
+    </assetreference>
+    <component>flying_tapir</component>
+    <attach a="FX" frombone="ATTACHPOINT" tobone="ATTACHPOINT" syncanims="0"/>
+  </anim>
+  <anim>Walk
+    <assetreference type="GrannyAnim">
+      <file>animation_library\quads\flying_purple_tapier_walk</file>
+    </assetreference>
+    <component>flying_tapir</component>
+    <attach a="FX" frombone="ATTACHPOINT" tobone="ATTACHPOINT" syncanims="0"/>
+  </anim>
+</animfile>
