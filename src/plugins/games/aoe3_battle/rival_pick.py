@@ -39,6 +39,7 @@ class _PendingPick:
     options: list[RivalTheme]
     emoji_to_index: dict[str, int]
     budget: int | None
+    age: int | None = None
     resolved: bool = False
     picks_enabled: bool = False
     like_counts: dict[str, int] = dataclasses.field(default_factory=dict)
@@ -107,6 +108,7 @@ async def start_theme_pick(
     group_id: int,
     initiator_id: int,
     budget: int | None = None,
+    age: int | None = None,
 ) -> str | None:
     """发起选主题。成功返回 None；失败返回错误提示文本。"""
     async with _pick_lock:
@@ -138,6 +140,7 @@ async def start_theme_pick(
         options=rng_options,
         emoji_to_index=emoji_to_index,
         budget=budget,
+        age=age,
         picks_enabled=False,
     )
     _pending[group_id] = pending
@@ -179,6 +182,7 @@ async def launch_rival_direct(
     initiator_id: int,
     theme_token: str,
     budget: int | None = None,
+    age: int | None = None,
 ) -> str | None:
     """指定主题直接开局。失败返回错误文本。"""
     theme = resolve_theme(theme_token)
@@ -189,6 +193,7 @@ async def launch_rival_direct(
         initiator_id=initiator_id,
         theme=theme,
         budget=budget,
+        age=age,
     )
 
 
@@ -203,6 +208,7 @@ async def _consume_choice(group_id: int, index: int, picker_id: int) -> None:
         p.resolved = True
         theme = p.options[index]
         budget = p.budget
+        age = p.age
         _pending.pop(group_id, None)
 
     err = await _launch_with_theme(
@@ -210,6 +216,7 @@ async def _consume_choice(group_id: int, index: int, picker_id: int) -> None:
         initiator_id=picker_id,
         theme=theme,
         budget=budget,
+        age=age,
     )
     if err:
         await session.broadcast(group_id, err)
@@ -221,12 +228,15 @@ async def _launch_with_theme(
     initiator_id: int,
     theme: RivalTheme,
     budget: int | None,
+    age: int | None = None,
 ) -> str | None:
     if game_base.get_runner_by_group(group_id) is not None:
         return "⚠️ 本群已有进行中的斗蛐蛐"
     config: dict[str, Any] = {"mode": "rival", "rival_theme_id": theme.id}
     if budget is not None:
         config["budget"] = budget
+    if age is not None:
+        config["age"] = age
     try:
         await game_base.create_and_start(
             "aoe3_battle",

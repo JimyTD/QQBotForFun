@@ -16,6 +16,7 @@ from typing import Sequence
 from src.plugins.aoe3.formatter import append_unit_tooltip
 from src.plugins.aoe3.models import Unit
 from src.plugins.aoe3.repository import UnitRepo, is_excluded_unit
+from src.plugins.aoe3.upgrades import apply_upgrades
 
 logger = logging.getLogger("aoe3_battle.lineup")
 
@@ -23,6 +24,35 @@ logger = logging.getLogger("aoe3_battle.lineup")
 # 常量
 # =====================================================================
 BUDGET = 10000               # 默认资源预算（与 game.py BUDGET_DEFAULT 一致）
+
+# 时代名 → 游戏时代号（与 units.json age 字段口径一致）
+AGE_NAME_TO_NUM = {
+    "Exploration Age": 1,
+    "Commerce Age": 2,
+    "Fortress Age": 3,
+    "Industrial Age": 4,
+    "Imperial Age": 5,
+}
+
+
+def unit_game_age(unit: Unit) -> int:
+    """单位登场时代号（1~5）；缺失视为 1（始终可用）。"""
+    return AGE_NAME_TO_NUM.get(unit.age, 1)
+
+
+def _age_filter(pool: list[Unit], age: int | None) -> list[Unit]:
+    """按 `unit.age ≤ age` 过滤兵池；age 为 None 不过滤。"""
+    if age is None:
+        return pool
+    return [u for u in pool if unit_game_age(u) <= age]
+
+
+def _apply_age_to_lineup(lineup: "Lineup", age: int | None) -> "Lineup":
+    """对阵容每个槽位的兵叠加该时代改良（出副本）。age=None 原样返回。"""
+    if age is None:
+        return lineup
+    lineup.slots = [UnitSlot(apply_upgrades(s.unit, age), s.count) for s in lineup.slots]
+    return lineup
 
 # 兵种数量权重（§2.2.3）
 SLOT_WEIGHTS = [0, 50, 50]   # 1种0%, 2种50%, 3种50%
@@ -242,6 +272,7 @@ class MatchLineup:
     blue: Lineup
     mode: str                  # "bet" | "duel" | "rival" | ...
     rival_theme: str | None = None   # 王中王展示名，如「散兵王」
+    age: int | None = None     # 本局时代（2~5）；None = 未启用改良/时代限定
 
 
 # =====================================================================
@@ -287,7 +318,7 @@ def _is_pure_healer(unit: Unit) -> bool:
     return max_atk <= PURE_HEALER_ATTACK_THRESHOLD
 
 
-def get_bet_pool(repo: UnitRepo) -> list[Unit]:
+def get_bet_pool(repo: UnitRepo, age: int | None = None) -> list[Unit]:
     """押注模式兵种池。
 
     规则（§2.2.2）：
@@ -297,6 +328,7 @@ def get_bet_pool(repo: UnitRepo) -> list[Unit]:
     - 排除纯治疗师（``AbstractHealer`` 且攻击 ≤ 10）
     - 排除召唤占位符（``*batch``）和 PVE 守护者（``is_excluded_unit``）
     - 排除 ``BLACKLIST``（数据 broken）和 ``BATTLE_BLACKLIST``（彩蛋/作弊兵）
+    - ``age`` 给定时按 ``unit.age ≤ age`` 限定（§3.10.6）
     """
     pool = []
     blacklisted = 0
@@ -330,9 +362,10 @@ def get_bet_pool(repo: UnitRepo) -> list[Unit]:
             continue
         pool.append(u)
 
+    pool = _age_filter(pool, age)
     logger.info(
-        "押注模式兵种池：%d 个兵种（总 %d，全局排除 %d，黑名单排除 %d）",
-        len(pool), len(repo.all_units), excluded, blacklisted,
+        "押注模式兵种池：%d 个兵种（总 %d，全局排除 %d，黑名单排除 %d，时代≤%s）",
+        len(pool), len(repo.all_units), excluded, blacklisted, age,
     )
     return pool
 
@@ -380,7 +413,7 @@ def get_blacklist_pool(repo: UnitRepo) -> list[Unit]:
     return pool
 
 
-def get_duel_pool(repo: UnitRepo) -> list[Unit]:
+def get_duel_pool(repo: UnitRepo, age: int | None = None) -> list[Unit]:
     """单挑模式兵种池。
 
     规则（§2.3）：
@@ -389,6 +422,7 @@ def get_duel_pool(repo: UnitRepo) -> list[Unit]:
     - 排除纯治疗师（``AbstractHealer`` 且攻击 ≤ 10）
     - 排除召唤占位符（``*batch``）和 PVE 守护者（``is_excluded_unit``）
     - 排除 ``BLACKLIST``（数据 broken）和 ``BATTLE_BLACKLIST``（彩蛋/作弊兵）
+    - ``age`` 给定时按 ``unit.age ≤ age`` 限定（§3.10.6）
     """
     pool = []
     blacklisted = 0
@@ -415,9 +449,10 @@ def get_duel_pool(repo: UnitRepo) -> list[Unit]:
             continue
         pool.append(u)
 
+    pool = _age_filter(pool, age)
     logger.info(
-        "单挑模式兵种池：%d 个兵种（总 %d，全局排除 %d，黑名单排除 %d）",
-        len(pool), len(repo.all_units), excluded, blacklisted,
+        "单挑模式兵种池：%d 个兵种（总 %d，全局排除 %d，黑名单排除 %d，时代≤%s）",
+        len(pool), len(repo.all_units), excluded, blacklisted, age,
     )
     return pool
 
@@ -631,6 +666,7 @@ def generate_bet_lineup(
     repo: UnitRepo,
     *,
     budget: int = BUDGET,
+    age: int | None = None,
     rng: random.Random | None = None,
 ) -> MatchLineup:
     """生成押注模式阵容（v2 复合阵容）。
@@ -639,11 +675,12 @@ def generate_bet_lineup(
     - 红蓝双方各独立生成 1~3 个兵种的阵容
     - 单兵种 vs 单兵种时使用 LCM 算法平衡资源
     - 多兵种时使用贪心填充
+    - ``age`` 给定时兵池按时代限定，并对双方叠加该时代改良（§3.10.6）
     """
     if rng is None:
         rng = random.Random()
 
-    pool = get_bet_pool(repo)
+    pool = get_bet_pool(repo, age=age)
     if len(pool) < 2:
         raise ValueError(f"兵种池不足：仅 {len(pool)} 个兵种")
 
@@ -682,7 +719,9 @@ def generate_bet_lineup(
         blue.total_cost, blue.total_pop,
     )
 
-    return MatchLineup(red=red, blue=blue, mode="bet")
+    _apply_age_to_lineup(red, age)
+    _apply_age_to_lineup(blue, age)
+    return MatchLineup(red=red, blue=blue, mode="bet", age=age)
 
 
 def _fill_to_target(
@@ -806,6 +845,7 @@ def generate_blacklist_lineup(
 def generate_duel_lineup(
     repo: UnitRepo,
     *,
+    age: int | None = None,
     rng: random.Random | None = None,
 ) -> MatchLineup:
     """生成单挑模式阵容。
@@ -813,15 +853,19 @@ def generate_duel_lineup(
     规则（§2.3）：
     - 两边各 1 个兵种，各 1 个单位
     - 不考虑资源平衡
+    - ``age`` 给定时兵池按时代限定，并叠加该时代改良
     """
     if rng is None:
         rng = random.Random()
 
-    pool = get_duel_pool(repo)
+    pool = get_duel_pool(repo, age=age)
     if len(pool) < 2:
         raise ValueError(f"兵种池不足：仅 {len(pool)} 个兵种")
 
     red_unit, blue_unit = rng.sample(pool, 2)
+    if age is not None:
+        red_unit = apply_upgrades(red_unit, age)
+        blue_unit = apply_upgrades(blue_unit, age)
 
     logger.info(
         "单挑阵容生成：🔴 %s (HP=%d) vs 🔵 %s (HP=%d)",
@@ -833,6 +877,7 @@ def generate_duel_lineup(
         red=Lineup(slots=[UnitSlot(unit=red_unit, count=1)]),
         blue=Lineup(slots=[UnitSlot(unit=blue_unit, count=1)]),
         mode="duel",
+        age=age,
     )
 
 
@@ -1089,6 +1134,17 @@ def format_vs_banner(lineup: MatchLineup) -> str:
         title,
         f"{red_str}  VS  {blue_str}",
     ]
+    # 时代 + 已激活类别科技（§3.10.6）
+    if lineup.age is not None:
+        from src.plugins.aoe3.i18n import t
+        from src.plugins.aoe3.upgrades import active_category_techs
+        age_names = {2: "商业", 3: "要塞", 4: "工业", 5: "帝王"}
+        lines.append(f"⏳ 本局：{age_names.get(lineup.age, lineup.age)}时代（{lineup.age}）· 含逐时代改良")
+        all_units = [s.unit for s in r.slots + b.slots]
+        cats = active_category_techs(all_units, lineup.age)
+        for name, hp_mult in cats:
+            pct = round((hp_mult - 1.0) * 100)
+            lines.append(f"   · {name}：血/攻 +{pct}%")
     if lineup.mode == "blacklist":
         lines.append(
             f"⭐战力 🔴 {r.total_power:,.0f} vs 🔵 {b.total_power:,.0f}"
@@ -1238,6 +1294,7 @@ def generate_custom_lineup(
     unit_names: list[str],
     *,
     budget: int = BUDGET,
+    age: int | None = None,
     rng: random.Random | None = None,
 ) -> MatchLineup | str:
     """生成自选兵种对决阵容。
@@ -1282,8 +1339,8 @@ def generate_custom_lineup(
         # 选了 2 种：直接对打
         blue_unit = resolved_units[1]
     else:
-        # 选了 1 种：系统从正常池随机对手
-        pool = get_bet_pool(repo)
+        # 选了 1 种：系统从正常池随机对手（对手尊重时代限定；玩家明选不受限）
+        pool = get_bet_pool(repo, age=age)
         # 排除玩家已选的兵种（不镜像对决）
         pool = [u for u in pool if u.id != red_unit.id]
         if not pool:
@@ -1315,7 +1372,9 @@ def generate_custom_lineup(
         abs(red.total_cost - blue.total_cost),
     )
 
-    return MatchLineup(red=red, blue=blue, mode="custom")
+    _apply_age_to_lineup(red, age)
+    _apply_age_to_lineup(blue, age)
+    return MatchLineup(red=red, blue=blue, mode="custom", age=age)
 
 
 def generate_rival_lineup(
@@ -1323,6 +1382,7 @@ def generate_rival_lineup(
     theme_id: str,
     *,
     budget: int = BUDGET,
+    age: int | None = None,
     rng: random.Random | None = None,
 ) -> MatchLineup | str:
     """生成王中王阵容：主题池内随机两兵种 + LCM（同自选）。"""
@@ -1335,7 +1395,7 @@ def generate_rival_lineup(
     if theme is None:
         return f"⚠️ 未知王中王主题 id：{theme_id}"
 
-    pool = filter_theme_pool(get_bet_pool(repo), theme)
+    pool = filter_theme_pool(get_bet_pool(repo, age=age), theme)
     if len(pool) < 2:
         return f"⚠️ 主题「{theme.title}」兵种池不足（仅 {len(pool)} 个）"
 
@@ -1361,6 +1421,8 @@ def generate_rival_lineup(
         red_unit.name, red_count, blue_unit.name, blue_count,
     )
 
+    _apply_age_to_lineup(red, age)
+    _apply_age_to_lineup(blue, age)
     return MatchLineup(
-        red=red, blue=blue, mode="rival", rival_theme=theme.title,
+        red=red, blue=blue, mode="rival", rival_theme=theme.title, age=age,
     )

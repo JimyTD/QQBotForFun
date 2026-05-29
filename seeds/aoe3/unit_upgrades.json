@@ -1,0 +1,3310 @@
+{
+  "_meta": {
+    "generated_at": "2026-05-29T11:18:46.474426+00:00",
+    "source": "data/aoe3/raw/techtreey.xml",
+    "doc": "docs/games/aoe3-battle.md §3.10",
+    "fields": [
+      "hp_mult",
+      "damage_mult",
+      "range_add",
+      "aoe_add",
+      "rof_set",
+      "armor_add",
+      "speed_add",
+      "speed_mult",
+      "speed_set",
+      "mult_add"
+    ],
+    "age_status": {
+      "Colonialize": 2,
+      "Fortressize": 3,
+      "Industrialize": 4,
+      "Imperialize": 5
+    }
+  },
+  "units": {
+    "abusgun": {
+      "3": {
+        "hp_mult": 1.2,
+        "damage_mult": 1.2,
+        "range_add": {
+          "ranged": 1.0
+        }
+      },
+      "4": {
+        "hp_mult": 1.5,
+        "damage_mult": 1.5,
+        "range_add": {
+          "ranged": 2.0
+        }
+      },
+      "5": {
+        "hp_mult": 2.0,
+        "damage_mult": 2.0,
+        "range_add": {
+          "ranged": 4.0
+        }
+      }
+    },
+    "cacadore": {
+      "3": {
+        "hp_mult": 1.2,
+        "damage_mult": 1.2
+      },
+      "4": {
+        "hp_mult": 1.5,
+        "damage_mult": 1.5
+      },
+      "5": {
+        "hp_mult": 2.0,
+        "damage_mult": 2.0
+      }
+    },
+    "cannon": {
+      "5": {
+        "hp_mult": 1.5,
+        "damage_mult": 1.5
+      }
+    },
+    "canoe": {
+      "5": {
+        "hp_mult": 1.25
+      }
+    },
+    "caravel": {
+      "5": {
+        "hp_mult": 1.3,
+        "damage_mult": 1.3
+      }
+    },
+    "cavalryarcher": {
+      "3": {
+        "hp_mult": 1.2,
+        "damage_mult": 1.2
+      },
+      "4": {
+        "hp_mult": 1.5,
+        "damage_mult": 1.5
+      },
+      "5": {
+        "hp_mult": 2.0,
+        "damage_mult": 2.0
+      }
+    },
+    "cossack": {
+      "3": {
+        "hp_mult": 1.2,
+        "damage_mult": 1.2
+      },
+      "4": {
+        "hp_mult": 1.5,
+        "damage_mult": 1.5
+      },
+      "5": {
+        "hp_mult": 2.0,
+        "damage_mult": 2.0
+      }
+    },
+    "crossbowman": {
+      "3": {
+        "hp_mult": 1.2,
+        "damage_mult": 1.2
+      },
+      "4": {
+        "hp_mult": 1.5,
+        "damage_mult": 1.5
+      },
+      "5": {
+        "hp_mult": 2.0,
+        "damage_mult": 2.0
+      }
+    },
+    "cuirassier": {
+      "3": {
+        "hp_mult": 1.2,
+        "damage_mult": 1.2
+      },
+      "4": {
+        "hp_mult": 1.5,
+        "damage_mult": 1.5
+      },
+      "5": {
+        "hp_mult": 2.0,
+        "damage_mult": 2.0
+      }
+    },
+    "culverin": {
+      "4": {
+        "hp_mult": 1.25,
+        "damage_mult": 1.35
+      },
+      "5": {
+        "hp_mult": 1.75,
+        "damage_mult": 1.85
+      }
+    },
+    "deazap": {
+      "3": {
+        "hp_mult": 1.2,
+        "damage_mult": 1.2,
+        "range_add": {
+          "ranged": 2.0
+        }
+      },
+      "4": {
+        "hp_mult": 1.5,
+        "damage_mult": 1.5,
+        "range_add": {
+          "ranged": 4.0
+        }
+      },
+      "5": {
+        "hp_mult": 2.0,
+        "damage_mult": 2.0,
+        "range_add": {
+          "ranged": 6.0
+        }
+      }
+    },
+    "debarbaryarcher": {
+      "3": {
+        "hp_mult": 1.2,
+        "damage_mult": 1.2
+      }
+    },
+    "debarbarycavalry": {
+      "3": {
+        "hp_mult": 1.2,
+        "damage_mult": 1.2
+      },
+      "4": {
+        "hp_mult": 1.5,
+        "damage_mult": 1.5
+      }
+    },
+    "debarbaryskirmisher": {
+      "3": {
+        "hp_mult": 1.2,
+        "damage_mult": 1.2
+      },
+      "4": {
+        "hp_mult": 1.5,
+        "damage_mult": 1.5
+      }
+    },
+    "debarbaryspearman": {
+      "3": {
+        "hp_mult": 1.2,
+        "damage_mult": 1.2
+      }
+    },
+    "debattlecanoe": {
+      "5": {
+        "hp_mult": 1.5,
+        "damage_mult": 1.5
+      }
+    },
+    "debedouinhorsearcher": {
+      "3": {
+        "hp_mult": 1.2,
+        "damage_mult": 1.2
+      },
+      "4": {
+        "hp_mult": 1.5,
+        "damage_mult": 1.5
+      }
+    },
+    "debersagliere": {
+      "3": {
+        "hp_mult": 1.2,
+        "damage_mult": 1.2
+      },
+      "4": {
+        "hp_mult": 1.5,
+        "damage_mult": 1.5
+      },
+      "5": {
+        "hp_mult": 2.0,
+        "damage_mult": 2.0
+      }
+    },
+    "debolaswarrior": {
+      "3": {
+        "hp_mult": 1.25,
+        "damage_mult": 1.25,
+        "range_add": {
+          "ranged": 1.0
+        }
+      },
+      "4": {
+        "hp_mult": 1.5,
+        "damage_mult": 1.5,
+        "range_add": {
+          "ranged": 3.0
+        }
+      },
+      "5": {
+        "hp_mult": 2.0,
+        "damage_mult": 2.0,
+        "range_add": {
+          "ranged": 3.0
+        }
+      }
+    },
+    "debowmanlevy": {
+      "3": {
+        "hp_mult": 1.25,
+        "damage_mult": 1.25
+      },
+      "4": {
+        "hp_mult": 1.5,
+        "damage_mult": 1.5
+      },
+      "5": {
+        "hp_mult": 2.0,
+        "damage_mult": 2.0
+      }
+    },
+    "decannonboat": {
+      "5": {
+        "hp_mult": 1.5,
+        "damage_mult": 1.5
+      }
+    },
+    "decarolean": {
+      "3": {
+        "hp_mult": 1.2,
+        "damage_mult": 1.2
+      },
+      "4": {
+        "hp_mult": 1.5,
+        "damage_mult": 1.5
+      },
+      "5": {
+        "hp_mult": 2.0,
+        "damage_mult": 2.0
+      }
+    },
+    "dechasqui": {
+      "3": {
+        "hp_mult": 1.25
+      },
+      "4": {
+        "hp_mult": 1.5
+      },
+      "5": {
+        "hp_mult": 2.0
+      }
+    },
+    "dechevauleger": {
+      "4": {
+        "hp_mult": 1.3,
+        "damage_mult": 1.3
+      },
+      "5": {
+        "hp_mult": 1.8,
+        "damage_mult": 1.8
+      }
+    },
+    "dechinaco": {
+      "3": {
+        "hp_mult": 1.2,
+        "damage_mult": 1.2
+      },
+      "4": {
+        "hp_mult": 1.6,
+        "damage_mult": 1.6
+      },
+      "5": {
+        "hp_mult": 2.1,
+        "damage_mult": 2.1
+      }
+    },
+    "dechincharaft": {
+      "3": {
+        "damage_mult": 1.25
+      },
+      "5": {
+        "hp_mult": 1.25,
+        "damage_mult": 1.5
+      }
+    },
+    "dedeli": {
+      "3": {
+        "hp_mult": 1.2,
+        "damage_mult": 1.2
+      },
+      "4": {
+        "hp_mult": 1.6,
+        "damage_mult": 1.6
+      },
+      "5": {
+        "hp_mult": 2.1,
+        "damage_mult": 2.1
+      }
+    },
+    "deeaglescout": {
+      "3": {
+        "hp_mult": 1.25,
+        "damage_mult": 1.25
+      },
+      "4": {
+        "hp_mult": 1.5,
+        "damage_mult": 1.5
+      },
+      "5": {
+        "hp_mult": 2.0,
+        "damage_mult": 2.0
+      }
+    },
+    "deemboscador": {
+      "3": {
+        "hp_mult": 1.2,
+        "damage_mult": 1.2
+      },
+      "4": {
+        "hp_mult": 1.5,
+        "damage_mult": 1.5
+      },
+      "5": {
+        "hp_mult": 1.9,
+        "damage_mult": 1.9
+      }
+    },
+    "definnishrider": {
+      "3": {
+        "hp_mult": 1.2,
+        "damage_mult": 1.2
+      },
+      "4": {
+        "hp_mult": 1.5,
+        "damage_mult": 1.5
+      },
+      "5": {
+        "hp_mult": 2.0,
+        "damage_mult": 2.0
+      }
+    },
+    "defishingboatafrican": {
+      "5": {
+        "hp_mult": 1.5,
+        "damage_mult": 1.5
+      }
+    },
+    "defulawarrior": {
+      "3": {
+        "hp_mult": 1.25,
+        "damage_mult": 1.25
+      },
+      "4": {
+        "hp_mult": 1.5,
+        "damage_mult": 1.5
+      },
+      "5": {
+        "hp_mult": 2.0,
+        "damage_mult": 2.0
+      }
+    },
+    "degascenya": {
+      "3": {
+        "hp_mult": 1.25,
+        "damage_mult": 1.25
+      },
+      "4": {
+        "hp_mult": 1.5,
+        "damage_mult": 1.5
+      },
+      "5": {
+        "hp_mult": 2.0,
+        "damage_mult": 2.0
+      }
+    },
+    "degunnerlevy": {
+      "3": {
+        "hp_mult": 1.25,
+        "damage_mult": 1.25
+      },
+      "4": {
+        "hp_mult": 1.5,
+        "damage_mult": 1.5
+      },
+      "5": {
+        "hp_mult": 2.0,
+        "damage_mult": 2.0
+      }
+    },
+    "dehoopthrower": {
+      "3": {
+        "hp_mult": 1.2,
+        "damage_mult": 1.2
+      },
+      "4": {
+        "hp_mult": 1.5,
+        "damage_mult": 1.5
+      },
+      "5": {
+        "hp_mult": 2.0,
+        "damage_mult": 2.0
+      }
+    },
+    "dehospitaller": {
+      "3": {
+        "hp_mult": 1.2,
+        "damage_mult": 1.2
+      },
+      "4": {
+        "hp_mult": 1.5,
+        "damage_mult": 1.5
+      },
+      "5": {
+        "hp_mult": 2.0,
+        "damage_mult": 2.0
+      }
+    },
+    "dehumbaraci": {
+      "3": {
+        "hp_mult": 1.2,
+        "damage_mult": 1.2
+      },
+      "4": {
+        "hp_mult": 1.6,
+        "damage_mult": 1.6
+      },
+      "5": {
+        "hp_mult": 2.1,
+        "damage_mult": 2.1
+      }
+    },
+    "deincarunner": {
+      "3": {
+        "hp_mult": 1.25,
+        "damage_mult": 1.25
+      },
+      "4": {
+        "hp_mult": 1.5,
+        "damage_mult": 1.5
+      },
+      "5": {
+        "hp_mult": 2.0,
+        "damage_mult": 2.0
+      }
+    },
+    "deincaspearman": {
+      "3": {
+        "hp_mult": 1.25,
+        "damage_mult": 1.25
+      },
+      "4": {
+        "hp_mult": 1.5,
+        "damage_mult": 1.5
+      },
+      "5": {
+        "hp_mult": 2.0,
+        "damage_mult": 2.0
+      }
+    },
+    "deinsurgente": {
+      "3": {
+        "hp_mult": 1.2,
+        "damage_mult": 1.2
+      },
+      "4": {
+        "hp_mult": 1.5,
+        "damage_mult": 1.5
+      },
+      "5": {
+        "hp_mult": 2.0,
+        "damage_mult": 2.0
+      }
+    },
+    "dejavelinrider": {
+      "3": {
+        "hp_mult": 1.25,
+        "damage_mult": 1.25
+      },
+      "4": {
+        "hp_mult": 1.5,
+        "damage_mult": 1.5
+      },
+      "5": {
+        "hp_mult": 2.0,
+        "damage_mult": 2.0
+      }
+    },
+    "dejunglebowman": {
+      "3": {
+        "hp_mult": 1.25,
+        "damage_mult": 1.25,
+        "range_add": {
+          "ranged": 1.0
+        }
+      },
+      "4": {
+        "hp_mult": 1.5,
+        "damage_mult": 1.5,
+        "range_add": {
+          "ranged": 3.0
+        }
+      },
+      "5": {
+        "hp_mult": 2.0,
+        "damage_mult": 2.0,
+        "range_add": {
+          "ranged": 3.0
+        }
+      }
+    },
+    "delandwehr": {
+      "3": {
+        "hp_mult": 1.2,
+        "damage_mult": 1.2
+      },
+      "4": {
+        "hp_mult": 1.5,
+        "damage_mult": 1.5
+      },
+      "5": {
+        "hp_mult": 2.0,
+        "damage_mult": 2.0
+      }
+    },
+    "deleathercannon": {
+      "4": {
+        "hp_mult": 1.25,
+        "damage_mult": 1.25,
+        "range_add": {
+          "ranged": 1.0
+        },
+        "speed_add": 0.5
+      },
+      "5": {
+        "hp_mult": 1.75,
+        "damage_mult": 1.75,
+        "range_add": {
+          "ranged": 2.0
+        },
+        "speed_add": 1.0
+      }
+    },
+    "delifidi": {
+      "3": {
+        "hp_mult": 1.15,
+        "damage_mult": 1.15
+      },
+      "4": {
+        "hp_mult": 1.4,
+        "damage_mult": 1.4
+      },
+      "5": {
+        "hp_mult": 1.9,
+        "damage_mult": 1.9
+      }
+    },
+    "demaceman": {
+      "3": {
+        "hp_mult": 1.25,
+        "damage_mult": 1.25
+      },
+      "4": {
+        "hp_mult": 1.5,
+        "damage_mult": 1.5
+      },
+      "5": {
+        "hp_mult": 2.0,
+        "damage_mult": 2.0
+      }
+    },
+    "demaigadi": {
+      "3": {
+        "hp_mult": 1.2,
+        "damage_mult": 1.2
+      },
+      "4": {
+        "hp_mult": 1.5,
+        "damage_mult": 1.5
+      },
+      "5": {
+        "hp_mult": 2.0,
+        "damage_mult": 2.0
+      }
+    },
+    "demaltesemusketeer": {
+      "3": {
+        "hp_mult": 1.2,
+        "damage_mult": 1.2
+      },
+      "4": {
+        "hp_mult": 1.5,
+        "damage_mult": 1.5
+      },
+      "5": {
+        "hp_mult": 2.0,
+        "damage_mult": 2.0
+      }
+    },
+    "demerccapturedmortar": {
+      "5": {
+        "hp_mult": 1.1,
+        "damage_mult": 1.1
+      }
+    },
+    "demercdhow": {
+      "5": {
+        "hp_mult": 1.3,
+        "damage_mult": 1.3
+      }
+    },
+    "demercxebec": {
+      "5": {
+        "hp_mult": 1.3,
+        "damage_mult": 1.3
+      }
+    },
+    "deminuteman": {
+      "4": {
+        "hp_mult": 1.3,
+        "damage_mult": 1.3
+      },
+      "5": {
+        "hp_mult": 1.8,
+        "damage_mult": 1.8
+      }
+    },
+    "denatakanmusketeer": {
+      "3": {
+        "hp_mult": 1.25,
+        "damage_mult": 1.25
+      },
+      "4": {
+        "hp_mult": 1.6,
+        "damage_mult": 1.6
+      }
+    },
+    "denatbolasrider": {
+      "3": {
+        "hp_mult": 1.25,
+        "damage_mult": 1.25
+      },
+      "4": {
+        "hp_mult": 1.6,
+        "damage_mult": 1.6
+      }
+    },
+    "denatboyar": {
+      "3": {
+        "hp_mult": 1.2,
+        "damage_mult": 1.2
+      },
+      "4": {
+        "hp_mult": 1.6,
+        "damage_mult": 1.6
+      }
+    },
+    "denatbrunswicker": {
+      "3": {
+        "hp_mult": 1.2,
+        "damage_mult": 1.2
+      },
+      "4": {
+        "hp_mult": 1.6,
+        "damage_mult": 1.6
+      }
+    },
+    "denatcamelrider": {
+      "3": {
+        "hp_mult": 1.25,
+        "damage_mult": 1.25
+      },
+      "4": {
+        "hp_mult": 1.6,
+        "damage_mult": 1.6
+      }
+    },
+    "denatchevauleger": {
+      "3": {
+        "hp_mult": 1.2,
+        "damage_mult": 1.2
+      },
+      "4": {
+        "hp_mult": 1.6,
+        "damage_mult": 1.6
+      }
+    },
+    "denatdrummer": {
+      "3": {
+        "hp_mult": 1.2,
+        "damage_mult": 1.2
+      },
+      "4": {
+        "hp_mult": 1.6,
+        "damage_mult": 1.6
+      }
+    },
+    "denatevzone": {
+      "3": {
+        "hp_mult": 1.2,
+        "damage_mult": 1.2
+      },
+      "4": {
+        "hp_mult": 1.6,
+        "damage_mult": 1.6
+      }
+    },
+    "denatholcanjavelineer": {
+      "3": {
+        "hp_mult": 1.25,
+        "damage_mult": 1.25
+      },
+      "4": {
+        "hp_mult": 1.6,
+        "damage_mult": 1.6
+      }
+    },
+    "denatlineinfantry": {
+      "3": {
+        "hp_mult": 1.2,
+        "damage_mult": 1.2
+      },
+      "4": {
+        "hp_mult": 1.6,
+        "damage_mult": 1.6
+      }
+    },
+    "denatlipkatatar": {
+      "3": {
+        "hp_mult": 1.2,
+        "damage_mult": 1.2
+      },
+      "4": {
+        "hp_mult": 1.6,
+        "damage_mult": 1.6
+      }
+    },
+    "denatmercakanmusketeer": {
+      "3": {
+        "hp_mult": 1.25,
+        "damage_mult": 1.25
+      },
+      "4": {
+        "hp_mult": 1.6,
+        "damage_mult": 1.6
+      }
+    },
+    "denatmercapachecavalry": {
+      "3": {
+        "hp_mult": 1.25,
+        "damage_mult": 1.25
+      },
+      "4": {
+        "hp_mult": 1.6,
+        "damage_mult": 1.6
+      }
+    },
+    "denatmercbolasrider": {
+      "3": {
+        "hp_mult": 1.25,
+        "damage_mult": 1.25
+      },
+      "4": {
+        "hp_mult": 1.6,
+        "damage_mult": 1.6
+      }
+    },
+    "denatmercboyar": {
+      "3": {
+        "hp_mult": 1.2,
+        "damage_mult": 1.2
+      },
+      "4": {
+        "hp_mult": 1.6,
+        "damage_mult": 1.6
+      }
+    },
+    "denatmercbrunswicker": {
+      "3": {
+        "hp_mult": 1.2,
+        "damage_mult": 1.2
+      },
+      "4": {
+        "hp_mult": 1.6,
+        "damage_mult": 1.6
+      }
+    },
+    "denatmerccamelrider": {
+      "3": {
+        "hp_mult": 1.25,
+        "damage_mult": 1.25
+      },
+      "4": {
+        "hp_mult": 1.6,
+        "damage_mult": 1.6
+      }
+    },
+    "denatmercchevauleger": {
+      "3": {
+        "hp_mult": 1.2,
+        "damage_mult": 1.2
+      },
+      "4": {
+        "hp_mult": 1.6,
+        "damage_mult": 1.6
+      }
+    },
+    "denatmercdrummer": {
+      "3": {
+        "hp_mult": 1.2,
+        "damage_mult": 1.2
+      },
+      "4": {
+        "hp_mult": 1.6,
+        "damage_mult": 1.6
+      }
+    },
+    "denatmercevzone": {
+      "3": {
+        "hp_mult": 1.2,
+        "damage_mult": 1.2
+      },
+      "4": {
+        "hp_mult": 1.6,
+        "damage_mult": 1.6
+      }
+    },
+    "denatmercholcanjavelineer": {
+      "3": {
+        "hp_mult": 1.25,
+        "damage_mult": 1.25
+      },
+      "4": {
+        "hp_mult": 1.6,
+        "damage_mult": 1.6
+      }
+    },
+    "denatmercjaguarwarrior": {
+      "3": {
+        "hp_mult": 1.25,
+        "damage_mult": 1.25
+      },
+      "4": {
+        "hp_mult": 1.6,
+        "damage_mult": 1.6
+      }
+    },
+    "denatmerclenaperifleman": {
+      "3": {
+        "hp_mult": 1.25,
+        "damage_mult": 1.25
+      }
+    },
+    "denatmerclineinfantry": {
+      "3": {
+        "hp_mult": 1.2,
+        "damage_mult": 1.2
+      },
+      "4": {
+        "hp_mult": 1.6,
+        "damage_mult": 1.6
+      }
+    },
+    "denatmerclipkatatar": {
+      "3": {
+        "hp_mult": 1.2,
+        "damage_mult": 1.2
+      },
+      "4": {
+        "hp_mult": 1.6,
+        "damage_mult": 1.6
+      }
+    },
+    "denatmercmapucheclubman": {
+      "3": {
+        "hp_mult": 1.25,
+        "damage_mult": 1.25
+      },
+      "4": {
+        "hp_mult": 1.6,
+        "damage_mult": 1.6
+      }
+    },
+    "denatmercmountaintrooper": {
+      "3": {
+        "hp_mult": 1.2,
+        "damage_mult": 1.2
+      },
+      "4": {
+        "hp_mult": 1.6,
+        "damage_mult": 1.6
+      }
+    },
+    "denatmercmountedinfantry": {
+      "3": {
+        "hp_mult": 1.2,
+        "damage_mult": 1.2
+      },
+      "4": {
+        "hp_mult": 1.6,
+        "damage_mult": 1.6
+      }
+    },
+    "denatmercmountedinfantryrider": {
+      "3": {
+        "hp_mult": 1.2,
+        "damage_mult": 1.2
+      },
+      "4": {
+        "hp_mult": 1.6,
+        "damage_mult": 1.6
+      }
+    },
+    "denatmercnavajorifleman": {
+      "3": {
+        "hp_mult": 1.25,
+        "damage_mult": 1.25
+      },
+      "4": {
+        "hp_mult": 1.6,
+        "damage_mult": 1.6
+      }
+    },
+    "denatmercnorthernmusketeer": {
+      "3": {
+        "hp_mult": 1.2,
+        "damage_mult": 1.2
+      },
+      "4": {
+        "hp_mult": 1.6,
+        "damage_mult": 1.6
+      }
+    },
+    "denatmercqizilbash": {
+      "3": {
+        "hp_mult": 1.25,
+        "damage_mult": 1.25
+      },
+      "4": {
+        "hp_mult": 1.6,
+        "damage_mult": 1.6
+      }
+    },
+    "denatmercroyalarquebusier": {
+      "3": {
+        "hp_mult": 1.2,
+        "damage_mult": 1.2
+      },
+      "4": {
+        "hp_mult": 1.6,
+        "damage_mult": 1.6
+      }
+    },
+    "denatmercroyaldragoon": {
+      "3": {
+        "hp_mult": 1.2,
+        "damage_mult": 1.2
+      },
+      "4": {
+        "hp_mult": 1.6,
+        "damage_mult": 1.6
+      }
+    },
+    "denatmercroyalhunter": {
+      "3": {
+        "hp_mult": 1.2,
+        "damage_mult": 1.2
+      },
+      "4": {
+        "hp_mult": 1.6,
+        "damage_mult": 1.6
+      }
+    },
+    "denatmercroyalmusketeer": {
+      "3": {
+        "hp_mult": 1.2,
+        "damage_mult": 1.2
+      },
+      "4": {
+        "hp_mult": 1.6,
+        "damage_mult": 1.6
+      }
+    },
+    "denatmercsaxoncuirassier": {
+      "3": {
+        "hp_mult": 1.2,
+        "damage_mult": 1.2
+      },
+      "4": {
+        "hp_mult": 1.6,
+        "damage_mult": 1.6
+      }
+    },
+    "denatmercsharktoothbowman": {
+      "3": {
+        "hp_mult": 1.25,
+        "damage_mult": 1.25
+      },
+      "4": {
+        "hp_mult": 1.6,
+        "damage_mult": 1.6
+      }
+    },
+    "denatmercshockrider": {
+      "3": {
+        "hp_mult": 1.2,
+        "damage_mult": 1.2
+      },
+      "4": {
+        "hp_mult": 1.6,
+        "damage_mult": 1.6
+      }
+    },
+    "denatmercsomalidarood": {
+      "3": {
+        "hp_mult": 1.25,
+        "damage_mult": 1.25,
+        "range_add": {
+          "ranged": 1.0
+        }
+      },
+      "4": {
+        "hp_mult": 1.6,
+        "damage_mult": 1.6,
+        "range_add": {
+          "ranged": 2.0
+        }
+      }
+    },
+    "denatmercsomalijavelineer": {
+      "3": {
+        "hp_mult": 1.25,
+        "damage_mult": 1.25
+      },
+      "4": {
+        "hp_mult": 1.6,
+        "damage_mult": 1.6
+      }
+    },
+    "denatmercsudanesedervish": {
+      "3": {
+        "hp_mult": 1.25,
+        "damage_mult": 1.25
+      },
+      "4": {
+        "hp_mult": 1.6,
+        "damage_mult": 1.6
+      }
+    },
+    "denatmerctatararcher": {
+      "3": {
+        "hp_mult": 1.25,
+        "damage_mult": 1.25
+      },
+      "4": {
+        "hp_mult": 1.6,
+        "damage_mult": 1.6
+      }
+    },
+    "denatmerctotenkopf": {
+      "3": {
+        "hp_mult": 1.2,
+        "damage_mult": 1.2
+      },
+      "4": {
+        "hp_mult": 1.6,
+        "damage_mult": 1.6
+      }
+    },
+    "denatmerctrabant": {
+      "3": {
+        "hp_mult": 1.2,
+        "damage_mult": 1.2
+      },
+      "4": {
+        "hp_mult": 1.6,
+        "damage_mult": 1.6
+      }
+    },
+    "denatmercwingedhussar": {
+      "3": {
+        "hp_mult": 1.2,
+        "damage_mult": 1.2
+      },
+      "4": {
+        "hp_mult": 1.6,
+        "damage_mult": 1.6
+      }
+    },
+    "denatmercyorubalegionary": {
+      "3": {
+        "hp_mult": 1.25,
+        "damage_mult": 1.25
+      },
+      "4": {
+        "hp_mult": 1.6,
+        "damage_mult": 1.6
+      }
+    },
+    "denatmercyorubarider": {
+      "3": {
+        "hp_mult": 1.25,
+        "damage_mult": 1.25
+      },
+      "4": {
+        "hp_mult": 1.6,
+        "damage_mult": 1.6
+      }
+    },
+    "denatmountaintrooper": {
+      "3": {
+        "hp_mult": 1.2,
+        "damage_mult": 1.2
+      },
+      "4": {
+        "hp_mult": 1.6,
+        "damage_mult": 1.6
+      }
+    },
+    "denatmountedinfantry": {
+      "3": {
+        "hp_mult": 1.2,
+        "damage_mult": 1.2
+      },
+      "4": {
+        "hp_mult": 1.6,
+        "damage_mult": 1.6
+      }
+    },
+    "denatmountedinfantryrider": {
+      "3": {
+        "hp_mult": 1.2,
+        "damage_mult": 1.2
+      },
+      "4": {
+        "hp_mult": 1.6,
+        "damage_mult": 1.6
+      }
+    },
+    "denatnorthernmusketeer": {
+      "3": {
+        "hp_mult": 1.2,
+        "damage_mult": 1.2
+      },
+      "4": {
+        "hp_mult": 1.6,
+        "damage_mult": 1.6
+      }
+    },
+    "denatqizilbash": {
+      "3": {
+        "hp_mult": 1.25,
+        "damage_mult": 1.25
+      },
+      "4": {
+        "hp_mult": 1.6,
+        "damage_mult": 1.6
+      }
+    },
+    "denatroyalarquebusier": {
+      "3": {
+        "hp_mult": 1.2,
+        "damage_mult": 1.2
+      },
+      "4": {
+        "hp_mult": 1.6,
+        "damage_mult": 1.6
+      }
+    },
+    "denatroyaldragoon": {
+      "3": {
+        "hp_mult": 1.2,
+        "damage_mult": 1.2
+      },
+      "4": {
+        "hp_mult": 1.6,
+        "damage_mult": 1.6
+      }
+    },
+    "denatroyalhunter": {
+      "3": {
+        "hp_mult": 1.2,
+        "damage_mult": 1.2
+      },
+      "4": {
+        "hp_mult": 1.6,
+        "damage_mult": 1.6
+      }
+    },
+    "denatroyalhuntsman": {
+      "3": {
+        "hp_mult": 1.2,
+        "damage_mult": 1.2
+      },
+      "4": {
+        "hp_mult": 1.6,
+        "damage_mult": 1.6
+      }
+    },
+    "denatroyalmusketeer": {
+      "3": {
+        "hp_mult": 1.2,
+        "damage_mult": 1.2
+      },
+      "4": {
+        "hp_mult": 1.6,
+        "damage_mult": 1.6
+      }
+    },
+    "denatsaxoncuirassier": {
+      "3": {
+        "hp_mult": 1.2,
+        "damage_mult": 1.2
+      },
+      "4": {
+        "hp_mult": 1.6,
+        "damage_mult": 1.6
+      }
+    },
+    "denatshockrider": {
+      "3": {
+        "hp_mult": 1.2,
+        "damage_mult": 1.2
+      },
+      "4": {
+        "hp_mult": 1.6,
+        "damage_mult": 1.6
+      }
+    },
+    "denatsomalidarood": {
+      "3": {
+        "hp_mult": 1.25,
+        "damage_mult": 1.25,
+        "range_add": {
+          "ranged": 1.0
+        }
+      },
+      "4": {
+        "hp_mult": 1.6,
+        "damage_mult": 1.6,
+        "range_add": {
+          "ranged": 2.0
+        }
+      }
+    },
+    "denatsomalijavelineer": {
+      "3": {
+        "hp_mult": 1.25,
+        "damage_mult": 1.25
+      },
+      "4": {
+        "hp_mult": 1.6,
+        "damage_mult": 1.6
+      }
+    },
+    "denatspclenaperifleman": {
+      "3": {
+        "hp_mult": 1.25,
+        "damage_mult": 1.25
+      },
+      "4": {
+        "hp_mult": 1.6,
+        "damage_mult": 1.6
+      }
+    },
+    "denatsudanesedervish": {
+      "3": {
+        "hp_mult": 1.25,
+        "damage_mult": 1.25
+      },
+      "4": {
+        "hp_mult": 1.6,
+        "damage_mult": 1.6
+      }
+    },
+    "denattatararcher": {
+      "3": {
+        "hp_mult": 1.25,
+        "damage_mult": 1.25
+      },
+      "4": {
+        "hp_mult": 1.6,
+        "damage_mult": 1.6
+      }
+    },
+    "denattotenkopf": {
+      "3": {
+        "hp_mult": 1.2,
+        "damage_mult": 1.2
+      },
+      "4": {
+        "hp_mult": 1.6,
+        "damage_mult": 1.6
+      }
+    },
+    "denattrabant": {
+      "3": {
+        "hp_mult": 1.2,
+        "damage_mult": 1.2
+      },
+      "4": {
+        "hp_mult": 1.6,
+        "damage_mult": 1.6
+      }
+    },
+    "denatwingedhussar": {
+      "3": {
+        "hp_mult": 1.2,
+        "damage_mult": 1.2
+      },
+      "4": {
+        "hp_mult": 1.6,
+        "damage_mult": 1.6
+      }
+    },
+    "denatyorubalegionary": {
+      "3": {
+        "hp_mult": 1.25,
+        "damage_mult": 1.25
+      },
+      "4": {
+        "hp_mult": 1.6,
+        "damage_mult": 1.6
+      }
+    },
+    "denatyorubarider": {
+      "3": {
+        "hp_mult": 1.25,
+        "damage_mult": 1.25
+      },
+      "4": {
+        "hp_mult": 1.6,
+        "damage_mult": 1.6
+      }
+    },
+    "deneftenya": {
+      "3": {
+        "hp_mult": 1.15,
+        "damage_mult": 1.15
+      },
+      "4": {
+        "hp_mult": 1.4,
+        "damage_mult": 1.4
+      },
+      "5": {
+        "hp_mult": 1.9,
+        "damage_mult": 1.9
+      }
+    },
+    "denizam": {
+      "3": {
+        "hp_mult": 1.2,
+        "damage_mult": 1.2
+      },
+      "4": {
+        "hp_mult": 1.5,
+        "damage_mult": 1.5
+      },
+      "5": {
+        "hp_mult": 2.0,
+        "damage_mult": 2.0
+      }
+    },
+    "denmpapalbombard": {
+      "5": {
+        "hp_mult": 1.5,
+        "damage_mult": 1.5
+      }
+    },
+    "deordenanca": {
+      "5": {
+        "hp_mult": 1.5,
+        "damage_mult": 1.5
+      }
+    },
+    "deoromowarrior": {
+      "3": {
+        "hp_mult": 1.15,
+        "damage_mult": 1.15
+      },
+      "4": {
+        "hp_mult": 1.4,
+        "damage_mult": 1.4
+      },
+      "5": {
+        "hp_mult": 1.9,
+        "damage_mult": 1.9
+      }
+    },
+    "depavisier": {
+      "3": {
+        "hp_mult": 1.2,
+        "damage_mult": 1.2
+      },
+      "4": {
+        "hp_mult": 1.5,
+        "damage_mult": 1.5
+      },
+      "5": {
+        "hp_mult": 2.0,
+        "damage_mult": 2.0,
+        "range_add": {
+          "ranged": 1.0
+        }
+      }
+    },
+    "depriestess": {
+      "3": {
+        "hp_mult": 1.25
+      },
+      "4": {
+        "hp_mult": 1.5
+      },
+      "5": {
+        "hp_mult": 2.0
+      }
+    },
+    "dequakergun": {
+      "4": {
+        "hp_mult": 1.25
+      },
+      "5": {
+        "hp_mult": 1.75
+      }
+    },
+    "deraider": {
+      "3": {
+        "hp_mult": 1.25,
+        "damage_mult": 1.25
+      },
+      "4": {
+        "hp_mult": 1.5,
+        "damage_mult": 1.5
+      },
+      "5": {
+        "hp_mult": 2.0,
+        "damage_mult": 2.0
+      }
+    },
+    "deranger": {
+      "3": {
+        "hp_mult": 1.2,
+        "damage_mult": 1.2
+      },
+      "4": {
+        "hp_mult": 1.5,
+        "damage_mult": 1.5
+      },
+      "5": {
+        "hp_mult": 2.0,
+        "damage_mult": 2.0
+      }
+    },
+    "deregular": {
+      "3": {
+        "hp_mult": 1.2,
+        "damage_mult": 1.2
+      },
+      "4": {
+        "hp_mult": 1.5,
+        "damage_mult": 1.5
+      },
+      "5": {
+        "hp_mult": 2.0,
+        "damage_mult": 2.0
+      }
+    },
+    "derifleman": {
+      "3": {
+        "hp_mult": 1.2,
+        "damage_mult": 1.2,
+        "range_add": {
+          "ranged": 1.0
+        }
+      },
+      "4": {
+        "hp_mult": 1.5,
+        "damage_mult": 1.5,
+        "range_add": {
+          "ranged": 2.0
+        }
+      },
+      "5": {
+        "hp_mult": 2.0,
+        "damage_mult": 2.0,
+        "range_add": {
+          "ranged": 2.0
+        }
+      }
+    },
+    "derussianhalberdier": {
+      "3": {
+        "hp_mult": 1.2,
+        "damage_mult": 1.2
+      },
+      "4": {
+        "hp_mult": 1.5,
+        "damage_mult": 1.5
+      },
+      "5": {
+        "hp_mult": 2.0,
+        "damage_mult": 2.0
+      }
+    },
+    "derussianmusketeer": {
+      "3": {
+        "hp_mult": 1.2,
+        "damage_mult": 1.2
+      },
+      "4": {
+        "hp_mult": 1.5,
+        "damage_mult": 1.5
+      },
+      "5": {
+        "hp_mult": 2.0,
+        "damage_mult": 2.0
+      }
+    },
+    "desebastopolmortar": {
+      "4": {
+        "damage_mult": 1.25,
+        "range_add": {
+          "ranged": 2.0
+        }
+      },
+      "5": {
+        "hp_mult": 1.5,
+        "damage_mult": 1.75,
+        "range_add": {
+          "ranged": 2.0
+        }
+      }
+    },
+    "deshotelwarrior": {
+      "3": {
+        "hp_mult": 1.25,
+        "damage_mult": 1.25
+      },
+      "4": {
+        "hp_mult": 1.5,
+        "damage_mult": 1.5
+      },
+      "5": {
+        "hp_mult": 2.0,
+        "damage_mult": 2.0
+      }
+    },
+    "deslinger": {
+      "3": {
+        "hp_mult": 1.25,
+        "damage_mult": 1.25
+      },
+      "4": {
+        "hp_mult": 1.5,
+        "damage_mult": 1.5,
+        "range_add": {
+          "ranged": 1.0
+        },
+        "mult_add": {
+          "ranged": {
+            "AbstractArtillery": 0.5
+          },
+          "melee": {
+            "AbstractArtillery": 0.5
+          }
+        }
+      },
+      "5": {
+        "hp_mult": 2.0,
+        "damage_mult": 2.0,
+        "range_add": {
+          "ranged": 2.0
+        },
+        "mult_add": {
+          "ranged": {
+            "AbstractArtillery": 0.5
+          },
+          "melee": {
+            "AbstractArtillery": 0.5
+          }
+        }
+      }
+    },
+    "desoldado": {
+      "3": {
+        "hp_mult": 1.2,
+        "damage_mult": 1.2
+      },
+      "4": {
+        "hp_mult": 1.5,
+        "damage_mult": 1.5
+      },
+      "5": {
+        "hp_mult": 2.0,
+        "damage_mult": 2.0
+      }
+    },
+    "despccityguard": {
+      "3": {
+        "hp_mult": 1.2,
+        "damage_mult": 1.2
+      },
+      "4": {
+        "hp_mult": 1.5,
+        "damage_mult": 1.5
+      },
+      "5": {
+        "hp_mult": 2.0,
+        "damage_mult": 2.0
+      }
+    },
+    "despcdelugecossack": {
+      "3": {
+        "hp_mult": 1.2,
+        "damage_mult": 1.2
+      },
+      "4": {
+        "hp_mult": 1.5,
+        "damage_mult": 1.5
+      },
+      "5": {
+        "hp_mult": 2.0,
+        "damage_mult": 2.0
+      }
+    },
+    "despchornspearman": {
+      "3": {
+        "hp_mult": 1.25,
+        "damage_mult": 1.25
+      },
+      "4": {
+        "hp_mult": 1.6,
+        "damage_mult": 1.6
+      }
+    },
+    "despcusregular": {
+      "5": {
+        "hp_mult": 1.5,
+        "damage_mult": 1.5
+      }
+    },
+    "despcusvolunteer": {
+      "5": {
+        "hp_mult": 1.5,
+        "damage_mult": 1.5
+      }
+    },
+    "despearmanlevy": {
+      "3": {
+        "hp_mult": 1.25,
+        "damage_mult": 1.25
+      },
+      "4": {
+        "hp_mult": 1.5,
+        "damage_mult": 1.5
+      },
+      "5": {
+        "hp_mult": 2.0,
+        "damage_mult": 2.0
+      }
+    },
+    "destatemilitia": {
+      "3": {
+        "hp_mult": 1.2,
+        "damage_mult": 1.2
+      },
+      "4": {
+        "hp_mult": 1.5,
+        "damage_mult": 1.5
+      },
+      "5": {
+        "hp_mult": 1.9,
+        "damage_mult": 1.9
+      }
+    },
+    "deunknownnateaglewarrior": {
+      "3": {
+        "hp_mult": 1.25,
+        "damage_mult": 1.25
+      },
+      "4": {
+        "hp_mult": 1.6,
+        "damage_mult": 1.6
+      }
+    },
+    "deunknownnatjaguarwarrior": {
+      "3": {
+        "hp_mult": 1.25,
+        "damage_mult": 1.25
+      },
+      "4": {
+        "hp_mult": 1.6,
+        "damage_mult": 1.6
+      }
+    },
+    "deuscavalry": {
+      "3": {
+        "hp_mult": 1.2,
+        "damage_mult": 1.2,
+        "range_add": {
+          "ranged": 2.0
+        }
+      },
+      "4": {
+        "hp_mult": 1.5,
+        "damage_mult": 1.5,
+        "range_add": {
+          "ranged": 2.0
+        }
+      },
+      "5": {
+        "hp_mult": 2.0,
+        "damage_mult": 2.0,
+        "range_add": {
+          "ranged": 2.0
+        }
+      }
+    },
+    "dopplesoldner": {
+      "3": {
+        "hp_mult": 1.2,
+        "damage_mult": 1.2
+      },
+      "4": {
+        "hp_mult": 1.5,
+        "damage_mult": 1.5
+      },
+      "5": {
+        "hp_mult": 2.0,
+        "damage_mult": 2.0
+      }
+    },
+    "dragoon": {
+      "3": {
+        "hp_mult": 1.2,
+        "damage_mult": 1.2
+      },
+      "4": {
+        "hp_mult": 1.5,
+        "damage_mult": 1.5
+      },
+      "5": {
+        "hp_mult": 2.0,
+        "damage_mult": 2.0
+      }
+    },
+    "falconet": {
+      "4": {
+        "hp_mult": 1.25,
+        "damage_mult": 1.25
+      },
+      "5": {
+        "hp_mult": 1.75,
+        "damage_mult": 1.75
+      }
+    },
+    "frigate": {
+      "5": {
+        "hp_mult": 1.5,
+        "damage_mult": 1.5
+      }
+    },
+    "greatbombard": {
+      "5": {
+        "hp_mult": 1.5,
+        "damage_mult": 1.5
+      }
+    },
+    "grenadier": {
+      "3": {
+        "hp_mult": 1.2,
+        "damage_mult": 1.2
+      },
+      "4": {
+        "hp_mult": 1.5,
+        "damage_mult": 1.5
+      },
+      "5": {
+        "hp_mult": 2.0,
+        "damage_mult": 2.0
+      }
+    },
+    "halberdier": {
+      "4": {
+        "hp_mult": 1.3,
+        "damage_mult": 1.3
+      },
+      "5": {
+        "hp_mult": 1.8,
+        "damage_mult": 1.8
+      }
+    },
+    "hussar": {
+      "3": {
+        "hp_mult": 1.2,
+        "damage_mult": 1.2
+      },
+      "4": {
+        "hp_mult": 1.5,
+        "damage_mult": 1.5
+      },
+      "5": {
+        "hp_mult": 2.0,
+        "damage_mult": 2.0
+      }
+    },
+    "janissary": {
+      "3": {
+        "hp_mult": 1.2,
+        "damage_mult": 1.2
+      },
+      "4": {
+        "hp_mult": 1.5,
+        "damage_mult": 1.5
+      },
+      "5": {
+        "hp_mult": 2.0,
+        "damage_mult": 2.0
+      }
+    },
+    "lancer": {
+      "4": {
+        "hp_mult": 1.3,
+        "damage_mult": 1.3
+      },
+      "5": {
+        "hp_mult": 1.8,
+        "damage_mult": 1.8
+      }
+    },
+    "longbowman": {
+      "3": {
+        "hp_mult": 1.2,
+        "damage_mult": 1.2
+      },
+      "4": {
+        "hp_mult": 1.5,
+        "damage_mult": 1.5
+      },
+      "5": {
+        "hp_mult": 2.0,
+        "damage_mult": 2.0
+      }
+    },
+    "mercbarbarycorsair": {
+      "3": {
+        "hp_mult": 1.2,
+        "damage_mult": 1.2
+      },
+      "4": {
+        "hp_mult": 1.5,
+        "damage_mult": 1.5
+      }
+    },
+    "mercmameluke": {
+      "4": {
+        "hp_mult": 1.3,
+        "damage_mult": 1.3
+      }
+    },
+    "mercswisspikeman": {
+      "3": {
+        "hp_mult": 1.1,
+        "damage_mult": 1.1
+      }
+    },
+    "monitor": {
+      "4": {
+        "hp_mult": 1.5,
+        "damage_mult": 1.5
+      },
+      "5": {
+        "hp_mult": 2.0,
+        "damage_mult": 2.0
+      }
+    },
+    "mortar": {
+      "4": {
+        "hp_mult": 1.25,
+        "damage_mult": 1.35
+      },
+      "5": {
+        "hp_mult": 1.75,
+        "damage_mult": 1.85
+      }
+    },
+    "musketeer": {
+      "3": {
+        "hp_mult": 1.2,
+        "damage_mult": 1.2
+      },
+      "4": {
+        "hp_mult": 1.5,
+        "damage_mult": 1.5
+      },
+      "5": {
+        "hp_mult": 2.0,
+        "damage_mult": 2.0
+      }
+    },
+    "natapachecavalry": {
+      "3": {
+        "hp_mult": 1.25,
+        "damage_mult": 1.25
+      },
+      "4": {
+        "hp_mult": 1.6,
+        "damage_mult": 1.6
+      }
+    },
+    "nataxerider": {
+      "3": {
+        "hp_mult": 1.25,
+        "damage_mult": 1.25
+      },
+      "4": {
+        "hp_mult": 1.6,
+        "damage_mult": 1.6
+      }
+    },
+    "nataxeriderdogsoldier": {
+      "4": {
+        "hp_mult": 1.15,
+        "damage_mult": 1.15
+      }
+    },
+    "natblackwoodarcher": {
+      "3": {
+        "hp_mult": 1.25,
+        "damage_mult": 1.25
+      },
+      "4": {
+        "hp_mult": 1.6,
+        "damage_mult": 1.6
+      }
+    },
+    "natblowgunambusher": {
+      "3": {
+        "hp_mult": 1.25,
+        "damage_mult": 1.25
+      },
+      "4": {
+        "hp_mult": 1.6,
+        "damage_mult": 1.6
+      }
+    },
+    "natblowgunwarrior": {
+      "3": {
+        "hp_mult": 1.25,
+        "damage_mult": 1.25
+      },
+      "4": {
+        "hp_mult": 1.6,
+        "damage_mult": 1.6
+      }
+    },
+    "natbolaswarrior": {
+      "3": {
+        "hp_mult": 1.25,
+        "damage_mult": 1.25
+      },
+      "4": {
+        "hp_mult": 1.6,
+        "damage_mult": 1.6
+      }
+    },
+    "natcheyennerider": {
+      "3": {
+        "hp_mult": 1.25,
+        "damage_mult": 1.25
+      },
+      "4": {
+        "hp_mult": 1.6,
+        "damage_mult": 1.6
+      }
+    },
+    "natclubman": {
+      "3": {
+        "hp_mult": 1.25,
+        "damage_mult": 1.25
+      },
+      "4": {
+        "hp_mult": 1.6,
+        "damage_mult": 1.6
+      }
+    },
+    "natclubmanloyal": {
+      "3": {
+        "hp_mult": 1.25,
+        "damage_mult": 1.25
+      },
+      "4": {
+        "hp_mult": 1.6,
+        "damage_mult": 1.6
+      }
+    },
+    "nateaglewarrior": {
+      "3": {
+        "hp_mult": 1.25,
+        "damage_mult": 1.25
+      },
+      "4": {
+        "hp_mult": 1.6,
+        "damage_mult": 1.6
+      }
+    },
+    "natholcanspearman": {
+      "3": {
+        "hp_mult": 1.25,
+        "damage_mult": 1.25
+      },
+      "4": {
+        "hp_mult": 1.6,
+        "damage_mult": 1.6
+      }
+    },
+    "nathorsearcher": {
+      "3": {
+        "hp_mult": 1.25,
+        "damage_mult": 1.25
+      },
+      "4": {
+        "hp_mult": 1.6,
+        "damage_mult": 1.6
+      }
+    },
+    "nathuaminca": {
+      "3": {
+        "hp_mult": 1.25,
+        "damage_mult": 1.25
+      },
+      "4": {
+        "hp_mult": 1.6,
+        "damage_mult": 1.6
+      }
+    },
+    "nathuronmantlet": {
+      "3": {
+        "hp_mult": 1.25,
+        "damage_mult": 1.25
+      },
+      "4": {
+        "hp_mult": 1.6,
+        "damage_mult": 1.6
+      }
+    },
+    "natjaguarwarrior": {
+      "3": {
+        "hp_mult": 1.25,
+        "damage_mult": 1.25
+      },
+      "4": {
+        "hp_mult": 1.6,
+        "damage_mult": 1.6
+      }
+    },
+    "natklamathrifleman": {
+      "3": {
+        "hp_mult": 1.25,
+        "damage_mult": 1.25
+      },
+      "4": {
+        "hp_mult": 1.6,
+        "damage_mult": 1.6
+      }
+    },
+    "natlightningwarrior": {
+      "3": {
+        "hp_mult": 1.25,
+        "damage_mult": 1.25
+      },
+      "4": {
+        "hp_mult": 1.6,
+        "damage_mult": 1.6
+      }
+    },
+    "natmantlet": {
+      "3": {
+        "hp_mult": 1.25,
+        "damage_mult": 1.25
+      },
+      "4": {
+        "hp_mult": 1.6,
+        "damage_mult": 1.6
+      }
+    },
+    "natmapucheclubman": {
+      "3": {
+        "hp_mult": 1.25,
+        "damage_mult": 1.25
+      },
+      "4": {
+        "hp_mult": 1.6,
+        "damage_mult": 1.6
+      }
+    },
+    "natmercblackwoodarcher": {
+      "3": {
+        "hp_mult": 1.25,
+        "damage_mult": 1.25
+      },
+      "4": {
+        "hp_mult": 1.6,
+        "damage_mult": 1.6
+      }
+    },
+    "natmercblowgunwarrior": {
+      "3": {
+        "hp_mult": 1.25,
+        "damage_mult": 1.25
+      },
+      "4": {
+        "hp_mult": 1.6,
+        "damage_mult": 1.6
+      }
+    },
+    "natmerccheyennerider": {
+      "3": {
+        "hp_mult": 1.25,
+        "damage_mult": 1.25
+      },
+      "4": {
+        "hp_mult": 1.6,
+        "damage_mult": 1.6
+      }
+    },
+    "natmercclubman": {
+      "3": {
+        "hp_mult": 1.25,
+        "damage_mult": 1.25
+      },
+      "4": {
+        "hp_mult": 1.6,
+        "damage_mult": 1.6
+      }
+    },
+    "natmercholcanspearman": {
+      "3": {
+        "hp_mult": 1.25,
+        "damage_mult": 1.25
+      },
+      "4": {
+        "hp_mult": 1.6,
+        "damage_mult": 1.6
+      }
+    },
+    "natmerchorsearcher": {
+      "3": {
+        "hp_mult": 1.25,
+        "damage_mult": 1.25
+      },
+      "4": {
+        "hp_mult": 1.6,
+        "damage_mult": 1.6
+      }
+    },
+    "natmerchuronmantlet": {
+      "3": {
+        "hp_mult": 1.25,
+        "damage_mult": 1.25
+      },
+      "4": {
+        "hp_mult": 1.6,
+        "damage_mult": 1.6
+      }
+    },
+    "natmerclightningwarrior": {
+      "3": {
+        "hp_mult": 1.25,
+        "damage_mult": 1.25
+      },
+      "4": {
+        "hp_mult": 1.6,
+        "damage_mult": 1.6
+      }
+    },
+    "natmercrifleman": {
+      "3": {
+        "hp_mult": 1.25,
+        "damage_mult": 1.25
+      },
+      "4": {
+        "hp_mult": 1.6,
+        "damage_mult": 1.6
+      }
+    },
+    "natmerctracker": {
+      "3": {
+        "hp_mult": 1.25,
+        "damage_mult": 1.25
+      },
+      "4": {
+        "hp_mult": 1.6,
+        "damage_mult": 1.6
+      }
+    },
+    "natnavajorifleman": {
+      "3": {
+        "hp_mult": 1.25,
+        "damage_mult": 1.25
+      },
+      "4": {
+        "hp_mult": 1.6,
+        "damage_mult": 1.6
+      }
+    },
+    "natrifleman": {
+      "3": {
+        "hp_mult": 1.25,
+        "damage_mult": 1.25
+      },
+      "4": {
+        "hp_mult": 1.6,
+        "damage_mult": 1.6
+      }
+    },
+    "natsharktoothbowman": {
+      "3": {
+        "hp_mult": 1.25,
+        "damage_mult": 1.25
+      },
+      "4": {
+        "hp_mult": 1.6,
+        "damage_mult": 1.6
+      }
+    },
+    "nattomahawk": {
+      "3": {
+        "hp_mult": 1.25,
+        "damage_mult": 1.25
+      },
+      "4": {
+        "hp_mult": 1.6,
+        "damage_mult": 1.6
+      }
+    },
+    "nattracker": {
+      "3": {
+        "hp_mult": 1.25,
+        "damage_mult": 1.25
+      },
+      "4": {
+        "hp_mult": 1.6,
+        "damage_mult": 1.6
+      }
+    },
+    "oprichnik": {
+      "4": {
+        "hp_mult": 1.3,
+        "damage_mult": 1.3
+      },
+      "5": {
+        "hp_mult": 1.8,
+        "damage_mult": 1.8
+      }
+    },
+    "organgun": {
+      "4": {
+        "hp_mult": 1.25,
+        "damage_mult": 1.25
+      },
+      "5": {
+        "hp_mult": 1.75,
+        "damage_mult": 1.75
+      }
+    },
+    "pikeman": {
+      "3": {
+        "hp_mult": 1.2,
+        "damage_mult": 1.2,
+        "range_add": {
+          "melee": 0.5
+        }
+      },
+      "4": {
+        "hp_mult": 1.5,
+        "damage_mult": 1.5,
+        "range_add": {
+          "melee": 1.0
+        }
+      },
+      "5": {
+        "hp_mult": 2.0,
+        "damage_mult": 2.0,
+        "range_add": {
+          "melee": 1.5
+        }
+      }
+    },
+    "privateer": {
+      "5": {
+        "hp_mult": 1.25
+      }
+    },
+    "rocket": {
+      "5": {
+        "hp_mult": 1.5,
+        "damage_mult": 1.5
+      }
+    },
+    "rodelero": {
+      "3": {
+        "hp_mult": 1.2,
+        "damage_mult": 1.2
+      },
+      "4": {
+        "hp_mult": 1.5,
+        "damage_mult": 1.5
+      },
+      "5": {
+        "hp_mult": 2.0,
+        "damage_mult": 2.0
+      }
+    },
+    "ruyter": {
+      "3": {
+        "hp_mult": 1.2,
+        "damage_mult": 1.2
+      },
+      "4": {
+        "hp_mult": 1.5,
+        "damage_mult": 1.5
+      },
+      "5": {
+        "hp_mult": 2.0,
+        "damage_mult": 2.0
+      }
+    },
+    "skirmisher": {
+      "3": {
+        "hp_mult": 1.2,
+        "damage_mult": 1.2
+      },
+      "4": {
+        "hp_mult": 1.5,
+        "damage_mult": 1.5
+      },
+      "5": {
+        "hp_mult": 2.0,
+        "damage_mult": 2.0
+      }
+    },
+    "spahi": {
+      "4": {
+        "hp_mult": 1.3,
+        "damage_mult": 1.3
+      },
+      "5": {
+        "hp_mult": 1.8,
+        "damage_mult": 1.8
+      }
+    },
+    "spccherokeearcher": {
+      "3": {
+        "hp_mult": 1.25,
+        "damage_mult": 1.25
+      },
+      "4": {
+        "hp_mult": 1.6,
+        "damage_mult": 1.6
+      }
+    },
+    "spccherokeehorsearcher": {
+      "3": {
+        "hp_mult": 1.25,
+        "damage_mult": 1.25
+      },
+      "4": {
+        "hp_mult": 1.6,
+        "damage_mult": 1.6
+      }
+    },
+    "strelet": {
+      "3": {
+        "hp_mult": 1.2,
+        "damage_mult": 1.2
+      },
+      "4": {
+        "hp_mult": 1.5,
+        "damage_mult": 1.5
+      },
+      "5": {
+        "hp_mult": 2.0,
+        "damage_mult": 2.0,
+        "range_add": {
+          "ranged": 2.0
+        }
+      }
+    },
+    "uhlan": {
+      "3": {
+        "hp_mult": 1.2,
+        "damage_mult": 1.2
+      },
+      "4": {
+        "hp_mult": 1.5,
+        "damage_mult": 1.5
+      },
+      "5": {
+        "hp_mult": 2.0,
+        "damage_mult": 2.0
+      }
+    },
+    "warwagon": {
+      "4": {
+        "hp_mult": 1.3,
+        "damage_mult": 1.3
+      },
+      "5": {
+        "hp_mult": 1.8,
+        "damage_mult": 1.8
+      }
+    },
+    "xpaenna": {
+      "3": {
+        "hp_mult": 1.25,
+        "damage_mult": 1.25
+      },
+      "4": {
+        "hp_mult": 1.5,
+        "damage_mult": 1.5
+      },
+      "5": {
+        "hp_mult": 2.0,
+        "damage_mult": 2.0
+      }
+    },
+    "xparrowknight": {
+      "4": {
+        "hp_mult": 1.25,
+        "damage_mult": 1.25
+      },
+      "5": {
+        "hp_mult": 1.75,
+        "damage_mult": 1.75
+      }
+    },
+    "xpaxerider": {
+      "3": {
+        "hp_mult": 1.25,
+        "damage_mult": 1.25
+      },
+      "4": {
+        "hp_mult": 1.5,
+        "damage_mult": 1.5
+      },
+      "5": {
+        "hp_mult": 2.0,
+        "damage_mult": 2.0
+      }
+    },
+    "xpbowrider": {
+      "3": {
+        "hp_mult": 1.25,
+        "damage_mult": 1.25,
+        "mult_add": {
+          "ranged": {
+            "AbstractArtillery": 0.5
+          }
+        }
+      },
+      "4": {
+        "hp_mult": 1.5,
+        "damage_mult": 1.5,
+        "mult_add": {
+          "ranged": {
+            "AbstractArtillery": 0.5
+          }
+        }
+      },
+      "5": {
+        "hp_mult": 2.0,
+        "damage_mult": 2.0,
+        "mult_add": {
+          "ranged": {
+            "AbstractArtillery": 0.5
+          }
+        }
+      }
+    },
+    "xpcouprider": {
+      "4": {
+        "hp_mult": 1.25,
+        "damage_mult": 1.25
+      },
+      "5": {
+        "hp_mult": 1.5,
+        "damage_mult": 1.5
+      }
+    },
+    "xpcoyoteman": {
+      "3": {
+        "hp_mult": 1.25,
+        "damage_mult": 1.25
+      },
+      "4": {
+        "hp_mult": 1.5,
+        "damage_mult": 1.5
+      },
+      "5": {
+        "hp_mult": 2.0,
+        "damage_mult": 2.0
+      }
+    },
+    "xpdogsoldier": {
+      "3": {
+        "hp_mult": 1.25,
+        "damage_mult": 1.25
+      },
+      "4": {
+        "hp_mult": 1.5,
+        "damage_mult": 1.5
+      },
+      "5": {
+        "hp_mult": 2.0,
+        "damage_mult": 2.0
+      }
+    },
+    "xpeagleknight": {
+      "4": {
+        "hp_mult": 1.25,
+        "damage_mult": 1.25
+      },
+      "5": {
+        "hp_mult": 1.75,
+        "damage_mult": 1.75
+      }
+    },
+    "xpgatlinggun": {
+      "4": {
+        "hp_mult": 1.25,
+        "damage_mult": 1.25
+      },
+      "5": {
+        "hp_mult": 1.75,
+        "damage_mult": 1.75
+      }
+    },
+    "xphorseartillery": {
+      "4": {
+        "hp_mult": 1.25,
+        "damage_mult": 1.25
+      },
+      "5": {
+        "hp_mult": 1.75,
+        "damage_mult": 1.75
+      }
+    },
+    "xphorseman": {
+      "3": {
+        "hp_mult": 1.25,
+        "damage_mult": 1.25
+      },
+      "4": {
+        "hp_mult": 1.5,
+        "damage_mult": 1.5
+      },
+      "5": {
+        "hp_mult": 2.0,
+        "damage_mult": 2.0
+      }
+    },
+    "xpironclad": {
+      "4": {
+        "hp_mult": 1.25,
+        "damage_mult": 1.25
+      },
+      "5": {
+        "hp_mult": 1.75,
+        "damage_mult": 1.75
+      }
+    },
+    "xpjaguarknight": {
+      "4": {
+        "hp_mult": 1.25,
+        "damage_mult": 1.25
+      },
+      "5": {
+        "hp_mult": 1.75,
+        "damage_mult": 1.75
+      }
+    },
+    "xplightcannon": {
+      "4": {
+        "hp_mult": 1.25,
+        "damage_mult": 1.25
+      },
+      "5": {
+        "hp_mult": 1.75,
+        "damage_mult": 1.75
+      }
+    },
+    "xpmacehualtin": {
+      "3": {
+        "hp_mult": 1.25,
+        "damage_mult": 1.25
+      },
+      "4": {
+        "hp_mult": 1.5,
+        "damage_mult": 1.5
+      },
+      "5": {
+        "hp_mult": 2.0,
+        "damage_mult": 2.0,
+        "range_add": {
+          "ranged": 1.0
+        }
+      }
+    },
+    "xpmantlet": {
+      "4": {
+        "hp_mult": 1.25,
+        "damage_mult": 1.25
+      },
+      "5": {
+        "hp_mult": 1.75,
+        "damage_mult": 1.75
+      }
+    },
+    "xpmusketrider": {
+      "3": {
+        "hp_mult": 1.25,
+        "damage_mult": 1.25
+      },
+      "4": {
+        "hp_mult": 1.5,
+        "damage_mult": 1.5
+      },
+      "5": {
+        "hp_mult": 2.0,
+        "damage_mult": 2.0
+      }
+    },
+    "xpmusketwarrior": {
+      "3": {
+        "hp_mult": 1.25,
+        "damage_mult": 1.25
+      },
+      "4": {
+        "hp_mult": 1.5,
+        "damage_mult": 1.5
+      },
+      "5": {
+        "hp_mult": 2.0,
+        "damage_mult": 2.0
+      }
+    },
+    "xppumaman": {
+      "3": {
+        "hp_mult": 1.25,
+        "damage_mult": 1.25
+      },
+      "4": {
+        "hp_mult": 1.5,
+        "damage_mult": 1.5
+      },
+      "5": {
+        "hp_mult": 2.0,
+        "damage_mult": 2.0
+      }
+    },
+    "xpram": {
+      "4": {
+        "hp_mult": 1.25,
+        "damage_mult": 1.25
+      },
+      "5": {
+        "hp_mult": 1.75,
+        "damage_mult": 1.75
+      }
+    },
+    "xpriflerider": {
+      "3": {
+        "hp_mult": 1.25,
+        "damage_mult": 1.25
+      },
+      "4": {
+        "hp_mult": 1.5,
+        "damage_mult": 1.5
+      },
+      "5": {
+        "hp_mult": 2.0,
+        "damage_mult": 2.0
+      }
+    },
+    "xpskullknight": {
+      "3": {
+        "hp_mult": 1.25,
+        "damage_mult": 1.25
+      },
+      "4": {
+        "hp_mult": 1.5,
+        "damage_mult": 1.5
+      },
+      "5": {
+        "hp_mult": 2.0,
+        "damage_mult": 2.0
+      }
+    },
+    "xpspccolonialmilitia": {
+      "2": {
+        "hp_mult": 1.2,
+        "damage_mult": 1.2
+      },
+      "3": {
+        "hp_mult": 1.5,
+        "damage_mult": 1.5
+      }
+    },
+    "xptlaloccanoe": {
+      "3": {
+        "damage_mult": 1.25
+      },
+      "5": {
+        "hp_mult": 1.25,
+        "damage_mult": 1.5
+      }
+    },
+    "xptomahawk": {
+      "3": {
+        "hp_mult": 1.25,
+        "damage_mult": 1.25
+      },
+      "4": {
+        "hp_mult": 1.5,
+        "damage_mult": 1.5
+      },
+      "5": {
+        "hp_mult": 2.0,
+        "damage_mult": 2.0
+      }
+    },
+    "xpwarbow": {
+      "3": {
+        "hp_mult": 1.25,
+        "damage_mult": 1.25
+      },
+      "4": {
+        "hp_mult": 1.5,
+        "damage_mult": 1.5
+      },
+      "5": {
+        "hp_mult": 2.0,
+        "damage_mult": 2.0
+      }
+    },
+    "xpwarcanoe": {
+      "3": {
+        "damage_mult": 1.25
+      },
+      "5": {
+        "hp_mult": 1.25,
+        "damage_mult": 1.5
+      }
+    },
+    "xpwarclub": {
+      "3": {
+        "hp_mult": 1.25,
+        "damage_mult": 1.25
+      },
+      "4": {
+        "hp_mult": 1.5,
+        "damage_mult": 1.5
+      },
+      "5": {
+        "hp_mult": 2.0,
+        "damage_mult": 2.0
+      }
+    },
+    "xpwarrifle": {
+      "3": {
+        "hp_mult": 1.25,
+        "damage_mult": 1.25
+      },
+      "4": {
+        "hp_mult": 1.5,
+        "damage_mult": 1.5
+      },
+      "5": {
+        "hp_mult": 2.0,
+        "damage_mult": 2.0,
+        "range_add": {
+          "ranged": 1.0
+        }
+      }
+    },
+    "yparquebusier": {
+      "3": {
+        "hp_mult": 1.2,
+        "damage_mult": 1.2
+      },
+      "4": {
+        "hp_mult": 1.5,
+        "damage_mult": 1.5
+      },
+      "5": {
+        "hp_mult": 2.0,
+        "damage_mult": 2.0
+      }
+    },
+    "ypashigaru": {
+      "3": {
+        "hp_mult": 1.2,
+        "damage_mult": 1.2
+      },
+      "4": {
+        "hp_mult": 1.5,
+        "damage_mult": 1.5
+      },
+      "5": {
+        "hp_mult": 2.0,
+        "damage_mult": 2.0
+      }
+    },
+    "ypchangdao": {
+      "3": {
+        "hp_mult": 1.2,
+        "damage_mult": 1.2
+      },
+      "4": {
+        "hp_mult": 1.5,
+        "damage_mult": 1.5
+      },
+      "5": {
+        "hp_mult": 2.0,
+        "damage_mult": 2.0
+      }
+    },
+    "ypchukonu": {
+      "3": {
+        "hp_mult": 1.2,
+        "damage_mult": 1.2
+      },
+      "4": {
+        "hp_mult": 1.5,
+        "damage_mult": 1.5
+      },
+      "5": {
+        "hp_mult": 2.0,
+        "damage_mult": 2.0
+      }
+    },
+    "ypflamethrower": {
+      "3": {
+        "hp_mult": 1.2,
+        "damage_mult": 1.2
+      },
+      "4": {
+        "hp_mult": 1.5,
+        "damage_mult": 1.5
+      },
+      "5": {
+        "hp_mult": 2.0,
+        "damage_mult": 2.0
+      }
+    },
+    "ypflamingarrow": {
+      "4": {
+        "hp_mult": 1.25,
+        "damage_mult": 1.25,
+        "mult_add": {
+          "ranged": {
+            "AbstractArtillery": 0.5
+          }
+        }
+      },
+      "5": {
+        "hp_mult": 1.75,
+        "damage_mult": 1.75,
+        "range_add": {
+          "ranged": 2.0
+        },
+        "mult_add": {
+          "ranged": {
+            "AbstractArtillery": 0.5
+          }
+        }
+      }
+    },
+    "ypflyingcrow": {
+      "5": {
+        "hp_mult": 1.5,
+        "damage_mult": 1.5
+      }
+    },
+    "ypfuchuan": {
+      "5": {
+        "hp_mult": 1.5,
+        "damage_mult": 1.5
+      }
+    },
+    "yphandmortar": {
+      "4": {
+        "hp_mult": 1.25,
+        "damage_mult": 1.25
+      },
+      "5": {
+        "hp_mult": 1.75,
+        "damage_mult": 1.75
+      }
+    },
+    "ypironflail": {
+      "3": {
+        "hp_mult": 1.2,
+        "damage_mult": 1.2
+      },
+      "4": {
+        "hp_mult": 1.5,
+        "damage_mult": 1.5
+      },
+      "5": {
+        "hp_mult": 2.0,
+        "damage_mult": 2.0
+      }
+    },
+    "ypkensei": {
+      "3": {
+        "hp_mult": 1.2,
+        "damage_mult": 1.2
+      },
+      "4": {
+        "hp_mult": 1.5,
+        "damage_mult": 1.5
+      },
+      "5": {
+        "hp_mult": 2.0,
+        "damage_mult": 2.0
+      }
+    },
+    "ypkeshik": {
+      "3": {
+        "hp_mult": 1.2,
+        "damage_mult": 1.2,
+        "mult_add": {
+          "ranged": {
+            "AbstractArtillery": 0.75
+          }
+        }
+      },
+      "4": {
+        "hp_mult": 1.5,
+        "damage_mult": 1.5,
+        "mult_add": {
+          "ranged": {
+            "AbstractArtillery": 0.75
+          }
+        }
+      },
+      "5": {
+        "hp_mult": 2.0,
+        "damage_mult": 2.0,
+        "mult_add": {
+          "ranged": {
+            "AbstractArtillery": 0.75
+          }
+        }
+      }
+    },
+    "ypmarathancatamaran": {
+      "5": {
+        "hp_mult": 1.25
+      }
+    },
+    "ypmercyojimbo": {
+      "5": {
+        "hp_mult": 1.5,
+        "damage_mult": 1.5
+      }
+    },
+    "ypmeteorhammer": {
+      "3": {
+        "hp_mult": 1.2,
+        "damage_mult": 1.2
+      },
+      "4": {
+        "hp_mult": 1.5,
+        "damage_mult": 1.5
+      },
+      "5": {
+        "hp_mult": 2.0,
+        "damage_mult": 2.0
+      }
+    },
+    "ypmorutaru": {
+      "4": {
+        "hp_mult": 1.25,
+        "damage_mult": 1.25
+      },
+      "5": {
+        "hp_mult": 1.75,
+        "damage_mult": 1.75
+      }
+    },
+    "ypnaginatarider": {
+      "3": {
+        "hp_mult": 1.2,
+        "damage_mult": 1.2
+      },
+      "4": {
+        "hp_mult": 1.5,
+        "damage_mult": 1.5
+      },
+      "5": {
+        "hp_mult": 2.0,
+        "damage_mult": 2.0
+      }
+    },
+    "ypnatchakram": {
+      "3": {
+        "hp_mult": 1.25,
+        "damage_mult": 1.25
+      },
+      "4": {
+        "hp_mult": 1.6,
+        "damage_mult": 1.6
+      }
+    },
+    "ypnatconquistador": {
+      "3": {
+        "hp_mult": 1.25,
+        "damage_mult": 1.25
+      },
+      "4": {
+        "hp_mult": 1.6,
+        "damage_mult": 1.6
+      }
+    },
+    "ypnatmercchakram": {
+      "3": {
+        "hp_mult": 1.25,
+        "damage_mult": 1.25
+      },
+      "4": {
+        "hp_mult": 1.6,
+        "damage_mult": 1.6
+      }
+    },
+    "ypnatmercconquistador": {
+      "3": {
+        "hp_mult": 1.25,
+        "damage_mult": 1.25
+      },
+      "4": {
+        "hp_mult": 1.6,
+        "damage_mult": 1.6
+      }
+    },
+    "ypnatmercrattanshield": {
+      "3": {
+        "hp_mult": 1.25,
+        "damage_mult": 1.25
+      },
+      "4": {
+        "hp_mult": 1.6,
+        "damage_mult": 1.6
+      }
+    },
+    "ypnatmercsohei": {
+      "3": {
+        "hp_mult": 1.25,
+        "damage_mult": 1.25
+      },
+      "4": {
+        "hp_mult": 1.6,
+        "damage_mult": 1.6
+      }
+    },
+    "ypnatmerctigerclaw": {
+      "3": {
+        "hp_mult": 1.25,
+        "damage_mult": 1.25
+      },
+      "4": {
+        "hp_mult": 1.6,
+        "damage_mult": 1.6
+      }
+    },
+    "ypnatmercwarelephant": {
+      "3": {
+        "hp_mult": 1.25,
+        "damage_mult": 1.25
+      },
+      "4": {
+        "hp_mult": 1.6,
+        "damage_mult": 1.6
+      }
+    },
+    "ypnatrattanshield": {
+      "3": {
+        "hp_mult": 1.25,
+        "damage_mult": 1.25
+      },
+      "4": {
+        "hp_mult": 1.6,
+        "damage_mult": 1.6
+      }
+    },
+    "ypnatsohei": {
+      "3": {
+        "hp_mult": 1.25,
+        "damage_mult": 1.25
+      },
+      "4": {
+        "hp_mult": 1.6,
+        "damage_mult": 1.6
+      }
+    },
+    "ypnattigerclaw": {
+      "3": {
+        "hp_mult": 1.25,
+        "damage_mult": 1.25
+      },
+      "4": {
+        "hp_mult": 1.6,
+        "damage_mult": 1.6
+      }
+    },
+    "ypnatwarelephant": {
+      "3": {
+        "hp_mult": 1.25,
+        "damage_mult": 1.25
+      },
+      "4": {
+        "hp_mult": 1.6,
+        "damage_mult": 1.6
+      }
+    },
+    "ypqiangpikeman": {
+      "3": {
+        "hp_mult": 1.2,
+        "damage_mult": 1.2,
+        "range_add": {
+          "melee": 0.5
+        }
+      },
+      "4": {
+        "hp_mult": 1.5,
+        "damage_mult": 1.5,
+        "range_add": {
+          "melee": 1.0
+        }
+      },
+      "5": {
+        "hp_mult": 2.0,
+        "damage_mult": 2.0,
+        "range_add": {
+          "melee": 1.5
+        }
+      }
+    },
+    "ypshinobihorse": {
+      "3": {
+        "hp_mult": 1.2,
+        "damage_mult": 1.2
+      },
+      "4": {
+        "hp_mult": 1.5,
+        "damage_mult": 1.5
+      },
+      "5": {
+        "hp_mult": 2.0,
+        "damage_mult": 2.0
+      }
+    },
+    "ypstepperider": {
+      "3": {
+        "hp_mult": 1.2,
+        "damage_mult": 1.2
+      },
+      "4": {
+        "hp_mult": 1.5,
+        "damage_mult": 1.5
+      },
+      "5": {
+        "hp_mult": 1.9,
+        "damage_mult": 1.9
+      }
+    },
+    "yptekkousen": {
+      "5": {
+        "hp_mult": 1.5,
+        "damage_mult": 1.5
+      }
+    },
+    "ypwokoujunk": {
+      "5": {
+        "hp_mult": 1.25
+      }
+    },
+    "ypyabusame": {
+      "3": {
+        "hp_mult": 1.2,
+        "damage_mult": 1.2
+      },
+      "4": {
+        "hp_mult": 1.5,
+        "damage_mult": 1.5
+      },
+      "5": {
+        "hp_mult": 2.0,
+        "damage_mult": 2.0
+      }
+    },
+    "ypyamabushi": {
+      "2": {
+        "hp_mult": 1.3,
+        "damage_mult": 1.3
+      },
+      "3": {
+        "hp_mult": 1.5,
+        "damage_mult": 1.5
+      },
+      "4": {
+        "hp_mult": 1.8,
+        "damage_mult": 1.8
+      },
+      "5": {
+        "hp_mult": 2.3,
+        "damage_mult": 2.3
+      }
+    },
+    "ypyumi": {
+      "3": {
+        "hp_mult": 1.2,
+        "damage_mult": 1.2
+      },
+      "4": {
+        "hp_mult": 1.5,
+        "damage_mult": 1.5
+      },
+      "5": {
+        "hp_mult": 2.0,
+        "damage_mult": 2.0
+      }
+    }
+  },
+  "category": {
+    "AbstractOutlaw": {
+      "3": {
+        "hp_mult": 1.2,
+        "damage_mult": 1.2
+      },
+      "4": {
+        "hp_mult": 1.5,
+        "damage_mult": 1.5
+      },
+      "5": {
+        "hp_mult": 2.0,
+        "damage_mult": 2.0
+      }
+    },
+    "AbstractNativeWarrior": {
+      "5": {
+        "hp_mult": 1.5,
+        "damage_mult": 1.5
+      }
+    },
+    "Mercenary": {
+      "5": {
+        "hp_mult": 1.5,
+        "damage_mult": 1.5
+      }
+    }
+  }
+}

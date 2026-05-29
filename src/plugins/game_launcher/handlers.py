@@ -9,6 +9,7 @@
 from __future__ import annotations
 
 import random
+import re
 
 from nonebot import on_command
 from nonebot.adapters.onebot.v11 import GroupMessageEvent, Message
@@ -101,6 +102,25 @@ async def _(matcher: Matcher, event: GroupMessageEvent) -> None:
     )
 
 
+# 时代参数：「3时代」/「时代3」/「age3」（N=2~5），见 aoe3-battle §3.10.6
+_AGE_TOKEN_RE = re.compile(r"^(?:(\d)\s*时代|时代\s*(\d)|age\s*(\d))$", re.IGNORECASE)
+
+
+def _extract_age(parts: list[str]) -> tuple[int | None, list[str]]:
+    """从分词里抽出时代参数，返回 (age, 去掉时代词后的分词)。"""
+    age: int | None = None
+    rest: list[str] = []
+    for p in parts:
+        m = _AGE_TOKEN_RE.match(p)
+        if m:
+            n = int(next(g for g in m.groups() if g))
+            if 2 <= n <= 5:
+                age = n
+                continue
+        rest.append(p)
+    return age, rest
+
+
 # -------------------- 快捷开局：斗蛐蛐 --------------------
 _quick_battle = on_command(
     "斗蛐蛐",
@@ -125,16 +145,18 @@ async def _(matcher: Matcher, event: GroupMessageEvent, args: Message = CommandA
         await set_group_config(int(event.group_id), "aoe3_battle.broadcast_mode", "brief")
         await matcher.finish("✅ 已切换为【极简播报】模式（只显示开战和战报，帝国/红警通用）")
 
+    # ---- 时代参数（所有模式通用）："斗蛐蛐 5时代" / "斗蛐蛐 火枪 3时代" ----
+    age, parts = _extract_age(arg_text.split())
+
     # ---- 王中王："斗蛐蛐 王中王" / "斗蛐蛐 王中王 散兵 15000" ----
-    parts = arg_text.split()
     _RIVAL_KEYWORDS = {"王中王", "宿敌", "宿敌挑战", "rival"}
     if parts and parts[0] in _RIVAL_KEYWORDS:
-        await _handle_rival_battle(matcher, event, " ".join(parts[1:]))
+        await _handle_rival_battle(matcher, event, " ".join(parts[1:]), age=age)
         return
 
     # ---- 自选模式："斗蛐蛐 自选 火枪手 散兵 15000" ----
     if parts and parts[0] == "自选":
-        await _handle_custom_battle(matcher, event, " ".join(parts[1:]))
+        await _handle_custom_battle(matcher, event, " ".join(parts[1:]), age=age)
         return
 
     # ---- 隐式自选：参数中有非模式关键词且非纯数字 → 当作兵种名 ----
@@ -146,7 +168,7 @@ async def _(matcher: Matcher, event: GroupMessageEvent, args: Message = CommandA
     unknown_words = [p for p in parts if p not in _MODE_KEYWORDS and not p.isdigit()]
     if unknown_words:
         # 有无法识别为模式的词 → 视为兵种名，走自选逻辑
-        await _handle_custom_battle(matcher, event, arg_text)
+        await _handle_custom_battle(matcher, event, " ".join(parts), age=age)
         return
 
     mode_id = "bet"  # 默认押注模式
@@ -164,6 +186,8 @@ async def _(matcher: Matcher, event: GroupMessageEvent, args: Message = CommandA
     config = {"mode": mode_id}
     if budget is not None:
         config["budget"] = budget
+    if age is not None:
+        config["age"] = age
 
     await _launch_game(
         matcher,
@@ -191,7 +215,8 @@ async def _(matcher: Matcher, event: GroupMessageEvent, args: Message = CommandA
 
 
 async def _handle_custom_battle(
-    matcher: Matcher, event: GroupMessageEvent, arg_text: str
+    matcher: Matcher, event: GroupMessageEvent, arg_text: str,
+    age: int | None = None,
 ) -> None:
     """自选兵种对决的公共处理逻辑（供 '斗蛐蛐自选' 和 '斗蛐蛐 自选' 共用）。"""
     if not arg_text:
@@ -200,11 +225,14 @@ async def _handle_custom_battle(
             "  @我 斗蛐蛐自选 兵种名\n"
             "  @我 斗蛐蛐自选 兵种A 兵种B\n"
             "  @我 斗蛐蛐自选 兵种A 兵种B 15000\n"
-            "（末尾数字为自定义预算，默认 10000）"
+            "（末尾数字为自定义预算，默认 10000；可加「N时代」N=2~5）"
         )
         return
 
-    parts = arg_text.split()
+    # 时代词可能仍在 arg_text 里（独立 '斗蛐蛐自选' 入口），就地再抽一次
+    age_inline, parts = _extract_age(arg_text.split())
+    if age is None:
+        age = age_inline
     unit_names: list[str] = []
     budget = None
 
@@ -235,6 +263,8 @@ async def _handle_custom_battle(
     config: dict = {"mode": "custom", "unit_names": unit_names}
     if budget is not None:
         config["budget"] = budget
+    if age is not None:
+        config["age"] = age
 
     await _launch_game(
         matcher,
@@ -247,7 +277,8 @@ async def _handle_custom_battle(
 
 
 async def _handle_rival_battle(
-    matcher: Matcher, event: GroupMessageEvent, arg_text: str
+    matcher: Matcher, event: GroupMessageEvent, arg_text: str,
+    age: int | None = None,
 ) -> None:
     """王中王：无参数 → 随机 3 主题 + 表情选；有主题名 → 直接开局。"""
     from src.plugins.games.aoe3_battle.rival_pick import (
@@ -258,9 +289,13 @@ async def _handle_rival_battle(
     group_id = int(event.group_id)
     initiator_id = int(event.user_id)
 
+    age_inline, parts = _extract_age(arg_text.split())
+    if age is None:
+        age = age_inline
+
     theme_token: str | None = None
     budget: int | None = None
-    for part in arg_text.split():
+    for part in parts:
         if part.isdigit():
             budget = int(part)
         elif theme_token is None:
@@ -275,6 +310,7 @@ async def _handle_rival_battle(
             initiator_id=initiator_id,
             theme_token=theme_token,
             budget=budget,
+            age=age,
         )
         if err:
             await matcher.finish(err)
@@ -284,6 +320,7 @@ async def _handle_rival_battle(
         group_id=group_id,
         initiator_id=initiator_id,
         budget=budget,
+        age=age,
     )
     if err:
         await matcher.finish(err)

@@ -56,6 +56,9 @@ BROADCAST_SLEEP = 2.0        # 播报间隔（秒）
 BUDGET_MIN = 1000            # 自定义资源下限
 BUDGET_MAX = 50000           # 自定义资源上限
 BUDGET_DEFAULT = 10000       # 默认资源
+AGE_MIN = 2                  # 时代下限（2 时代无军改）
+AGE_MAX = 5                  # 时代上限（帝王）
+AGE_DEFAULT = 3              # 默认时代（§3.10.6：693 兵，默认即有改良）
 BATTLE_LOG_DIR = Path(__file__).resolve().parents[4] / "logs" / "aoe3_battle"
 BATTLE_LOG_KEEP = 5          # 保留最近 N 局（精简+完整各算一个文件）
 
@@ -311,16 +314,22 @@ class AoE3BattleGame(GameBase):
         budget = (ctx.config or {}).get("budget", BUDGET_DEFAULT)
         budget = max(BUDGET_MIN, min(BUDGET_MAX, int(budget)))
 
+        # 时代（§3.10.6）：默认 3 时代；黑名单乱斗不启用（怪物互殴无改良意义）
+        age = (ctx.config or {}).get("age", AGE_DEFAULT)
+        age = max(AGE_MIN, min(AGE_MAX, int(age)))
+
         repo = UnitRepo.get()
         rng = random.Random()
 
         if mode_id == "duel":
-            match = generate_duel_lineup(repo, rng=rng)
+            match = generate_duel_lineup(repo, age=age, rng=rng)
         elif mode_id == "blacklist":
             match = generate_blacklist_lineup(repo, rng=rng)
         elif mode_id == "custom":
             unit_names = (ctx.config or {}).get("unit_names", [])
-            result = generate_custom_lineup(repo, unit_names, budget=budget, rng=rng)
+            result = generate_custom_lineup(
+                repo, unit_names, budget=budget, age=age, rng=rng
+            )
             if isinstance(result, str):
                 # 生成失败，广播错误信息并抛异常让框架结束对局
                 await session.broadcast(ctx.group_id, result)
@@ -328,17 +337,20 @@ class AoE3BattleGame(GameBase):
             match = result
         elif mode_id == "rival":
             theme_id = (ctx.config or {}).get("rival_theme_id", "")
-            result = generate_rival_lineup(repo, theme_id, budget=budget, rng=rng)
+            result = generate_rival_lineup(
+                repo, theme_id, budget=budget, age=age, rng=rng
+            )
             if isinstance(result, str):
                 await session.broadcast(ctx.group_id, result)
                 raise ValueError(result)
             match = result
         else:
-            match = generate_bet_lineup(repo, rng=rng, budget=budget)
+            match = generate_bet_lineup(repo, rng=rng, budget=budget, age=age)
 
         # 序列化阵容到 state（供持久化）
         ctx.state.update(
             mode=mode_id,
+            age=match.age,
             phase="betting",          # betting → fighting → ended
             # 阵容信息（序列化为可 JSON 的格式）
             red_army=[{"unit_id": s.unit.id, "unit_name": s.unit.name, "count": s.count}
