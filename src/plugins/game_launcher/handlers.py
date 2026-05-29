@@ -121,6 +121,27 @@ def _extract_age(parts: list[str]) -> tuple[int | None, list[str]]:
     return age, rest
 
 
+_AGE_CONFIG_KEY = "aoe3_battle.default_age"
+_AGE_NAMES = {2: "商业时代", 3: "要塞时代", 4: "工业时代", 5: "帝王时代"}
+
+
+async def _get_default_age(group_id: int) -> int | None:
+    """读取本群持久默认时代（未设置过则返回 None，由 game.py AGE_DEFAULT 兜底）。"""
+    from core.group_config import get_group_config
+    val = await get_group_config(group_id, _AGE_CONFIG_KEY)
+    if val and val.isdigit() and 2 <= int(val) <= 5:
+        return int(val)
+    return None
+
+
+async def _set_default_age(matcher: Matcher, group_id: int, age: int) -> None:
+    """设置本群持久默认时代。"""
+    from core.group_config import set_group_config
+    await set_group_config(group_id, _AGE_CONFIG_KEY, str(age))
+    name = _AGE_NAMES.get(age, f"{age}时代")
+    await matcher.finish(f"✅ 本群斗蛐蛐默认时代已设为【{name}（{age}）】")
+
+
 # -------------------- 快捷开局：斗蛐蛐 --------------------
 _quick_battle = on_command(
     "斗蛐蛐",
@@ -147,6 +168,15 @@ async def _(matcher: Matcher, event: GroupMessageEvent, args: Message = CommandA
 
     # ---- 时代参数（所有模式通用）："斗蛐蛐 5时代" / "斗蛐蛐 火枪 3时代" ----
     age, parts = _extract_age(arg_text.split())
+
+    # ---- 只写时代、没有其他词 → 设置本群默认时代，不开局 ----
+    if age is not None and not parts:
+        await _set_default_age(matcher, int(event.group_id), age)
+        return
+
+    # 没有显式指定时代 → 读本群持久默认
+    if age is None:
+        age = await _get_default_age(int(event.group_id))
 
     # ---- 王中王："斗蛐蛐 王中王" / "斗蛐蛐 王中王 散兵 15000" ----
     _RIVAL_KEYWORDS = {"王中王", "宿敌", "宿敌挑战", "rival"}
@@ -211,7 +241,8 @@ _quick_battle_custom = on_command(
 async def _(matcher: Matcher, event: GroupMessageEvent, args: Message = CommandArg()) -> None:
     """自选兵种对决：@bot 斗蛐蛐自选 火枪手 散兵 15000"""
     arg_text = args.extract_plain_text().strip()
-    await _handle_custom_battle(matcher, event, arg_text)
+    age = await _get_default_age(int(event.group_id))
+    await _handle_custom_battle(matcher, event, arg_text, age=age)
 
 
 async def _handle_custom_battle(
