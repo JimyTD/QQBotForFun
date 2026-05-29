@@ -62,23 +62,28 @@ KEEP_TYPE_EXACT = {
 # 攻击动作名优先级（选择"标准"姿态 / 主攻击）
 # 数字越小越优先；不在列表中的 = 99
 #
-# 远程步兵/弓弩/火枪：游戏默认齐射 Volley
-# 远程骑兵：游戏默认交错 Stagger（兼有两种 tag 时仍 Volley）
-# 具名主攻击（BowAttack 等）优先于一切姿态变体
+# 远程/近战统一层级：
+#   齐射 Volley > 交错 Stagger > 具名主攻击（无 Volley/Stagger 后缀的主循环）
+#   > 防御 Defend（手动阵型，置底）
+# 步兵默认 Volley；纯远程骑兵默认 Stagger；兼有两种 tag 仍 Volley
 # 炮兵等另表（打兵模式优先于打建筑）
 # ============================================================
 
-# 非姿态远程主攻击（满洲兵 BowAttack 等）— 优先于 Volley/Stagger/Defend
-NAMED_RANGED_ATTACK_PRIORITY = {
-    "BowAttack": 1,
-    "RifleAttack": 2,
-    "BlunderbussAttack": 3,
-    "SharpshooterAttack": 4,
-    "CrackshotAttack": 5,
-    "LongRangeAttack": 6,
-    "SwashbucklerAttack": 7,
-    "RangedAttack": 8,  # 无 Volley/Stagger 后缀的通用远程名
-}
+TIER_VOLLEY = 20
+TIER_STAGGER = 21
+TIER_NAMED_RANGED = 22   # + 在 NAMED_RANGED_ATTACK_ORDER 中的下标
+TIER_DEFEND_RANGED = 32
+# 具名远程：多数单位无 Volley/Stagger，靠本层作主输出；待 protoy 核实是否含一次性技能（见 TODO）
+NAMED_RANGED_ATTACK_ORDER = [
+    "BowAttack",
+    "RifleAttack",
+    "BlunderbussAttack",
+    "SharpshooterAttack",
+    "CrackshotAttack",
+    "LongRangeAttack",
+    "SwashbucklerAttack",
+    "RangedAttack",
+]
 
 ARTILLERY_RANGED_PRIORITY = {
     "BarrageAttack": 40,
@@ -89,43 +94,58 @@ ARTILLERY_RANGED_PRIORITY = {
     "MortarAttack": 45,
 }
 
-MELEE_HAND_PRIORITY = {
-    "VolleyHandAttack": 1,
-    "StaggerHandAttack": 2,
-    "DefendHandAttack": 3,
-    "MeleeHandAttack": 4,
-    "BayonetAttack": 5,
-    "HandAttack": 6,
-}
+TIER_VOLLEY_HAND = 1
+TIER_STAGGER_HAND = 2
+TIER_NAMED_MELEE = 3     # + 在 NAMED_MELEE_ATTACK_ORDER 中的下标
+TIER_DEFEND_HAND = 13
+# 具名近战：同上，在齐射/交错之后、防御之前
+NAMED_MELEE_ATTACK_ORDER = [
+    "MeleeHandAttack",
+    "BayonetAttack",
+    "HandAttack",
+]
 
-STANCE_RANGED_BASE = 20  # 姿态变体起点；必低于 NAMED / ARTILLERY
 
-
-def _stance_ranged_order(unit_types: set[str]) -> list[str]:
-    """远程槽姿态顺序：步兵齐射默认；纯远程骑兵交错默认；兼有两种 tag 仍齐射。"""
+def _primary_ranged_stances(unit_types: set[str]) -> tuple[str, str]:
+    """返回 (第一优先姿态, 第二优先姿态)。"""
     has_inf = "AbstractRangedInfantry" in unit_types
     has_cav = "AbstractRangedCavalry" in unit_types
     if has_inf:
-        return ["VolleyRangedAttack", "StaggerRangedAttack", "DefendRangedAttack"]
+        return ("VolleyRangedAttack", "StaggerRangedAttack")
     if has_cav:
-        return ["StaggerRangedAttack", "VolleyRangedAttack", "DefendRangedAttack"]
-    return ["VolleyRangedAttack", "StaggerRangedAttack", "DefendRangedAttack"]
+        return ("StaggerRangedAttack", "VolleyRangedAttack")
+    return ("VolleyRangedAttack", "StaggerRangedAttack")
 
 
 def _ranged_attack_priority(name: str, unit_types: set[str]) -> int:
-    if name in NAMED_RANGED_ATTACK_PRIORITY:
-        return NAMED_RANGED_ATTACK_PRIORITY[name]
     if name in ARTILLERY_RANGED_PRIORITY:
         return ARTILLERY_RANGED_PRIORITY[name]
-    order = _stance_ranged_order(unit_types)
-    if name in order:
-        return STANCE_RANGED_BASE + order.index(name)
+    volley, stagger = _primary_ranged_stances(unit_types)
+    if name == volley:
+        return TIER_VOLLEY
+    if name == stagger:
+        return TIER_STAGGER
+    if name in NAMED_RANGED_ATTACK_ORDER:
+        return TIER_NAMED_RANGED + NAMED_RANGED_ATTACK_ORDER.index(name)
+    if name == "DefendRangedAttack":
+        return TIER_DEFEND_RANGED
+    return 99
+
+
+def _melee_hand_priority(name: str) -> int:
+    if name == "VolleyHandAttack":
+        return TIER_VOLLEY_HAND
+    if name == "StaggerHandAttack":
+        return TIER_STAGGER_HAND
+    if name in NAMED_MELEE_ATTACK_ORDER:
+        return TIER_NAMED_MELEE + NAMED_MELEE_ATTACK_ORDER.index(name)
+    if name == "DefendHandAttack":
+        return TIER_DEFEND_HAND
     return 99
 
 
 # 兼容旧引用（siege 等）
 ATTACK_PRIORITY = {
-    **{k: v for k, v in MELEE_HAND_PRIORITY.items()},
     "BuildingAttack": 10,
 }
 
@@ -622,7 +642,7 @@ def _parse_attacks(
             result["ranged"] = valid_ranged[0]
     if melee_candidates:
         for c in melee_candidates:
-            c["priority"] = MELEE_HAND_PRIORITY.get(c["name"], 99)
+            c["priority"] = _melee_hand_priority(c["name"])
         melee_candidates.sort(key=lambda x: x["priority"])
         result["melee"] = melee_candidates[0]
     if siege_candidates:

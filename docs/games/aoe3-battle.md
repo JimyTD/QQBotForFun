@@ -871,14 +871,12 @@ AOE3 有三种伤害类型，每种只被对应的抗性减免：
 都属于 ranged）。按 `ATTACK_PRIORITY` 常量选**优先级最高的一条**作为该槽位的代表，
 该 protoaction 的所有字段（damage / range / rof / aoe / multipliers）整体写入对应字段族。
 
-优先级设计原则（游戏内默认阵型；**均高于 Defend**）：
+优先级设计原则（**Volley/Stagger > 具名主攻击 > Defend**；Defend 为手动防御阵型）：
 
-- **具名主攻击**（无姿态后缀）：`BowAttack` / `RifleAttack` / `RangedAttack` 等 → 优先于一切 Volley/Stagger/Defend（例：满洲兵 `BowAttack`）
-- **远程步兵**（含 `AbstractRangedInfantry`）：`VolleyRangedAttack > StaggerRangedAttack > DefendRangedAttack`
-- **远程骑兵**（仅 `AbstractRangedCavalry`、无步兵 tag）：`StaggerRangedAttack > VolleyRangedAttack > DefendRangedAttack`
-- **兼有两种 tag**：仍 **Volley** 优先
-- **近战槽**（刺刀等）：`VolleyHandAttack > StaggerHandAttack > DefendHandAttack > …`
-- **炮兵**：`BarrageAttack > RepeatingAttack > CannonAttack > …`
+- **远程**：`VolleyRanged` / `StaggerRanged`（步兵默认齐射，纯骑兵默认交错）→ 具名主攻击（`BowAttack` 等，多数单位无齐射/交错后缀）→ `DefendRanged`（置底）
+- **近战**：`VolleyHand` / `StaggerHand` → 具名（`MeleeHandAttack` / `BayonetAttack` / `HandAttack`）→ `DefendHand`（置底）
+- **炮兵**：`BarrageAttack > RepeatingAttack > CannonAttack > …`（独立表）
+- 具名表内条目待 protoy 核实是否含一次性英雄技能（见 `TODO.md`）；斗蛐蛐只用常态 DPS 循环，不用每枪开技能
 
 **外部参考**（人工核对单位数值）：[AOE 3 Home City — 军事单位](https://aoe3homecity.com/zh-CN/units?type=military)（如[雇佣兵列表](https://aoe3homecity.com/zh-CN/units?type=military&tags=Mercenary)）
 
