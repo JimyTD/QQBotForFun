@@ -38,6 +38,8 @@
 
 解包含 `protoy.xml`、`stringtabley_zh.xml`、`tactics/*.tactics` 等；AOE 半径/cap 在 **protoy 的 protoaction**；距离衰减等在 **tactics**（`outerdamageareadistance/factor`），斗蛐蛐未模拟。
 
+**人工核对参考**：[AOE 3 Home City](https://aoe3homecity.com/zh-CN/units?type=military)（单位面板数值较可靠；如 [雇佣兵](https://aoe3homecity.com/zh-CN/units?type=military&tags=Mercenary)）。权威仍以 `protoy.xml` 解析为准。
+
 **核心设计原则**：
 - `unit.type` 与 `multipliers.vs` 直接存游戏原始标签（`AbstractCavalry` 等），不翻译
 - 倍率天然匹配：`damagebonus.type` 和 `unit.type` 来自同一份 XML 同一套字符串，不需要映射表

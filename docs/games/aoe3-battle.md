@@ -871,15 +871,16 @@ AOE3 有三种伤害类型，每种只被对应的抗性减免：
 都属于 ranged）。按 `ATTACK_PRIORITY` 常量选**优先级最高的一条**作为该槽位的代表，
 该 protoaction 的所有字段（damage / range / rof / aoe / multipliers）整体写入对应字段族。
 
-优先级设计原则：**远程步兵/弓弩/火枪等选齐射（Volley）姿态**；炮兵等特殊单位另定（打兵模式优先于打建筑）：
-- 远程步兵/弓弩/火枪：`VolleyRangedAttack > StaggerRangedAttack > DefendRangedAttack > RangedAttack`
-- 近战槽（刺刀等）：`VolleyHandAttack > StaggerHandAttack > DefendHandAttack > MeleeHandAttack > HandAttack`
-- 炮兵：`BarrageAttack > RepeatingAttack > CannonAttack > BombardAttack > CaseShotAttack`
-  - BarrageAttack = 迫击炮打兵模式（AOE 大、伤害低、有负倍率）
-  - RepeatingAttack = 加特林连射模式（rof=0.5，极高 DPS）
-  - CannonAttack = 标准远程炮击（鹰炮/长管炮的主力）
-  - BombardAttack = 旧版强攻/半程射程
-  - CaseShotAttack = 散弹（1/10 伤害）
+优先级设计原则（游戏内默认阵型；**均高于 Defend**）：
+
+- **具名主攻击**（无姿态后缀）：`BowAttack` / `RifleAttack` / `RangedAttack` 等 → 优先于一切 Volley/Stagger/Defend（例：满洲兵 `BowAttack`）
+- **远程步兵**（含 `AbstractRangedInfantry`）：`VolleyRangedAttack > StaggerRangedAttack > DefendRangedAttack`
+- **远程骑兵**（仅 `AbstractRangedCavalry`、无步兵 tag）：`StaggerRangedAttack > VolleyRangedAttack > DefendRangedAttack`
+- **兼有两种 tag**：仍 **Volley** 优先
+- **近战槽**（刺刀等）：`VolleyHandAttack > StaggerHandAttack > DefendHandAttack > …`
+- **炮兵**：`BarrageAttack > RepeatingAttack > CannonAttack > …`
+
+**外部参考**（人工核对单位数值）：[AOE 3 Home City — 军事单位](https://aoe3homecity.com/zh-CN/units?type=military)（如[雇佣兵列表](https://aoe3homecity.com/zh-CN/units?type=military&tags=Mercenary)）
 
 > **铁律**：只能整体选用一个 protoaction，不能把 A 的 damage 和 B 的 multipliers 拼在一起。
 

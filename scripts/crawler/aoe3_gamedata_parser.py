@@ -59,32 +59,73 @@ KEEP_TYPE_EXACT = {
 
 
 # ============================================================
-# 攻击动作名优先级（选择"标准"姿态）
+# 攻击动作名优先级（选择"标准"姿态 / 主攻击）
 # 数字越小越优先；不在列表中的 = 99
 #
-# 设计原则：
-#   - 攻击类型（ranged/melee/siege 槽位）和伤害类型（damagetype）正交
-#   - 槽位判定只看 maxrange + 动作名，不看 damagetype
-#   - 优先选"打兵"模式（BarrageAttack/RepeatingAttack）而非"打建筑"（CannonAttack）
+# 远程步兵/弓弩/火枪：游戏默认齐射 Volley
+# 远程骑兵：游戏默认交错 Stagger（兼有两种 tag 时仍 Volley）
+# 具名主攻击（BowAttack 等）优先于一切姿态变体
+# 炮兵等另表（打兵模式优先于打建筑）
 # ============================================================
-ATTACK_PRIORITY = {
-    # --- 远程姿态（步兵/弓弩/火枪等：游戏默认齐射 Volley）---
-    "VolleyRangedAttack": 1,
-    "StaggerRangedAttack": 2,
-    "DefendRangedAttack": 3,
-    "RangedAttack": 4,
-    "BarrageAttack": 5,         # 迫击炮打兵模式（优先于 CannonAttack）
-    "RepeatingAttack": 6,       # 加特林连射模式（优先于 CannonAttack）
-    "CannonAttack": 7,          # 标准炮击（鹰炮等的主攻）
-    "BombardAttack": 8,         # 旧版强攻模式，射程减半
-    "CaseShotAttack": 9,        # 散弹，伤害极低
-    # --- 近战姿态（与齐射配对的刺刀/白刃等）---
+
+# 非姿态远程主攻击（满洲兵 BowAttack 等）— 优先于 Volley/Stagger/Defend
+NAMED_RANGED_ATTACK_PRIORITY = {
+    "BowAttack": 1,
+    "RifleAttack": 2,
+    "BlunderbussAttack": 3,
+    "SharpshooterAttack": 4,
+    "CrackshotAttack": 5,
+    "LongRangeAttack": 6,
+    "SwashbucklerAttack": 7,
+    "RangedAttack": 8,  # 无 Volley/Stagger 后缀的通用远程名
+}
+
+ARTILLERY_RANGED_PRIORITY = {
+    "BarrageAttack": 40,
+    "RepeatingAttack": 41,
+    "CannonAttack": 42,
+    "BombardAttack": 43,
+    "CaseShotAttack": 44,
+    "MortarAttack": 45,
+}
+
+MELEE_HAND_PRIORITY = {
     "VolleyHandAttack": 1,
     "StaggerHandAttack": 2,
     "DefendHandAttack": 3,
     "MeleeHandAttack": 4,
-    "HandAttack": 5,
-    # --- 拆建筑（归 siege 桶）---
+    "BayonetAttack": 5,
+    "HandAttack": 6,
+}
+
+STANCE_RANGED_BASE = 20  # 姿态变体起点；必低于 NAMED / ARTILLERY
+
+
+def _stance_ranged_order(unit_types: set[str]) -> list[str]:
+    """远程槽姿态顺序：步兵齐射默认；纯远程骑兵交错默认；兼有两种 tag 仍齐射。"""
+    has_inf = "AbstractRangedInfantry" in unit_types
+    has_cav = "AbstractRangedCavalry" in unit_types
+    if has_inf:
+        return ["VolleyRangedAttack", "StaggerRangedAttack", "DefendRangedAttack"]
+    if has_cav:
+        return ["StaggerRangedAttack", "VolleyRangedAttack", "DefendRangedAttack"]
+    return ["VolleyRangedAttack", "StaggerRangedAttack", "DefendRangedAttack"]
+
+
+def _ranged_attack_priority(name: str, unit_types: set[str]) -> int:
+    if name in NAMED_RANGED_ATTACK_PRIORITY:
+        return NAMED_RANGED_ATTACK_PRIORITY[name]
+    if name in ARTILLERY_RANGED_PRIORITY:
+        return ARTILLERY_RANGED_PRIORITY[name]
+    order = _stance_ranged_order(unit_types)
+    if name in order:
+        return STANCE_RANGED_BASE + order.index(name)
+    return 99
+
+
+# 兼容旧引用（siege 等）
+ATTACK_PRIORITY = {
+    **{k: v for k, v in MELEE_HAND_PRIORITY.items()},
     "BuildingAttack": 10,
 }
 
@@ -216,7 +257,7 @@ def parse_unit(el: ET.Element, strings_en: dict, strings_zh: dict) -> dict | Non
 
     # --- Attacks ---
     tactics_filename = el.findtext("tactics", "").strip()
-    attacks = _parse_attacks(el, tactics_filename)
+    attacks = _parse_attacks(el, tactics_filename, all_types)
     ranged = attacks.get("ranged")
     melee = attacks.get("melee")
     siege = attacks.get("siege")
@@ -487,12 +528,17 @@ def _parse_windups(el: ET.Element, tactics_filename: str) -> dict[str, float]:
     return windups
 
 
-def _parse_attacks(el: ET.Element, tactics_filename: str = "") -> dict[str, dict]:
+def _parse_attacks(
+    el: ET.Element, tactics_filename: str = "", unit_types: set[str] | None = None,
+) -> dict[str, dict]:
     """Parse protoaction elements, categorize and select best per slot.
 
     tactics_filename: 该单位引用的 tactics 文件名（如 "chukonu.tactics"），
     用于读取 displayednumberprojectiles（每次攻击的弹丸数）。
+    unit_types: unittype 标签集合，用于远程姿态默认（步兵 Volley / 骑兵 Stagger）。
     """
+    if unit_types is None:
+        unit_types = set()
     # Load tactics projectile data
     tactics_proj = _load_tactics(tactics_filename) if tactics_filename else {}
 
@@ -545,7 +591,6 @@ def _parse_attacks(el: ET.Element, tactics_filename: str = "") -> dict[str, dict
             "damage_cap": damagecap,
             "num_projectiles": num_projectiles,
             "multipliers": multipliers,
-            "priority": ATTACK_PRIORITY.get(name, 99),
         }
 
         # Categorize — 只看动作名 + maxrange，不看 damagetype
@@ -571,12 +616,18 @@ def _parse_attacks(el: ET.Element, tactics_filename: str = "") -> dict[str, dict
         # maxrange<=0 的 *RangedAttack 在 protoy 里是占位/继承，不能作远程槽代表。
         valid_ranged = [c for c in ranged_candidates if c["maxrange"] > 0]
         if valid_ranged:
+            for c in valid_ranged:
+                c["priority"] = _ranged_attack_priority(c["name"], unit_types)
             valid_ranged.sort(key=lambda x: x["priority"])
             result["ranged"] = valid_ranged[0]
     if melee_candidates:
+        for c in melee_candidates:
+            c["priority"] = MELEE_HAND_PRIORITY.get(c["name"], 99)
         melee_candidates.sort(key=lambda x: x["priority"])
         result["melee"] = melee_candidates[0]
     if siege_candidates:
+        for c in siege_candidates:
+            c["priority"] = ATTACK_PRIORITY.get(c["name"], 99)
         siege_candidates.sort(key=lambda x: x["priority"])
         result["siege"] = siege_candidates[0]
     return result

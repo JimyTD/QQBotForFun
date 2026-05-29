@@ -6,12 +6,14 @@
 
 ## 🔴 AoE3 数据管线：权威源入库 + 重跑 parser
 
-**背景**：仓库里只有 `seeds/aoe3/units.json`（~1.2MB 二手产物）；`protoy.xml` 不入 git，parser 错则无法对账修。旧 `ATTACK_PRIORITY` 误用 Defend 优先（非设计意图），远程步兵/弓弩应以 **Volley** 为准；已改 parser/文档，**未重跑**，JSON 仍是旧数据。
+**背景**：仓库里只有 `seeds/aoe3/units.json`（~1.2MB 二手产物）；`protoy.xml` 不入 git，parser 错则无法对账修。`ATTACK_PRIORITY` 已按游戏默认阵型修正（步兵 Volley / 骑兵 Stagger / 具名攻击如 BowAttack 优先 / 均高于 Defend），**未重跑**，JSON 仍是旧数据。
+
+**核对参考**：[AOE 3 Home City](https://aoe3homecity.com/zh-CN/units?type=military&tags=Mercenary)
 
 **待办**（有 `Data.bar` / `E:\aoe3_extracted` 的机器）：
 
 1. **重跑**：`aoe3_bar_extractor.py` → `aoe3_gamedata_parser.py`，提交新 `units.json`（禁止手改 seeds）
-2. **验收**：`demercirishbrigadier` 远程应为 Volley **2–12**（非 0/3）；抽查 `skirmisher` / `musketeer` 的 `range_min`、windup
+2. **验收**：`demercirishbrigadier` Volley **2–12**；`mercmanchu` 仍为 `BowAttack`；远程骑兵（如 dragoon 类）远程槽来自 **Stagger**；抽查 `skirmisher` / `musketeer`
 3. **影响面**（旧 JSON 估算）：157 单位 Defend/Volley 双姿态；30 条 windup 已分叉；仅 1 条 `range=0` 硬伤
 4. **权威层入库**（对齐 RA2 `data/ra2/`）：parser 另导出 `data/aoe3/protoactions.json`（或等价）——**全 protoaction 整包、不选代表**；`units.json` 降为模拟器/卡片用的派生视图
 5. 模拟器/卡片显式绑定动作名（如 `VolleyRangedAttack`），弱化或移除 `ATTACK_PRIORITY` 猜默认值
