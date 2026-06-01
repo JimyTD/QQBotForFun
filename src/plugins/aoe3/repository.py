@@ -205,6 +205,7 @@ class UnitRepo:
 
         results = exact_name + exact_alias + prefix + contains
         if results:
+            results.sort(key=lambda u: "AbstractConsulateUnit" in u.type)
             return results[:limit]
 
         # ── 模糊兜底：编辑距离匹配 ──
