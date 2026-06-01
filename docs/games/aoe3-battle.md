@@ -955,8 +955,7 @@ def has_attack(self) -> bool:
 
 ### 3.10 单位改良（科技加成）
 
-> **Status**: 设计中（未实现）。原始数据来源 `data/aoe3/raw/techtreey.xml`（已入库）。
-> 当前模拟器 `_create_soldier` 直接用 `units.json` 的**未改良**面板，不叠任何科技。
+> **Status**: ✅ 已实现（2026-05-29）。数据源 `data/aoe3/raw/techtreey.xml` → 离线生成 `seeds/aoe3/unit_upgrades.json`；运行时由 `src/plugins/aoe3/upgrades.py` 的 `apply_upgrades()` 按时代叠加。
 
 #### 3.10.1 档位是「累加」不是「替代」也不是「连乘」
 
