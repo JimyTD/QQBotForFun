@@ -90,6 +90,18 @@ def test_apply_upgrades_returns_copy(repo):
     assert up.attack_ranged == round(musk.attack_ranged * 2, 2)
 
 
+def test_apply_upgrades_renames_unit(repo):
+    """时代升级后兵种改名（SetName）。"""
+    musk = repo.get_by_id("musketeer")
+    assert musk.name == "火枪兵"
+    up3 = apply_upgrades(musk, 3)
+    assert up3.name == "老练火枪兵"
+    up4 = apply_upgrades(musk, 4)
+    assert up4.name == "护卫火枪兵"
+    up5 = apply_upgrades(musk, 5)
+    assert up5.name == "帝国火枪兵"
+
+
 def test_apply_age2_noop(repo):
     """2 时代标准兵无军改，原样返回。"""
     musk = repo.get_by_id("musketeer")

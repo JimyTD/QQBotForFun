@@ -317,6 +317,7 @@ class AoE3BattleGame(GameBase):
         # 时代（§3.10.6）：默认 3 时代；黑名单乱斗不启用（怪物互殴无改良意义）
         age = (ctx.config or {}).get("age", AGE_DEFAULT)
         age = max(AGE_MIN, min(AGE_MAX, int(age)))
+        generic_techs_on = bool((ctx.config or {}).get("generic_techs", False))
 
         repo = UnitRepo.get()
         rng = random.Random()
@@ -345,7 +346,44 @@ class AoE3BattleGame(GameBase):
                 raise ValueError(result)
             match = result
         else:
-            match = generate_bet_lineup(repo, rng=rng, budget=budget, age=age)
+            _defer = generic_techs_on and age is not None
+            match = generate_bet_lineup(
+                repo, rng=rng, budget=budget, age=age,
+                defer_counts=_defer,
+            )
+
+        # 通用科技（roguelike 横向加成，叠在 tier 之上）
+        if generic_techs_on and mode_id != "blacklist" and match.age is not None:
+            from src.plugins.aoe3.generic_techs import (
+                apply_generic_techs,
+                format_tech_lines,
+                select_techs,
+            )
+            from src.plugins.games.aoe3_battle.lineup import (
+                _apply_lcm_balance,
+                allocate_lineup_counts,
+            )
+            k = 2 if mode_id == "duel" else 4
+            red_units = [s.unit for s in match.red.slots]
+            blue_units = [s.unit for s in match.blue.slots]
+            red_techs, blue_techs = select_techs(
+                red_units, blue_units, match.age, k=k, rng=rng,
+            )
+            if red_techs or blue_techs:
+                base_red = [repo.get_by_id(s.unit.id) for s in match.red.slots]
+                base_blue = [repo.get_by_id(s.unit.id) for s in match.blue.slots]
+                new_red = apply_generic_techs(red_units, red_techs, base_red)
+                new_blue = apply_generic_techs(blue_units, blue_techs, base_blue)
+                for i, slot in enumerate(match.red.slots):
+                    match.red.slots[i] = UnitSlot(new_red[i], slot.count)
+                for i, slot in enumerate(match.blue.slots):
+                    match.blue.slots[i] = UnitSlot(new_blue[i], slot.count)
+                match.generic_tech_lines = format_tech_lines(red_techs, blue_techs)
+            # 科技应用完毕（cost 可能已变）→ 按最终 cost 分配数量（唯一一次）
+            if mode_id != "duel":
+                allocate_lineup_counts(match.red, budget)
+                allocate_lineup_counts(match.blue, budget)
+                _apply_lcm_balance(match.red, match.blue, budget)
 
         # 序列化阵容到 state（供持久化）
         ctx.state.update(

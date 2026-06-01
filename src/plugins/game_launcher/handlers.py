@@ -123,6 +123,7 @@ def _extract_age(parts: list[str]) -> tuple[int | None, list[str]]:
 
 _AGE_CONFIG_KEY = "aoe3_battle.default_age"
 _AGE_NAMES = {2: "商业时代", 3: "要塞时代", 4: "工业时代", 5: "帝王时代"}
+_TECH_CONFIG_KEY = "aoe3_battle.generic_techs"
 
 
 async def _get_default_age(group_id: int) -> int | None:
@@ -140,6 +141,21 @@ async def _set_default_age(matcher: Matcher, group_id: int, age: int) -> None:
     await set_group_config(group_id, _AGE_CONFIG_KEY, str(age))
     name = _AGE_NAMES.get(age, f"{age}时代")
     await matcher.finish(f"✅ 本群斗蛐蛐默认时代已设为【{name}（{age}）】")
+
+
+async def _get_generic_techs_enabled(group_id: int) -> bool:
+    """读取本群通用科技开关（默认关）。"""
+    from core.group_config import get_group_config
+    val = await get_group_config(group_id, _TECH_CONFIG_KEY)
+    return val == "on"
+
+
+async def _set_generic_techs(matcher: Matcher, group_id: int, on: bool) -> None:
+    """设置本群通用科技开关。"""
+    from core.group_config import set_group_config
+    await set_group_config(group_id, _TECH_CONFIG_KEY, "on" if on else "off")
+    state = "开启" if on else "关闭"
+    await matcher.finish(f"✅ 本群斗蛐蛐通用科技已【{state}】（roguelike 随机研发加成）")
 
 
 # -------------------- 快捷开局：斗蛐蛐 --------------------
@@ -166,6 +182,14 @@ async def _(matcher: Matcher, event: GroupMessageEvent, args: Message = CommandA
         await set_group_config(int(event.group_id), "aoe3_battle.broadcast_mode", "brief")
         await matcher.finish("✅ 已切换为【极简播报】模式（只显示开战和战报，帝国/红警通用）")
 
+    # ---- 通用科技开关："斗蛐蛐 科技开" / "斗蛐蛐 科技关" ----
+    if arg_text in ("科技开", "科技on"):
+        await _set_generic_techs(matcher, int(event.group_id), True)
+        return
+    if arg_text in ("科技关", "科技off"):
+        await _set_generic_techs(matcher, int(event.group_id), False)
+        return
+
     # ---- 时代参数（所有模式通用）："斗蛐蛐 5时代" / "斗蛐蛐 火枪 3时代" ----
     age, parts = _extract_age(arg_text.split())
 
@@ -177,6 +201,9 @@ async def _(matcher: Matcher, event: GroupMessageEvent, args: Message = CommandA
     # 没有显式指定时代 → 读本群持久默认
     if age is None:
         age = await _get_default_age(int(event.group_id))
+
+    # 通用科技开关 → 传入 config
+    generic_techs_on = await _get_generic_techs_enabled(int(event.group_id))
 
     # ---- 王中王："斗蛐蛐 王中王" / "斗蛐蛐 王中王 散兵 15000" ----
     _RIVAL_KEYWORDS = {"王中王", "宿敌", "宿敌挑战", "rival"}
@@ -218,6 +245,8 @@ async def _(matcher: Matcher, event: GroupMessageEvent, args: Message = CommandA
         config["budget"] = budget
     if age is not None:
         config["age"] = age
+    if generic_techs_on:
+        config["generic_techs"] = True
 
     await _launch_game(
         matcher,

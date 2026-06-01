@@ -1,0 +1,1837 @@
+{
+  "_meta": {
+    "source": "techtreey.xml",
+    "note": "通用科技池（roguelike，横向加成）。BROAD_TAGS+特色兵白名单收窄，按 (scope,效果结构) 去重取最强。op 保留 action，运行时按单位代表动作分槽。age 对卡片为启发式估计。",
+    "count": 66,
+    "dropped_unmatched": []
+  },
+  "techs": [
+    {
+      "id": "Caracole",
+      "name_zh": "远程骑兵半回旋战术",
+      "source": "Arsenal",
+      "age": 2,
+      "scope": [
+        "AbstractRangedCavalry"
+      ],
+      "ops": [
+        {
+          "stat": "damage",
+          "kind": "mult",
+          "value": 1.1,
+          "action": null,
+          "allactions": true
+        },
+        {
+          "stat": "range",
+          "kind": "add",
+          "value": 2.0,
+          "action": "StaggerRangedAttack",
+          "allactions": false
+        }
+      ],
+      "match_count": 77
+    },
+    {
+      "id": "CavalryCuirass",
+      "name_zh": "骑兵胸甲",
+      "source": "Arsenal",
+      "age": 2,
+      "scope": [
+        "AbstractHeavyCavalry"
+      ],
+      "ops": [
+        {
+          "stat": "hp",
+          "kind": "mult",
+          "value": 1.1,
+          "action": null,
+          "allactions": false
+        }
+      ],
+      "match_count": 106
+    },
+    {
+      "id": "Flintlock",
+      "name_zh": "燧发枪",
+      "source": "Arsenal",
+      "age": 2,
+      "scope": [
+        "AbstractGunpowderTrooper"
+      ],
+      "ops": [
+        {
+          "stat": "hp",
+          "kind": "mult",
+          "value": 1.1,
+          "action": null,
+          "allactions": false
+        }
+      ],
+      "match_count": 140
+    },
+    {
+      "id": "IncendiaryGrenades",
+      "name_zh": "燃烧弹",
+      "source": "Arsenal",
+      "age": 2,
+      "scope": [
+        "AbstractGrenadier"
+      ],
+      "ops": [
+        {
+          "stat": "aoe",
+          "kind": "add",
+          "value": 1.0,
+          "action": "RangedAttack",
+          "allactions": false
+        }
+      ],
+      "match_count": 17
+    },
+    {
+      "id": "MilitaryDrummers",
+      "name_zh": "军队鼓手",
+      "source": "Arsenal",
+      "age": 2,
+      "scope": [
+        "AbstractInfantry"
+      ],
+      "ops": [
+        {
+          "stat": "speed",
+          "kind": "mult",
+          "value": 1.1
+        }
+      ],
+      "match_count": 303
+    },
+    {
+      "id": "PaperCartridge",
+      "name_zh": "弹药包",
+      "source": "Arsenal",
+      "age": 2,
+      "scope": [
+        "AbstractGunpowderTrooper"
+      ],
+      "ops": [
+        {
+          "stat": "damage",
+          "kind": "mult",
+          "value": 1.15,
+          "action": null,
+          "allactions": true
+        }
+      ],
+      "match_count": 140
+    },
+    {
+      "id": "ProfessionalGunners",
+      "name_zh": "职业枪手",
+      "source": "Arsenal",
+      "age": 2,
+      "scope": [
+        "AbstractArtillery"
+      ],
+      "ops": [
+        {
+          "stat": "hp",
+          "kind": "mult",
+          "value": 1.1,
+          "action": null,
+          "allactions": false
+        }
+      ],
+      "match_count": 41
+    },
+    {
+      "id": "Rifling",
+      "name_zh": "反步兵步枪",
+      "source": "Arsenal",
+      "age": 2,
+      "scope": [
+        "AbstractRifleman"
+      ],
+      "ops": [
+        {
+          "stat": "mult",
+          "kind": "add",
+          "value": 1.0,
+          "vs": "AbstractHeavyInfantry",
+          "action": null,
+          "allactions": true
+        }
+      ],
+      "match_count": 64
+    },
+    {
+      "id": "Trunion",
+      "name_zh": "炮耳",
+      "source": "Arsenal",
+      "age": 2,
+      "scope": [
+        "AbstractArtillery"
+      ],
+      "ops": [
+        {
+          "stat": "speed",
+          "kind": "mult",
+          "value": 1.15
+        }
+      ],
+      "match_count": 41
+    },
+    {
+      "id": "ChurchCorsolet",
+      "name_zh": "胸甲",
+      "source": "Church",
+      "age": 2,
+      "scope": [
+        "AbstractHeavyInfantry"
+      ],
+      "ops": [
+        {
+          "stat": "hp",
+          "kind": "mult",
+          "value": 1.25,
+          "action": null,
+          "allactions": false
+        },
+        {
+          "stat": "speed",
+          "kind": "mult",
+          "value": 0.85
+        }
+      ],
+      "match_count": 152
+    },
+    {
+      "id": "ChurchThinRedLine",
+      "name_zh": "细细的红线",
+      "source": "Church",
+      "age": 2,
+      "scope": [
+        "musketeer"
+      ],
+      "ops": [
+        {
+          "stat": "hp",
+          "kind": "mult",
+          "value": 1.2,
+          "action": null,
+          "allactions": false
+        },
+        {
+          "stat": "speed",
+          "kind": "mult",
+          "value": 0.9
+        }
+      ],
+      "match_count": 1
+    },
+    {
+      "id": "ChurchTillysDiscipline",
+      "name_zh": "蒂莉的纪律",
+      "source": "Church",
+      "age": 2,
+      "scope": [
+        "AbstractInfantry"
+      ],
+      "ops": [
+        {
+          "stat": "speed",
+          "kind": "mult",
+          "value": 1.2
+        },
+        {
+          "stat": "cost",
+          "kind": "mult",
+          "value": 1.1,
+          "resource": "gold"
+        },
+        {
+          "stat": "cost",
+          "kind": "mult",
+          "value": 1.1,
+          "resource": "food"
+        },
+        {
+          "stat": "cost",
+          "kind": "mult",
+          "value": 1.1,
+          "resource": "wood"
+        }
+      ],
+      "match_count": 303
+    },
+    {
+      "id": "DEChurchPikePush",
+      "name_zh": "长枪战",
+      "source": "Church",
+      "age": 2,
+      "scope": [
+        "AbstractHandInfantry"
+      ],
+      "ops": [
+        {
+          "stat": "speed",
+          "kind": "mult",
+          "value": 1.1
+        }
+      ],
+      "match_count": 121
+    },
+    {
+      "id": "HCHandInfantryHitpointsSpanish",
+      "name_zh": "古老的步兵生命值",
+      "source": "HomeCity",
+      "age": 2,
+      "scope": [
+        "AbstractFootArcher",
+        "AbstractHandInfantry"
+      ],
+      "ops": [
+        {
+          "stat": "hp",
+          "kind": "mult",
+          "value": 1.15,
+          "action": null,
+          "allactions": false
+        }
+      ],
+      "match_count": 159
+    },
+    {
+      "id": "DEChurchSecondGuarantee",
+      "name_zh": "次要保障",
+      "source": "Church",
+      "age": 3,
+      "scope": [
+        "AbstractMusketeer"
+      ],
+      "ops": [
+        {
+          "stat": "hp",
+          "kind": "mult",
+          "value": 1.15,
+          "action": null,
+          "allactions": false
+        },
+        {
+          "stat": "damage",
+          "kind": "mult",
+          "value": 1.15,
+          "action": null,
+          "allactions": true
+        }
+      ],
+      "match_count": 63
+    },
+    {
+      "id": "DEHCContinentalRangers",
+      "name_zh": "大陆游骑兵",
+      "source": "HomeCity",
+      "age": 3,
+      "scope": [
+        "AbstractRifleman"
+      ],
+      "ops": [
+        {
+          "stat": "hp",
+          "kind": "mult",
+          "value": 1.15,
+          "action": null,
+          "allactions": false
+        },
+        {
+          "stat": "damage",
+          "kind": "mult",
+          "value": 1.15,
+          "action": null,
+          "allactions": true
+        }
+      ],
+      "match_count": 64
+    },
+    {
+      "id": "DEHCFedMXBustamante",
+      "name_zh": "布斯塔曼特",
+      "source": "HomeCity",
+      "age": 3,
+      "scope": [
+        "AbstractMusketeer"
+      ],
+      "ops": [
+        {
+          "stat": "hp",
+          "kind": "mult",
+          "value": 1.1,
+          "action": null,
+          "allactions": false
+        }
+      ],
+      "match_count": 63
+    },
+    {
+      "id": "DEHCFedSeminolePonies",
+      "name_zh": "塞米诺尔矮种马",
+      "source": "HomeCity",
+      "age": 3,
+      "scope": [
+        "AbstractHandCavalry"
+      ],
+      "ops": [
+        {
+          "stat": "hp",
+          "kind": "mult",
+          "value": 1.15,
+          "action": null,
+          "allactions": false
+        },
+        {
+          "stat": "damage",
+          "kind": "mult",
+          "value": 1.15,
+          "action": null,
+          "allactions": true
+        },
+        {
+          "stat": "speed",
+          "kind": "mult",
+          "value": 1.05
+        }
+      ],
+      "match_count": 113
+    },
+    {
+      "id": "DEHCHandUnitDamage",
+      "name_zh": "近战步兵/近战骑兵攻击力",
+      "source": "HomeCity",
+      "age": 3,
+      "scope": [
+        "AbstractHandCavalry",
+        "AbstractHandInfantry"
+      ],
+      "ops": [
+        {
+          "stat": "damage",
+          "kind": "mult",
+          "value": 1.15,
+          "action": null,
+          "allactions": true
+        }
+      ],
+      "match_count": 234
+    },
+    {
+      "id": "DEHCHandUnitHitpoints",
+      "name_zh": "近战步兵/近战骑兵生命值",
+      "source": "HomeCity",
+      "age": 3,
+      "scope": [
+        "AbstractHandCavalry",
+        "AbstractHandInfantry"
+      ],
+      "ops": [
+        {
+          "stat": "hp",
+          "kind": "mult",
+          "value": 1.15,
+          "action": null,
+          "allactions": false
+        }
+      ],
+      "match_count": 234
+    },
+    {
+      "id": "DEHCHeavyInfHitpointsOttoman",
+      "name_zh": "库雷利学校",
+      "source": "HomeCity",
+      "age": 3,
+      "scope": [
+        "AbstractGrenadier"
+      ],
+      "ops": [
+        {
+          "stat": "hp",
+          "kind": "mult",
+          "value": 1.15,
+          "action": null,
+          "allactions": false
+        },
+        {
+          "stat": "damage",
+          "kind": "mult",
+          "value": 1.15,
+          "action": null,
+          "allactions": true
+        }
+      ],
+      "match_count": 17
+    },
+    {
+      "id": "DEHCInfantryDamageItalian",
+      "name_zh": "步兵攻击力",
+      "source": "HomeCity",
+      "age": 3,
+      "scope": [
+        "AbstractInfantry"
+      ],
+      "ops": [
+        {
+          "stat": "damage",
+          "kind": "mult",
+          "value": 1.15,
+          "action": null,
+          "allactions": true
+        }
+      ],
+      "match_count": 303
+    },
+    {
+      "id": "DEHCInfantryHitpointsItalian",
+      "name_zh": "步兵生命值",
+      "source": "HomeCity",
+      "age": 3,
+      "scope": [
+        "AbstractInfantry"
+      ],
+      "ops": [
+        {
+          "stat": "hp",
+          "kind": "mult",
+          "value": 1.15,
+          "action": null,
+          "allactions": false
+        }
+      ],
+      "match_count": 303
+    },
+    {
+      "id": "DEHCLiberationMarch",
+      "name_zh": "解放游行",
+      "source": "HomeCity",
+      "age": 3,
+      "scope": [
+        "AbstractCavalry",
+        "AbstractInfantry",
+        "AbstractLightInfantry"
+      ],
+      "ops": [
+        {
+          "stat": "speed",
+          "kind": "mult",
+          "value": 1.05
+        }
+      ],
+      "match_count": 505
+    },
+    {
+      "id": "DEHCPeninsularGuerrillas",
+      "name_zh": "半岛游击队",
+      "source": "HomeCity",
+      "age": 3,
+      "scope": [
+        "AbstractRangedInfantry"
+      ],
+      "ops": [
+        {
+          "stat": "damage",
+          "kind": "mult",
+          "value": 1.2,
+          "action": null,
+          "allactions": true
+        }
+      ],
+      "match_count": 223
+    },
+    {
+      "id": "DEHCPlanCasaMata",
+      "name_zh": "卡萨马塔计划",
+      "source": "HomeCity",
+      "age": 3,
+      "scope": [
+        "AbstractHandCavalry"
+      ],
+      "ops": [
+        {
+          "stat": "speed",
+          "kind": "mult",
+          "value": 1.05
+        }
+      ],
+      "match_count": 113
+    },
+    {
+      "id": "DEHCPlanMiramare",
+      "name_zh": "米拉马雷计划",
+      "source": "HomeCity",
+      "age": 3,
+      "scope": [
+        "AbstractRifleman"
+      ],
+      "ops": [
+        {
+          "stat": "range",
+          "kind": "add",
+          "value": 2.0,
+          "action": "RangedAttack",
+          "allactions": false
+        },
+        {
+          "stat": "range",
+          "kind": "add",
+          "value": 2.0,
+          "action": "RangedAttack2",
+          "allactions": false
+        },
+        {
+          "stat": "range",
+          "kind": "add",
+          "value": 2.0,
+          "action": "DefendRangedAttack",
+          "allactions": false
+        },
+        {
+          "stat": "range",
+          "kind": "add",
+          "value": 2.0,
+          "action": "StaggerRangedAttack",
+          "allactions": false
+        },
+        {
+          "stat": "range",
+          "kind": "add",
+          "value": 2.0,
+          "action": "VolleyRangedAttack",
+          "allactions": false
+        },
+        {
+          "stat": "range",
+          "kind": "add",
+          "value": 2.0,
+          "action": "LongRangedAttack",
+          "allactions": false
+        },
+        {
+          "stat": "range",
+          "kind": "add",
+          "value": 2.0,
+          "action": "BuckshotChargeAttack",
+          "allactions": false
+        },
+        {
+          "stat": "range",
+          "kind": "add",
+          "value": 2.0,
+          "action": "EagleEyeChargeAttack",
+          "allactions": false
+        },
+        {
+          "stat": "range",
+          "kind": "add",
+          "value": 2.0,
+          "action": "DynamiteAttackCharge",
+          "allactions": false
+        }
+      ],
+      "match_count": 64
+    },
+    {
+      "id": "DEHCPlanTuxtepec",
+      "name_zh": "图斯特佩克计划",
+      "source": "HomeCity",
+      "age": 3,
+      "scope": [
+        "AbstractMusketeer"
+      ],
+      "ops": [
+        {
+          "stat": "range",
+          "kind": "add",
+          "value": 1.0,
+          "action": "DefendRangedAttack",
+          "allactions": false
+        },
+        {
+          "stat": "range",
+          "kind": "add",
+          "value": 1.0,
+          "action": "StaggerRangedAttack",
+          "allactions": false
+        },
+        {
+          "stat": "range",
+          "kind": "add",
+          "value": 1.0,
+          "action": "VolleyRangedAttack",
+          "allactions": false
+        },
+        {
+          "stat": "range",
+          "kind": "add",
+          "value": 1.0,
+          "action": "MortarAttack",
+          "allactions": false
+        }
+      ],
+      "match_count": 63
+    },
+    {
+      "id": "DEHCRangedCavalryCombat",
+      "name_zh": "远程骑兵战斗力",
+      "source": "HomeCity",
+      "age": 3,
+      "scope": [
+        "AbstractRangedCavalry"
+      ],
+      "ops": [
+        {
+          "stat": "hp",
+          "kind": "mult",
+          "value": 1.15,
+          "action": null,
+          "allactions": false
+        },
+        {
+          "stat": "damage",
+          "kind": "mult",
+          "value": 1.15,
+          "action": null,
+          "allactions": true
+        }
+      ],
+      "match_count": 77
+    },
+    {
+      "id": "DEHCRegularCombat",
+      "name_zh": "美国军队",
+      "source": "HomeCity",
+      "age": 3,
+      "scope": [
+        "AbstractHeavyInfantry"
+      ],
+      "ops": [
+        {
+          "stat": "hp",
+          "kind": "mult",
+          "value": 1.15,
+          "action": null,
+          "allactions": false
+        },
+        {
+          "stat": "damage",
+          "kind": "mult",
+          "value": 1.15,
+          "action": null,
+          "allactions": true
+        }
+      ],
+      "match_count": 152
+    },
+    {
+      "id": "HCArtilleryCombatFrench",
+      "name_zh": "炮兵战略",
+      "source": "HomeCity",
+      "age": 3,
+      "scope": [
+        "AbstractArtillery"
+      ],
+      "ops": [
+        {
+          "stat": "hp",
+          "kind": "mult",
+          "value": 1.15,
+          "action": null,
+          "allactions": false
+        },
+        {
+          "stat": "damage",
+          "kind": "mult",
+          "value": 1.15,
+          "action": null,
+          "allactions": true
+        }
+      ],
+      "match_count": 41
+    },
+    {
+      "id": "HCArtilleryCombatOttoman",
+      "name_zh": "托普苏拉",
+      "source": "HomeCity",
+      "age": 3,
+      "scope": [
+        "AbstractAbusGun",
+        "AbstractArtillery",
+        "AbstractGrenadier"
+      ],
+      "ops": [
+        {
+          "stat": "damage",
+          "kind": "mult",
+          "value": 1.15,
+          "action": null,
+          "allactions": true
+        },
+        {
+          "stat": "hp",
+          "kind": "mult",
+          "value": 1.15,
+          "action": null,
+          "allactions": false
+        }
+      ],
+      "match_count": 60
+    },
+    {
+      "id": "HCCaballeros",
+      "name_zh": "西班牙绅士",
+      "source": "HomeCity",
+      "age": 3,
+      "scope": [
+        "AbstractLancer"
+      ],
+      "ops": [
+        {
+          "stat": "mult",
+          "kind": "add",
+          "value": 1.0,
+          "vs": "AbstractInfantry",
+          "action": "MeleeHandAttack",
+          "allactions": false
+        },
+        {
+          "stat": "mult",
+          "kind": "add",
+          "value": 1.0,
+          "vs": "AbstractInfantry",
+          "action": "TrampleHandAttack",
+          "allactions": false
+        },
+        {
+          "stat": "mult",
+          "kind": "add",
+          "value": 1.0,
+          "vs": "AbstractInfantry",
+          "action": "DefendHandAttack",
+          "allactions": false
+        },
+        {
+          "stat": "mult",
+          "kind": "add",
+          "value": 1.0,
+          "vs": "AbstractInfantry",
+          "action": "GuardianAttack",
+          "allactions": false
+        },
+        {
+          "stat": "mult",
+          "kind": "add",
+          "value": 1.0,
+          "vs": "AbstractInfantry",
+          "action": "LanceChargeAttack",
+          "allactions": false
+        },
+        {
+          "stat": "mult",
+          "kind": "add",
+          "value": 1.0,
+          "vs": "AbstractInfantry",
+          "action": "ChargeAttack",
+          "allactions": false
+        },
+        {
+          "stat": "mult",
+          "kind": "add",
+          "value": 1.0,
+          "vs": "AbstractInfantry",
+          "action": "HandAttack",
+          "allactions": false
+        },
+        {
+          "stat": "range",
+          "kind": "add",
+          "value": 1.0,
+          "action": "MeleeHandAttack",
+          "allactions": false
+        },
+        {
+          "stat": "range",
+          "kind": "add",
+          "value": 1.0,
+          "action": "TrampleHandAttack",
+          "allactions": false
+        },
+        {
+          "stat": "range",
+          "kind": "add",
+          "value": 1.0,
+          "action": "DefendHandAttack",
+          "allactions": false
+        },
+        {
+          "stat": "range",
+          "kind": "add",
+          "value": 1.0,
+          "action": "GuardianAttack",
+          "allactions": false
+        },
+        {
+          "stat": "range",
+          "kind": "add",
+          "value": 1.0,
+          "action": "LanceChargeAttack",
+          "allactions": false
+        },
+        {
+          "stat": "range",
+          "kind": "add",
+          "value": 1.0,
+          "action": "ChargeAttack",
+          "allactions": false
+        },
+        {
+          "stat": "range",
+          "kind": "add",
+          "value": 1.0,
+          "action": "HandAttack",
+          "allactions": false
+        }
+      ],
+      "match_count": 24
+    },
+    {
+      "id": "HCCavalryDamageBritish",
+      "name_zh": "骑兵伤害",
+      "source": "HomeCity",
+      "age": 3,
+      "scope": [
+        "AbstractCavalry"
+      ],
+      "ops": [
+        {
+          "stat": "damage",
+          "kind": "mult",
+          "value": 1.15,
+          "action": null,
+          "allactions": true
+        }
+      ],
+      "match_count": 185
+    },
+    {
+      "id": "HCCavalryHitpointsBritish",
+      "name_zh": "骑兵生命值",
+      "source": "HomeCity",
+      "age": 3,
+      "scope": [
+        "AbstractCavalry"
+      ],
+      "ops": [
+        {
+          "stat": "hp",
+          "kind": "mult",
+          "value": 1.15,
+          "action": null,
+          "allactions": false
+        }
+      ],
+      "match_count": 185
+    },
+    {
+      "id": "HCHandCavalryCombatSpanish",
+      "name_zh": "骑兵战斗力",
+      "source": "HomeCity",
+      "age": 3,
+      "scope": [
+        "AbstractCavalry"
+      ],
+      "ops": [
+        {
+          "stat": "hp",
+          "kind": "mult",
+          "value": 1.15,
+          "action": null,
+          "allactions": false
+        },
+        {
+          "stat": "damage",
+          "kind": "mult",
+          "value": 1.15,
+          "action": null,
+          "allactions": true
+        }
+      ],
+      "match_count": 185
+    },
+    {
+      "id": "HCHandCavalryDamageSpanish",
+      "name_zh": "近战骑兵攻击力",
+      "source": "HomeCity",
+      "age": 3,
+      "scope": [
+        "AbstractHandCavalry"
+      ],
+      "ops": [
+        {
+          "stat": "damage",
+          "kind": "mult",
+          "value": 1.15,
+          "action": null,
+          "allactions": true
+        }
+      ],
+      "match_count": 113
+    },
+    {
+      "id": "HCHandCavalryHitpointsSpanish",
+      "name_zh": "近战骑兵生命值",
+      "source": "HomeCity",
+      "age": 3,
+      "scope": [
+        "AbstractHandCavalry"
+      ],
+      "ops": [
+        {
+          "stat": "hp",
+          "kind": "mult",
+          "value": 1.15,
+          "action": null,
+          "allactions": false
+        }
+      ],
+      "match_count": 113
+    },
+    {
+      "id": "HCHandInfantryCombatSpanish",
+      "name_zh": "古老的步兵战斗力",
+      "source": "HomeCity",
+      "age": 3,
+      "scope": [
+        "AbstractFootArcher",
+        "AbstractHandInfantry"
+      ],
+      "ops": [
+        {
+          "stat": "hp",
+          "kind": "mult",
+          "value": 1.15,
+          "action": null,
+          "allactions": false
+        },
+        {
+          "stat": "damage",
+          "kind": "mult",
+          "value": 1.15,
+          "action": null,
+          "allactions": true
+        }
+      ],
+      "match_count": 159
+    },
+    {
+      "id": "HCLightArtilleryHitpointsOttoman",
+      "name_zh": "色比西军团",
+      "source": "HomeCity",
+      "age": 3,
+      "scope": [
+        "AbstractGrenadier"
+      ],
+      "ops": [
+        {
+          "stat": "hp",
+          "kind": "mult",
+          "value": 1.2,
+          "action": null,
+          "allactions": false
+        }
+      ],
+      "match_count": 17
+    },
+    {
+      "id": "HCRidingSchoolGerman2",
+      "name_zh": "西班牙骑术学校",
+      "source": "HomeCity",
+      "age": 3,
+      "scope": [
+        "AbstractCavalry"
+      ],
+      "ops": [
+        {
+          "stat": "speed",
+          "kind": "mult",
+          "value": 1.1
+        }
+      ],
+      "match_count": 185
+    },
+    {
+      "id": "HCXPImprovedGrenades",
+      "name_zh": "名英国掷弹兵",
+      "source": "HomeCity",
+      "age": 3,
+      "scope": [
+        "AbstractGrenadier"
+      ],
+      "ops": [
+        {
+          "stat": "damage",
+          "kind": "mult",
+          "value": 1.15,
+          "action": null,
+          "allactions": true
+        }
+      ],
+      "match_count": 17
+    },
+    {
+      "id": "YPHCArtilleryCombatChinese",
+      "name_zh": "攻城武器战斗力",
+      "source": "HomeCity",
+      "age": 3,
+      "scope": [
+        "AbstractArtillery",
+        "AbstractGrenadier"
+      ],
+      "ops": [
+        {
+          "stat": "damage",
+          "kind": "mult",
+          "value": 1.15,
+          "action": null,
+          "allactions": true
+        },
+        {
+          "stat": "hp",
+          "kind": "mult",
+          "value": 1.15,
+          "action": null,
+          "allactions": false
+        },
+        {
+          "stat": "damage",
+          "kind": "mult",
+          "value": 1.2,
+          "action": null,
+          "allactions": true
+        },
+        {
+          "stat": "hp",
+          "kind": "mult",
+          "value": 1.2,
+          "action": null,
+          "allactions": false
+        }
+      ],
+      "match_count": 58
+    },
+    {
+      "id": "YPHCArtilleryDamageChinese",
+      "name_zh": "攻城攻击",
+      "source": "HomeCity",
+      "age": 3,
+      "scope": [
+        "AbstractArtillery",
+        "AbstractGrenadier"
+      ],
+      "ops": [
+        {
+          "stat": "damage",
+          "kind": "mult",
+          "value": 1.15,
+          "action": null,
+          "allactions": true
+        },
+        {
+          "stat": "damage",
+          "kind": "mult",
+          "value": 1.2,
+          "action": null,
+          "allactions": true
+        }
+      ],
+      "match_count": 58
+    },
+    {
+      "id": "YPHCArtilleryHitpointsChinese",
+      "name_zh": "攻城武器生命值",
+      "source": "HomeCity",
+      "age": 3,
+      "scope": [
+        "AbstractArtillery",
+        "AbstractGrenadier"
+      ],
+      "ops": [
+        {
+          "stat": "hp",
+          "kind": "mult",
+          "value": 1.15,
+          "action": null,
+          "allactions": false
+        },
+        {
+          "stat": "hp",
+          "kind": "mult",
+          "value": 1.2,
+          "action": null,
+          "allactions": false
+        }
+      ],
+      "match_count": 58
+    },
+    {
+      "id": "YPHCInfantryCombatIndians",
+      "name_zh": "步兵战斗力",
+      "source": "HomeCity",
+      "age": 3,
+      "scope": [
+        "AbstractInfantry"
+      ],
+      "ops": [
+        {
+          "stat": "hp",
+          "kind": "mult",
+          "value": 1.15,
+          "action": null,
+          "allactions": false
+        },
+        {
+          "stat": "damage",
+          "kind": "mult",
+          "value": 1.15,
+          "action": null,
+          "allactions": true
+        }
+      ],
+      "match_count": 303
+    },
+    {
+      "id": "YPHCOldHanArmyReforms",
+      "name_zh": "旧朝改革",
+      "source": "HomeCity",
+      "age": 3,
+      "scope": [
+        "ypchukonu",
+        "ypkeshik",
+        "ypmingarmy",
+        "ypmongolianarmy",
+        "ypoldhanarmy",
+        "ypqiangpikeman",
+        "ypstandardarmy",
+        "ypstepperider"
+      ],
+      "ops": [
+        {
+          "stat": "hp",
+          "kind": "mult",
+          "value": 1.5,
+          "action": null,
+          "allactions": false
+        },
+        {
+          "stat": "damage",
+          "kind": "mult",
+          "value": 1.5,
+          "action": null,
+          "allactions": true
+        },
+        {
+          "stat": "cost",
+          "kind": "mult",
+          "value": 1.25,
+          "resource": "wood"
+        },
+        {
+          "stat": "cost",
+          "kind": "mult",
+          "value": 1.25,
+          "resource": "food"
+        },
+        {
+          "stat": "cost",
+          "kind": "mult",
+          "value": 1.25,
+          "resource": "gold"
+        }
+      ],
+      "match_count": 8
+    },
+    {
+      "id": "ChurchKapikuluCorps",
+      "name_zh": "卡皮库鲁军团",
+      "source": "Church",
+      "age": 4,
+      "scope": [
+        "AbstractHeavyCavalry"
+      ],
+      "ops": [
+        {
+          "stat": "armor",
+          "kind": "add",
+          "value": 0.1,
+          "armor_kind": "melee"
+        }
+      ],
+      "match_count": 106
+    },
+    {
+      "id": "DERGArbalester",
+      "name_zh": "劲弩手",
+      "source": "RoyalGuard",
+      "age": 4,
+      "scope": [
+        "crossbowman"
+      ],
+      "ops": [
+        {
+          "stat": "damage",
+          "kind": "mult",
+          "value": 1.05,
+          "action": null,
+          "allactions": true
+        },
+        {
+          "stat": "hp",
+          "kind": "mult",
+          "value": 1.05,
+          "action": null,
+          "allactions": false
+        },
+        {
+          "stat": "range",
+          "kind": "add",
+          "value": 1.0,
+          "action": "VolleyRangedAttack",
+          "allactions": false
+        },
+        {
+          "stat": "range",
+          "kind": "add",
+          "value": 1.0,
+          "action": "DefendRangedAttack",
+          "allactions": false
+        },
+        {
+          "stat": "range",
+          "kind": "add",
+          "value": 1.0,
+          "action": "StaggerRangedAttack",
+          "allactions": false
+        },
+        {
+          "stat": "range",
+          "kind": "add",
+          "value": 1.0,
+          "action": "RangedBuildingAttack",
+          "allactions": false
+        }
+      ],
+      "match_count": 1
+    },
+    {
+      "id": "RGCarabineer",
+      "name_zh": "护卫荷兰枪骑兵",
+      "source": "RoyalGuard",
+      "age": 4,
+      "scope": [
+        "ruyter"
+      ],
+      "ops": [
+        {
+          "stat": "hp",
+          "kind": "mult",
+          "value": 1.1,
+          "action": null,
+          "allactions": false
+        },
+        {
+          "stat": "damage",
+          "kind": "mult",
+          "value": 1.1,
+          "action": null,
+          "allactions": true
+        },
+        {
+          "stat": "range",
+          "kind": "add",
+          "value": 1.0,
+          "action": "DefendRangedAttack",
+          "allactions": false
+        },
+        {
+          "stat": "range",
+          "kind": "add",
+          "value": 1.0,
+          "action": "StaggerRangedAttack",
+          "allactions": false
+        }
+      ],
+      "match_count": 1
+    },
+    {
+      "id": "RGCzapkaUhlans",
+      "name_zh": "护卫德国骑兵",
+      "source": "RoyalGuard",
+      "age": 4,
+      "scope": [
+        "uhlan"
+      ],
+      "ops": [
+        {
+          "stat": "hp",
+          "kind": "mult",
+          "value": 1.1,
+          "action": null,
+          "allactions": false
+        },
+        {
+          "stat": "damage",
+          "kind": "mult",
+          "value": 1.1,
+          "action": null,
+          "allactions": true
+        },
+        {
+          "stat": "armor",
+          "kind": "add",
+          "value": 0.05,
+          "armor_kind": "ranged"
+        }
+      ],
+      "match_count": 1
+    },
+    {
+      "id": "RGDrabants",
+      "name_zh": "近卫连队",
+      "source": "RoyalGuard",
+      "age": 4,
+      "scope": [
+        "definnishrider"
+      ],
+      "ops": [
+        {
+          "stat": "hp",
+          "kind": "mult",
+          "value": 1.1,
+          "action": null,
+          "allactions": false
+        },
+        {
+          "stat": "damage",
+          "kind": "mult",
+          "value": 1.1,
+          "action": null,
+          "allactions": true
+        }
+      ],
+      "match_count": 1
+    },
+    {
+      "id": "RGEspadachins",
+      "name_zh": "护卫兰朵武士",
+      "source": "RoyalGuard",
+      "age": 4,
+      "scope": [
+        "rodelero"
+      ],
+      "ops": [
+        {
+          "stat": "damage",
+          "kind": "mult",
+          "value": 1.1,
+          "action": null,
+          "allactions": true
+        },
+        {
+          "stat": "hp",
+          "kind": "mult",
+          "value": 1.1,
+          "action": null,
+          "allactions": false
+        }
+      ],
+      "match_count": 1
+    },
+    {
+      "id": "RGGarrochista",
+      "name_zh": "护卫长矛骑兵",
+      "source": "RoyalGuard",
+      "age": 4,
+      "scope": [
+        "lancer"
+      ],
+      "ops": [
+        {
+          "stat": "damage",
+          "kind": "mult",
+          "value": 1.1,
+          "action": null,
+          "allactions": true
+        },
+        {
+          "stat": "hp",
+          "kind": "mult",
+          "value": 1.1,
+          "action": null,
+          "allactions": false
+        },
+        {
+          "stat": "speed",
+          "kind": "add",
+          "value": 0.25
+        }
+      ],
+      "match_count": 1
+    },
+    {
+      "id": "RGGendarmes",
+      "name_zh": "护卫胸甲骑兵",
+      "source": "RoyalGuard",
+      "age": 4,
+      "scope": [
+        "cuirassier"
+      ],
+      "ops": [
+        {
+          "stat": "hp",
+          "kind": "mult",
+          "value": 1.1,
+          "action": null,
+          "allactions": false
+        },
+        {
+          "stat": "damage",
+          "kind": "mult",
+          "value": 1.1,
+          "action": null,
+          "allactions": true
+        }
+      ],
+      "match_count": 1
+    },
+    {
+      "id": "RGGuerreiros",
+      "name_zh": "军团兵",
+      "source": "RoyalGuard",
+      "age": 4,
+      "scope": [
+        "musketeer"
+      ],
+      "ops": [
+        {
+          "stat": "hp",
+          "kind": "mult",
+          "value": 1.1,
+          "action": null,
+          "allactions": false
+        },
+        {
+          "stat": "damage",
+          "kind": "mult",
+          "value": 1.1,
+          "action": null,
+          "allactions": true
+        }
+      ],
+      "match_count": 1
+    },
+    {
+      "id": "RGJinetes",
+      "name_zh": "军团枪骑兵",
+      "source": "RoyalGuard",
+      "age": 4,
+      "scope": [
+        "dragoon"
+      ],
+      "ops": [
+        {
+          "stat": "damage",
+          "kind": "mult",
+          "value": 1.1,
+          "action": null,
+          "allactions": true
+        },
+        {
+          "stat": "hp",
+          "kind": "mult",
+          "value": 1.1,
+          "action": null,
+          "allactions": false
+        }
+      ],
+      "match_count": 1
+    },
+    {
+      "id": "RGLifeGuardHussars",
+      "name_zh": "英国皇家轻骑兵",
+      "source": "RoyalGuard",
+      "age": 4,
+      "scope": [
+        "hussar"
+      ],
+      "ops": [
+        {
+          "stat": "hp",
+          "kind": "mult",
+          "value": 1.1,
+          "action": null,
+          "allactions": false
+        },
+        {
+          "stat": "damage",
+          "kind": "mult",
+          "value": 1.1,
+          "action": null,
+          "allactions": true
+        }
+      ],
+      "match_count": 1
+    },
+    {
+      "id": "RGNassausLinearTactics",
+      "name_zh": "城市卫队",
+      "source": "RoyalGuard",
+      "age": 4,
+      "scope": [
+        "halberdier"
+      ],
+      "ops": [
+        {
+          "stat": "hp",
+          "kind": "mult",
+          "value": 1.1,
+          "action": null,
+          "allactions": false
+        },
+        {
+          "stat": "damage",
+          "kind": "mult",
+          "value": 1.1,
+          "action": null,
+          "allactions": true
+        }
+      ],
+      "match_count": 1
+    },
+    {
+      "id": "RGOrdinanceBesteiro",
+      "name_zh": "骑士团葡萄牙弩手",
+      "source": "RoyalGuard",
+      "age": 4,
+      "scope": [
+        "crossbowman"
+      ],
+      "ops": [
+        {
+          "stat": "hp",
+          "kind": "mult",
+          "value": 1.1,
+          "action": null,
+          "allactions": false
+        },
+        {
+          "stat": "damage",
+          "kind": "mult",
+          "value": 1.1,
+          "action": null,
+          "allactions": true
+        }
+      ],
+      "match_count": 1
+    },
+    {
+      "id": "RGOrdinancePikemen",
+      "name_zh": "法令长矛兵",
+      "source": "RoyalGuard",
+      "age": 4,
+      "scope": [
+        "pikeman"
+      ],
+      "ops": [
+        {
+          "stat": "damage",
+          "kind": "mult",
+          "value": 1.1,
+          "action": null,
+          "allactions": true
+        },
+        {
+          "stat": "hp",
+          "kind": "mult",
+          "value": 1.1,
+          "action": null,
+          "allactions": false
+        },
+        {
+          "stat": "cost",
+          "kind": "mult",
+          "value": 0.75,
+          "resource": "food"
+        },
+        {
+          "stat": "cost",
+          "kind": "mult",
+          "value": 0.75,
+          "resource": "wood"
+        }
+      ],
+      "match_count": 1
+    },
+    {
+      "id": "RGPavlovGrenadiers",
+      "name_zh": "护卫俄国掷弹兵",
+      "source": "RoyalGuard",
+      "age": 4,
+      "scope": [
+        "grenadier"
+      ],
+      "ops": [
+        {
+          "stat": "hp",
+          "kind": "mult",
+          "value": 1.1,
+          "action": null,
+          "allactions": false
+        },
+        {
+          "stat": "damage",
+          "kind": "mult",
+          "value": 1.1,
+          "action": null,
+          "allactions": true
+        },
+        {
+          "stat": "cost",
+          "kind": "mult",
+          "value": 0.9,
+          "resource": "food"
+        }
+      ],
+      "match_count": 1
+    },
+    {
+      "id": "RGPrussianNeedleGun",
+      "name_zh": "护卫德国长枪兵",
+      "source": "RoyalGuard",
+      "age": 4,
+      "scope": [
+        "skirmisher"
+      ],
+      "ops": [
+        {
+          "stat": "hp",
+          "kind": "mult",
+          "value": 1.1,
+          "action": null,
+          "allactions": false
+        },
+        {
+          "stat": "rof",
+          "kind": "set",
+          "value": 2.75,
+          "action": "VolleyRangedAttack",
+          "allactions": false
+        },
+        {
+          "stat": "rof",
+          "kind": "set",
+          "value": 2.75,
+          "action": "StaggerRangedAttack",
+          "allactions": false
+        },
+        {
+          "stat": "rof",
+          "kind": "set",
+          "value": 2.75,
+          "action": "DefendRangedAttack",
+          "allactions": false
+        }
+      ],
+      "match_count": 1
+    },
+    {
+      "id": "RGTartarLoyalists",
+      "name_zh": "俄国骑射手",
+      "source": "RoyalGuard",
+      "age": 4,
+      "scope": [
+        "cavalryarcher"
+      ],
+      "ops": [
+        {
+          "stat": "hp",
+          "kind": "mult",
+          "value": 1.05,
+          "action": null,
+          "allactions": false
+        },
+        {
+          "stat": "damage",
+          "kind": "mult",
+          "value": 1.05,
+          "action": null,
+          "allactions": true
+        },
+        {
+          "stat": "armor",
+          "kind": "add",
+          "value": 0.05,
+          "armor_kind": "melee"
+        }
+      ],
+      "match_count": 1
+    },
+    {
+      "id": "RGTercio",
+      "name_zh": "西班牙长矛兵",
+      "source": "RoyalGuard",
+      "age": 4,
+      "scope": [
+        "pikeman"
+      ],
+      "ops": [
+        {
+          "stat": "damage",
+          "kind": "mult",
+          "value": 1.1,
+          "action": null,
+          "allactions": true
+        },
+        {
+          "stat": "hp",
+          "kind": "mult",
+          "value": 1.1,
+          "action": null,
+          "allactions": false
+        }
+      ],
+      "match_count": 1
+    },
+    {
+      "id": "RGVoltigeur",
+      "name_zh": "护卫法国长枪兵",
+      "source": "RoyalGuard",
+      "age": 4,
+      "scope": [
+        "skirmisher"
+      ],
+      "ops": [
+        {
+          "stat": "hp",
+          "kind": "mult",
+          "value": 1.1,
+          "action": null,
+          "allactions": false
+        },
+        {
+          "stat": "damage",
+          "kind": "mult",
+          "value": 1.1,
+          "action": null,
+          "allactions": true
+        }
+      ],
+      "match_count": 1
+    }
+  ]
+}

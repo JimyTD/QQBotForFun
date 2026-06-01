@@ -273,6 +273,7 @@ class MatchLineup:
     mode: str                  # "bet" | "duel" | "rival" | ...
     rival_theme: str | None = None   # 王中王展示名，如「散兵王」
     age: int | None = None     # 本局时代（2~5）；None = 未启用改良/时代限定
+    generic_tech_lines: list[str] = field(default_factory=list)
 
 
 # =====================================================================
@@ -622,8 +623,14 @@ def _generate_side_lineup(
     pool: list[Unit],
     budget: int,
     rng: random.Random,
+    *,
+    defer_counts: bool = False,
 ) -> Lineup:
-    """为一方生成阵容（支持 1~3 兵种）。"""
+    """为一方生成阵容（支持 1~3 兵种）。
+
+    ``defer_counts=True`` 时只选兵种、不分配数量（count=1 占位），
+    由调用方在升级/科技应用后调用 ``allocate_lineup_counts`` 一次性分配。
+    """
     # 抽兵种数
     slot_count = rng.choices([1, 2, 3], weights=SLOT_WEIGHTS, k=1)[0]
 
@@ -636,6 +643,13 @@ def _generate_side_lineup(
         # 约束满足不了，降级到 1 个兵种
         logger.warning("抽兵约束多次失败，降级为单兵种。budget=%d", budget)
         chosen = [rng.choice(pool)]
+
+    if defer_counts:
+        slots = [UnitSlot(unit=u, count=1) for u in chosen]
+        lineup = Lineup(slots=slots)
+        logger.info("阵容选兵（延迟分配）：%d 兵种: %s",
+                     len(slots), ", ".join(u.name for u in chosen))
+        return lineup
 
     # 分配数量
     costs = [_unit_cost(u) for u in chosen]
@@ -662,12 +676,66 @@ def _generate_side_lineup(
     return lineup
 
 
+def allocate_lineup_counts(lineup: "Lineup", budget: int) -> None:
+    """按当前 unit.cost 为 lineup 的每个槽位分配数量。
+
+    用于「选兵种→升级→分配数量」流程的最后一步，
+    在 tier / 通用科技都已应用（cost 可能已被修改）后调用。
+    """
+    costs = [_unit_cost(s.unit) for s in lineup.slots]
+    if len(lineup.slots) == 1:
+        lineup.slots[0] = UnitSlot(lineup.slots[0].unit,
+                                   max(1, budget // costs[0]))
+    else:
+        counts = greedy_fill(budget, costs)
+        lineup.slots = [UnitSlot(s.unit, c)
+                        for s, c in zip(lineup.slots, counts)]
+
+    logger.info(
+        "数量分配：%d 兵种，总花费 %d/%d (浪费 %d)，总人数 %d",
+        len(lineup.slots), lineup.total_cost, budget,
+        budget - lineup.total_cost, lineup.total_count,
+    )
+    for s in lineup.slots:
+        logger.debug("  %s ×%d (cost=%d, 小计=%d)",
+                     s.unit.name, s.count, s.unit_cost, s.total_cost)
+
+
+def _apply_lcm_balance(
+    red: "Lineup", blue: "Lineup", budget: int,
+) -> None:
+    """单兵种 vs 单兵种时用 LCM 算法平衡资源并重新分配数量。"""
+    if red.is_multi or blue.is_multi:
+        return
+    cost_a = red.slots[0].unit_cost
+    cost_b = blue.slots[0].unit_cost
+    lcm_budget = approx_lcm_budget(cost_a, cost_b, budget)
+
+    red.slots[0] = UnitSlot(
+        unit=red.slots[0].unit,
+        count=max(1, lcm_budget // cost_a),
+    )
+    blue.slots[0] = UnitSlot(
+        unit=blue.slots[0].unit,
+        count=max(1, lcm_budget // cost_b),
+    )
+
+    logger.info(
+        "LCM 平衡：预算 %d → %d，🔴 %s ×%d (%d) vs 🔵 %s ×%d (%d) 差=%d",
+        budget, lcm_budget,
+        red.unit.name, red.count, red.total_cost,
+        blue.unit.name, blue.count, blue.total_cost,
+        abs(red.total_cost - blue.total_cost),
+    )
+
+
 def generate_bet_lineup(
     repo: UnitRepo,
     *,
     budget: int = BUDGET,
     age: int | None = None,
     rng: random.Random | None = None,
+    defer_counts: bool = False,
 ) -> MatchLineup:
     """生成押注模式阵容（v2 复合阵容）。
 
@@ -676,6 +744,10 @@ def generate_bet_lineup(
     - 单兵种 vs 单兵种时使用 LCM 算法平衡资源
     - 多兵种时使用贪心填充
     - ``age`` 给定时兵池按时代限定，并对双方叠加该时代改良（§3.10.6）
+
+    ``defer_counts=True``：只选兵种 + 叠时代改良，不分配数量（count=1 占位）、
+    不做 LCM 平衡。调用方在通用科技等修改 cost 后，自行调
+    ``allocate_lineup_counts`` + ``_apply_lcm_balance``。
     """
     if rng is None:
         rng = random.Random()
@@ -685,42 +757,24 @@ def generate_bet_lineup(
         raise ValueError(f"兵种池不足：仅 {len(pool)} 个兵种")
 
     # 红蓝双方独立生成
-    red = _generate_side_lineup(pool, budget, rng)
-    blue = _generate_side_lineup(pool, budget, rng)
+    red = _generate_side_lineup(pool, budget, rng, defer_counts=defer_counts)
+    blue = _generate_side_lineup(pool, budget, rng, defer_counts=defer_counts)
 
-    # 如果双方都是单兵种，使用 LCM 算法平衡资源
-    if not red.is_multi and not blue.is_multi:
-        cost_a = red.slots[0].unit_cost
-        cost_b = blue.slots[0].unit_cost
-        lcm_budget = approx_lcm_budget(cost_a, cost_b, budget)
-
-        red.slots[0] = UnitSlot(
-            unit=red.slots[0].unit,
-            count=max(1, lcm_budget // cost_a),
-        )
-        blue.slots[0] = UnitSlot(
-            unit=blue.slots[0].unit,
-            count=max(1, lcm_budget // cost_b),
-        )
-
-        logger.info(
-            "LCM 平衡：预算 %d → %d，🔴 %s ×%d (%d) vs 🔵 %s ×%d (%d) 差=%d",
-            budget, lcm_budget,
-            red.unit.name, red.count, red.total_cost,
-            blue.unit.name, blue.count, blue.total_cost,
-            abs(red.total_cost - blue.total_cost),
-        )
-
-    logger.info(
-        "押注阵容最终：🔴 %s (cost=%d, pop=%d) vs 🔵 %s (cost=%d, pop=%d)",
-        " + ".join(f"{s.unit.name}×{s.count}" for s in red.slots),
-        red.total_cost, red.total_pop,
-        " + ".join(f"{s.unit.name}×{s.count}" for s in blue.slots),
-        blue.total_cost, blue.total_pop,
-    )
-
+    # tier 升级（不改 cost，只改 HP/Damage）
     _apply_age_to_lineup(red, age)
     _apply_age_to_lineup(blue, age)
+
+    if not defer_counts:
+        _apply_lcm_balance(red, blue, budget)
+
+        logger.info(
+            "押注阵容最终：🔴 %s (cost=%d, pop=%d) vs 🔵 %s (cost=%d, pop=%d)",
+            " + ".join(f"{s.unit.name}×{s.count}" for s in red.slots),
+            red.total_cost, red.total_pop,
+            " + ".join(f"{s.unit.name}×{s.count}" for s in blue.slots),
+            blue.total_cost, blue.total_pop,
+        )
+
     return MatchLineup(red=red, blue=blue, mode="bet", age=age)
 
 
@@ -1145,6 +1199,8 @@ def format_vs_banner(lineup: MatchLineup) -> str:
         for name, hp_mult in cats:
             pct = round((hp_mult - 1.0) * 100)
             lines.append(f"   · {name}：血/攻 +{pct}%")
+    if lineup.generic_tech_lines:
+        lines.extend(lineup.generic_tech_lines)
     if lineup.mode == "blacklist":
         lines.append(
             f"⭐战力 🔴 {r.total_power:,.0f} vs 🔵 {b.total_power:,.0f}"

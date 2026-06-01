@@ -349,16 +349,33 @@ def _line_priority(name: str) -> int:
     return 1
 
 
-def build_unit_upgrades(blocks, resolver, units_by_id):
-    """返回 {id: {age: {hp_mult, damage_mult, range_add, ...}}}（cumulative）。"""
+def _build_tag_to_units(units_by_id: dict) -> dict[str, set[str]]:
+    """构建 abstract tag (lower) → concrete unit_ids 映射。
+
+    仅保留映射到少量单位（≤ 10）的窄标签（如 AbstractSepoy → {ypsepoy, ypsepoymansabdar}），
+    排除宽泛类别标签（如 AbstractInfantry → 几百个单位）以免误匹配。
+    """
+    tag_map: dict[str, set[str]] = {}
+    for uid, u in units_by_id.items():
+        for tag in u.get("type", []):
+            tag_map.setdefault(tag.lower(), set()).add(uid)
+    return {tag: ids for tag, ids in tag_map.items() if len(ids) <= 10}
+
+
+def build_unit_upgrades(blocks, resolver, units_by_id,
+                        stringtable: dict[str, str] | None = None):
+    """返回 {id: {age: {hp_mult, damage_mult, name, ...}}}（cumulative）。"""
     valid_ids = set(units_by_id)
-    # 收集：id -> age -> list[(line_priority, hp_inc, dmg_inc, tech_name)]
+    tag_to_units = _build_tag_to_units(units_by_id)
+    if stringtable is None:
+        stringtable = {}
+    # 收集：id -> age -> list[(line_priority, hp_inc, dmg_inc, tech_name, setname_proto)]
+    # setname_proto: SetName 查找时需要用原始大小写 proto 名
     per_id: dict[str, dict[int, list]] = {}
     for name, block in blocks.items():
         flags = tech_flags(block)
         if is_excluded(name, flags):
             continue
-        # 政客升时代科技（SetAge）= 玩家级一档一选选项，不作逐兵升级
         if has_setage(block):
             continue
         if not is_candidate_flags(flags, allow_age_upgrade=False):
@@ -366,18 +383,24 @@ def build_unit_upgrades(blocks, resolver, units_by_id):
         age = resolver.resolve(name)
         if age is None or age not in (2, 3, 4, 5):
             continue
-        # 找出该 tech 命中的合法单位 id（target=ProtoUnit 且在 units.json）
         targets = {t for _, t in iter_effects(block) if t}
         for tgt in targets:
             tid = tgt.lower()
-            if tid not in valid_ids:
-                continue
-            hp_inc, dmg_inc = hp_dmg_increments(block, tid)
-            if not hp_inc and not dmg_inc:
-                continue
-            per_id.setdefault(tid, {}).setdefault(age, []).append(
-                (_line_priority(name), hp_inc or 0.0, dmg_inc or 0.0, name)
-            )
+            if tid in valid_ids:
+                hp_inc, dmg_inc = hp_dmg_increments(block, tid)
+                if not hp_inc and not dmg_inc:
+                    continue
+                per_id.setdefault(tid, {}).setdefault(age, []).append(
+                    (_line_priority(name), hp_inc or 0.0, dmg_inc or 0.0, name, tgt)
+                )
+            elif tid in tag_to_units:
+                hp_inc, dmg_inc = hp_dmg_increments(block, tid)
+                if not hp_inc and not dmg_inc:
+                    continue
+                for resolved_uid in tag_to_units[tid]:
+                    per_id.setdefault(resolved_uid, {}).setdefault(age, []).append(
+                        (_line_priority(name), hp_inc or 0.0, dmg_inc or 0.0, name, tgt)
+                    )
 
     # 逐时代选一条：通用线优先，其次增量大者
     result: dict[str, dict] = {}
@@ -389,10 +412,28 @@ def build_unit_upgrades(blocks, resolver, units_by_id):
             picks[age] = (cands[0][1], cands[0][2])
             picked_tech[age] = cands[0][3]
         base = _accumulate(picks)
-        # 整包：从同一条代表科技提取 range/aoe/rof/速度/护甲/倍率，按链累加后合并
         extras = _accumulate_extras(picked_tech, blocks, units_by_id[tid])
         for age_str, ex in extras.items():
             base.setdefault(age_str, {}).update(ex)
+        # SetName: 遍历该时代所有候选科技，取含基础名的最短名（通用线最短）
+        base_zh = units_by_id[tid].get("name", "")
+        for age in sorted(by_age):
+            best_name = None
+            fallback_name = None
+            for cand in by_age[age]:
+                cand_tech = cand[3]
+                cand_block = blocks[cand_tech]
+                zh = _extract_setname(cand_block, tid, stringtable)
+                if zh is None:
+                    continue
+                if base_zh and base_zh in zh:
+                    if best_name is None or len(zh) < len(best_name):
+                        best_name = zh
+                elif fallback_name is None:
+                    fallback_name = zh
+            name = best_name or fallback_name
+            if name:
+                base.setdefault(str(age), {})["name"] = name
         if base:
             result[tid] = base
     return result
@@ -433,6 +474,26 @@ def build_category_upgrades(blocks, resolver):
     return out
 
 
+def _extract_setname(block: str, unit_id_lower: str,
+                     stringtable: dict[str, str]) -> str | None:
+    """从科技 block 提取 unit_id 对应的默认 SetName（无 reqtech 条件、大小写不敏感）。"""
+    for m in re.finditer(
+        r'type="SetName"\s+proto="([^"]+)"([^>]*)newname="(\d+)"', block
+    ):
+        if m.group(1).lower() != unit_id_lower:
+            continue
+        rest = m.group(2)
+        if "reqtech=" in rest:
+            continue
+        locid = m.group(3)
+        zh = stringtable.get(locid)
+        if zh:
+            zh = re.sub(r"<[^>]+>", "", zh).strip()
+            if zh:
+                return zh
+    return None
+
+
 def _accumulate(picks: dict[int, tuple[float, float]]) -> dict[str, dict]:
     """picks: age -> (hp_inc, dmg_inc) → cumulative mult per age（含低档累加）。"""
     out: dict[str, dict] = {}
@@ -452,6 +513,12 @@ def _accumulate(picks: dict[int, tuple[float, float]]) -> dict[str, dict]:
     return out
 
 
+def _load_stringtable() -> dict[str, str]:
+    st_path = PROJECT_ROOT / "data" / "aoe3" / "raw" / "stringtabley_zh.xml"
+    st_text = st_path.read_text(encoding="utf-8")
+    return dict(re.findall(r'<string _locid="(\d+)"[^>]*>(.*?)</string>', st_text, re.S))
+
+
 def main():
     print("=== AoE3 单位改良 Parser ===")
     text = TECHTREE_PATH.read_text(encoding="utf-8")
@@ -462,8 +529,9 @@ def main():
     blocks = parse_tech_blocks(text)
     print(f"  tech blocks: {len(blocks)}")
     resolver = AgeResolver(blocks)
+    stringtable = _load_stringtable()
 
-    unit_up = build_unit_upgrades(blocks, resolver, units_by_id)
+    unit_up = build_unit_upgrades(blocks, resolver, units_by_id, stringtable)
     cat_up = build_category_upgrades(blocks, resolver)
 
     out = {
@@ -471,8 +539,9 @@ def main():
             "generated_at": datetime.now(timezone.utc).isoformat(),
             "source": "data/aoe3/raw/techtreey.xml",
             "doc": "docs/games/aoe3-battle.md §3.10",
-            "fields": ["hp_mult", "damage_mult", "range_add", "aoe_add", "rof_set",
-                       "armor_add", "speed_add", "speed_mult", "speed_set", "mult_add"],
+            "fields": ["hp_mult", "damage_mult", "name", "range_add", "aoe_add",
+                       "rof_set", "armor_add", "speed_add", "speed_mult", "speed_set",
+                       "mult_add"],
             "age_status": AGE_STATUS,
         },
         "units": dict(sorted(unit_up.items())),

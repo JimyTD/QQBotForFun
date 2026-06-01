@@ -109,18 +109,27 @@ def _unit_extras(unit: Unit, age: int) -> dict:
 
 
 def _apply_mult_add(mults: list, mult_add_vs: dict[str, float]) -> list | None:
-    """对**已存在的正倍率**按 vs 累加 delta；返回新列表（无改动则 None）。"""
+    """按 vs 累加 delta；无条目视为隐含 1.0 倍并创建；返回新列表（无改动则 None）。"""
     if not mult_add_vs:
         return None
-    changed = False
-    out = []
-    for m in mults:
-        if m.vs in mult_add_vs and m.value > 1.0:
-            out.append(dataclasses.replace(m, value=round(m.value + mult_add_vs[m.vs], 3)))
-            changed = True
-        else:
-            out.append(m)
-    return out if changed else None
+    from .models import Multiplier
+    out = list(mults)
+    remaining = dict(mult_add_vs)
+    for i, m in enumerate(out):
+        if m.vs in remaining:
+            out[i] = dataclasses.replace(m, value=round(m.value + remaining.pop(m.vs), 3))
+    for vs, delta in remaining.items():
+        out.append(Multiplier(vs=vs, value=round(1.0 + delta, 3)))
+    return out if out != list(mults) else None
+
+
+def _unit_age_name(unit: Unit, age: int) -> str | None:
+    """取该单位在指定时代的升级名（SetName），无则 None。"""
+    per_id = _load().get("units", {}).get(unit.id)
+    if not per_id:
+        return None
+    e = _pick(per_id, age)
+    return e.get("name") if e else None
 
 
 def apply_upgrades(unit: Unit, age: int) -> Unit:
@@ -130,10 +139,13 @@ def apply_upgrades(unit: Unit, age: int) -> Unit:
     """
     hp_mult, dmg_mult, _ = get_multipliers(unit, age)
     extras = _unit_extras(unit, age)
-    if hp_mult == 1.0 and dmg_mult == 1.0 and not extras:
+    upgraded_name = _unit_age_name(unit, age)
+    if hp_mult == 1.0 and dmg_mult == 1.0 and not extras and not upgraded_name:
         return unit
 
     changes: dict = {}
+    if upgraded_name:
+        changes["name"] = upgraded_name
     if hp_mult != 1.0:
         changes["hp"] = round(unit.hp * hp_mult)
     if dmg_mult != 1.0:
