@@ -320,11 +320,14 @@ async def _handle_custom_battle(
             await matcher.finish(f"⚠️ 找不到兵种「{name}」（需要有攻击力的战斗单位）")
             return
 
+    generic_techs_on = await _get_generic_techs_enabled(int(event.group_id))
     config: dict = {"mode": "custom", "unit_names": unit_names}
     if budget is not None:
         config["budget"] = budget
     if age is not None:
         config["age"] = age
+    if generic_techs_on:
+        config["generic_techs"] = True
 
     await _launch_game(
         matcher,
@@ -348,6 +351,7 @@ async def _handle_rival_battle(
 
     group_id = int(event.group_id)
     initiator_id = int(event.user_id)
+    generic_techs_on = await _get_generic_techs_enabled(group_id)
 
     age_inline, parts = _extract_age(arg_text.split())
     if age is None:
@@ -371,6 +375,7 @@ async def _handle_rival_battle(
             theme_token=theme_token,
             budget=budget,
             age=age,
+            generic_techs=generic_techs_on,
         )
         if err:
             await matcher.finish(err)
@@ -381,6 +386,7 @@ async def _handle_rival_battle(
         initiator_id=initiator_id,
         budget=budget,
         age=age,
+        generic_techs=generic_techs_on,
     )
     if err:
         await matcher.finish(err)
