@@ -33,10 +33,10 @@ DEFAULT_ROF_MELEE = 1.5      # 近战 ROF 缺失默认值
 
 # ---- 近战 CAP 与渗透 ----
 MELEE_ATTACK_CAP = 4         # 同一目标最多被几个近战兵同时攻击
-INFILTRATE_SPEED_MULT = 0.1  # 渗透状态移动速度系数
+INFILTRATE_SPEED_MULT = 0.3  # 渗透状态移动速度系数（模拟2D绕路开销）
 
 # ---- 阵型排布参数 ----
-ROW_SPACING = 2.5            # 排间距（≥ range_min=2 常见值，确保后排可远程）
+ROW_SPACING = 2.0            # 排间距（长柄兵 range_melee=2.0 恰好可打到第二排）
 ROW_CAPACITY = 8             # 每排站多少人
 
 

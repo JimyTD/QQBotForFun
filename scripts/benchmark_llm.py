@@ -43,11 +43,9 @@ class ModelSpec:
 
 
 def production_models() -> list[ModelSpec]:
-    """与 llm.yaml 对齐的生产模型。"""
+    """与 llm.yaml 对齐的生产模型（2026-06-02 LongCat 旧模型已全部下线）。"""
     return [
-        ModelSpec("longcat", "LongCat-Flash-Chat", "海龟汤 judge/claim"),
-        ModelSpec("longcat", "LongCat-Flash-Lite", "查资料 / 高额度"),
-        ModelSpec("zhipu", "glm-4-flash-250414", "出题 / 兜底"),
+        ModelSpec("zhipu", "glm-4-flash-250414", "全场景唯一"),
     ]
 
 

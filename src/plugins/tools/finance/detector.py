@@ -106,9 +106,11 @@ def find_top_mover(data: dict[str, list[DailyBar]]) -> TopMover | None:
 
 async def detect_macro_updates() -> list[MacroAlert]:
     """检测宏观数据是否有新发布，返回需要播报的列表。"""
+    import asyncio
+
     from .storage import get_macro_seen, set_macro_seen
 
-    macros = fetch_all_macros()
+    macros = await asyncio.to_thread(fetch_all_macros)
     alerts: list[MacroAlert] = []
 
     for point in macros:
@@ -136,11 +138,14 @@ async def detect_macro_updates() -> list[MacroAlert]:
 
 async def run_detection() -> tuple[list[AnomalyAlert], list[MacroAlert], TopMover | None]:
     """完整检测流程：拉数据 + 异动 + 宏观 + 最大波动。"""
+    import asyncio
+
     from .data_provider import clear_cache
 
     clear_cache()
 
-    data = fetch_all_categories()
+    # AKShare 调用是同步阻塞的（含 time.sleep 限速），用 to_thread 避免阻塞事件循环
+    data = await asyncio.to_thread(fetch_all_categories)
     logger.info(f"[finance] fetched {len(data)} categories")
 
     anomalies = detect_anomalies(data)

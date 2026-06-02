@@ -103,10 +103,9 @@ def _build_structured_data(
     if top_mover and not anomalies:
         direction = "涨" if top_mover.pct_chg > 0 else "跌"
         impact = _interpret_cat(top_mover.cat_id)
-        parts.append("【今日最大波动】")
+        parts.append("【今日关注】")
         parts.append(
-            f"- {top_mover.cat_name}: {direction}了{abs(top_mover.pct_chg)}%"
-            f"（在正常范围内，但是今天动得最大的）"
+            f"- {top_mover.cat_name}: {direction}了{abs(top_mover.pct_chg)}%，今天各品类里动得最大"
         )
         if impact:
             parts.append(f"  生活影响：{impact}")
