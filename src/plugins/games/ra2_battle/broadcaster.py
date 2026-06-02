@@ -290,6 +290,26 @@ class Broadcaster:
             ))
 
 
+_HP_BAR_LEN = 10
+
+
+def _hp_bar(current: float, maximum: float, filled: str, empty: str = "⬛") -> str:
+    if maximum <= 0:
+        return empty * _HP_BAR_LEN
+    pct = max(0.0, min(1.0, current / maximum))
+    filled_count = round(pct * _HP_BAR_LEN)
+    return filled * filled_count + empty * (_HP_BAR_LEN - filled_count)
+
+
+def _hp_summary(current: float, maximum: float) -> str:
+    if maximum <= 0:
+        return "0%  全灭"
+    pct = max(0.0, current / maximum) * 100
+    if current <= 0:
+        return "0%  全灭"
+    return f"{pct:.0f}%  ({current:.0f}/{maximum:.0f})"
+
+
 def format_battle_report(result: BattleResult) -> str:
     """生成最终战报文本（对齐帝国斗蛐蛐）。"""
     lines = ["🏆 ━━━ 战斗结果 ━━━"]
@@ -304,7 +324,19 @@ def format_battle_report(result: BattleResult) -> str:
     lines.append(f"战斗时长：{result.duration:.1f} 秒")
     lines.append("")
 
+    # 血条
     red_all = result.red_alive + result.red_dead
+    blue_all = result.blue_alive + result.blue_dead
+    red_max_hp = sum(u.max_hp for u in red_all)
+    red_cur_hp = sum(u.hp for u in result.red_alive)
+    blue_max_hp = sum(u.max_hp for u in blue_all)
+    blue_cur_hp = sum(u.hp for u in result.blue_alive)
+
+    lines.append(f"🔴 {_hp_bar(red_cur_hp, red_max_hp, '🟥')}  {_hp_summary(red_cur_hp, red_max_hp)}")
+    lines.append(f"🔵 {_hp_bar(blue_cur_hp, blue_max_hp, '🟦')}  {_hp_summary(blue_cur_hp, blue_max_hp)}")
+    lines.append("")
+
+    # 红方
     for slot in result.red_army:
         name = _label_actor(slot.actor_id)
         soldiers = [u for u in red_all if u.actor_id == slot.actor_id]
@@ -317,7 +349,7 @@ def format_battle_report(result: BattleResult) -> str:
         )
     lines.append("──────────")
 
-    blue_all = result.blue_alive + result.blue_dead
+    # 蓝方
     for slot in result.blue_army:
         name = _label_actor(slot.actor_id)
         soldiers = [u for u in blue_all if u.actor_id == slot.actor_id]
@@ -327,30 +359,6 @@ def format_battle_report(result: BattleResult) -> str:
         status = "全灭" if not alive else f"存活{len(alive)}"
         lines.append(
             f"🔵 {name} ×{slot.count} → {status}/击杀{kills}/伤害{dmg:.0f}"
-        )
-    lines.append("")
-
-    all_units = red_all + blue_all
-    if result.winner is not None:
-        mvp_candidates = [u for u in all_units if u.side == result.winner]
-    else:
-        mvp_candidates = []
-
-    if mvp_candidates:
-        mvp_candidates.sort(
-            key=lambda u: u.total_damage_dealt * 0.5 + u.kills * 50,
-            reverse=True,
-        )
-        mvp = mvp_candidates[0]
-        mvp_score = mvp.total_damage_dealt * 0.5 + mvp.kills * 50
-        lines.append(
-            f"🎖 MVP：{_side_emoji(mvp.side.value)} "
-            f"{_label_actor(mvp.actor_id)} #{mvp.id}"
-        )
-        lines.append(
-            f"   伤害 {mvp.total_damage_dealt:.0f} / "
-            f"击杀 {mvp.kills} / "
-            f"综合分 {mvp_score:.1f}"
         )
 
     return "\n".join(lines)

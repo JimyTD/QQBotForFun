@@ -332,6 +332,31 @@ class Broadcaster:
 
 
 # =====================================================================
+# 血条渲染
+# =====================================================================
+_HP_BAR_LEN = 10
+
+
+def _hp_bar(current: float, maximum: float, filled: str, empty: str = "⬛") -> str:
+    """生成 emoji 血条。"""
+    if maximum <= 0:
+        return empty * _HP_BAR_LEN
+    pct = max(0.0, min(1.0, current / maximum))
+    filled_count = round(pct * _HP_BAR_LEN)
+    return filled * filled_count + empty * (_HP_BAR_LEN - filled_count)
+
+
+def _hp_summary(current: float, maximum: float) -> str:
+    """百分比 + 数值，全灭时特殊显示。"""
+    if maximum <= 0:
+        return "0%  全灭"
+    pct = max(0.0, current / maximum) * 100
+    if current <= 0:
+        return "0%  全灭"
+    return f"{pct:.0f}%  ({current:.0f}/{maximum:.0f})"
+
+
+# =====================================================================
 # 最终战报生成
 # =====================================================================
 def format_battle_report(result: BattleResult) -> str:
@@ -355,8 +380,19 @@ def format_battle_report(result: BattleResult) -> str:
     lines.append(f"战斗时长：{result.duration:.1f} 秒")
     lines.append("")
 
-    # 红方
+    # 血条
     red_all = result.red_alive + result.red_dead
+    blue_all = result.blue_alive + result.blue_dead
+    red_max_hp = sum(s.max_hp for s in red_all)
+    red_cur_hp = sum(s.hp for s in result.red_alive)
+    blue_max_hp = sum(s.max_hp for s in blue_all)
+    blue_cur_hp = sum(s.hp for s in result.blue_alive)
+
+    lines.append(f"🔴 {_hp_bar(red_cur_hp, red_max_hp, '🟥')}  {_hp_summary(red_cur_hp, red_max_hp)}")
+    lines.append(f"🔵 {_hp_bar(blue_cur_hp, blue_max_hp, '🟦')}  {_hp_summary(blue_cur_hp, blue_max_hp)}")
+    lines.append("")
+
+    # 红方
     for slot in result.red_army:
         soldiers_of_type = [s for s in red_all if s.unit.id == slot.unit.id]
         alive_of_type = [s for s in result.red_alive if s.unit.id == slot.unit.id]
@@ -373,7 +409,6 @@ def format_battle_report(result: BattleResult) -> str:
     lines.append("──────────")
 
     # 蓝方
-    blue_all = result.blue_alive + result.blue_dead
     for slot in result.blue_army:
         soldiers_of_type = [s for s in blue_all if s.unit.id == slot.unit.id]
         alive_of_type = [s for s in result.blue_alive if s.unit.id == slot.unit.id]
@@ -386,35 +421,6 @@ def format_battle_report(result: BattleResult) -> str:
         lines.append(
             f"🔵 {slot.unit.name} ×{slot.count}"
             f" → {status}/击杀{kills}/伤害{dmg:.0f}"
-        )
-    lines.append("")
-
-    # MVP（仅胜方评选）
-    all_soldiers = (
-        result.red_alive + result.red_dead
-        + result.blue_alive + result.blue_dead
-    )
-
-    if result.winner is not None:
-        mvp_candidates = [s for s in all_soldiers if s.side == result.winner]
-    else:
-        mvp_candidates = []
-
-    if mvp_candidates:
-        mvp_candidates.sort(
-            key=lambda s: s.total_damage_dealt * 0.5 + s.kills * 50,
-            reverse=True,
-        )
-        mvp = mvp_candidates[0]
-        mvp_score = mvp.total_damage_dealt * 0.5 + mvp.kills * 50
-        mvp_emoji = _side_emoji(mvp.side.value)
-        lines.append(
-            f"🎖 MVP：{mvp_emoji} {mvp.name} #{mvp.id}"
-        )
-        lines.append(
-            f"   伤害 {mvp.total_damage_dealt:.0f} / "
-            f"击杀 {mvp.kills} / "
-            f"综合分 {mvp_score:.1f}"
         )
 
     return "\n".join(lines)

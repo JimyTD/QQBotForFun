@@ -50,7 +50,7 @@ def test_battle_report_stats(require_export):
     assert "动员兵" in report
     assert "击杀" in report
     assert "伤害" in report
-    assert "MVP" in report
+    assert "🟥" in report or "🟦" in report
     assert result.winner == Side.RED
     assert "红方（1号）" in report
 
