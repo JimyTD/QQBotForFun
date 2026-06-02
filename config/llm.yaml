@@ -77,3 +77,10 @@ scenes:
     temperature: 0.3
     max_tokens: 512
     timeout_seconds: 30
+
+  finance_report:
+    provider: longcat
+    model: LongCat-Flash-Lite
+    temperature: 0.7
+    max_tokens: 512
+    timeout_seconds: 30

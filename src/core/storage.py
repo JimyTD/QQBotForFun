@@ -213,6 +213,13 @@ def _import_all_models() -> None:
 
         logger.debug(f"[storage] tools/checkin models not loaded: {e}")
 
+    try:
+        from src.plugins.tools.finance import models as _finance_models  # noqa: F401
+    except Exception as e:  # noqa: BLE001
+        from nonebot import logger
+
+        logger.debug(f"[storage] tools/finance models not loaded: {e}")
+
     # 群配置
     try:
         from core import group_config as _group_config  # noqa: F401

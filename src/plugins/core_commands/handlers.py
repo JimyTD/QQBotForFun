@@ -79,6 +79,8 @@ HELP_TEXT = render.text_card(
         "━━━ 🛠️ 日常工具 ━━━",
         "签到            每日签到领金币",
         "吃什么          今天吃什么",
+        "经济天气        市场异动播报",
+        "经济天气 开/关  定时推送开关",
         "菜单            游戏大厅",
         "",
         "━━━ ⚙️ 个人中心 ━━━",
@@ -162,6 +164,14 @@ async def _(matcher: Matcher, event: MessageEvent) -> None:
             name="每日签到",
             subtitle="每天签到领金币 + 积分，连续签到有加成",
             command="@我 签到",
+        )
+    )
+    items.append(
+        MenuItem(
+            emoji="📈",
+            name="经济天气",
+            subtitle="市场异动 + 宏观数据播报 · 小工具",
+            command="@我 经济天气",
         )
     )
 

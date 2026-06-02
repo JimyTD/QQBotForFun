@@ -2,7 +2,7 @@
 description: Rule for deploying and operating the QQBotForFun server. Load this rule when you need to deploy code, check server status, or troubleshoot the bot.
 alwaysApply: true
 enabled: true
-updatedAt: 2026-05-18T00:00:00.000Z
+updatedAt: 2026-06-02T00:00:00.000Z
 provider: 
 ---
 
@@ -80,6 +80,29 @@ cd /root/qqbot && docker compose logs napcat 2>&1 | grep 'WebUi Token' | tail -1
 ```
 cd /root/qqbot && cat logs/aoe3_battle/$(ls -t logs/aoe3_battle/*.json | grep -v full | head -1)
 ```
+
+## 带新依赖的部署（如 finance 插件首次上线）
+
+当 `pyproject.toml` 新增了 Python 包（如 `akshare`、`numpy`）时，标准日常部署流程**已包含 `--build`**，会自动重建镜像安装新依赖，无需额外操作。
+
+**但要注意：**
+1. 新依赖安装会使构建时间变长（`akshare` 较大，首次约 2-3 分钟）
+2. `config/llm.yaml` 是挂载卷，标准 cp 命令不覆盖 `config/`。如果 `config/` 有改动，需额外复制：
+```
+cp -r /root/QQBotForFun_<ts>/config/llm.yaml /root/qqbot/config/llm.yaml
+```
+3. 新增的 DB 表由 `init_db()` 的 `create_all` 自动创建（幂等），无需手动跑 migration
+
+**完整命令（finance 插件首次部署）：**
+```
+cd /root/qqbot && docker compose stop bot && docker compose rm -f bot && cp -r /root/QQBotForFun_<ts>/{src,seeds,scripts,docs,resources,pyproject.toml} /root/qqbot/ && cp /root/QQBotForFun_<ts>/config/llm.yaml /root/qqbot/config/llm.yaml && docker compose up -d --build bot
+```
+
+**验证：**
+```
+cd /root/qqbot && docker compose logs bot --tail=10
+```
+应看到 `[finance] registered daily report cron` 和 `[bot] ready.`。
 
 ## 全流程部署（仅改了 docker-compose.yml 时）
 
