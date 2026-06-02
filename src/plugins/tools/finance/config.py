@@ -17,7 +17,7 @@ class CategoryDef:
     id: str
     name: str
     source: str  # akshare 接口路径提示
-    fetch_kind: str  # "index_sina" | "gold_sge" | "forex_safe" | "us_stock_sina"
+    fetch_kind: str  # "index_sina" | "gold_sge" | "forex_safe" | "us_stock_sina" | "hk_index_sina" | "futures_sina"
 
     # 新浪 A 股指数 / 美股需要的 symbol
     symbol: str = ""
@@ -35,6 +35,10 @@ CATEGORIES: list[CategoryDef] = [
     CategoryDef("us_aapl", "美股·苹果", "stock_us_daily", "us_stock_sina", symbol="AAPL"),
     # 黄金
     CategoryDef("gold", "黄金", "spot_golden_benchmark_sge", "gold_sge"),
+    # 港股 (新浪源)
+    CategoryDef("hk_hsi", "港股·恒生指数", "stock_hk_index_daily_sina", "hk_index_sina", symbol="HSI"),
+    # 原油期货 (新浪源, 上海INE原油连续合约)
+    CategoryDef("oil_ine", "原油期货", "futures_zh_hist_sina", "futures_sina", symbol="sc0"),
     # 汇率 (外管局央行中间价)
     CategoryDef("fx_usd", "汇率·美元", "currency_boc_safe", "forex_safe", column="美元"),
     CategoryDef("fx_eur", "汇率·欧元", "currency_boc_safe", "forex_safe", column="欧元"),
@@ -52,10 +56,11 @@ class MacroIndicator:
     func_name: str   # akshare 函数名
     value_col: str   # 数值列名
     date_col: str     # 日期列名
+    prev_col: str = ""  # 前值列名（数据自带时直接用，空则取倒数第二行）
 
 
 MACRO_INDICATORS: list[MacroIndicator] = [
-    MacroIndicator("cpi_monthly", "CPI月率", "物价涨跌", "macro_china_cpi_monthly", "月率", "月份"),
-    MacroIndicator("ppi_yearly", "PPI年率", "出厂价涨跌", "macro_china_ppi_yearly", "年率", "月份"),
+    MacroIndicator("cpi_monthly", "CPI月率", "物价涨跌", "macro_china_cpi_monthly", "今值", "日期", "前值"),
+    MacroIndicator("ppi_yearly", "PPI年率", "出厂价涨跌", "macro_china_ppi_yearly", "今值", "日期", "前值"),
     MacroIndicator("lpr", "LPR利率", "房贷利率", "macro_china_lpr", "LPR1Y", "TRADE_DATE"),
 ]

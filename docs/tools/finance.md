@@ -85,6 +85,8 @@ Bot:
 |------|-------------|------------|
 | 沪指/深成指/创业板 | `stock_zh_index_daily` (Sina) | `index_sina` |
 | 标普500/苹果 | `stock_us_daily` (Sina) | `us_stock_sina` |
+| 恒生指数 | `stock_hk_index_daily_sina` (Sina) | `hk_index_sina` |
+| 原油期货 | `futures_zh_hist_sina` (Sina, INE sc0) | `futures_sina` |
 | 黄金 | `spot_golden_benchmark_sge` | `gold_sge` |
 | 美元/欧元/日元汇率 | `currency_boc_safe` (外管局) | `forex_safe` |
 
@@ -180,7 +182,7 @@ src/plugins/tools/finance/
 
 | 功能 | 说明 |
 |------|------|
-| 原油/比特币/港股 | 待找到稳定 AKShare 数据源后补充 |
+| 比特币 | AKShare 已移除 crypto 接口，暂无稳定数据源 |
 | 实时新闻推送 | 接入新闻 API，真正的"突发插播" |
 | 关注清单 | 群友可自定义关注的品类 |
 | 模拟投资组合 | 与 `core.economy` 联动 |

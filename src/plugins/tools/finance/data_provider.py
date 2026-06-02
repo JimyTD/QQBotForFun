@@ -118,6 +118,16 @@ def fetch_category(cat: CategoryDef) -> list[DailyBar]:
         if cached_fx is not None and cat.column in cached_fx.columns:
             bars = _price_to_bars(cached_fx, "日期", cat.column)
 
+    elif cat.fetch_kind == "hk_index_sina":
+        df = _safe_call(ak.stock_hk_index_daily_sina, symbol=cat.symbol)
+        if df is not None and len(df) > 0:
+            bars = _price_to_bars(df, "date", "close")
+
+    elif cat.fetch_kind == "futures_sina":
+        df = _safe_call(ak.futures_zh_hist_sina, symbol=cat.symbol)
+        if df is not None and len(df) > 0:
+            bars = _price_to_bars(df, "date", "close")
+
     elif cat.fetch_kind == "us_stock_sina":
         df = _safe_call(ak.stock_us_daily, symbol=cat.symbol, adjust="")
         if df is not None and len(df) > 0:
@@ -159,12 +169,23 @@ def fetch_macro(indicator: MacroIndicator) -> MacroDataPoint | None:
     if df is None or len(df) < 2:
         return None
 
+    if indicator.value_col not in df.columns:
+        logger.warning(
+            f"[finance] {indicator.func_name} missing column '{indicator.value_col}', "
+            f"available: {list(df.columns)}"
+        )
+        return None
+
     df = df.dropna(subset=[indicator.value_col])
     if len(df) < 2:
         return None
 
     latest = df.iloc[-1]
-    prev = df.iloc[-2]
+
+    if indicator.prev_col and indicator.prev_col in df.columns:
+        prev_value = str(latest[indicator.prev_col])
+    else:
+        prev_value = str(df.iloc[-2][indicator.value_col])
 
     point = MacroDataPoint(
         indicator_id=indicator.id,
@@ -172,7 +193,7 @@ def fetch_macro(indicator: MacroIndicator) -> MacroDataPoint | None:
         plain_name=indicator.plain_name,
         date_str=str(latest[indicator.date_col]),
         value=str(latest[indicator.value_col]),
-        prev_value=str(prev[indicator.value_col]),
+        prev_value=prev_value,
     )
     _set_cached(cache_key, point)
     return point
