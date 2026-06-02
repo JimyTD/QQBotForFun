@@ -23,6 +23,15 @@ class AnomalyAlert:
 
 
 @dataclass
+class TopMover:
+    """今日最大波动（未达异动阈值时使用）。"""
+
+    cat_id: str
+    cat_name: str
+    pct_chg: float
+
+
+@dataclass
 class MacroAlert:
     """宏观数据新发布。"""
 
@@ -32,6 +41,7 @@ class MacroAlert:
     date_str: str
     value: str
     prev_value: str
+    changed: bool = True  # value != prev_value
 
 
 def _cat_name(cat_id: str) -> str:
@@ -76,6 +86,24 @@ def detect_anomalies(data: dict[str, list[DailyBar]]) -> list[AnomalyAlert]:
     return alerts
 
 
+def find_top_mover(data: dict[str, list[DailyBar]]) -> TopMover | None:
+    """找到今日绝对涨跌幅最大的品类。|pct_chg| < 0.3% 时返回 None。"""
+    best: TopMover | None = None
+    for cat_id, bars in data.items():
+        if not bars:
+            continue
+        today = bars[-1]
+        if best is None or abs(today.pct_chg) > abs(best.pct_chg):
+            best = TopMover(
+                cat_id=cat_id,
+                cat_name=_cat_name(cat_id),
+                pct_chg=round(today.pct_chg, 2),
+            )
+    if best is not None and abs(best.pct_chg) < 0.3:
+        return None
+    return best
+
+
 async def detect_macro_updates() -> list[MacroAlert]:
     """检测宏观数据是否有新发布，返回需要播报的列表。"""
     from .storage import get_macro_seen, set_macro_seen
@@ -87,6 +115,7 @@ async def detect_macro_updates() -> list[MacroAlert]:
         seen_date, _ = await get_macro_seen(point.indicator_id)
 
         if point.date_str != seen_date:
+            value_changed = point.value.strip() != point.prev_value.strip()
             alerts.append(MacroAlert(
                 indicator_id=point.indicator_id,
                 name=point.name,
@@ -94,18 +123,19 @@ async def detect_macro_updates() -> list[MacroAlert]:
                 date_str=point.date_str,
                 value=point.value,
                 prev_value=point.prev_value,
+                changed=value_changed,
             ))
             await set_macro_seen(point.indicator_id, point.date_str, point.value)
             logger.info(
-                f"[finance] macro update: {point.name} "
-                f"{point.prev_value} -> {point.value} ({point.date_str})"
+                f"[finance] macro {'update' if value_changed else 'unchanged'}: "
+                f"{point.name} {point.prev_value} -> {point.value} ({point.date_str})"
             )
 
     return alerts
 
 
-async def run_detection() -> tuple[list[AnomalyAlert], list[MacroAlert]]:
-    """完整检测流程：拉数据 + 异动 + 宏观。"""
+async def run_detection() -> tuple[list[AnomalyAlert], list[MacroAlert], TopMover | None]:
+    """完整检测流程：拉数据 + 异动 + 宏观 + 最大波动。"""
     from .data_provider import clear_cache
 
     clear_cache()
@@ -115,5 +145,6 @@ async def run_detection() -> tuple[list[AnomalyAlert], list[MacroAlert]]:
 
     anomalies = detect_anomalies(data)
     macros = await detect_macro_updates()
+    top_mover = find_top_mover(data) if not anomalies else None
 
-    return anomalies, macros
+    return anomalies, macros, top_mover

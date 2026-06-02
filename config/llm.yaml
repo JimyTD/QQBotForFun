@@ -14,16 +14,17 @@ defaults:
   backoff_base_seconds: 1.0
   backoff_max_seconds: 10.0
 
-# 生产模型矩阵（2026-05-26 实测 eval_judge_compare · 详见 docs/free-llm-vendors.md）
+# 生产模型矩阵（2026-06-02 更新 · LongCat 旧模型 2026-05-29 全部下线）
 #
 # | scene              | 模块                 | model                |
 # |--------------------|----------------------|----------------------|
-# | turtle_soup_judge  | 海龟汤 · 提问判定    | LongCat-Flash-Chat   |
-# | turtle_soup_claim  | 海龟汤 · 宣告判定    | LongCat-Flash-Chat   |
-# | web_search         | 查资料 · 搜索总结    | LongCat-Flash-Lite   |
-# | ask_ai             | 查资料 · LLM 兜底    | LongCat-Flash-Lite   |
+# | turtle_soup_judge  | 海龟汤 · 提问判定    | glm-4-flash-250414   |
+# | turtle_soup_claim  | 海龟汤 · 宣告判定    | glm-4-flash-250414   |
+# | web_search         | 查资料 · 搜索总结    | glm-4-flash-250414   |
+# | ask_ai             | 查资料 · LLM 兜底    | glm-4-flash-250414   |
 # | turtle_soup_host   | 海龟汤 · LLM 出题    | glm-4-flash-250414   |
 # | trivia_host        | 趣味问答 · LLM 补题  | glm-4-flash-250414   |
+# | finance_report     | 经济天气 · 播报生成  | glm-4-flash-250414   |
 # | default            | 兜底                 | glm-4-flash-250414   |
 
 scenes:
@@ -41,16 +42,16 @@ scenes:
     json_mode_default: true
 
   turtle_soup_judge:
-    provider: longcat
-    model: LongCat-Flash-Chat
+    provider: zhipu
+    model: glm-4-flash-250414
     temperature: 0.1
     max_tokens: 256
     json_mode_default: true
     timeout_seconds: 30
 
   turtle_soup_claim:
-    provider: longcat
-    model: LongCat-Flash-Chat
+    provider: zhipu
+    model: glm-4-flash-250414
     temperature: 0.2
     max_tokens: 512
     json_mode_default: true
@@ -65,22 +66,22 @@ scenes:
     timeout_seconds: 30
 
   ask_ai:
-    provider: longcat
-    model: LongCat-Flash-Lite
+    provider: zhipu
+    model: glm-4-flash-250414
     temperature: 0.7
     max_tokens: 1024
     timeout_seconds: 30
 
   web_search:
-    provider: longcat
-    model: LongCat-Flash-Lite
+    provider: zhipu
+    model: glm-4-flash-250414
     temperature: 0.3
     max_tokens: 512
     timeout_seconds: 30
 
   finance_report:
-    provider: longcat
-    model: LongCat-Flash-Lite
+    provider: zhipu
+    model: glm-4-flash-250414
     temperature: 0.7
     max_tokens: 512
     timeout_seconds: 30

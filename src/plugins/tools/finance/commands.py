@@ -51,18 +51,21 @@ async def _(matcher: Matcher, event: GroupMessageEvent, args=CommandArg()) -> No
             pre_market_note = "\n⏰ A股尚未收盘，数据基于最近一个交易日"
 
         await matcher.send("⏳ 正在拉取数据，请稍候...")
-        try:
-            from .detector import run_detection
-            from .reporter import generate_report
 
-            anomalies, macros = await run_detection()
-            report = await generate_report(anomalies, macros)
-            if report is None:
-                await matcher.finish("📊 今天市场风平浪静，没什么值得说的。" + pre_market_note)
-            else:
-                await matcher.finish(report + pre_market_note)
+        from .detector import run_detection
+        from .reporter import generate_report
+
+        try:
+            anomalies, macros, top_mover = await run_detection()
+            report = await generate_report(anomalies, macros, top_mover)
         except Exception as e:  # noqa: BLE001
             await matcher.finish(f"❌ 拉取数据失败: {e}")
+            return  # unreachable, but makes intent clear
+
+        if report is None:
+            await matcher.finish("📊 今天市场风平浪静，没什么值得说的。" + pre_market_note)
+        else:
+            await matcher.finish(report + pre_market_note)
     else:
         await matcher.finish(
             "用法：\n"

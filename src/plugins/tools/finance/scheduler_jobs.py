@@ -26,10 +26,10 @@ async def daily_finance_report() -> None:
     logger.info("[finance] daily report job started")
 
     try:
-        anomalies, macros = await run_detection()
+        anomalies, macros, top_mover = await run_detection()
         logger.info(f"[finance] detection done: {len(anomalies)} anomalies, {len(macros)} macros")
 
-        report = await generate_report(anomalies, macros)
+        report = await generate_report(anomalies, macros, top_mover)
         if report is None:
             logger.info("[finance] nothing to report today, skip")
             return
