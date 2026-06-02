@@ -123,8 +123,8 @@ def fetch_category(cat: CategoryDef) -> list[DailyBar]:
         if df is not None and len(df) > 0:
             bars = _price_to_bars(df, "date", "close")
 
-    elif cat.fetch_kind == "futures_sina":
-        df = _safe_call(ak.futures_zh_hist_sina, symbol=cat.symbol)
+    elif cat.fetch_kind == "futures_foreign":
+        df = _safe_call(ak.futures_foreign_hist, symbol=cat.symbol)
         if df is not None and len(df) > 0:
             bars = _price_to_bars(df, "date", "close")
 
