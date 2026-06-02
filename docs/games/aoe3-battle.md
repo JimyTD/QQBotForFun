@@ -668,15 +668,37 @@ blue_count = max(1, lcm_budget // cost(blue))
 
 **windup 值确定时机**：在停下的那一刻就能确定——因为 `_can_attack_any_enemy` 已经知道是远程射程够到了还是近战射程够到了。
 
-**数据来源**：`units.json` 中的 `windup_ranged` / `windup_melee` 字段（秒），由 parser 从 anim 文件解析。
-
-**影响评估**：
-- 长弓手（windup=0.98s）：首发延迟近 1 秒，DPS 窗口显著缩短
-- 散兵/火枪（windup≈0.46-0.48s）：首发延迟约半秒
-- 炮兵（windup≈0.02-0.06s）：几乎无影响
-- 近战兵（windup≈0.27-0.5s）：贴脸后多等 0.3-0.5s
+**数据来源**：`units.json` 中的 `windup_ranged` / `windup_melee` 字段，由 parser 从 anim XML 的 `<tag type="Attack">` 解析。
 
 **面板展示**：查兵种面板展示 windup 数据，斗蛐蛐战前面板和播报不展示。
+
+##### 已知精度问题（2026-06 调查，暂不修复）
+
+以下两个问题经调查确认存在，但作为群小游戏精度足够，暂搁置。
+
+**问题 1：windup 数值可能不精确**
+
+当前 parser 直接将 anim XML 的 `<tag type="Attack">` 值当作秒数。但 Steam modding 指南
+（[Proto & Anim Action & Logic Lists](https://steamcommunity.com/sharedfiles/filedetails/?id=821258879)）
+明确写道 tag 值是**动画运行时间的百分比位置**（0.0~1.0），Fandom Wiki Attack Delay 词条也在
+Bang Engine 章节确认 *"attack delays are handled with animation completion percentages in tandem
+with tags"*。正确公式应为 `windup_seconds = tag_fraction × GrannyAnim固有时长`，需从 .gr2
+二进制文件提取动画时长。
+
+但 ESOC 社区和 Fandom Wiki 各单位页面又都直接把 tag 值报成秒数（如长弓 0.98s、散兵 0.46s），
+可能是多数攻击动画时长接近 1 秒所以误差不大。有资深玩家提供的数据（长弓 1.47s、弩手 0.35s）
+与 tag × 动画时长模型吻合，但未能用第三个单位做决定性验证。
+
+修复方案：写 .gr2 时长提取器（参考 [AOE3GR2Exporter](https://github.com/zzqqqzzz/AOE3GR2Exporter)），
+乘以 tag 百分比得到真实秒数。工作量中等，收益有限。
+
+**问题 2：转火是否应重新抬手**
+
+当前模拟器在目标死亡后无缝转火（`_acquire_target` 只换 `target_id`，不重置 `attack_cd`），
+即转火不重新 windup。但 AoE3 DE 玩家观察到目标死亡后单位行为异常（如炮兵冲向死去目标的位置），
+暗示引擎在目标死亡时**会中断攻击周期**。未找到 AoE3 社区或 modding 文档对"站定单位 auto-retarget
+后是否重新 windup"的明确结论。若实际会重新 windup，则慢抬手兵种（长弓等）的 overkill 代价
+会被我们低估。
 
 #### ROF（攻击间隔）
 

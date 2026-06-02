@@ -128,30 +128,95 @@ def _slots_for_op(op: dict, unit: Unit) -> list[str]:
     return slots
 
 
+def _op_dedup_key(op: dict, unit: Unit) -> tuple[str, ...]:
+    """为 op 生成去重键：同键的多条 op 只保留最强的一条。
+
+    键的构成取决于 stat 类型：
+      - slot-routed (range/aoe/rof): (stat, kind, slot)
+      - mult: (stat, kind, slot, vs)
+      - 全局 (hp/damage/speed): (stat, kind)
+      - armor: (stat, kind, armor_kind)
+      - cost: (stat, kind, resource)
+
+    返回 tuple 列表（一条 op 可能命中多个 slot，则生成多个键）。
+    """
+    stat = op["stat"]
+    kind = op["kind"]
+
+    if stat in ("range", "aoe", "rof"):
+        slots = _slots_for_op(op, unit)
+        return tuple(f"{stat}:{kind}:{s}" for s in slots) if slots else (f"{stat}:{kind}:",)
+    if stat == "mult":
+        vs = op.get("vs", "")
+        slots = _slots_for_op(op, unit)
+        return tuple(f"mult:{kind}:{s}:{vs}" for s in slots) if slots else (f"mult:{kind}::{vs}",)
+    if stat == "armor":
+        return (f"armor:{kind}:{op.get('armor_kind', '')}",)
+    if stat == "cost":
+        return (f"cost:{kind}:{op.get('resource', '')}",)
+    # hp, damage, speed 等全局 stat
+    return (f"{stat}:{kind}",)
+
+
+def _deduplicate_ops(ops: list[dict], unit: Unit) -> list[dict]:
+    """同一科技内按去重键分组，每组只保留 value 最大的 op。
+
+    科技列出多条 action 变体是为覆盖不同兵种的代表动作名，对单个兵只应生效一次。
+    数据中偶有 parser 合并产生的重复（如同 stat 不同 value），取最大值。
+    """
+    seen: dict[str, dict] = {}  # key → best op
+    result_keys: list[str] = []  # 保持首次出现顺序
+
+    for op in ops:
+        keys = _op_dedup_key(op, unit)
+        for k in keys:
+            if k not in seen:
+                seen[k] = op
+                result_keys.append(k)
+            elif op["value"] > seen[k]["value"]:
+                seen[k] = op
+
+    # 同一 op 可能产生多个 key（多 slot），去重保留唯一 op
+    emitted: set[int] = set()
+    result: list[dict] = []
+    for k in result_keys:
+        op = seen[k]
+        op_id = id(op)
+        if op_id not in emitted:
+            emitted.add(op_id)
+            result.append(op)
+    return result
+
+
 def _apply_one_tech(unit: Unit, tech: dict, base: Unit) -> Unit:
     """把一条通用科技叠到单位上，返回新副本（无效不动）。
 
     base: tier 升级前的原始 Unit，用于 BasePercent 加算（AoE3 所有 BasePercent
     效果加算于原始基础值，而非乘在 tier 之后的值上）。
+
+    去重原则：同一条科技内，同一 (stat, kind, 目标键) 只生效一次。
+    科技列出多条 action 变体是为覆盖不同兵种的代表动作名，实际对单个兵只取
+    首次命中（值相同时无差别；值不同时取最大值的 op 先到先得，见 _best_ops）。
     """
     scope = set(tech["scope"])
     unit_tags = set(unit.type) | {unit.id}
     if not (scope & unit_tags):
         return unit
 
+    # 预处理：按 (stat, kind, 目标键) 分组，每组只保留最强的一条 op
+    best_ops = _deduplicate_ops(tech["ops"], unit)
+
     changes: dict = {}
-    for op in tech["ops"]:
+    for op in best_ops:
         stat = op["stat"]
         kind = op["kind"]
         val = op["value"]
 
         if stat == "hp" and kind == "mult":
-            # BasePercent 加算：增量 = base_hp × (val - 1)
             changes["hp"] = round(changes.get("hp", unit.hp) + base.hp * (val - 1.0))
         elif stat == "hp" and kind == "add":
             changes["hp"] = round(changes.get("hp", unit.hp) + val)
         elif stat == "damage" and kind == "mult":
-            # BasePercent 加算：增量 = base_attack × (val - 1)
             inc = val - 1.0
             if unit.attack_ranged:
                 changes["attack_ranged"] = round(
@@ -231,7 +296,6 @@ def _apply_one_tech(unit: Unit, tech: dict, base: Unit) -> Unit:
                     else:
                         new_list.append(m)
                 if not found:
-                    # 隐含 1.0 倍率 + 增量
                     new_list.append(Multiplier(vs=vs, value=round(1.0 + val, 3)))
                 changes[field_name] = new_list
 
