@@ -21,6 +21,7 @@ class AnomalyAlert:
     avg_vol: float       # 近期日均绝对波动
     threshold: float     # 触发阈值
     bar_date: str = ""   # 数据实际日期 YYYY-MM-DD
+    overnight: bool = False  # 隔夜市场（昨天的date是正常最新）
 
 
 @dataclass
@@ -31,6 +32,7 @@ class TopMover:
     cat_name: str
     pct_chg: float
     bar_date: str = ""   # 数据实际日期 YYYY-MM-DD
+    overnight: bool = False
 
 
 @dataclass
@@ -46,11 +48,16 @@ class MacroAlert:
     changed: bool = True  # value != prev_value
 
 
-def _cat_name(cat_id: str) -> str:
+def _cat_def(cat_id: str) -> CategoryDef | None:
     for c in CATEGORIES:
         if c.id == cat_id:
-            return c.name
-    return cat_id
+            return c
+    return None
+
+
+def _cat_name(cat_id: str) -> str:
+    c = _cat_def(cat_id)
+    return c.name if c else cat_id
 
 
 def detect_anomalies(data: dict[str, list[DailyBar]]) -> list[AnomalyAlert]:
@@ -73,13 +80,15 @@ def detect_anomalies(data: dict[str, list[DailyBar]]) -> list[AnomalyAlert]:
 
         threshold = mean_vol + N_SIGMA * std_vol
         if abs(today.pct_chg) > threshold:
+            cat = _cat_def(cat_id)
             alerts.append(AnomalyAlert(
                 cat_id=cat_id,
-                cat_name=_cat_name(cat_id),
+                cat_name=cat.name if cat else cat_id,
                 pct_chg=round(today.pct_chg, 2),
                 avg_vol=round(mean_vol, 2),
                 threshold=round(threshold, 2),
                 bar_date=today.date,
+                overnight=cat.overnight if cat else False,
             ))
             logger.info(
                 f"[finance] anomaly: {cat_id} {today.pct_chg:+.2f}% "
@@ -97,11 +106,13 @@ def find_top_mover(data: dict[str, list[DailyBar]]) -> TopMover | None:
             continue
         today = bars[-1]
         if best is None or abs(today.pct_chg) > abs(best.pct_chg):
+            cat = _cat_def(cat_id)
             best = TopMover(
                 cat_id=cat_id,
-                cat_name=_cat_name(cat_id),
+                cat_name=cat.name if cat else cat_id,
                 pct_chg=round(today.pct_chg, 2),
                 bar_date=today.date,
+                overnight=cat.overnight if cat else False,
             )
     if best is not None and abs(best.pct_chg) < 0.3:
         return None

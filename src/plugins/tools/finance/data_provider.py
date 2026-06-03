@@ -8,6 +8,7 @@ from __future__ import annotations
 
 import time
 from dataclasses import dataclass
+from datetime import date
 
 import numpy as np
 import pandas as pd
@@ -89,6 +90,59 @@ def _price_to_bars(df: pd.DataFrame, date_col: str, price_col: str, tail_n: int 
     return [DailyBar(date=r["_date"].strftime("%Y-%m-%d"), pct_chg=round(r["_pct"], 4)) for _, r in df.iterrows()]
 
 
+def _fetch_spot_pct(cat: CategoryDef) -> float | None:
+    """用实时接口获取当日涨跌幅(%)，失败返回 None。"""
+    ak = _get_ak()
+
+    if cat.fetch_kind == "index_sina":
+        cache_key = "_spot_zh_index"
+        df = _get_cached(cache_key)
+        if df is None:
+            df = _safe_call(ak.stock_zh_index_spot_sina)
+            if df is not None:
+                _set_cached(cache_key, df)
+        if df is not None:
+            row = df[df["代码"] == cat.symbol]
+            if len(row) > 0:
+                return float(row.iloc[0]["涨跌幅"])
+
+    elif cat.fetch_kind == "hk_index_sina":
+        cache_key = "_spot_hk_index"
+        df = _get_cached(cache_key)
+        if df is None:
+            df = _safe_call(ak.stock_hk_index_spot_sina)
+            if df is not None:
+                _set_cached(cache_key, df)
+        if df is not None:
+            row = df[df["代码"] == cat.symbol]
+            if len(row) > 0:
+                return float(row.iloc[0]["涨跌幅"])
+
+    elif cat.fetch_kind == "futures_foreign":
+        df = _safe_call(ak.futures_foreign_commodity_realtime, symbol=cat.symbol)
+        if df is not None and len(df) > 0:
+            return float(df.iloc[0]["涨跌幅"])
+
+    return None
+
+
+def _supplement_today(bars: list[DailyBar], cat: CategoryDef) -> list[DailyBar]:
+    """如果日K最后一根不是今天，用实时接口补上当天数据。"""
+    if not bars:
+        return bars
+    today_str = date.today().strftime("%Y-%m-%d")
+    if bars[-1].date >= today_str:
+        return bars
+    if cat.overnight:
+        return bars
+
+    pct = _fetch_spot_pct(cat)
+    if pct is not None:
+        bars.append(DailyBar(date=today_str, pct_chg=round(pct, 4)))
+        logger.debug(f"[finance] supplemented {cat.id} with spot: {today_str} {pct:+.2f}%")
+    return bars
+
+
 def fetch_category(cat: CategoryDef) -> list[DailyBar]:
     """拉取单个品类的历史日线数据。"""
     cache_key = f"cat_{cat.id}"
@@ -134,8 +188,9 @@ def fetch_category(cat: CategoryDef) -> list[DailyBar]:
             bars = _price_to_bars(df, "date", "close")
 
     if bars:
+        bars = _supplement_today(bars, cat)
         _set_cached(cache_key, bars)
-        logger.debug(f"[finance] fetched {cat.id}: {len(bars)} bars")
+        logger.debug(f"[finance] fetched {cat.id}: {len(bars)} bars, latest={bars[-1].date}")
     else:
         logger.warning(f"[finance] no data for {cat.id}")
 

@@ -7,7 +7,7 @@ from dataclasses import dataclass, field
 
 N_SIGMA: float = 1.5
 LOOKBACK_DAYS: int = 30
-CRON_SCHEDULE: str = "30 16 * * 1-5"
+CRON_SCHEDULE: str = "30 17 * * 1-5"
 
 
 @dataclass(frozen=True)
@@ -23,6 +23,8 @@ class CategoryDef:
     symbol: str = ""
     # 外管局汇率需要的列名
     column: str = ""
+    # 隔夜市场（美股/外盘期货）：bars[-1] 日期为"昨天"是正常的最新数据
+    overnight: bool = False
 
 
 CATEGORIES: list[CategoryDef] = [
@@ -30,15 +32,15 @@ CATEGORIES: list[CategoryDef] = [
     CategoryDef("sh_index", "A股·沪指", "stock_zh_index_daily", "index_sina", symbol="sh000001"),
     CategoryDef("sz_index", "A股·深成指", "stock_zh_index_daily", "index_sina", symbol="sz399001"),
     CategoryDef("cy_index", "A股·创业板", "stock_zh_index_daily", "index_sina", symbol="sz399006"),
-    # 美股 (新浪源)
-    CategoryDef("us_spy", "美股·标普500", "stock_us_daily", "us_stock_sina", symbol="SPY"),
-    CategoryDef("us_aapl", "美股·苹果", "stock_us_daily", "us_stock_sina", symbol="AAPL"),
+    # 美股 (新浪源, 隔夜盘)
+    CategoryDef("us_spy", "美股·标普500", "stock_us_daily", "us_stock_sina", symbol="SPY", overnight=True),
+    CategoryDef("us_aapl", "美股·苹果", "stock_us_daily", "us_stock_sina", symbol="AAPL", overnight=True),
     # 黄金
     CategoryDef("gold", "黄金", "spot_golden_benchmark_sge", "gold_sge"),
     # 港股 (新浪源)
     CategoryDef("hk_hsi", "港股·恒生指数", "stock_hk_index_daily_sina", "hk_index_sina", symbol="HSI"),
-    # 原油期货 (新浪源, WTI原油)
-    CategoryDef("oil_wti", "原油·WTI", "futures_foreign_hist", "futures_foreign", symbol="CL"),
+    # 原油期货 (新浪源, WTI原油, 隔夜盘)
+    CategoryDef("oil_wti", "原油·WTI", "futures_foreign_hist", "futures_foreign", symbol="CL", overnight=True),
     # 汇率 (外管局央行中间价)
     CategoryDef("fx_usd", "汇率·美元", "currency_boc_safe", "forex_safe", column="美元"),
     CategoryDef("fx_eur", "汇率·欧元", "currency_boc_safe", "forex_safe", column="欧元"),

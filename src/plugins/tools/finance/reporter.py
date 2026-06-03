@@ -15,16 +15,25 @@ from .prompts import FINANCE_REPORT_SYSTEM, FINANCE_REPORT_USER
 CST = timezone(timedelta(hours=8))
 
 
-def _date_label(bar_date: str) -> str:
-    """根据 bar 日期与今天的关系返回 '今日' / '昨日' / '06月02日'。"""
+def _date_label(bar_date: str, overnight: bool = False) -> str:
+    """判断数据是否最新，返回需要标注的日期标签。
+
+    返回空字符串 → 数据是最新的，不需要额外标注。
+    返回 "昨日" / "06月02日" → 数据不是最新的，需要提醒。
+
+    隔夜市场（美股/外盘期货）：bar_date 为昨天是正常的（北京时间凌晨收盘）。
+    白天市场（A股/港股/黄金）：bar_date 应该是今天。
+    """
     today = date.today()
     try:
         d = date.fromisoformat(bar_date)
     except (ValueError, TypeError):
-        return "今日"
+        return ""
     diff = (today - d).days
     if diff <= 0:
-        return "今日"
+        return ""
+    if overnight and diff == 1:
+        return ""
     if diff == 1:
         return "昨日"
     return f"{d.month:02d}月{d.day:02d}日"
@@ -107,10 +116,11 @@ def _build_structured_data(
         parts.append("【行情异动】")
         for a in anomalies:
             direction = "涨" if a.pct_chg > 0 else "跌"
-            label = _date_label(a.bar_date)
+            label = _date_label(a.bar_date, a.overnight)
+            date_note = f"（{label}）" if label else ""
             impact = _interpret_cat(a.cat_id)
             parts.append(
-                f"- {a.cat_name}（{label}）: {direction}了{abs(a.pct_chg)}%"
+                f"- {a.cat_name}{date_note}: {direction}了{abs(a.pct_chg)}%"
                 f"（平时日均波动约{a.avg_vol}%，超出正常范围）"
             )
             if impact:
@@ -118,11 +128,12 @@ def _build_structured_data(
 
     if top_mover and not anomalies:
         direction = "涨" if top_mover.pct_chg > 0 else "跌"
-        label = _date_label(top_mover.bar_date)
+        label = _date_label(top_mover.bar_date, top_mover.overnight)
+        date_note = f"（{label}）" if label else ""
         impact = _interpret_cat(top_mover.cat_id)
         parts.append("【行情关注】")
         parts.append(
-            f"- {top_mover.cat_name}（{label}）: {direction}了{abs(top_mover.pct_chg)}%，各品类里动得最大"
+            f"- {top_mover.cat_name}{date_note}: {direction}了{abs(top_mover.pct_chg)}%，各品类里动得最大"
         )
         if impact:
             parts.append(f"  生活影响：{impact}")
@@ -190,8 +201,9 @@ def _fallback_report(
 
     for a in anomalies:
         d = "涨" if a.pct_chg > 0 else "跌"
-        label = _date_label(a.bar_date)
-        line = f"{a.cat_name}（{label}）{d}了{abs(a.pct_chg)}%，平时波动约{a.avg_vol}%，不太正常。"
+        label = _date_label(a.bar_date, a.overnight)
+        date_note = f"（{label}）" if label else ""
+        line = f"{a.cat_name}{date_note}{d}了{abs(a.pct_chg)}%，平时波动约{a.avg_vol}%，不太正常。"
         impact = _interpret_cat(a.cat_id)
         if impact:
             line += f"{impact}。"
@@ -199,8 +211,9 @@ def _fallback_report(
 
     if top_mover and not anomalies:
         d = "涨" if top_mover.pct_chg > 0 else "跌"
-        label = _date_label(top_mover.bar_date)
-        line = f"{label}动得最大的是{top_mover.cat_name}，{d}了{abs(top_mover.pct_chg)}%，还在正常范围。"
+        label = _date_label(top_mover.bar_date, top_mover.overnight)
+        prefix = f"{label}" if label else "今天"
+        line = f"{prefix}动得最大的是{top_mover.cat_name}，{d}了{abs(top_mover.pct_chg)}%，还在正常范围。"
         impact = _interpret_cat(top_mover.cat_id)
         if impact:
             line += f"{impact}。"
