@@ -5,7 +5,7 @@
 
 from __future__ import annotations
 
-from datetime import datetime, timedelta, timezone
+from datetime import date, datetime, timedelta, timezone
 
 from nonebot import logger
 
@@ -13,6 +13,21 @@ from .detector import AnomalyAlert, MacroAlert, TopMover
 from .prompts import FINANCE_REPORT_SYSTEM, FINANCE_REPORT_USER
 
 CST = timezone(timedelta(hours=8))
+
+
+def _date_label(bar_date: str) -> str:
+    """根据 bar 日期与今天的关系返回 '今日' / '昨日' / '06月02日'。"""
+    today = date.today()
+    try:
+        d = date.fromisoformat(bar_date)
+    except (ValueError, TypeError):
+        return "今日"
+    diff = (today - d).days
+    if diff <= 0:
+        return "今日"
+    if diff == 1:
+        return "昨日"
+    return f"{d.month:02d}月{d.day:02d}日"
 
 _DISCLAIMER = "\n\n⚠️ 仅供闲聊参考，不构成投资建议"
 
@@ -89,23 +104,25 @@ def _build_structured_data(
     parts: list[str] = []
 
     if anomalies:
-        parts.append("【今日异动】")
+        parts.append("【行情异动】")
         for a in anomalies:
             direction = "涨" if a.pct_chg > 0 else "跌"
+            label = _date_label(a.bar_date)
             impact = _interpret_cat(a.cat_id)
             parts.append(
-                f"- {a.cat_name}: {direction}了{abs(a.pct_chg)}%"
-                f"（平时日均波动约{a.avg_vol}%，今天超出正常范围）"
+                f"- {a.cat_name}（{label}）: {direction}了{abs(a.pct_chg)}%"
+                f"（平时日均波动约{a.avg_vol}%，超出正常范围）"
             )
             if impact:
                 parts.append(f"  生活影响：{impact}")
 
     if top_mover and not anomalies:
         direction = "涨" if top_mover.pct_chg > 0 else "跌"
+        label = _date_label(top_mover.bar_date)
         impact = _interpret_cat(top_mover.cat_id)
-        parts.append("【今日关注】")
+        parts.append("【行情关注】")
         parts.append(
-            f"- {top_mover.cat_name}: {direction}了{abs(top_mover.pct_chg)}%，今天各品类里动得最大"
+            f"- {top_mover.cat_name}（{label}）: {direction}了{abs(top_mover.pct_chg)}%，各品类里动得最大"
         )
         if impact:
             parts.append(f"  生活影响：{impact}")
@@ -173,7 +190,8 @@ def _fallback_report(
 
     for a in anomalies:
         d = "涨" if a.pct_chg > 0 else "跌"
-        line = f"{a.cat_name}{d}了{abs(a.pct_chg)}%，平时波动约{a.avg_vol}%，今天不太正常。"
+        label = _date_label(a.bar_date)
+        line = f"{a.cat_name}（{label}）{d}了{abs(a.pct_chg)}%，平时波动约{a.avg_vol}%，不太正常。"
         impact = _interpret_cat(a.cat_id)
         if impact:
             line += f"{impact}。"
@@ -181,7 +199,8 @@ def _fallback_report(
 
     if top_mover and not anomalies:
         d = "涨" if top_mover.pct_chg > 0 else "跌"
-        line = f"今天动得最大的是{top_mover.cat_name}，{d}了{abs(top_mover.pct_chg)}%，还在正常范围。"
+        label = _date_label(top_mover.bar_date)
+        line = f"{label}动得最大的是{top_mover.cat_name}，{d}了{abs(top_mover.pct_chg)}%，还在正常范围。"
         impact = _interpret_cat(top_mover.cat_id)
         if impact:
             line += f"{impact}。"

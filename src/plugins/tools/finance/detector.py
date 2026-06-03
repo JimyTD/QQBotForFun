@@ -17,18 +17,20 @@ class AnomalyAlert:
 
     cat_id: str
     cat_name: str
-    pct_chg: float      # 今日涨跌幅
+    pct_chg: float      # 涨跌幅
     avg_vol: float       # 近期日均绝对波动
     threshold: float     # 触发阈值
+    bar_date: str = ""   # 数据实际日期 YYYY-MM-DD
 
 
 @dataclass
 class TopMover:
-    """今日最大波动（未达异动阈值时使用）。"""
+    """最大波动（未达异动阈值时使用）。"""
 
     cat_id: str
     cat_name: str
     pct_chg: float
+    bar_date: str = ""   # 数据实际日期 YYYY-MM-DD
 
 
 @dataclass
@@ -77,6 +79,7 @@ def detect_anomalies(data: dict[str, list[DailyBar]]) -> list[AnomalyAlert]:
                 pct_chg=round(today.pct_chg, 2),
                 avg_vol=round(mean_vol, 2),
                 threshold=round(threshold, 2),
+                bar_date=today.date,
             ))
             logger.info(
                 f"[finance] anomaly: {cat_id} {today.pct_chg:+.2f}% "
@@ -98,6 +101,7 @@ def find_top_mover(data: dict[str, list[DailyBar]]) -> TopMover | None:
                 cat_id=cat_id,
                 cat_name=_cat_name(cat_id),
                 pct_chg=round(today.pct_chg, 2),
+                bar_date=today.date,
             )
     if best is not None and abs(best.pct_chg) < 0.3:
         return None
