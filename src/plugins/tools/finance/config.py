@@ -7,7 +7,7 @@ from dataclasses import dataclass, field
 
 N_SIGMA: float = 1.5
 LOOKBACK_DAYS: int = 30
-CRON_SCHEDULE: str = "30 15 * * 1-5"
+CRON_SCHEDULE: str = "30 16 * * 1-5"
 
 
 @dataclass(frozen=True)
