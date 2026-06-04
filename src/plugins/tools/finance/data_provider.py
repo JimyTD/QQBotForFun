@@ -136,10 +136,13 @@ def _supplement_today(bars: list[DailyBar], cat: CategoryDef) -> list[DailyBar]:
     if cat.overnight:
         return bars
 
+    logger.info(f"[finance] {cat.id} daily stale ({bars[-1].date}), trying spot...")
     pct = _fetch_spot_pct(cat)
     if pct is not None:
         bars.append(DailyBar(date=today_str, pct_chg=round(pct, 4)))
-        logger.debug(f"[finance] supplemented {cat.id} with spot: {today_str} {pct:+.2f}%")
+        logger.info(f"[finance] {cat.id} supplemented with spot: {today_str} {pct:+.2f}%")
+    else:
+        logger.warning(f"[finance] {cat.id} spot fetch FAILED, using stale daily data")
     return bars
 
 
