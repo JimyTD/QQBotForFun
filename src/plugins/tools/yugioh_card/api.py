@@ -34,6 +34,19 @@ class YugiohCard:
     image_url_small: str  # 小尺寸卡图 URL
 
 
+def _build_description(text: dict[str, Any]) -> str:
+    """组合灵摆效果和怪兽效果为完整描述文本。
+
+    搜索端点将灵摆效果放在 pdesc、怪兽效果放在 desc；
+    详情端点则合并在 desc 里（已带【灵摆效果】/【怪兽效果】标题）。
+    """
+    pdesc = text.get("pdesc", "")
+    desc = text.get("desc", "")
+    if pdesc:
+        return f"【灵摆效果】\n{pdesc}\n【怪兽效果】\n{desc}"
+    return desc
+
+
 def _parse_card(data: dict[str, Any]) -> YugiohCard:
     """从百鸽 API 搜索结果中解析单张卡片。"""
     card_id = data.get("id", 0)
@@ -52,7 +65,7 @@ def _parse_card(data: dict[str, Any]) -> YugiohCard:
         name_jp=data.get("jp_name", ""),
         name_en=data.get("en_name", ""),
         types=text.get("types", ""),
-        description=text.get("desc", ""),
+        description=_build_description(text),
         image_url=f"{_IMG_CDN}/{card_id}.jpg",
         image_url_small=f"{_IMG_CDN}/{card_id}.jpg!half",
     )
@@ -70,7 +83,7 @@ def _parse_card_detail(data: dict[str, Any]) -> YugiohCard:
         name_jp="",
         name_en="",
         types=text.get("types", ""),
-        description=text.get("desc", ""),
+        description=_build_description(text),
         image_url=f"{_IMG_CDN}/{card_id}.jpg",
         image_url_small=f"{_IMG_CDN}/{card_id}.jpg!half",
     )

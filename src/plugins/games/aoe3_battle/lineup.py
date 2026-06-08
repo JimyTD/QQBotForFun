@@ -67,16 +67,11 @@ MAX_DRAW_RETRIES = 20
 # 发现数据异常、表现极端、或不适合斗蛐蛐的兵种直接加 id
 BLACKLIST: set[str] = {
     # 作弊单位（Cheat unit）— 数据完全离谱
-    "mediocrebombard",           # 普通射石炮，攻击力 5000，cost 16
-    "thetommynator",             # The Tommynator，攻击力 1200，speed 11
-    "learicorn",                 # 独角兽，近战 800
+    "mediocrebombard",           # 中型火炮，攻击力 5000，cost 16
+    "learicorn",                 # 利尔厉（独角兽），近战 800
 
-    # 火船 — ROF=0，无限 DPS（自爆单位无法模拟）
-    "firejunk",                  # 火船，ROF=0
-    "fireship",                  # 火船，ROF=0
-
-    # 假炮 — 攻击力 500，cost 100，严重超模
-    "quakergun",                 # 假炮
+    # 假炮 — InflictsNoDamage 单位，attack_ranged=500 是假数据，实际不打伤害
+    "dequakergun",               # 木制假炮
 
     # 翻译缺失 + 不认识的奇怪单位
     "yppeasantindians",          # ypPeasantIndians，无中文名
@@ -107,6 +102,9 @@ BATTLE_BLACKLIST: dict[str, str] = {
     "monstertrucka":       "彩蛋·怪兽卡车-大安迪",   # hp 60000
     "monstertruckt":       "彩蛋·怪兽卡车-汤米",     # hp 60000
     "ypeggicecreamtruck":  "彩蛋·冰淇淋大脚车",      # hp 60000
+    "fluffy":              "彩蛋·毛毛",              # hp 600 melee=800，cost 12（极端超模）
+    "flyingpurpletapir":   "彩蛋·会飞的紫貘",        # hp 600 melee=800
+    "deeggleonardostank":  "彩蛋·莱昂纳多的战车",    # hp 5000 ranged=800，DE 彩蛋 DLC
 
     # —— 弃用 / 老版本兵种 ——
     "legacygatlingcamel":  "祖传·加特林骆驼",        # hp 9001，legacy 前缀
