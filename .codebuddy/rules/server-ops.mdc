@@ -34,12 +34,22 @@ provider:
 cd /root/qqbot && docker compose stop bot && docker compose rm -f bot && cp -r /root/QQBotForFun_<ts>/{src,seeds,scripts,docs,resources,pyproject.toml} /root/qqbot/ && docker compose up -d --build bot
 ```
 3. 确认：`cd /root/qqbot && docker compose logs bot --tail=5`（看到 `[bot] ready.`）
+4. 确认成功后清理：
+```
+rm -rf /root/QQBotForFun_<ts> && docker image prune -f
+```
 
 **禁止：**
 - ❌ 在新临时目录里执行 docker compose（会启新容器栈，造成混乱）
 - ❌ docker compose down（杀 NapCat，需重新扫码）
 - ❌ rsync --delete 或任何可能删除/覆盖 `.env`、`logs/`、`uploads/` 的命令
 - ❌ 部署命令中出现 `.env` 以外的全量同步方式
+- ❌ `docker system prune -a` 或 `--volumes`（会删掉所有镜像缓存，导致重建耗时数十分钟）
+
+**磁盘空间维护**：
+- 每次部署成功后执行步骤 4 即可保持空间健康
+- 如仍遇磁盘不足：只允许 `rm -rf /root/QQBotForFun_*旧目录` + `docker image prune -f`
+- 其他清理操作（如 docker system prune）必须先报告用户，由用户决定
 
 **`.env` 保护**：
 - `.env` 在服务器上一次配置后永不需要再动，部署流程不涉及它
@@ -97,6 +107,8 @@ cp -r /root/QQBotForFun_<ts>/config/llm.yaml /root/qqbot/config/llm.yaml
 ```
 cd /root/qqbot && docker compose stop bot && docker compose rm -f bot && cp -r /root/QQBotForFun_<ts>/{src,seeds,scripts,docs,resources,pyproject.toml} /root/qqbot/ && cp /root/QQBotForFun_<ts>/config/llm.yaml /root/qqbot/config/llm.yaml && docker compose up -d --build bot
 ```
+
+**验证成功后同样执行清理：** `rm -rf /root/QQBotForFun_<ts> && docker image prune -f`
 
 **验证：**
 ```

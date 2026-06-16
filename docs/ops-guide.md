@@ -66,10 +66,24 @@ cd /root/qqbot && docker compose logs bot --tail=5
 
 应看到 `[bot] ready.` 和 `Uvicorn running`。
 
+4. 确认成功后清理（每次必做）：
+
+```bash
+rm -rf /root/QQBotForFun_<ts> && docker image prune -f
+```
+
+> 上传临时目录和旧镜像层会持续积累磁盘空间，必须在每次部署成功后清理。
+
 **禁止事项：**
 - ❌ 不要在新目录里执行 `docker compose up`（会启新容器栈）
 - ❌ 不要 `docker compose down`（会杀 NapCat，需要重新扫码）
 - ❌ 不要重命名或删除 `/root/qqbot` 链接指向的实际目录
+- ❌ 不要 `docker system prune -a` 或 `--volumes`（清掉所有镜像缓存，重建耗时数十分钟）
+
+**磁盘空间维护：**
+- 每次部署成功后的步骤 4（`rm -rf` 临时目录 + `docker image prune -f`）是必做项
+- 如仍遇磁盘不足：只允许删旧的 `/root/QQBotForFun_*` 目录 + `docker image prune -f`
+- 其他清理操作必须先报告用户由用户决定，禁止自行执行
 
 ---
 

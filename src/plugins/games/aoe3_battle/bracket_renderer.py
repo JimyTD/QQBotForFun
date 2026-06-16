@@ -272,6 +272,8 @@ def render_bracket(data: BracketData) -> bytes:
 
     # ── 八强 ──
     qf_done = stage in (_STAGE_QF_DONE, _STAGE_SF_DONE, _STAGE_FINAL)
+    sf_done = stage in (_STAGE_SF_DONE, _STAGE_FINAL)
+    is_final = stage == _STAGE_FINAL
     qf_positions = []
     for m in range(4):
         y1 = start_y + m * pair_gap
@@ -328,11 +330,22 @@ def render_bracket(data: BracketData) -> bytes:
             # 四强图标
             w = data.qf_results[m_idx]
             w_icon = icons_sm[w]
-            img.paste(w_icon, (col2_x, mid_y - SMALL_ICON // 2), w_icon)
+
+            # sf_done 后，SF 败者应显示淘汰标记
+            is_sf_loser = sf_done and w not in set(data.sf_results.values())
+            if is_sf_loser:
+                w_icon = _dim_icon(w_icon, 0.25)
+                img.paste(w_icon, (col2_x, mid_y - SMALL_ICON // 2), w_icon)
+                _draw_cross(draw, col2_x, mid_y - SMALL_ICON // 2, SMALL_ICON)
+                text_color = COLORS["text_dim"]
+            else:
+                img.paste(w_icon, (col2_x, mid_y - SMALL_ICON // 2), w_icon)
+                text_color = (230, 220, 180)
+
             draw.text(
                 (col2_x + SMALL_ICON + 4, mid_y - 8),
                 data.units[w][1],
-                fill=(230, 220, 180),
+                fill=text_color,
                 font=font,
             )
         else:
@@ -381,7 +394,7 @@ def render_bracket(data: BracketData) -> bytes:
             for yy, sf_slot in [(ya, a), (yb, b)]:
                 u_idx = sf_unit_map[sf_slot]
                 wins = u_idx == winner
-                c = COLORS["winner"] if wins else COLORS["line"]
+                c = COLORS["winner"] if wins else COLORS["eliminated"]
                 line_sx = (
                     col2_x
                     + SMALL_ICON
@@ -398,11 +411,20 @@ def render_bracket(data: BracketData) -> bytes:
                 width=2,
             )
             w_icon = icons_sm[winner]
-            img.paste(w_icon, (col3_x, mid_y - SMALL_ICON // 2), w_icon)
+            # final 阶段：亚军应显示淘汰标记
+            is_runner_up = is_final and data.champion_idx is not None and winner != data.champion_idx
+            if is_runner_up:
+                w_icon = _dim_icon(w_icon, 0.25)
+                img.paste(w_icon, (col3_x, mid_y - SMALL_ICON // 2), w_icon)
+                _draw_cross(draw, col3_x, mid_y - SMALL_ICON // 2, SMALL_ICON)
+                text_color = COLORS["text_dim"]
+            else:
+                img.paste(w_icon, (col3_x, mid_y - SMALL_ICON // 2), w_icon)
+                text_color = (230, 220, 180)
             draw.text(
                 (col3_x + SMALL_ICON + 4, mid_y - 8),
                 data.units[winner][1],
-                fill=(230, 220, 180),
+                fill=text_color,
                 font=font,
             )
         elif qf_done:

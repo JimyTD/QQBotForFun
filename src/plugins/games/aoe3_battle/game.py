@@ -25,6 +25,8 @@ from src.plugins.aoe3.repository import UnitRepo
 from .broadcaster import (
     Broadcaster,
     BroadcastSegment,
+    _hp_bar,
+    _hp_summary,
     format_battle_report,
     MODE_BRIEF,
 )
@@ -1015,15 +1017,6 @@ class AoE3BattleGame(GameBase):
                 count_a = max(1, lcm_budget // cost_a)
                 count_b = max(1, lcm_budget // cost_b)
 
-                # 广播比赛标题
-                await session.broadcast(
-                    ctx.group_id,
-                    f"━━━ {match_obj.label} ━━━\n"
-                    f"🔴 {tu_a.display_name} ×{count_a}  vs  "
-                    f"🔵 {tu_b.display_name} ×{count_b}",
-                )
-                await asyncio.sleep(1.0)
-
                 # 跑模拟
                 sim = BattleSimulator(
                     red_army=[(tu_a.unit, count_a)],
@@ -1047,24 +1040,58 @@ class AoE3BattleGame(GameBase):
                 # 中间推进（败者组需要在 LR1/LR2 结束后填充 7TH/5TH）
                 t.try_advance()
 
-                # 播报简化战报
+                # ── 合并战报（标题 + 血条 + 统计 + 胜者）──
                 winner_tu = t.get_unit(winner_idx)
                 loser_idx = match_obj.loser_idx
                 assert loser_idx is not None
                 loser_tu = t.get_unit(loser_idx)
-                alive_count = len(result.red_alive) if result.winner == Side.RED else len(result.blue_alive)
+
+                # 血条数据
+                red_all = result.red_alive + result.red_dead
+                blue_all = result.blue_alive + result.blue_dead
+                red_max_hp = sum(s.max_hp for s in red_all)
+                red_cur_hp = sum(s.hp for s in result.red_alive)
+                blue_max_hp = sum(s.max_hp for s in blue_all)
+                blue_cur_hp = sum(s.hp for s in result.blue_alive)
+
+                # 每方统计
+                red_same = [s for s in red_all if s.unit.id == tu_a.unit.id]
+                blue_same = [s for s in blue_all if s.unit.id == tu_b.unit.id]
+                red_alive_n = len([s for s in result.red_alive if s.unit.id == tu_a.unit.id])
+                blue_alive_n = len([s for s in result.blue_alive if s.unit.id == tu_b.unit.id])
+                red_kills = sum(s.kills for s in red_same)
+                red_dmg = sum(s.total_damage_dealt for s in red_same)
+                blue_kills = sum(s.kills for s in blue_same)
+                blue_dmg = sum(s.total_damage_dealt for s in blue_same)
+
+                red_status = "全灭" if red_alive_n == 0 else f"存活{red_alive_n}"
+                blue_status = "全灭" if blue_alive_n == 0 else f"存活{blue_alive_n}"
+
+                # 晋级文案
+                mid = match_obj.match_id
+                if mid.startswith("QF"):
+                    promo = "，晋级四强"
+                elif mid.startswith("SF"):
+                    promo = "，晋级决赛"
+                elif mid == "FINAL":
+                    promo = "，夺得冠军！"
+                else:
+                    promo = ""
+
+                # 组装一条消息
                 report_lines = [
-                    f"🏆 {winner_tu.display_name} 胜！（剩余 {alive_count} 单位）",
-                    f"⏱ 耗时 {result.duration:.1f}s",
+                    f"━━━ {match_obj.label} {tu_a.display_name} vs {tu_b.display_name} ⏱{result.duration:.1f}s ━━━",
+                    f"🔴 {_hp_bar(red_cur_hp, red_max_hp, '🟥')}  {_hp_summary(red_cur_hp, red_max_hp)}",
+                    f"🔵 {_hp_bar(blue_cur_hp, blue_max_hp, '🟥')}  {_hp_summary(blue_cur_hp, blue_max_hp)}",
+                    f"🔴 {tu_a.display_name} ×{count_a} → {red_status}/击杀{red_kills}/伤害{red_dmg:.0f}",
+                    f"🔵 {tu_b.display_name} ×{count_b} → {blue_status}/击杀{blue_kills}/伤害{blue_dmg:.0f}",
+                    f"✅ {winner_tu.display_name} 胜{promo}",
                 ]
                 await session.broadcast(ctx.group_id, "\n".join(report_lines))
-                await asyncio.sleep(1.5)
+                await asyncio.sleep(2.0)
 
-            # 尝试推进阶段
-            t.try_advance()
-            ctx.state["tournament"] = t.to_dict()
-
-            # 判断是否需要出图 / 结束
+            # 先检查循环内 try_advance 后是否已进入出图阶段
+            # （必须在第二次 try_advance 前检查，否则 QF_DONE/SF_DONE 会被跳过）
             if t.stage == TournamentStage.FINISHED:
                 # 决赛结束 → 出最终对阵图 + 排名图 + 结算
                 await self._tournament_send_bracket(ctx)
@@ -1094,13 +1121,45 @@ class AoE3BattleGame(GameBase):
                 ctx.state["phase"] = "tournament_waiting"
 
             else:
-                # 败者组等不出图的中间阶段：直接等待「开战」
-                stage_prompts = {
-                    TournamentStage.LOSERS_DONE: "排位赛结束，发送「开战」进入半决赛",
-                }
-                prompt = stage_prompts.get(t.stage, "发送「开战」继续")
-                await session.broadcast(ctx.group_id, f"📋 {prompt}")
-                ctx.state["phase"] = "tournament_waiting"
+                # 非出图阶段 → 推进一次后再判断
+                t.try_advance()
+                ctx.state["tournament"] = t.to_dict()
+
+                if t.stage == TournamentStage.FINISHED:
+                    # 推进后进入结束状态
+                    await self._tournament_send_bracket(ctx)
+                    await asyncio.sleep(1.0)
+                    await self._tournament_send_ranking(ctx)
+                    await asyncio.sleep(0.5)
+
+                    settlement = await self._settle_tournament_bets(ctx)
+                    if settlement:
+                        await session.broadcast(ctx.group_id, settlement)
+
+                    ctx.state["phase"] = "ended"
+                    from core import game_base as gb
+                    runner = gb.get_runner(ctx.session_id)
+                    if runner is not None:
+                        await runner.end(EndReason.COMPLETED)
+
+                elif t.is_bracket_stage():
+                    # 推进后进入出图阶段（兜底）
+                    stage_hints = {
+                        TournamentStage.QF_DONE: "八强战结束 · 发送「开战」进入排位赛+半决赛",
+                        TournamentStage.SF_DONE: "半决赛结束 · 发送「开战」进入季军战+决赛",
+                    }
+                    hint = stage_hints.get(t.stage, "")
+                    await self._tournament_send_bracket(ctx, hint=hint)
+                    ctx.state["phase"] = "tournament_waiting"
+
+                else:
+                    # 败者组等不出图的中间阶段：直接等待「开战」
+                    stage_prompts = {
+                        TournamentStage.LOSERS_DONE: "排位赛结束，发送「开战」进入半决赛",
+                    }
+                    prompt = stage_prompts.get(t.stage, "发送「开战」继续")
+                    await session.broadcast(ctx.group_id, f"📋 {prompt}")
+                    ctx.state["phase"] = "tournament_waiting"
 
         except asyncio.CancelledError:
             logger.info("[aoe3_battle] %s 锦标赛任务被取消", ctx.session_id)

@@ -16,7 +16,7 @@ from typing import Sequence
 from src.plugins.aoe3.formatter import append_unit_tooltip
 from src.plugins.aoe3.models import Unit
 from src.plugins.aoe3.repository import UnitRepo, is_excluded_unit
-from src.plugins.aoe3.upgrades import apply_upgrades
+from src.plugins.aoe3.upgrades import _load, apply_upgrades
 
 logger = logging.getLogger("aoe3_battle.lineup")
 
@@ -1515,6 +1515,25 @@ def generate_tournament_lineup(
     if len(pool) < 8:
         return (
             f"⚠️ 主题「{theme.title}」可用兵种不足 8 个"
+            f"（当前 {len(pool)} 个），无法举办锦标赛"
+        )
+
+    # 中文名去重（仅锦标赛）：有逐兵升级链的优先保留，剔掉同名弱马甲
+    upgrades_units = _load().get("units", {})
+    pool.sort(key=lambda u: (u.id in upgrades_units), reverse=True)
+
+    seen_names: set[str] = set()
+    deduped: list[Unit] = []
+    for u in pool:
+        if u.name not in seen_names:
+            seen_names.add(u.name)
+            deduped.append(u)
+
+    pool = deduped
+
+    if len(pool) < 8:
+        return (
+            f"⚠️ 主题「{theme.title}」去重后可用兵种不足 8 个"
             f"（当前 {len(pool)} 个），无法举办锦标赛"
         )
 
