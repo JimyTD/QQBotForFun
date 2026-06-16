@@ -205,6 +205,12 @@ async def _(matcher: Matcher, event: GroupMessageEvent, args: Message = CommandA
     # 通用科技开关 → 传入 config
     generic_techs_on = await _get_generic_techs_enabled(int(event.group_id))
 
+    # ---- 王中王锦标赛："斗蛐蛐 王中王锦标赛" / "斗蛐蛐 锦标赛" ----
+    _TOURNAMENT_KEYWORDS = {"王中王锦标赛", "锦标赛", "tournament"}
+    if parts and parts[0] in _TOURNAMENT_KEYWORDS:
+        await _handle_tournament_battle(matcher, event, age=age)
+        return
+
     # ---- 王中王："斗蛐蛐 王中王" / "斗蛐蛐 王中王 散兵 15000" ----
     _RIVAL_KEYWORDS = {"王中王", "宿敌", "宿敌挑战", "rival"}
     if parts and parts[0] in _RIVAL_KEYWORDS:
@@ -221,6 +227,7 @@ async def _(matcher: Matcher, event: GroupMessageEvent, args: Message = CommandA
         "单挑", "1v1", "duel",
         "黑名单", "乱斗", "黑名单乱斗", "blacklist",
         "王中王", "宿敌", "宿敌挑战", "rival",
+        "王中王锦标赛", "锦标赛", "tournament",
     }
     unknown_words = [p for p in parts if p not in _MODE_KEYWORDS and not p.isdigit()]
     if unknown_words:
@@ -337,6 +344,25 @@ async def _handle_custom_battle(
         mode_id="custom",
         extra_config=config,
     )
+
+
+async def _handle_tournament_battle(
+    matcher: Matcher, event: GroupMessageEvent,
+    age: int | None = None,
+) -> None:
+    """王中王锦标赛：随机 3 主题 + 表情选（同王中王流程）。"""
+    from src.plugins.games.aoe3_battle.rival_pick import start_tournament_pick
+
+    group_id = int(event.group_id)
+    initiator_id = int(event.user_id)
+
+    err = await start_tournament_pick(
+        group_id=group_id,
+        initiator_id=initiator_id,
+        age=age,
+    )
+    if err:
+        await matcher.finish(err)
 
 
 async def _handle_rival_battle(

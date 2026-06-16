@@ -1480,3 +1480,56 @@ def generate_rival_lineup(
     return MatchLineup(
         red=red, blue=blue, mode="rival", rival_theme=theme.title, age=age,
     )
+
+
+# =====================================================================
+# 王中王锦标赛：8 兵种抽签
+# =====================================================================
+
+
+def generate_tournament_lineup(
+    repo: UnitRepo,
+    theme_id: str,
+    *,
+    age: int = 3,
+    rng: random.Random | None = None,
+) -> list[tuple[str, str, Unit]] | str:
+    """从主题池抽 8 个不同兵种用于锦标赛。
+
+    Returns
+    -------
+    成功时返回 ``[(unit_id, display_name, Unit), ...]`` （已叠加时代改良）；
+    失败时返回错误消息字符串。
+    """
+    from .rival_themes import filter_theme_pool, get_theme_by_id
+
+    rng = rng or random.Random()
+
+    theme = get_theme_by_id(theme_id)
+    if theme is None:
+        return f"⚠️ 未知主题 ID: {theme_id}"
+
+    base_pool = get_bet_pool(repo, age)
+    pool = filter_theme_pool(base_pool, theme)
+
+    if len(pool) < 8:
+        return (
+            f"⚠️ 主题「{theme.title}」可用兵种不足 8 个"
+            f"（当前 {len(pool)} 个），无法举办锦标赛"
+        )
+
+    picked = rng.sample(pool, 8)
+
+    # 叠加时代改良
+    result: list[tuple[str, str, Unit]] = []
+    for u in picked:
+        upgraded = apply_upgrades(u, age)
+        result.append((u.id, u.name, upgraded))
+
+    logger.info(
+        "锦标赛抽签 [%s]：%s",
+        theme.title,
+        " / ".join(name for _, name, _ in result),
+    )
+
+    return result

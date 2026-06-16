@@ -41,6 +41,7 @@ class _PendingPick:
     budget: int | None
     age: int | None = None
     generic_techs: bool = False
+    tournament: bool = False           # 锦标赛模式
     resolved: bool = False
     picks_enabled: bool = False
     like_counts: dict[str, int] = dataclasses.field(default_factory=dict)
@@ -179,6 +180,78 @@ async def start_theme_pick(
     return None
 
 
+async def start_tournament_pick(
+    *,
+    group_id: int,
+    initiator_id: int,
+    budget: int | None = None,
+    age: int | None = None,
+) -> str | None:
+    """发起锦标赛选主题。流程与普通王中王一样（随机 3 主题 + 表情/数字选）。"""
+    async with _pick_lock:
+        if game_base.get_runner_by_group(group_id) is not None:
+            return "⚠️ 本群已有进行中的斗蛐蛐，先 @我 结束 再开锦标赛"
+        if has_pending(group_id):
+            return "⚠️ 本群已在选主题，请点选单消息上的表情或回复 1/2/3"
+
+        rng_options = pick_random_themes(count=3)
+        text = "🏆 王中王锦标赛 · 选主题\n\n" + format_pick_message(rng_options)
+
+        bot = get_bot()
+        resp = await bot.call_api(  # type: ignore[attr-defined]
+            "send_group_msg",
+            group_id=group_id,
+            message=text,
+        )
+        message_id = int(resp["message_id"])
+
+    emoji_to_index: dict[str, int] = {}
+    slots = PICK_SLOT_EMOJIS[: len(rng_options)]
+    for idx, slot in enumerate(slots):
+        emoji_to_index[slot.id] = idx
+
+    pending = _PendingPick(
+        group_id=group_id,
+        initiator_id=initiator_id,
+        message_id=message_id,
+        options=rng_options,
+        emoji_to_index=emoji_to_index,
+        budget=budget,
+        age=age,
+        tournament=True,
+        picks_enabled=False,
+    )
+    _pending[group_id] = pending
+
+    mounted = 0
+    for slot in slots:
+        try:
+            await bot.call_api(  # type: ignore[attr-defined]
+                "set_msg_emoji_like",
+                message_id=pending.message_id,
+                emoji_id=slot.id,
+                emoji_type=slot.emoji_type,
+            )
+            mounted += 1
+        except Exception as e:  # noqa: BLE001
+            logger.warning(
+                "[rival_pick] tournament set_msg_emoji_like failed gid=%s: %s",
+                group_id, e,
+            )
+    if mounted == 0:
+        logger.warning(
+            "[rival_pick] tournament no emoji slots mounted gid=%s — use reply 1/2/3",
+            group_id,
+        )
+
+    await asyncio.sleep(0.25)
+    async with _pick_lock:
+        p = _pending.get(group_id)
+        if p is pending:
+            p.picks_enabled = True
+    return None
+
+
 async def launch_rival_direct(
     *,
     group_id: int,
@@ -215,6 +288,7 @@ async def _consume_choice(group_id: int, index: int, picker_id: int) -> None:
         budget = p.budget
         age = p.age
         generic_techs = p.generic_techs
+        tournament = p.tournament
         _pending.pop(group_id, None)
 
     err = await _launch_with_theme(
@@ -224,6 +298,7 @@ async def _consume_choice(group_id: int, index: int, picker_id: int) -> None:
         budget=budget,
         age=age,
         generic_techs=generic_techs,
+        tournament=tournament,
     )
     if err:
         await session.broadcast(group_id, err)
@@ -237,15 +312,17 @@ async def _launch_with_theme(
     budget: int | None,
     age: int | None = None,
     generic_techs: bool = False,
+    tournament: bool = False,
 ) -> str | None:
     if game_base.get_runner_by_group(group_id) is not None:
         return "⚠️ 本群已有进行中的斗蛐蛐"
-    config: dict[str, Any] = {"mode": "rival", "rival_theme_id": theme.id}
+    mode = "rival_tournament" if tournament else "rival"
+    config: dict[str, Any] = {"mode": mode, "rival_theme_id": theme.id}
     if budget is not None:
         config["budget"] = budget
     if age is not None:
         config["age"] = age
-    if generic_techs:
+    if generic_techs and not tournament:
         config["generic_techs"] = True
     try:
         await game_base.create_and_start(

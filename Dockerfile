@@ -7,9 +7,9 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
 
 WORKDIR /app
 
-# 系统依赖
+# 系统依赖（含中文字体，供 Pillow 对阵图渲染使用）
 RUN apt-get update \
- && apt-get install -y --no-install-recommends curl ca-certificates \
+ && apt-get install -y --no-install-recommends curl ca-certificates fonts-wqy-microhei \
  && rm -rf /var/lib/apt/lists/*
 
 # 安装 uv（使用国内源加速）

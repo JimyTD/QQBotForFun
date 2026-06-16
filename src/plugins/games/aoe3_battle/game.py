@@ -33,6 +33,7 @@ from .lineup import (
     Lineup,
     MatchLineup,
     UnitSlot,
+    approx_lcm_budget,
     format_formation_panel,
     format_matchup_panel,
     format_side_panel,
@@ -42,8 +43,10 @@ from .lineup import (
     generate_custom_lineup,
     generate_duel_lineup,
     generate_rival_lineup,
+    generate_tournament_lineup,
 )
 from .simulator import ArmySlot, BattleResult, BattleSimulator, Side
+from .tournament import Tournament, TournamentStage
 
 logger = logging.getLogger("aoe3_battle.game")
 
@@ -266,7 +269,7 @@ class AoE3BattleGame(GameBase):
 
     id = "aoe3_battle"
     name = "帝国3斗蛐蛐"
-    description = "兵种对战模拟 · 押注 / 单挑 / 黑名单乱斗 / 自选 / 王中王"
+    description = "兵种对战模拟 · 押注 / 单挑 / 黑名单乱斗 / 自选 / 王中王 / 锦标赛"
     min_players = 0            # 无人押注也能打
     max_players = 50
     version = "1.0"
@@ -303,6 +306,12 @@ class AoE3BattleGame(GameBase):
             name="王中王",
             description="职能主题对决 · 表情选主题或指定主题",
             aliases=("王中王", "宿敌", "宿敌挑战"),
+        ),
+        GameMode(
+            id="rival_tournament",
+            name="王中王锦标赛",
+            description="8 兵种单败淘汰锦标赛 · 表情选主题",
+            aliases=("王中王锦标赛", "锦标赛", "tournament"),
         ),
     ]
 
@@ -345,6 +354,32 @@ class AoE3BattleGame(GameBase):
                 await session.broadcast(ctx.group_id, result)
                 raise ValueError(result)
             match = result
+        elif mode_id == "rival_tournament":
+            theme_id = (ctx.config or {}).get("rival_theme_id", "")
+            t_result = generate_tournament_lineup(
+                repo, theme_id, age=age, rng=rng
+            )
+            if isinstance(t_result, str):
+                await session.broadcast(ctx.group_id, t_result)
+                raise ValueError(t_result)
+            from .rival_themes import get_theme_by_id
+            theme = get_theme_by_id(theme_id)
+            theme_title = theme.title if theme else theme_id
+            tournament = Tournament.create(
+                t_result, theme_title, age=age, rng=rng,
+            )
+            # 锦标赛用自己的 state 结构，不走普通 match 流程
+            ctx.state.update(
+                mode=mode_id,
+                age=age,
+                phase="tournament_betting",
+                tournament=tournament.to_dict(),
+                tournament_bets={},  # {str(qq_id): int(unit_idx)}
+                budget=budget,
+            )
+            self._tournament = tournament
+            self._battle_task = None
+            return  # 提前返回，不走普通 match 的 state 序列化
         else:
             _defer = generic_techs_on and age is not None
             match = generate_bet_lineup(
@@ -421,8 +456,14 @@ class AoE3BattleGame(GameBase):
 
         from src.plugins.aoe3.repository import UnitRepo as _UnitRepo
 
-        match = self._match
         mode = ctx.state["mode"]
+
+        # ── 锦标赛模式：发送赛前对阵图 + 押注提示 ──
+        if mode == "rival_tournament":
+            await self._tournament_on_start(ctx)
+            return
+
+        match = self._match
 
         # ── 发红方（图片 + 详情）──
         red_text = format_side_panel(match.red, "red", mode, opponent=match.blue)
@@ -469,6 +510,10 @@ class AoE3BattleGame(GameBase):
         text = message.strip()
         phase = ctx.state.get("phase", "ended")
 
+        # ── 锦标赛阶段 ──
+        if phase.startswith("tournament_"):
+            return await self._handle_tournament_action(ctx, player_id, text, phase)
+
         if phase == "betting":
             return await self._handle_betting(ctx, player_id, text)
         return False
@@ -479,6 +524,17 @@ class AoE3BattleGame(GameBase):
             return (
                 "⚔️ 斗蛐蛐战斗进行中，请稍候…\n"
                 "💡 播报结束后 @我 结束 可开新局"
+            )
+        if phase == "tournament_betting":
+            return (
+                "🏆 锦标赛押注中\n"
+                "💡 发送序号 1-8 押注夺冠 / 发送「开战」开始\n"
+                "💡 @我 结束 可终止本局"
+            )
+        if phase.startswith("tournament_"):
+            return (
+                "🏆 锦标赛进行中\n"
+                "💡 发送「开战」进入下一轮 / @我 结束 可终止本局"
             )
         return (
             "⚔️ 斗蛐蛐押注中\n"
@@ -774,6 +830,374 @@ class AoE3BattleGame(GameBase):
             await self.award(
                 pid, PARTICIPATION_REWARD,
                 reason=f"aoe3_battle_participate:{ctx.session_id}",
+                currency="coin",
+            )
+        lines.append(f"全员参与奖：+{PARTICIPATION_REWARD} 金币")
+
+        return "\n".join(lines)
+
+    # ================================================================
+    # 锦标赛阶段
+    # ================================================================
+
+    def _get_tournament_icon_paths(self) -> list:
+        """获取锦标赛 8 个兵种的图标路径列表。"""
+        from pathlib import Path
+        repo = UnitRepo.get()
+        paths = []
+        for tu in self._tournament.units:
+            unit = repo.get_by_id(tu.unit_id)
+            if unit:
+                paths.append(repo.get_icon_path(unit))
+            else:
+                paths.append(None)
+        return paths
+
+    async def _tournament_send_bracket(
+        self, ctx: GameContext, hint: str = ""
+    ) -> None:
+        """发送当前阶段的对阵图。"""
+        import base64
+        from nonebot.adapters.onebot.v11 import Message, MessageSegment
+        from .bracket_renderer import render_bracket
+
+        icon_paths = self._get_tournament_icon_paths()
+        data = self._tournament.get_bracket_data(hint=hint, icon_paths=icon_paths)
+        png_bytes = render_bracket(data)
+
+        b64 = base64.b64encode(png_bytes).decode()
+        msg = Message()
+        msg.append(MessageSegment.image(f"base64://{b64}"))
+        await session.broadcast_rich(ctx.group_id, msg, "[锦标赛对阵图]")
+
+    async def _tournament_send_ranking(self, ctx: GameContext) -> None:
+        """发送最终排名图。"""
+        import base64
+        from nonebot.adapters.onebot.v11 import Message, MessageSegment
+        from .bracket_renderer import render_ranking
+
+        icon_paths = self._get_tournament_icon_paths()
+        data = self._tournament.get_ranking_data(icon_paths=icon_paths)
+        png_bytes = render_ranking(data)
+
+        b64 = base64.b64encode(png_bytes).decode()
+        msg = Message()
+        msg.append(MessageSegment.image(f"base64://{b64}"))
+        await session.broadcast_rich(ctx.group_id, msg, "[最终排名]")
+
+    async def _tournament_on_start(self, ctx: GameContext) -> None:
+        """锦标赛开局：发送赛前对阵图 + 参赛兵种列表 + 押注提示。"""
+        t = self._tournament
+
+        # 参赛兵种列表
+        lines = [f"🏆 王中王锦标赛 · {t.theme_title}", ""]
+        lines.append("📋 参赛兵种：")
+        for tu in t.units:
+            lines.append(f"  {tu.idx + 1}. {tu.display_name}")
+        lines.append("")
+        lines.append("💰 发送序号 1-8 押注夺冠（扣 5 金币入场券）")
+        lines.append("⚔️ 发送「开战」开始八强战")
+
+        await session.broadcast(ctx.group_id, "\n".join(lines))
+
+        # 发送赛前对阵图
+        await self._tournament_send_bracket(
+            ctx, hint="八强对阵已确定 · 发送「开战」开始八强战",
+        )
+
+        logger.info(
+            "[aoe3_battle] 锦标赛 %s 开始，主题=%s，兵种=%s",
+            ctx.session_id,
+            t.theme_title,
+            " / ".join(tu.display_name for tu in t.units),
+        )
+
+    async def _handle_tournament_action(
+        self, ctx: GameContext, player_id: int, text: str, phase: str
+    ) -> bool:
+        """处理锦标赛阶段的群消息。"""
+        if phase == "tournament_betting":
+            return await self._handle_tournament_betting(ctx, player_id, text)
+
+        if phase == "tournament_waiting":
+            if text == "开战":
+                await self._run_tournament_next_stage(ctx)
+                return True
+            return False
+
+        # 战斗进行中不拦截
+        return False
+
+    async def _handle_tournament_betting(
+        self, ctx: GameContext, player_id: int, text: str
+    ) -> bool:
+        """锦标赛押注：序号 1-8 押注夺冠 / 开战。"""
+        bets: dict[str, int] = ctx.state.get("tournament_bets", {})
+        pid_str = str(player_id)
+
+        # 押注序号
+        if text in ("1", "2", "3", "4", "5", "6", "7", "8"):
+            if pid_str in bets:
+                await session.broadcast(
+                    ctx.group_id,
+                    "⚠️ 你已经押过了（锁死第一笔）",
+                    at=player_id,
+                )
+                return True
+
+            ok = await self._charge_entry_fee(ctx, player_id)
+            if not ok:
+                return True
+
+            unit_idx = int(text) - 1
+            bets[pid_str] = unit_idx
+            ctx.state["tournament_bets"] = bets
+
+            tu = self._tournament.get_unit(unit_idx)
+            await session.broadcast(
+                ctx.group_id,
+                f"✅ 押 {text}号 {tu.display_name} 夺冠，入场券 {ENTRY_FEE} 金币已扣除",
+                at=player_id,
+            )
+            logger.info(
+                "[aoe3_battle] %s 玩家 %d 锦标赛押注 %d号 %s",
+                ctx.session_id, player_id, unit_idx + 1, tu.display_name,
+            )
+            return True
+
+        if text == "开战":
+            bet_count = len(bets)
+            if bet_count > 0:
+                await session.broadcast(
+                    ctx.group_id,
+                    f"🎲 押注截止！共 {bet_count} 人参与",
+                )
+            else:
+                await session.broadcast(
+                    ctx.group_id,
+                    "🎲 无人押注，直接开战！",
+                )
+            # 推进到八强战
+            self._tournament.try_advance()  # DRAW → QF
+            ctx.state["phase"] = "tournament_fighting"
+            self._battle_task = asyncio.create_task(
+                self._run_tournament_round(ctx)
+            )
+            return True
+
+        return False
+
+    async def _run_tournament_round(self, ctx: GameContext) -> None:
+        """执行当前轮次的所有比赛 → 播报 → 出图 → 等待「开战」或结束。"""
+        try:
+            t = self._tournament
+            pending = t.get_current_round_matches()
+            if not pending:
+                # 尝试推进
+                t.try_advance()
+                pending = t.get_current_round_matches()
+
+            budget = ctx.state.get("budget", BUDGET_DEFAULT)
+
+            for match_obj in pending:
+                # 一场比赛：双方各 1 兵种，LCM 平衡数量
+                tu_a = t.get_unit(match_obj.unit_a_idx)
+                tu_b = t.get_unit(match_obj.unit_b_idx)
+
+                # LCM 平衡
+                cost_a = sum(tu_a.unit.cost.values())
+                cost_b = sum(tu_b.unit.cost.values())
+                if cost_a <= 0:
+                    cost_a = 1
+                if cost_b <= 0:
+                    cost_b = 1
+                lcm_budget = approx_lcm_budget(cost_a, cost_b, budget)
+                count_a = max(1, lcm_budget // cost_a)
+                count_b = max(1, lcm_budget // cost_b)
+
+                # 广播比赛标题
+                await session.broadcast(
+                    ctx.group_id,
+                    f"━━━ {match_obj.label} ━━━\n"
+                    f"🔴 {tu_a.display_name} ×{count_a}  vs  "
+                    f"🔵 {tu_b.display_name} ×{count_b}",
+                )
+                await asyncio.sleep(1.0)
+
+                # 跑模拟
+                sim = BattleSimulator(
+                    red_army=[(tu_a.unit, count_a)],
+                    blue_army=[(tu_b.unit, count_b)],
+                )
+                result = sim.run()
+
+                # 确定胜者
+                if result.winner == Side.RED:
+                    winner_idx = match_obj.unit_a_idx
+                elif result.winner == Side.BLUE:
+                    winner_idx = match_obj.unit_b_idx
+                else:
+                    # 平局时随机决定（锦标赛不允许平局）
+                    winner_idx = random.choice(
+                        [match_obj.unit_a_idx, match_obj.unit_b_idx]
+                    )
+
+                t.record_result(match_obj.match_id, winner_idx)
+
+                # 中间推进（败者组需要在 LR1/LR2 结束后填充 7TH/5TH）
+                t.try_advance()
+
+                # 播报简化战报
+                winner_tu = t.get_unit(winner_idx)
+                loser_idx = match_obj.loser_idx
+                assert loser_idx is not None
+                loser_tu = t.get_unit(loser_idx)
+                alive_count = len(result.red_alive) if result.winner == Side.RED else len(result.blue_alive)
+                report_lines = [
+                    f"🏆 {winner_tu.display_name} 胜！（剩余 {alive_count} 单位）",
+                    f"⏱ 耗时 {result.duration:.1f}s",
+                ]
+                await session.broadcast(ctx.group_id, "\n".join(report_lines))
+                await asyncio.sleep(1.5)
+
+            # 尝试推进阶段
+            t.try_advance()
+            ctx.state["tournament"] = t.to_dict()
+
+            # 判断是否需要出图 / 结束
+            if t.stage == TournamentStage.FINISHED:
+                # 决赛结束 → 出最终对阵图 + 排名图 + 结算
+                await self._tournament_send_bracket(ctx)
+                await asyncio.sleep(1.0)
+                await self._tournament_send_ranking(ctx)
+                await asyncio.sleep(0.5)
+
+                # 押注结算
+                settlement = await self._settle_tournament_bets(ctx)
+                if settlement:
+                    await session.broadcast(ctx.group_id, settlement)
+
+                ctx.state["phase"] = "ended"
+                from core import game_base as gb
+                runner = gb.get_runner(ctx.session_id)
+                if runner is not None:
+                    await runner.end(EndReason.COMPLETED)
+
+            elif t.is_bracket_stage():
+                # QF_DONE 或 SF_DONE → 出对阵图，等待「开战」
+                stage_hints = {
+                    TournamentStage.QF_DONE: "八强战结束 · 发送「开战」进入排位赛+半决赛",
+                    TournamentStage.SF_DONE: "半决赛结束 · 发送「开战」进入季军战+决赛",
+                }
+                hint = stage_hints.get(t.stage, "")
+                await self._tournament_send_bracket(ctx, hint=hint)
+                ctx.state["phase"] = "tournament_waiting"
+
+            else:
+                # 败者组等不出图的中间阶段：直接等待「开战」
+                stage_prompts = {
+                    TournamentStage.LOSERS_DONE: "排位赛结束，发送「开战」进入半决赛",
+                }
+                prompt = stage_prompts.get(t.stage, "发送「开战」继续")
+                await session.broadcast(ctx.group_id, f"📋 {prompt}")
+                ctx.state["phase"] = "tournament_waiting"
+
+        except asyncio.CancelledError:
+            logger.info("[aoe3_battle] %s 锦标赛任务被取消", ctx.session_id)
+        except Exception as e:
+            logger.exception("[aoe3_battle] %s 锦标赛执行出错: %s", ctx.session_id, e)
+            try:
+                await session.broadcast(ctx.group_id, f"⚠️ 锦标赛执行出错：{e}")
+            except Exception:
+                pass
+            ctx.state["phase"] = "ended"
+            from core import game_base as gb
+            runner = gb.get_runner(ctx.session_id)
+            if runner is not None:
+                await runner.end(EndReason.ERROR)
+
+    async def _run_tournament_next_stage(self, ctx: GameContext) -> None:
+        """「开战」后推进到下一轮并执行。"""
+        t = self._tournament
+        t.try_advance()
+        ctx.state["phase"] = "tournament_fighting"
+        self._battle_task = asyncio.create_task(
+            self._run_tournament_round(ctx)
+        )
+
+    # ================================================================
+    # 锦标赛押注结算
+    # ================================================================
+
+    async def _settle_tournament_bets(self, ctx: GameContext) -> str:
+        """锦标赛押注结算。押中夺冠的兵种序号即为赢家。"""
+        bets: dict[str, int] = ctx.state.get("tournament_bets", {})
+        if not bets:
+            return ""
+
+        t = self._tournament
+        if not t.final_ranks:
+            return ""
+
+        champion_idx = t.final_ranks[0]
+        champion_name = t.get_unit(champion_idx).display_name
+
+        lines = ["━━━ 锦标赛押注结算 ━━━"]
+        lines.append(f"🏆 冠军：{champion_name}")
+
+        winners = [int(k) for k, v in bets.items() if v == champion_idx]
+        losers = [int(k) for k, v in bets.items() if v != champion_idx]
+
+        loser_pool = len(losers) * ENTRY_FEE
+
+        if winners and losers:
+            per_winner = loser_pool // len(winners)
+            remainder = loser_pool % len(winners)
+
+            for pid in winners:
+                reward = ENTRY_FEE + per_winner
+                await self.award(
+                    pid, reward,
+                    reason=f"aoe3_tournament_win:{ctx.session_id}",
+                    currency="coin",
+                )
+            if remainder > 0:
+                await self.award(
+                    winners[0], remainder,
+                    reason=f"aoe3_tournament_win_r:{ctx.session_id}",
+                    currency="coin",
+                )
+
+            if len(winners) <= 5:
+                winner_mentions = " ".join(f"@{pid}" for pid in winners)
+            else:
+                winner_mentions = (
+                    " ".join(f"@{pid}" for pid in winners[:5])
+                    + f" 等 {len(winners)} 人"
+                )
+
+            lines.append(f"🎉 押对：{winner_mentions}（{len(winners)} 人）")
+            lines.append(f"每人 +{per_winner + ENTRY_FEE} 金币（含退还入场券）")
+            lines.append(f"押错：{len(losers)} 人，每人 -{ENTRY_FEE} 金币")
+
+        elif winners and not losers:
+            for pid in winners:
+                await self.award(
+                    pid, ENTRY_FEE,
+                    reason=f"aoe3_tournament_refund:{ctx.session_id}",
+                    currency="coin",
+                )
+            lines.append("全员押对，退还入场券")
+
+        elif losers and not winners:
+            lines.append("无人押中冠军，无赢家分池")
+
+        # 参与奖
+        for pid_str in bets:
+            pid = int(pid_str)
+            await self.award(
+                pid, PARTICIPATION_REWARD,
+                reason=f"aoe3_tournament_part:{ctx.session_id}",
                 currency="coin",
             )
         lines.append(f"全员参与奖：+{PARTICIPATION_REWARD} 金币")
