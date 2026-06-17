@@ -34,7 +34,9 @@ from core.group_config import get_group_config
 from .lineup import (
     Lineup,
     MatchLineup,
+    POP_HOUSE_COST,
     UnitSlot,
+    _unit_cost,
     approx_lcm_budget,
     format_formation_panel,
     format_matchup_panel,
@@ -1006,9 +1008,9 @@ class AoE3BattleGame(GameBase):
                 tu_a = t.get_unit(match_obj.unit_a_idx)
                 tu_b = t.get_unit(match_obj.unit_b_idx)
 
-                # LCM 平衡
-                cost_a = sum(tu_a.unit.cost.values())
-                cost_b = sum(tu_b.unit.cost.values())
+                # LCM 平衡（含人口折算）
+                cost_a = _unit_cost(tu_a.unit)
+                cost_b = _unit_cost(tu_b.unit)
                 if cost_a <= 0:
                     cost_a = 1
                 if cost_b <= 0:

@@ -24,6 +24,7 @@ logger = logging.getLogger("aoe3_battle.lineup")
 # 常量
 # =====================================================================
 BUDGET = 10000               # 默认资源预算（与 game.py BUDGET_DEFAULT 一致）
+POP_HOUSE_COST = 5            # 每人口折算资源（100木/10人口 → 折半均摊）
 
 # 时代名 → 游戏时代号（与 units.json age 字段口径一致）
 AGE_NAME_TO_NUM = {
@@ -207,8 +208,8 @@ class UnitSlot:
 
     @property
     def unit_cost(self) -> int:
-        """单个单位的资源消耗。"""
-        return sum(self.unit.cost.values())
+        """单个单位的资源消耗（含人口折算的房子成本）。"""
+        return _unit_cost(self.unit)
 
     @property
     def total_cost(self) -> int:
@@ -461,8 +462,8 @@ def get_duel_pool(repo: UnitRepo, age: int | None = None) -> list[Unit]:
 # =====================================================================
 
 def _unit_cost(unit: Unit) -> int:
-    """获取单位总资源消耗。"""
-    return sum(unit.cost.values())
+    """获取单位总资源消耗（含人口折算的房子成本）。"""
+    return sum(unit.cost.values()) + POP_HOUSE_COST * unit.pop
 
 
 def _soft_diminish(value: float, baseline: float) -> float:
@@ -1072,7 +1073,12 @@ def format_side_panel(
                 f"⭐总战力 {lineup.total_power:,.0f}（单兵 {power_score(u):,.0f}）"
             )
         else:
-            lines.append(f"💰总资源 {lineup.total_cost}")
+            pop_part = lineup.total_pop * POP_HOUSE_COST
+            resource_cost = lineup.total_cost - pop_part
+            if pop_part:
+                lines.append(f"💰总资源 {resource_cost}（人口 +{pop_part}）")
+            else:
+                lines.append(f"💰总资源 {lineup.total_cost}")
         lines.append(f"❤️{u.hp} 🦶{u.speed}")
         lines.append(f"⚔️ {_atk_summary(u)}")
         _append_extras(lines, u)
@@ -1086,9 +1092,16 @@ def format_side_panel(
                 f"{emoji} {label}（总战力 {lineup.total_power:,.0f}，总人数 {lineup.total_count}）"
             )
         else:
-            lines.append(
-                f"{emoji} {label}（总资源 {lineup.total_cost}，人口 {lineup.total_pop}）"
-            )
+            pop_part = lineup.total_pop * POP_HOUSE_COST
+            resource_cost = lineup.total_cost - pop_part
+            if pop_part:
+                lines.append(
+                    f"{emoji} {label}（总资源 {resource_cost}，含人口 +{pop_part}）"
+                )
+            else:
+                lines.append(
+                    f"{emoji} {label}（总资源 {lineup.total_cost}，人口 {lineup.total_pop}）"
+                )
         for slot in lineup.slots:
             u = slot.unit
             lines.append(f"  {'─' * 20}")

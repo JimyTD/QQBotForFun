@@ -30,6 +30,7 @@ MELEE_RANGE = 1.5            # 近战射程（默认值，有 range_melee 数据
 CLOSE_RANGE_PENALTY = 0.5    # 贴脸惩罚伤害系数
 DEFAULT_ROF_RANGED = 3.0     # 远程 ROF 缺失默认值
 DEFAULT_ROF_MELEE = 1.5      # 近战 ROF 缺失默认值
+POP_HOUSE_COST = 5           # 每人口折算资源（与 lineup.py 一致）
 
 # ---- 近战 CAP 与渗透 ----
 MELEE_ATTACK_CAP = 4         # 同一目标最多被几个近战兵同时攻击
@@ -1199,10 +1200,12 @@ class BattleSimulator:
             logger.info("超时判胜：单挑模式 → 平局")
             return None
         red_value = sum(
-            sum(s.unit.cost.values()) for s in self._alive(Side.RED)
+            sum(s.unit.cost.values()) + POP_HOUSE_COST * s.unit.pop
+            for s in self._alive(Side.RED)
         )
         blue_value = sum(
-            sum(s.unit.cost.values()) for s in self._alive(Side.BLUE)
+            sum(s.unit.cost.values()) + POP_HOUSE_COST * s.unit.pop
+            for s in self._alive(Side.BLUE)
         )
         logger.info(
             "超时判胜：红方剩余价值=%d 蓝方剩余价值=%d",
