@@ -1074,9 +1074,8 @@ def format_side_panel(
             )
         else:
             pop_part = lineup.total_pop * POP_HOUSE_COST
-            resource_cost = lineup.total_cost - pop_part
             if pop_part:
-                lines.append(f"💰总资源 {resource_cost}（人口 +{pop_part}）")
+                lines.append(f"💰总资源 {lineup.total_cost}（含人口 +{pop_part}）")
             else:
                 lines.append(f"💰总资源 {lineup.total_cost}")
         lines.append(f"❤️{u.hp} 🦶{u.speed}")
@@ -1093,10 +1092,9 @@ def format_side_panel(
             )
         else:
             pop_part = lineup.total_pop * POP_HOUSE_COST
-            resource_cost = lineup.total_cost - pop_part
             if pop_part:
                 lines.append(
-                    f"{emoji} {label}（总资源 {resource_cost}，含人口 +{pop_part}）"
+                    f"{emoji} {label}（总资源 {lineup.total_cost}，含人口 +{pop_part}）"
                 )
             else:
                 lines.append(
