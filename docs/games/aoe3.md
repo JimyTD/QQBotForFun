@@ -227,12 +227,38 @@ class UnitRepo:
 
 - icon 图片存 `resources/aoe3/icons/{unit.id}.png`
 - 统一尺寸 128×128px，单个 ≤50KB（经 `compress_aoe3_icons.py` 压缩）
-- 来源：主要从游戏 `ArtUnitsTextures*.bar` / `UIResources1.bar` 直接提取 RTS3 DDT 格式图标（`aoe3_icon_extractor.py`）；少量 DE DLC 单位因自研纹理格式无法解码，改从 AoE3 Wiki API 下载或用同类单位图标替代
-- 个别 BAR 占位/错图：`data/aoe3/icon_overrides.json` 手动 `force_copy_from`，再跑 `aoe3_icon_extractor.py --backfill-only`（或直拷 PNG）同步 `resources/aoe3/icons/`
+- 来源：从游戏 `ArtUnitsTextures*.bar` / `UIResources1.bar` 直接提取 RTS3 DDT 格式图标（`aoe3_icon_extractor.py`）
+- **所有游戏单位图标 100% 真实提取**（2026-06-19 修复 64-bit offset bug 后，2005 个 bar 图标全覆盖）
+- 统一尺寸 128×128px，单个 ≤50KB（经 `compress_aoe3_icons.py` 压缩）
 
 ---
 
-## 7. 已解决项（归档）
+## 7. 踩坑记录
+
+### 7.1 同名兵种搜索
+**已归档。**
+
+### 7.2 BAR v6 64-bit offset 截断导致大量图标错误
+
+**现象**：重型加农炮（`xppropheavycannon`）与加农炮（`cannon`）共用同一 bar entry，却产出不同图标；另有大量单位图标为游戏截图/绘画/错误单位头像。
+
+**根因**：`aoe3_bar_extractor.py :: read_bar_entries()` 中 per-file entry 的 offset 字段被错误解析为 `uint32(4B) + skip(4B)`。BAR v6（AoE3 DE）格式中该字段实际为 `uint64(8B)`。Resource Manager 源码（`BarEntry.cs`）证实 `version>3` 时使用 `ReadInt64()`。
+
+**修复**（commit 此后）：将 `struct.unpack('<I', f.read(4))[0]; f.read(4)` 改为 `struct.unpack('<Q', f.read(8))[0]`。
+
+**影响范围**：
+
+| 旧来源 | 数量 | 说明 |
+|--------|------|------|
+| bar（实际错误） | 192 | 提取成功但读到错误数据，外表看不出来 |
+| bar_alt | 33 | 解码失败→降级用 portrait 替代 |
+| variant_copy | 98 | BAR 未匹配→从相似单位拷贝 |
+| wiki_api | 1 | 从 Fandom Wiki 下载 |
+| missing→bar | 13 | 之前完全没解出 |
+
+修复后重提取，**337 个图标得到改善，0 个丢失**。现在 2005 个 BAR 图标全覆盖，斗蛐蛐兵种头像 100% 真实。
+
+### 7.3 以往归档
 
 ### 7.1 同名兵种搜索
 

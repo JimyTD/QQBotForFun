@@ -40,11 +40,11 @@ def read_bar_entries(bar_path: str) -> list[dict]:
 
     BAR v6 header (292 bytes):
       0x000: 'ESPN' (4) + version=6 (4) + 0x11223344 (4) + null padding (256)
-      0x10C: padding (8) + unknown (4) + num_files (4) + padding (4) + dir_offset (4) + padding (4)
+      0x10C: padding (8) + unknown (4) + num_files (4) + padding (4) + dir_offset (8) + padding (4)
 
     Directory (at dir_offset):
       dir_name_len (4) + dir_name (unicode) + file_count (4)
-      Per file: offset(4) + unk(4) + size_raw(4) + size_compressed(4) + size_decompressed(4) + name_len(4) + name(unicode) + flags(4)
+      Per file: offset(8) + size_raw(4) + size_compressed(4) + size_decompressed(4) + name_len(4) + name(unicode) + flags(4)
     """
     entries = []
     with open(bar_path, "rb") as f:
@@ -64,8 +64,7 @@ def read_bar_entries(bar_path: str) -> list[dict]:
         file_count = struct.unpack('<I', f.read(4))[0]
 
         for _ in range(file_count):
-            offset = struct.unpack('<I', f.read(4))[0]
-            f.read(4)  # unknown
+            offset = struct.unpack('<Q', f.read(8))[0]  # uint64 for large files
             size_raw = struct.unpack('<I', f.read(4))[0]
             size_compressed = struct.unpack('<I', f.read(4))[0]
             f.read(4)  # size_decompressed (same as compressed)
