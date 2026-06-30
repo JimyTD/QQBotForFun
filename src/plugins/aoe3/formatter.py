@@ -301,3 +301,32 @@ def render_civ_units(units: list[Unit], civ: str) -> str:
         lines.append(f"  {name:<15} │ {age_zh} │ HP {u.hp} ATK {atk:g}")
 
     return "\n".join(lines)
+
+
+def render_counter_list(
+    results: list[Unit] | list[tuple[Unit, str, float]],
+    target: str,
+    *,
+    limit: int = 10,
+) -> str:
+    """渲染克制查询结果。兼容两种返回类型。"""
+    if not results:
+        return f"未找到克制「{target}」的兵种。"
+
+    atk_type_zh = {"ranged": "远程", "melee": "近战", "siege": "攻城"}
+    lines = [f"⚔️ 克制「{target}」的兵种", "━" * 30]
+
+    for item in results[:limit]:
+        if isinstance(item, Unit):
+            name = _unit_display_name(item)
+            lines.append(f"  {name}")
+        else:
+            unit, atk_type, value = item
+            name = _unit_display_name(unit)
+            atk_zh = atk_type_zh.get(atk_type, atk_type)
+            lines.append(f"  {name:<15} │ {atk_zh} x{value:g}")
+
+    if len(results) > limit:
+        lines.append(f"  … 还有 {len(results) - limit} 个")
+
+    return "\n".join(lines)

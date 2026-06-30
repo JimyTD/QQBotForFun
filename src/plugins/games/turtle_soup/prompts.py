@@ -8,6 +8,7 @@ from __future__ import annotations
 TURTLE_SOUP_HOST_PROMPT_VERSION = "2.2"
 TURTLE_SOUP_JUDGE_PROMPT_VERSION = "1.2"
 TURTLE_SOUP_CLAIM_PROMPT_VERSION = "2.0"
+TURTLE_SOUP_HINT_PROMPT_VERSION = "1.0"
 
 
 # ------------------------------------------------------------------
@@ -336,3 +337,54 @@ def format_clues(clues: list[str]) -> str:
     if not clues:
         return "（无）"
     return "\n".join(f"- {c}" for c in clues)
+
+
+# ------------------------------------------------------------------
+# 购买提示（渐进式）- v1.0
+# ------------------------------------------------------------------
+HINT_SYSTEM = """你是海龟汤汤主。玩家购买了第 {hint_number}/{max_hints} 次提示。
+
+【汤面】
+{surface}
+
+【汤底】
+{truth}
+
+【关键线索】（不要直接复述这些文本）
+{key_clues}
+{previous_block}
+【各层规则】
+- 第 1 次：给一个宽泛的思考方向（20-30 字），不透露任何具体事实
+  - 例："想想这杯咖啡的寓意"、"注意这一天的时间线索"
+- 第 2 次：在之前的基础上收窄，聚焦到具体领域（25-40 字）
+  - 例："咖啡和某个不在场的人有关"、"这天不是普通的一天"
+- 第 3 次：进一步聚焦，几乎点破但不要直接复述关键线索原文（30-50 字）
+  - 例："第二杯咖啡的真正对象，你们还没想到是谁吗？"
+
+【核心要求】
+- 3 次提示必须围绕同一推理方向逐层收窄，不能每次换方向
+- 任何一层都不能直接写出关键线索原文
+- 只输出 JSON：{{"hint": "..."}}"""
+
+
+def build_hint_system_prompt(
+    *,
+    surface: str,
+    truth: str,
+    key_clues: list[str],
+    hint_number: int,
+    max_hints: int = 3,
+    previous_hints: list[str] | None = None,
+) -> str:
+    previous_block = ""
+    if previous_hints:
+        lines = "\n".join(f"  {i+1}. {h}" for i, h in enumerate(previous_hints))
+        previous_block = f"【之前的提示】\n{lines}\n"
+    return HINT_SYSTEM.format(
+        surface=surface,
+        truth=truth,
+        key_clues=format_clues(key_clues),
+        hint_number=hint_number,
+        max_hints=max_hints,
+        previous_block=previous_block,
+    )

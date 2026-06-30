@@ -41,6 +41,8 @@ async def _(matcher: Matcher, event: GroupMessageEvent) -> None:
     puzzle = ctx.state.get("puzzle", {})
     qcount = int(ctx.state.get("question_count", 0))
     max_q = int(ctx.state.get("max_questions", 50))
+    hints_used = len(ctx.state.get("hints_purchased", []))
+    max_hints = get_config().max_hints_per_game
     await matcher.finish(
         render.text_card(
             "本局状态",
@@ -48,6 +50,7 @@ async def _(matcher: Matcher, event: GroupMessageEvent) -> None:
                 f"标题：《{puzzle.get('title', '未知')}》",
                 f"局号：{ctx.session_id}",
                 f"提问：{qcount} / {max_q}",
+                f"提示：{hints_used} / {max_hints}",
             ],
             emoji="📊",
         )
@@ -91,25 +94,46 @@ async def _(matcher: Matcher, event: GroupMessageEvent) -> None:
         return
 
     ctx = runner.ctx
+    puzzle = ctx.state.get("puzzle", {})
+
+    # 收集已发现的关键事实
+    facts: list[str] = []
+
+    # 来源 1：购买的渐进式提示（从 ctx.state 读取）
+    hints_purchased: list[str] = ctx.state.get("hints_purchased", [])
+    for i, h in enumerate(hints_purchased, 1):
+        facts.append(f"{h}  [提示 #{i}]")
+
+    # 来源 2：自然命中的 key（从 DB 读取，排除购买的提示）
     async with db_session() as sess:
         rows = (
             await sess.execute(
                 select(SoupQuestion)
                 .where(SoupQuestion.session_id == ctx.session_id)
+                .where(SoupQuestion.verdict == "key")
                 .order_by(SoupQuestion.asked_at)
             )
         ).scalars().all()
-    key_lines = [
-        f"💡 {r.question} → {r.hint or '（提示已过）'}"
-        for r in rows
-        if r.verdict == "key"
-    ]
-    if not key_lines:
-        await matcher.finish("📜 暂无关键线索被发掘")
-    else:
-        await matcher.finish(
-            render.list_card("关键线索回顾", key_lines, emoji="📜")
-        )
+
+    for r in rows:
+        # 跳过购买提示的记录
+        if r.question.startswith("[提示 #"):
+            continue
+        # 自然命中的 key：显示 LLM 判官的引导 hint
+        label = f"{r.hint}  [提问发现]" if r.hint else "（关键线索命中）"
+        facts.append(label)
+
+    if not facts:
+        await matcher.finish("📋 暂无已确认的关键事实")
+
+    total_clues = len(puzzle.get("key_clues", []))
+    header = f"📖 已发现 {len(facts)} 个关键事实"
+    if total_clues:
+        header += f"（共 {total_clues} 条关键线索）"
+
+    await matcher.finish(
+        render.list_card(header, facts, emoji="📋")
+    )
 
 
 # -------------------- /提示 --------------------
@@ -132,15 +156,16 @@ async def _(matcher: Matcher, event: GroupMessageEvent) -> None:
     from .game import TurtleSoupGame
 
     game_instance = TurtleSoupGame()
-    clue_text = await game_instance.handle_hint(ctx, player_id)
-    if clue_text:
+    hint_text = await game_instance.handle_hint(ctx, player_id)
+    if hint_text:
         hints_used = len(ctx.state.get("hints_purchased", []))
         max_hints = cfg.max_hints_per_game
+        tier_label = f"第 {hints_used} 次"
         await matcher.finish(
             render.text_card(
-                "购买提示",
+                f"购买提示 · {tier_label}",
                 [
-                    f"💡 关键线索：{clue_text}",
+                    f"💡 {hint_text}",
                     "",
                     f"💰 花费 {cfg.hint_cost_coin} 金币",
                 ],

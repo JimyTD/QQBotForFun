@@ -15,6 +15,7 @@ from src.plugins.games.turtle_soup.prompts import (
     CLAIM_USER,
     JUDGE_SYSTEM,
     JUDGE_USER,
+    build_hint_system_prompt,
     format_clues,
 )
 from src.plugins.games.turtle_soup.puzzle_service import (
@@ -91,8 +92,8 @@ class TurtleSoupCLIAdapter(GameCLIAdapter):
         self.debug = debug
         self.puzzle: PuzzleData | None = None
         self.question_count = 0
-        self.key_clues_shown: list[tuple[str, str]] = []
-        self.hints_purchased: list[int] = []  # 已购买提示对应的线索索引
+        self.key_clues_shown: list[tuple[str, str]] = []  # (问题文本, 判官hint) 自然命中
+        self.hints_purchased: list[str] = []  # 已购买的渐进式提示文本
         self.max_q = 50
         # CLI 本地累积的奖励（不真实调 economy，避免 qq_id=0 幽灵账户污染 DB）
         self.cli_score = 0
@@ -163,7 +164,7 @@ class TurtleSoupCLIAdapter(GameCLIAdapter):
         return str(data.get("verdict", "wrong")), str(data.get("feedback", "") or "")
 
     async def _handle_hint(self) -> None:
-        """CLI 端购买提示逻辑：直接揭示一条未发现的关键线索。"""
+        """CLI 端渐进式提示：3 次由浅入深，LLM 生成。"""
         assert self.puzzle is not None
         cfg = get_config()
 
@@ -175,30 +176,47 @@ class TurtleSoupCLIAdapter(GameCLIAdapter):
             )
             return
 
-        # 检查是否还有未揭示的线索
-        all_clues = self.puzzle.key_clues
-        undiscovered_indices = [
-            i for i in range(len(all_clues)) if i not in self.hints_purchased
-        ]
-        if not undiscovered_indices:
-            print(f"{C.DIM}💡 所有关键线索都已揭示，靠你自己推理汤底啦！{C.R}")
-            return
-
-        # 直接揭示第一条未发现的线索
-        target_idx = undiscovered_indices[0]
-        clue_text = all_clues[target_idx]
-        self.hints_purchased.append(target_idx)
-
-        # 归入回顾列表
-        self.key_clues_shown.append(("[购买提示]", clue_text))
-
         # 模拟扣币（CLI 本地）
         self.cli_coin -= cfg.hint_cost_coin
+
+        hint_number = len(self.hints_purchased) + 1
+        try:
+            resp = await llm.chat(
+                messages=[
+                    llm.LLMMessage(
+                        role="system",
+                        content=build_hint_system_prompt(
+                            surface=self.puzzle.surface,
+                            truth=self.puzzle.truth,
+                            key_clues=self.puzzle.key_clues,
+                            hint_number=hint_number,
+                            max_hints=cfg.max_hints_per_game,
+                            previous_hints=self.hints_purchased if self.hints_purchased else None,
+                        ),
+                    ),
+                    llm.LLMMessage(role="user", content=f"请生成第 {hint_number} 次的提示。"),
+                ],
+                scene="turtle_soup_judge",
+                json_mode=True,
+            )
+            data = resp.json()
+            hint_text = str(data.get("hint", "")).strip()
+            if not hint_text:
+                raise ValueError("LLM returned empty hint")
+        except (LLMError, LLMJSONParseError, ValueError) as e:
+            print(f"{C.RED}⚠️ 汤主走神了：{e}{C.R}")
+            return
+
+        self.hints_purchased.append(hint_text)
+        # 归入回顾列表
+        self.key_clues_shown.append((f"[提示 #{hint_number}]", hint_text))
+
         hints_used = len(self.hints_purchased)
         print(
-            f"\n{C.B}🔮 购买提示（{hints_used}/{cfg.max_hints_per_game}）{C.R}"
+            f"\n{C.B}🔮 购买提示 · 第 {hint_number} 次 "
+            f"（{hints_used}/{cfg.max_hints_per_game}）{C.R}"
         )
-        print(f"  {C.MAG}💡 关键线索：{clue_text}{C.R}")
+        print(f"  {C.MAG}💡 {hint_text}{C.R}")
         print(
             f"  {C.DIM}💰 花费 {cfg.hint_cost_coin} 金币{C.R}"
         )
@@ -226,7 +244,12 @@ class TurtleSoupCLIAdapter(GameCLIAdapter):
                 print(HELP_TEXT)
                 continue
             if kind == "status":
-                print(f"{C.DIM}📊 已提问 {self.question_count}/{self.max_q} 次{C.R}")
+                hints_used = len(self.hints_purchased)
+                max_hints = get_config().max_hints_per_game
+                print(
+                    f"{C.DIM}📊 已提问 {self.question_count}/{self.max_q} 次  "
+                    f"提示 {hints_used}/{max_hints}{C.R}"
+                )
                 continue
             if kind == "surface":
                 box(
@@ -236,12 +259,23 @@ class TurtleSoupCLIAdapter(GameCLIAdapter):
                 )
                 continue
             if kind == "recap":
-                if not self.key_clues_shown:
-                    print(f"{C.DIM}📜 暂无关键线索{C.R}")
+                # 收集所有已发现的关键事实
+                facts: list[str] = []
+                for label, text in self.key_clues_shown:
+                    # label 是 "[提示 #N]" 或 原始问题文本
+                    if label.startswith("[提示 #"):
+                        facts.append(f"{text}  {C.DIM}{label}{C.R}")
+                    else:
+                        facts.append(f"{text}  {C.DIM}[提问发现]{C.R}")
+
+                if not facts:
+                    print(f"{C.DIM}📋 暂无已确认的关键事实{C.R}")
                 else:
-                    print(f"\n{C.B}📜 关键线索回顾{C.R}")
-                    for q, h in self.key_clues_shown:
-                        print(f"  💡 {q} → {h}")
+                    total = len(self.puzzle.key_clues)
+                    print(f"\n{C.B}📋 已发现 {len(facts)} 个关键事实"
+                          f"（共 {total} 条关键线索）{C.R}")
+                    for f in facts:
+                        print(f"  • {f}")
                 continue
             if kind == "hint":
                 await self._handle_hint()

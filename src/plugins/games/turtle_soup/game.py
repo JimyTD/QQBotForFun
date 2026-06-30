@@ -20,6 +20,7 @@ from .prompts import (
     CLAIM_SYSTEM,
     CLAIM_USER,
     JUDGE_USER,
+    build_hint_system_prompt,
     build_judge_system_prompt,
     format_clues,
 )
@@ -445,13 +446,12 @@ class TurtleSoupGame(GameBase):
                 + "\n   本次宣告不消耗提问额度，继续推理吧",
             )
 
-    # ---------- 购买提示 ----------
+    # ---------- 购买提示（渐进式，由浅入深）----------
     async def handle_hint(self, ctx: GameContext, player_id: int) -> str | None:
-        """花金币直接揭示一条未发现的关键线索。
+        """渐进式提示：3 次由浅入深，LLM 生成，不再直接给 key 原文。
 
-        返回被揭示的线索文本（成功时），或 None（已由内部发送错误消息）。
-        揭示后自动归入"已发掘线索"，/回顾 可查看。
-        供 commands.py 的 /提示 指令调用。
+        第 1 次→宽泛方向，第 2 次→聚焦收窄，第 3 次→接近点破。
+        3 次围绕同一推理方向逐层递进。
         """
         cfg = get_config()
         puzzle = ctx.state.get("puzzle")
@@ -459,24 +459,11 @@ class TurtleSoupGame(GameBase):
             return None
 
         # 防超限
-        hints_purchased: list[int] = ctx.state.setdefault("hints_purchased", [])
+        hints_purchased: list[str] = ctx.state.setdefault("hints_purchased", [])
         if len(hints_purchased) >= cfg.max_hints_per_game:
             await session.broadcast(
                 ctx.group_id,
                 f"⚠️ 本局已购买 {cfg.max_hints_per_game} 次提示，达到上限。",
-                at=player_id,
-            )
-            return None
-
-        # 检查是否还有未揭示的线索
-        all_clues: list[str] = puzzle.get("key_clues", [])
-        undiscovered_indices = [
-            i for i in range(len(all_clues)) if i not in hints_purchased
-        ]
-        if not undiscovered_indices:
-            await session.broadcast(
-                ctx.group_id,
-                "💡 所有关键线索都已揭示，靠你自己推理汤底啦！",
                 at=player_id,
             )
             return None
@@ -499,27 +486,57 @@ class TurtleSoupGame(GameBase):
             )
             return None
 
-        # 直接揭示第一条未发现的线索
-        target_idx = undiscovered_indices[0]
-        clue_text = all_clues[target_idx]
+        # LLM 生成渐进式提示
+        hint_number = len(hints_purchased) + 1
+        try:
+            resp = await llm.chat(
+                messages=[
+                    llm.LLMMessage(
+                        role="system",
+                        content=build_hint_system_prompt(
+                            surface=puzzle["surface"],
+                            truth=puzzle["truth"],
+                            key_clues=puzzle.get("key_clues", []),
+                            hint_number=hint_number,
+                            max_hints=cfg.max_hints_per_game,
+                            previous_hints=hints_purchased if hints_purchased else None,
+                        ),
+                    ),
+                    llm.LLMMessage(role="user", content="请生成第 {hint_number} 次的提示。".format(hint_number=hint_number)),
+                ],
+                scene="turtle_soup_judge",
+                json_mode=True,
+            )
+            data = resp.json()
+            hint_text = str(data.get("hint", "")).strip()
+            if not hint_text:
+                raise ValueError("LLM returned empty hint")
+        except (LLMError, LLMJSONParseError, ValueError) as e:
+            logger.warning(f"[soup] hint generation failed: {e}")
+            await session.broadcast(
+                ctx.group_id,
+                "⚠️ 汤主走神了，请稍后再买提示~",
+                at=player_id,
+            )
+            return None
 
-        # 记录已购买
-        hints_purchased.append(target_idx)
+        # 记录
+        hints_purchased.append(hint_text)
         ctx.state["hints_purchased"] = hints_purchased
 
-        # 写入 DB（verdict="hint"），使 /回顾 能看到
+        # 写入 DB，使 /回顾 能看到
         async with db_session() as sess:
             sess.add(
                 SoupQuestion(
                     session_id=ctx.session_id,
                     asker_id=player_id,
-                    question="[购买提示]",
+                    question=f"[提示 #{hint_number}]",
                     verdict="key",
-                    hint=clue_text,
+                    hint=hint_text,
                 )
             )
 
-        return clue_text
+        return hint_text
 
     # ---------- 工具 ----------
     @staticmethod

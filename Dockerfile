@@ -8,7 +8,9 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
 WORKDIR /app
 
 # 系统依赖（含中文字体，供 Pillow 对阵图渲染使用）
-RUN apt-get update \
+# 换国内 apt 源加速
+RUN sed -i 's/deb.debian.org/mirrors.aliyun.com/g' /etc/apt/sources.list.d/debian.sources \
+ && apt-get update \
  && apt-get install -y --no-install-recommends curl ca-certificates fonts-wqy-microhei \
  && rm -rf /var/lib/apt/lists/*
 
