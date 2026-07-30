@@ -1056,7 +1056,9 @@ range_min           = ranged 代表攻击的 minrange
 rof_ranged          = ranged 代表攻击的 rof
 damage_type_ranged  = ranged 代表攻击的 damagetype
 aoe_radius_ranged   = ranged 代表攻击的 damagearea
-damage_cap_ranged   = ranged 代表攻击的 damagecap（0 则模拟器 fallback 2×合并基础攻）
+damage_cap_ranged   = ranged 代表攻击的 damagecap（有 proto 值必须用该值；无字段才 fallback）
+num_projectiles_ranged = ranged 代表动作名的 displayednumberprojectiles（tactics 按动作名查）
+windup_ranged       = ranged 代表动作名的抬手时间（tactics[动作名].anim → Attack tag）
 multipliers.ranged  = ranged 代表攻击的 damagebonus 列表
 
 attack_melee        = melee 代表攻击的 damage
@@ -1065,12 +1067,26 @@ rof_melee           = melee 代表攻击的 rof
 damage_type_melee   = melee 代表攻击的 damagetype
 aoe_radius_melee    = melee 代表攻击的 damagearea
 damage_cap_melee    = melee 代表攻击的 damagecap
+num_projectiles_melee = melee 代表动作名的 displayednumberprojectiles
+windup_melee        = melee 代表动作名的抬手时间
 multipliers.melee   = melee 代表攻击的 damagebonus 列表
 
 attack_siege        = siege 代表攻击的 damage（拆建筑专用）
 range_siege         = siege 代表攻击的 maxrange
 rof_siege           = siege 代表攻击的 rof
 ```
+
+> **windup / num_projectiles 同样是「整包」的一部分**：它们按**代表动作名**去
+> `tactics` / `anim` 解析（`tactics[动作名].anim` → `Attack` tag），每个动作名各自解，
+> 解不出则该动作无此字段。**禁止**为 windup、ROF、伤害类型单独做「选哪条」或 fallback
+> 逻辑，也禁止从 `<tactic>Volley` 另挑动作拼进槽——`ATTACK_PRIORITY` 选的是**动作**，
+> 不是另选了一套 windup。
+
+> **damage_cap 补充**：有 proto `damagecap` 时**必须用该值，不得用 2× 覆盖**；
+> 仅当有溅射半径但 JSON 无 `damage_cap_*` 时才 fallback 为
+> `合并基础攻 × 2`（即 `damage × num_projectiles × 2`）。
+> 禁止砍掉 AOE 当作「无 cap」处理。
+
 
 > **siege 槽位仅用于拆建筑展示，斗蛐蛐模拟器不使用**——一维场地上没有建筑可拆。
 > 角色卡（`_atk_summary`）也不显示 `attack_siege`，避免误导群友（详见 §8.5）。
@@ -1100,10 +1116,16 @@ def has_attack(self) -> bool:
 #### simulator 侧
 
 - 战斗模拟只读 `attack_ranged` / `attack_melee` 及其对应字段族
+- 运行时 `AttackMode` 只表示「本 tick 用远程槽还是近战槽」，**不表示伤害类型**：
+  - `MELEE` → 近战槽整包
+  - `RANGED` / `RANGED_PENALIZED` → 远程槽整包（贴脸只折**主伤害**，**不换槽**）
+- 溅射与 `_calc_damage` 必须用**同一槽**字段（`CombatSlotStats` / `_combat_slot_stats`），
+  禁止一边用远程槽的 damage、一边用近战槽的 aoe/cap
 - `damage_type_ranged` / `damage_type_melee` 决定吃哪种护甲：
   - `Siege` → `armor_siege`（极少见）
   - `Hand` → `armor_melee`
   - `Ranged` → `armor_ranged`
+
 - 例：鹰炮 `attack_ranged=80, damage_type_ranged=Siege` 打火枪手（无 siege 抗性）→ 全额伤害
 
 #### 示例
