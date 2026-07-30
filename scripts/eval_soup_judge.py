@@ -128,6 +128,7 @@ async def run_case(
     *,
     version: str,
     use_facts: bool,
+    with_clue: bool = False,
 ) -> tuple[CaseResult, int, bool]:
     facts, gloss = (None, None)
     if use_facts:
@@ -140,7 +141,9 @@ async def run_case(
         canonical_facts=facts,
         surface_gloss=gloss,
         version=version,
+        with_clue=with_clue,
     )
+
     start = time.monotonic()
     json_ok = False
     actual = ""

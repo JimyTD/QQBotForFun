@@ -58,6 +58,95 @@ def _strip_claim_prefix(text: str) -> str:
     return s
 
 
+def _norm_clue(s: str) -> str:
+    """线索归一化：只保留字母数字与中日韩文字，用于容错匹配。"""
+    return "".join(ch for ch in s if ch.isalnum())
+
+
+def locate_clue(clue: str, key_clues: list[str]) -> int | None:
+    """把判官回填的线索原文定位到 key_clues 的下标。
+
+    判官是 flash 级小模型，可能改写、截断或抄空。四级降级匹配：
+      1. 完全相等
+      2. 归一化后相等（忽略标点空格）
+      3. 归一化后互相包含（模型多抄或少抄了修饰语）
+      4. 最长公共子串占比 >= 0.6 且**唯一命中**（如「父亲去世」↔「父亲已经去世」）
+    全部失配、或第 4 级出现多条并列候选（歧义）时返回 None，
+    调用方按「命中但无法定位」处理，绝不猜测下标。
+    """
+    if not clue or not key_clues:
+        return None
+    if clue in key_clues:
+        return key_clues.index(clue)
+    nc = _norm_clue(clue)
+    if not nc:
+        return None
+    normed = [_norm_clue(c) for c in key_clues]
+    for i, n in enumerate(normed):
+        if n and n == nc:
+            return i
+    for i, n in enumerate(normed):
+        if n and (n in nc or nc in n):
+            return i
+
+    # 第 4 级：最长公共子序列占比，取最优且要求明显领先，避免歧义
+    scored: list[tuple[float, int]] = []
+    for i, n in enumerate(normed):
+        if not n:
+            continue
+        lcs = _lcs_len(n, nc)
+        ratio = lcs / max(len(n), len(nc))
+        if ratio >= 0.6:
+            scored.append((ratio, i))
+    if not scored:
+        return None
+    scored.sort(reverse=True)
+    if len(scored) > 1 and abs(scored[0][0] - scored[1][0]) < 1e-9:
+        # 两条线索得分完全相同，无法区分，宁可不猜
+        return None
+    return scored[0][1]
+
+
+def _lcs_len(a: str, b: str) -> int:
+    """最长公共子序列长度（滚动数组 DP）。
+
+    用子序列而非子串：判官常在线索中间插入或省略修饰词
+    （「父亲去世」↔「父亲已经去世」），子串会漏判。
+    线索都很短，O(n*m) 足够。
+    """
+    if not a or not b:
+        return 0
+    prev = [0] * (len(b) + 1)
+    for i in range(1, len(a) + 1):
+        cur = [0] * (len(b) + 1)
+        for j in range(1, len(b) + 1):
+            if a[i - 1] == b[j - 1]:
+                cur[j] = prev[j - 1] + 1
+            else:
+                cur[j] = max(prev[j], cur[j - 1])
+        prev = cur
+    return prev[len(b)]
+
+
+
+
+def clue_progress(ctx: GameContext) -> tuple[int, int]:
+    """返回 (已发现线索数, 线索总数)。
+
+    已发现数取「可定位去重集合」与「无法定位的命中次数」之和，
+    并按总数封顶，避免出现 6/5 这类越界显示。
+    """
+    puzzle = ctx.state.get("puzzle", {})
+    total = len(puzzle.get("key_clues", []) or [])
+    hit_idx = ctx.state.get("hit_clue_idx", []) or []
+    unlocated = int(ctx.state.get("unlocated_key_hits", 0) or 0)
+    found = len(set(hit_idx)) + unlocated
+    if total:
+        found = min(found, total)
+    return found, total
+
+
+
 @register_game
 class TurtleSoupGame(GameBase):
     id = "turtle_soup"
@@ -150,9 +239,11 @@ class TurtleSoupGame(GameBase):
             footer=[
                 "💡 @我 发送问题即可提问",
                 "💡 宣告汤底请以「汤底:」开头",
+                "💡 @我 /回顾 看已知线索与进度",
                 "💡 @我 /提示 花金币买方向提示",
                 "💡 @我 结束 投降 · @我 状态 查看进度",
             ],
+
         )
         await session.broadcast(ctx.group_id, card)
 
@@ -270,6 +361,7 @@ class TurtleSoupGame(GameBase):
                             truth=puzzle["truth"],
                             key_clues=puzzle.get("key_clues", []),
                             version="1.2",
+                            with_clue=True,
                         ),
                     ),
                     llm.LLMMessage(role="user", content=JUDGE_USER.format(question=question)),
@@ -280,6 +372,7 @@ class TurtleSoupGame(GameBase):
             data = resp.json()
             verdict = str(data.get("type", "irrelevant"))
             hint = str(data.get("hint", "") or "")
+            clue_raw = str(data.get("clue", "") or "")
         except (LLMError, LLMJSONParseError) as e:
             logger.warning(f"[soup] judge failed: {e}")
             await session.broadcast(
@@ -296,6 +389,35 @@ class TurtleSoupGame(GameBase):
         ctx.state["question_count"] = int(ctx.state.get("question_count", 0)) + 1
         ctx.state["last_activity_ts"] = datetime.utcnow().isoformat()
 
+        # ---- 线索进度维护（key 命中时）----
+        newly_found = False
+        if verdict == "key":
+            key_clues = puzzle.get("key_clues", []) or []
+            idx = locate_clue(clue_raw, key_clues)
+            hit_idx: list[int] = ctx.state.setdefault("hit_clue_idx", [])
+            if idx is not None:
+                if idx not in hit_idx:
+                    hit_idx.append(idx)
+                    newly_found = True
+                ctx.state["hit_clue_idx"] = hit_idx
+            else:
+                # 判官没给 clue 或抄错到无法定位：按次数计入，不猜下标
+                logger.info(
+                    f"[soup] key hit but clue unlocatable: clue={clue_raw!r} "
+                    f"session={ctx.session_id}"
+                )
+                ctx.state["unlocated_key_hits"] = (
+                    int(ctx.state.get("unlocated_key_hits", 0) or 0) + 1
+                )
+                newly_found = True
+
+        # ---- 已排除记录（no 命中时，供 /回顾 面板使用）----
+        if verdict == "no":
+            ruled_out: list[str] = ctx.state.setdefault("ruled_out", [])
+            ruled_out.append(question.strip())
+            # 只保留最近 12 条，避免 state 无限膨胀
+            ctx.state["ruled_out"] = ruled_out[-12:]
+
         # 记录
         async with db_session() as sess:
             sess.add(
@@ -311,6 +433,7 @@ class TurtleSoupGame(GameBase):
             if row is not None:
                 row.question_count = int(ctx.state["question_count"])
 
+
         # 回复
         label = {
             "yes": "✅ 是",
@@ -318,6 +441,17 @@ class TurtleSoupGame(GameBase):
             "irrelevant": "🤔 与此无关",
             "key": f"💡 关键线索：{hint}" if hint else "💡 关键线索",
         }.get(verdict, "🤔 与此无关")
+
+        # key 命中时附加线索进度，给玩家"闯关"而非"盲猜"的感觉
+        if verdict == "key":
+            found, total = clue_progress(ctx)
+            if total:
+                bar = "●" * found + "○" * max(0, total - found)
+                tag = "🔓 新线索" if newly_found else "↩ 已知线索"
+                label += f"\n   {tag} · 进度 {bar} {found}/{total}"
+                if found >= total:
+                    label += "\n   🎯 关键线索已全部集齐，快宣告汤底！"
+
 
         # 参与奖（核心设计：及时正反馈）
         cfg = get_config()

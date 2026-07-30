@@ -149,7 +149,9 @@ async def judge_once(client: AsyncOpenAI, model: str, case: GoldenCase) -> tuple
         truth=case.puzzle["truth"],
         key_clues=list(case.puzzle.get("key_clues") or []),
         version="1.2",
+        with_clue=False,
     )
+
     start = time.monotonic()
     try:
         r = await client.chat.completions.create(

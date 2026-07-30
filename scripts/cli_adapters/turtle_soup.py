@@ -9,15 +9,16 @@ from __future__ import annotations
 from core import llm
 from core.errors import LLMError, LLMJSONParseError
 from src.plugins.games.turtle_soup.config import get_config
-from src.plugins.games.turtle_soup.game import TurtleSoupGame
+from src.plugins.games.turtle_soup.game import TurtleSoupGame, locate_clue
 from src.plugins.games.turtle_soup.prompts import (
     CLAIM_SYSTEM,
     CLAIM_USER,
-    JUDGE_SYSTEM,
     JUDGE_USER,
     build_hint_system_prompt,
+    build_judge_system_prompt,
     format_clues,
 )
+
 from src.plugins.games.turtle_soup.puzzle_service import (
     PuzzleData,
     mark_bad_by_group,
@@ -95,9 +96,30 @@ class TurtleSoupCLIAdapter(GameCLIAdapter):
         self.key_clues_shown: list[tuple[str, str]] = []  # (问题文本, 判官hint) 自然命中
         self.hints_purchased: list[str] = []  # 已购买的渐进式提示文本
         self.max_q = 50
+        # 线索进度（与 bot 侧 ctx.state 的 hit_clue_idx / unlocated_key_hits 对应）
+        self.hit_clue_idx: list[int] = []
+        self.unlocated_key_hits = 0
+        # 已确认 / 已排除（与 bot 侧 ruled_out 对应；yes 由本地列表承载）
+        self.yes_asked: list[str] = []
+        self.ruled_out: list[str] = []
         # CLI 本地累积的奖励（不真实调 economy，避免 qq_id=0 幽灵账户污染 DB）
         self.cli_score = 0
         self.cli_coin = 0
+
+    def _clue_progress(self) -> tuple[int, int]:
+        """与 bot 侧 game.clue_progress 保持同一算法。"""
+        total = len(self.puzzle.key_clues) if self.puzzle else 0
+        found = len(set(self.hit_clue_idx)) + self.unlocated_key_hits
+        if total:
+            found = min(found, total)
+        return found, total
+
+    def _progress_bar(self) -> str:
+        found, total = self._clue_progress()
+        if not total:
+            return ""
+        return "●" * found + "○" * max(0, total - found) + f" {found}/{total}"
+
 
     def _show_reward(self, *, score: int = 0, coin: int = 0, label: str = "") -> None:
         """CLI 端本地累积并即时显示奖励，行为和 Bot 一致（只是不入 DB）。"""
@@ -120,16 +142,19 @@ class TurtleSoupCLIAdapter(GameCLIAdapter):
         """统一入口：mode_id 决定是题库还是 LLM 生成。"""
         self.puzzle = await obtain_puzzle(mode=mode_id)
 
-    async def _judge_question(self, question: str) -> tuple[str, str]:
+    async def _judge_question(self, question: str) -> tuple[str, str, str]:
+        """返回 (verdict, hint, clue)；与 bot 侧 _handle_question 保持同一 prompt。"""
         assert self.puzzle is not None
         resp = await llm.chat(
             messages=[
                 llm.LLMMessage(
                     role="system",
-                    content=JUDGE_SYSTEM.format(
+                    content=build_judge_system_prompt(
                         surface=self.puzzle.surface,
                         truth=self.puzzle.truth,
-                        key_clues=format_clues(self.puzzle.key_clues),
+                        key_clues=self.puzzle.key_clues,
+                        version="1.2",
+                        with_clue=True,
                     ),
                 ),
                 llm.LLMMessage(role="user", content=JUDGE_USER.format(question=question)),
@@ -140,7 +165,12 @@ class TurtleSoupCLIAdapter(GameCLIAdapter):
         if self.debug:
             print(f"{C.DIM}[debug] judge raw: {resp.content}{C.R}")
         data = resp.json()
-        return str(data.get("type", "irrelevant")), str(data.get("hint", "") or "")
+        return (
+            str(data.get("type", "irrelevant")),
+            str(data.get("hint", "") or ""),
+            str(data.get("clue", "") or ""),
+        )
+
 
     async def _judge_claim(self, claim: str) -> tuple[str, str]:
         assert self.puzzle is not None
@@ -246,9 +276,11 @@ class TurtleSoupCLIAdapter(GameCLIAdapter):
             if kind == "status":
                 hints_used = len(self.hints_purchased)
                 max_hints = get_config().max_hints_per_game
+                bar = self._progress_bar()
+                extra = f"  线索 {bar}" if bar else ""
                 print(
                     f"{C.DIM}📊 已提问 {self.question_count}/{self.max_q} 次  "
-                    f"提示 {hints_used}/{max_hints}{C.R}"
+                    f"提示 {hints_used}/{max_hints}{extra}{C.R}"
                 )
                 continue
             if kind == "surface":
@@ -259,24 +291,46 @@ class TurtleSoupCLIAdapter(GameCLIAdapter):
                 )
                 continue
             if kind == "recap":
-                # 收集所有已发现的关键事实
-                facts: list[str] = []
-                for label, text in self.key_clues_shown:
-                    # label 是 "[提示 #N]" 或 原始问题文本
-                    if label.startswith("[提示 #"):
-                        facts.append(f"{text}  {C.DIM}{label}{C.R}")
-                    else:
-                        facts.append(f"{text}  {C.DIM}[提问发现]{C.R}")
+                def _clip(s: str, n: int = 22) -> str:
+                    s = s.strip().replace("\n", " ")
+                    return s if len(s) <= n else s[: n - 1] + "…"
 
-                if not facts:
-                    print(f"{C.DIM}📋 暂无已确认的关键事实{C.R}")
+                confirmed: list[str] = []
+                for i, h in enumerate(self.hints_purchased, 1):
+                    confirmed.append(f"💡 {h}  {C.DIM}[提示 #{i}]{C.R}")
+                for label, hint_text in self.key_clues_shown:
+                    if label.startswith("[提示 #"):
+                        continue
+                    confirmed.append(f"🔑 {hint_text}")
+                yes_items = [f"✅ {_clip(q)}" for q in self.yes_asked]
+                if len(yes_items) > 8:
+                    omitted = len(yes_items) - 8
+                    yes_items = yes_items[-8:]
+                    yes_items.insert(0, f"{C.DIM}（另有 {omitted} 条较早的确认已省略）{C.R}")
+                confirmed.extend(yes_items)
+                ruled = [f"❌ {_clip(q)}" for q in self.ruled_out[-10:]]
+
+                if not confirmed and not ruled:
+                    print(f"{C.DIM}📋 暂无已确认或已排除的信息，先多问几个问题吧{C.R}")
+                    continue
+
+                bar = self._progress_bar()
+                print(f"\n{C.B}📋 已知面板{C.R}")
+                if bar:
+                    print(f"  {C.CYAN}关键线索进度：{bar}{C.R}")
+                print(f"\n  {C.B}【已确认】{len(confirmed)} 条{C.R}")
+                if confirmed:
+                    for c in confirmed:
+                        print(f"    • {c}")
                 else:
-                    total = len(self.puzzle.key_clues)
-                    print(f"\n{C.B}📋 已发现 {len(facts)} 个关键事实"
-                          f"（共 {total} 条关键线索）{C.R}")
-                    for f in facts:
-                        print(f"  • {f}")
+                    print(f"    {C.DIM}（暂无）{C.R}")
+                if ruled:
+                    print(f"\n  {C.B}【已排除】最近 {len(ruled)} 条{C.R}")
+                    for r in ruled:
+                        print(f"    • {r}")
+                print(f"\n  {C.DIM}💡 排除法也是解法{C.R}")
                 continue
+
             if kind == "hint":
                 await self._handle_hint()
                 continue
@@ -299,7 +353,7 @@ class TurtleSoupCLIAdapter(GameCLIAdapter):
                     print(f"{C.RED}⚠️ 已达提问上限，请宣告汤底或 giveup。{C.R}")
                     continue
                 try:
-                    verdict, hint = await self._judge_question(text)
+                    verdict, hint, clue_raw = await self._judge_question(text)
                 except (LLMError, LLMJSONParseError) as e:
                     print(f"{C.RED}⚠️ 汤主走神了：{e}{C.R}")
                     continue
@@ -309,6 +363,29 @@ class TurtleSoupCLIAdapter(GameCLIAdapter):
                     kind = "claim"
                 else:
                     self.question_count += 1
+
+                    # ---- 线索进度维护（与 bot 侧同逻辑）----
+                    newly_found = False
+                    if verdict == "key":
+                        idx = locate_clue(clue_raw, puzzle.key_clues)
+                        if idx is not None:
+                            if idx not in self.hit_clue_idx:
+                                self.hit_clue_idx.append(idx)
+                                newly_found = True
+                        else:
+                            if self.debug:
+                                print(
+                                    f"{C.DIM}[debug] clue unlocatable: "
+                                    f"{clue_raw!r}{C.R}"
+                                )
+                            self.unlocated_key_hits += 1
+                            newly_found = True
+                    elif verdict == "yes":
+                        self.yes_asked.append(text.strip())
+                    elif verdict == "no":
+                        self.ruled_out.append(text.strip())
+                        self.ruled_out = self.ruled_out[-12:]
+
                     label = {
                         "yes": f"{C.GRN}✅ 是{C.R}",
                         "no": f"{C.RED}❌ 不是{C.R}",
@@ -323,6 +400,17 @@ class TurtleSoupCLIAdapter(GameCLIAdapter):
                         f"汤主> {label}  "
                         f"{C.DIM}({self.question_count}/{self.max_q}){C.R}"
                     )
+                    if verdict == "key":
+                        bar = self._progress_bar()
+                        if bar:
+                            tag = "🔓 新线索" if newly_found else "↩ 已知线索"
+                            print(f"    {C.CYAN}{tag} · 进度 {bar}{C.R}")
+                            found, total = self._clue_progress()
+                            if found >= total:
+                                print(
+                                    f"    {C.YEL}🎯 关键线索已全部集齐，"
+                                    f"快宣告汤底！{C.R}"
+                                )
                     if verdict == "key" and hint:
                         self.key_clues_shown.append((text, hint))
                         # 参与奖：问到 key 线索 → score + coin
@@ -341,6 +429,7 @@ class TurtleSoupCLIAdapter(GameCLIAdapter):
                             label="提问正确",
                         )
                     continue
+
 
             if kind == "claim":
                 claim_text = (

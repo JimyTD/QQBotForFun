@@ -6,9 +6,14 @@
 from __future__ import annotations
 
 TURTLE_SOUP_HOST_PROMPT_VERSION = "2.2"
-TURTLE_SOUP_JUDGE_PROMPT_VERSION = "1.2"
+TURTLE_SOUP_JUDGE_PROMPT_VERSION = "1.3"
 TURTLE_SOUP_CLAIM_PROMPT_VERSION = "2.0"
 TURTLE_SOUP_HINT_PROMPT_VERSION = "1.0"
+
+# 判官 v1.3 变更：key 时新增 `clue` 字段，要求照抄被命中的关键线索原文，
+#   用于线索进度去重统计（代码侧做匹配定位，抄错/抄空则降级为不去重计数）。
+#   判定尺度未改动，v1.2 仍保留给 tests/eval 做 baseline 对照。
+
 
 
 # ------------------------------------------------------------------
@@ -195,7 +200,7 @@ _JUDGE_SYSTEM_BODY = """判定类型（5 选 1）：
 
 hint 控制在 30 字内，必须**针对这一条具体问题**，让玩家读完知道：
 我猜对了哪、错在哪、下一步往哪想。绝不能是放之四海皆准的客套话。
-
+{clue_block}
 ═══ 其他要求 ═══
 
 - 严禁泄露汤底完整内容
@@ -204,9 +209,29 @@ hint 控制在 30 字内，必须**针对这一条具体问题**，让玩家读�
 输出格式：
 {{
   "type": "yes" | "no" | "irrelevant" | "key" | "claim_detected",
-  "hint": "仅 type=key 时非空，针对该问题的确认+纠偏+递进引导；其他类型留空字符串"
+  "hint": "仅 type=key 时非空，针对该问题的确认+纠偏+递进引导；其他类型留空字符串"{clue_field}
 }}
 """
+
+# v1.3 新增：key 命中时要求回填被命中的关键线索原文，用于线索进度去重统计。
+# v1.2（eval baseline）传空串，可完全还原改动前的 prompt 文本。
+CLUE_RULE_BLOCK = """
+═══ clue 规则（仅 key 时填写）═══
+
+判 key 时，把**你认定被命中的那条【关键线索】原文**照抄到 `clue` 字段。
+
+- 必须是【关键线索】列表里**已存在的某一条**，逐字照抄，不要改写、不要合并两条
+- 只填**一条**（命中最主要的那条）
+- 非 key 类型一律填空字符串
+
+这个字段用于统计进度，抄错会导致进度显示错误，请务必照抄原文。
+"""
+
+CLUE_FIELD_LINE = (
+    ',\n  "clue": "仅 type=key 时非空，照抄被命中的那条关键线索原文；其他类型留空字符串"'
+)
+
+
 
 JUDGE_SYSTEM_V12 = """你是海龟汤汤主，严格按规则判定玩家问题。
 
@@ -220,6 +245,8 @@ JUDGE_SYSTEM_V12 = """你是海龟汤汤主，严格按规则判定玩家问题�
 {key_clues}
 
 """ + _JUDGE_SYSTEM_BODY
+
+
 
 JUDGE_SYSTEM = """你是海龟汤汤主，严格按规则判定玩家问题。
 
@@ -249,6 +276,8 @@ JUDGE_SYSTEM = """你是海龟汤汤主，严格按规则判定玩家问题。
 
 """ + _JUDGE_SYSTEM_BODY
 
+
+
 JUDGE_USER = "玩家问题：{question}"
 
 
@@ -276,8 +305,16 @@ def build_judge_system_prompt(
     canonical_facts: list[str] | None = None,
     surface_gloss: str | None = None,
     version: str | None = None,
+    with_clue: bool = True,
 ) -> str:
-    """组装 judge system prompt。version='1.2' 用于 eval baseline。"""
+    """组装 judge system prompt。
+
+    - version: 选择模板骨架。'1.2' 是**生产当前实际使用**的模板（见 game.py），
+      也被 eval 脚本用作对照基准；非 '1.2' 走带「读题原则 + facts_block」的新模板。
+    - with_clue: 是否注入 clue 规则（key 命中时回填线索原文，用于进度统计）。
+      与 version 正交——生产走 1.2 也需要 clue。传 False 可复现引入 clue 前的原始
+      prompt 文本，供 eval 做 A/B 对照。
+    """
     ver = version or TURTLE_SOUP_JUDGE_PROMPT_VERSION
     template = JUDGE_SYSTEM_V12 if ver == "1.2" else JUDGE_SYSTEM
     facts_block = ""
@@ -288,7 +325,11 @@ def build_judge_system_prompt(
         truth=truth,
         key_clues=format_clues(key_clues),
         facts_block=facts_block,
+        clue_block=CLUE_RULE_BLOCK if with_clue else "",
+        clue_field=CLUE_FIELD_LINE if with_clue else "",
     )
+
+
 
 
 # ------------------------------------------------------------------

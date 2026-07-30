@@ -43,18 +43,27 @@ async def _(matcher: Matcher, event: GroupMessageEvent) -> None:
     max_q = int(ctx.state.get("max_questions", 50))
     hints_used = len(ctx.state.get("hints_purchased", []))
     max_hints = get_config().max_hints_per_game
+
+    from .game import clue_progress
+
+    found, total = clue_progress(ctx)
+    lines = [
+        f"标题：《{puzzle.get('title', '未知')}》",
+        f"局号：{ctx.session_id}",
+        f"提问：{qcount} / {max_q}",
+        f"提示：{hints_used} / {max_hints}",
+    ]
+    if total:
+        bar = "●" * found + "○" * max(0, total - found)
+        lines.append(f"线索：{bar} {found} / {total}")
     await matcher.finish(
         render.text_card(
             "本局状态",
-            [
-                f"标题：《{puzzle.get('title', '未知')}》",
-                f"局号：{ctx.session_id}",
-                f"提问：{qcount} / {max_q}",
-                f"提示：{hints_used} / {max_hints}",
-            ],
+            lines,
             emoji="📊",
         )
     )
+
 
 
 # -------------------- /汤面 --------------------
@@ -94,46 +103,81 @@ async def _(matcher: Matcher, event: GroupMessageEvent) -> None:
         return
 
     ctx = runner.ctx
-    puzzle = ctx.state.get("puzzle", {})
 
-    # 收集已发现的关键事实
-    facts: list[str] = []
+    from .game import clue_progress
+
+
+    def _clip(s: str, n: int = 22) -> str:
+        s = s.strip().replace("\n", " ")
+        return s if len(s) <= n else s[: n - 1] + "…"
+
+    # ---- 已确认栏 ----
+    confirmed: list[str] = []
 
     # 来源 1：购买的渐进式提示（从 ctx.state 读取）
     hints_purchased: list[str] = ctx.state.get("hints_purchased", [])
     for i, h in enumerate(hints_purchased, 1):
-        facts.append(f"{h}  [提示 #{i}]")
+        confirmed.append(f"💡 {h}  [提示 #{i}]")
 
-    # 来源 2：自然命中的 key（从 DB 读取，排除购买的提示）
+    # 来源 2 / 3：自然命中的 key（带 hint）与 yes（原始问题），从 DB 读取
     async with db_session() as sess:
         rows = (
             await sess.execute(
                 select(SoupQuestion)
                 .where(SoupQuestion.session_id == ctx.session_id)
-                .where(SoupQuestion.verdict == "key")
+                .where(SoupQuestion.verdict.in_(("key", "yes")))
                 .order_by(SoupQuestion.asked_at)
             )
         ).scalars().all()
 
+    yes_items: list[str] = []
     for r in rows:
-        # 跳过购买提示的记录
+        # 跳过购买提示的记录（已在来源 1 展示）
         if r.question.startswith("[提示 #"):
             continue
-        # 自然命中的 key：显示 LLM 判官的引导 hint
-        label = f"{r.hint}  [提问发现]" if r.hint else "（关键线索命中）"
-        facts.append(label)
+        if r.verdict == "key":
+            label = r.hint or _clip(r.question)
+            confirmed.append(f"🔑 {label}")
+        else:
+            yes_items.append(f"✅ {_clip(r.question)}")
 
-    if not facts:
-        await matcher.finish("📋 暂无已确认的关键事实")
+    # yes 只保留最近 8 条，避免面板过长
+    if len(yes_items) > 8:
+        omitted = len(yes_items) - 8
+        yes_items = yes_items[-8:]
+        yes_items.insert(0, f"（另有 {omitted} 条较早的确认已省略）")
+    confirmed.extend(yes_items)
 
-    total_clues = len(puzzle.get("key_clues", []))
-    header = f"📖 已发现 {len(facts)} 个关键事实"
-    if total_clues:
-        header += f"（共 {total_clues} 条关键线索）"
+    # ---- 已排除栏 ----
+    ruled_out_raw: list[str] = ctx.state.get("ruled_out", []) or []
+    ruled_out = [f"❌ {_clip(q)}" for q in ruled_out_raw[-10:]]
+
+    if not confirmed and not ruled_out:
+        await matcher.finish("📋 暂无已确认或已排除的信息，先多问几个问题吧")
+
+    found, total = clue_progress(ctx)
+    lines: list[str] = []
+    if total:
+        bar = "●" * found + "○" * max(0, total - found)
+        lines.append(f"关键线索进度：{bar} {found} / {total}")
+        lines.append("")
+
+    lines.append(f"【已确认】{len(confirmed)} 条")
+    if confirmed:
+        lines.extend(f"  {c}" for c in confirmed)
+    else:
+        lines.append("  （暂无）")
+
+
+    if ruled_out:
+        lines.append("")
+        lines.append(f"【已排除】最近 {len(ruled_out)} 条")
+        lines.extend(f"  {r}" for r in ruled_out)
 
     await matcher.finish(
-        render.list_card(header, facts, emoji="📋")
+        render.text_card("已知面板", lines, emoji="📋", footer=["💡 排除法也是解法"])
     )
+
 
 
 # -------------------- /提示 --------------------
