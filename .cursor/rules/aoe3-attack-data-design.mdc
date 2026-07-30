@@ -7,10 +7,35 @@ alwaysApply: true
 
 ## 正交维度
 
-- **动作名**（HandAttack / RangedAttack / BuildingAttack…）：引擎行为；parser 据此归入 ranged / melee / siege 槽。
-- **damagetype**（Hand / Ranged / Siege）：只决定吃哪种护甲；**禁止**用 damagetype 判断归属哪个槽。
+AoE3 引擎中「攻击类型」（动作名：HandAttack / RangedAttack / BuildingAttack 等）和「伤害类型」（damagetype: Hand / Ranged / Siege）是**完全正交的两个维度**：
 
-详见 `.codebuddy/rules/aoe3-attack-data-design.mdc` 与 `docs/games/aoe3-battle.md` §3.9。
+- **动作名**：引擎硬编码绑定行为（**动画、抬手/windup**、弹道、弹丸数、是否停步、是否触发闪避）；parser 据此归入 ranged / melee / siege 槽。
+- **damagetype**：只决定伤害吃哪种护甲，与远程/近战/anim/windup **无关**。
+
+AoE3 引擎**不存在「远程 vs 近战」的概念划分**。它只有：
+
+    姿态(Defend/Stagger/Volley) × 距离(Hand/Ranged) × 特殊(Building/Rocket/Guardian)
+
+每次激活一种攻击模式。我们斗蛐蛐的 ranged/melee/siege 三槽位是**人为简化**。
+
+详见 `docs/games/aoe3-battle.md` §3.9。
+
+## Parser 分类规则
+
+（`aoe3_gamedata_parser.py :: _parse_attacks`）
+
+1. 动作名含 `BuildingAttack` → siege
+2. 动作名含 `HandAttack` → melee（不管 maxrange 和 damagetype）
+3. 动作名含 `RangedAttack` → ranged（不管 damagetype）
+4. 以上均不匹配时：maxrange < 6 → melee，>= 6 → ranged
+
+**绝对禁止**用 `damagetype` 来判断攻击归属哪个槽位。
+
+经典反例：
+
+- 沙漠突袭者：`MeleeHandAttack, damagetype=Siege` → 近战攻击打攻城伤害
+- 战斧兵/飞刀手：`RangedAttack, damagetype=Hand` → 远程投掷打近战伤害
+- 火兵：10 种攻击模式全部 `damagetype=Siege`，有远程有近战
 
 ## 只选动作，不选属性（整包）
 
@@ -42,8 +67,10 @@ Parser：**对每个动作名**从 protoy / tactics / anim 解出其属性；**�
 
 溅射与 `_calc_damage` 必须用**同一槽**字段（`CombatSlotStats` / `_combat_slot_stats`）。
 
-## damagecap
+## damagecap（溅射池）
 
-- 有 `damage_cap_*`（protoy `damagecap`）→ 必须用该值，**不得**用 2× 覆盖。
+- 与 `damage` / `damagearea` 同条 protoaction 写入 `damage_cap_ranged` 或 `damage_cap_melee`。
+- 模拟器按**本次出手槽位整包**读取。
+- 有 `damage_cap_*`（protoy `damagecap`）→ 必须用该值，**不得**用 2× 覆盖已有 proto cap。
 - 有溅射半径但 JSON 无 `damage_cap_*` → fallback：`合并基础攻 × 2`（`damage × num_projectiles × 2`）。
 - 禁止砍掉 AOE 作为「无 cap」的处理方式。

@@ -1,24 +1,32 @@
 ---
-description: 
+description: AoE3 攻击槽位与数据铁律（parser / 斗蛐蛐模拟器）
 alwaysApply: true
 enabled: true
-updatedAt: 2026-05-22T00:00:00.000Z
+updatedAt: 2026-07-30T00:00:00.000Z
 provider: 
 ---
 
-【AoE3 攻击模式与伤害类型设计铁律】
+# AoE3 攻击数据铁律
 
-AoE3 引擎中「攻击类型」（动作名：HandAttack/RangedAttack/BuildingAttack 等）
-和「伤害类型」（damagetype: Hand/Ranged/Siege）是**完全正交的两个维度**：
+## 正交维度
 
-- **动作名**：引擎硬编码绑定行为（**动画、抬手/windup**、弹道、弹丸数、是否停步、是否触发闪避）
-- **damagetype**：只决定伤害吃哪种护甲，与远程/近战/anim/windup **无关**
+AoE3 引擎中「攻击类型」（动作名：HandAttack / RangedAttack / BuildingAttack 等）和「伤害类型」（damagetype: Hand / Ranged / Siege）是**完全正交的两个维度**：
 
-AoE3 引擎**不存在"远程 vs 近战"的概念划分**。它只有：
-  姿态(Defend/Stagger/Volley) × 距离(Hand/Ranged) × 特殊(Building/Rocket/Guardian)
+- **动作名**：引擎硬编码绑定行为（**动画、抬手/windup**、弹道、弹丸数、是否停步、是否触发闪避）；parser 据此归入 ranged / melee / siege 槽。
+- **damagetype**：只决定伤害吃哪种护甲，与远程/近战/anim/windup **无关**。
+
+AoE3 引擎**不存在「远程 vs 近战」的概念划分**。它只有：
+
+    姿态(Defend/Stagger/Volley) × 距离(Hand/Ranged) × 特殊(Building/Rocket/Guardian)
+
 每次激活一种攻击模式。我们斗蛐蛐的 ranged/melee/siege 三槽位是**人为简化**。
 
-**Parser 分类规则**（`aoe3_gamedata_parser.py :: _parse_attacks`）：
+详见 `docs/games/aoe3-battle.md` §3.9。
+
+## Parser 分类规则
+
+（`aoe3_gamedata_parser.py :: _parse_attacks`）
+
 1. 动作名含 `BuildingAttack` → siege
 2. 动作名含 `HandAttack` → melee（不管 maxrange 和 damagetype）
 3. 动作名含 `RangedAttack` → ranged（不管 damagetype）
@@ -27,20 +35,45 @@ AoE3 引擎**不存在"远程 vs 近战"的概念划分**。它只有：
 **绝对禁止**用 `damagetype` 来判断攻击归属哪个槽位。
 
 经典反例：
+
 - 沙漠突袭者：`MeleeHandAttack, damagetype=Siege` → 近战攻击打攻城伤害
 - 战斧兵/飞刀手：`RangedAttack, damagetype=Hand` → 远程投掷打近战伤害
 - 火兵：10 种攻击模式全部 `damagetype=Siege`，有远程有近战
 
-详见 docs/games/aoe3-battle.md §3.9。
+## 只选动作，不选属性（整包）
 
-**只选动作，不选属性（整包）**
+**唯一的人为决策**：在每个 ranged / melee / siege 桶里，用 `ATTACK_PRIORITY` **选一条代表动作名**——层级为 **Volley/Stagger > 具名主攻击 > Defend**（Defend 为手动防御阵型）；远程统一齐射 > 交错（多数纯骑兵 protoy 仅有交错动作时自然落回）。
 
-- **唯一决策**：`ATTACK_PRIORITY` 在每个 ranged/melee/siege 桶里选**一条代表动作名**。
-- damage / rof / damagetype / aoe / damagecap / 倍率 / num_projectiles / **windup** 都是该动作名的一体数据；**禁止**为 windup、ROF、伤害类型等单独做「选哪条」逻辑。
-- Parser 对**每个动作名**从 protoy、tactics、anim 解属性；桶里 `*_ranged` 等字段只因代表动作是谁而写入，不是另选 windup。
-- **禁止**：`<tactic>Volley` 拼桶；把优先级说成「选抬手」；用 damagetype 推 anim/windup/槽位。
+**禁止**为下列字段单独做优先级、fallback 表或「选哪条」逻辑——它们都是该动作名在数据里的**一体属性**，随代表动作整包进出 `units.json` / 模拟器：
 
-**damagecap（溅射池）**：
+- `damage` / `attack_*`
+- `rof_*`
+- `damagetype` → `damage_type_*`（伤害类型，只吃护甲）
+- `damagearea` / `damagecap` / 倍率
+- `displayednumberprojectiles` → `num_projectiles_*`（tactics 按**动作名**查）
+- **windup**（tactics[动作名].anim → Attack tag；每个动作名各自解，解不出则该动作无此字段）
+
+Parser：**对每个动作名**从 protoy / tactics / anim 解出其属性；**不**存在「选抬手 / 选 ROF / 选伤害类型」。斗蛐蛐桶里写哪套 `*_ranged`，是因为选了哪条代表**动作**，不是另选了一套 windup。
+
+**禁止**：从 `<tactic>Volley` 另挑动作拼进桶；把 `ATTACK_PRIORITY` 说成在「选 windup」；用 `damagetype` 推 anim / windup / 槽位。
+
+## 数据第一
+
+每个槽位的 `attack_*`、`aoe_radius_*`、`damage_cap_*`、`damage_type_*`、倍率、`num_projectiles_*`、**`windup_*`** 必须来自**同一条** parser 选定的代表 `protoaction`（同一动作名），禁止拆条拼接。
+
+## 模拟器选槽
+
+运行时 `AttackMode` 只表示「本 tick 用远程槽还是近战槽」：
+
+- `MELEE` → 近战槽整包
+- `RANGED` / `RANGED_PENALIZED` → 远程槽整包（贴脸只折主伤害，不换槽）
+
+溅射与 `_calc_damage` 必须用**同一槽**字段（`CombatSlotStats` / `_combat_slot_stats`）。
+
+## damagecap（溅射池）
+
 - 与 `damage` / `damagearea` 同条 protoaction 写入 `damage_cap_ranged` 或 `damage_cap_melee`。
-- 模拟器按**本次出手槽位整包**读取；有 proto 值必须用 proto，无字段才 fallback `合并基础攻×2`。
-- 不得用 2× 覆盖已有 proto cap。
+- 模拟器按**本次出手槽位整包**读取。
+- 有 `damage_cap_*`（protoy `damagecap`）→ 必须用该值，**不得**用 2× 覆盖已有 proto cap。
+- 有溅射半径但 JSON 无 `damage_cap_*` → fallback：`合并基础攻 × 2`（`damage × num_projectiles × 2`）。
+- 禁止砍掉 AOE 作为「无 cap」的处理方式。
