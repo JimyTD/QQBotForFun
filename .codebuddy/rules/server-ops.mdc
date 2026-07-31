@@ -2,7 +2,7 @@
 description: Rule for deploying and operating the QQBotForFun server. Load this rule when you need to deploy code, check server status, or troubleshoot the bot.
 alwaysApply: true
 enabled: true
-updatedAt: 2026-06-02T00:00:00.000Z
+updatedAt: 2026-07-31T00:00:00.000Z
 provider: 
 ---
 
@@ -15,28 +15,49 @@ provider:
 - ✅ 日常部署只动 bot：`stop bot → rm bot → cp files → up --build bot`
 - ✅ NapCat 只用 `restart`（不删容器）
 
+## ⚠️ 铁律：目录命名与角色绑定，禁止裸时间戳目录常驻
+
+- `/root/qqbot` 是**真实目录**（不是符号链接），是生产环境唯一真身，**永久存在，永不删除、永不重命名**。
+- `deploy_project_preparation` 每次上传都会生成 `/root/QQBotForFun_<timestamp>`——这个命名**只允许作为一次性中转**，生命周期不超过一条部署命令链。
+- **上传后的第一件事**永远是：`rm -rf /root/.deploy_staging; mv /root/QQBotForFun_<ts> /root/.deploy_staging`，把带时间戳的名字立刻消灭掉，换成固定名 `/root/.deploy_staging`。
+- 之后所有 `cp` 都从 `/root/.deploy_staging/` 取文件，部署结束**无条件** `rm -rf /root/.deploy_staging`（不是"确认成功后才删"，是同一条命令链里必须执行，成功失败都删）。
+- **效果**：`/root/` 下任何时候都不应该存在 `QQBotForFun_*` 这个模式的目录（只在一条命令执行的极短窗口内短暂存在）。如果排查磁盘时发现了这种目录，说明流程被打断过，**必须先询问用户这是什么，禁止直接当作"废弃临时目录"删除**——正常流程下它不应该出现。
+- **禁止**再对 `/root/qqbot` 做 `ln -sfn` 之类的符号链接操作。它是真实目录，改配置/改代码就是直接 `cp` 文件进去，不存在"切换指向"这一步。
+
 ## 固定参数（直接使用，不需要查询）
 
 - Region: `ap-guangzhou`
 - InstanceId: `lhins-hwnz7rcz`
 - IP: `106.55.228.236`
-- 项目路径: `/root/qqbot`（符号链接）
+- 项目路径: `/root/qqbot`（真实目录，生产唯一真身）
 - Bot QQ: `3959381140`
 - NapCat WebUI: `http://106.55.228.236:6099`
 
 用 lighthouse `execute_command` 工具执行命令，参数固定为上述 Region + InstanceId。
 
+## 权威副本规定（哪份是"真的"）
+
+| 文件/目录 | 唯一权威来源 | 说明 |
+|---|---|---|
+| `src/` `seeds/` `scripts/` `docs/` `resources/` `config/llm.yaml`（模板）`Dockerfile` `docker-compose.yml` `pyproject.toml` `uv.lock` `migrations/` `alembic.ini` | **本地 git 仓库** | 服务器上的版本永远由本地 `cp` 覆盖，服务器上不做手工编辑 |
+| `.env`（真实密钥） | **服务器 `/root/qqbot/.env`**，备份于 `/root/.env_qqbot_backup` | 不在 git（含密钥）。改动后必须同步更新备份文件，这是唯一权威来源，本地无副本 |
+| NapCat 登录态 / QQ 账号数据 | **named volume** `qqbot_napcat_data` 等 | 与 `/root/qqbot` 目录完全无关，删目录不影响它 |
+| Postgres / Redis 数据 | **named volume** `qqbot_pg_data` / `qqbot_redis_data` | 同上，与目录无关 |
+| `logs/` | 服务器本地，**无备份，可丢弃** | 纯运行时产物，允许接受丢失 |
+
 ## 日常部署（只改了代码/数据，未改 docker-compose.yml）
 
 1. `deploy_project_preparation` 上传项目 → 得到 `/root/QQBotForFun_<ts>`
-2. 执行：
+2. **立刻消灭时间戳名**，转入固定中转目录，再部署：
 ```
-cd /root/qqbot && docker compose stop bot && docker compose rm -f bot && cp -r /root/QQBotForFun_<ts>/{src,seeds,scripts,docs,resources,pyproject.toml} /root/qqbot/ && docker compose up -d --build bot
+rm -rf /root/.deploy_staging
+mv /root/QQBotForFun_<ts> /root/.deploy_staging
+cd /root/qqbot && docker compose stop bot && docker compose rm -f bot && cp -r /root/.deploy_staging/{src,seeds,scripts,docs,resources,pyproject.toml} /root/qqbot/ && docker compose up -d --build bot
 ```
 3. 确认：`cd /root/qqbot && docker compose logs bot --tail=5`（看到 `[bot] ready.`）
-4. 确认成功后清理：
+4. 无条件清理（成功失败都执行）：
 ```
-rm -rf /root/QQBotForFun_<ts> && docker image prune -f
+rm -rf /root/.deploy_staging && docker image prune -f
 ```
 
 **禁止：**
@@ -45,15 +66,17 @@ rm -rf /root/QQBotForFun_<ts> && docker image prune -f
 - ❌ rsync --delete 或任何可能删除/覆盖 `.env`、`logs/`、`uploads/` 的命令
 - ❌ 部署命令中出现 `.env` 以外的全量同步方式
 - ❌ `docker system prune -a` 或 `--volumes`（会删掉所有镜像缓存，导致重建耗时数十分钟）
+- ❌ 对 `/root/qqbot` 做任何 `ln -sfn` / 改指向操作——它是真实目录，没有"指向"这个概念
 
 **磁盘空间维护**：
-- 每次部署成功后执行步骤 4 即可保持空间健康
-- 如仍遇磁盘不足：只允许 `rm -rf /root/QQBotForFun_*旧目录` + `docker image prune -f`
+- 每次部署成功/失败后都无条件清理 `/root/.deploy_staging`，磁盘上永远不该有它以外的残留中转目录
+- 如果在 `/root/` 发现任何 `QQBotForFun_*` 命名的目录（不是 `.deploy_staging`）→ **先向用户报告并询问**，禁止直接删除，这不是正常流程的产物
 - 其他清理操作（如 docker system prune）必须先报告用户，由用户决定
 
 **`.env` 保护**：
 - `.env` 在服务器上一次配置后永不需要再动，部署流程不涉及它
 - 备份位置：`/root/.env_qqbot_backup`（出事时 `cp /root/.env_qqbot_backup /root/qqbot/.env`）
+- 如果手动改过服务器上的 `.env`，必须同步 `cp /root/qqbot/.env /root/.env_qqbot_backup` 更新备份
 
 ## 排查：机器人没反应
 
@@ -99,16 +122,17 @@ cd /root/qqbot && cat logs/aoe3_battle/$(ls -t logs/aoe3_battle/*.json | grep -v
 1. 新依赖安装会使构建时间变长（`akshare` 较大，首次约 2-3 分钟）
 2. `config/llm.yaml` 是挂载卷，标准 cp 命令不覆盖 `config/`。如果 `config/` 有改动，需额外复制：
 ```
-cp -r /root/QQBotForFun_<ts>/config/llm.yaml /root/qqbot/config/llm.yaml
+cp -r /root/.deploy_staging/config/llm.yaml /root/qqbot/config/llm.yaml
 ```
 3. 新增的 DB 表由 `init_db()` 的 `create_all` 自动创建（幂等），无需手动跑 migration
 
 **完整命令（finance 插件首次部署）：**
 ```
-cd /root/qqbot && docker compose stop bot && docker compose rm -f bot && cp -r /root/QQBotForFun_<ts>/{src,seeds,scripts,docs,resources,pyproject.toml} /root/qqbot/ && cp /root/QQBotForFun_<ts>/config/llm.yaml /root/qqbot/config/llm.yaml && docker compose up -d --build bot
+rm -rf /root/.deploy_staging && mv /root/QQBotForFun_<ts> /root/.deploy_staging
+cd /root/qqbot && docker compose stop bot && docker compose rm -f bot && cp -r /root/.deploy_staging/{src,seeds,scripts,docs,resources,pyproject.toml} /root/qqbot/ && cp /root/.deploy_staging/config/llm.yaml /root/qqbot/config/llm.yaml && docker compose up -d --build bot
 ```
 
-**验证成功后同样执行清理：** `rm -rf /root/QQBotForFun_<ts> && docker image prune -f`
+**验证成功后同样无条件清理：** `rm -rf /root/.deploy_staging && docker image prune -f`
 
 **验证：**
 ```
@@ -116,6 +140,27 @@ cd /root/qqbot && docker compose logs bot --tail=10
 ```
 应看到 `[finance] registered daily report cron` 和 `[bot] ready.`。
 
-## 全流程部署（仅改了 docker-compose.yml 时）
+## 全流程部署（改了 docker-compose.yml / Dockerfile 等根级文件）
 
-会重启 NapCat，需要重新扫码。详见 docs/ops-guide.md §4。
+`/root/qqbot` 是真实目录后，这一步**不再需要 `docker compose down`、不再需要重建符号链接、不再需要 NapCat 重新扫码**——本质就是多 cp 几个文件，然后让 compose 按需重建变更的服务。
+
+```
+rm -rf /root/.deploy_staging && mv /root/QQBotForFun_<ts> /root/.deploy_staging
+cp /root/.deploy_staging/docker-compose.yml /root/qqbot/docker-compose.yml
+# 如果 Dockerfile / pyproject.toml / uv.lock 等也变了，一并 cp
+cd /root/qqbot && docker compose up -d --build
+rm -rf /root/.deploy_staging && docker image prune -f
+```
+
+`docker compose up -d` 只会重建**定义发生变化的服务**（一般是 `bot`），postgres/redis/napcat 的服务定义没变就不会被触碰，不会掉线、不需要扫码。
+
+**唯一需要扫码的场景**：确实修改了 `napcat` 这个 service 本身的定义（镜像版本、端口等），此时才需要 `docker compose up -d --build napcat`，之后走 NapCat 重新登录流程。
+
+## 关键规则
+
+- NapCat 每次「删容器重建」都需要重新扫码，仅 `restart` 不需要
+- `docker compose up -d --build bot` 只重建 Bot，不影响其他服务
+- docker-compose.yml 中 `name: qqbot` 固定了项目名，与目录名无关
+- 数据卷使用 external volume（`qqbot_pg_data` 等），数据不会因目录内容变化丢失
+- Bot 容器里的文件 NapCat 读不到，图片用 base64 发送
+- **任何 `rm -rf` 目标路径，如果不是 `/root/.deploy_staging`，且位于 `/root/` 下、看起来像项目相关目录 → 先 `ls -la` 确认、向用户报告，禁止直接删除**

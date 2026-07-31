@@ -12,6 +12,16 @@
 - ✅ `docker compose stop bot && rm -f bot && up -d --build bot`（日常部署）
 - ✅ `docker compose restart napcat`（重启但不删容器，登录态保留）
 - ✅ `docker compose restart bot`
+- ✅ `docker compose up -d --build`（只要没改 napcat 的 service 定义，只会重建 bot）
+
+---
+
+## ⚠️ 铁律：目录命名与角色绑定
+
+- `/root/qqbot` 是**真实目录**（不是符号链接），生产环境唯一真身，**永久存在，永不删除、永不重命名、永不做 `ln -sfn` 之类的指向切换**。
+- `deploy_project_preparation` 上传后生成的 `/root/QQBotForFun_<timestamp>` **只允许作为一次性中转**，寿命不超过一条部署命令链。
+- 上传后第一步永远是把它改名成固定名字：`mv /root/QQBotForFun_<ts> /root/.deploy_staging`，之后所有操作都从这个固定名字读取，用完无条件删除。
+- **正常情况下 `/root/` 不应该存在任何 `QQBotForFun_*` 目录**（只在一条命令执行的瞬间存在）。排查磁盘时如果看到这种目录，说明某次部署被中断过，**必须先询问用户，禁止当作垃圾直接删除**——这正是历史上一次生产目录被误删的直接原因（旧版流程用 `ln -sfn` 切换符号链接指向，从未清理被替换掉的旧目标目录，导致"真身"和"废弃临时目录"共用同一套命名，无法区分）。
 
 ---
 
@@ -21,12 +31,24 @@
 Region:      ap-guangzhou
 InstanceId:  lhins-hwnz7rcz
 IP:          106.55.228.236
-项目路径:     /root/qqbot（符号链接，指向实际目录）
+项目路径:     /root/qqbot（真实目录，生产唯一真身，不是符号链接）
 Bot QQ:      3959381140
 NapCat WebUI: http://106.55.228.236:6099
 ```
 
 所有命令直接用 `cd /root/qqbot && ...`，不需要查地域或实例列表。
+
+---
+
+## 权威副本规定
+
+| 内容 | 唯一权威来源 |
+|---|---|
+| 代码/文档/资源/配置模板/依赖清单/迁移脚本 | 本地 git 仓库，服务器版本永远由本地 `cp` 覆盖 |
+| `.env`（真实密钥） | 服务器 `/root/qqbot/.env` + 备份 `/root/.env_qqbot_backup`，本地无副本 |
+| NapCat 登录态 / QQ 账号数据 | named volume `qqbot_napcat_data`，与目录无关 |
+| Postgres / Redis 数据 | named volume `qqbot_pg_data` / `qqbot_redis_data`，与目录无关 |
+| `logs/` | 服务器本地，无备份，可接受丢失 |
 
 ---
 
@@ -37,7 +59,7 @@ NapCat WebUI: http://106.55.228.236:6099
 ├─ 更新 Python 代码/数据 → §1 日常部署
 ├─ 机器人没反应 → §2 排查
 ├─ NapCat 掉线/需要扫码 → §3 重新登录
-├─ 改了 docker-compose.yml → §4 全流程部署（需扫码）
+├─ 改了 docker-compose.yml / Dockerfile → §4 根级文件部署
 └─ 查战斗日志 → §5 日志
 ```
 
@@ -50,15 +72,22 @@ NapCat WebUI: http://106.55.228.236:6099
 **步骤：**
 
 1. 用 `deploy_project_preparation` 上传项目（会生成临时目录 `/root/QQBotForFun_<ts>`）
-2. 停 bot、复制文件、重建：
+2. **立刻**把临时目录改名成固定名字，消除时间戳歧义：
+
+```bash
+rm -rf /root/.deploy_staging
+mv /root/QQBotForFun_<ts> /root/.deploy_staging
+```
+
+3. 停 bot、复制文件、重建：
 
 ```bash
 cd /root/qqbot && docker compose stop bot && docker compose rm -f bot
-cp -r /root/QQBotForFun_<ts>/{src,seeds,scripts,docs,resources,pyproject.toml} /root/qqbot/
+cp -r /root/.deploy_staging/{src,seeds,scripts,docs,resources,pyproject.toml} /root/qqbot/
 cd /root/qqbot && docker compose up -d --build bot
 ```
 
-3. 确认启动：
+4. 确认启动：
 
 ```bash
 cd /root/qqbot && docker compose logs bot --tail=5
@@ -66,23 +95,23 @@ cd /root/qqbot && docker compose logs bot --tail=5
 
 应看到 `[bot] ready.` 和 `Uvicorn running`。
 
-4. 确认成功后清理（每次必做）：
+5. 无条件清理（成功失败都执行，不是"确认成功后才做"）：
 
 ```bash
-rm -rf /root/QQBotForFun_<ts> && docker image prune -f
+rm -rf /root/.deploy_staging && docker image prune -f
 ```
 
-> 上传临时目录和旧镜像层会持续积累磁盘空间，必须在每次部署成功后清理。
+> 中转目录和旧镜像层会持续积累磁盘空间，必须每次都清理，且必须清理干净（不留任何 `QQBotForFun_*` 残留）。
 
 **禁止事项：**
-- ❌ 不要在新目录里执行 `docker compose up`（会启新容器栈）
+- ❌ 不要在中转目录里执行 `docker compose up`（会启新容器栈）
 - ❌ 不要 `docker compose down`（会杀 NapCat，需要重新扫码）
-- ❌ 不要重命名或删除 `/root/qqbot` 链接指向的实际目录
+- ❌ 不要对 `/root/qqbot` 做任何重命名、删除、`ln -sfn` 操作——它是真实目录，没有"指向"这个概念
 - ❌ 不要 `docker system prune -a` 或 `--volumes`（清掉所有镜像缓存，重建耗时数十分钟）
 
 **磁盘空间维护：**
-- 每次部署成功后的步骤 4（`rm -rf` 临时目录 + `docker image prune -f`）是必做项
-- 如仍遇磁盘不足：只允许删旧的 `/root/QQBotForFun_*` 目录 + `docker image prune -f`
+- 每次部署后无条件执行步骤 5，磁盘上不该残留任何 `.deploy_staging` 以外的中转目录
+- 如果在 `/root/` 发现 `QQBotForFun_*` 命名的目录 → 先报告用户询问来源，**禁止直接删除**（正常流程不会留下这种目录，出现即异常）
 - 其他清理操作必须先报告用户由用户决定，禁止自行执行
 
 ---
@@ -144,42 +173,29 @@ cd /root/qqbot && docker compose logs bot --tail=5
 
 ---
 
-## §4 全流程部署（极少用）
+## §4 根级文件部署（改了 docker-compose.yml / Dockerfile 等）
 
-**仅当修改了 docker-compose.yml 时才需要。会重启 NapCat，需要重新扫码。**
+**`/root/qqbot` 是真实目录，这一步不再需要 `down`、不再需要切换符号链接、正常情况下也不需要重新扫码**——本质就是把变了的根级文件 cp 进去，让 compose 按需重建。
 
 ```bash
-# 1. 上传代码（deploy_project_preparation），得到新目录 /root/QQBotForFun_<ts>
+# 1. 上传代码，立刻转固定名
+rm -rf /root/.deploy_staging && mv /root/QQBotForFun_<ts> /root/.deploy_staging
 
-# 2. 停掉所有容器
-cd /root/qqbot && docker compose down
+# 2. 把变了的根级文件 cp 进真身目录（按实际改动挑选，不是全量覆盖）
+cp /root/.deploy_staging/docker-compose.yml /root/qqbot/docker-compose.yml
+# 如果 Dockerfile / pyproject.toml / uv.lock / alembic.ini 等也变了，一并 cp
 
-# 3. 更新符号链接
-ln -sfn /root/QQBotForFun_<ts> /root/qqbot
+# 3. 让 compose 按服务定义差异自动重建（一般只会重建 bot）
+cd /root/qqbot && docker compose up -d --build
 
-# 4. Dockerfile 镜像加速（如果新目录的 Dockerfile 还没 patch）
-cd /root/qqbot && python3 << 'PYEOF'
-with open('Dockerfile','r') as f: c=f.read()
-c=c.replace("RUN apt-get update","RUN sed -i 's@deb.debian.org@mirrors.cloud.tencent.com@g' /etc/apt/sources.list.d/debian.sources && apt-get update")
-c=c.replace('RUN pip install uv','RUN pip install -i https://mirrors.cloud.tencent.com/pypi/simple uv')
-c=c.replace('RUN uv pip install --system .','RUN uv pip install --system --index-url https://mirrors.cloud.tencent.com/pypi/simple .')
-c=c.replace('COPY pyproject.toml ./','COPY pyproject.toml README.md ./')
-with open('Dockerfile','w') as f: f.write(c)
-print('Dockerfile patched')
-PYEOF
-
-# 5. 启动
-cd /root/qqbot && docker compose up -d
-
-# 6. 写入 NapCat WebSocket 配置（全流程部署后配置会被重置）
-cd /root/qqbot && docker compose exec napcat sh -c 'cat > /app/napcat/config/onebot11_3959381140.json << EOF
-{"network":{"httpServers":[],"httpSseServers":[],"httpClients":[],"websocketServers":[],"websocketClients":[{"enable":true,"name":"qqbot","url":"ws://bot:8080/onebot/v11/ws","messagePostFormat":"array","reconnectInterval":3000,"token":"qqbot_fun_token_2026","heartInterval":30000}],"plugins":[]},"musicSignUrl":"","enableLocalFile2Url":false,"parseMultMsg":false,"imageDownloadProxy":"","timeout":{"baseTimeout":10000,"uploadSpeedKBps":256,"downloadSpeedKBps":256,"maxTimeout":1800000}}
-EOF'
-# 必须 stop+rm+up（不是 restart），否则端口映射可能丢失
-docker compose stop napcat && docker compose rm -f napcat && docker compose up -d napcat
-
-# 7. 去 WebUI 扫码（同 §3 步骤 2~4）
+# 4. 清理
+rm -rf /root/.deploy_staging && docker image prune -f
 ```
+
+**判断是否会影响 NapCat：**
+- 只改了 `bot` service 的定义（环境变量、构建方式等）→ 只重建 `bot`，NapCat 不受影响，**不需要扫码**
+- 确实修改了 `napcat` service 本身的定义（镜像版本、端口映射等）→ `docker compose up -d --build napcat` 会重建该容器，**需要走 §3 重新登录**
+- 不确定改动范围时，先 `docker compose config` 或 `docker compose up -d --build --dry-run`（如支持）确认哪些服务会被重建，再执行
 
 ---
 
@@ -199,8 +215,9 @@ cd /root/qqbot && cat logs/aoe3_battle/$(ls -t logs/aoe3_battle/*.json | grep -v
 
 ## §6 关键规则
 
-- NapCat 每次重启都需要重新扫码
-- `docker compose up -d --build bot` 只重建 Bot，不影响 NapCat
+- NapCat 只有「删容器重建」才需要重新扫码，`restart` 不需要
+- `docker compose up -d --build` 只重建服务定义发生变化的容器
 - docker-compose.yml 中 `name: qqbot` 固定了项目名，与目录名无关
-- 数据卷使用 external volume（`qqbot_pg_data` 等），数据不会因目录变化丢失
+- 数据卷使用 external volume（`qqbot_pg_data` 等），数据不会因目录内容变化丢失
 - Bot 容器里的文件 NapCat 读不到，图片用 base64 发送
+- **任何 `rm -rf` 目标如果不是 `/root/.deploy_staging`，且位于 `/root/` 下、名字像项目目录 → 先确认来源、向用户报告，禁止直接删除**
