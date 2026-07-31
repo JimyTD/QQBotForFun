@@ -15,13 +15,26 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
 
   redis:
     image: redis:7-alpine
     restart: unless-stopped
     volumes:
       - redis_data:/data
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
 
+  # ⚠️ napcat 故意不加 logging 限制：修改此 service 定义会触发容器重建，
+  # 而 NapCat 每次删容器重建都需要重新扫码（登录态与网络配置的重建行为已知有坑，
+  # 见 docs/ops-guide.md §3）。为了日志滚动去冒重新扫码的风险不值得，维持原样。
   napcat:
     image: mlikiowa/napcat-docker:latest
     restart: unless-stopped
@@ -53,6 +66,11 @@ services:
       - ./config:/app/config
     ports:
       - "8080:8080"
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
 
 volumes:
   pg_data:
