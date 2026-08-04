@@ -14,7 +14,6 @@ from src.plugins.games.turtle_soup.prompts import (
     CLAIM_SYSTEM,
     CLAIM_USER,
     JUDGE_USER,
-    build_hint_system_prompt,
     build_judge_system_prompt,
     format_clues,
 )
@@ -36,7 +35,7 @@ HELP_TEXT = (
     "  · status / 状态   查看进度\n"
     "  · surface/ 汤面   重新查看汤面（题面）\n"
     "  · recap  / 回顾   查看关键线索\n"
-    "  · hint   / 提示   花金币购买一条方向性提示\n"
+    "  · hint   / 提示   花金币揭示一条未发现的关键线索\n"
     "  · giveup / 投降   投降公布汤底\n"
     "  · quit   / 退出   退出当前游戏\n"
     "  · help   / 帮助   查看本帮助\n"
@@ -94,7 +93,7 @@ class TurtleSoupCLIAdapter(GameCLIAdapter):
         self.puzzle: PuzzleData | None = None
         self.question_count = 0
         self.key_clues_shown: list[tuple[str, str]] = []  # (问题文本, 判官hint) 自然命中
-        self.hints_purchased: list[str] = []  # 已购买的渐进式提示文本
+        self.hints_purchased: list[int] = []  # 已购买揭示的关键线索下标
         self.max_q = 50
         # 线索进度（与 bot 侧 ctx.state 的 hit_clue_idx / unlocated_key_hits 对应）
         self.hit_clue_idx: list[int] = []
@@ -194,7 +193,7 @@ class TurtleSoupCLIAdapter(GameCLIAdapter):
         return str(data.get("verdict", "wrong")), str(data.get("feedback", "") or "")
 
     async def _handle_hint(self) -> None:
-        """CLI 端渐进式提示：3 次由浅入深，LLM 生成。"""
+        """CLI 端购买提示：直接揭示一条未发现的关键线索。"""
         assert self.puzzle is not None
         cfg = get_config()
 
@@ -206,50 +205,39 @@ class TurtleSoupCLIAdapter(GameCLIAdapter):
             )
             return
 
+        purchased = set(self.hints_purchased)
+        hit = set(self.hit_clue_idx)
+        undiscovered = [
+            i
+            for i in range(len(self.puzzle.key_clues))
+            if i not in purchased and i not in hit
+        ]
+        if not undiscovered:
+            print(f"{C.YEL}💡 所有关键线索都已揭示，靠你自己推理汤底啦！{C.R}")
+            return
+
         # 模拟扣币（CLI 本地）
         self.cli_coin -= cfg.hint_cost_coin
 
+        target_idx = undiscovered[0]
+        clue_text = self.puzzle.key_clues[target_idx]
         hint_number = len(self.hints_purchased) + 1
-        try:
-            resp = await llm.chat(
-                messages=[
-                    llm.LLMMessage(
-                        role="system",
-                        content=build_hint_system_prompt(
-                            surface=self.puzzle.surface,
-                            truth=self.puzzle.truth,
-                            key_clues=self.puzzle.key_clues,
-                            hint_number=hint_number,
-                            max_hints=cfg.max_hints_per_game,
-                            previous_hints=self.hints_purchased if self.hints_purchased else None,
-                        ),
-                    ),
-                    llm.LLMMessage(role="user", content=f"请生成第 {hint_number} 次的提示。"),
-                ],
-                scene="turtle_soup_judge",
-                json_mode=True,
-            )
-            data = resp.json()
-            hint_text = str(data.get("hint", "")).strip()
-            if not hint_text:
-                raise ValueError("LLM returned empty hint")
-        except (LLMError, LLMJSONParseError, ValueError) as e:
-            print(f"{C.RED}⚠️ 汤主走神了：{e}{C.R}")
-            return
 
-        self.hints_purchased.append(hint_text)
-        # 归入回顾列表
-        self.key_clues_shown.append((f"[提示 #{hint_number}]", hint_text))
+        self.hints_purchased.append(target_idx)
+        if target_idx not in self.hit_clue_idx:
+            self.hit_clue_idx.append(target_idx)
+        self.key_clues_shown.append((f"[提示 #{hint_number}]", clue_text))
 
         hints_used = len(self.hints_purchased)
+        bar = self._progress_bar()
         print(
-            f"\n{C.B}🔮 购买提示 · 第 {hint_number} 次 "
+            f"\n{C.B}🔮 购买提示 "
             f"（{hints_used}/{cfg.max_hints_per_game}）{C.R}"
         )
-        print(f"  {C.MAG}💡 {hint_text}{C.R}")
-        print(
-            f"  {C.DIM}💰 花费 {cfg.hint_cost_coin} 金币{C.R}"
-        )
+        print(f"  {C.MAG}💡 关键线索：{clue_text}{C.R}")
+        print(f"  {C.DIM}💰 花费 {cfg.hint_cost_coin} 金币{C.R}")
+        if bar:
+            print(f"  {C.CYAN}线索进度：{bar}{C.R}")
 
     async def play(self) -> None:  # noqa: C901
         assert self.puzzle is not None
@@ -296,8 +284,13 @@ class TurtleSoupCLIAdapter(GameCLIAdapter):
                     return s if len(s) <= n else s[: n - 1] + "…"
 
                 confirmed: list[str] = []
-                for i, h in enumerate(self.hints_purchased, 1):
-                    confirmed.append(f"💡 {h}  {C.DIM}[提示 #{i}]{C.R}")
+                for i, idx in enumerate(self.hints_purchased, 1):
+                    text = (
+                        puzzle.key_clues[idx]
+                        if isinstance(idx, int) and 0 <= idx < len(puzzle.key_clues)
+                        else str(idx)
+                    )
+                    confirmed.append(f"💡 {text}  {C.DIM}[提示 #{i}]{C.R}")
                 for label, hint_text in self.key_clues_shown:
                     if label.startswith("[提示 #"):
                         continue

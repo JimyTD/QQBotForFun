@@ -3,7 +3,7 @@
 - @机器人 /状态    查看当前进度
 - @机器人 /汤面    重新查看汤面（题面）
 - @机器人 /回顾    查看已问过的关键线索
-- @机器人 /提示    花金币购买一条方向性提示
+- @机器人 /提示    花金币揭示一条未发现的关键线索
 - @机器人 /烂题    烂题淘汰（本局结束后短窗口内可用）
 
 投降/结束 已合并到 game_launcher 的 /结束 命令。
@@ -113,11 +113,17 @@ async def _(matcher: Matcher, event: GroupMessageEvent) -> None:
 
     # ---- 已确认栏 ----
     confirmed: list[str] = []
+    puzzle = ctx.state.get("puzzle", {}) or {}
+    all_clues: list[str] = puzzle.get("key_clues", []) or []
 
-    # 来源 1：购买的渐进式提示（从 ctx.state 读取）
-    hints_purchased: list[str] = ctx.state.get("hints_purchased", [])
+    # 来源 1：购买揭示的关键线索（从 ctx.state 读取；兼容旧局的渐进式字符串）
+    hints_purchased: list = ctx.state.get("hints_purchased", [])
     for i, h in enumerate(hints_purchased, 1):
-        confirmed.append(f"💡 {h}  [提示 #{i}]")
+        if isinstance(h, int) and 0 <= h < len(all_clues):
+            text = all_clues[h]
+        else:
+            text = str(h)
+        confirmed.append(f"💡 {text}  [提示 #{i}]")
 
     # 来源 2 / 3：自然命中的 key（带 hint）与 yes（原始问题），从 DB 读取
     async with db_session() as sess:
@@ -133,7 +139,7 @@ async def _(matcher: Matcher, event: GroupMessageEvent) -> None:
     yes_items: list[str] = []
     for r in rows:
         # 跳过购买提示的记录（已在来源 1 展示）
-        if r.question.startswith("[提示 #"):
+        if r.question.startswith("[提示 #") or r.question.startswith("[购买提示"):
             continue
         if r.verdict == "key":
             label = r.hint or _clip(r.question)
@@ -200,19 +206,25 @@ async def _(matcher: Matcher, event: GroupMessageEvent) -> None:
     from .game import TurtleSoupGame
 
     game_instance = TurtleSoupGame()
-    hint_text = await game_instance.handle_hint(ctx, player_id)
-    if hint_text:
+    clue_text = await game_instance.handle_hint(ctx, player_id)
+    if clue_text:
+        from .game import clue_progress
+
         hints_used = len(ctx.state.get("hints_purchased", []))
         max_hints = cfg.max_hints_per_game
-        tier_label = f"第 {hints_used} 次"
+        found, total = clue_progress(ctx)
+        body = [
+            f"💡 关键线索：{clue_text}",
+            "",
+            f"💰 花费 {cfg.hint_cost_coin} 金币",
+        ]
+        if total:
+            bar = "●" * found + "○" * max(0, total - found)
+            body.append(f"线索进度：{bar} {found}/{total}")
         await matcher.finish(
             render.text_card(
-                f"购买提示 · {tier_label}",
-                [
-                    f"💡 {hint_text}",
-                    "",
-                    f"💰 花费 {cfg.hint_cost_coin} 金币",
-                ],
+                "购买提示",
+                body,
                 emoji="🔮",
                 footer=[f"已用 {hints_used}/{max_hints} 次提示机会"],
             )
