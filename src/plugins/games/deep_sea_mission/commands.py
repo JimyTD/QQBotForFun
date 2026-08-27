@@ -1,4 +1,9 @@
-"""深海任务：报名房间与开局命令。"""
+"""深海任务：开局 + 报名房间命令。
+
+- @机器人 深海任务 N    创建等待房间（始终可触发，与海龟汤/斗蛐蛐相同）
+- 加入 / 重复加入 / 离开 / 开始 / 发牌
+  只在本群已有等待房间时生效；没有房间则不拦截，把口令留给其他游戏。
+"""
 
 from __future__ import annotations
 
@@ -9,7 +14,7 @@ from nonebot import on_command
 from nonebot.adapters.onebot.v11 import GroupMessageEvent, Message
 from nonebot.matcher import Matcher
 from nonebot.params import CommandArg
-from nonebot.rule import to_me
+from nonebot.rule import Rule, to_me
 
 from core import game_base, user
 from core.errors import GameAlreadyRunningError
@@ -26,6 +31,17 @@ class PendingRoom:
 
 
 _rooms: dict[int, PendingRoom] = {}
+
+
+def has_pending_room(group_id: int) -> bool:
+    return group_id in _rooms
+
+
+async def _is_pending_room(event: GroupMessageEvent) -> bool:
+    return has_pending_room(int(event.group_id))
+
+
+_PENDING_ROOM = Rule(_is_pending_room)
 
 
 def _parse_difficulty(text: str) -> int | None:
@@ -96,7 +112,7 @@ async def _(matcher: Matcher, event: GroupMessageEvent, args: Message = CommandA
 _join_room = on_command(
     "加入",
     aliases={"join", "参战"},
-    rule=to_me(),
+    rule=to_me() & _PENDING_ROOM,
     priority=3,
     block=True,
 )
@@ -107,11 +123,9 @@ async def _(matcher: Matcher, event: GroupMessageEvent) -> None:
     group_id = int(event.group_id)
     room = _rooms.get(group_id)
     if room is None:
-        await matcher.finish("当前没有等待中的深海任务房间。")
         return
     if game_base.get_runner_by_group(group_id) is not None:
         _rooms.pop(group_id, None)
-        await matcher.finish("⚠️ 本群已有进行中的游戏，等待房间已取消。")
         return
     player = await user.get(int(event.user_id), group_id)
     if player.qq_id in room.players:
@@ -128,7 +142,7 @@ async def _(matcher: Matcher, event: GroupMessageEvent) -> None:
 _duplicate_join_room = on_command(
     "重复加入",
     aliases={"调试加入", "debug_join"},
-    rule=to_me(),
+    rule=to_me() & _PENDING_ROOM,
     priority=3,
     block=True,
 )
@@ -139,11 +153,9 @@ async def _(matcher: Matcher, event: GroupMessageEvent) -> None:
     group_id = int(event.group_id)
     room = _rooms.get(group_id)
     if room is None:
-        await matcher.finish("当前没有等待中的深海任务房间。")
         return
     if game_base.get_runner_by_group(group_id) is not None:
         _rooms.pop(group_id, None)
-        await matcher.finish("⚠️ 本群已有进行中的游戏，等待房间已取消。")
         return
     owner_already_seated = int(event.user_id) in room.seat_owners
     seats_needed = 1 if owner_already_seated else 2
@@ -169,7 +181,7 @@ async def _(matcher: Matcher, event: GroupMessageEvent) -> None:
 _leave_room = on_command(
     "离开",
     aliases={"leave", "退出房间"},
-    rule=to_me(),
+    rule=to_me() & _PENDING_ROOM,
     priority=3,
     block=True,
 )
@@ -180,7 +192,6 @@ async def _(matcher: Matcher, event: GroupMessageEvent) -> None:
     group_id = int(event.group_id)
     room = _rooms.get(group_id)
     if room is None:
-        await matcher.finish("当前没有等待中的深海任务房间。")
         return
     qq_id = int(event.user_id)
     for seat_id, owner_id in list(room.seat_owners.items()):
@@ -198,8 +209,8 @@ async def _(matcher: Matcher, event: GroupMessageEvent) -> None:
 
 _begin_room = on_command(
     "开始",
-    aliases={"start", "发牌"},
-    rule=to_me(),
+    aliases={"发牌"},
+    rule=to_me() & _PENDING_ROOM,
     priority=3,
     block=True,
 )
@@ -210,17 +221,15 @@ async def _(matcher: Matcher, event: GroupMessageEvent) -> None:
     group_id = int(event.group_id)
     room = _rooms.get(group_id)
     if room is None:
-        await matcher.finish("当前没有等待中的深海任务房间。")
+        return
+    if game_base.get_runner_by_group(group_id) is not None:
+        _rooms.pop(group_id, None)
         return
     if int(event.user_id) != room.host_id:
         await matcher.finish("⚠️ 只有房主可以开始深海任务。")
         return
     if len(room.players) < 3:
         await matcher.finish("⚠️ 深海任务至少需要 3 名玩家。")
-        return
-    if game_base.get_runner_by_group(group_id) is not None:
-        _rooms.pop(group_id, None)
-        await matcher.finish("⚠️ 本群已有进行中的游戏，等待房间已取消。")
         return
     players = list(room.players.values())
     _rooms.pop(group_id, None)
