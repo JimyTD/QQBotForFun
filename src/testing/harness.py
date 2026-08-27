@@ -48,10 +48,15 @@ class GameTestHarness:
 
         async def _fake_whisper(qq_id: int, message) -> None:
             self.whispers.append((qq_id, str(message)))
+            return 2000 + len(self.whispers)
+
+        async def _fake_delete_message(message_id: int) -> bool:  # noqa: ARG001
+            return True
 
         p1 = patch.object(session, "broadcast", AsyncMock(side_effect=_fake_broadcast))
         p2 = patch.object(session, "whisper", AsyncMock(side_effect=_fake_whisper))
-        for p in (p1, p2):
+        p3 = patch.object(session, "delete_message", AsyncMock(side_effect=_fake_delete_message))
+        for p in (p1, p2, p3):
             p.start()
             self._patches.append(p)
         return self

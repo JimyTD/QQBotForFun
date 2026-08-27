@@ -8,6 +8,7 @@
 | [trivia.md](trivia.md) | `trivia` | 趣味问答 · 听线索猜答案 |
 | [aoe3-battle.md](aoe3-battle.md) | `aoe3_battle` | 帝国3斗蛐蛐 · 一维自研模拟 |
 | [ra2-battle.md](ra2-battle.md) | `ra2_battle` | 红警2斗蛐蛐 · 二维 OpenRA 数据 |
+| [deep-sea-mission.md](deep-sea-mission.md) | `deep_sea_mission` | 深海任务 · 合作吃墩框架 |
 
 ## 子系统 / 参考文档
 

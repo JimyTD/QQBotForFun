@@ -59,6 +59,7 @@ _FALLBACK_HELP = (
     "\n"
     "🎮 @我 海龟汤\n"
     "🎮 @我 趣味问答\n"
+    "🌊 @我 深海任务 8\n"
     "⚔️ @我 斗蛐蛐\n"
     "⚔️ @我 斗蛐蛐 锦标赛\n"
     "⚔️ @我 斗蛐蛐 王中王\n"
@@ -97,7 +98,12 @@ async def _route(event: MessageEvent, matcher: Matcher) -> None:
         return
 
     # 1) 游戏内提问 / ask 等待
-    consumed = await csession.route_incoming_message(qq_id, group_id, text)
+    consumed = await csession.route_incoming_message(
+        qq_id,
+        group_id,
+        text,
+        message_id=getattr(event, "message_id", None),
+    )
     if consumed:
         matcher.stop_propagation()
         return

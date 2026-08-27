@@ -64,6 +64,7 @@ from cli_adapters.web_search import WebSearchCLIAdapter  # noqa: E402
 from cli_adapters.yugioh_card import YugiohCardCLIAdapter  # noqa: E402
 from cli_adapters.aoe3 import AoE3CLIAdapter  # noqa: E402
 from cli_adapters.aoe3_battle import AoE3BattleCLIAdapter  # noqa: E402
+from cli_adapters.deep_sea_mission import DeepSeaMissionCLIAdapter  # noqa: E402
 
 
 # ============ 已注册的 CLI 游戏 ============
@@ -76,6 +77,7 @@ ADAPTERS: dict[str, type[GameCLIAdapter]] = {
     "yugioh_card": YugiohCardCLIAdapter,
     "aoe3": AoE3CLIAdapter,
     "aoe3_battle": AoE3BattleCLIAdapter,
+    "deep_sea_mission": DeepSeaMissionCLIAdapter,
 }
 
 
