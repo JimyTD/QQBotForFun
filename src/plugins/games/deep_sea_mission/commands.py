@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, field
+import uuid
 
 from nonebot import on_command
 from nonebot.adapters.onebot.v11 import GroupMessageEvent, Message
@@ -21,6 +22,7 @@ class PendingRoom:
     host_id: int
     difficulty: int
     players: dict[int, User] = field(default_factory=dict)
+    seat_owners: dict[int, int] = field(default_factory=dict)
 
 
 _rooms: dict[int, PendingRoom] = {}
@@ -39,14 +41,25 @@ def _parse_difficulty(text: str) -> int | None:
 
 
 def _room_line(room: PendingRoom) -> str:
-    names = "、".join(f"@{p.nickname}" for p in room.players.values())
+    names = "、".join(
+        f"@{p.nickname}" if room.seat_owners.get(p.qq_id, p.qq_id) == p.qq_id
+        else f"@{p.nickname}[调试位]"
+        for p in room.players.values()
+    )
     return (
         f"🌊 深海任务房间\n"
         f"目标难度：{room.difficulty}\n"
         f"人数：{len(room.players)} / 5（至少 3 人）\n"
         f"玩家：{names}\n"
-        "💡 @我 加入 加入房间；房主 @我 开始 发牌"
+        "💡 @我 加入 加入房间；@我 重复加入 添加调试座位；房主 @我 开始 发牌"
     )
+
+
+def _new_debug_seat_id(room: PendingRoom) -> int:
+    while True:
+        seat_id = 9_000_000_000_000_000 + uuid.uuid4().int % 900_000_000_000_000
+        if seat_id not in room.players:
+            return seat_id
 
 
 _start_room = on_command(
@@ -74,6 +87,7 @@ async def _(matcher: Matcher, event: GroupMessageEvent, args: Message = CommandA
         host_id=player.qq_id,
         difficulty=difficulty,
         players={player.qq_id: player},
+        seat_owners={player.qq_id: player.qq_id},
     )
     _rooms[group_id] = room
     await matcher.finish(_room_line(room))
@@ -107,6 +121,48 @@ async def _(matcher: Matcher, event: GroupMessageEvent) -> None:
         await matcher.finish("⚠️ 深海任务最多 5 人。")
         return
     room.players[player.qq_id] = player
+    room.seat_owners[player.qq_id] = player.qq_id
+    await matcher.finish(_room_line(room))
+
+
+_duplicate_join_room = on_command(
+    "重复加入",
+    aliases={"调试加入", "debug_join"},
+    rule=to_me(),
+    priority=3,
+    block=True,
+)
+
+
+@_duplicate_join_room.handle()
+async def _(matcher: Matcher, event: GroupMessageEvent) -> None:
+    group_id = int(event.group_id)
+    room = _rooms.get(group_id)
+    if room is None:
+        await matcher.finish("当前没有等待中的深海任务房间。")
+        return
+    if game_base.get_runner_by_group(group_id) is not None:
+        _rooms.pop(group_id, None)
+        await matcher.finish("⚠️ 本群已有进行中的游戏，等待房间已取消。")
+        return
+    owner_already_seated = int(event.user_id) in room.seat_owners
+    seats_needed = 1 if owner_already_seated else 2
+    if len(room.players) + seats_needed > 5:
+        await matcher.finish("⚠️ 深海任务最多 5 人。")
+        return
+
+    owner = await user.get(int(event.user_id), group_id)
+    if owner.qq_id not in room.players:
+        room.players[owner.qq_id] = owner
+        room.seat_owners[owner.qq_id] = owner.qq_id
+    seat_no = 1 + sum(1 for owner_id in room.seat_owners.values() if owner_id == owner.qq_id)
+    seat_id = _new_debug_seat_id(room)
+    room.players[seat_id] = User(
+        qq_id=seat_id,
+        nickname=f"{owner.nickname}-调试{seat_no}",
+        group_id=group_id,
+    )
+    room.seat_owners[seat_id] = owner.qq_id
     await matcher.finish(_room_line(room))
 
 
@@ -127,7 +183,10 @@ async def _(matcher: Matcher, event: GroupMessageEvent) -> None:
         await matcher.finish("当前没有等待中的深海任务房间。")
         return
     qq_id = int(event.user_id)
-    room.players.pop(qq_id, None)
+    for seat_id, owner_id in list(room.seat_owners.items()):
+        if seat_id == qq_id or owner_id == qq_id:
+            room.players.pop(seat_id, None)
+            room.seat_owners.pop(seat_id, None)
     if not room.players:
         _rooms.pop(group_id, None)
         await matcher.finish("深海任务房间已取消。")
@@ -139,7 +198,7 @@ async def _(matcher: Matcher, event: GroupMessageEvent) -> None:
 
 _begin_room = on_command(
     "开始",
-    aliases={"start"},
+    aliases={"start", "发牌"},
     rule=to_me(),
     priority=3,
     block=True,
@@ -171,7 +230,14 @@ async def _(matcher: Matcher, event: GroupMessageEvent) -> None:
             group_id=group_id,
             host_id=room.host_id,
             players=players,
-            config={"mode": "mission", "difficulty": room.difficulty},
+            config={
+                "mode": "mission",
+                "difficulty": room.difficulty,
+                "seat_owners": {
+                    str(seat_id): owner_id
+                    for seat_id, owner_id in room.seat_owners.items()
+                },
+            },
         )
     except GameAlreadyRunningError as e:
         await matcher.finish(f"⚠️ {e}")

@@ -98,7 +98,12 @@ async def _route(event: MessageEvent, matcher: Matcher) -> None:
         return
 
     # 1) 游戏内提问 / ask 等待
-    consumed = await csession.route_incoming_message(qq_id, group_id, text)
+    consumed = await csession.route_incoming_message(
+        qq_id,
+        group_id,
+        text,
+        message_id=getattr(event, "message_id", None),
+    )
     if consumed:
         matcher.stop_propagation()
         return

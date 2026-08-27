@@ -47,6 +47,7 @@ class ActiveGameSession:
     on_player_action: Callable[[int, str], Awaitable[bool]] | None = None
     # 正在等待的 futures: key 为 (qq_id, group_id|None) 或 ("group", group_id)
     waiters: dict[tuple, asyncio.Future[tuple[int, str]]] = dataclasses.field(default_factory=dict)
+    last_message_ids: dict[int, int] = dataclasses.field(default_factory=dict)
 
 
 _active_by_group: dict[int, ActiveGameSession] = {}
@@ -126,7 +127,7 @@ async def broadcast(
     message: str | Message,
     *,
     at: int | list[int] | None = None,
-) -> None:
+) -> int | None:
     """向群发送消息（前面可选 @）。"""
     await _throttle()
     bot = get_bot()
@@ -138,10 +139,25 @@ async def broadcast(
         msg += MessageSegment.text(" ")
     msg += _coerce_message(message)
     try:
-        await bot.call_api("send_group_msg", group_id=group_id, message=msg)  # type: ignore[attr-defined]
+        result = await bot.call_api("send_group_msg", group_id=group_id, message=msg)  # type: ignore[attr-defined]
+        if isinstance(result, dict) and result.get("message_id") is not None:
+            return int(result["message_id"])
+        return None
     except Exception as e:  # noqa: BLE001
         logger.error(f"[session] broadcast failed group={group_id}: {e}")
         raise
+
+
+async def delete_message(message_id: int) -> bool:
+    """撤回一条消息。失败只记录日志，由调用方决定是否继续。"""
+    await _throttle()
+    bot = get_bot()
+    try:
+        await bot.call_api("delete_msg", message_id=message_id)  # type: ignore[attr-defined]
+        return True
+    except Exception as e:  # noqa: BLE001
+        logger.warning(f"[session] delete_msg failed message_id={message_id}: {e}")
+        return False
 
 
 async def broadcast_rich(
@@ -176,12 +192,15 @@ async def broadcast_rich(
     await broadcast(group_id, fallback_text)
 
 
-async def whisper(qq_id: int, message: str | Message) -> None:
+async def whisper(qq_id: int, message: str | Message) -> int | None:
     """私聊。"""
     await _throttle()
     bot = get_bot()
     try:
-        await bot.call_api("send_private_msg", user_id=qq_id, message=_coerce_message(message))  # type: ignore[attr-defined]
+        result = await bot.call_api("send_private_msg", user_id=qq_id, message=_coerce_message(message))  # type: ignore[attr-defined]
+        if isinstance(result, dict) and result.get("message_id") is not None:
+            return int(result["message_id"])
+        return None
     except Exception as e:  # noqa: BLE001
         logger.warning(f"[session] whisper failed qq={qq_id}: {e}")
         raise WhisperFailedError(str(e)) from e
@@ -385,6 +404,8 @@ async def route_incoming_message(
     qq_id: int,
     group_id: int | None,
     text: str,
+    *,
+    message_id: int | None = None,
 ) -> bool:
     """将一条入站消息路由到：waiters → 游戏 on_player_action。
 
@@ -408,6 +429,8 @@ async def route_incoming_message(
     active = _active_by_group.get(group_id)
     if active is None:
         return consumed
+    if message_id is not None:
+        active.last_message_ids[qq_id] = message_id
     # 玩家校验
     if active.player_ids and qq_id not in active.player_ids:
         return consumed
@@ -432,3 +455,10 @@ async def route_incoming_message(
             logger.exception(f"[session] on_player_action error: {e}")
 
     return consumed
+
+
+def last_routed_message_id(session_id: str, qq_id: int) -> int | None:
+    active = _active_by_sid.get(session_id)
+    if active is None:
+        return None
+    return active.last_message_ids.get(qq_id)
