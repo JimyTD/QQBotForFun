@@ -2,7 +2,7 @@
 
 红警2斗蛐蛐以 [OpenRA/ra2](https://github.com/OpenRA/ra2) 的 mod yaml 为唯一权威数据源，
 但**参考源码不放在项目目录内**——它们体积大（~90MB）、与运行时无关，
-且会拖慢 `deploy_project_preparation` 的整体上传。
+且会让部署时的 git 仓库无谓膨胀（`vendor/openra*` 已在 `.gitignore` 中忽略）。
 
 ## 推荐布局
 

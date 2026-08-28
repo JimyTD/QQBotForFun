@@ -90,27 +90,58 @@ INFO | Connected to OneBot: self_id=10086
 
 ## 4. 生产部署（Linux 云服务器）
 
+> **当前生产环境的日常运维请直接看 `docs/ops-guide.md`**（含固定参数、Git 同步流程、铁律）。
+> 本节保留「从零搭建一台新服务器」的完整步骤，供灾难重建或迁移新机时参考。
+
 ### 4.1 准备
 - 一台 Linux 服务器（2核 2GB+）
 - Docker + Docker Compose v2 已安装
 - 放行端口（可选，仅当需外部访问 NapCat WebUI）
 
 ### 4.2 拉代码
+
+⚠️ **国内服务器直连 GitHub 通常不通**（实测当前生产机 TCP 443 被拒），需走镜像：
+
 ```bash
-git clone <repo-url> /opt/qqbot
-cd /opt/qqbot
+# 镜像 clone（推荐）
+git clone https://ghfast.top/https://github.com/JimyTD/QQBotForFun.git /root/qqbot
+cd /root/qqbot
+
+# 配置双 remote：origin 存真实地址，mirror 用于实际拉取
+git remote set-url origin https://github.com/JimyTD/QQBotForFun.git
+git remote add mirror https://ghfast.top/https://github.com/JimyTD/QQBotForFun.git
 ```
 
+> 备用镜像：`https://gh-proxy.com/https://github.com/JimyTD/QQBotForFun.git`
+> 生产路径约定为 `/root/qqbot`（真实目录，永不重命名/删除/做符号链接）。
+
 ### 4.3 配置
+
+⚠️ `.env` **永不入 git**，必须手工创建（含真实密钥）：
+
 ```bash
 cp .env.example .env
 # 编辑 .env，修改：
 #   APP_ENV=prod
-#   DATABASE_URL=postgresql+asyncpg://qqbot:xxx@postgres:5432/qqbot
+#   DATABASE_URL=postgresql+asyncpg://qqbot:qqbot_pass@postgres:5432/qqbot
 #   REDIS_URL=redis://redis:6379/0
-#   ONEBOT_WS_URL=ws://napcat:3001
-#   以及所有 API KEY
+#   ONEBOT_ACCESS_TOKEN（与 NapCat WebSocket 配置一致）
+#   ZHIPU_API_KEY / LONGCAT_API_KEY 等
 nano .env
+
+# 立刻建立备份（.env 是唯一权威来源，本地无副本）
+cp .env /root/.env_qqbot_backup
+chmod 600 .env
+```
+
+### 4.3.1 创建 external volumes（首次必做）
+
+`docker-compose.yml` 使用 external volume，确保数据与目录解耦：
+
+```bash
+docker volume create qqbot_pg_data
+docker volume create qqbot_redis_data
+docker volume create qqbot_napcat_data
 ```
 
 ### 4.4 启动
@@ -175,19 +206,32 @@ docker compose up -d --build bot
 > - 服务器直连 GitHub 不通，必须走镜像 remote（`mirror`），详见 `docs/ops-guide.md`
 > - 禁止 `git pull`（可能触发 merge/交互），统一用 `fetch` + `reset --hard`
 > - 禁止 `git clean -fdx`（会删除 `.env` 和 `logs/`）
-> - 生产路径是 `/root/qqbot`，不是本文 §4.2 示例中的 `/opt/qqbot`
+> - 生产路径是 `/root/qqbot`
 
 ## 6. NapCat 账号维护
 
 ### 6.1 账号掉线
-NapCat 少数情况会掉线：
-1. `docker compose logs napcat` 查看原因
-2. 重新扫码：访问 WebUI 或从日志获取登录 URL
+
+⚠️ **关键**：`Bot xxx connected` 只代表 Bot ↔ NapCat 的 WebSocket 通了，**不代表 QQ 账号在线**。
+账号被踢下线时 WebSocket 照样 connected，但收不到任何群消息。必须分开确认：
+
+```bash
+# 查 QQ 账号是否离线
+docker compose logs napcat 2>&1 | grep -iE 'KickedOffLine|账号状态变更|offline' | tail -5
+```
+
+处理：
+1. 若有 `KickedOffLine` / `账号状态变更为离线` → 需重新扫码
+2. 扫码前**必须**确认 NapCat 的 WebSocket 配置不为空（`ws_clients` ≥ 1），否则登录了也收不到消息 —— 详见 `docs/ops-guide.md` §3
+3. 若报「当前账号已登录,无法重复登录」但实际是离线状态 → NapCat 内部状态残留，`docker compose restart napcat` 清掉后会生成新二维码
+4. 缓存的 `/app/napcat/cache/qrcode.png` 可能是很久以前的过期码，必须 restart 后取新码
 
 ### 6.2 换号
 1. 停 NapCat：`docker compose stop napcat`
 2. 清空 napcat 数据卷：`docker volume rm qqbot_napcat_data`
 3. 重启并重新登录
+
+> ⚠️ 日常运维中禁止 `docker compose down` 或删除 NapCat 容器——会导致必须重新扫码。只有换号才做 6.2。
 
 ## 7. 安全建议
 
@@ -197,6 +241,16 @@ NapCat 少数情况会掉线：
 - API Key 定期轮换
 - 数据库和 Redis 不暴露到公网
 
+### 7.1 密钥管理铁律
+
+- 🔴 **`.env` 永不入 git**。本仓库历史上曾误提交过一次（commit `66e2df6`），导致密钥在 public 仓库泄露，不得重演
+- 🔴 **禁止 `git clean -fdx` / `-fx`** —— `-x` 会删除 ignored 文件，即 `.env` 和 `logs/`
+- ✅ `.env` 唯一权威来源是服务器上的文件，备份于 `/root/.env_qqbot_backup`，改动后必须同步更新备份
+- ✅ `config/llm.yaml` 只用 `${ZHIPU_API_KEY}` 占位符，真值从 `.env` 注入 —— 轮换密钥只改 `.env`，不动 yaml
+- ⚠️ **若仓库转为 private**，禁止继续用第三方镜像 + PAT 拉取（凭证会明文经过第三方），必须改用 SSH deploy key 或自建代理
+
+密钥轮换流程见 `docs/ops-guide.md` §5。
+
 ## 8. 故障排查
 
 | 现象 | 检查 |
@@ -204,11 +258,14 @@ NapCat 少数情况会掉线：
 | bot 启动报 "OneBot connection failed" | NapCat 是否启动、`ONEBOT_WS_URL` 是否正确、token 是否一致 |
 | bot 启动报 "DB connection refused" | postgres 是否健康、`DATABASE_URL` 是否正确 |
 | LLM 调用 401 | API Key 是否正确、配额是否用完 |
+| 群里发指令无反应，但日志有 `Bot xxx connected` | **QQ 账号可能已离线**（connected ≠ 在线），查 §6.1 |
 | 群里发指令无反应 | NapCat 是否收到消息（看日志）、机器人是否被设为群管理员（部分指令需要） |
 | `/play turtle_soup` 报 LLMError | 检查 LLM 配额、`config/llm.yaml` 配置 |
 | 数据库表不存在 | `docker compose exec bot alembic upgrade head` |
+| 服务器代码看起来没更新 | `cd /root/qqbot && git rev-parse --short HEAD` 对比本地；`git status --short` 查是否有人手改造成漂移 |
 
 ## 9. 变更日志
 | 版本 | 日期 | 变更 |
 |---|---|---|
 | v1 | 2026-04-28 | 初版 |
+| v2 | 2026-08-28 | 生产同步方式改为 Git（镜像 remote + `fetch`/`reset --hard`）；生产路径更正为 `/root/qqbot`；补充 external volume 创建步骤、密钥管理铁律（§7.1）、NapCat「connected ≠ 在线」排查经验（§6.1） |
