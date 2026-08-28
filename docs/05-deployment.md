@@ -164,11 +164,18 @@ docker compose exec bot alembic upgrade head
 # 数据库备份（每日 cron 推荐）
 docker compose exec postgres pg_dump -U qqbot qqbot > backup_$(date +%F).sql
 
-# 升级代码
-git pull
-docker compose build bot
-docker compose up -d bot
+# 升级代码（⚠️ 生产环境请走 docs/ops-guide.md §1，不要用 git pull）
+git fetch mirror main
+docker compose stop bot && docker compose rm -f bot
+git reset --hard mirror/main
+docker compose up -d --build bot
 ```
+
+> ⚠️ **生产环境注意**：
+> - 服务器直连 GitHub 不通，必须走镜像 remote（`mirror`），详见 `docs/ops-guide.md`
+> - 禁止 `git pull`（可能触发 merge/交互），统一用 `fetch` + `reset --hard`
+> - 禁止 `git clean -fdx`（会删除 `.env` 和 `logs/`）
+> - 生产路径是 `/root/qqbot`，不是本文 §4.2 示例中的 `/opt/qqbot`
 
 ## 6. NapCat 账号维护
 

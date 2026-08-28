@@ -2,81 +2,116 @@
 description: Rule for deploying and operating the QQBotForFun server. Load this rule when you need to deploy code, check server status, or troubleshoot the bot.
 alwaysApply: true
 enabled: true
-updatedAt: 2026-07-31T00:00:00.000Z
+updatedAt: 2026-08-28T00:00:00.000Z
 provider: 
 ---
 
 # QQBotForFun 服务器运维指令
 
+> **同步方式：Git**（自 2026-08-28 起）。已废弃 `deploy_project_preparation` 上传 + `cp` 清单 + `.deploy_staging` 中转目录的旧流程。
+> 详见 `docs/ops-guide.md`。
+
 ## ⚠️ 铁律：不要触发重新扫码
 
 - ❌ 禁止 `docker compose down`（会杀 NapCat，用户要扫码）
 - ❌ 禁止 `docker compose stop/rm napcat`（同上）
-- ✅ 日常部署只动 bot：`stop bot → rm bot → cp files → up --build bot`
+- ✅ 日常部署只动 bot：`stop bot → rm bot → git reset --hard → up --build bot`
 - ✅ NapCat 只用 `restart`（不删容器）
+- ✅ **所有 git 操作都安全**——git 只改目录里的文件，碰不到 NapCat 容器和它的 volume
 
-## ⚠️ 铁律：目录命名与角色绑定，禁止裸时间戳目录常驻
+## ⚠️ 铁律：Git 操作红线
 
-- `/root/qqbot` 是**真实目录**（不是符号链接），是生产环境唯一真身，**永久存在，永不删除、永不重命名**。
-- `deploy_project_preparation` 每次上传都会生成 `/root/QQBotForFun_<timestamp>`——这个命名**只允许作为一次性中转**，生命周期不超过一条部署命令链。
-- **上传后的第一件事**永远是：`rm -rf /root/.deploy_staging; mv /root/QQBotForFun_<ts> /root/.deploy_staging`，把带时间戳的名字立刻消灭掉，换成固定名 `/root/.deploy_staging`。
-- 之后所有 `cp` 都从 `/root/.deploy_staging/` 取文件，部署结束**无条件** `rm -rf /root/.deploy_staging`（不是"确认成功后才删"，是同一条命令链里必须执行，成功失败都删）。
-- **效果**：`/root/` 下任何时候都不应该存在 `QQBotForFun_*` 这个模式的目录（只在一条命令执行的极短窗口内短暂存在）。如果排查磁盘时发现了这种目录，说明流程被打断过，**必须先询问用户这是什么，禁止直接当作"废弃临时目录"删除**——正常流程下它不应该出现。
-- **禁止**再对 `/root/qqbot` 做 `ln -sfn` 之类的符号链接操作。它是真实目录，改配置/改代码就是直接 `cp` 文件进去，不存在"切换指向"这一步。
+`/root/qqbot` 是 git 工作区，以下命令**绝对禁止**：
+
+| 禁令 | 原因 |
+|---|---|
+| ❌ `git clean -fdx` / `-fx` | `-x` 删 ignored 文件 → **会删掉 `.env`（本地无副本）和 `logs/`** |
+| ❌ `git pull` | 可能触发 merge/交互。统一用 `git fetch` + `git reset --hard` |
+| ❌ 在服务器编辑任何 tracked 文件 | 含 `config/llm.yaml`、`docker-compose.yml`、`Dockerfile`。会被下次 reset 覆盖并造成静默漂移。要改就改本地 + push |
+| ❌ 把 `.env` 提交进 git | 历史已发生过事故（commit `66e2df6`，密钥在 public 仓库泄露），不得重演 |
+| ❌ 仓库转 private 后继续用镜像 + PAT | 凭证会明文经过第三方镜像站。转 private 必须改用 SSH deploy key 或自建代理 |
+
+**安全的 git 操作**（只动 tracked 文件）：`git fetch` / `git reset --hard` / `git status` / `git log` / `git rev-parse` / `git checkout -- <file>`
+
+## ⚠️ 铁律：目录与删除
+
+- `/root/qqbot` 是**真实目录 + git 工作区**，生产唯一真身，**永久存在，永不删除、永不重命名、永不做 `ln -sfn`**。
+- 部署**不再需要任何中转目录**。git 直接在真身目录 fetch/reset。
+- 如果在 `/root/` 发现 `QQBotForFun_*` 或 `.deploy_staging` → 旧流程遗留或异常，**先报告用户询问，禁止直接删除**。
+- **任何 `rm -rf` 目标位于 `/root/` 下、看起来像项目目录 → 先 `ls -la` 确认、向用户报告，禁止自行删除**。`/root/` 下存在其他项目（SilentWereWolf），其中 `SilentWereWolf_20260827145231` 是**正在运行的生产目录**，`silentwerewolf-secrets` 是其密钥目录，均不可动。
 
 ## 固定参数（直接使用，不需要查询）
 
 - Region: `ap-guangzhou`
 - InstanceId: `lhins-hwnz7rcz`
 - IP: `106.55.228.236`
-- 项目路径: `/root/qqbot`（真实目录，生产唯一真身）
+- 项目路径: `/root/qqbot`（真实目录 + git 工作区）
 - Bot QQ: `3959381140`
 - NapCat WebUI: `http://106.55.228.236:6099`
+- GitHub: `https://github.com/JimyTD/QQBotForFun`
 
 用 lighthouse `execute_command` 工具执行命令，参数固定为上述 Region + InstanceId。
+
+**Git remote：**
+
+| remote | URL | 用途 |
+|---|---|---|
+| `origin` | `https://github.com/JimyTD/QQBotForFun.git` | 记录真实地址。**直连不通**，不能 fetch |
+| `mirror` | `https://ghfast.top/https://github.com/JimyTD/QQBotForFun.git` | **实际拉取用这个** |
+
+⚠️ 服务器直连 GitHub 完全不通（TCP 443 被拒 + timeout），必须走镜像。
+备用镜像：`https://gh-proxy.com/https://github.com/JimyTD/QQBotForFun.git`
 
 ## 权威副本规定（哪份是"真的"）
 
 | 文件/目录 | 唯一权威来源 | 说明 |
 |---|---|---|
-| `src/` `seeds/` `scripts/` `docs/` `resources/` `config/llm.yaml`（模板）`Dockerfile` `docker-compose.yml` `pyproject.toml` `uv.lock` `migrations/` `alembic.ini` | **本地 git 仓库** | 服务器上的版本永远由本地 `cp` 覆盖，服务器上不做手工编辑 |
-| `.env`（真实密钥） | **服务器 `/root/qqbot/.env`**，备份于 `/root/.env_qqbot_backup` | 不在 git（含密钥）。改动后必须同步更新备份文件，这是唯一权威来源，本地无副本 |
-| NapCat 登录态 / QQ 账号数据 | **named volume** `qqbot_napcat_data` 等 | 与 `/root/qqbot` 目录完全无关，删目录不影响它 |
-| Postgres / Redis 数据 | **named volume** `qqbot_pg_data` / `qqbot_redis_data` | 同上，与目录无关 |
-| `logs/` | 服务器本地，**无备份，可丢弃** | 纯运行时产物，允许接受丢失 |
+| 所有 tracked 文件（`src/` `seeds/` `scripts/` `docs/` `resources/` `data/` `config/llm.yaml` `Dockerfile` `docker-compose.yml` `pyproject.toml` `uv.lock` `migrations/` `alembic.ini`） | **git 仓库 `main` 分支** | 服务器由 `git reset --hard mirror/main` 全量对齐，服务器上不做任何手工编辑 |
+| `.env`（真实密钥） | **服务器 `/root/qqbot/.env`**，备份于 `/root/.env_qqbot_backup` | **永不入 git**，由运维助手手工写入。这是唯一权威来源，本地无副本 |
+| NapCat 登录态 / QQ 账号数据 | **named volume** `qqbot_napcat_data` | 与目录、git 均无关 |
+| Postgres / Redis 数据 | **named volume** `qqbot_pg_data` / `qqbot_redis_data` | 同上，git 操作不影响 |
+| `logs/` | 服务器本地，**无备份，可丢弃** | 在 `.gitignore` 里，`fetch`/`reset` 不会动它 |
 
-## 日常部署（只改了代码/数据，未改 docker-compose.yml）
+## 日常部署（唯一流程，不再区分是否改了根级文件）
 
-1. `deploy_project_preparation` 上传项目 → 得到 `/root/QQBotForFun_<ts>`
-2. **立刻消灭时间戳名**，转入固定中转目录，再部署：
+**前置：确认本地已 push**（否则服务器拉到旧代码）
+
 ```
-rm -rf /root/.deploy_staging
-mv /root/QQBotForFun_<ts> /root/.deploy_staging
-cd /root/qqbot && docker compose stop bot && docker compose rm -f bot && cp -r /root/.deploy_staging/{src,seeds,scripts,docs,resources,pyproject.toml} /root/qqbot/ && docker compose up -d --build bot
+git status --short          # 本地应为空
+git rev-parse HEAD          # 记下 hash
+git ls-remote origin HEAD   # 应与上面一致
 ```
-3. 确认：`cd /root/qqbot && docker compose logs bot --tail=5`（看到 `[bot] ready.`）
-4. 无条件清理（成功失败都执行）：
+
+**部署：**
 ```
-rm -rf /root/.deploy_staging && docker image prune -f
+cd /root/qqbot && git fetch mirror main && docker compose stop bot && docker compose rm -f bot && git reset --hard mirror/main && docker compose up -d --build bot
 ```
+
+**验证：**
+```
+cd /root/qqbot && git rev-parse --short HEAD && git status --short && docker compose logs bot --tail=15
+```
+应看到 `[bot] ready.` 和 `Bot 3959381140 connected`；`git status` 应为空。
+
+**清理：**
+```
+docker image prune -f
+```
+不需要清理中转目录——git 流程不产生中转目录。
 
 **禁止：**
-- ❌ 在新临时目录里执行 docker compose（会启新容器栈，造成混乱）
-- ❌ docker compose down（杀 NapCat，需重新扫码）
-- ❌ rsync --delete 或任何可能删除/覆盖 `.env`、`logs/`、`uploads/` 的命令
-- ❌ 部署命令中出现 `.env` 以外的全量同步方式
-- ❌ `docker system prune -a` 或 `--volumes`（会删掉所有镜像缓存，导致重建耗时数十分钟）
-- ❌ 对 `/root/qqbot` 做任何 `ln -sfn` / 改指向操作——它是真实目录，没有"指向"这个概念
+- ❌ `docker compose down`（杀 NapCat，需重新扫码）
+- ❌ `git clean -fdx`（删 `.env`）
+- ❌ `git pull`（用 fetch + reset）
+- ❌ `docker system prune -a` 或 `--volumes`（清掉所有镜像缓存，重建耗时数十分钟）
+- ❌ 对 `/root/qqbot` 做任何重命名/删除/`ln -sfn`
 
-**磁盘空间维护**：
-- 每次部署成功/失败后都无条件清理 `/root/.deploy_staging`，磁盘上永远不该有它以外的残留中转目录
-- 如果在 `/root/` 发现任何 `QQBotForFun_*` 命名的目录（不是 `.deploy_staging`）→ **先向用户报告并询问**，禁止直接删除，这不是正常流程的产物
-- 其他清理操作（如 docker system prune）必须先报告用户，由用户决定
+**新依赖 / config 改动**：`pyproject.toml`、`uv.lock`、`config/llm.yaml` 都是 tracked 文件，`reset --hard` 自动同步，`--build` 自动装新依赖。**不再需要单独 cp `config/llm.yaml`**。较大的包（如 `akshare`）首次构建约 2-3 分钟。新 DB 表由 `init_db()` 的 `create_all` 幂等创建。
 
-**`.env` 保护**：
-- `.env` 在服务器上一次配置后永不需要再动，部署流程不涉及它
-- 备份位置：`/root/.env_qqbot_backup`（出事时 `cp /root/.env_qqbot_backup /root/qqbot/.env`）
-- 如果手动改过服务器上的 `.env`，必须同步 `cp /root/qqbot/.env /root/.env_qqbot_backup` 更新备份
+**镜像站故障 fallback：**
+```
+cd /root/qqbot && git remote set-url mirror https://gh-proxy.com/https://github.com/JimyTD/QQBotForFun.git && git fetch mirror main
+```
 
 ## 排查：机器人没反应
 
@@ -84,11 +119,21 @@ rm -rf /root/.deploy_staging && docker image prune -f
 cd /root/qqbot && docker compose ps
 cd /root/qqbot && docker compose logs bot --tail=30
 cd /root/qqbot && docker compose logs bot 2>&1 | grep 'connected' | tail -1
-cd /root/qqbot && docker compose logs napcat 2>&1 | grep -i 'kicked\|offline\|二维码' | tail -3
+cd /root/qqbot && docker compose logs napcat 2>&1 | grep -iE 'KickedOffLine|账号状态变更|offline|二维码' | tail -5
+cd /root/qqbot && git rev-parse --short HEAD && git status --short
 ```
 
-- 无 connected / NapCat kicked → 需要扫码（见下方）
-- Bot 报错 → 修代码重新部署
+判定：
+
+| 现象 | 结论 |
+|---|---|
+| 容器不在 | `docker compose up -d` |
+| Bot 报错 | 修代码，走日常部署 |
+| 无 connected | Bot↔NapCat 链路问题，检查 ws 配置 |
+| 有 connected 但有 `KickedOffLine`/`账号状态变更为离线` | **QQ 账号本身离线**，需重新扫码，与部署无关 |
+| `git status` 有输出 | 有人在服务器手改了文件（违规漂移），`git reset --hard mirror/main` 恢复 |
+
+⚠️ **重要经验**：`Bot xxx connected` 只代表 **Bot ↔ NapCat** 的 WebSocket 通了，**不代表 QQ 账号在线**。QQ 被踢下线时 WebSocket 照样 connected 但收不到任何消息，必须单独查 NapCat 账号状态。
 
 ## NapCat 重新登录（需要用户扫码）
 
@@ -96,17 +141,74 @@ cd /root/qqbot && docker compose logs napcat 2>&1 | grep -i 'kicked\|offline\|�
 
 ```
 # 1. 检查配置
-cd /root/qqbot && docker compose exec napcat cat /app/napcat/config/onebot11_3959381140.json 2>/dev/null | python3 -c "import sys,json;d=json.load(sys.stdin);print('ws_clients:',len(d['network']['websocketClients']))"
+cd /root/qqbot && docker compose exec -T napcat cat /app/napcat/config/onebot11_3959381140.json 2>/dev/null | python3 -c "import sys,json;d=json.load(sys.stdin);print('ws_clients:',len(d['network']['websocketClients']))"
 
 # 2. 如果 ws_clients: 0 → 写入配置
 cd /root/qqbot && docker compose exec napcat sh -c 'echo "{\"network\":{\"httpServers\":[],\"httpSseServers\":[],\"httpClients\":[],\"websocketServers\":[],\"websocketClients\":[{\"enable\":true,\"name\":\"qqbot\",\"url\":\"ws://bot:8080/onebot/v11/ws\",\"messagePostFormat\":\"array\",\"reconnectInterval\":3000,\"token\":\"qqbot_fun_token_2026\",\"heartInterval\":30000}],\"plugins\":[]},\"musicSignUrl\":\"\",\"enableLocalFile2Url\":false,\"parseMultMsg\":false,\"imageDownloadProxy\":\"\",\"timeout\":{\"baseTimeout\":10000,\"uploadSpeedKBps\":256,\"downloadSpeedKBps\":256,\"maxTimeout\":1800000}}" > /app/napcat/config/onebot11_3959381140.json'
 cd /root/qqbot && docker compose restart napcat
 
 # 3. 获取 Token 让用户扫码
-cd /root/qqbot && docker compose logs napcat 2>&1 | grep 'WebUi Token' | tail -1
+cd /root/qqbot && docker compose exec -T napcat cat /app/napcat/config/webui.json 2>/dev/null | python3 -c "import sys,json;d=json.load(sys.stdin);print('TOKEN:',d.get('token'))"
 ```
 告知用户打开 http://106.55.228.236:6099 输入 Token 扫码。
-扫码后确认：`cd /root/qqbot && docker compose logs bot --tail=5`（应有 "Bot 3959381140 connected"）
+扫码后确认：`cd /root/qqbot && docker compose logs bot --tail=5`（应有 `Bot 3959381140 connected`）
+
+**坑：**
+- 报 "当前账号已登录,无法重复登录" 但实际离线 → NapCat 内部状态残留（被踢时未复位）。`docker compose restart napcat` 清残留，重启后出新码
+- 缓存的 `/app/napcat/cache/qrcode.png` 可能是很久以前的已过期码，必须 restart 后取新码
+- QQ 账号可能需要"更新网络身份验证"等账号层面操作，在 QQ 侧解决，与服务器无关
+
+## 版本管理
+
+**查服务器版本：**
+```
+cd /root/qqbot && git rev-parse --short HEAD && git log -1 --format='%h %s (%ci)' && git status --short
+```
+
+**回滚：**
+```
+cd /root/qqbot && git log --oneline -10
+cd /root/qqbot && docker compose stop bot && docker compose rm -f bot && git reset --hard <commit> && docker compose up -d --build bot
+```
+
+**检查是否落后远端：**
+```
+cd /root/qqbot && git fetch mirror main && git log --oneline HEAD..mirror/main
+```
+
+## 密钥维护（`.env`，不走 git）
+
+`.env` 永不入 git，由运维助手手工写入。修改后**必须**同步备份。
+
+```
+# 查看配置项指纹（不打印完整值）
+cd /root/qqbot && grep -E '^[A-Za-z_]+=' .env | while IFS='=' read -r k v; do if [ -n "$v" ]; then echo "$k len=${#v} starts=$(echo -n "$v"|cut -c1-4)"; else echo "$k (empty)"; fi; done
+
+# 精确替换单个变量
+cd /root/qqbot && sed -i 's|^ZHIPU_API_KEY=.*|ZHIPU_API_KEY=<新key>|' .env
+
+# 同步备份（必做）
+cp /root/qqbot/.env /root/.env_qqbot_backup
+
+# 生效（改 .env 只需 restart，不用 rebuild）
+cd /root/qqbot && docker compose restart bot && docker compose logs bot --tail=10
+```
+
+灾难恢复：`cp /root/.env_qqbot_backup /root/qqbot/.env && cd /root/qqbot && docker compose restart bot`
+
+注意：`config/llm.yaml` 里 `${ZHIPU_API_KEY}` 是占位符，真值从 `.env` 注入。轮换密钥只改 `.env`。
+
+## 数据备份
+
+```
+# 快照（重大变更前建议做，dump 约 730KB）
+cd /root/qqbot && docker compose exec -T postgres pg_dump -U qqbot qqbot > /root/pg_backup_$(date +%F).sql
+
+# 恢复
+cd /root/qqbot && cat /root/pg_backup_<date>.sql | docker compose exec -T postgres psql -U qqbot -d qqbot
+```
+
+数据基线参考（2026-08-28）：`economy_tx` 1412 / `game_session` 500 / `game_turtle_soup_question` 347 / `game_turtle_soup_session` 44 / `economy_balance` 12 / `group_config` 5 / alembic `0002_food` / DB 9687 kB
 
 ## 查战斗日志
 
@@ -114,53 +216,13 @@ cd /root/qqbot && docker compose logs napcat 2>&1 | grep 'WebUi Token' | tail -1
 cd /root/qqbot && cat logs/aoe3_battle/$(ls -t logs/aoe3_battle/*.json | grep -v full | head -1)
 ```
 
-## 带新依赖的部署（如 finance 插件首次上线）
-
-当 `pyproject.toml` 新增了 Python 包（如 `akshare`、`numpy`）时，标准日常部署流程**已包含 `--build`**，会自动重建镜像安装新依赖，无需额外操作。
-
-**但要注意：**
-1. 新依赖安装会使构建时间变长（`akshare` 较大，首次约 2-3 分钟）
-2. `config/llm.yaml` 是挂载卷，标准 cp 命令不覆盖 `config/`。如果 `config/` 有改动，需额外复制：
-```
-cp -r /root/.deploy_staging/config/llm.yaml /root/qqbot/config/llm.yaml
-```
-3. 新增的 DB 表由 `init_db()` 的 `create_all` 自动创建（幂等），无需手动跑 migration
-
-**完整命令（finance 插件首次部署）：**
-```
-rm -rf /root/.deploy_staging && mv /root/QQBotForFun_<ts> /root/.deploy_staging
-cd /root/qqbot && docker compose stop bot && docker compose rm -f bot && cp -r /root/.deploy_staging/{src,seeds,scripts,docs,resources,pyproject.toml} /root/qqbot/ && cp /root/.deploy_staging/config/llm.yaml /root/qqbot/config/llm.yaml && docker compose up -d --build bot
-```
-
-**验证成功后同样无条件清理：** `rm -rf /root/.deploy_staging && docker image prune -f`
-
-**验证：**
-```
-cd /root/qqbot && docker compose logs bot --tail=10
-```
-应看到 `[finance] registered daily report cron` 和 `[bot] ready.`。
-
-## 全流程部署（改了 docker-compose.yml / Dockerfile 等根级文件）
-
-`/root/qqbot` 是真实目录后，这一步**不再需要 `docker compose down`、不再需要重建符号链接、不再需要 NapCat 重新扫码**——本质就是多 cp 几个文件，然后让 compose 按需重建变更的服务。
-
-```
-rm -rf /root/.deploy_staging && mv /root/QQBotForFun_<ts> /root/.deploy_staging
-cp /root/.deploy_staging/docker-compose.yml /root/qqbot/docker-compose.yml
-# 如果 Dockerfile / pyproject.toml / uv.lock 等也变了，一并 cp
-cd /root/qqbot && docker compose up -d --build
-rm -rf /root/.deploy_staging && docker image prune -f
-```
-
-`docker compose up -d` 只会重建**定义发生变化的服务**（一般是 `bot`），postgres/redis/napcat 的服务定义没变就不会被触碰，不会掉线、不需要扫码。
-
-**唯一需要扫码的场景**：确实修改了 `napcat` 这个 service 本身的定义（镜像版本、端口等），此时才需要 `docker compose up -d --build napcat`，之后走 NapCat 重新登录流程。
-
 ## 关键规则
 
-- NapCat 每次「删容器重建」都需要重新扫码，仅 `restart` 不需要
+- NapCat 只有「删容器重建」才需要重新扫码，`restart` 不需要；**git 操作永远不需要**
 - `docker compose up -d --build bot` 只重建 Bot，不影响其他服务
 - docker-compose.yml 中 `name: qqbot` 固定了项目名，与目录名无关
-- 数据卷使用 external volume（`qqbot_pg_data` 等），数据不会因目录内容变化丢失
+- 数据卷使用 external volume（`qqbot_pg_data` 等），数据不会因目录内容变化或 git 操作丢失
 - Bot 容器里的文件 NapCat 读不到，图片用 base64 发送
-- **任何 `rm -rf` 目标路径，如果不是 `/root/.deploy_staging`，且位于 `/root/` 下、看起来像项目相关目录 → 先 `ls -la` 确认、向用户报告，禁止直接删除**
+- `Bot xxx connected` ≠ QQ 账号在线，排查时必须分开确认
+- 服务器直连 GitHub 不通，git 必须走 `mirror` remote
+- **任何 `rm -rf` 目标路径，如果位于 `/root/` 下、看起来像项目相关目录 → 先 `ls -la` 确认、向用户报告，禁止直接删除**
