@@ -168,6 +168,15 @@ uv run pytest
 
 应看到 core 模块与海龟汤流程全部通过。
 
+红警2斗蛐蛐的战斗模拟测试（约 32s，占全套 ~70%）默认跳过 —— 玩法仍在线但已不再迭代，
+代码与测试均完整保留。改动 `src/plugins/games/ra2_battle/` 后必须补跑：
+
+```powershell
+uv run pytest tests/games/ra2_battle -m ra2
+```
+
+详见 [docs/games/ra2-battle.md](docs/games/ra2-battle.md) §9.4。
+
 ---
 
 ## 📚 文档导航
