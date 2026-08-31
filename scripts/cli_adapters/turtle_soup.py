@@ -9,7 +9,11 @@ from __future__ import annotations
 from core import llm
 from core.errors import LLMError, LLMJSONParseError
 from src.plugins.games.turtle_soup.config import get_config
-from src.plugins.games.turtle_soup.game import TurtleSoupGame, locate_clue
+from src.plugins.games.turtle_soup.game import (
+    TurtleSoupGame,
+    canonical_discovered_clues,
+    locate_clue,
+)
 from src.plugins.games.turtle_soup.prompts import (
     CLAIM_SYSTEM,
     CLAIM_USER,
@@ -92,7 +96,7 @@ class TurtleSoupCLIAdapter(GameCLIAdapter):
         self.debug = debug
         self.puzzle: PuzzleData | None = None
         self.question_count = 0
-        self.key_clues_shown: list[tuple[str, str]] = []  # (问题文本, 判官hint) 自然命中
+        self.key_clues_shown: list[tuple[str, str]] = []  # (问题文本, 未定位命中的判官hint)
         self.hints_purchased: list[int] = []  # 已购买揭示的关键线索下标
         self.max_q = 50
         # 线索进度（与 bot 侧 ctx.state 的 hit_clue_idx / unlocated_key_hits 对应）
@@ -291,10 +295,14 @@ class TurtleSoupCLIAdapter(GameCLIAdapter):
                         else str(idx)
                     )
                     confirmed.append(f"💡 {text}  {C.DIM}[提示 #{i}]{C.R}")
-                for label, hint_text in self.key_clues_shown:
-                    if label.startswith("[提示 #"):
-                        continue
-                    confirmed.append(f"🔑 {hint_text}")
+                for clue_text in canonical_discovered_clues(
+                    puzzle.key_clues,
+                    self.hit_clue_idx,
+                    self.hints_purchased,
+                ):
+                    confirmed.append(f"🔑 {clue_text}")
+                for _question, hint_text in self.key_clues_shown:
+                    confirmed.append(f"💡 判官提示：{hint_text}")
                 yes_items = [f"✅ {_clip(q)}" for q in self.yes_asked]
                 if len(yes_items) > 8:
                     omitted = len(yes_items) - 8
@@ -359,9 +367,11 @@ class TurtleSoupCLIAdapter(GameCLIAdapter):
 
                     # ---- 线索进度维护（与 bot 侧同逻辑）----
                     newly_found = False
+                    matched_clue: str | None = None
                     if verdict == "key":
                         idx = locate_clue(clue_raw, puzzle.key_clues)
                         if idx is not None:
+                            matched_clue = puzzle.key_clues[idx]
                             if idx not in self.hit_clue_idx:
                                 self.hit_clue_idx.append(idx)
                                 newly_found = True
@@ -379,15 +389,20 @@ class TurtleSoupCLIAdapter(GameCLIAdapter):
                         self.ruled_out.append(text.strip())
                         self.ruled_out = self.ruled_out[-12:]
 
+                    # 即时显示 hint + 命中的正式线索；正式线索另存入回顾面板的 🔑 栏。
+                    key_lines = [hint] if hint else []
+                    if matched_clue:
+                        key_lines.append(f"💡关键线索：{matched_clue}")
+                    elif not key_lines:
+                        key_lines.append("💡关键线索")
+                    key_label = "\n".join(
+                        f"{C.MAG}{line}{C.R}" for line in key_lines
+                    )
                     label = {
                         "yes": f"{C.GRN}✅ 是{C.R}",
                         "no": f"{C.RED}❌ 不是{C.R}",
                         "irrelevant": f"{C.DIM}🤔 与此无关{C.R}",
-                        "key": (
-                            f"{C.MAG}💡 关键线索：{hint}{C.R}"
-                            if hint
-                            else f"{C.MAG}💡 关键线索{C.R}"
-                        ),
+                        "key": key_label,
                     }.get(verdict, f"{C.DIM}🤔 与此无关{C.R}")
                     print(
                         f"汤主> {label}  "
@@ -404,8 +419,9 @@ class TurtleSoupCLIAdapter(GameCLIAdapter):
                                     f"    {C.YEL}🎯 关键线索已全部集齐，"
                                     f"快宣告汤底！{C.R}"
                                 )
-                    if verdict == "key" and hint:
+                    if verdict == "key" and idx is None and hint:
                         self.key_clues_shown.append((text, hint))
+                    if verdict == "key":
                         # 参与奖：问到 key 线索 → score + coin
                         cfg = get_config()
                         self._show_reward(
