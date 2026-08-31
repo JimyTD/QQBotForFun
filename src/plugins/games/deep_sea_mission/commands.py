@@ -18,14 +18,20 @@ from nonebot.rule import Rule, to_me
 
 from core import game_base, user
 from core.errors import GameAlreadyRunningError
+from core.group_config import get_group_config
 from core.types import User
+
+from .campaign import CAMPAIGN_LEVEL_KEY, parse_campaign_arg, parse_campaign_progress
 
 
 @dataclass
 class PendingRoom:
     group_id: int
     host_id: int
-    difficulty: int
+    mode: str = "mission"            # mission | campaign
+    difficulty: int = 3
+    mission_no: int | None = None    # campaign 关卡号
+    epilogue_diff: int | None = None  # campaign Epilogue 难度
     players: dict[int, User] = field(default_factory=dict)
     seat_owners: dict[int, int] = field(default_factory=dict)
 
@@ -62,9 +68,16 @@ def _room_line(room: PendingRoom) -> str:
         else f"@{p.nickname}[调试位]"
         for p in room.players.values()
     )
+    if room.mode == "campaign":
+        if room.epilogue_diff is not None:
+            target_line = f"模式：战役 Epilogue · 难度 {room.epilogue_diff}"
+        else:
+            target_line = f"模式：战役 · 第 {room.mission_no} 关"
+    else:
+        target_line = f"目标难度：{room.difficulty}"
     return (
         f"🌊 深海任务房间\n"
-        f"目标难度：{room.difficulty}\n"
+        f"{target_line}\n"
         f"人数：{len(room.players)} / 5（至少 3 人）\n"
         f"玩家：{names}\n"
         "💡 @我 加入 加入房间；@我 重复加入 添加调试座位；房主 @我 开始 发牌"
@@ -207,6 +220,45 @@ async def _(matcher: Matcher, event: GroupMessageEvent) -> None:
     await matcher.finish(_room_line(room))
 
 
+_start_campaign = on_command(
+    "深海战役",
+    aliases={"deep_sea_campaign", "战役", "campaign"},
+    rule=to_me(),
+    priority=3,
+    block=True,
+)
+
+
+@_start_campaign.handle()
+async def _(matcher: Matcher, event: GroupMessageEvent, args: Message = CommandArg()) -> None:
+    group_id = int(event.group_id)
+    if game_base.get_runner_by_group(group_id) is not None:
+        await matcher.finish("⚠️ 本群已有进行中的游戏，先 @我 结束 终止当前游戏。")
+        return
+    arg = args.extract_plain_text().strip()
+    if arg:
+        parsed = parse_campaign_arg(arg)
+        if parsed is None:
+            await matcher.finish("⚠️ 无法识别的关卡，例如：@我 深海战役 5 或 @我 深海战役 epilogue:18")
+            return
+        mission_no, epilogue_diff = parsed
+    else:
+        raw = await get_group_config(group_id, CAMPAIGN_LEVEL_KEY, default="1")
+        mission_no, epilogue_diff = parse_campaign_progress(raw)
+    player = await user.get(int(event.user_id), group_id)
+    room = PendingRoom(
+        group_id=group_id,
+        host_id=player.qq_id,
+        mode="campaign",
+        mission_no=mission_no,
+        epilogue_diff=epilogue_diff,
+        players={player.qq_id: player},
+        seat_owners={player.qq_id: player.qq_id},
+    )
+    _rooms[group_id] = room
+    await matcher.finish(_room_line(room))
+
+
 _begin_room = on_command(
     "开始",
     aliases={"发牌"},
@@ -233,20 +285,34 @@ async def _(matcher: Matcher, event: GroupMessageEvent) -> None:
         return
     players = list(room.players.values())
     _rooms.pop(group_id, None)
+    if room.mode == "campaign":
+        config: dict[str, object] = {
+            "mode": "campaign",
+            "seat_owners": {
+                str(seat_id): owner_id
+                for seat_id, owner_id in room.seat_owners.items()
+            },
+        }
+        if room.epilogue_diff is not None:
+            config["epilogue_difficulty"] = room.epilogue_diff
+        else:
+            config["mission_no"] = room.mission_no
+    else:
+        config = {
+            "mode": "mission",
+            "difficulty": room.difficulty,
+            "seat_owners": {
+                str(seat_id): owner_id
+                for seat_id, owner_id in room.seat_owners.items()
+            },
+        }
     try:
         await game_base.create_and_start(
             "deep_sea_mission",
             group_id=group_id,
             host_id=room.host_id,
             players=players,
-            config={
-                "mode": "mission",
-                "difficulty": room.difficulty,
-                "seat_owners": {
-                    str(seat_id): owner_id
-                    for seat_id, owner_id in room.seat_owners.items()
-                },
-            },
+            config=config,
         )
     except GameAlreadyRunningError as e:
         await matcher.finish(f"⚠️ {e}")
