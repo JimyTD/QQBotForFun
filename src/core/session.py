@@ -203,7 +203,10 @@ async def whisper(qq_id: int, message: str | Message) -> int | None:
         return None
     except Exception as e:  # noqa: BLE001
         logger.warning(f"[session] whisper failed qq={qq_id}: {e}")
-        raise WhisperFailedError(str(e)) from e
+        text = str(e)
+        if "添加对方为好友" in text:
+            text = "对方未添加机器人为好友"
+        raise WhisperFailedError(text) from e
 
 
 async def reply(event_ref: Any, message: str | Message) -> None:

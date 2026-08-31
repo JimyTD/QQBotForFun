@@ -80,7 +80,8 @@ def _room_line(room: PendingRoom) -> str:
         f"{target_line}\n"
         f"人数：{len(room.players)} / 5（至少 3 人）\n"
         f"玩家：{names}\n"
-        "💡 @我 加入 加入房间；@我 重复加入 添加调试座位；房主 @我 开始 发牌"
+        "💡 @我 加入 加入房间；@我 重复加入 添加调试座位；房主 @我 开始 发牌\n"
+        "⚠️ 请先添加机器人为好友，否则收不到私聊手牌"
     )
 
 

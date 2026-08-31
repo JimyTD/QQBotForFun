@@ -237,13 +237,9 @@ class DeepSeaMissionGame(GameBase):
 
     async def on_start(self, ctx: GameContext) -> None:
         self._register_controllers_for_routing(ctx)
-        try:
-            await self._whisper_all_hands(ctx)
-        except WhisperFailedError as e:
-            await session.broadcast(ctx.group_id, f"⚠️ 手牌私聊失败：{e}\n本局深海任务已结束。")
-            runner = game_base.get_runner(ctx.session_id)
-            if runner is not None:
-                await runner.end(EndReason.ERROR)
+        failed = await self._whisper_all_hands(ctx)
+        if failed:
+            await self._end_on_whisper_failure(ctx, failed, "本局深海任务已结束。")
             return
 
         if ctx.state.get("mode") == "campaign":
@@ -629,7 +625,10 @@ class DeepSeaMissionGame(GameBase):
         for seat in order:
             hands[str(seat)] = sort_cards(hands[str(seat)])
         # 传牌后重发私聊手牌
-        await self._whisper_all_hands(ctx)
+        failed = await self._whisper_all_hands(ctx)
+        if failed:
+            await self._end_on_whisper_failure(ctx, failed, "本局深海任务已结束。")
+            return
         await session.broadcast(
             ctx.group_id,
             "⚓ 传牌完成：每位玩家各传 1 张给左邻。",
@@ -839,7 +838,9 @@ class DeepSeaMissionGame(GameBase):
                     "📌 下一墩起手玩家已无手牌，本局出牌结束。请核对任务：@我 完成 编号，全部完成后 @我 胜利；失败则 @我 失败。",
                 )
 
-    async def _whisper_all_hands(self, ctx: GameContext) -> None:
+    async def _whisper_all_hands(self, ctx: GameContext) -> list[int]:
+        """逐玩家私聊发手牌，返回私聊失败的座位 QQ 列表（成功者仍收到手牌）。"""
+        failed: list[int] = []
         for player in ctx.players:
             hand = ctx.state["hands"][str(player.qq_id)]
             tasks = self._task_lines(ctx, assigned_only=False)
@@ -857,15 +858,39 @@ class DeepSeaMissionGame(GameBase):
                 "",
                 "群里 @机器人 选 编号 / 出 蓝4 / 声呐 蓝4 最高",
             ]
-            await self._replace_private_message(
-                ctx,
-                player.qq_id,
-                render.text_card(
-                    f"深海任务 · {player.nickname} 的手牌",
-                    lines,
-                    emoji=EMOJI,
-                ),
-            )
+            try:
+                await self._replace_private_message(
+                    ctx,
+                    player.qq_id,
+                    render.text_card(
+                        f"深海任务 · {player.nickname} 的手牌",
+                        lines,
+                        emoji=EMOJI,
+                    ),
+                )
+            except WhisperFailedError:
+                failed.append(player.qq_id)
+        return failed
+
+    async def _end_on_whisper_failure(self, ctx: GameContext, failed: list[int], tail: str) -> None:
+        failed_nicks = "、".join(f"@{self._nickname(ctx, qid)}" for qid in failed)
+        bot_hint = ""
+        try:
+            bot = session.get_bot()
+            bot_qq = str(getattr(bot, "self_id", "") or "")
+            if bot_qq:
+                bot_hint = f"（QQ {bot_qq}）"
+        except Exception:  # noqa: BLE001
+            bot_hint = ""
+        await session.broadcast(
+            ctx.group_id,
+            f"⚠️ 手牌私聊失败：{failed_nicks} 尚未添加机器人{bot_hint}为好友，无法接收私聊手牌。\n"
+            "请以上玩家先点击机器人头像「添加好友」，加好后 @我 深海任务 / 深海战役 重新开局。\n"
+            f"{tail}",
+        )
+        runner = game_base.get_runner(ctx.session_id)
+        if runner is not None:
+            await runner.end(EndReason.ERROR)
 
     def _campaign_header_lines(self, ctx: GameContext) -> list[str]:
         if ctx.state.get("mode") != "campaign":
