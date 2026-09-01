@@ -6,7 +6,7 @@ from dataclasses import dataclass, field
 import uuid
 
 from nonebot import on_command
-from nonebot.adapters.onebot.v11 import GroupMessageEvent, Message
+from nonebot.adapters.onebot.v11 import GroupMessageEvent, Message, MessageEvent, PrivateMessageEvent
 from nonebot.matcher import Matcher
 from nonebot.params import CommandArg
 from nonebot.rule import to_me
@@ -26,6 +26,31 @@ class PendingRoom:
 
 
 _rooms: dict[int, PendingRoom] = {}
+
+
+def _prediction_text(args: Message) -> str:
+    body = args.extract_plain_text().strip()
+    return f"预测 {body}" if body else "预测"
+
+
+def _can_control_seat(ctx, actor_id: int, seat_id: int) -> bool:  # noqa: ANN001
+    owner_id = int(ctx.state.get("seat_owners", {}).get(str(seat_id), seat_id))
+    return actor_id == seat_id or actor_id == owner_id
+
+
+def _private_prediction_runner(qq_id: int):
+    for runner in game_base.list_runners():
+        if runner.ctx.game_id != "deep_sea_mission":
+            continue
+        if runner.ctx.state.get("phase") != "prediction":
+            continue
+        task = runner.game._next_prediction_task(runner.ctx)  # noqa: SLF001
+        if task is None or task.get("id") != "T091":
+            continue
+        owner = int(task["assigned_to"])
+        if _can_control_seat(runner.ctx, qq_id, owner):
+            return runner
+    return None
 
 
 def _parse_difficulty(text: str) -> int | None:
@@ -243,3 +268,45 @@ async def _(matcher: Matcher, event: GroupMessageEvent) -> None:
         await matcher.finish(f"⚠️ {e}")
     except Exception as e:  # noqa: BLE001
         await matcher.finish(f"⚠️ 深海任务启动失败：{e}")
+
+
+_predict = on_command(
+    "预测",
+    aliases={"predict"},
+    rule=to_me(),
+    priority=3,
+    block=True,
+)
+
+
+@_predict.handle()
+async def _(matcher: Matcher, event: MessageEvent, args: Message = CommandArg()) -> None:
+    qq_id = int(event.user_id)
+    text = _prediction_text(args)
+    if isinstance(event, GroupMessageEvent):
+        runner = game_base.get_runner_by_group(int(event.group_id))
+        if runner is None or runner.ctx.game_id != "deep_sea_mission":
+            await matcher.finish("当前没有进行中的深海任务。")
+            return
+        if runner.ctx.state.get("phase") != "prediction":
+            await matcher.finish("当前不在深海任务预测阶段。")
+            return
+        await runner.game.submit_prediction(
+            runner.ctx,
+            qq_id,
+            text,
+            is_private=False,
+            user_message_id=int(event.message_id),
+        )
+        await runner.persist()
+        matcher.stop_propagation()
+        return
+
+    if isinstance(event, PrivateMessageEvent):
+        runner = _private_prediction_runner(qq_id)
+        if runner is None:
+            await matcher.finish("当前没有需要你私聊预测的深海任务。")
+            return
+        await runner.game.submit_prediction(runner.ctx, qq_id, text, is_private=True)
+        await runner.persist()
+        matcher.stop_propagation()

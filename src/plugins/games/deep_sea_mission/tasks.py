@@ -156,6 +156,8 @@ def draw_tasks(
             "difficulty": card.difficulty_for(player_count),
             "assigned_to": None,
             "completed": False,
+            "failed": False,
+            "prediction": None,
         }
         for card in selected
     ]

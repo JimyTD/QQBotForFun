@@ -24,6 +24,7 @@ from .cards import (
     suit_of,
     trick_winner,
 )
+from .rules import all_tasks_completed, any_task_failed, evaluate_tasks, task_needs_prediction
 from .tasks import draw_tasks
 
 
@@ -34,6 +35,7 @@ WIN_SCORE_REWARD = 10
 _SELECT_RE = re.compile(r"^(?:选|选择)\s*(\d+)$")
 _COMPLETE_RE = re.compile(r"^完成\s*(\d+)$")
 _UNDO_COMPLETE_RE = re.compile(r"^撤销完成\s*(\d+)$")
+_PREDICT_RE = re.compile(r"^(?:预测|predict)\s*(\d+)\s+(\d+)$", re.IGNORECASE)
 _PLAY_PREFIX_RE = re.compile(r"^(?:出|打|play)\s*", re.IGNORECASE)
 _SONAR_RE = re.compile(r"^(?:声呐|沟通|sonar)\s*(\S+)\s*(最高|最低|唯一|high|low|only)$", re.IGNORECASE)
 
@@ -56,7 +58,7 @@ SONAR_MARKER_TEXT = {
 class DeepSeaMissionGame(GameBase):
     id = "deep_sea_mission"
     name = "深海任务"
-    description = "合作吃墩 · 私聊手牌 · 手动确认任务"
+    description = "合作吃墩 · 私聊手牌 · 自动判定任务"
     min_players = 3
     max_players = 5
     version = "1.0"
@@ -83,6 +85,8 @@ class DeepSeaMissionGame(GameBase):
         hands = deal(deck, ctx.player_ids())
         captain_id = self._find_captain(hands)
         tasks = draw_tasks(target, player_count, rng)
+        for i, task in enumerate(tasks, 1):
+            task["display_no"] = i
         order = ctx.player_ids()
         captain_index = order.index(captain_id)
 
@@ -135,6 +139,12 @@ class DeepSeaMissionGame(GameBase):
                 return True
             return False
 
+        if phase == "prediction":
+            if await self.submit_prediction(ctx, player_id, text, is_private=False):
+                await self._persist(ctx)
+                return True
+            return False
+
         if phase in {"playing", "task_review"}:
             handled = await self._handle_playing(ctx, player_id, text)
             if handled:
@@ -153,10 +163,12 @@ class DeepSeaMissionGame(GameBase):
             return (
                 f"{EMOJI} 深海任务进行中 · 第 {ctx.state.get('trick_no', 1)} 墩\n"
                 f"💡 当前轮到 @{current}：@我 出 蓝4 / @我 蓝4\n"
-                "💡 @我 完成 任务编号 · @我 胜利 / 失败"
+                "💡 任务自动判定 · @我 胜利 / 失败"
             )
         if phase == "task_review":
-            return f"{EMOJI} 深海任务核对任务中\n💡 @我 完成 任务编号 · @我 胜利 / 失败"
+            return f"{EMOJI} 深海任务核对任务中\n💡 任务已自动判定；@我 胜利 / 失败"
+        if phase == "prediction":
+            return f"{EMOJI} 深海任务预测阶段\n💡 当前玩家按提示输入：@我 预测 任务编号 墩数"
         return f"{EMOJI} 深海任务进行中"
 
     async def on_end(self, ctx: GameContext, reason: EndReason) -> None:
@@ -253,11 +265,76 @@ class DeepSeaMissionGame(GameBase):
 
     async def _after_selection_step(self, ctx: GameContext) -> None:
         if not self._unassigned_task_indices(ctx):
+            if self._next_prediction_task(ctx) is not None:
+                ctx.state["phase"] = "prediction"
+                await session.broadcast(ctx.group_id, self._prediction_panel(ctx))
+                return
             ctx.state["phase"] = "playing"
             ctx.state["current_player"] = int(ctx.state["captain_id"])
             await self._replace_visible_group_message(ctx, self._playing_panel(ctx, started=True))
             return
         await session.broadcast(ctx.group_id, self._task_selection_panel(ctx))
+
+    async def submit_prediction(
+        self,
+        ctx: GameContext,
+        player_id: int,
+        text: str,
+        *,
+        is_private: bool,
+        user_message_id: int | None = None,
+    ) -> bool:
+        task = self._next_prediction_task(ctx)
+        if task is None:
+            ctx.state["phase"] = "playing"
+            ctx.state["current_player"] = int(ctx.state["captain_id"])
+            await self._replace_visible_group_message(ctx, self._playing_panel(ctx, started=True))
+            return True
+        owner = int(task["assigned_to"])
+        if not self._can_control_seat(ctx, player_id, owner):
+            await session.broadcast(
+                ctx.group_id,
+                f"⚠️ 现在需要 {self._nickname(ctx, owner)} 预测任务 {task['display_no']} 的墩数。",
+                at=player_id,
+            )
+            return True
+        match = _PREDICT_RE.match(text)
+        if match is None:
+            await self._prediction_error(ctx, player_id, f"请按格式输入：预测 {task['display_no']} 墩数", is_private)
+            return True
+        idx = int(match.group(1)) - 1
+        prediction = int(match.group(2))
+        tasks: list[dict[str, Any]] = ctx.state["tasks"]
+        if idx < 0 or idx >= len(tasks) or tasks[idx] is not task:
+            await self._prediction_error(ctx, player_id, f"当前要预测的是任务 {task['display_no']}。", is_private)
+            return True
+        if task["id"] == "T090" and is_private:
+            await self._prediction_error(ctx, player_id, "这是公开预测任务，请在群里 @我 预测。", is_private)
+            return True
+        if task["id"] == "T091" and not is_private:
+            if user_message_id is not None:
+                await session.delete_message(user_message_id)
+            await session.broadcast(ctx.group_id, "⚠️ 这是秘密预测任务，请私聊我发送：预测 任务编号 墩数", at=player_id)
+            return True
+        max_tricks = len(ctx.state["initial_hands"].get(str(owner), []))
+        if prediction < 0 or prediction > max_tricks:
+            await self._prediction_error(ctx, player_id, f"预测墩数应为 0-{max_tricks}。", is_private)
+            return True
+        task["prediction"] = prediction
+        if task["id"] == "T090":
+            await session.broadcast(
+                ctx.group_id,
+                f"✅ {self._nickname(ctx, owner)} 公开预测任务 {task['display_no']}：赢 {prediction} 墩。",
+            )
+        else:
+            await session.broadcast(ctx.group_id, f"✅ {self._nickname(ctx, owner)} 已完成秘密预测。")
+        if self._next_prediction_task(ctx) is not None:
+            await session.broadcast(ctx.group_id, self._prediction_panel(ctx))
+            return True
+        ctx.state["phase"] = "playing"
+        ctx.state["current_player"] = int(ctx.state["captain_id"])
+        await self._replace_visible_group_message(ctx, self._playing_panel(ctx, started=True))
+        return True
 
     async def _handle_playing(self, ctx: GameContext, player_id: int, text: str) -> bool:
         if text in {"失败", "任务失败"}:
@@ -267,6 +344,13 @@ class DeepSeaMissionGame(GameBase):
         if text in {"胜利", "成功", "任务成功"}:
             if not self._can_manage_task(ctx, player_id):
                 await session.broadcast(ctx.group_id, "⚠️ 只有房主或任务领取者可以宣告胜利。", at=player_id)
+                return True
+            evaluate_tasks(ctx.state, final=ctx.state.get("phase") == "task_review")
+            if any_task_failed(ctx.state):
+                await session.broadcast(ctx.group_id, "⚠️ 已有任务判定失败，不能胜利。", at=player_id)
+                return True
+            if not all_tasks_completed(ctx.state):
+                await session.broadcast(ctx.group_id, "⚠️ 还有任务未完成，不能胜利。", at=player_id)
                 return True
             ctx.state["completed"] = True
             await self._end(ctx, EndReason.COMPLETED)
@@ -280,7 +364,7 @@ class DeepSeaMissionGame(GameBase):
         if ctx.state.get("phase") == "task_review":
             await session.broadcast(
                 ctx.group_id,
-                "⚠️ 出牌已经结束，请核对任务：@我 完成 编号，全部完成后 @我 胜利；失败则 @我 失败。",
+                "⚠️ 出牌已经结束，任务已自动判定；完成则 @我 胜利，失败则 @我 失败。",
                 at=player_id,
             )
             return True
@@ -311,6 +395,8 @@ class DeepSeaMissionGame(GameBase):
             await session.broadcast(ctx.group_id, "⚠️ 只有房主或任务领取者可以修改任务状态。", at=player_id)
             return True
         tasks[idx]["completed"] = not undo
+        if not undo:
+            tasks[idx]["failed"] = False
         state = "撤销完成" if undo else "完成"
         await session.broadcast(ctx.group_id, f"✅ 任务 {idx + 1} 已{state}：{tasks[idx]['text']}")
         return True
@@ -394,17 +480,23 @@ class DeepSeaMissionGame(GameBase):
                 "winner": winner,
             }
         )
+        ctx.state["current_player"] = winner
+        if any(not ctx.state["hands"].get(str(pid), []) for pid in ctx.state["order"]):
+            ctx.state["phase"] = "task_review"
+            evaluate_tasks(ctx.state, final=True)
+        else:
+            evaluate_tasks(ctx.state, final=False)
         await self._replace_visible_group_message(ctx, self._finished_trick_panel(ctx, plays, winner))
         ctx.state["trick_no"] = int(ctx.state["trick_no"]) + 1
         ctx.state["current_trick"] = []
         ctx.state["lead_suit"] = None
-        ctx.state["current_player"] = winner
-        if not ctx.state["hands"].get(str(winner), []):
-            ctx.state["phase"] = "task_review"
+        if ctx.state.get("phase") == "task_review":
             await session.broadcast(
                 ctx.group_id,
-                "📌 下一墩起手玩家已无手牌，本局出牌结束。请核对任务：@我 完成 编号，全部完成后 @我 胜利；失败则 @我 失败。",
+                "📌 有玩家已无手牌，本局出牌结束。任务已自动判定；完成则 @我 胜利，失败则 @我 失败。",
             )
+        elif any_task_failed(ctx.state):
+            await session.broadcast(ctx.group_id, "⚠️ 已有任务判定失败。可继续打完复盘，或 @我 失败 结束。")
 
     async def _whisper_all_hands(self, ctx: GameContext) -> None:
         for player in ctx.players:
@@ -419,7 +511,8 @@ class DeepSeaMissionGame(GameBase):
                         f"局号：{ctx.session_id}",
                         f"座位：@{player.nickname}",
                         f"队长：{self._nickname(ctx, int(ctx.state['captain_id']))}",
-                        f"你的手牌：{display_cards(hand)}",
+                        "你的手牌：",
+                        *self._hand_lines(hand),
                         "",
                         "任务池：",
                         *tasks,
@@ -468,7 +561,23 @@ class DeepSeaMissionGame(GameBase):
                 "",
                 *self._task_lines(ctx),
                 "",
-                "指令：@我 出 蓝4 / @我 蓝4 / @我 完成 2 / @我 声呐 蓝4 最高",
+                "指令：@我 出 蓝4 / @我 蓝4 / @我 声呐 蓝4 最高",
+            ],
+            emoji=EMOJI,
+        )
+
+    def _prediction_panel(self, ctx: GameContext) -> str:
+        task = self._next_prediction_task(ctx)
+        if task is None:
+            return render.text_card("深海任务 · 预测完成", ["即将开始出牌。"], emoji=EMOJI)
+        owner = int(task["assigned_to"])
+        return render.text_card(
+            "深海任务 · 预测",
+            [
+                f"当前玩家：{self._nickname(ctx, owner)}",
+                f"任务 {task['display_no']}：{task['text']}",
+                "",
+                self._prediction_instruction(task),
             ],
             emoji=EMOJI,
         )
@@ -485,7 +594,7 @@ class DeepSeaMissionGame(GameBase):
             lines.append(
                 f"@{self._nickname(ctx, int(play['player']))}：{display_card(str(play['card']))}"
             )
-        lines.extend(["", "指令：@我 出 蓝4 / @我 蓝4"])
+        lines.extend(["", "当前任务：", *self._task_lines(ctx), "", "指令：@我 出 蓝4 / @我 蓝4"])
         return render.text_card("深海任务 · 当前场面", lines, emoji=EMOJI)
 
     def _finished_trick_panel(
@@ -505,7 +614,16 @@ class DeepSeaMissionGame(GameBase):
             lines.append(
                 f"@{self._nickname(ctx, int(play['player']))}：{display_card(str(play['card']))}"
             )
-        lines.extend(["", "当前吃墩数：", *self._trick_count_lines(ctx)])
+        lines.extend(
+            [
+                "",
+                "当前吃墩数：",
+                *self._trick_count_lines(ctx),
+                "",
+                "当前任务：",
+                *self._task_lines(ctx),
+            ]
+        )
         return render.text_card("深海任务 · 本墩结果", lines, emoji=EMOJI)
 
     def _task_lines(self, ctx: GameContext, *, assigned_only: bool = False) -> list[str]:
@@ -515,9 +633,48 @@ class DeepSeaMissionGame(GameBase):
             if assigned_only and owner is None:
                 continue
             owner_text = "未选择" if owner is None else self._nickname(ctx, int(owner))
-            done = "✅" if task.get("completed") else "□"
-            lines.append(f"{i}. {done} [{task['difficulty']}] {task['text']}（{owner_text}）")
+            if task.get("failed"):
+                state = "❌"
+            elif task.get("completed"):
+                state = "✅"
+            elif task_needs_prediction(task) and task.get("prediction") is None:
+                state = "?"
+            else:
+                state = "□"
+            prediction_text = ""
+            if task_needs_prediction(task) and task.get("prediction") is not None:
+                prediction_text = "（已预测）" if task["id"] == "T091" else f"（预测 {task['prediction']} 墩）"
+            lines.append(
+                f"{i}. {state} [{task['difficulty']}] {task['text']}{prediction_text}（{owner_text}）"
+            )
         return lines
+
+    def _next_prediction_task(self, ctx: GameContext) -> dict[str, Any] | None:
+        for task in ctx.state.get("tasks", []):
+            if (
+                task.get("assigned_to") is not None
+                and task_needs_prediction(task)
+                and task.get("prediction") is None
+            ):
+                return task
+        return None
+
+    async def _prediction_error(
+        self,
+        ctx: GameContext,
+        player_id: int,
+        message: str,
+        is_private: bool,
+    ) -> None:
+        if is_private:
+            await session.whisper(player_id, f"⚠️ {message}")
+        else:
+            await session.broadcast(ctx.group_id, f"⚠️ {message}", at=player_id)
+
+    def _prediction_instruction(self, task: dict[str, Any]) -> str:
+        if task.get("id") == "T091":
+            return f"请私聊我发送：预测 {task['display_no']} 墩数"
+        return f"请在群里发送：@我 预测 {task['display_no']} 墩数"
 
     def _trick_count_lines(self, ctx: GameContext) -> list[str]:
         won_tricks: dict[str, list[dict[str, Any]]] = ctx.state.get("won_tricks", {})
@@ -636,7 +793,7 @@ class DeepSeaMissionGame(GameBase):
             lines.append(f"最近吃墩：第 {recent['no']} 墩，{self._trick_cards_text(recent)}")
         else:
             lines.append("最近吃墩：暂无")
-        lines.extend(["", f"你的手牌：{display_cards(hand)}"])
+        lines.extend(["", "你的手牌：", *self._hand_lines(hand)])
         await self._replace_private_message(
             ctx,
             seat_id,
@@ -685,6 +842,21 @@ class DeepSeaMissionGame(GameBase):
                 f"第 {trick['no']} 墩：{play_text}；赢家 @{self._nickname(ctx, int(trick['winner']))}"
             )
         return lines
+
+    def _hand_lines(self, hand: list[str]) -> list[str]:
+        groups = [
+            ("粉", "pink"),
+            ("黄", "yellow"),
+            ("蓝", "blue"),
+            ("绿", "green"),
+            ("潜艇", "sub"),
+        ]
+        lines: list[str] = []
+        for label, suit in groups:
+            cards = [card for card in sort_cards(hand) if suit_of(card) == suit]
+            if cards:
+                lines.append(f"{label}：{' '.join(display_card(card) for card in cards)}")
+        return lines or ["（空）"]
 
     async def _persist(self, ctx: GameContext) -> None:
         runner = game_base.get_runner(ctx.session_id)

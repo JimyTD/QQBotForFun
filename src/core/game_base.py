@@ -319,6 +319,10 @@ def get_runner_by_group(group_id: int) -> GameRunner | None:
     return _runner_by_group.get(group_id)
 
 
+def list_runners() -> list[GameRunner]:
+    return list(_runners.values())
+
+
 def in_game_hint_for_group(group_id: int) -> str | None:
     """活跃对局的情境提示；无对局时返回 None。"""
     runner = _runner_by_group.get(group_id)
