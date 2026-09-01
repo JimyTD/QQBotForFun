@@ -93,7 +93,13 @@ indent-style = "space"
 asyncio_mode = "auto"
 testpaths = ["tests"]
 pythonpath = [".", "src"]
-addopts = "-ra -q"
+# 默认跳过 ra2 标记（红警2斗蛐蛐战斗模拟，约 32s，占全套测试 ~70%）。
+# 玩法仍在线、代码与测试均保留，只是日常不跑。改动 ra2_battle 时必须手动跑：
+#   uv run pytest tests/games/ra2_battle -m ra2
+addopts = "-ra -q -m 'not ra2'"
+markers = [
+    "ra2: 红警2斗蛐蛐战斗模拟测试（默认跳过，见 docs/games/ra2-battle.md §9.4）",
+]
 
 # ---------- Mypy ----------
 [tool.mypy]

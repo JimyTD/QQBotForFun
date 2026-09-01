@@ -8,7 +8,11 @@ from unittest.mock import AsyncMock, patch
 import pytest
 
 from core.types import GameContext, User, new_session_id
-from src.plugins.games.turtle_soup.game import TurtleSoupGame, clue_progress
+from src.plugins.games.turtle_soup.game import (
+    TurtleSoupGame,
+    canonical_discovered_clues,
+    clue_progress,
+)
 
 
 def _ctx(*, key_clues: list[str] | None = None) -> GameContext:
@@ -110,3 +114,11 @@ def _fake_db_session():
             return None
 
     return _CM
+
+
+def test_canonical_discovered_clues_excludes_dynamic_hints_and_purchased() -> None:
+    clues = ["我是爸爸捡来的孩子", "爸爸患有阿尔兹海默症", "我早就知道我的特工妈妈就是你"]
+
+    assert canonical_discovered_clues(clues, [0, 2, 2], [0]) == [
+        "我早就知道我的特工妈妈就是你"
+    ]

@@ -621,12 +621,27 @@ uv run python scripts/ra2_battle_sim.py --red htnk:1 --blue mtank:1 --width 48 -
 
 ### 9.4 测试
 
+> ⚠️ **这批测试默认跳过。** 红警玩法仍在线，但已基本不再迭代，而战斗模拟测试
+> 约 32s、占全套测试 ~70%（196 个用例，耗时平摊，没有可以单独跳的「大户」）。
+> `pyproject.toml` 里 `addopts = "-m 'not ra2'"`，`tests/games/ra2_battle/conftest.py`
+> 给本目录自动打 `ra2` 标记。**代码与测试都完整保留，只是日常不跑。**
+
 ```bash
-uv run pytest tests/games/ra2_battle/ -v
+# 改动 src/plugins/games/ra2_battle/ 后必须手动跑这一条
+uv run pytest tests/games/ra2_battle -m ra2
+
+# 想临时把 ra2 并入全量
+uv run pytest -m "ra2 or not ra2"
 ```
+
+`tests/games/ra2_battle/test_import_smoke.py` **不打标记，每次 `uv run pytest` 都跑**
+（<1s）：只做导入 + `register_game` 注册 + 元信息 + 模式别名解析的静态断言，
+用于兜住 `core.game_base` / `core.session` / `core.economy` 接口漂移，
+避免玩法失配到线上才发现。新增 ra2 测试文件无需手动加标记，conftest 会自动打。
 
 | 测试 | 验证点 |
 |------|--------|
+| `test_import_smoke.py` | **（默认跑）** 插件可导入并注册、模式别名可解析、播报配置键未漂移 |
 | `test_armament_non_elite` | 非精英禁用 `rank-elite` 武器 |
 | `test_120mm_vs_heavy` | 120mm 对 Heavy 装甲 = 90 伤害 |
 | `test_htnk_vs_mtnk_completes` | 灰熊 vs 犀牛能正常结束 |
@@ -641,7 +656,7 @@ uv run pytest tests/games/ra2_battle/ -v
 
 ```bash
 # 全量抽检（含 35+ 兵种参数化，略慢）
-uv run pytest tests/games/ra2_battle/test_coverage.py -v
+uv run pytest tests/games/ra2_battle/test_coverage.py -v -m ra2
 
 # 性能 + 固定/随机阵容报告
 uv run python scripts/ra2_battle_bench.py

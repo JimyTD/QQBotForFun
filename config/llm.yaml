@@ -69,15 +69,15 @@ scenes:
     provider: zhipu
     model: glm-4-flash-250414
     temperature: 0.7
-    max_tokens: 1024
-    timeout_seconds: 30
+    max_tokens: 1536
+    timeout_seconds: 45
 
   web_search:
     provider: zhipu
     model: glm-4-flash-250414
     temperature: 0.3
-    max_tokens: 512
-    timeout_seconds: 30
+    max_tokens: 1536
+    timeout_seconds: 45
 
   finance_report:
     provider: zhipu

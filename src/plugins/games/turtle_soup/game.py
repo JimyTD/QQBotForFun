@@ -145,6 +145,28 @@ def clue_progress(ctx: GameContext) -> tuple[int, int]:
     return found, total
 
 
+def canonical_discovered_clues(
+    key_clues: list[str],
+    hit_clue_idx: list[object] | None,
+    purchased_indices: list[object] | None,
+) -> list[str]:
+    """返回自然命中的题库线索，避免把 LLM hint 当成正式线索。"""
+    purchased = {
+        index
+        for index in (purchased_indices or [])
+        if isinstance(index, int) and not isinstance(index, bool)
+    }
+    result: list[str] = []
+    seen: set[int] = set(purchased)
+    for raw_index in hit_clue_idx or []:
+        if not isinstance(raw_index, int) or isinstance(raw_index, bool):
+            continue
+        if raw_index < 0 or raw_index >= len(key_clues) or raw_index in seen:
+            continue
+        seen.add(raw_index)
+        result.append(key_clues[raw_index])
+    return result
+
 
 @register_game
 class TurtleSoupGame(GameBase):
@@ -390,11 +412,13 @@ class TurtleSoupGame(GameBase):
 
         # ---- 线索进度维护（key 命中时）----
         newly_found = False
+        matched_clue: str | None = None
         if verdict == "key":
             key_clues = puzzle.get("key_clues", []) or []
             idx = locate_clue(clue_raw, key_clues)
             hit_idx: list[int] = ctx.state.setdefault("hit_clue_idx", [])
             if idx is not None:
+                matched_clue = key_clues[idx]
                 if idx not in hit_idx:
                     hit_idx.append(idx)
                     newly_found = True
@@ -408,6 +432,12 @@ class TurtleSoupGame(GameBase):
                 ctx.state["unlocated_key_hits"] = (
                     int(ctx.state.get("unlocated_key_hits", 0) or 0) + 1
                 )
+                if hint:
+                    unlocated_hints: list[str] = ctx.state.setdefault(
+                        "unlocated_key_hints", []
+                    )
+                    unlocated_hints.append(hint)
+                    ctx.state["unlocated_key_hints"] = unlocated_hints[-12:]
                 newly_found = True
 
         # ---- 已排除记录（no 命中时，供 /回顾 面板使用）----
@@ -433,12 +463,18 @@ class TurtleSoupGame(GameBase):
                 row.question_count = int(ctx.state["question_count"])
 
 
-        # 回复
+        # 回复：即时显示 hint + 命中的正式线索；正式线索另存入已知面板的 🔑 栏。
+        key_lines = [hint] if hint else []
+        if matched_clue:
+            key_lines.append(f"💡关键线索：{matched_clue}")
+        elif not key_lines:
+            key_lines.append("💡关键线索")
+        key_label = "\n".join(key_lines)
         label = {
             "yes": "✅ 是",
             "no": "❌ 不是",
             "irrelevant": "🤔 与此无关",
-            "key": f"💡 关键线索：{hint}" if hint else "💡 关键线索",
+            "key": key_label,
         }.get(verdict, "🤔 与此无关")
 
         # key 命中时附加线索进度，给玩家"闯关"而非"盲猜"的感觉

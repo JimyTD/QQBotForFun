@@ -21,6 +21,7 @@ from core import game_base, render
 from core.storage import get_session as db_session
 
 from .config import get_config
+from .game import canonical_discovered_clues
 from .models import SoupQuestion
 from .puzzle_service import mark_bad_by_group
 
@@ -125,7 +126,17 @@ async def _(matcher: Matcher, event: GroupMessageEvent) -> None:
             text = str(h)
         confirmed.append(f"💡 {text}  [提示 #{i}]")
 
-    # 来源 2 / 3：自然命中的 key（带 hint）与 yes（原始问题），从 DB 读取
+    # 来源 2 / 3：自然命中的正式线索与 yes（原始问题），从 DB 读取。
+    # key 的 hint 是即时引导语，不是题库线索，不能写进 🔑 栏。
+    for clue_text in canonical_discovered_clues(
+        all_clues,
+        ctx.state.get("hit_clue_idx", []),
+        hints_purchased,
+    ):
+        confirmed.append(f"🔑 {clue_text}")
+    for dynamic_hint in ctx.state.get("unlocated_key_hints", []) or []:
+        confirmed.append(f"💡 判官提示：{_clip(str(dynamic_hint), 40)}")
+
     async with db_session() as sess:
         rows = (
             await sess.execute(
@@ -141,10 +152,7 @@ async def _(matcher: Matcher, event: GroupMessageEvent) -> None:
         # 跳过购买提示的记录（已在来源 1 展示）
         if r.question.startswith("[提示 #") or r.question.startswith("[购买提示"):
             continue
-        if r.verdict == "key":
-            label = r.hint or _clip(r.question)
-            confirmed.append(f"🔑 {label}")
-        else:
+        if r.verdict == "yes":
             yes_items.append(f"✅ {_clip(r.question)}")
 
     # yes 只保留最近 8 条，避免面板过长

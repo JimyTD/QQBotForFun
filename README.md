@@ -23,6 +23,7 @@
 
 - **海龟汤**（`turtle_soup`）：纯 LLM 汤主模式 · 玩家自由提问 · LLM 判定
 - **趣味问答**（`trivia`）：听线索猜答案 · 6 类（国家/城市/美食/人物/动物/成语）· 题库驱动（580+ 道 × 2 套线索）· 10 题一局 · 结算入 score 榜
+- **深海任务**（`deep_sea_mission`）：The Crew 类合作吃墩 · 「任务难度」自由选难度 + 「战役」官方 32 关推进（含特殊符号 / 传牌 / 进度存档）
 - **帝国3斗蛐蛐**（`aoe3_battle`）：一维自研模拟器 · 真实 AoE3 数据 · 押注/单挑模式
 - **红警2斗蛐蛐**（`ra2_battle`）：二维战场 · OpenRA 数据 · 押注/单挑模式
 
@@ -167,6 +168,15 @@ uv run pytest
 
 应看到 core 模块与海龟汤流程全部通过。
 
+红警2斗蛐蛐的战斗模拟测试（约 32s，占全套 ~70%）默认跳过 —— 玩法仍在线但已不再迭代，
+代码与测试均完整保留。改动 `src/plugins/games/ra2_battle/` 后必须补跑：
+
+```powershell
+uv run pytest tests/games/ra2_battle -m ra2
+```
+
+详见 [docs/games/ra2-battle.md](docs/games/ra2-battle.md) §9.4。
+
 ---
 
 ## 📚 文档导航
@@ -195,6 +205,8 @@ uv run pytest
 - [`games/trivia-bank.md`](./docs/games/trivia-bank.md) — 趣味问答题库子系统
 - [`games/aoe3-battle.md`](./docs/games/aoe3-battle.md) — 帝国3斗蛐蛐
 - [`games/ra2-battle.md`](./docs/games/ra2-battle.md) — 红警2斗蛐蛐
+- [`games/deep-sea-mission.md`](./docs/games/deep-sea-mission.md) — 深海任务
+- [`games/deep-sea-mission-campaign.md`](./docs/games/deep-sea-mission-campaign.md) — 深海任务 · 战役模式
 - [`games/terra-survival.md`](./docs/games/terra-survival.md) — 群峦求生（设计中）
 
 ### 工具设计
