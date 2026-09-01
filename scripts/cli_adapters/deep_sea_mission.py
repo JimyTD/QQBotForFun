@@ -223,6 +223,9 @@ class DeepSeaMissionCLIAdapter(GameCLIAdapter):
             hand = self.hands[str(self.current)]
             print(f"\n第 {self.trick_no} 墩，轮到 {self.names[self.current]}")
             print(f"手牌：{display_cards(hand)}")
+            if self.tasks:
+                print("任务及完成情况：")
+                print("\n".join(self._task_lines()))
             raw = prompt("出牌（win/fail 结束，setlevel N 跳关）> ")
             if raw in {"win", "胜利"}:
                 self._on_win()

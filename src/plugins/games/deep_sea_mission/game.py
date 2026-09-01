@@ -975,6 +975,8 @@ class DeepSeaMissionGame(GameBase):
             lines.append(
                 f"@{self._nickname(ctx, int(play['player']))}：{display_card(str(play['card']))}"
             )
+        if ctx.state.get("tasks"):
+            lines.extend(["", "任务及完成情况：", *self._task_lines(ctx)])
         lines.extend(["", "指令：@我 出 蓝4 / @我 蓝4"])
         return render.text_card("深海任务 · 当前场面", lines, emoji=EMOJI)
 
@@ -996,6 +998,8 @@ class DeepSeaMissionGame(GameBase):
                 f"@{self._nickname(ctx, int(play['player']))}：{display_card(str(play['card']))}"
             )
         lines.extend(["", "当前吃墩数：", *self._trick_count_lines(ctx)])
+        if ctx.state.get("tasks"):
+            lines.extend(["", "任务及完成情况：", *self._task_lines(ctx)])
         return render.text_card("深海任务 · 本墩结果", lines, emoji=EMOJI)
 
     def _task_lines(self, ctx: GameContext, *, assigned_only: bool = False) -> list[str]:
