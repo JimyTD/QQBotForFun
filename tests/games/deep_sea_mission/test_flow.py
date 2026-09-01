@@ -177,6 +177,48 @@ async def test_duplicate_debug_seats_are_controlled_by_real_qq(monkeypatch) -> N
         assert award_mock.await_count == 2
 
 
+async def test_first_trick_task_ends_game_early(monkeypatch) -> None:  # type: ignore[no-untyped-def]
+    monkeypatch.setattr(
+        "src.plugins.games.deep_sea_mission.game.build_deck",
+        lambda rng=None: [],
+    )
+    monkeypatch.setattr(
+        "src.plugins.games.deep_sea_mission.game.deal",
+        lambda deck, player_ids: {k: list(v) for k, v in FIXED_HANDS.items()},
+    )
+    monkeypatch.setattr(
+        "src.plugins.games.deep_sea_mission.game.draw_tasks",
+        lambda difficulty, player_count, rng=None: [
+            {
+                "id": "T079",
+                "text": "赢得第一墩",
+                "difficulty": 1,
+                "assigned_to": None,
+                "completed": False,
+                "failed": False,
+            }
+        ],
+    )
+    award_mock = AsyncMock()
+    monkeypatch.setattr(DeepSeaMissionGame, "award", award_mock)
+
+    async with GameTestHarness(
+        DeepSeaMissionGame,
+        players=[1, 2, 3],
+        config={"difficulty": 1},
+    ) as h:
+        await h.start()
+        await h.send(3, "选 1")
+        await h.send(3, "潜艇4")
+        await h.send(1, "蓝1")
+        await h.send(2, "黄1")
+        assert h.runner is not None
+        assert h.runner._ended is True
+        assert h.runner.ctx.state["completed"] is True
+        assert h.broadcasts_contain("剩余墩不用打")
+        assert award_mock.await_count == 6
+
+
 async def test_real_controller_is_allowed_by_session_route(monkeypatch) -> None:  # type: ignore[no-untyped-def]
     synthetic_1 = 9_000_000_000_000_001
     synthetic_2 = 9_000_000_000_000_002

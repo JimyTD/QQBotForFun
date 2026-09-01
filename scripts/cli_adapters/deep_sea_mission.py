@@ -28,7 +28,11 @@ from src.plugins.games.deep_sea_mission.cards import (
     trick_winner,
 )
 from src.plugins.games.deep_sea_mission.game import DeepSeaMissionGame
-from src.plugins.games.deep_sea_mission.tasks import draw_tasks
+from src.plugins.games.deep_sea_mission.rules import (
+    evaluate_campaign_special,
+    evaluate_tasks,
+    mission_locked_win,
+)
 
 from .base import C, GameCLIAdapter, box, prompt
 
@@ -53,6 +57,7 @@ class DeepSeaMissionCLIAdapter(GameCLIAdapter):
         self.captain = 1
         self.trick_no = 1
         self.current_trick: list[dict[str, int | str]] = []
+        self.trick_history: list[dict] = []
         self.lead_suit: str | None = None
         self.mission: Mission | None = None
 
@@ -254,10 +259,22 @@ class DeepSeaMissionCLIAdapter(GameCLIAdapter):
                 winner = trick_winner(self.current_trick)
                 cards = " ".join(display_card(str(p["card"])) for p in self.current_trick)
                 print(f"{C.GRN}本墩：{cards}，{self.names[winner]} 赢。{C.R}")
+                self.trick_history.append(
+                    {
+                        "no": self.trick_no,
+                        "plays": [
+                            {"player": int(p["player"]), "card": str(p["card"])}
+                            for p in self.current_trick
+                        ],
+                        "winner": winner,
+                    }
+                )
                 self.current = winner
                 self.current_trick = []
                 self.lead_suit = None
                 self.trick_no += 1
+                if self._after_trick():
+                    return
             else:
                 self.current = self.order[(self.order.index(self.current) + 1) % len(self.order)]
         box("手牌已打完", "请人工核对任务。输入胜利结算由 Bot 侧支持。", C.YEL)
@@ -267,9 +284,47 @@ class DeepSeaMissionCLIAdapter(GameCLIAdapter):
         for i, task in enumerate(self.tasks, 1):
             owner = task.get("assigned_to")
             owner_text = "未选" if owner is None else self.names[int(owner)]
-            done = "✅" if task.get("completed") else "□"
-            lines.append(f"{i}. {done} [{task['difficulty']}] {task['text']}（{owner_text}）")
+            if task.get("failed"):
+                state = "❌"
+            elif task.get("completed"):
+                state = "✅"
+            else:
+                state = "□"
+            lines.append(f"{i}. {state} [{task['difficulty']}] {task['text']}（{owner_text}）")
         return lines
+
+    def _eval_state(self) -> dict:
+        for i, task in enumerate(self.tasks, 1):
+            task.setdefault("display_no", i)
+        return {
+            "mode": self.mode_id,
+            "order": self.order,
+            "captain_id": self.captain,
+            "hands": self.hands,
+            "tasks": self.tasks,
+            "trick_history": self.trick_history,
+            "mission": {
+                "no": self.mission.no if self.mission else None,
+                "special": self.mission.special if self.mission else None,
+            },
+        }
+
+    def _after_trick(self) -> bool:
+        """墩结束后判定。锁死胜利则收局并返回 True。"""
+        state = self._eval_state()
+        playing_ended = not any(self.hands[str(p)] for p in self.players)
+        changes = evaluate_tasks(state, final=playing_ended)
+        for line in changes:
+            print(f"{C.GRN}{line}{C.R}" if "完成" in line else f"{C.RED}{line}{C.R}")
+        if mission_locked_win(state):
+            self._on_win()
+            extra = "出牌结束，任务已全部完成。" if playing_ended else "任务已全部锁死完成，剩余墩不用打。"
+            box("胜利", extra, C.GRN)
+            return True
+        status, msg = evaluate_campaign_special(state, final=playing_ended)
+        if status == "failed" and msg:
+            print(f"{C.RED}⚠️ {msg}。可继续打完复盘，或 fail 结束。{C.R}")
+        return False
 
     def _on_win(self) -> None:
         """战役胜利后推进单次运行内的关卡进度（<32 则 +1）。"""

@@ -201,6 +201,7 @@ def test_check_yellow5_last_m27() -> None:
                     "winner": 3,
                 },
             ],
+            "hands": {"1": [], "2": [], "3": []},
         }
     )
     assert game._check_no_difficulty_constraints(ctx) is not None

@@ -45,9 +45,15 @@ from .cards import (
     sort_cards,
     suit_of,
     trick_winner,
-    value_of,
 )
-from .rules import all_tasks_completed, any_task_failed, evaluate_tasks, task_needs_prediction
+from .rules import (
+    all_tasks_completed,
+    any_task_failed,
+    evaluate_campaign_special,
+    evaluate_tasks,
+    mission_locked_win,
+    task_needs_prediction,
+)
 from .tasks import draw_tasks
 
 
@@ -218,10 +224,9 @@ class DeepSeaMissionGame(GameBase):
                 }
             )
 
+        ctx.state.update(common)
         for i, task in enumerate(ctx.state.get("tasks", []), 1):
             task["display_no"] = i
-
-        ctx.state.update(common)
 
     def _resolve_sonar_mode(self, mission: Mission, rng: random.Random) -> tuple[str, str]:
         """按关卡 modifiers 解析声呐模式。返回 (mode, 说明文本)。"""
@@ -877,6 +882,8 @@ class DeepSeaMissionGame(GameBase):
 
         if len(ctx.state["current_trick"]) >= len(ctx.state["order"]):
             await self._finish_trick(ctx)
+            if ctx.state.get("completed"):
+                return
             await self._whisper_after_play(ctx, seat_id)
             return
         await self._whisper_after_play(ctx, seat_id)
@@ -905,25 +912,32 @@ class DeepSeaMissionGame(GameBase):
             }
         )
         ctx.state["current_player"] = winner
-        if any(not ctx.state["hands"].get(str(pid), []) for pid in ctx.state["order"]):
-            ctx.state["phase"] = "task_review"
-            evaluate_tasks(ctx.state, final=True)
-        else:
-            evaluate_tasks(ctx.state, final=False)
+        playing_ended = any(not ctx.state["hands"].get(str(pid), []) for pid in ctx.state["order"])
+        changes = evaluate_tasks(ctx.state, final=playing_ended)
         await self._replace_visible_group_message(ctx, self._finished_trick_panel(ctx, plays, winner))
         ctx.state["trick_no"] = int(ctx.state["trick_no"]) + 1
         ctx.state["current_trick"] = []
         ctx.state["lead_suit"] = None
-        if ctx.state.get("phase") == "task_review":
+        if changes:
+            await session.broadcast(ctx.group_id, "\n".join(changes))
+        if mission_locked_win(ctx.state):
+            ctx.state["completed"] = True
+            remaining = "出牌结束，任务已全部完成。" if playing_ended else "任务已全部锁死完成，剩余墩不用打。"
+            await session.broadcast(ctx.group_id, f"🏆 {remaining}")
+            await self._end(ctx, EndReason.COMPLETED)
+            return
+        special_status, special_msg = evaluate_campaign_special(ctx.state, final=playing_ended)
+        if playing_ended:
+            ctx.state["phase"] = "task_review"
             await session.broadcast(
                 ctx.group_id,
                 "📌 有玩家已无手牌，本局出牌结束。任务已自动判定；完成则 @我 胜利，失败则 @我 失败。",
             )
-            violation = self._check_no_difficulty_constraints(ctx)
-            if violation is not None:
-                await session.broadcast(ctx.group_id, f"约束校验：💥 {violation}")
-        elif any_task_failed(ctx.state):
-            await session.broadcast(ctx.group_id, "⚠️ 已有任务判定失败。可继续打完复盘，或 @我 失败 结束。")
+            if special_msg:
+                await session.broadcast(ctx.group_id, f"约束校验：💥 {special_msg}")
+        elif any_task_failed(ctx.state) or special_status == "failed":
+            reason = special_msg or "已有任务判定失败"
+            await session.broadcast(ctx.group_id, f"⚠️ {reason}。可继续打完复盘，或 @我 失败 结束。")
 
     async def _whisper_all_hands(self, ctx: GameContext) -> list[int]:
         """逐玩家私聊发手牌，返回私聊失败的座位 QQ 列表（成功者仍收到手牌）。"""
@@ -1394,74 +1408,6 @@ class DeepSeaMissionGame(GameBase):
     # 无难度关约束校验（M8/12/21/23/27）
     # ------------------------------------------------------------------
     def _check_no_difficulty_constraints(self, ctx: GameContext) -> str | None:
-        """无难度关特殊约束校验。返回违规说明，None 表示通过。"""
-        if ctx.state.get("mode") != "campaign":
-            return None
-        no = ctx.state.get("mission", {}).get("no")
-        if no == 8:
-            return self._check_value_gap(ctx, 9, "9")
-        if no == 12:
-            return self._check_no_pink_or_sub_lead(ctx)
-        if no == 21:
-            return self._check_value_gap(ctx, 1, "1")
-        if no == 23:
-            return self._check_first_winner_always_lead(ctx)
-        if no == 27:
-            return self._check_yellow5_last(ctx)
-        return None
-
-    def _check_value_gap(self, ctx: GameContext, value: int, label: str) -> str | None:
-        order = [int(x) for x in ctx.state.get("order", [])]
-        counts: list[tuple[int, int]] = []
-        for seat in order:
-            won = ctx.state.get("won_tricks", {}).get(str(seat), [])
-            n = sum(
-                1 for t in won for c in t.get("cards", []) if value_of(str(c)) == value
-            )
-            counts.append((seat, n))
-        if len(counts) < 2:
-            return None
-        hi = max(counts, key=lambda x: x[1])
-        lo = min(counts, key=lambda x: x[1])
-        if hi[1] - lo[1] >= 2:
-            return (
-                f"违反约束：@{self._nickname(ctx, hi[0])} 赢得的 {label} 比 "
-                f"@{self._nickname(ctx, lo[0])} 多 2 张及以上"
-            )
-        return None
-
-    def _check_no_pink_or_sub_lead(self, ctx: GameContext) -> str | None:
-        for trick in ctx.state.get("trick_history", []):
-            first = str(trick["plays"][0]["card"])
-            if suit_of(first) in {"pink", "sub"}:
-                return (
-                    f"违反约束：第 {trick['no']} 墩用 {display_card(first)} 开墩"
-                    "（禁止粉牌或潜艇开墩）"
-                )
-        return None
-
-    def _check_first_winner_always_lead(self, ctx: GameContext) -> str | None:
-        history = ctx.state.get("trick_history", [])
-        if not history:
-            return None
-        first_winner = int(history[0]["winner"])
-        counts = {int(x): 0 for x in ctx.state.get("order", [])}
-        for trick in history:
-            counts[int(trick["winner"])] += 1
-            fw = counts.get(first_winner, 0)
-            for seat, n in counts.items():
-                if n > fw:
-                    return (
-                        f"违反约束：第 {trick['no']} 墩后 @{self._nickname(ctx, seat)}（{n} 墩）"
-                        f"超过了首墩赢家 @{self._nickname(ctx, first_winner)}（{fw} 墩）"
-                    )
-        return None
-
-    def _check_yellow5_last(self, ctx: GameContext) -> str | None:
-        history = ctx.state.get("trick_history", [])
-        if not history:
-            return None
-        final_card = str(history[-1]["plays"][-1]["card"])
-        if final_card != "yellow:5":
-            return f"违反约束：最后一墩的最后一张牌是 {display_card(final_card)}，应为黄5"
-        return None
+        """无难度关特殊约束校验。返回已锁死失败的说明，否则 None。"""
+        _status, message = evaluate_campaign_special(ctx.state)
+        return message
