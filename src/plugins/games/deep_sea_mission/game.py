@@ -1288,6 +1288,8 @@ class DeepSeaMissionGame(GameBase):
         else:
             lines.append("最近吃墩：暂无")
         lines.extend(["", "你的手牌：", *self._hand_lines(hand)])
+        if ctx.state.get("tasks"):
+            lines.extend(["", "任务及完成情况：", *self._task_lines(ctx)])
         await self._replace_private_message(
             ctx,
             seat_id,

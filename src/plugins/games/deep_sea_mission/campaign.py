@@ -210,6 +210,8 @@ def fixed_tasks_m32(player_count: int) -> list[dict[str, int | str | bool | None
             "difficulty": card.difficulty_for(player_count),
             "assigned_to": None,
             "completed": False,
+            "failed": False,
+            "prediction": None,
         }
         for task_id in _M32_TASK_IDS
         for card in [by_id[task_id]]
