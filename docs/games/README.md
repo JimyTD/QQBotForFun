@@ -26,6 +26,7 @@
 | [terra-survival.md](terra-survival.md) | `terra_survival` | 群峦求生（搁置 · 归档索引） |
 | [terra-survival-tfc-gt-research.md](terra-survival-tfc-gt-research.md) | — | TFC/GT 调研参考库（已归档） |
 | [terra-survival-archive-v5.md](terra-survival-archive-v5.md) | — | v5 详细草案（已 superseded） |
+| [yellow-yangtze.md](yellow-yangtze.md) | `yellow_yangtze` | 长江黄河（调研完成 · 暂不实现 · agent 陪玩方案） |
 
 ---
 
