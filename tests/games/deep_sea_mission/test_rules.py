@@ -331,6 +331,48 @@ def test_t003_locks_by_remaining_tricks() -> None:
     assert tied["tasks"][0]["failed"] is True
 
 
+def test_sub_counts_as_remaining_chance_for_value_tasks() -> None:
+    # T013：四张彩色 4 已出场且没赢到 8，但 sub:4 未出 → 仍可用潜艇 4 赢下 8
+    hist_t013 = [
+        _trick(1, 2, ["pink:4", "pink:9", "pink:1"]),
+        _trick(2, 2, ["yellow:4", "yellow:9", "yellow:1"]),
+        _trick(3, 2, ["blue:4", "blue:9", "blue:1"]),
+        _trick(4, 2, ["green:4", "green:9", "green:1"]),
+    ]
+    pending = _state(
+        [_task("T013", 1)],
+        hist_t013,
+        extra_hands={"1": ["blue:8", "sub:4", "sub:1"], "2": ["blue:2", "blue:3", "blue:5"], "3": ["blue:6", "blue:7", "green:5"]},
+    )
+    evaluate_tasks(pending)
+    assert pending["tasks"][0]["failed"] is False
+    assert pending["tasks"][0]["completed"] is False
+
+    # sub:4 也出场 → 才锁死失败
+    lost = _state(
+        [_task("T013", 1)],
+        hist_t013 + [_trick(5, 1, ["sub:4", "pink:2", "pink:3"])],
+        extra_hands={"1": ["blue:8", "sub:1"], "2": ["blue:2", "blue:3"], "3": ["blue:6", "blue:7"]},
+    )
+    evaluate_tasks(lost)
+    assert lost["tasks"][0]["failed"] is True
+
+    # T015：彩色 2 全出但 sub:2 未出 → pending
+    hist_t015 = [
+        _trick(1, 2, ["pink:2", "pink:9", "pink:1"]),
+        _trick(2, 2, ["yellow:2", "yellow:9", "yellow:1"]),
+        _trick(3, 2, ["blue:2", "blue:9", "blue:1"]),
+        _trick(4, 2, ["green:2", "green:9", "green:1"]),
+    ]
+    pending15 = _state(
+        [_task("T015", 1)],
+        hist_t015,
+        extra_hands={"1": ["blue:8", "sub:2", "sub:1"], "2": ["blue:3", "blue:5", "blue:4"], "3": ["blue:6", "blue:7", "green:5"]},
+    )
+    evaluate_tasks(pending15)
+    assert pending15["tasks"][0]["failed"] is False
+
+
 def test_t005_tie_midway_is_not_fail() -> None:
     # 领取者与队长同为 0 墩，R>0：队长还能反超 → pending
     state = _state([_task("T005", 1)], [], r_hands=5, captain=3)

@@ -148,8 +148,9 @@ def _evaluate_one(state: dict[str, Any], task: dict[str, Any], owner: int, r: in
         )
     if tid in {"T009", "T010", "T011", "T015"}:
         target = {"T009": 6, "T010": 5, "T011": 3, "T015": 2}[tid]
+        # 潜艇牌同样是「点数 target」牌，也能赢下含该点数的墩，必须计入剩余机会
         extra = _winnable_color_value(state, target, r)
-        if target == 3 and r > 0 and "sub:3" not in played:
+        if r > 0 and f"sub:{target}" not in played:
             extra += 1
         return _exists_trick(
             won_tricks,
@@ -163,7 +164,8 @@ def _evaluate_one(state: dict[str, Any], task: dict[str, Any], owner: int, r: in
             lambda cards, winner_card: value_of(winner_card) == 7
             and any(value_of(c) == 5 for c in cards if c != winner_card),
             r,
-            key_unplayed=_winnable_color_value(state, 7, r),
+            key_unplayed=_winnable_color_value(state, 7, r)
+            + _sub_unplayed(played, 7, r),
         )
     if tid == "T013":
         return _exists_trick(
@@ -171,7 +173,8 @@ def _evaluate_one(state: dict[str, Any], task: dict[str, Any], owner: int, r: in
             lambda cards, winner_card: value_of(winner_card) == 4
             and any(value_of(c) == 8 for c in cards if c != winner_card),
             r,
-            key_unplayed=_winnable_color_value(state, 4, r),
+            key_unplayed=_winnable_color_value(state, 4, r)
+            + _sub_unplayed(played, 4, r),
         )
     if tid == "T014":
         found = _exists_trick(
@@ -686,6 +689,13 @@ def _has_cards(cards: list[str], required: list[str], played: list[str], r: int)
         if card in played_set or r == 0:
             return "failed"
     return "pending"
+
+
+def _sub_unplayed(played: list[str], value: int, r: int) -> int:
+    """点数 value 的潜艇牌是否还可能出场（潜艇可当该点数赢墩）。"""
+    if r == 0 or value > _SUIT_TOTAL["sub"]:
+        return 0
+    return 0 if f"sub:{value}" in played else 1
 
 
 def _exists_trick(
