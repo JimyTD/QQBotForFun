@@ -280,3 +280,60 @@ def test_campaign_m23_tie_is_fail() -> None:
     }
     status, _ = evaluate_campaign_special(state)
     assert status == "failed"
+
+
+def test_t003_tie_midway_is_not_fail() -> None:
+    # 甲 2 墩、乙（领取者）0、丙 0，R 充足：丙还能反超乙，乙只是暂时打平 → pending
+    history = [
+        _trick(1, 1, ["blue:9", "blue:1", "yellow:1"]),
+        _trick(2, 1, ["green:9", "green:1", "pink:1"]),
+    ]
+    state = _state([_task("T003", 2)], history, r_hands=11)
+    evaluate_tasks(state)
+    assert state["tasks"][0]["failed"] is False
+    assert state["tasks"][0]["completed"] is False
+
+    # 开局全员 0 墩：同样是 pending
+    fresh = _state([_task("T003", 2)], [], r_hands=13)
+    evaluate_tasks(fresh)
+    assert fresh["tasks"][0]["failed"] is False
+
+
+def test_t003_locks_by_remaining_tricks() -> None:
+    # 乙 0、甲 3、丙 3，R=1：1 < 3 且剩余 1 墩不够抬任何人 → 锁死完成
+    history = [
+        _trick(1, 1, ["blue:9", "blue:1", "yellow:1"]),
+        _trick(2, 1, ["green:9", "green:1", "pink:1"]),
+        _trick(3, 1, ["blue:8", "blue:2", "yellow:2"]),
+        _trick(4, 3, ["green:8", "green:2", "pink:2"]),
+        _trick(5, 3, ["blue:7", "blue:3", "yellow:3"]),
+        _trick(6, 3, ["green:7", "green:3", "pink:3"]),
+    ]
+    done = _state([_task("T003", 2)], history, r_hands=1)
+    evaluate_tasks(done)
+    assert done["tasks"][0]["completed"] is True
+
+    # 乙 2、甲 0、丙 0，R=1：把两人都抬到 3 需要 6 墩 > 1 → 锁死失败
+    lost = _state(
+        [_task("T003", 1)],
+        [
+            _trick(1, 1, ["blue:9", "blue:1", "yellow:1"]),
+            _trick(2, 1, ["green:9", "green:1", "pink:1"]),
+        ],
+        r_hands=1,
+    )
+    evaluate_tasks(lost)
+    assert lost["tasks"][0]["failed"] is True
+
+    # 终局（R=0）与他人打平 → 失败
+    tied = _state([_task("T003", 2)], [], extra_hands={"1": [], "2": [], "3": []})
+    evaluate_tasks(tied)
+    assert tied["tasks"][0]["failed"] is True
+
+
+def test_t005_tie_midway_is_not_fail() -> None:
+    # 领取者与队长同为 0 墩，R>0：队长还能反超 → pending
+    state = _state([_task("T005", 1)], [], r_hands=5, captain=3)
+    evaluate_tasks(state)
+    assert state["tasks"][0]["failed"] is False
+    assert state["tasks"][0]["completed"] is False

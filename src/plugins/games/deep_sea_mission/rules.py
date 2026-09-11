@@ -452,21 +452,31 @@ def _more_than_each(owner: int, others: list[int], r: int) -> str:
 
 
 def _fewer_than_each(owner: int, others: list[int], r: int) -> str:
+    """领取者要严格少于「每一个」他人。
+
+    打平不等于失败：别人还会继续吃墩，只要那些人最终都超过领取者即可。
+    只有把剩余 R 墩全用来抬人、仍抬不动（有人注定不超过领取者）时才锁死失败。
+    """
     if not others:
         return "pending"
-    if any(owner >= n for n in others):
-        return "failed"
     if owner + r < min(others):
         return "completed"
+    if _raise_needed(owner, others) > r:
+        return "failed"
     return "pending"
 
 
 def _fewer_than_one(owner: int, other: int, r: int) -> str:
-    if owner >= other:
+    if owner >= other + r:
         return "failed"
     if owner + r < other:
         return "completed"
     return "pending"
+
+
+def _raise_needed(owner: int, others: list[int]) -> int:
+    """让所有「不高于领取者」的人都反超，至少需要的墩数。"""
+    return sum(max(0, owner - n + 1) for n in others)
 
 
 def _cmp_lock(owner: int, other: int, r: int, *, more: bool) -> str:
