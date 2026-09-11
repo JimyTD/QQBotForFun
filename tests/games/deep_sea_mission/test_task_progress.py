@@ -124,7 +124,7 @@ def test_consecutive():
     s = _state(["pink:1", "pink:2", "pink:3"])
     assert task_progress(s, _task("T086")) == "最长连赢 3/3 · 当前 3"
     assert task_progress(s, _task("T088")) == "最长连赢 3/3 · 当前 3（超 3 失败）"
-    assert task_progress(s, _task("T075")) == "当前连赢 3（再连 1 墩失败）"
+    assert task_progress(s, _task("T075")) == "最长连赢 3 · 当前 3"
 
 
 def test_avoid_first_n():
@@ -140,17 +140,17 @@ def test_single_card():
 
 def test_avoid_suit_threat():
     s = _state(["pink:1"])
-    assert task_progress(s, _task("T062")) == "剩余威胁 9 张未打出"
+    assert task_progress(s, _task("T062")) == "未打出 9 张"
 
 
 def test_avoid_lead():
     s = _state(["pink:1"])
-    assert task_progress(s, _task("T060")) == "已开墩 1 次，未违规"
+    assert task_progress(s, _task("T060")) == "已开墩 1 次"
 
 
 def test_remaining_chances():
     s = _state(["pink:1"])
-    assert task_progress(s, _task("T046")) == "还剩 12 墩机会"
+    assert task_progress(s, _task("T046")) == "还剩 12 墩"
 
 
 def test_win_first_n():
@@ -160,18 +160,18 @@ def test_win_first_n():
 
 def test_only_sub():
     s = _state(["pink:1"])
-    # 构造里 2 号靠潜艇4 吃墩，已赢到非目标潜艇 → 报错
-    assert task_progress(s, _task("T052")) == "已赢错 1 张潜艇（失败）"
-    assert task_progress(s, _task("T053")) == "已赢错 1 张潜艇（失败）"
+    # 构造里 2 号靠潜艇4 吃墩，未赢到潜艇1/2，但赢了其他潜艇 1 张
+    assert task_progress(s, _task("T052")) == "潜艇1 0/1 · 其他潜艇 1"
+    assert task_progress(s, _task("T053")) == "潜艇2 0/1 · 其他潜艇 1"
 
 
 def test_first_last_tricks():
     s = _state(["pink:1"])
-    assert task_progress(s, _task("T080")) == "第1墩 ✅ · 最后一墩待定"
+    assert task_progress(s, _task("T080")) == "第1墩 ✅ · 第13墩 □"
     assert task_progress(s, _task("T082")) == "第1墩 ✅ · 已赢 1/1（超 1 失败）"
 
 
 def test_trick_with_value():
     s = _state(["pink:1"])
-    assert task_progress(s, _task("T009")) == "还剩 12 墩机会（需赢下含 6 的一墩）"
-    assert task_progress(s, _task("T015")) == "还剩 12 墩机会（需赢下含 2 的一墩）"
+    assert task_progress(s, _task("T009")) == "含6的墩 0/1"
+    assert task_progress(s, _task("T015")) == "含2的墩 0/1"

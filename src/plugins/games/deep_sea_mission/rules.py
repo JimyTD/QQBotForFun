@@ -1067,7 +1067,8 @@ def task_progress(state: dict[str, Any], task: dict[str, Any]) -> str | None:
     if tid == "T075":
         won_nos = [t["no"] for t in won_tricks]
         run = _run_ending_at(set(won_nos), _last_trick_no(state))
-        return f"当前连赢 {run}（再连 1 墩失败）"
+        best = _max_consecutive(won_nos)
+        return f"最长连赢 {best} · 当前 {run}"
     if tid in {"T071", "T072", "T073"}:
         n = {"T071": 4, "T072": 3, "T073": 5}[tid]
         last_no = _last_trick_no(state)
@@ -1082,20 +1083,25 @@ def task_progress(state: dict[str, Any], task: dict[str, Any]) -> str | None:
 
     # ---- P2：剩余机会 / 威胁提示 ----
     if tid in {"T007", "T008", "T012", "T013", "T014", "T046", "T047", "T048", "T049", "T050", "T058", "T059", "T093", "T094"}:
-        return f"还剩 {r} 墩机会"
+        return f"还剩 {r} 墩"
     if tid in {"T009", "T010", "T011", "T015"}:
         value = {"T009": 6, "T010": 5, "T011": 3, "T015": 2}[tid]
-        return f"还剩 {r} 墩机会（需赢下含 {value} 的一墩）"
+        got = sum(
+            1
+            for t in won_tricks
+            if any(suit_of(c) != "sub" and value_of(c) == value for c in t["cards"])
+        )
+        return f"含{value}的墩 {got}/1"
     if tid in _NO_SUIT_TASKS or tid in {"T043", "T057"}:
         suits = _NO_SUIT_TASKS.get(tid) or {"T043": {"pink"}, "T057": {"sub"}}[tid]
         left = sum(_unplayed_suit(state, s) for s in suits)
-        return f"剩余威胁 {left} 张未打出"
+        return f"未打出 {left} 张"
     if tid in _NO_VALUE_TASKS:
         left = sum(_unplayed_color_value(state, v) for v in _NO_VALUE_TASKS[tid])
-        return f"剩余威胁 {left} 张未打出"
+        return f"未打出 {left} 张"
     if tid in {"T060", "T061"}:
         opened = _opened_tricks(state, owner)
-        return f"已开墩 {len(opened)} 次，未违规"
+        return f"已开墩 {len(opened)} 次"
     if tid in {"T077", "T078", "T079"}:
         n = {"T077": 3, "T078": 2, "T079": 1}[tid]
         won_nos = [t["no"] for t in won_tricks]
@@ -1103,20 +1109,21 @@ def task_progress(state: dict[str, Any], task: dict[str, Any]) -> str | None:
         return f"前{n}墩 {len(got)}/{n}"
     if tid == "T080":
         won_nos = [t["no"] for t in won_tricks]
-        return f"第1墩 {'✅' if 1 in won_nos else '□'} · 最后一墩待定"
+        total = _last_trick_no(state) + r
+        f1 = "✅" if 1 in won_nos else "□"
+        fl = "✅" if total in won_nos else "□"
+        return f"第1墩 {f1} · 第{total}墩 {fl}"
     if tid == "T082":
         won_nos = [t["no"] for t in won_tricks]
         return f"第1墩 {'✅' if 1 in won_nos else '□'} · 已赢 {owner_count}/1（超 1 失败）"
     if tid == "T076":
-        return f"还剩 {r} 墩机会"
+        return f"还剩 {r} 墩"
     if tid in {"T052", "T053"}:
         value = 1 if tid == "T052" else 2
         subs = set(_sub_values(won_cards))
         others = sum(1 for v in subs if v != value)
-        if others:
-            return f"已赢错 {others} 张潜艇（失败）"
-        got = "已赢到" if value in subs else f"潜艇{value} 未打出"
-        return f"{got} · 其他潜艇 0（需仅潜艇{value}）"
+        got = 1 if value in subs else 0
+        return f"潜艇{value} {got}/1 · 其他潜艇 {others}"
     if tid == "T054":
         card = "sub:3"
         if card in won_cards:
