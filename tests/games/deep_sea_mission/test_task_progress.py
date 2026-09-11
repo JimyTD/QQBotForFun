@@ -96,5 +96,61 @@ def test_prediction():
 
 def test_no_progress_cases():
     s = _state(["pink:1"])
-    assert task_progress(s, _task("T001")) is None
+    # T074「一墩都不赢」属终局判定，无进度可报
+    assert task_progress(s, _task("T074")) is None
     assert task_progress(s, _task("T092", assigned_to=None)) is None
+
+
+def test_trick_compare_with_captain():
+    s = _state(["pink:1"])
+    assert task_progress(s, _task("T004")) == "你 1 > 队长 0"
+    assert task_progress(s, _task("T006")) == "你 1 = 队长 0"
+
+
+def test_trick_compare_others():
+    s = _state(["pink:1"])
+    assert task_progress(s, _task("T001")) == "你 1 > 其他人最多 0"
+    assert task_progress(s, _task("T003")) == "你 1 < 其他人最多 0"
+
+
+def test_exact_tricks():
+    s = _state(["pink:1", "pink:2"])
+    assert task_progress(s, _task("T084")) == "已赢 2/2（超 2 失败）"
+    assert task_progress(s, _task("T087")) == "已赢 2/4（超 4 失败）"
+
+
+def test_consecutive():
+    s = _state(["pink:1", "pink:2", "pink:3"])
+    assert task_progress(s, _task("T086")) == "当前连赢 3 · 最长 3/3"
+    assert task_progress(s, _task("T075")) == "当前连赢 3（再连 1 墩失败）"
+
+
+def test_avoid_first_n():
+    s = _state(["pink:1", "pink:2"])
+    assert task_progress(s, _task("T072")) == "已忍 2/3 墩"
+
+
+def test_single_card():
+    s = _state(["pink:3"])
+    assert task_progress(s, _task("T016")) == "粉3 已赢"
+    assert task_progress(s, _task("T017")) == "黄1 未打出"
+
+
+def test_avoid_suit_threat():
+    s = _state(["pink:1"])
+    assert task_progress(s, _task("T062")) == "剩余威胁 9 张未打出"
+
+
+def test_avoid_lead():
+    s = _state(["pink:1"])
+    assert task_progress(s, _task("T060")) == "已开墩 1 次，未违规"
+
+
+def test_remaining_chances():
+    s = _state(["pink:1"])
+    assert task_progress(s, _task("T046")) == "还剩 12 墩机会"
+
+
+def test_win_first_n():
+    s = _state(["pink:1"])
+    assert task_progress(s, _task("T078")) == "前2墩 1/2"

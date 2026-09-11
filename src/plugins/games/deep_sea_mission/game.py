@@ -1143,9 +1143,10 @@ class DeepSeaMissionGame(GameBase):
             lines.append(
                 f"{i}. {state} [{task['difficulty']}] {task['text']}{prediction_text}（{owner_text}）"
             )
-            progress = task_progress(ctx.state, task)
-            if progress:
-                lines.append(f"   └ {progress}")
+            if state == "□":
+                progress = task_progress(ctx.state, task)
+                if progress:
+                    lines.append(f"   └ {progress}")
         return lines
 
     def _next_prediction_task(self, ctx: GameContext) -> dict[str, Any] | None:
