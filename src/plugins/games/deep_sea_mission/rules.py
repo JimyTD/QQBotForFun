@@ -1063,6 +1063,9 @@ def task_progress(state: dict[str, Any], task: dict[str, Any]) -> str | None:
     # ---- P2：剩余机会 / 威胁提示 ----
     if tid in {"T007", "T008", "T012", "T013", "T014", "T046", "T047", "T048", "T049", "T050", "T058", "T059", "T093", "T094"}:
         return f"还剩 {r} 墩机会"
+    if tid in {"T009", "T010", "T011", "T015"}:
+        value = {"T009": 6, "T010": 5, "T011": 3, "T015": 2}[tid]
+        return f"还剩 {r} 墩机会（需赢下含 {value} 的一墩）"
     if tid in _NO_SUIT_TASKS or tid in {"T043", "T057"}:
         suits = _NO_SUIT_TASKS.get(tid) or {"T043": {"pink"}, "T057": {"sub"}}[tid]
         left = sum(_unplayed_suit(state, s) for s in suits)
