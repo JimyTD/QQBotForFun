@@ -1119,8 +1119,6 @@ class DeepSeaMissionGame(GameBase):
                 *self._task_lines(ctx),
             ]
         )
-        if ctx.state.get("tasks"):
-            lines.extend(["", "任务及完成情况：", *self._task_lines(ctx)])
         return render.text_card("深海任务 · 本墩结果", lines, emoji=EMOJI)
 
     def _task_lines(self, ctx: GameContext, *, assigned_only: bool = False) -> list[str]:
