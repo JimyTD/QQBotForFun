@@ -1032,28 +1032,38 @@ def task_progress(state: dict[str, Any], task: dict[str, Any]) -> str | None:
         return f"已赢 {owner_count} / 预测 {int(prediction)}"
 
     # ---- P1：墩数 / 连续 / 对比类 ----
-    if tid in {"T001", "T002", "T003"}:
+    if tid == "T001":
         others = [counts.get(p, 0) for p in order if p != owner]
         top = max(others) if others else 0
-        op = {"T001": ">", "T002": ">", "T003": "<"}[tid]
-        return f"你 {owner_count} {op} 其他人最多 {top}"
+        return f"你 {owner_count} · 其他人最多 {top}（需更多）"
+    if tid == "T002":
+        others = [counts.get(p, 0) for p in order if p != owner]
+        return f"你 {owner_count} · 其他人合计 {sum(others)}（需更多）"
+    if tid == "T003":
+        others = [counts.get(p, 0) for p in order if p != owner]
+        low = min(others) if others else 0
+        return f"你 {owner_count} · 其他人最少 {low}（需更少）"
     if tid in {"T004", "T005", "T006"}:
         captain = int(state.get("captain_id", 0))
         if owner == captain:
             return None
-        op = {"T004": ">", "T005": "<", "T006": "="}[tid]
-        return f"你 {owner_count} {op} 队长 {counts.get(captain, 0)}"
+        op = {"T004": "（需更多）", "T005": "（需更少）", "T006": "（需相同）"}[tid]
+        return f"你 {owner_count} · 队长 {counts.get(captain, 0)} {op}"
     if tid in {"T083", "T084", "T087"}:
         target = {"T083": 1, "T084": 2, "T087": 4}[tid]
         return f"已赢 {owner_count}/{target}（超 {target} 失败）"
-    if tid in {"T085", "T086", "T088", "T089"}:
-        need = {"T085": 2, "T086": 3, "T088": 3, "T089": 2}[tid]
+    if tid in {"T085", "T086"}:
+        need = {"T085": 2, "T086": 3}[tid]
         won_nos = [t["no"] for t in won_tricks]
-        if not won_nos:
-            return f"连赢 0/{need}"
         run = _run_ending_at(set(won_nos), _last_trick_no(state))
         best = _max_consecutive(won_nos)
-        return f"当前连赢 {run} · 最长 {best}/{need}"
+        return f"最长连赢 {best}/{need} · 当前 {run}"
+    if tid in {"T088", "T089"}:
+        target = {"T088": 3, "T089": 2}[tid]
+        won_nos = [t["no"] for t in won_tricks]
+        run = _run_ending_at(set(won_nos), _last_trick_no(state))
+        best = _max_consecutive(won_nos)
+        return f"最长连赢 {best}/{target} · 当前 {run}（超 {target} 失败）"
     if tid == "T075":
         won_nos = [t["no"] for t in won_tricks]
         run = _run_ending_at(set(won_nos), _last_trick_no(state))
@@ -1091,14 +1101,22 @@ def task_progress(state: dict[str, Any], task: dict[str, Any]) -> str | None:
         won_nos = [t["no"] for t in won_tricks]
         got = [k for k in range(1, n + 1) if k in won_nos]
         return f"前{n}墩 {len(got)}/{n}"
-    if tid in {"T080", "T082"}:
+    if tid == "T080":
         won_nos = [t["no"] for t in won_tricks]
-        return f"第1墩 {'✅' if 1 in won_nos else '□'}"
+        return f"第1墩 {'✅' if 1 in won_nos else '□'} · 最后一墩待定"
+    if tid == "T082":
+        won_nos = [t["no"] for t in won_tricks]
+        return f"第1墩 {'✅' if 1 in won_nos else '□'} · 已赢 {owner_count}/1（超 1 失败）"
     if tid == "T076":
         return f"还剩 {r} 墩机会"
     if tid in {"T052", "T053"}:
         value = 1 if tid == "T052" else 2
-        return f"潜艇 已赢 {len(set(_sub_values(won_cards)))} 种（需仅 {value}）"
+        subs = set(_sub_values(won_cards))
+        others = sum(1 for v in subs if v != value)
+        if others:
+            return f"已赢错 {others} 张潜艇（失败）"
+        got = "已赢到" if value in subs else f"潜艇{value} 未打出"
+        return f"{got} · 其他潜艇 0（需仅潜艇{value}）"
     if tid == "T054":
         card = "sub:3"
         if card in won_cards:

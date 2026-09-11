@@ -103,14 +103,15 @@ def test_no_progress_cases():
 
 def test_trick_compare_with_captain():
     s = _state(["pink:1"])
-    assert task_progress(s, _task("T004")) == "你 1 > 队长 0"
-    assert task_progress(s, _task("T006")) == "你 1 = 队长 0"
+    assert task_progress(s, _task("T004")) == "你 1 · 队长 0 （需更多）"
+    assert task_progress(s, _task("T006")) == "你 1 · 队长 0 （需相同）"
 
 
 def test_trick_compare_others():
     s = _state(["pink:1"])
-    assert task_progress(s, _task("T001")) == "你 1 > 其他人最多 0"
-    assert task_progress(s, _task("T003")) == "你 1 < 其他人最多 0"
+    assert task_progress(s, _task("T001")) == "你 1 · 其他人最多 0（需更多）"
+    assert task_progress(s, _task("T003")) == "你 1 · 其他人最少 0（需更少）"
+    assert task_progress(s, _task("T002")) == "你 1 · 其他人合计 0（需更多）"
 
 
 def test_exact_tricks():
@@ -121,7 +122,8 @@ def test_exact_tricks():
 
 def test_consecutive():
     s = _state(["pink:1", "pink:2", "pink:3"])
-    assert task_progress(s, _task("T086")) == "当前连赢 3 · 最长 3/3"
+    assert task_progress(s, _task("T086")) == "最长连赢 3/3 · 当前 3"
+    assert task_progress(s, _task("T088")) == "最长连赢 3/3 · 当前 3（超 3 失败）"
     assert task_progress(s, _task("T075")) == "当前连赢 3（再连 1 墩失败）"
 
 
@@ -154,3 +156,22 @@ def test_remaining_chances():
 def test_win_first_n():
     s = _state(["pink:1"])
     assert task_progress(s, _task("T078")) == "前2墩 1/2"
+
+
+def test_only_sub():
+    s = _state(["pink:1"])
+    # 构造里 2 号靠潜艇4 吃墩，已赢到非目标潜艇 → 报错
+    assert task_progress(s, _task("T052")) == "已赢错 1 张潜艇（失败）"
+    assert task_progress(s, _task("T053")) == "已赢错 1 张潜艇（失败）"
+
+
+def test_first_last_tricks():
+    s = _state(["pink:1"])
+    assert task_progress(s, _task("T080")) == "第1墩 ✅ · 最后一墩待定"
+    assert task_progress(s, _task("T082")) == "第1墩 ✅ · 已赢 1/1（超 1 失败）"
+
+
+def test_trick_with_value():
+    s = _state(["pink:1"])
+    assert task_progress(s, _task("T009")) == "还剩 12 墩机会（需赢下含 6 的一墩）"
+    assert task_progress(s, _task("T015")) == "还剩 12 墩机会（需赢下含 2 的一墩）"
