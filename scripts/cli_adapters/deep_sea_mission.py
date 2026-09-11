@@ -32,6 +32,7 @@ from src.plugins.games.deep_sea_mission.rules import (
     evaluate_campaign_special,
     evaluate_tasks,
     mission_locked_win,
+    task_progress,
 )
 
 from .base import C, GameCLIAdapter, box, prompt
@@ -291,6 +292,9 @@ class DeepSeaMissionCLIAdapter(GameCLIAdapter):
             else:
                 state = "□"
             lines.append(f"{i}. {state} [{task['difficulty']}] {task['text']}（{owner_text}）")
+            progress = task_progress(self._eval_state(), task)
+            if progress:
+                lines.append(f"   └ {progress}")
         return lines
 
     def _eval_state(self) -> dict:

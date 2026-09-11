@@ -53,6 +53,7 @@ from .rules import (
     evaluate_tasks,
     mission_locked_win,
     task_needs_prediction,
+    task_progress,
 )
 from .tasks import draw_tasks
 
@@ -1142,6 +1143,9 @@ class DeepSeaMissionGame(GameBase):
             lines.append(
                 f"{i}. {state} [{task['difficulty']}] {task['text']}{prediction_text}（{owner_text}）"
             )
+            progress = task_progress(ctx.state, task)
+            if progress:
+                lines.append(f"   └ {progress}")
         return lines
 
     def _next_prediction_task(self, ctx: GameContext) -> dict[str, Any] | None:

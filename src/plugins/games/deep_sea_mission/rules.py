@@ -11,7 +11,7 @@ from collections import Counter
 from collections.abc import Callable
 from typing import Any
 
-from .cards import suit_of, value_of
+from .cards import display_card, display_suit, suit_of, value_of
 
 
 PREDICTION_TASK_IDS = {"T090", "T091"}
@@ -936,3 +936,86 @@ def _max_consecutive(numbers: list[int]) -> int:
         best = max(best, run)
         prev = n
     return best
+
+
+def task_progress(state: dict[str, Any], task: dict[str, Any]) -> str | None:
+    """未完成任务的一行进度提示；无进度可报返回 None。
+
+    只使用公开信息（已打出并赢下的牌、赢墩数），不泄露任何手牌。
+    与 ``_evaluate_one`` 的判定口径保持一致，仅做展示、不参与胜负。
+    """
+    tid = str(task.get("id"))
+    owner = task.get("assigned_to")
+    if owner is None:
+        return None
+    owner = int(owner)
+    won_cards = _won_cards(state, owner)
+    counts = _trick_counts(state)
+    owner_count = counts.get(owner, 0)
+
+    def at_least(current: int, need: int, label: str) -> str:
+        return f"{label} {current}/{need}"
+
+    def exact(current: int, target: int, label: str) -> str:
+        return f"{label} {current}/{target}（超 {target} 失败）"
+
+    def suit_label(suit: str) -> str:
+        return display_suit(suit)
+
+    def value_count(value: int) -> int:
+        return sum(1 for c in won_cards if suit_of(c) != "sub" and value_of(c) == value)
+
+    if tid in {"T020", "T024"}:
+        value = 3 if tid == "T020" else 9
+        return at_least(value_count(value), 4, f"{value}点")
+    if tid in {"T021", "T022", "T023"}:
+        value, amount = {"T021": (5, 3), "T022": (9, 3), "T023": (7, 2)}[tid]
+        return at_least(value_count(value), amount, f"{value}点")
+    if tid in {"T025", "T026"}:
+        value, target = {"T025": (6, 3), "T026": (9, 2)}[tid]
+        return exact(value_count(value), target, f"{value}点")
+
+    if tid in {"T038", "T039"}:
+        suit, need = {"T038": ("yellow", 7), "T039": ("pink", 5)}[tid]
+        return at_least(_suit_count(won_cards, suit), need, suit_label(suit))
+    if tid in {"T040", "T041", "T042"}:
+        suit, target = {"T040": ("green", 2), "T041": ("blue", 2), "T042": ("pink", 1)}[tid]
+        return exact(_suit_count(won_cards, suit), target, suit_label(suit))
+
+    if tid == "T037":
+        return (
+            f"{suit_label('pink')} {_suit_count(won_cards, 'pink')}/1 · "
+            f"{suit_label('green')} {_suit_count(won_cards, 'green')}/1（各超 1 失败）"
+        )
+    if tid == "T044":
+        return " ".join(f"{suit_label(s)}{_suit_count(won_cards, s)}" for s in _COLORS)
+    if tid == "T045":
+        return " ".join(f"{suit_label(s)}{_suit_count(won_cards, s)}" for s in _COLORS) + " /9"
+    if tid == "T092":
+        return (
+            f"{suit_label('pink')} {_suit_count(won_cards, 'pink')} · "
+            f"{suit_label('yellow')} {_suit_count(won_cards, 'yellow')}"
+        )
+    if tid in {"T095", "T096"}:
+        more, less = {"T095": ("yellow", "blue"), "T096": ("pink", "green")}[tid]
+        return (
+            f"{suit_label(more)} {_suit_count(won_cards, more)} · "
+            f"{suit_label(less)} {_suit_count(won_cards, less)}"
+        )
+
+    if tid in {"T051", "T055", "T056"}:
+        target = {"T051": 1, "T055": 2, "T056": 3}[tid]
+        return exact(_suit_count(won_cards, "sub"), target, suit_label("sub"))
+
+    if tid in _CARD_SET_TASKS:
+        return " ".join(
+            f"{display_card(c)}{'✅' if c in won_cards else '□'}" for c in _CARD_SET_TASKS[tid]
+        )
+
+    if tid in {"T090", "T091"}:
+        prediction = task.get("prediction")
+        if prediction is None:
+            return None
+        return f"已赢 {owner_count} / 预测 {int(prediction)}"
+
+    return None
