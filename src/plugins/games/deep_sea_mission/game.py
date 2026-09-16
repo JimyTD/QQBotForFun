@@ -67,8 +67,24 @@ _COMPLETE_RE = re.compile(r"^完成\s*(\d+)$")
 _UNDO_COMPLETE_RE = re.compile(r"^撤销完成\s*(\d+)$")
 _PREDICT_RE = re.compile(r"^(?:预测|predict)\s*(\d+)\s+(\d+)$", re.IGNORECASE)
 _PLAY_PREFIX_RE = re.compile(r"^(?:出|打|play)\s*", re.IGNORECASE)
+_SONAR_PREFIX_RE = re.compile(r"^(?:声呐|沟通|sonar)", re.IGNORECASE)
 _SONAR_RE = re.compile(r"^(?:声呐|沟通|sonar)\s*(\S+)\s*(最高|最低|唯一|high|low|only)$", re.IGNORECASE)
 _PASS_CARD_RE = re.compile(r"^(?:传|求救传牌|distress)\s*(\S+)$", re.IGNORECASE)
+
+# =====================================================================
+# 声呐：解析 / 时机 / 文案 的唯一来源（CLI 与 Bot 共用，铁律 13）
+# =====================================================================
+SONAR_USAGE_CORE = "声呐 蓝4 最高/最低/唯一"
+SONAR_USAGE = f"@我 {SONAR_USAGE_CORE}"
+# 官方规则：声呐只能在「任务卡选完、任一墩开始前」使用（不让在墩进行中发）。
+SONAR_TIMING_HINT = "📡 声呐要等任务卡选完、每墩开始前才能用"
+SONAR_SILENCE_TEXT = "🔇 本关禁止交流，无法使用声呐。"
+SONAR_M23_TEXT = "🔇 第二墩前禁止交流。"
+SONAR_MID_TRICK_TEXT = "⚠️ 一墩进行中不能用声呐：等本墩打完、下一墩开始前再发。"
+SONAR_BAD_FORMAT_TEXT = "⚠️ 声呐写法不对。正确格式：{usage}。"
+SONAR_ILLEGAL_TEXT = "⚠️ 声呐声明不合法。"
+SONAR_USED_TEXT = "⚠️ 你本局已经用过声呐。"
+SONAR_QUOTA_USED_TEXT = "⚠️ 全队共享声呐次数已用完。"
 
 SONAR_MARKERS = {
     "最高": "highest",
@@ -83,6 +99,60 @@ SONAR_MARKER_TEXT = {
     "lowest": "最低",
     "only": "唯一",
 }
+
+
+def is_sonar_text(text: str) -> bool:
+    """是否以声呐前缀开头。写法错也要认出来，否则会被当成出牌处理。"""
+    return _SONAR_PREFIX_RE.match(text) is not None
+
+
+def parse_sonar(text: str) -> tuple[str, str] | None:
+    """解析声呐指令 → (card, marker)；格式不合法返回 None。"""
+    match = _SONAR_RE.match(text)
+    if match is None:
+        return None
+    card = parse_card(match.group(1))
+    marker = SONAR_MARKERS.get(match.group(2).lower())
+    if card is None or marker is None:
+        return None
+    return card, marker
+
+
+def sonar_block_reason(
+    *,
+    sonar_mode: str,
+    mission_no: int | None,
+    trick_no: int,
+    trick_in_progress: bool,
+) -> str | None:
+    """此刻不能发声呐的原因；None = 可以发。CLI 与 Bot 共用同一套判定。"""
+    if sonar_mode == "silence":
+        return SONAR_SILENCE_TEXT
+    if mission_no == 23 and trick_no <= 2:
+        return SONAR_M23_TEXT
+    if trick_in_progress:
+        return SONAR_MID_TRICK_TEXT
+    return None
+
+
+def resolve_sonar_mode(mission: Mission | None, rng: random.Random) -> tuple[str, str]:
+    """按关卡 modifiers 解析声呐模式。返回 (mode, 说明文本)。"""
+    if mission is None:
+        return "normal", ""
+    if MOD_UNFAMILIAR in mission.modifiers:
+        draw = rng.randint(1, 9)
+        if draw <= 3:
+            return "normal", "🔴 抽到 1-3：正常声呐"
+        if draw <= 6:
+            return "currents", "🔴 抽到 4-6：❓ Currents（声呐不公开标记）"
+        return "rapture", "🔴 抽到 7-9：-2 Rapture（全队共享声呐）"
+    if MOD_CURRENTS in mission.modifiers:
+        return "currents", "❓ Currents：声呐不公开标记"
+    if MOD_RAPTURE in mission.modifiers:
+        return "rapture", "-2 Rapture：全队共享声呐"
+    if MOD_SILENCE in mission.modifiers:
+        return "silence", "🔇 禁止交流"
+    return "normal", ""
 
 
 @register_game
@@ -176,7 +246,7 @@ class DeepSeaMissionGame(GameBase):
             else:
                 mission_no = int(ctx.config.get("mission_no", 1))
                 mission = get_mission(mission_no)
-                sonar_mode, sonar_note = self._resolve_sonar_mode(mission, rng)
+                sonar_mode, sonar_note = resolve_sonar_mode(mission, rng)
                 if mission.task_source == "draw":
                     if mission.difficulty is None:
                         raise ValueError(f"战役关卡 {mission_no} 需要难度数值")
@@ -229,23 +299,6 @@ class DeepSeaMissionGame(GameBase):
         for i, task in enumerate(ctx.state.get("tasks", []), 1):
             task["display_no"] = i
 
-    def _resolve_sonar_mode(self, mission: Mission, rng: random.Random) -> tuple[str, str]:
-        """按关卡 modifiers 解析声呐模式。返回 (mode, 说明文本)。"""
-        if MOD_UNFAMILIAR in mission.modifiers:
-            draw = rng.randint(1, 9)
-            if draw <= 3:
-                return "normal", "🔴 抽到 1-3：正常声呐"
-            if draw <= 6:
-                return "currents", "🔴 抽到 4-6：❓ Currents（声呐不公开标记）"
-            return "rapture", "🔴 抽到 7-9：-2 Rapture（全队共享声呐）"
-        if MOD_CURRENTS in mission.modifiers:
-            return "currents", "❓ Currents：声呐不公开标记"
-        if MOD_RAPTURE in mission.modifiers:
-            return "rapture", "-2 Rapture：全队共享声呐"
-        if MOD_SILENCE in mission.modifiers:
-            return "silence", "🔇 禁止交流"
-        return "normal", ""
-
     async def on_start(self, ctx: GameContext) -> None:
         self._register_controllers_for_routing(ctx)
         failed = await self._whisper_all_hands(ctx)
@@ -294,6 +347,17 @@ class DeepSeaMissionGame(GameBase):
             return False
 
         phase = str(ctx.state.get("phase", ""))
+
+        # 声呐只在「任务卡选完、每墩开始前」有效。其他阶段明确回绝，
+        # 否则会被选任务 / 出牌分支吞掉，报出与声呐无关的轮次错误。
+        if phase not in {"playing", "task_review", "prediction"} and _SONAR_PREFIX_RE.match(text):
+            await session.broadcast(
+                ctx.group_id,
+                f"⚠️ 现在还不能用声呐：{SONAR_TIMING_HINT}。",
+                at=player_id,
+            )
+            return True
+
         if phase == "distress":
             if await self._handle_distress(ctx, player_id, text):
                 await self._persist(ctx)
@@ -307,6 +371,10 @@ class DeepSeaMissionGame(GameBase):
             return False
 
         if phase == "prediction":
+            # 任务卡已选完、还没开始出牌 —— 恰好是官方允许声呐的窗口。
+            if await self._handle_sonar(ctx, player_id, text):
+                await self._persist(ctx)
+                return True
             if await self.submit_prediction(ctx, player_id, text, is_private=False):
                 await self._persist(ctx)
                 return True
@@ -333,7 +401,7 @@ class DeepSeaMissionGame(GameBase):
             return (
                 f"{EMOJI} 深海任务{title} · 选任务阶段\n"
                 f"💡 当前轮到 @{selector}：@我 选 任务编号；无任务可选时 @我 过\n"
-                f"{self._sonar_hint(ctx)}"
+                f"{self._sonar_timing_hint(ctx)}"
             )
         if phase == "playing":
             current = self._nickname(ctx, int(ctx.state.get("current_player", ctx.host_id)))
@@ -364,7 +432,13 @@ class DeepSeaMissionGame(GameBase):
             used = int(ctx.state.get("sonar_used_count", 0))
             quota = int(ctx.state.get("sonar_quota", 0))
             return f"📡 全队共享声呐：剩余 {quota - used} 次"
-        return "📡 每人一次声呐：@我 声呐 蓝4 最高/最低/唯一"
+        return f"📡 每人一次声呐：{SONAR_USAGE}"
+
+    def _sonar_timing_hint(self, ctx: GameContext) -> str:
+        """选任务阶段的声呐提示：只讲时机，不催人现在就用。"""
+        if ctx.state.get("sonar_mode", "normal") == "silence":
+            return "🔇 本关禁止交流（声呐整关不可用）"
+        return SONAR_TIMING_HINT
 
     async def on_end(self, ctx: GameContext, reason: EndReason) -> None:
         await self._delete_all_private_messages(ctx)
@@ -793,39 +867,42 @@ class DeepSeaMissionGame(GameBase):
         return True
 
     async def _handle_sonar(self, ctx: GameContext, player_id: int, text: str) -> bool:
-        match = _SONAR_RE.match(text)
-        if match is None:
+        if not is_sonar_text(text):
             return False
-        sonar_mode = ctx.state.get("sonar_mode", "normal")
-        if sonar_mode == "silence":
-            await session.broadcast(ctx.group_id, "🔇 本关禁止交流，无法使用声呐。", at=player_id)
+        parsed = parse_sonar(text)
+        if parsed is None:
+            # 一旦是声呐前缀就必须在这里消费掉：否则会继续被当成出牌解析，
+            # 报出「还没轮到你」这种与声呐无关的错。
+            await session.broadcast(
+                ctx.group_id,
+                SONAR_BAD_FORMAT_TEXT.format(usage=SONAR_USAGE),
+                at=player_id,
+            )
             return True
-        if (
-            ctx.state.get("mode") == "campaign"
-            and ctx.state.get("mission", {}).get("no") == 23
-            and int(ctx.state.get("trick_no", 1)) <= 2
-        ):
-            await session.broadcast(ctx.group_id, "🔇 第二墩前禁止交流。", at=player_id)
+        mission_no = None
+        if ctx.state.get("mode") == "campaign":
+            mission_no = ctx.state.get("mission", {}).get("no")
+        block = sonar_block_reason(
+            sonar_mode=str(ctx.state.get("sonar_mode", "normal")),
+            mission_no=mission_no,
+            trick_no=int(ctx.state.get("trick_no", 1)),
+            trick_in_progress=bool(ctx.state["current_trick"]),
+        )
+        if block is not None:
+            await session.broadcast(ctx.group_id, block, at=player_id)
             return True
-        if ctx.state["current_trick"]:
-            await session.broadcast(ctx.group_id, "⚠️ 一墩进行中不能使用声呐。", at=player_id)
-            return True
-        seat_id = self._find_sonar_seat(ctx, player_id, text)
+        card, marker = parsed
+        seat_id = self._find_sonar_seat(ctx, player_id, card, marker)
         if seat_id is None:
-            await session.broadcast(ctx.group_id, "⚠️ 声呐声明不合法。", at=player_id)
+            await session.broadcast(ctx.group_id, SONAR_ILLEGAL_TEXT, at=player_id)
             return True
-        card = parse_card(match.group(1))
-        marker = SONAR_MARKERS.get(match.group(2).lower())
-        hand = ctx.state["hands"].get(str(seat_id), [])
-        if card is None or marker is None or not sonar_condition(hand, card, marker):
-            await session.broadcast(ctx.group_id, "⚠️ 声呐声明不合法。", at=player_id)
-            return True
+        sonar_mode = ctx.state.get("sonar_mode", "normal")
 
         if sonar_mode == "rapture":
             used = int(ctx.state.get("sonar_used_count", 0))
             quota = int(ctx.state.get("sonar_quota", 0))
             if used >= quota:
-                await session.broadcast(ctx.group_id, "⚠️ 全队共享声呐次数已用完。", at=player_id)
+                await session.broadcast(ctx.group_id, SONAR_QUOTA_USED_TEXT, at=player_id)
                 return True
             ctx.state["sonar_used_count"] = used + 1
             ctx.state["sonar_public"].append({"player": seat_id, "card": card, "marker": marker})
@@ -836,7 +913,7 @@ class DeepSeaMissionGame(GameBase):
             return True
 
         if ctx.state["sonar_used"].get(str(seat_id)):
-            await session.broadcast(ctx.group_id, "⚠️ 你本局已经用过声呐。", at=player_id)
+            await session.broadcast(ctx.group_id, SONAR_USED_TEXT, at=player_id)
             return True
         ctx.state["sonar_used"][str(seat_id)] = True
         if sonar_mode == "currents":
@@ -1257,14 +1334,8 @@ class DeepSeaMissionGame(GameBase):
         for owner_id in ctx.state.get("seat_owners", {}).values():
             active.player_ids.add(int(owner_id))
 
-    def _find_sonar_seat(self, ctx: GameContext, actor_id: int, text: str) -> int | None:
-        match = _SONAR_RE.match(text)
-        if match is None:
-            return None
-        card = parse_card(match.group(1))
-        marker = SONAR_MARKERS.get(match.group(2).lower())
-        if card is None or marker is None:
-            return None
+    def _find_sonar_seat(self, ctx: GameContext, actor_id: int, card: str, marker: str) -> int | None:
+        """在 actor 控制的座位里找出手牌满足该声呐声明的座位。"""
         for seat_id in ctx.state.get("order", []):
             seat = int(seat_id)
             if not self._can_control_seat(ctx, actor_id, seat):

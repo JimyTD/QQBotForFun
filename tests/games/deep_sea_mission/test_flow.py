@@ -258,3 +258,123 @@ async def test_real_controller_is_allowed_by_session_route(monkeypatch) -> None:
         await h.send(1, "1")
         assert h.runner.ctx.state["tasks"][0]["assigned_to"] == synthetic_3
         assert h.runner.ctx.state["phase"] == "playing"
+
+
+def _patch_deck(monkeypatch, task_id: str = "T001") -> None:  # type: ignore[no-untyped-def]
+    monkeypatch.setattr(
+        "src.plugins.games.deep_sea_mission.game.build_deck",
+        lambda rng=None: [],
+    )
+    monkeypatch.setattr(
+        "src.plugins.games.deep_sea_mission.game.deal",
+        lambda deck, player_ids: {k: list(v) for k, v in FIXED_HANDS.items()},
+    )
+    monkeypatch.setattr(
+        "src.plugins.games.deep_sea_mission.game.draw_tasks",
+        lambda difficulty, player_count, rng=None: [dict(FIXED_TASKS[0], id=task_id)],
+    )
+
+
+async def test_sonar_in_task_selection_is_rejected_clearly(monkeypatch) -> None:  # type: ignore[no-untyped-def]
+    """选任务阶段发声呐 → 讲清时机，而不是报「轮到别人选任务」。"""
+    _patch_deck(monkeypatch)
+    async with GameTestHarness(
+        DeepSeaMissionGame,
+        players=[1, 2, 3],
+        config={"difficulty": 1},
+    ) as h:
+        await h.start()
+        assert h.runner is not None
+        assert h.runner.ctx.state["phase"] == "task_selection"
+
+        # 非选择者
+        await h.send(1, "声呐 蓝1 最低")
+        assert h.broadcasts_contain("现在还不能用声呐")
+        assert not h.broadcasts_contain("现在轮到 @P3 选择任务")
+
+        # 选择者本人
+        await h.send(3, "声呐 蓝1 最低")
+        assert h.broadcasts_contain("现在还不能用声呐")
+        assert h.runner.ctx.state["phase"] == "task_selection"
+
+
+async def test_sonar_bad_format_never_falls_through_to_play(monkeypatch) -> None:  # type: ignore[no-untyped-def]
+    """声呐写法不对 → 明确回格式，绝不落到出牌分支报「还没轮到你」。"""
+    _patch_deck(monkeypatch)
+    async with GameTestHarness(
+        DeepSeaMissionGame,
+        players=[1, 2, 3],
+        config={"difficulty": 1},
+    ) as h:
+        await h.start()
+        assert h.runner is not None
+        await h.send(3, "选 1")
+        assert h.runner.ctx.state["phase"] == "playing"
+        assert h.runner.ctx.state["current_player"] == 3
+
+        for bad in ("声呐 蓝1", "声呐 蓝1 最大", "声呐 蓝1 最小", "声呐", "沟通 蓝1 高"):
+            before = len(h.broadcasts)
+            await h.send(1, bad)  # P1 不是当前出牌者
+            new = h.broadcasts[before:]
+            assert any("声呐写法不对" in m for m in new), bad
+            assert not any("还没轮到你" in m for m in new), bad
+        assert h.runner.ctx.state["current_trick"] == []
+
+
+async def test_sonar_allowed_between_tricks_regardless_of_turn(monkeypatch) -> None:  # type: ignore[no-untyped-def]
+    """墩与墩之间任何玩家都能发声呐，不受轮次限制。"""
+    _patch_deck(monkeypatch)
+    async with GameTestHarness(
+        DeepSeaMissionGame,
+        players=[1, 2, 3],
+        config={"difficulty": 1},
+    ) as h:
+        await h.start()
+        assert h.runner is not None
+        await h.send(3, "选 1")
+        assert h.runner.ctx.state["current_player"] == 3
+
+        await h.send(1, "声呐 蓝1 最低")  # P1 此刻不是当前出牌者
+        assert h.broadcasts_contain("公开 蓝1")
+        assert h.runner.ctx.state["sonar_used"]["1"] is True
+
+        await h.send(1, "声呐 蓝1 最低")
+        assert h.broadcasts_contain("你本局已经用过声呐")
+
+
+async def test_sonar_blocked_mid_trick_with_timing_wording(monkeypatch) -> None:  # type: ignore[no-untyped-def]
+    """一墩进行中不能发声呐（官方规则：墩开始前），文案要讲清何时可用。"""
+    _patch_deck(monkeypatch)
+    async with GameTestHarness(
+        DeepSeaMissionGame,
+        players=[1, 2, 3],
+        config={"difficulty": 1},
+    ) as h:
+        await h.start()
+        assert h.runner is not None
+        await h.send(3, "选 1")
+        await h.send(3, "潜艇4")
+        assert h.runner.ctx.state["current_trick"] == [{"player": 3, "card": "sub:4"}]
+
+        await h.send(1, "声呐 蓝1 最低")
+        assert h.broadcasts_contain("一墩进行中不能用声呐")
+        assert h.runner.ctx.state["sonar_used"]["1"] is False
+
+
+async def test_sonar_allowed_in_prediction_phase(monkeypatch) -> None:  # type: ignore[no-untyped-def]
+    """预测阶段（任务已选完、还没开始出牌）在官方声呐窗口内，应该能用。"""
+    _patch_deck(monkeypatch, task_id="T090")
+    async with GameTestHarness(
+        DeepSeaMissionGame,
+        players=[1, 2, 3],
+        config={"difficulty": 1},
+    ) as h:
+        await h.start()
+        assert h.runner is not None
+        await h.send(3, "选 1")
+        assert h.runner.ctx.state["phase"] == "prediction"
+
+        await h.send(1, "声呐 蓝1 最低")
+        assert h.broadcasts_contain("公开 蓝1")
+        assert h.runner.ctx.state["sonar_used"]["1"] is True
+        assert h.runner.ctx.state["phase"] == "prediction"
