@@ -41,6 +41,9 @@ from plugins.games.aoe3_battle.simulator import BattleResult, BattleSimulator, S
 # =====================================================================
 # 模式定义
 # =====================================================================
+# ⚠️ 本列表有意缺少本体 MODES 里的 `rival_tournament` (王中王锦标赛):
+#    CLI 尚未实现锦标赛流程, 若直接引用 AoE3BattleGame.MODES 会让玩家选到
+#    无法游玩的模式。已知差异留档见 docs/13-cli-bot-parity.md 的 "当前已知差异(允许)" 表。
 MODES = [
     GameMode(
         id="bet",
