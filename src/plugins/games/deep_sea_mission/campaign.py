@@ -20,7 +20,9 @@ MOD_RAPTURE = "rapture"            # -2 深海狂喜：声呐全队共享 quota
 MOD_UNFAMILIAR = "unfamiliar"      # 🔴 陌生地形：发牌前抽颜色卡定声呐规则
 MOD_REALTIME = "realtime"          # 🕒 限时：面板提示 + 默认走替代规则（不做真实倒计时）
 MOD_FREE_SELECTION = "free_selection"  # 🐙 自由选任务：可自由讨论任务分配
-MOD_DISTRESS = "distress"          # ⚓ 求救信号：开局可选传牌（本关尝试数 +1，简化为提示）
+# ⚓ 求救信号：开局可选传牌（本关尝试数 +1）。**已冻结**：没有任何关卡挂它，机器人也不宣传
+# `@我 求救` 入口（官方 ⚓ 关卡清单未确认），拿到清单后再按关接线。
+MOD_DISTRESS = "distress"
 MOD_SILENCE = "silence"            # 禁止交流（M16 替代规则）
 
 # 任务分配规则（assignment）
@@ -62,7 +64,7 @@ CAMPAIGN_MISSIONS: dict[int, Mission] = {
         10,
         4,
         assignment=ASG_CAPTAIN_ALL,
-        note="队长拿全部任务；若分出去，则首墩前完成全部交流",
+        note="队长拿全部任务（官方另可转交自愿船员，本项目固定队长全拿）",
     ),
     11: Mission(11, 8, modifiers=(MOD_RAPTURE,)),
     12: Mission(
@@ -75,28 +77,28 @@ CAMPAIGN_MISSIONS: dict[int, Mission] = {
         13,
         5,
         assignment=ASG_CAPTAIN_ALL,
-        note="队长拿全部任务；若分出去，则首墩前完成全部交流",
+        note="队长拿全部任务（官方另可转交自愿船员，本项目固定队长全拿）",
     ),
     14: Mission(
         14,
         6,
         modifiers=(MOD_REALTIME, MOD_CURRENTS),
         assignment=ASG_SELF_NOMINATE_1,
-        note="🕒 3:30 限时（不计时则 ❓ Currents）",
+        note="官方限时 3:30；本项目不计时，走替代规则 ❓ Currents",
     ),
     15: Mission(
         15,
         6,
         modifiers=(MOD_REALTIME, MOD_RAPTURE),
         assignment=ASG_SELF_NOMINATE_1,
-        note="🕒 3:00 限时（不计时则 -2 Rapture）",
+        note="官方限时 3:00；本项目不计时，走替代规则 -2 Rapture",
     ),
     16: Mission(
         16,
         6,
         modifiers=(MOD_REALTIME, MOD_SILENCE),
         assignment=ASG_SELF_NOMINATE_1,
-        note="🕒 2:30 限时（不计时则禁止交流）",
+        note="官方限时 2:30；本项目不计时，走替代规则「禁止交流」",
     ),
     17: Mission(17, 9, modifiers=(MOD_FREE_SELECTION,)),
     18: Mission(18, 9),
@@ -107,7 +109,7 @@ CAMPAIGN_MISSIONS: dict[int, Mission] = {
         difficulty=None,
         task_source="none",
         modifiers=(MOD_UNFAMILIAR,),
-        special="🔴 + 不得有玩家比其他玩家多赢 2 张 1",
+        special="不得有玩家比其他玩家多赢 2 张 1",
     ),
     22: Mission(22, 11, modifiers=(MOD_UNFAMILIAR,)),
     23: Mission(
@@ -115,7 +117,7 @@ CAMPAIGN_MISSIONS: dict[int, Mission] = {
         difficulty=None,
         task_source="none",
         modifiers=(MOD_UNFAMILIAR,),
-        special="🔴 + 赢首墩者须始终领先赢墩数 + 第二墩前禁止交流",
+        special="赢首墩者须始终领先赢墩数 + 第二墩前禁止交流",
     ),
     24: Mission(24, 12, modifiers=(MOD_UNFAMILIAR,)),
     25: Mission(
@@ -130,14 +132,14 @@ CAMPAIGN_MISSIONS: dict[int, Mission] = {
         12,
         modifiers=(MOD_REALTIME,),
         assignment=ASG_SELF_NOMINATE_2,
-        note="🕒 5:00 限时（10 tasks），不计时则 12 tasks",
+        note="官方限时 5:00（10 tasks）；本项目不计时，难度 12",
     ),
     27: Mission(
         27,
         difficulty=None,
         task_source="none",
         modifiers=(MOD_UNFAMILIAR,),
-        special="🔴 + 黄 5 须作为最后一墩的最后一张牌",
+        special="黄 5 须作为最后一墩的最后一张牌",
     ),
     28: Mission(28, 14, modifiers=(MOD_FREE_SELECTION,)),
     29: Mission(29, 15, modifiers=(MOD_FREE_SELECTION,)),

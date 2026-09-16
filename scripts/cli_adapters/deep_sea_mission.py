@@ -260,29 +260,44 @@ class DeepSeaMissionCLIAdapter(GameCLIAdapter):
     async def _nominate(self) -> None:
         assert self.mission is not None
         target = 2 if self.mission.assignment == ASG_SELF_NOMINATE_2 else 1
-        fallback = self.mission.assignment != ASG_ALL_ONE_CREW
         order = self.order
         start = order.index(self.captain)
         turn = start
         nominees: list[int] = []
+        print(f"{C.CYAN}说明：全员都「过」时，队长必须接下任务。{C.R}")
         while len(nominees) < target:
             player = order[turn]
             print(f"{self.names[player]} 手牌：{display_cards(self.hands[str(player)])}")
+            print("任务池（公开）：")
+            print("\n".join(self._task_lines()))
             text = prompt(f"{self.names[player]} 是否包揽全部任务？(y/包揽 / n/过) > ").strip().lower()
             if text in QUIT_TOKENS:
                 info("已退出本局。")
                 self._aborted = True
                 return
             if text in {"y", "yes", "包揽", "我来"}:
-                nominees.append(player)
-                print(f"{C.GRN}{self.names[player]} 包揽。{C.R}")
+                if player in nominees:
+                    print(f"{C.RED}{self.names[player]} 已经在包揽名单里了。{C.R}")
+                else:
+                    nominees.append(player)
+                    print(f"{C.GRN}{self.names[player]} 包揽。{C.R}")
             turn = (turn + 1) % len(order)
-            if turn == start and len(nominees) == 0:
-                if fallback:
-                    print(f"{C.RED}无人包揽，退回轮流选。{C.R}")
-                    await self._select_tasks_normal()
-                    return
+            if turn != start or len(nominees) >= target:
+                continue
+            # 一整轮表态结束仍缺名额（对应 Bot 的 _resolve_nomination_round）
+            if self.mission.assignment == ASG_ALL_ONE_CREW:
                 print(f"{C.RED}本关必须有船员包揽，继续表态。{C.R}")
+                continue
+            if target - len(nominees) == 1 and self.captain not in nominees:
+                nominees.append(self.captain)
+                print(f"{C.YEL}⚠️ 无人自愿包揽，队长 {self.names[self.captain]} 必须接下任务。{C.R}")
+                break
+            print(
+                f"{C.YEL}⚠️ 无人自愿：队长无法占两个名额，"
+                f"改为 {self.names[self.captain]} 一人包揽全部任务。{C.R}"
+            )
+            nominees = [self.captain]
+            break
         if len(nominees) == 1:
             for t in self.tasks:
                 t["assigned_to"] = nominees[0]
@@ -560,7 +575,8 @@ class DeepSeaMissionCLIAdapter(GameCLIAdapter):
             else:
                 state = "□"
             lines.append(f"{i}. {state} [{task['difficulty']}] {task['text']}（{owner_text}）")
-            progress = task_progress(self._eval_state(), task)
+            # 控制台是所有玩家共看，进度行用座位名而不是「你」（同群内面板口径）。
+            progress = task_progress(self._eval_state(), task, owner_label=owner_text)
             if progress:
                 lines.append(f"   └ {progress}")
         return lines

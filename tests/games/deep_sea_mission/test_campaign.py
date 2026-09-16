@@ -360,6 +360,66 @@ async def test_campaign_self_nominate_two(monkeypatch) -> None:  # type: ignore[
         assert h.runner.ctx.state["phase"] == "playing"
 
 
+async def test_campaign_nobody_volunteers_captain_takes_all(monkeypatch) -> None:  # type: ignore[no-untyped-def]
+    """M14：全员都「过」→ 队长必须接下全部任务（不再退回轮流选）。"""
+    _patch_common(monkeypatch)
+    async with GameTestHarness(
+        DeepSeaMissionGame,
+        players=[1, 2, 3],
+        config={"mode": "campaign", "mission_no": 14},
+    ) as h:
+        await h.start()
+        assert h.runner is not None
+        assert h.runner.ctx.state["phase"] == "task_selection"
+        await h.send(3, "过")
+        await h.send(1, "过")
+        await h.send(2, "过")
+        tasks = h.runner.ctx.state["tasks"]
+        assert all(t["assigned_to"] == 3 for t in tasks)
+        assert h.runner.ctx.state["phase"] == "playing"
+        assert h.runner.ctx.state.get("nomination") is None
+        assert h.broadcasts_contain("队长必须接下任务")
+
+
+async def test_campaign_two_nominate_captain_fills_last_slot(monkeypatch) -> None:  # type: ignore[no-untyped-def]
+    """M26：只有一名非队长自愿 → 队长补齐第二个名额。"""
+    _patch_common(monkeypatch)
+    async with GameTestHarness(
+        DeepSeaMissionGame,
+        players=[1, 2, 3],
+        config={"mode": "campaign", "mission_no": 26},
+    ) as h:
+        await h.start()
+        assert h.runner is not None
+        await h.send(3, "过")
+        await h.send(1, "包揽")
+        await h.send(2, "过")
+        tasks = h.runner.ctx.state["tasks"]
+        assert len(tasks) == 4
+        assert {t["assigned_to"] for t in tasks} == {1, 3}
+        assert h.runner.ctx.state["phase"] == "playing"
+
+
+async def test_campaign_two_nominate_captain_alone(monkeypatch) -> None:  # type: ignore[no-untyped-def]
+    """M26：全员都不自愿 → 队长无法占两个名额，改为一人包揽全部任务。"""
+    _patch_common(monkeypatch)
+    async with GameTestHarness(
+        DeepSeaMissionGame,
+        players=[1, 2, 3],
+        config={"mode": "campaign", "mission_no": 26},
+    ) as h:
+        await h.start()
+        assert h.runner is not None
+        await h.send(3, "过")
+        await h.send(1, "过")
+        await h.send(2, "过")
+        tasks = h.runner.ctx.state["tasks"]
+        assert len(tasks) == 2
+        assert all(t["assigned_to"] == 3 for t in tasks)
+        assert h.runner.ctx.state["phase"] == "playing"
+        assert h.broadcasts_contain("队长无法占两个名额")
+
+
 async def test_campaign_hardest_to_captain(monkeypatch) -> None:  # type: ignore[no-untyped-def]
     _patch_common(monkeypatch)
     async with GameTestHarness(
@@ -409,7 +469,7 @@ async def test_campaign_distress_pass(monkeypatch) -> None:  # type: ignore[no-u
         # 潜艇不能传
         await h.send(3, "传 潜艇4")
         assert h.broadcasts_contain("潜艇不能作为求救信号传牌")
-        # 三人各传一张给左邻
+        # 三人各传一张给下家（出牌顺序的下一家）
         await h.send(1, "传 蓝1")
         await h.send(2, "传 蓝3")
         await h.send(3, "传 黄2")

@@ -958,11 +958,19 @@ def _max_consecutive(numbers: list[int]) -> int:
     return best
 
 
-def task_progress(state: dict[str, Any], task: dict[str, Any]) -> str | None:
+def task_progress(
+    state: dict[str, Any],
+    task: dict[str, Any],
+    *,
+    owner_label: str = "你",
+) -> str | None:
     """未完成任务的一行进度提示；无进度可报返回 None。
 
     只使用公开信息（已打出并赢下的牌、赢墩数），不泄露任何手牌。
     与 ``_evaluate_one`` 的判定口径保持一致，仅做展示、不参与胜负。
+
+    ``owner_label`` 用于指代任务领取者：群内公开面板与 CLI 控制台会被非领取者看到，
+    调用方应传昵称，不能写死「你」。
     """
     tid = str(task.get("id"))
     owner = task.get("assigned_to")
@@ -1045,20 +1053,20 @@ def task_progress(state: dict[str, Any], task: dict[str, Any]) -> str | None:
     if tid == "T001":
         others = [counts.get(p, 0) for p in order if p != owner]
         top = max(others) if others else 0
-        return f"你 {owner_count} · 其他人最多 {top}（需更多）"
+        return f"{owner_label} {owner_count} · 其他人最多 {top}（需更多）"
     if tid == "T002":
         others = [counts.get(p, 0) for p in order if p != owner]
-        return f"你 {owner_count} · 其他人合计 {sum(others)}（需更多）"
+        return f"{owner_label} {owner_count} · 其他人合计 {sum(others)}（需更多）"
     if tid == "T003":
         others = [counts.get(p, 0) for p in order if p != owner]
         low = min(others) if others else 0
-        return f"你 {owner_count} · 其他人最少 {low}（需更少）"
+        return f"{owner_label} {owner_count} · 其他人最少 {low}（需更少）"
     if tid in {"T004", "T005", "T006"}:
         captain = int(state.get("captain_id", 0))
         if owner == captain:
             return None
         op = {"T004": "（需更多）", "T005": "（需更少）", "T006": "（需相同）"}[tid]
-        return f"你 {owner_count} · 队长 {counts.get(captain, 0)} {op}"
+        return f"{owner_label} {owner_count} · 队长 {counts.get(captain, 0)} {op}"
     if tid in {"T083", "T084", "T087"}:
         target = {"T083": 1, "T084": 2, "T087": 4}[tid]
         return f"已赢 {owner_count}/{target}（超 {target} 失败）"

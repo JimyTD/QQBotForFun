@@ -20,7 +20,6 @@ from .campaign import (
     ASG_SELF_NOMINATE_1,
     ASG_SELF_NOMINATE_2,
     MOD_CURRENTS,
-    MOD_DISTRESS,
     MOD_FREE_SELECTION,
     MOD_RAPTURE,
     MOD_REALTIME,
@@ -239,7 +238,6 @@ class DeepSeaMissionGame(GameBase):
                         "sonar_note": "",
                         "assignment": None,
                         "special": None,
-                        "distress_pending": False,
                         "tasks": draw_tasks(difficulty, player_count, rng),
                     }
                 )
@@ -277,7 +275,6 @@ class DeepSeaMissionGame(GameBase):
                         "sonar_note": sonar_note,
                         "assignment": mission.assignment,
                         "special": mission.special,
-                        "distress_pending": False,
                         "tasks": tasks,
                     }
                 )
@@ -332,7 +329,6 @@ class DeepSeaMissionGame(GameBase):
                     "start": captain_index,
                     "nominees": [],
                     "target": 2 if assignment == ASG_SELF_NOMINATE_2 else 1,
-                    "fallback": assignment != ASG_ALL_ONE_CREW,
                 }
                 ctx.state["phase"] = "task_selection"
                 await session.broadcast(ctx.group_id, self._nomination_panel(ctx))
@@ -394,13 +390,12 @@ class DeepSeaMissionGame(GameBase):
         if phase == "distress":
             return (
                 f"{EMOJI} 深海任务{title} · 求救传牌\n"
-                "💡 每位玩家 @我 传 蓝4（传 1 张给左邻，禁传潜艇）"
+                "💡 每位玩家 @我 传 蓝4（传 1 张给下家，禁传潜艇）"
             )
         if phase == "task_selection":
-            selector = self._nickname(ctx, int(ctx.state.get("order", [ctx.host_id])[int(ctx.state.get("selector_index", 0))]))
             return (
                 f"{EMOJI} 深海任务{title} · 选任务阶段\n"
-                f"💡 当前轮到 @{selector}：@我 选 任务编号；无任务可选时 @我 过\n"
+                f"💡 {self._selection_hint_line(ctx)}\n"
                 f"{self._sonar_timing_hint(ctx)}"
             )
         if phase == "playing":
@@ -416,6 +411,19 @@ class DeepSeaMissionGame(GameBase):
         if phase == "prediction":
             return f"{EMOJI} 深海任务{title} · 预测阶段\n💡 当前玩家按提示输入：@我 预测 任务编号 墩数"
         return f"{EMOJI} 深海任务{title}进行中"
+
+    def _selection_hint_line(self, ctx: GameContext) -> str:
+        """选任务阶段的实际指令。包揽关 / 自由选任务 / 轮流选三套文案不能混用。"""
+        nom = ctx.state.get("nomination")
+        order = [int(x) for x in ctx.state.get("order") or [ctx.host_id]]
+        if nom:
+            current = order[int(nom.get("turn", 0)) % len(order)]
+            return f"当前轮到 @{self._nickname(ctx, current)}：@我 包揽 / @我 过"
+        mission = ctx.state.get("mission") or {}
+        if MOD_FREE_SELECTION in mission.get("modifiers", []):
+            return "🐙 自由选任务：任何玩家 @我 选 编号，先到先得"
+        selector = order[int(ctx.state.get("selector_index", 0)) % len(order)]
+        return f"当前轮到 @{self._nickname(ctx, selector)}：@我 选 任务编号；无任务可选时 @我 过"
 
     def _campaign_title(self, ctx: GameContext) -> str:
         if ctx.state.get("mode") != "campaign":
@@ -459,7 +467,7 @@ class DeepSeaMissionGame(GameBase):
                 )
             next_line = await self._advance_campaign_progress(ctx)
             lines = [
-                f"任务难度：{ctx.state.get('difficulty', '?')}",
+                self._difficulty_line(ctx),
                 f"完成墩数：{int(ctx.state.get('trick_no', 1)) - 1}",
                 "",
                 *self._result_review_lines(ctx),
@@ -480,7 +488,7 @@ class DeepSeaMissionGame(GameBase):
                     "深海任务 · 游戏结束",
                     [
                         f"结束原因：{reason.value}",
-                        f"任务难度：{ctx.state.get('difficulty', '?')}",
+                        self._difficulty_line(ctx),
                         f"完成墩数：{int(ctx.state.get('trick_no', 1)) - 1}",
                         "",
                         *self._result_review_lines(ctx),
@@ -662,13 +670,20 @@ class DeepSeaMissionGame(GameBase):
         current = order[int(nom.get("turn", 0))]
         target = int(nom.get("target", 1))
         nominees = [self._nickname(ctx, int(s)) for s in nom.get("nominees", [])]
-        lines = [
+        lines = [*self._campaign_header_lines(ctx)]
+        if lines:
+            lines.append("")
+        lines += [
             f"本关任务分配：{target} 名船员包揽全部任务",
             f"当前轮到：@{self._nickname(ctx, current)}",
         ]
         if nominees:
             lines.append(f"已包揽：{'、'.join(nominees)}")
+        # 官方规则：抽出的任务卡正面朝上摆桌面中央，全程公开；自荐包揽前必须能看到任务池。
+        lines.extend(["", "任务池（公开）：", *self._task_lines(ctx)])
         lines.extend(["", "指令：@我 包揽（承接全部任务）· @我 过（不承接）"])
+        if ctx.state.get("assignment") != ASG_ALL_ONE_CREW:
+            lines.append("说明：全员都「过」时，队长必须接下任务。")
         return render.text_card("深海任务 · 任务分配", lines, emoji=EMOJI)
 
     async def _handle_nomination(self, ctx: GameContext, player_id: int, text: str) -> bool:
@@ -686,12 +701,17 @@ class DeepSeaMissionGame(GameBase):
             return True
 
         if text in {"包揽", "我来", "nominate"}:
+            if current in nom["nominees"]:
+                await session.broadcast(
+                    ctx.group_id,
+                    f"⚠️ @{self._nickname(ctx, current)} 已经在包揽名单里了。",
+                    at=player_id,
+                )
+                return True
             nom["nominees"].append(current)
             await session.broadcast(ctx.group_id, f"✅ @{self._nickname(ctx, current)} 包揽全部任务。")
             if len(nom["nominees"]) >= int(nom["target"]):
-                self._assign_all_tasks_to_nominees(ctx, nom["nominees"])
-                ctx.state.pop("nomination", None)
-                await self._enter_playing(ctx)
+                await self._complete_nomination(ctx, nom["nominees"])
                 return True
             nom["turn"] = (int(nom["turn"]) + 1) % len(order)
             await session.broadcast(ctx.group_id, self._nomination_panel(ctx))
@@ -699,24 +719,53 @@ class DeepSeaMissionGame(GameBase):
 
         if text in {"过", "pass", "不包揽"}:
             nom["turn"] = (int(nom["turn"]) + 1) % len(order)
-            if int(nom["turn"]) == int(nom["start"]) and len(nom["nominees"]) == 0:
-                if nom.get("fallback"):
-                    # 无人应答 → 退回轮流选
-                    ctx.state.pop("nomination", None)
-                    await session.broadcast(
-                        ctx.group_id,
-                        "⚠️ 无人包揽，退回轮流选任务。\n" + self._task_selection_panel(ctx),
-                    )
-                    return True
-                # all_one_crew 必须有人包揽，继续循环
-                await session.broadcast(
-                    ctx.group_id,
-                    "⚠️ 本关必须有船员包揽全部任务，请继续表态。",
-                )
+            if int(nom["turn"]) == int(nom["start"]) and await self._resolve_nomination_round(ctx, nom):
+                return True
             await session.broadcast(ctx.group_id, self._nomination_panel(ctx))
             return True
 
         return False
+
+    async def _complete_nomination(self, ctx: GameContext, nominees: list[int]) -> None:
+        self._assign_all_tasks_to_nominees(ctx, nominees)
+        ctx.state.pop("nomination", None)
+        await self._enter_playing(ctx)
+
+    async def _resolve_nomination_round(self, ctx: GameContext, nom: dict[str, Any]) -> bool:
+        """一整轮表态结束、名额仍没凑够时的兜底，返回 True 表示本阶段已定。
+
+        官方规则：自荐包揽关（M14/15/16/26）若没人自愿，**队长必须接下任务**，
+        不存在「退回轮流选」；M6 是「全队共同决定一人承担」，无人自愿就继续表态。
+
+        名额只剩 1 个时队长补位（M26「只有一人自愿」）；缺 2 个或队长本身就是
+        唯一的自愿者时，队长无法占两个名额，改为队长一人包揽全部任务，
+        不把任务强塞给不愿接的玩家。
+        """
+        nominees: list[int] = nom["nominees"]
+        target = int(nom["target"])
+        if len(nominees) >= target:
+            await self._complete_nomination(ctx, nominees)
+            return True
+        if ctx.state.get("assignment") == ASG_ALL_ONE_CREW:
+            await session.broadcast(ctx.group_id, "⚠️ 本关必须有船员包揽全部任务，请继续表态。")
+            return False
+        captain = int(ctx.state["captain_id"])
+        if target - len(nominees) == 1 and captain not in nominees:
+            nominees.append(captain)
+            await session.broadcast(
+                ctx.group_id,
+                f"⚠️ 无人自愿包揽，队长 @{self._nickname(ctx, captain)} 必须接下任务。",
+                at=captain,
+            )
+            await self._complete_nomination(ctx, nominees)
+            return True
+        await session.broadcast(
+            ctx.group_id,
+            f"⚠️ 无人自愿：队长无法占两个名额，改为 @{self._nickname(ctx, captain)} 一人包揽全部任务。",
+            at=captain,
+        )
+        await self._complete_nomination(ctx, [captain])
+        return True
 
     def _assign_all_tasks_to_nominees(self, ctx: GameContext, nominees: list[int]) -> None:
         tasks: list[dict[str, Any]] = ctx.state["tasks"]
@@ -739,7 +788,7 @@ class DeepSeaMissionGame(GameBase):
         ctx.state["distress_choices"] = {}
         await session.broadcast(
             ctx.group_id,
-            "⚓ 求救信号：每位玩家 @我 传 蓝4（传 1 张给左邻，禁传潜艇）。\n"
+            "⚓ 求救信号：每位玩家 @我 传 蓝4（传 1 张给下家，禁传潜艇）。\n"
             "全部传完后自动结算。",
         )
 
@@ -774,12 +823,12 @@ class DeepSeaMissionGame(GameBase):
         choices: dict[str, str] = ctx.state["distress_choices"]
         order = [int(x) for x in ctx.state["order"]]
         hands: dict[str, list[str]] = ctx.state["hands"]
-        # 每人的牌传给左邻（下一家）
+        # 每人的牌传给下家（出牌顺序的下一家；官方只说 adjacent member in same direction）
         for seat in order:
-            left = order[(order.index(seat) + 1) % len(order)]
+            nxt = order[(order.index(seat) + 1) % len(order)]
             card = choices[str(seat)]
             hands[str(seat)].remove(card)
-            hands[str(left)].append(card)
+            hands[str(nxt)].append(card)
         for seat in order:
             hands[str(seat)] = sort_cards(hands[str(seat)])
         # 传牌后重发私聊手牌
@@ -789,7 +838,7 @@ class DeepSeaMissionGame(GameBase):
             return
         await session.broadcast(
             ctx.group_id,
-            "⚓ 传牌完成：每位玩家各传 1 张给左邻。",
+            "⚓ 传牌完成：每位玩家各传 1 张给下家。",
         )
         ctx.state.pop("distress_choices", None)
         ctx.state["phase"] = "task_selection"
@@ -1094,8 +1143,9 @@ class DeepSeaMissionGame(GameBase):
         lines = [*self._campaign_header_lines(ctx)]
         if lines:
             lines.append("")
+        difficulty = ctx.state.get("difficulty") or 0
         lines += [
-            f"目标难度：{ctx.state['difficulty']}",
+            f"目标难度：{difficulty}" if difficulty else f"任务：本关固定 {len(ctx.state['tasks'])} 张（不抽难度）",
             f"队长：{self._nickname(ctx, int(ctx.state['captain_id']))}",
             f"当前选择：{self._nickname(ctx, selector)}",
             "",
@@ -1199,6 +1249,16 @@ class DeepSeaMissionGame(GameBase):
         )
         return render.text_card("深海任务 · 本墩结果", lines, emoji=EMOJI)
 
+    def _difficulty_line(self, ctx: GameContext) -> str:
+        """「任务难度」一行。无难度关（M8/12/21/23/27）与 M32 没有难度数字，不能显示 0。"""
+        difficulty = ctx.state.get("difficulty") or 0
+        if difficulty:
+            return f"任务难度：{difficulty}"
+        tasks = ctx.state.get("tasks") or []
+        if tasks:
+            return f"任务：本关固定 {len(tasks)} 张（不抽任务难度）"
+        return "任务：本关无任务卡（走特殊约束）"
+
     def _task_lines(self, ctx: GameContext, *, assigned_only: bool = False) -> list[str]:
         lines: list[str] = []
         for i, task in enumerate(ctx.state["tasks"], 1):
@@ -1221,7 +1281,8 @@ class DeepSeaMissionGame(GameBase):
                 f"{i}. {state} [{task['difficulty']}] {task['text']}{prediction_text}（{owner_text}）"
             )
             if state == "□":
-                progress = task_progress(ctx.state, task)
+                # 进度行在群内公开面板与私聊面板里都会出现，用昵称而不是「你」。
+                progress = task_progress(ctx.state, task, owner_label=owner_text)
                 if progress:
                     lines.append(f"   └ {progress}")
         return lines
