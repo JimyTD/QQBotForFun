@@ -7,21 +7,20 @@ CLI 流程：
 
 from __future__ import annotations
 
-import asyncio
 import random
 import time
 
-from cli_adapters.base import C, GameCLIAdapter, GameMode, box, info, prompt
+from cli_adapters.base import C, GameMode, info, prompt
 
 from plugins.aoe3.repository import UnitRepo
 from plugins.games.aoe3_battle.broadcaster import (
+    MODE_BRIEF,
     Broadcaster,
-    BroadcastSegment,
     format_battle_report,
 )
+from plugins.games.aoe3_battle.game import AGE_DEFAULT
 from plugins.games.aoe3_battle.lineup import (
     MatchLineup,
-    format_matchup_panel,
     format_side_panel,
     format_vs_banner,
     generate_bet_lineup,
@@ -31,12 +30,10 @@ from plugins.games.aoe3_battle.lineup import (
     generate_rival_lineup,
 )
 from plugins.games.aoe3_battle.rival_themes import (
-    RIVAL_THEMES,
-    filter_theme_pool,
     pick_random_themes,
     resolve_theme,
 )
-from plugins.games.aoe3_battle.simulator import BattleResult, BattleSimulator, Side
+from plugins.games.aoe3_battle.simulator import BattleResult, BattleSimulator
 
 # =====================================================================
 # 模式定义
@@ -61,7 +58,7 @@ MODES = [
         id="blacklist",
         name="黑名单乱斗",
         description="怪物 / 战役英雄 / 作弊码兵互殴，战力分平衡",
-        aliases=("黑名单", "乱斗", "黑名单乱斗"),
+        aliases=("黑名单", "乱斗", "黑名单乱斗", "blacklist"),
     ),
     GameMode(
         id="custom",
@@ -72,7 +69,7 @@ MODES = [
     GameMode(
         id="rival",
         name="王中王",
-        description="职能主题对决 · 随机 3 主题选 1 或指定主题",
+        description="职能主题对决 · 表情选主题或指定主题",
         aliases=("王中王", "宿敌", "宿敌挑战"),
     ),
 ]
@@ -122,7 +119,11 @@ class AoE3BattleCLIAdapter:
             info(f"本局资源预算：{self._budget}")
 
             result = generate_custom_lineup(
-                self._repo, unit_names, budget=self._budget, rng=random.Random()
+                self._repo,
+                unit_names,
+                budget=self._budget,
+                age=AGE_DEFAULT,
+                rng=random.Random(),
             )
             if isinstance(result, str):
                 info(f"生成失败：{result}")
@@ -148,7 +149,11 @@ class AoE3BattleCLIAdapter:
             if budget_str.isdigit():
                 self._budget = max(1000, min(50000, int(budget_str)))
             result = generate_rival_lineup(
-                self._repo, theme.id, budget=self._budget, rng=random.Random(),
+                self._repo,
+                theme.id,
+                budget=self._budget,
+                age=AGE_DEFAULT,
+                rng=random.Random(),
             )
             if isinstance(result, str):
                 info(f"生成失败：{result}")
@@ -157,13 +162,16 @@ class AoE3BattleCLIAdapter:
             return
 
         # 生成阵容
+        # 时代: 与线上默认一致 (game.AGE_DEFAULT, §3.10.6); 黑名单乱斗线上不启用时代
         rng = random.Random()
         if mode_id == "duel":
-            self._match = generate_duel_lineup(self._repo, rng=rng)
+            self._match = generate_duel_lineup(self._repo, age=AGE_DEFAULT, rng=rng)
         elif mode_id == "blacklist":
             self._match = generate_blacklist_lineup(self._repo, rng=rng)
         else:
-            self._match = generate_bet_lineup(self._repo, rng=rng, budget=self._budget)
+            self._match = generate_bet_lineup(
+                self._repo, rng=rng, budget=self._budget, age=AGE_DEFAULT
+            )
 
     async def play(self) -> None:
         assert self._match is not None
@@ -231,7 +239,8 @@ class AoE3BattleCLIAdapter:
         self._result = result
 
         # 4. 播报
-        bc = Broadcaster(result, mode="detailed")
+        # 默认跟线上一致用 brief; --debug 时给详细播报 (docs/13 允许的调试差异)
+        bc = Broadcaster(result, mode="detailed" if self._debug else MODE_BRIEF)
         segments = bc.generate()
 
         print(f"\n{C.CYAN}{'━' * 50}{C.R}")

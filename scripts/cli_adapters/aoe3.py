@@ -5,10 +5,10 @@ from __future__ import annotations
 import sys
 from pathlib import Path
 
-from cli_adapters.base import GameCLIAdapter, GameMode, box, C, info, prompt
+from cli_adapters.base import GameMode, box, C, info, prompt
 
-# 确保能 import src
-_root = Path(__file__).resolve().parent.parent / "src"
+# 确保能 import src (本文件在 scripts/cli_adapters/ 下, 向上两级才是项目根)
+_root = Path(__file__).resolve().parents[2] / "src"
 if str(_root) not in sys.path:
     sys.path.insert(0, str(_root))
 
