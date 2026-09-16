@@ -194,18 +194,22 @@ def test_apply_cost_effect(repo):
 
 
 def test_allocate_lineup_counts_single(repo):
-    """allocate_lineup_counts 按当前 cost 分配数量（单兵种）。"""
+    """allocate_lineup_counts 按当前 cost 分配数量 (单兵种)。
+
+    单价要用 ``UnitSlot.unit_cost`` (= 资源 + 人口折算的房子成本,
+    见 lineup._unit_cost, a0295d8 起生效), 而不是 ``sum(cost.values())``。
+    """
     import dataclasses
     from src.plugins.games.aoe3_battle.lineup import (
         Lineup, UnitSlot, allocate_lineup_counts,
     )
     musk = repo.get_by_id("musketeer")
     budget = 1000
-    old_cost = sum(musk.cost.values())
+    full_cost = UnitSlot(musk, 1).unit_cost
 
     lineup = Lineup(slots=[UnitSlot(musk, 1)])
     allocate_lineup_counts(lineup, budget)
-    assert lineup.slots[0].count == max(1, budget // old_cost)
+    assert lineup.slots[0].count == max(1, budget // full_cost)
 
     half_cost = {k: max(1, v // 2) for k, v in musk.cost.items()}
     cheap_musk = dataclasses.replace(musk, cost=half_cost)

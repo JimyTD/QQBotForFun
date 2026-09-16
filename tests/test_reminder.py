@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from datetime import date, datetime, time
+from datetime import datetime, time
 from pathlib import Path
 from unittest.mock import AsyncMock, patch
 
@@ -117,135 +117,120 @@ class TestImageCache:
 
 
 class TestPlanToday:
-    """测试每日规划逻辑。"""
+    """测试每日规划逻辑。
 
-    async def test_weekend_skip(self):
-        """周末不规划。"""
+    现状 (与代码对齐):
+    - 只看「中国法定工作日」, 不再在规划阶段 roll 概率
+      (概率判定已移到 _send_reminder 的 random 模式群, 见 TestSendReminder)
+    - 因此这里统一 mock ``chinese_calendar.is_workday``, 不再依赖
+      硬编码日期的节假日数据 (旧用例写死 2026-05-04, 而该日期在
+      chinesecalendar 里是劳动节假期, 曾导致期望落空)。
+    """
+
+    async def test_non_workday_skip(self):
+        """非工作日不规划。"""
         from src.plugins.tools.reminder import scheduler_jobs
 
         with patch.object(scheduler_jobs, "_planned_date", None):
-            with patch("src.plugins.tools.reminder.scheduler_jobs.date") as mock_date:
-                mock_date.today.return_value = date(2026, 5, 9)  # Saturday
-                mock_date.side_effect = lambda *a, **kw: date(*a, **kw)
-
+            with patch("chinese_calendar.is_workday", return_value=False):
                 mock_schedule = AsyncMock(return_value="job_id")
                 with patch("core.scheduler.schedule_once", mock_schedule):
                     await scheduler_jobs.plan_today()
                     mock_schedule.assert_not_called()
 
     async def test_workday_all_hit(self):
-        """工作日 + 所有概率命中 → 3 个任务。"""
+        """工作日 → 3 个窗口全部注册。"""
         from src.plugins.tools.reminder import scheduler_jobs
+        from src.plugins.tools.reminder.scheduler_jobs import CST
 
-        monday = date(2026, 5, 4)
-        fake_now = datetime(2026, 5, 4, 0, 6)
+        # 00:06 → 三个窗口 (10:00 / 14:30 / 19:00) 都在未来, 必然全注册
+        fake_now = datetime(2026, 5, 4, 0, 6, tzinfo=CST)
 
         with patch.object(scheduler_jobs, "_planned_date", None):
-            with patch("src.plugins.tools.reminder.scheduler_jobs.date") as mock_date:
-                mock_date.today.return_value = monday
-                mock_date.side_effect = lambda *a, **kw: date(*a, **kw)
-
-                with patch("src.plugins.tools.reminder.scheduler_jobs.datetime") as mock_dt:
-                    mock_dt.now.return_value = fake_now
-                    mock_dt.combine = datetime.combine
-
-                    with patch("src.plugins.tools.reminder.scheduler_jobs.random.random", return_value=0.0):
-                        with patch("src.plugins.tools.reminder.scheduler_jobs.random.randint", return_value=600):
-                            mock_schedule = AsyncMock(return_value="job_id")
-                            with patch("core.scheduler.schedule_once", mock_schedule):
-                                await scheduler_jobs.plan_today()
-                                assert mock_schedule.call_count == 3
-
-    async def test_all_probability_miss(self):
-        """所有概率不命中 → 0 个任务。"""
-        from src.plugins.tools.reminder import scheduler_jobs
-
-        monday = date(2026, 5, 4)
-        fake_now = datetime(2026, 5, 4, 0, 6)
-
-        with patch.object(scheduler_jobs, "_planned_date", None):
-            with patch("src.plugins.tools.reminder.scheduler_jobs.date") as mock_date:
-                mock_date.today.return_value = monday
-                mock_date.side_effect = lambda *a, **kw: date(*a, **kw)
-
-                with patch("src.plugins.tools.reminder.scheduler_jobs.datetime") as mock_dt:
-                    mock_dt.now.return_value = fake_now
-                    mock_dt.combine = datetime.combine
-
-                    with patch("src.plugins.tools.reminder.scheduler_jobs.random.random", return_value=1.0):
-                        mock_schedule = AsyncMock(return_value="job_id")
-                        with patch("core.scheduler.schedule_once", mock_schedule):
-                            await scheduler_jobs.plan_today()
-                            mock_schedule.assert_not_called()
+            with patch("src.plugins.tools.reminder.scheduler_jobs.datetime") as mock_dt:
+                mock_dt.now.return_value = fake_now
+                mock_dt.combine = datetime.combine
+                with patch("chinese_calendar.is_workday", return_value=True):
+                    mock_schedule = AsyncMock(return_value="job_id")
+                    with patch("core.scheduler.schedule_once", mock_schedule):
+                        await scheduler_jobs.plan_today()
+                        assert mock_schedule.call_count == 3
 
     async def test_past_windows_skipped(self):
         """启动补偿场景：已过去的窗口不注册。"""
         from src.plugins.tools.reminder import scheduler_jobs
+        from src.plugins.tools.reminder.scheduler_jobs import CST
 
-        monday = date(2026, 5, 4)
-        # 15:00 → morning 已过，afternoon 部分可用，offwork 未到
-        fake_now = datetime(2026, 5, 4, 15, 0)
+        # 15:00 → morning(10:00-11:30) 已过, afternoon 视随机分钟而可能已过,
+        # offwork(19:00) 未到。这里固定每个窗口取起点, 保证结果确定。
+        fake_now = datetime(2026, 5, 4, 15, 0, tzinfo=CST)
 
         with patch.object(scheduler_jobs, "_planned_date", None):
-            with patch("src.plugins.tools.reminder.scheduler_jobs.date") as mock_date:
-                mock_date.today.return_value = monday
-                mock_date.side_effect = lambda *a, **kw: date(*a, **kw)
-
-                with patch("src.plugins.tools.reminder.scheduler_jobs.datetime") as mock_dt:
-                    mock_dt.now.return_value = fake_now
-                    mock_dt.combine = datetime.combine
-
-                    # 所有概率命中
-                    with patch("src.plugins.tools.reminder.scheduler_jobs.random.random", return_value=0.0):
-                        # randint 对 morning 返回 600(10:00) → 已过
-                        # 对 afternoon 返回 870(14:30) → 已过
-                        # 对 offwork 返回 1140(19:00) → 未到
-                        call_count = [0]
-
-                        def fake_randint(a, b):
-                            call_count[0] += 1
-                            # morning: 10:00 = 600, afternoon: 14:30 = 870, offwork: 19:00 = 1140
-                            if a == 600:  # morning
-                                return 600
-                            elif a == 870:  # afternoon
-                                return 870
-                            else:  # offwork start=1140
-                                return 1140
-
-                        with patch("src.plugins.tools.reminder.scheduler_jobs.random.randint", side_effect=fake_randint):
-                            mock_schedule = AsyncMock(return_value="job_id")
-                            with patch("core.scheduler.schedule_once", mock_schedule):
-                                await scheduler_jobs.plan_today()
-                                # 只有 offwork(19:00) 在 15:00 之后
-                                assert mock_schedule.call_count == 1
+            with patch("src.plugins.tools.reminder.scheduler_jobs.datetime") as mock_dt:
+                mock_dt.now.return_value = fake_now
+                mock_dt.combine = datetime.combine
+                with patch("chinese_calendar.is_workday", return_value=True):
+                    with patch(
+                        "src.plugins.tools.reminder.scheduler_jobs.random.randint",
+                        side_effect=lambda a, b: a,  # 取窗口起点
+                    ):
+                        mock_schedule = AsyncMock(return_value="job_id")
+                        with patch("core.scheduler.schedule_once", mock_schedule):
+                            await scheduler_jobs.plan_today()
+                            # 只有 offwork(19:00) 在 15:00 之后
+                            assert mock_schedule.call_count == 1
 
 
 class TestSendReminder:
-    """测试发送逻辑。"""
+    """测试发送逻辑。
+
+    现状 (与代码对齐): ``_send_reminder`` 从 ``storage.get_enabled_groups_by_mode()``
+    取 ``{"always": [...], "random": [...]}``, random 模式的群在**发送阶段**
+    才 roll 概率 (``WINDOWS[slot]["probability"]``)。
+    旧用例 mock 的 ``scheduler_jobs.get_enabled_groups`` 已不存在 (函数在 storage)。
+    """
 
     async def test_no_enabled_groups_skips(self):
         """没有启用群时静默跳过。"""
         from src.plugins.tools.reminder.scheduler_jobs import _send_reminder
 
         with patch(
-            "src.plugins.tools.reminder.scheduler_jobs.get_enabled_groups",
+            "src.plugins.tools.reminder.storage.get_enabled_groups_by_mode",
             new_callable=AsyncMock,
-            return_value=[],
+            return_value={},
         ):
             mock_broadcast = AsyncMock()
             with patch("core.session.broadcast", mock_broadcast):
                 await _send_reminder(slot="morning")
                 mock_broadcast.assert_not_called()
 
+    async def test_random_mode_probability_miss(self):
+        """random 模式的群未命中概率 → 不发送。"""
+        from src.plugins.tools.reminder.scheduler_jobs import _send_reminder
+
+        with patch(
+            "src.plugins.tools.reminder.storage.get_enabled_groups_by_mode",
+            new_callable=AsyncMock,
+            return_value={"always": [], "random": ["12345"]},
+        ):
+            with patch(
+                "src.plugins.tools.reminder.scheduler_jobs.random.random",
+                return_value=1.0,
+            ):
+                mock_broadcast = AsyncMock()
+                with patch("core.session.broadcast", mock_broadcast):
+                    await _send_reminder(slot="morning")
+                    mock_broadcast.assert_not_called()
+
     async def test_text_message_sent(self):
-        """文字消息正常发送到启用群。"""
-        from src.plugins.tools.reminder.scheduler_jobs import _send_reminder, ContentItem
+        """文字消息正常发送到 always 模式的群。"""
+        from src.plugins.tools.reminder.scheduler_jobs import ContentItem, _send_reminder
 
         text_item = ContentItem("text", msg="test message")
         with patch(
-            "src.plugins.tools.reminder.scheduler_jobs.get_enabled_groups",
+            "src.plugins.tools.reminder.storage.get_enabled_groups_by_mode",
             new_callable=AsyncMock,
-            return_value=["12345", "67890"],
+            return_value={"always": ["12345", "67890"], "random": []},
         ):
             with patch("src.plugins.tools.reminder.scheduler_jobs.random.choice", return_value=text_item):
                 mock_broadcast = AsyncMock()
@@ -257,13 +242,13 @@ class TestSendReminder:
 
     async def test_broadcast_failure_silent(self):
         """单群发送失败不影响其他群。"""
-        from src.plugins.tools.reminder.scheduler_jobs import _send_reminder, ContentItem
+        from src.plugins.tools.reminder.scheduler_jobs import ContentItem, _send_reminder
 
         text_item = ContentItem("text", msg="hello")
         with patch(
-            "src.plugins.tools.reminder.scheduler_jobs.get_enabled_groups",
+            "src.plugins.tools.reminder.storage.get_enabled_groups_by_mode",
             new_callable=AsyncMock,
-            return_value=["111", "222", "333"],
+            return_value={"always": ["111", "222", "333"], "random": []},
         ):
             with patch("src.plugins.tools.reminder.scheduler_jobs.random.choice", return_value=text_item):
                 call_log = []
