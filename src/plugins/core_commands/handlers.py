@@ -138,7 +138,7 @@ async def _(matcher: Matcher, event: MessageEvent) -> None:
         MenuItem(
             emoji="🏰",
             name="帝国时代3百科",
-            subtitle="AoE3 兵种查询/对比/克制 · 小工具",
+            subtitle="AoE3 兵种查询/对比 · 小工具",
             command="@我 aoe3 兵种名",
         )
     )

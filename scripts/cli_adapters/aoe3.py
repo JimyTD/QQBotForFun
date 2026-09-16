@@ -24,7 +24,7 @@ class AoE3CLIAdapter:
     """帝国时代3百科 — CLI 查询工具。"""
 
     game_name = "帝国时代3百科"
-    MODES = [GameMode(id="default", name="兵种查询", description="查兵种属性/对比/克制/文明")]
+    MODES = [GameMode(id="default", name="兵种查询", description="查兵种属性/对比/文明")]
 
     def __init__(self, *, debug: bool = False) -> None:
         self._debug = debug
