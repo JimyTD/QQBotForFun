@@ -66,7 +66,7 @@ class DeepSeaMissionCLIAdapter(GameCLIAdapter):
     # 单次 CLI 运行内的战役进度（跨实例共享：play_cli「再来一局」会新建 adapter）。
     # 关掉 CLI 即失，不做持久化（docs/13 允许的机制差异）。
     _campaign_level = 1
-    # Epilogue 难度（setlevel epilogue:N 生效）；非 None 时下一局走 Epilogue
+    # Epilogue 难度 (setlevel epilogue:N 生效); 非 None 时下一局走 Epilogue
     _epilogue_difficulty: int | None = None
 
     def __init__(self, *, debug: bool = False) -> None:
