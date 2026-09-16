@@ -11,7 +11,7 @@
 帝国时代3:决定版（AoE3:DE）数据查询 + 猜兵种小游戏。
 
 包含两种形态：
-- **查询工具**（v1，优先实现）：一问一答，查兵种属性 / 对比 / 克制 / 文明
+- **查询工具**（v1，优先实现）：一问一答，查兵种属性 / 对比 / 文明
 - **猜兵种游戏**（v2，后续）：多轮交互，逐步给线索，玩家猜兵种名
 
 两者共用同一份数据层和 icon 资源。
@@ -215,7 +215,6 @@ resources/aoe3/icons/        # 单位 icon 图片
 class UnitRepo:
     def search(name: str) -> list[Unit]           # 中英文模糊搜索
     def get_by_id(id: str) -> Unit | None
-    def find_counters(type: str, min: float) -> list[Unit]  # 克制查询
     def list_by_civ(civ: str) -> list[Unit]       # 文明查询
     def random_trainable() -> Unit                 # 猜兵种用
     def get_icon_path(unit: Unit) -> Path | None   # icon 本地路径
