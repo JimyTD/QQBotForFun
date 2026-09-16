@@ -34,8 +34,13 @@ from src.plugins.games.deep_sea_mission.rules import (
     mission_locked_win,
     task_progress,
 )
+from src.plugins.games.deep_sea_mission.tasks import draw_tasks
 
-from .base import C, GameCLIAdapter, box, prompt
+from .base import C, GameCLIAdapter, box, info, prompt
+
+# 统一退出词: base.prompt() 在 Ctrl+C / EOF 时也返回 "quit",
+# 各输入循环必须显式处理, 否则会无限刷屏 (见 docs/13)。
+QUIT_TOKENS = {"quit", "exit", "退出", "结束"}
 
 
 class DeepSeaMissionCLIAdapter(GameCLIAdapter):
@@ -61,6 +66,8 @@ class DeepSeaMissionCLIAdapter(GameCLIAdapter):
         self.trick_history: list[dict] = []
         self.lead_suit: str | None = None
         self.mission: Mission | None = None
+        # 玩家主动退出 (quit/exit/Ctrl+C/EOF): 置位后 play() 直接返回。
+        self._aborted = False
 
     async def start(self, mode_id: str) -> None:
         self.mode_id = mode_id
@@ -134,6 +141,8 @@ class DeepSeaMissionCLIAdapter(GameCLIAdapter):
         box("深海任务 · 发牌", "\n".join(lines), C.BLUE)
         if self.tasks:
             await self._select_tasks()
+            if self._aborted:
+                return
         await self._play_cards()
 
     async def _select_tasks(self) -> None:
@@ -154,6 +163,10 @@ class DeepSeaMissionCLIAdapter(GameCLIAdapter):
             print("\n".join(self._task_lines()))
             tag = "自由选任务" if free else f"{self.names[player]} 选任务"
             text = prompt(f"{tag}（如 1；pass 跳过）> ")
+            if text.strip().lower() in QUIT_TOKENS:
+                info("已退出本局。")
+                self._aborted = True
+                return
             if text.lower() in {"pass", "过"}:
                 if not free:
                     selector_index = (selector_index + 1) % len(self.order)
@@ -181,6 +194,10 @@ class DeepSeaMissionCLIAdapter(GameCLIAdapter):
         while len(nominees) < target:
             player = order[turn]
             text = prompt(f"{self.names[player]} 是否包揽全部任务？(y/包揽 / n/过) > ").strip().lower()
+            if text in QUIT_TOKENS:
+                info("已退出本局。")
+                self._aborted = True
+                return
             if text in {"y", "yes", "包揽", "我来"}:
                 nominees.append(player)
                 print(f"{C.GRN}{self.names[player]} 包揽。{C.R}")
@@ -209,6 +226,10 @@ class DeepSeaMissionCLIAdapter(GameCLIAdapter):
             player = self.order[selector_index]
             print("\n".join(self._task_lines()))
             text = prompt(f"{self.names[player]} 选任务（如 1；pass 跳过）> ")
+            if text.strip().lower() in QUIT_TOKENS:
+                info("已退出本局。")
+                self._aborted = True
+                return
             if text.lower() in {"pass", "过"}:
                 selector_index = (selector_index + 1) % len(self.order)
                 continue
@@ -233,6 +254,9 @@ class DeepSeaMissionCLIAdapter(GameCLIAdapter):
                 print("任务及完成情况：")
                 print("\n".join(self._task_lines()))
             raw = prompt("出牌（win/fail 结束，setlevel N 跳关）> ")
+            if raw.strip().lower() in QUIT_TOKENS:
+                info("已退出本局。")
+                return
             if raw in {"win", "胜利"}:
                 self._on_win()
                 box("胜利", "所有玩家胜利。", C.GRN)
