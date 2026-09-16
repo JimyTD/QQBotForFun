@@ -158,6 +158,9 @@ async def test_cli_autopilot_full_mission(monkeypatch, capsys, sonar_mode: str) 
                 declared["n"] = 1
                 return "声呐 蓝1 最低"
             return ""
+        if msg.startswith("结算"):
+            # 任一玩家空手即出牌结束（与线上一致），此后进入结算提示
+            return "fail"
         hand = a.hands[str(a.current)]
         for card in hand:
             ok, _ = legal_play(hand, card, a.lead_suit)
@@ -170,5 +173,5 @@ async def test_cli_autopilot_full_mission(monkeypatch, capsys, sonar_mode: str) 
     out = capsys.readouterr().out
     assert declared["n"] == 1
     assert "公开 蓝1" in out
-    assert "手牌已打完" in out or "赢" in out
+    assert "手牌已打完" in out or "赢" in out or "任务失败" in out
     assert not a._aborted

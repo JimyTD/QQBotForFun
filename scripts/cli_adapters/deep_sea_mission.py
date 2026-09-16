@@ -11,6 +11,7 @@ from src.plugins.games.deep_sea_mission.campaign import (
     ASG_HARDEST_TO_CAPTAIN,
     ASG_SELF_NOMINATE_1,
     ASG_SELF_NOMINATE_2,
+    EPILOGUE_MODIFIERS,
     MOD_FREE_SELECTION,
     Mission,
     fixed_tasks_m32,
@@ -46,6 +47,7 @@ from src.plugins.games.deep_sea_mission.rules import (
     evaluate_campaign_special,
     evaluate_tasks,
     mission_locked_win,
+    task_needs_prediction,
     task_progress,
 )
 from src.plugins.games.deep_sea_mission.tasks import draw_tasks
@@ -64,6 +66,8 @@ class DeepSeaMissionCLIAdapter(GameCLIAdapter):
     # 单次 CLI 运行内的战役进度（跨实例共享：play_cli「再来一局」会新建 adapter）。
     # 关掉 CLI 即失，不做持久化（docs/13 允许的机制差异）。
     _campaign_level = 1
+    # Epilogue 难度（setlevel epilogue:N 生效）；非 None 时下一局走 Epilogue
+    _epilogue_difficulty: int | None = None
 
     def __init__(self, *, debug: bool = False) -> None:
         self.debug = debug
@@ -109,17 +113,26 @@ class DeepSeaMissionCLIAdapter(GameCLIAdapter):
         self.sonar_quota = len(self.players) - 2
 
         if mode_id == "campaign":
-            mission_no = type(self)._campaign_level
-            mission = get_mission(mission_no)
-            self.mission = mission
-            self.sonar_mode, self.sonar_note = resolve_sonar_mode(mission, rng)
-            if mission.task_source == "draw":
-                self.tasks = draw_tasks(mission.difficulty, len(self.players), rng)
-            elif mission.task_source == "fixed":
-                self.tasks = fixed_tasks_m32(len(self.players))
+            epilogue_diff = type(self)._epilogue_difficulty
+            if epilogue_diff is not None:
+                # Epilogue 无限模式: 与线上一致 (难度自由, 固定自由选任务, 声呐走常态)
+                self.mission = Mission(
+                    0, epilogue_diff, modifiers=EPILOGUE_MODIFIERS, note="Epilogue 无限模式"
+                )
+                self.sonar_mode, self.sonar_note = "normal", ""
+                self.tasks = draw_tasks(epilogue_diff, len(self.players), rng)
             else:
-                self.tasks = []
-            self._apply_auto_assignment(mission)
+                mission_no = type(self)._campaign_level
+                mission = get_mission(mission_no)
+                self.mission = mission
+                self.sonar_mode, self.sonar_note = resolve_sonar_mode(mission, rng)
+                if mission.task_source == "draw":
+                    self.tasks = draw_tasks(mission.difficulty, len(self.players), rng)
+                elif mission.task_source == "fixed":
+                    self.tasks = fixed_tasks_m32(len(self.players))
+                else:
+                    self.tasks = []
+                self._apply_auto_assignment(mission)
         else:
             self.sonar_mode, self.sonar_note = resolve_sonar_mode(None, rng)
             d = prompt("任务总难度（默认 3）> ").strip()
@@ -183,6 +196,9 @@ class DeepSeaMissionCLIAdapter(GameCLIAdapter):
             await self._select_tasks()
             if self._aborted:
                 return
+            self._ask_predictions()  # 与线上一致: 任务选完 → 预测 → 出牌
+            if self._aborted:
+                return
         await self._play_cards()
 
     async def _select_tasks(self) -> None:
@@ -202,27 +218,44 @@ class DeepSeaMissionCLIAdapter(GameCLIAdapter):
             player = self.order[selector_index]
             print(f"{self.names[player]} 手牌：{display_cards(self.hands[str(player)])}")
             print("\n".join(self._task_lines()))
-            tag = "自由选任务" if free else f"{self.names[player]} 选任务"
-            text = prompt(f"{tag}（如 1；pass 跳过）> ")
+            if free:
+                print(f"{C.CYAN}🐙 自由选任务：任何座位先到先得（输任务号，或「P2 3」指定座位）{C.R}")
+                text = prompt("自由选任务 > ")
+            else:
+                text = prompt(f"{self.names[player]} 选任务（如 1；pass 跳过）> ")
             if text.strip().lower() in QUIT_TOKENS:
                 info("已退出本局。")
                 self._aborted = True
                 return
-            if text.lower() in {"pass", "过"}:
-                if not free:
-                    selector_index = (selector_index + 1) % len(self.order)
-                continue
-            try:
-                idx = int(text) - 1
-            except ValueError:
-                print(f"{C.RED}无效任务。{C.R}")
-                continue
+            if free:
+                picked = self._parse_free_pick(text, player)
+                if picked is None:
+                    print(f"{C.RED}无效输入。请输入任务号，或「P2 3」指定抢任务的人。{C.R}")
+                    continue
+                owner, idx = picked
+                idx -= 1
+            else:
+                if text.lower() in {"pass", "过"}:
+                    unassigned = [t for t in self.tasks if t["assigned_to"] is None]
+                    if len(unassigned) >= len(self.order):
+                        print(f"{C.RED}还有足够任务可选，暂不能跳过。{C.R}")
+                        continue
+                    selector_index = self._advance_selector(selector_index)
+                    continue
+                try:
+                    idx = int(text) - 1
+                except ValueError:
+                    print(f"{C.RED}无效任务。{C.R}")
+                    continue
+                owner = player
             if idx < 0 or idx >= len(self.tasks) or self.tasks[idx]["assigned_to"] is not None:
                 print(f"{C.RED}无效任务。{C.R}")
                 continue
-            self.tasks[idx]["assigned_to"] = player
-            if not free:
-                selector_index = (selector_index + 1) % len(self.order)
+            self.tasks[idx]["assigned_to"] = owner
+            if free:
+                print(f"{C.GRN}{self.names[owner]} 抢到任务 {idx + 1}。{C.R}")
+            else:
+                selector_index = self._advance_selector(selector_index)
 
     async def _nominate(self) -> None:
         assert self.mission is not None
@@ -274,7 +307,11 @@ class DeepSeaMissionCLIAdapter(GameCLIAdapter):
                 self._aborted = True
                 return
             if text.lower() in {"pass", "过"}:
-                selector_index = (selector_index + 1) % len(self.order)
+                unassigned = [t for t in self.tasks if t["assigned_to"] is None]
+                if len(unassigned) >= len(self.order):
+                    print(f"{C.RED}还有足够任务可选，暂不能跳过。{C.R}")
+                    continue
+                selector_index = self._advance_selector(selector_index)
                 continue
             try:
                 idx = int(text) - 1
@@ -285,7 +322,68 @@ class DeepSeaMissionCLIAdapter(GameCLIAdapter):
                 print(f"{C.RED}无效任务。{C.R}")
                 continue
             self.tasks[idx]["assigned_to"] = player
-            selector_index = (selector_index + 1) % len(self.order)
+            selector_index = self._advance_selector(selector_index)
+
+    def _advance_selector(self, selector_index: int) -> int:
+        """下一名选择者; ASG_CAPTAIN_NO_TASK 关卡每一步都跳过队长 (对齐线上 _advance_selector)。"""
+        order = self.order
+        if self.mission and self.mission.assignment == ASG_CAPTAIN_NO_TASK:
+            captain_index = order.index(self.captain)
+            for step in range(1, len(order) + 1):
+                nxt = (selector_index + step) % len(order)
+                if nxt != captain_index:
+                    return nxt
+            return selector_index
+        return (selector_index + 1) % len(order)
+
+    def _seat_by_name(self, token: str) -> int | None:
+        """把 "P2" / "2" 解析成座位号; 不认识返回 None。"""
+        t = token.strip().upper().lstrip("P")
+        if not t.isdigit():
+            return None
+        seat = int(t)
+        return seat if seat in self.players else None
+
+    def _parse_free_pick(self, text: str, default_seat: int) -> tuple[int, int] | None:
+        """解析自由选任务输入: 「3」= default_seat 抢 3; 「P2 3」= P2 抢 3。
+
+        线上自由选任务是「谁先发消息谁拿」(game.py 先到先得), 单机 CLI 没有多个发话人,
+        用显式座位号对应「抢的人」。
+        """
+        parts = text.split()
+        if len(parts) == 2:
+            seat = self._seat_by_name(parts[0])
+            if seat is None or not parts[1].isdigit():
+                return None
+            return seat, int(parts[1])
+        if len(parts) == 1 and parts[0].isdigit():
+            return default_seat, int(parts[0])
+        return None
+
+    def _ask_predictions(self) -> None:
+        """预测阶段: T090/T091 由持有者报出赢墩数 (对应线上 prediction 阶段)。
+
+        本地没有群/私聊之分, 秘密预测直接在终端输入 (线上需私聊 Bot)。
+        """
+        for i, task in enumerate(self.tasks, 1):
+            if not task_needs_prediction(task) or task.get("prediction") is not None:
+                continue
+            owner = int(task["assigned_to"])
+            max_tricks = len(self.hands[str(owner)])
+            kind = "公开预测" if task["id"] == "T090" else "秘密预测 (线上需私聊输入)"
+            print(f"\n{C.CYAN}📣 {kind} · 任务 {i}: {task['text']}{C.R}")
+            while True:
+                raw = prompt(f"{self.names[owner]} 预测赢多少墩 (0-{max_tricks}) > ").strip()
+                if raw.strip().lower() in QUIT_TOKENS:
+                    info("已退出本局。")
+                    self._aborted = True
+                    return
+                if not raw.isdigit() or int(raw) > max_tricks:
+                    print(f"{C.RED}预测墩数应为 0-{max_tricks}。{C.R}")
+                    continue
+                task["prediction"] = int(raw)
+                print(f"{C.GRN}✅ {self.names[owner]} 预测任务 {i}: 赢 {raw} 墩。{C.R}")
+                break
 
     async def _play_cards(self) -> None:
         box("深海任务 · 开始", "\n".join(self._task_lines()), C.CYAN)
@@ -484,9 +582,10 @@ class DeepSeaMissionCLIAdapter(GameCLIAdapter):
         }
 
     def _after_trick(self) -> bool:
-        """墩结束后判定。锁死胜利则收局并返回 True。"""
+        """墩结束后判定。锁死胜利或出牌结束则收局并返回 True。"""
         state = self._eval_state()
-        playing_ended = not any(self.hands[str(p)] for p in self.players)
+        # 与线上一致: 任一玩家手牌为空即出牌结束 (game.py playing_ended)
+        playing_ended = any(not self.hands[str(p)] for p in self.players)
         changes = evaluate_tasks(state, final=playing_ended)
         for line in changes:
             print(f"{C.GRN}{line}{C.R}" if "完成" in line else f"{C.RED}{line}{C.R}")
@@ -498,11 +597,39 @@ class DeepSeaMissionCLIAdapter(GameCLIAdapter):
         status, msg = evaluate_campaign_special(state, final=playing_ended)
         if status == "failed" and msg:
             print(f"{C.RED}⚠️ {msg}。可继续打完复盘，或 fail 结束。{C.R}")
+        if playing_ended:
+            print(
+                f"\n{C.YEL}📌 有玩家已无手牌，本局出牌结束。"
+                f"任务已自动判定；完成则输入 win，失败则输入 fail。{C.R}"
+            )
+            print("\n".join(self._task_lines()))
+            return self._settle_after_end()
         return False
+
+    def _settle_after_end(self) -> bool:
+        """出牌结束后的手动结算 (对应线上 task_review 阶段)。"""
+        while True:
+            raw = prompt("结算（win/fail）> ").strip().lower()
+            if raw in QUIT_TOKENS:
+                info("已退出本局。")
+                self._aborted = True
+                return True
+            if raw in {"win", "胜利"}:
+                self._on_win()
+                box("胜利", "所有玩家胜利。", C.GRN)
+                return True
+            if raw in {"fail", "失败"}:
+                box("失败", "任务失败。", C.RED)
+                return True
+            print(f"{C.RED}请输入 win 或 fail。{C.R}")
 
     def _on_win(self) -> None:
         """战役胜利后推进单次运行内的关卡进度（<32 则 +1）。"""
         if self.mode_id != "campaign":
+            return
+        if type(self)._epilogue_difficulty is not None:
+            diff = type(self)._epilogue_difficulty
+            print(f"{C.GRN}Epilogue 通关（难度 {diff}）！setlevel epilogue:N 可加难再来。{C.R}")
             return
         level = type(self)._campaign_level
         if level < 32:
@@ -512,14 +639,28 @@ class DeepSeaMissionCLIAdapter(GameCLIAdapter):
             print(f"{C.GRN}32 关全部通关！{C.R}")
 
     def _handle_setlevel(self, raw: str) -> None:
-        """调试跳关：setlevel N（下一局生效，对应 Bot 的 @我 深海战役 N）。"""
+        """调试跳关：setlevel N | setlevel epilogue:N（下一局生效，对应 Bot 同名入口）。"""
+        usage = "用法：setlevel 1-32 或 setlevel epilogue:18（下一局生效）"
         parts = raw.split()
-        if len(parts) < 2 or not parts[1].isdigit():
-            print(f"{C.RED}用法：setlevel 1-32（下一局生效）{C.R}")
+        if len(parts) < 2:
+            print(f"{C.RED}{usage}{C.R}")
             return
-        no = int(parts[1])
+        arg = parts[1]
+        if arg.lower().startswith("epilogue:"):
+            diff_text = arg.split(":", 1)[1]
+            if not diff_text.isdigit():
+                print(f"{C.RED}{usage}{C.R}")
+                return
+            type(self)._epilogue_difficulty = int(diff_text)
+            print(f"{C.GRN}下一局将进入 Epilogue（难度 {diff_text}）。{C.R}")
+            return
+        if not arg.isdigit():
+            print(f"{C.RED}{usage}{C.R}")
+            return
+        no = int(arg)
         if not 1 <= no <= 32:
             print(f"{C.RED}关卡需在 1-32 之间。{C.R}")
             return
+        type(self)._epilogue_difficulty = None
         type(self)._campaign_level = no
         print(f"{C.GRN}下一局将从第 {no} 关开始。{C.R}")
