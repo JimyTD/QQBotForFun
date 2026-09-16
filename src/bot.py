@@ -88,6 +88,7 @@ def _load_plugins() -> None:
     nonebot.load_plugin("src.plugins.games.aoe3_battle")
     nonebot.load_plugin("src.plugins.games.ra2_battle")
     nonebot.load_plugin("src.plugins.games.deep_sea_mission")
+    nonebot.load_plugin("src.plugins.games.silent_mark")
     # 小工具（tools/）—— 独立拔插式小功能
     nonebot.load_plugin("src.plugins.tools.food")
     nonebot.load_plugin("src.plugins.tools.ask_ai")

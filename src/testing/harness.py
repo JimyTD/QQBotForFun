@@ -38,19 +38,34 @@ class GameTestHarness:
 
         self.broadcasts: list[str] = []
         self.whispers: list[tuple[int, str]] = []
+        self.deletes: list[int] = []
+        #: 最近一条发给某人的**提示**（群内提问带 at / 私聊提问即 whisper）。
+        #: 交互层现在自己发提示（不再借 `session.ask` 的 prompt 参数），
+        #: 所以"假玩家"要像真人一样：读刚发给自己的那条提示再作答。
+        self.prompts: dict[int, str] = {}
         self.runner: game_base.GameRunner | None = None
 
         self._patches: list[Any] = []
+        self._next_message_id = 1000
 
     async def __aenter__(self) -> GameTestHarness:
-        async def _fake_broadcast(group_id: int, message, *, at=None) -> None:  # noqa: ARG001
+        async def _fake_broadcast(group_id: int, message, *, at=None) -> int:  # noqa: ARG001
             self.broadcasts.append(str(message))
+            if at is not None:
+                ats = [at] if isinstance(at, int) else list(at)
+                for qq in ats:
+                    self.prompts[qq] = str(message)
+            self._next_message_id += 1
+            return self._next_message_id
 
-        async def _fake_whisper(qq_id: int, message) -> None:
+        async def _fake_whisper(qq_id: int, message) -> int:
             self.whispers.append((qq_id, str(message)))
-            return 2000 + len(self.whispers)
+            self.prompts[qq_id] = str(message)
+            self._next_message_id += 1
+            return self._next_message_id
 
-        async def _fake_delete_message(message_id: int) -> bool:  # noqa: ARG001
+        async def _fake_delete_message(message_id: int) -> bool:
+            self.deletes.append(message_id)
             return True
 
         p1 = patch.object(session, "broadcast", AsyncMock(side_effect=_fake_broadcast))

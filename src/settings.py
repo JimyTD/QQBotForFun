@@ -42,9 +42,16 @@ class Settings(BaseSettings):
     openrouter_api_key: str = ""
     longcat_api_key: str = ""  # 美团龙猫，https://longcat.chat
 
+    # ---------- Games（所有游戏统一）----------
+    # 整局兜底超时（小时）。为什么必须有：**真人没有单步超时**（大原则：
+    # 「AI 有超时，真实玩家没有」），所以"有人挂机"只会僵住这一局，只剩这层收尾。
+    # 24 小时 = 正常对局绝不会被打断，但也不会有一局永远占着群。
+    # 各游戏若需特殊值，覆盖 `GameBase.default_session_timeout_seconds` 即可，
+    # 不要在各自的 config 里再抄一份。
+    game_session_timeout_hours: int = 24
+
     # ---------- Turtle Soup ----------
     game_turtle_soup_max_questions: int = 50
-    game_turtle_soup_session_timeout_minutes: int = 60
     game_turtle_soup_idle_timeout_minutes: int = 15
     game_turtle_soup_prefer_llm_generation: bool = False
     game_turtle_soup_judge_timeout_seconds: int = 30

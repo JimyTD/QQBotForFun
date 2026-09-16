@@ -18,9 +18,6 @@ class TriviaConfig(BaseSettings):
     total_questions_per_game: int = 10
     max_clues_per_puzzle: int = 5
 
-    # --- 超时 ---
-    session_timeout_minutes: int = 30
-
     # --- 计分（score 入全局榜）---
     # 2026-04-30 v1.2 校准：对齐海龟汤（赢一局 20 分）。
     # 10 题全对理论上限 60 分 ≈ 3x 海龟汤，体现知识面广的奖励；

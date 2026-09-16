@@ -98,10 +98,6 @@ class TriviaGame(GameBase):
         for tid, info in TYPE_STYLE_GUIDES.items()
     ]
 
-    @property
-    def default_session_timeout_seconds(self) -> int:  # pragma: no cover
-        return get_config().session_timeout_minutes * 60
-
     # ---------- 生命周期 ----------
     async def on_create(self, ctx: GameContext) -> None:
         cfg = get_config()

@@ -85,3 +85,21 @@ scenes:
     temperature: 0.7
     max_tokens: 512
     timeout_seconds: 30
+
+  # 静夜标记 · AI 玩家决策：温度低、要 JSON、超时短（超时要压过 AI 座位的思考延迟）
+  silent_mark_ai:
+    provider: zhipu
+    model: glm-4-flash-250414
+    temperature: 0.3
+    max_tokens: 1024
+    json_mode_default: true
+    timeout_seconds: 30
+
+  # 静夜标记 · AI 取名：温度高才有花样，输出极短
+  silent_mark_ai_name:
+    provider: zhipu
+    model: glm-4-flash-250414
+    temperature: 0.9
+    max_tokens: 20
+    json_mode_default: false
+    timeout_seconds: 20

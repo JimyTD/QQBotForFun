@@ -15,7 +15,6 @@ class TurtleSoupConfig(BaseSettings):
     )
 
     max_questions: int = 50
-    session_timeout_minutes: int = 60
     idle_timeout_minutes: int = 15
     prefer_llm_generation: bool = False
     llm_retry_times: int = 3

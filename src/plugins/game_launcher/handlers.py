@@ -479,8 +479,17 @@ async def _(matcher: Matcher, event: GroupMessageEvent) -> None:
     group_id = int(event.group_id)
 
     from src.plugins.games.aoe3_battle.rival_pick import cancel_pending
+
     if cancel_pending(group_id):
         await matcher.finish("🏳 已取消王中王选主题。")
+        return
+
+    # 报名房间（还没开局）也要能收掉，否则房主挂机就没人能清场了
+    from src.plugins.games.deep_sea_mission.commands import cancel_room as cancel_deep_sea_room
+    from src.plugins.games.silent_mark.commands import cancel_room as cancel_silent_mark_room
+
+    if cancel_deep_sea_room(group_id) or cancel_silent_mark_room(group_id):
+        await matcher.finish("🏳 已取消报名房间。")
         return
 
     ok = await game_base.abort_by_group(group_id)

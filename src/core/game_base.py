@@ -29,6 +29,7 @@ from core.errors import (
 )
 from core.storage import get_session
 from core.types import EndReason, GameContext, User, new_session_id
+from src.settings import get_settings
 
 # 延迟导入 economy 避免循环（game_base 被 core 模块顶层导入）
 # 注意：economy.add 的失败不能阻塞游戏，所以 award() 里做了 try/except 防御
@@ -91,6 +92,19 @@ class GameBase(ABC):
     # 行为开关
     serialize_actions: ClassVar[bool] = False  # True 则 on_player_action 串行
     event_driven: ClassVar[bool] = False       # True 则 Core 会把群消息转给 on_player_action
+
+    # ---- 整局兜底 ----
+    @property
+    def default_session_timeout_seconds(self) -> int:
+        """整局兜底超时（秒）。**所有游戏统一**，由全局配置 `game_session_timeout_hours` 决定。
+
+        为什么必须有：**真人没有单步超时**（本仓库大原则：「AI 有超时，真实玩家没有」），
+        所以"某个玩家挂机"只会僵住这一局，只剩这一层收尾。
+
+        个别游戏要特殊值就覆盖本属性，**不要**各自在 config 里再抄一份。
+        `create_and_start()` 在调用方没显式传超时时会自动取这个值。
+        """
+        return get_settings().game_session_timeout_hours * 3600
 
     # ---- 生命周期钩子 ----
     async def on_create(self, ctx: GameContext) -> None:
@@ -340,7 +354,13 @@ async def create_and_start(
     config: dict[str, Any] | None = None,
     session_timeout_seconds: float | None = None,
 ) -> GameRunner:
-    """启动一局新游戏。"""
+    """启动一局新游戏。
+
+    ``session_timeout_seconds`` 不传时取游戏的 ``default_session_timeout_seconds``
+    （默认 = 全局 ``game_session_timeout_hours``）。**每一局都必须有整局兜底**：
+    真人没有单步超时，所以"有人挂机就把这局僵那儿"是可接受的，
+    但"永久僵着"不行——那会把整个群占死。
+    """
     if group_id in _runner_by_group:
         existing = _runner_by_group[group_id]
         raise GameAlreadyRunningError(
@@ -348,6 +368,8 @@ async def create_and_start(
         )
     cls = get_game_class(game_id)
     game = cls()
+    if session_timeout_seconds is None:
+        session_timeout_seconds = game.default_session_timeout_seconds
     ctx = GameContext(
         session_id=new_session_id(),
         game_id=game_id,

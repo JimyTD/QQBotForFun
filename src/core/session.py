@@ -277,7 +277,7 @@ async def ask(
     prompt: str | None = None,
     *,
     group_id: int | None = None,
-    timeout: float = 300,
+    timeout: float | None = None,
     validator: Callable[[str], bool] | None = None,
     retry_prompt: str = "⚠️ 输入无效，请重试",
     max_retries: int = 3,
@@ -287,6 +287,11 @@ async def ask(
     - /quit → 抛 PlayerQuitError
     - 超时 → 抛 TimeoutError
     - validator 失败 → 自动重试，超出 max_retries 抛 ValueError
+
+    ⚠️ **超时默认 None（永远等下去）**，这是本仓库的大原则：
+    「AI 有超时，真实玩家没有」——真人不需要被计时器催，
+    只在**AI 补位座位**上才显式传 ``timeout``。
+    整局兜底由 launcher 的 ``session_timeout_seconds`` 负责，不靠单步超时。
     """
     if prompt:
         if group_id is not None:
@@ -315,7 +320,7 @@ async def choose(
     options: list[str],
     *,
     group_id: int | None = None,
-    timeout: float = 60,
+    timeout: float | None = None,
     prompt: str | None = None,
 ) -> int:
     """从编号列表中选择。返回索引（0-based）。"""
@@ -380,8 +385,11 @@ async def wait_any(
         active.waiters.pop(key, None)
 
 
-async def _wait_message(qq_id: int, group_id: int | None, timeout: float) -> str:
-    """底层：注册一个等待某个 user/group 的 future。"""
+async def _wait_message(qq_id: int, group_id: int | None, timeout: float | None) -> str:
+    """底层：注册一个等待某个 user/group 的 future。``timeout=None`` = 永远等。
+
+    （``asyncio.wait_for(fut, timeout=None)`` 就是"不设超时"，
+    所以"真人没有超时"不需要新机制，只需要不传时限。）"""
     loop = asyncio.get_running_loop()
     fut: asyncio.Future[tuple[int, str]] = loop.create_future()
     key = ("user", qq_id, group_id)

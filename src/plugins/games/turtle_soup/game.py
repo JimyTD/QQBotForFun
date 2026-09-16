@@ -196,11 +196,6 @@ class TurtleSoupGame(GameBase):
         ),
     ]
 
-    # 在 launcher 启动时会查询该属性作为整局 timeout
-    @property
-    def default_session_timeout_seconds(self) -> int:  # pragma: no cover
-        return get_config().session_timeout_minutes * 60
-
     # ---------- 生命周期 ----------
     async def on_create(self, ctx: GameContext) -> None:
         # 保留生成时的配置快照，便于重启恢复

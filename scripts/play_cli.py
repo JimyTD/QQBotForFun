@@ -27,10 +27,14 @@ import sys
 from pathlib import Path
 
 # Windows 控制台强制 UTF-8
+# ⚠️ stdin 也要一起改：用管道喂输入时（脚本化跑 CLI），控制台默认 GBK 会把
+# UTF-8 BOM 字节 `EF BB BF` 解码成"锘匡豢"，一路污染到 `int()` 解析，
+# 最后表现成"玩家输入莫名不合法"（这次踩了很久）。
 if sys.platform == "win32":
     try:
         sys.stdout.reconfigure(encoding="utf-8")  # type: ignore[attr-defined]
         sys.stderr.reconfigure(encoding="utf-8")  # type: ignore[attr-defined]
+        sys.stdin.reconfigure(encoding="utf-8")  # type: ignore[attr-defined]
     except Exception:  # noqa: BLE001
         sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding="utf-8", errors="replace")
         sys.stderr = io.TextIOWrapper(sys.stderr.buffer, encoding="utf-8", errors="replace")
@@ -65,6 +69,7 @@ from cli_adapters.yugioh_card import YugiohCardCLIAdapter  # noqa: E402
 from cli_adapters.aoe3 import AoE3CLIAdapter  # noqa: E402
 from cli_adapters.aoe3_battle import AoE3BattleCLIAdapter  # noqa: E402
 from cli_adapters.deep_sea_mission import DeepSeaMissionCLIAdapter  # noqa: E402
+from cli_adapters.silent_mark import SilentMarkCLIAdapter  # noqa: E402
 
 
 # ============ 已注册的 CLI 游戏 ============
@@ -78,6 +83,7 @@ ADAPTERS: dict[str, type[GameCLIAdapter]] = {
     "aoe3": AoE3CLIAdapter,
     "aoe3_battle": AoE3BattleCLIAdapter,
     "deep_sea_mission": DeepSeaMissionCLIAdapter,
+    "silent_mark": SilentMarkCLIAdapter,
 }
 
 
