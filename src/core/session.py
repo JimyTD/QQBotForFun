@@ -389,11 +389,31 @@ async def _wait_message(qq_id: int, group_id: int | None, timeout: float | None)
     """底层：注册一个等待某个 user/group 的 future。``timeout=None`` = 永远等。
 
     （``asyncio.wait_for(fut, timeout=None)`` 就是"不设超时"，
-    所以"真人没有超时"不需要新机制，只需要不传时限。）"""
+    所以"真人没有超时"不需要新机制，只需要不传时限。）
+
+    ⚠️ **同一 (人, 场景) 只有一个等待位，且后来者优先。**
+
+    后到的等待会把先到的**结清**为"这次没拿到输入"（`TimeoutError`），
+    而不是静默覆盖：静默覆盖会让先到的那个永远等下去 —— 它自己并不知道
+    已经被顶掉，玩家看到的就是"某一局莫名卡死，怎么回话都没反应"。
+
+    结清用的就是**既有**的超时语义，所以任何调用方都不需要认识新东西：
+    它本来就有一条"拿不到输入 → 走兜底"的分支，现在只是真的会走到。
+    """
     loop = asyncio.get_running_loop()
-    fut: asyncio.Future[tuple[int, str]] = loop.create_future()
     key = ("user", qq_id, group_id)
 
+    previous = _pending_private_or_group.get(key)
+    if previous is not None and not previous.done():
+        previous.set_exception(
+            TimeoutError(f"waiter superseded qq={qq_id} group={group_id}")
+        )
+        logger.warning(
+            f"[session] 等待位被后来的等待顶掉 qq={qq_id} group={group_id}；"
+            "旧等待按「没拿到输入」收场"
+        )
+
+    fut: asyncio.Future[tuple[int, str]] = loop.create_future()
     # 注册到全局 pending（不依赖 active game；私聊场景也要支持）
     _pending_private_or_group[key] = fut
     try:
@@ -402,7 +422,11 @@ async def _wait_message(qq_id: int, group_id: int | None, timeout: float | None)
     except asyncio.TimeoutError as e:
         raise TimeoutError(f"ask timeout qq={qq_id}") from e
     finally:
-        _pending_private_or_group.pop(key, None)
+        # ⚠️ 只清理**自己**登记的那一份。本等待可能已经被更新的等待顶掉，
+        # 那时表里躺着的是别人的 future —— pop 掉会把新的等待也一起弄死，
+        # 等于把"一个孤儿"换成"每撞一次就坏一个"。
+        if _pending_private_or_group.get(key) is fut:
+            _pending_private_or_group.pop(key, None)
 
 
 _pending_private_or_group: dict[tuple, asyncio.Future[tuple[int, str]]] = {}
