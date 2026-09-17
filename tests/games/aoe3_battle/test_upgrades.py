@@ -130,9 +130,9 @@ def test_merc_category_not_suppressed_by_small_unit_tech(repo):
         pytest.skip("无 mercswisspikeman")
     hp_mult, _, source = get_multipliers(swiss, 5)
     assert hp_mult == 1.5 and source == "Mercenary"
-    # 低时代保留它自己更大的逐兵档
+    # 低时代保留它自己更大的逐兵档（2026-09 游戏更新后该档为 +20%）
     hp3, _, src3 = get_multipliers(swiss, 3)
-    assert hp3 == 1.1 and src3 == "unit"
+    assert hp3 == 1.2 and src3 == "unit"
 
 
 # ---------------- 整包扩展：range / aoe / rof / 速度 / 护甲 / 倍率 ----------------

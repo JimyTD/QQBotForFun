@@ -453,11 +453,13 @@ class TestRealUnitDamage:
             1 - iron.armor_siege
         )
         assert damage == pytest.approx(expected)
-        assert damage == pytest.approx(36.0)
+        # 该枪手对铁军无倍率、单弹丸、armor_siege=0 → 伤害 == 基础远程攻击力
+        # （不写死数字：2026-09 游戏更新把 attack_ranged 从 36 调到 34）
+        assert damage == pytest.approx(abus.attack_ranged)
 
         # 若错误地使用远程抗性，伤害会被严重低估
         wrong = abus.attack_ranged * mult * (1 - iron.armor_ranged)
-        assert wrong == pytest.approx(14.4)
+        assert wrong == pytest.approx(abus.attack_ranged * (1 - iron.armor_ranged))
         assert damage != pytest.approx(wrong)
 
     def test_iron_troop_vs_abus_gunner_uses_ranged_resist(self):
@@ -478,7 +480,7 @@ class TestRealUnitDamage:
         assert damage == pytest.approx(20.0)
 
     def test_abus_vs_iron_battle_applies_full_siege_damage(self):
-        """整局模拟：枪手每一发远程命中铁军均为 36（非 14.4）。"""
+        """整局模拟：枪手每一发远程命中铁军均为完整基础攻击力（不吃远程抗性）。"""
         from plugins.aoe3.repository import UnitRepo
 
         repo = UnitRepo.get()
@@ -495,7 +497,7 @@ class TestRealUnitDamage:
             and ev.data.get("damage_type") == "Siege"
         ]
         assert abus_hits, "应有枪手 Siege 远程命中记录"
-        assert all(d == pytest.approx(36.0) for d in abus_hits)
+        assert all(d == pytest.approx(abus.attack_ranged) for d in abus_hits)
 
 
 # =====================================================================
@@ -555,7 +557,7 @@ class TestMultiplierDataIntegrity:
             for t in unit.type:
                 all_types.add(t)
 
-        # 非战斗标签（对建筑/动物等的倍率，斗蛐蛐中不参与战斗）
+        # 非战斗标签（对建筑/动物/海军等的倍率，斗蛐蛐中不参与战斗）
         non_combat = {
             "Building", "AbstractWall", "AbstractDock", "Ship",
             "AbstractVillager", "Guardian", "Huntable", "Herdable",
@@ -563,6 +565,10 @@ class TestMultiplierDataIntegrity:
             "LogicalTypeLandEconomy", "LogicalTypeLandMilitary",
             "Abstract",  # 坏数据残留
             "TradingPost", "SPCFountainOfYouth",
+            # 2026-09 游戏更新新增：
+            "WaterGuardian",    # 水上守护者（PVE，不进斗蛐蛐池）
+            "AbstractWarship",  # 固定炮对战舰倍率；注意游戏侧拼写与 AbstractWarShip 不一致（笔误），
+                                # 斗蛐蛐一维场地无海军，不影响战斗
         }
 
         # 特定兵种专属倍率（不在通用 type 池中，只对特定 unit 生效）

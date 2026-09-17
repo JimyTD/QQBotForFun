@@ -106,6 +106,7 @@ BATTLE_BLACKLIST: dict[str, str] = {
     "fluffy":              "彩蛋·毛毛",              # hp 600 melee=800，cost 12（极端超模）
     "flyingpurpletapir":   "彩蛋·会飞的紫貘",        # hp 600 melee=800
     "deeggleonardostank":  "彩蛋·莱昂纳多的战车",    # hp 5000 ranged=800，DE 彩蛋 DLC
+    "deeggarctictruck":    "彩蛋·极地掠夺者",        # hp 60000，2026-09 新版彩蛋（同怪兽卡车）
 
     # —— 弃用 / 老版本兵种 ——
     "legacygatlingcamel":  "祖传·加特林骆驼",        # hp 9001，legacy 前缀
