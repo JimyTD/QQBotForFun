@@ -30,9 +30,9 @@
     "armor_melee": 0.0,
     "armor_ranged": 0.2,
     "description_en": "Ottoman infantry unit that inflicts siege damage. Good against infantry.",
-    "description": "造成围攻破坏的奥斯曼步兵部队。擅长对抗步兵。",
+    "description": "造成攻城伤害的奥斯曼步兵单位。擅长对抗步兵。",
     "protoaction_ranged": "VolleyRangedAttack",
-    "attack_ranged": 36.0,
+    "attack_ranged": 34.0,
     "range": 18.0,
     "range_min": 2.0,
     "rof_ranged": 3.0,
@@ -557,8 +557,27 @@
           "vs": "AbstractCoyoteMan",
           "value": 2.25
         }
+      ],
+      "melee": [
+        {
+          "vs": "AbstractHeavyCavalry",
+          "value": 4.5
+        },
+        {
+          "vs": "AbstractArtillery",
+          "value": 2.0
+        },
+        {
+          "vs": "AbstractCoyoteMan",
+          "value": 3.5
+        }
       ]
     },
+    "protoaction_melee": "GuardianAttack",
+    "attack_melee": 6.5,
+    "range_melee": 1.75,
+    "rof_melee": 1.5,
+    "damage_type_melee": "Hand",
     "attack_siege": 8.0,
     "range_siege": 6.0,
     "rof_siege": 3.0,
@@ -566,9 +585,12 @@
       "BowAttack": 0.1,
       "VolleyRangedAttack": 0.1,
       "BuildingAttack": 0.8,
-      "ChargeAttack": 0.54
+      "ChargeAttack": 0.54,
+      "GuardianAttack": 0.54,
+      "TrampleHandAttack": 0.56
     },
-    "windup_ranged": 0.1
+    "windup_ranged": 0.1,
+    "windup_melee": 0.54
   },
   {
     "id": "cossack",
@@ -638,7 +660,7 @@
     "speed": 4.5,
     "los": 18.0,
     "armor_melee": 0.0,
-    "armor_ranged": 0.4,
+    "armor_ranged": 0.3,
     "description_en": "Expensive but powerful villager who gathers fast.",
     "description": "成本昂贵但强大的村民，收集资源的速度很快。",
     "protoaction_ranged": "RifleAttack",
@@ -883,6 +905,7 @@
       "StaggerRangedAttack": 0.48,
       "VolleyHandAttack": 0.52,
       "VolleyRangedAttack": 0.48,
+      "LockRangedAttack": 0.48,
       "RangedBuildingAttack": 0.48
     },
     "windup_ranged": 0.48,
@@ -1034,7 +1057,7 @@
       "gold": 150
     },
     "pop": 2,
-    "train_time": 30,
+    "train_time": 24,
     "hp": 360,
     "speed": 4.0,
     "los": 18.0,
@@ -1098,7 +1121,7 @@
     "multipliers": {
       "ranged": [
         {
-          "vs": "Guardian",
+          "vs": "WaterGuardian",
           "value": 10.0
         },
         {
@@ -1108,7 +1131,7 @@
       ],
       "siege": [
         {
-          "vs": "Guardian",
+          "vs": "WaterGuardian",
           "value": 5.0
         },
         {
@@ -1851,7 +1874,7 @@
   {
     "id": "debattlecanoe",
     "name_en": "Battle Canoe",
-    "name": "战斗独木舟",
+    "name": "作战划艇",
     "type": [
       "AbstractCountAsGatherer",
       "AbstractFishingBoat",
@@ -1876,7 +1899,7 @@
     "armor_melee": 0.0,
     "armor_ranged": 0.5,
     "description_en": "Battle Canoe. Powerful, agile warship that can also train units.",
-    "description": "战斗独木舟。一艘强大、敏捷的军舰，可以训练单位。",
+    "description": "作战划艇。一艘强大、敏捷的军舰，可以训练单位。",
     "protoaction_ranged": "RangedAttack",
     "attack_ranged": 13.0,
     "range": 18.0,
@@ -2189,7 +2212,7 @@
       ]
     },
     "protoaction_melee": "VolleyHandAttack",
-    "attack_melee": 8.0,
+    "attack_melee": 15.0,
     "range_melee": 1.75,
     "rof_melee": 1.5,
     "damage_type_melee": "Hand",
@@ -2405,7 +2428,7 @@
     "civs": [],
     "age": "Commerce Age",
     "cost": {
-      "food": 65,
+      "food": 60,
       "gold": 40
     },
     "pop": 1,
@@ -2470,7 +2493,6 @@
     "type": [
       "AbstractBannerArmy",
       "AbstractMusketeer",
-      "LogicalTypeLandMilitary",
       "Military",
       "Unit",
       "UnitClass"
@@ -2631,7 +2653,7 @@
         },
         {
           "vs": "AbstractSkirmisher",
-          "value": 0.6
+          "value": 0.75
         }
       ]
     },
@@ -3083,7 +3105,7 @@
     "los": 26.0,
     "armor_melee": 0.0,
     "armor_ranged": 0.3,
-    "description_en": "Specialized Light Infantry that only counters other Light Infantry, but does so very effectively.",
+    "description_en": "Specialized Light Infantry that primarily counters other Light Infantry, but does so very effectively.",
     "description": "特种轻型步兵，只能反制其他轻型步兵，但效果十分显著。",
     "protoaction_ranged": "VolleyRangedAttack",
     "attack_ranged": 13.5,
@@ -3218,6 +3240,164 @@
       "BuildingAttack": 0.8,
       "ChargeAttack": 0.54
     }
+  },
+  {
+    "id": "deconsulateindependencedragoon",
+    "name_en": "Legion Dragoon",
+    "name": "军团枪骑兵",
+    "type": [
+      "AbstractCavalry",
+      "AbstractCavalryInfantry",
+      "AbstractConsulateUnit",
+      "AbstractConsulateUnitColonial",
+      "AbstractGunpowderCavalry",
+      "AbstractLightCavalry",
+      "AbstractRangedCavalry",
+      "LogicalTypeLandMilitary",
+      "Military",
+      "Ranged",
+      "Unit",
+      "UnitClass"
+    ],
+    "civs": [],
+    "age": "Fortress Age",
+    "cost": {
+      "food": 90,
+      "gold": 90
+    },
+    "pop": 2,
+    "train_time": 38,
+    "hp": 200,
+    "speed": 7.25,
+    "los": 15.0,
+    "armor_melee": 0.0,
+    "armor_ranged": 0.2,
+    "description_en": "Ranged cavalry. Good against cavalry.",
+    "description": "远程骑兵单位，擅长对付骑兵。",
+    "protoaction_ranged": "StaggerRangedAttack",
+    "attack_ranged": 22.0,
+    "range": 12.0,
+    "range_min": 0.0,
+    "rof_ranged": 3.0,
+    "damage_type_ranged": "Ranged",
+    "multipliers": {
+      "ranged": [
+        {
+          "vs": "AbstractCoyoteMan",
+          "value": 2.25
+        },
+        {
+          "vs": "AbstractHeavyCavalry",
+          "value": 3.0
+        },
+        {
+          "vs": "AbstractVillager",
+          "value": 0.5
+        },
+        {
+          "vs": "AbstractArtillery",
+          "value": 2.0
+        }
+      ],
+      "melee": [
+        {
+          "vs": "AbstractCoyoteMan",
+          "value": 2.25
+        },
+        {
+          "vs": "AbstractHeavyCavalry",
+          "value": 3.0
+        },
+        {
+          "vs": "AbstractArtillery",
+          "value": 2.0
+        }
+      ]
+    },
+    "protoaction_melee": "MeleeHandAttack",
+    "attack_melee": 11.0,
+    "range_melee": 1.75,
+    "rof_melee": 1.5,
+    "damage_type_melee": "Hand",
+    "attack_siege": 9.0,
+    "range_siege": 6.0,
+    "rof_siege": 3.0,
+    "windups": {
+      "BuildingAttack": 0.43,
+      "DefendRangedAttack": 0.43,
+      "MeleeHandAttack": 0.53,
+      "StaggerRangedAttack": 0.43,
+      "LanceHandAttack": 0.64
+    },
+    "windup_ranged": 0.43,
+    "windup_melee": 0.53
+  },
+  {
+    "id": "deconsulatejanissary",
+    "name_en": "Crown Janissary",
+    "name": "皇家奥斯曼火枪兵",
+    "type": [
+      "AbstractCavalryInfantry",
+      "AbstractConsulateUnit",
+      "AbstractConsulateUnitColonial",
+      "AbstractGunpowderTrooper",
+      "AbstractHeavyInfantry",
+      "AbstractInfantry",
+      "AbstractRangedInfantry",
+      "LogicalTypeLandMilitary",
+      "Military",
+      "Ranged",
+      "Unit",
+      "UnitClass"
+    ],
+    "civs": [],
+    "age": "Commerce Age",
+    "cost": {
+      "food": 90,
+      "gold": 25
+    },
+    "pop": 1,
+    "train_time": 40,
+    "hp": 215,
+    "speed": 4.0,
+    "los": 16.0,
+    "armor_melee": 0.2,
+    "armor_ranged": 0.0,
+    "description_en": "Powerful heavy musket infantry in Ottoman fashion with a lot of hitpoints.",
+    "description": "奥斯曼风格的强大重装火枪步兵，拥有很高的生命值。",
+    "protoaction_ranged": "VolleyRangedAttack",
+    "attack_ranged": 20.0,
+    "range": 12.0,
+    "range_min": 2.0,
+    "rof_ranged": 3.0,
+    "damage_type_ranged": "Ranged",
+    "protoaction_melee": "MeleeHandAttack",
+    "attack_melee": 15.0,
+    "range_melee": 1.75,
+    "rof_melee": 1.5,
+    "damage_type_melee": "Hand",
+    "multipliers": {
+      "melee": [
+        {
+          "vs": "AbstractCavalry",
+          "value": 2.0
+        },
+        {
+          "vs": "AbstractLightInfantry",
+          "value": 1.5
+        }
+      ]
+    },
+    "attack_siege": 25.0,
+    "range_siege": 6.0,
+    "rof_siege": 3.0,
+    "windups": {
+      "BuildingAttack": 0.66,
+      "MeleeHandAttack": 0.53,
+      "VolleyRangedAttack": 0.37
+    },
+    "windup_ranged": 0.37,
+    "windup_melee": 0.53
   },
   {
     "id": "deconsulatelongbowman",
@@ -3393,8 +3573,8 @@
   },
   {
     "id": "deconsulaterocket",
-    "name_en": "Mysorean Rocket",
-    "name": "迈索尔火箭炮",
+    "name_en": "Rocket",
+    "name": "火箭炮",
     "type": [
       "AbstractArtillery",
       "AbstractConsulateSiegeIndustrial",
@@ -3897,6 +4077,36 @@
     "windup_melee": 0.47
   },
   {
+    "id": "deeggarctictruck",
+    "name_en": "Arctic PredatoR",
+    "name": "极地掠夺者",
+    "type": [
+      "AbstractCavalry",
+      "AbstractCavalryInfantry",
+      "AbstractHandCavalry",
+      "AbstractHeavyCavalry",
+      "LogicalTypeLandMilitary",
+      "Military",
+      "Unit",
+      "UnitClass"
+    ],
+    "civs": [],
+    "age": "Commerce Age",
+    "cost": {
+      "food": 80,
+      "gold": 40
+    },
+    "pop": 0,
+    "train_time": 0,
+    "hp": 60000,
+    "speed": 16.0,
+    "los": 20.0,
+    "armor_melee": 0.9,
+    "armor_ranged": 0.0,
+    "description_en": "Heavy metal on ice and Fatih's little toy. Plows through snow and your pathetic little army.",
+    "description": "冰上的重金属，也是 Fatih 的小玩具. 碾碎积雪和你那可怜的小军队。"
+  },
+  {
     "id": "deeggleonardostank",
     "name_en": "Leonardo's Tank",
     "name": "莱昂纳多的战车",
@@ -4019,7 +4229,7 @@
     "pop": 1,
     "train_time": 35,
     "hp": 110,
-    "speed": 4.0,
+    "speed": 4.25,
     "los": 24.0,
     "armor_melee": 0.0,
     "armor_ranged": 0.3,
@@ -4337,12 +4547,85 @@
     "windup_melee": 0.54
   },
   {
+    "id": "deespingol",
+    "name_en": "Espingol",
+    "name": "雷筒",
+    "type": [
+      "AbstractArtillery",
+      "LogicalTypeLandMilitary",
+      "Military",
+      "Ranged",
+      "Unit",
+      "UnitClass"
+    ],
+    "civs": [],
+    "age": "Fortress Age",
+    "cost": {
+      "wood": 100,
+      "gold": 300
+    },
+    "pop": 4,
+    "train_time": 40,
+    "hp": 150,
+    "speed": 4.0,
+    "los": 28.0,
+    "armor_melee": 0.0,
+    "armor_ranged": 0.75,
+    "description_en": "Artillery that fires multiple projectiles. Better against infantry than buildings.",
+    "description": "可以发射多发炮弹的炮兵，擅长对付步兵，对建筑的攻击力则稍差。",
+    "protoaction_ranged": "CannonAttack",
+    "attack_ranged": 66.0,
+    "range": 26.0,
+    "range_min": 0.0,
+    "rof_ranged": 3.0,
+    "damage_type_ranged": "Siege",
+    "num_projectiles_ranged": 3,
+    "aoe_radius_ranged": 2,
+    "damage_cap_ranged": 60.0,
+    "multipliers": {
+      "ranged": [
+        {
+          "vs": "AbstractArtillery",
+          "value": 0.5
+        },
+        {
+          "vs": "AbstractCavalry",
+          "value": 0.5
+        },
+        {
+          "vs": "Building",
+          "value": 0.75
+        },
+        {
+          "vs": "Ship",
+          "value": 0.5
+        },
+        {
+          "vs": "AbstractLightInfantry",
+          "value": 0.5
+        },
+        {
+          "vs": "xpArrowKnight",
+          "value": 0.5
+        },
+        {
+          "vs": "deMalteseGun",
+          "value": 2.5
+        }
+      ]
+    },
+    "windups": {
+      "CannonAttack": 0.51
+    },
+    "windup_ranged": 0.51,
+    "aoe_radius": 2
+  },
+  {
     "id": "defedbisonbatch",
     "name_en": "Bison",
     "name": "野牛",
     "type": [
       "AbstractBannerArmy",
-      "LogicalTypeLandMilitary",
       "Military",
       "Unit",
       "UnitClass"
@@ -4378,7 +4661,6 @@
     "name": "清教徒",
     "type": [
       "AbstractBannerArmy",
-      "LogicalTypeLandMilitary",
       "Military",
       "Unit",
       "UnitClass"
@@ -4414,7 +4696,6 @@
     "name": "州民兵",
     "type": [
       "AbstractBannerArmy",
-      "LogicalTypeLandMilitary",
       "Military",
       "Unit",
       "UnitClass"
@@ -4450,7 +4731,6 @@
     "name": "州民兵",
     "type": [
       "AbstractBannerArmy",
-      "LogicalTypeLandMilitary",
       "Military",
       "Unit",
       "UnitClass"
@@ -4487,7 +4767,6 @@
     "type": [
       "AbstractBannerArmy",
       "AbstractVillager",
-      "LogicalTypeLandMilitary",
       "Military",
       "Unit",
       "UnitClass"
@@ -4525,7 +4804,6 @@
       "AbstractCavalry",
       "AbstractCavalryInfantry",
       "AbstractGunpowderCavalry",
-      "AbstractHandCavalry",
       "AbstractLightCavalry",
       "AbstractRangedCavalry",
       "LogicalTypeLandMilitary",
@@ -4542,11 +4820,11 @@
     },
     "pop": 2,
     "train_time": 40,
-    "hp": 210,
+    "hp": 215,
     "speed": 7.25,
-    "los": 15.0,
+    "los": 14.0,
     "armor_melee": 0.0,
-    "armor_ranged": 0.2,
+    "armor_ranged": 0.15,
     "description_en": "Light ranged cavalry from Finland with a powerful hand attack as well as a short-ranged attack inflicting area damage.",
     "description": "来自芬兰的轻型远程骑兵，近战攻击能力很强，短程攻击可以造成区域伤害。",
     "protoaction_ranged": "StaggerRangedAttack",
@@ -4604,7 +4882,7 @@
       ]
     },
     "protoaction_melee": "MeleeHandAttack",
-    "attack_melee": 22.0,
+    "attack_melee": 20.0,
     "range_melee": 1.75,
     "rof_melee": 1.5,
     "damage_type_melee": "Hand",
@@ -4679,7 +4957,6 @@
     "name": "加特林机枪",
     "type": [
       "AbstractBannerArmy",
-      "LogicalTypeLandMilitary",
       "Military",
       "Unit",
       "UnitClass"
@@ -4711,7 +4988,6 @@
     "name": "轻骑兵",
     "type": [
       "AbstractBannerArmy",
-      "LogicalTypeLandMilitary",
       "Military",
       "Unit",
       "UnitClass"
@@ -4749,7 +5025,6 @@
       "AbstractBannerArmy",
       "AbstractConsulateUnit",
       "AbstractConsulateUnitColonial",
-      "LogicalTypeLandMilitary",
       "Military",
       "Unit",
       "UnitClass"
@@ -4787,7 +5062,6 @@
       "AbstractBannerArmy",
       "AbstractConsulateUnit",
       "AbstractConsulateUnitColonial",
-      "LogicalTypeLandMilitary",
       "Military",
       "Unit",
       "UnitClass"
@@ -4825,7 +5099,6 @@
       "AbstractBannerArmy",
       "AbstractConsulateUnit",
       "AbstractConsulateUnitColonial",
-      "LogicalTypeLandMilitary",
       "Military",
       "Unit",
       "UnitClass"
@@ -4863,7 +5136,6 @@
       "AbstractBannerArmy",
       "AbstractConsulateUnit",
       "AbstractConsulateUnitColonial",
-      "LogicalTypeLandMilitary",
       "Military",
       "Unit",
       "UnitClass"
@@ -4899,7 +5171,6 @@
     "name": "正规军",
     "type": [
       "AbstractBannerArmy",
-      "LogicalTypeLandMilitary",
       "Military",
       "Unit",
       "UnitClass"
@@ -4935,7 +5206,6 @@
     "name": "狙击手",
     "type": [
       "AbstractBannerArmy",
-      "LogicalTypeLandMilitary",
       "Military",
       "Unit",
       "UnitClass"
@@ -4971,7 +5241,6 @@
     "name": "州民兵",
     "type": [
       "AbstractBannerArmy",
-      "LogicalTypeLandMilitary",
       "Military",
       "Unit",
       "UnitClass"
@@ -5007,7 +5276,6 @@
     "name": "卡宾枪骑兵",
     "type": [
       "AbstractBannerArmy",
-      "LogicalTypeLandMilitary",
       "Military",
       "Unit",
       "UnitClass"
@@ -5032,6 +5300,99 @@
     "range_min": 2.0,
     "rof_ranged": 3.0,
     "damage_type_ranged": "Ranged"
+  },
+  {
+    "id": "defriskytterider",
+    "name_en": "Mounted Friskytte",
+    "name": "骑马自由枪手",
+    "type": [
+      "AbstractCavalry",
+      "AbstractCavalryInfantry",
+      "AbstractGunpowderCavalry",
+      "AbstractRangedCavalry",
+      "LogicalTypeLandMilitary",
+      "Military",
+      "Ranged",
+      "Unit",
+      "UnitClass"
+    ],
+    "civs": [],
+    "age": "Commerce Age",
+    "cost": {
+      "food": 60,
+      "wood": 25
+    },
+    "pop": 1,
+    "train_time": 28,
+    "hp": 170,
+    "speed": 7.0,
+    "los": 16.0,
+    "armor_melee": 0.2,
+    "armor_ranged": 0.0,
+    "description_en": "Danish ranged cavalryman. Good against Artillery, Outlaws and Pets.",
+    "description": "丹麦远程骑兵。擅长对付炮兵、亡命之徒和宠物。",
+    "protoaction_ranged": "StaggerRangedAttack",
+    "attack_ranged": 12.0,
+    "range": 16.0,
+    "range_min": 3.0,
+    "rof_ranged": 3.0,
+    "damage_type_ranged": "Ranged",
+    "multipliers": {
+      "ranged": [
+        {
+          "vs": "AbstractArtillery",
+          "value": 2.0
+        },
+        {
+          "vs": "AbstractOutlaw",
+          "value": 2.0
+        },
+        {
+          "vs": "AbstractPet",
+          "value": 2.0
+        },
+        {
+          "vs": "AbstractVillager",
+          "value": 0.5
+        }
+      ],
+      "melee": [
+        {
+          "vs": "AbstractArtillery",
+          "value": 2.0
+        },
+        {
+          "vs": "AbstractOutlaw",
+          "value": 2.0
+        },
+        {
+          "vs": "AbstractPet",
+          "value": 2.0
+        },
+        {
+          "vs": "AbstractVillager",
+          "value": 0.5
+        }
+      ]
+    },
+    "protoaction_melee": "MeleeHandAttack",
+    "attack_melee": 12.0,
+    "range_melee": 1.75,
+    "rof_melee": 1.5,
+    "damage_type_melee": "Hand",
+    "attack_siege": 14.0,
+    "range_siege": 6.0,
+    "rof_siege": 3.0,
+    "windups": {
+      "BuildingAttack": 0.43,
+      "DefendRangedAttack": 0.5,
+      "GuardianRangedAttack": 0.5,
+      "MeleeHandAttack": 0.53,
+      "GuardianAttack": 0.53,
+      "StaggerRangedAttack": 0.5
+    },
+    "windup_ranged": 0.5,
+    "windup_melee": 0.53
   },
   {
     "id": "defulawarrior",
@@ -5069,7 +5430,7 @@
     "description": "手持短弓、可快速攻击的步弓手。擅长对抗重装步兵和远程骑兵。可以收集牲畜。",
     "protoaction_ranged": "VolleyRangedAttack",
     "attack_ranged": 9.0,
-    "range": 18.0,
+    "range": 17.0,
     "range_min": 2.0,
     "rof_ranged": 1.5,
     "damage_type_ranged": "Ranged",
@@ -5133,7 +5494,10 @@
       "VolleyRangedAttack": 0.1,
       "VolleyLongRangedAttack": 0.1,
       "HandAttackCrate": 0.47,
-      "ChopAttack": 0.66
+      "ChopAttack": 0.66,
+      "VolleyRifleAttack": 0.46,
+      "StaggerRifleAttack": 0.46,
+      "DefendRifleAttack": 0.48
     },
     "windup_ranged": 0.1,
     "windup_melee": 0.52
@@ -5168,12 +5532,12 @@
     "description_en": "Galleass. Slow, powerful ship resistant to building fire that can train units.",
     "description": "三桅帆装军舰。行动缓慢，但威力强大的船只，不但可以抵抗敌人从建筑中发起的攻击，还能训练单位。",
     "protoaction_ranged": "RoundelAttack",
-    "attack_ranged": 35.0,
+    "attack_ranged": 40.0,
     "range": 25.0,
     "range_min": 0.0,
     "rof_ranged": 1.0,
     "damage_type_ranged": "Siege",
-    "aoe_radius_ranged": 1,
+    "aoe_radius_ranged": 2,
     "damage_cap_ranged": 70.0,
     "multipliers": {
       "ranged": [
@@ -5184,7 +5548,7 @@
       ]
     },
     "protoaction_melee": "ShuntAttack",
-    "attack_melee": 350.0,
+    "attack_melee": 400.0,
     "range_melee": 4.0,
     "rof_melee": 0.05,
     "damage_type_melee": "Hand",
@@ -5220,7 +5584,7 @@
     },
     "pop": 1,
     "train_time": 30,
-    "hp": 135,
+    "hp": 140,
     "speed": 4.5,
     "los": 16.0,
     "armor_melee": 0.2,
@@ -5234,7 +5598,7 @@
     "rof_ranged": 3.0,
     "damage_type_ranged": "Ranged",
     "protoaction_melee": "VolleyHandAttack",
-    "attack_melee": 15.0,
+    "attack_melee": 12.0,
     "range_melee": 1.75,
     "rof_melee": 1.5,
     "damage_type_melee": "Hand",
@@ -5242,11 +5606,11 @@
       "melee": [
         {
           "vs": "AbstractCavalry",
-          "value": 3.0
+          "value": 4.0
         },
         {
           "vs": "AbstractLightInfantry",
-          "value": 2.25
+          "value": 2.5
         }
       ]
     },
@@ -5554,6 +5918,67 @@
     "windup_melee": 0.42
   },
   {
+    "id": "degunboat",
+    "name_en": "Gunboat",
+    "name": "炮舰",
+    "type": [
+      "AbstractSiegeTrooper",
+      "AbstractWarShip",
+      "Military",
+      "Ranged",
+      "Ship",
+      "Unit",
+      "UnitClass"
+    ],
+    "civs": [],
+    "age": "Commerce Age",
+    "cost": {
+      "wood": 120,
+      "gold": 100
+    },
+    "pop": 4,
+    "train_time": 10,
+    "hp": 250,
+    "speed": 7.5,
+    "los": 34.0,
+    "armor_melee": 0.0,
+    "armor_ranged": 0.5,
+    "description_en": "Gunboat. Quickly assembled war boat that is good against warships but loses hitpoints over time.",
+    "description": "炮舰。组装迅速的战船，擅长对付战船舰，但会随时间推移流失生命值。",
+    "protoaction_ranged": "LongRangeAttack",
+    "attack_ranged": 80.0,
+    "range": 40.0,
+    "range_min": 0.0,
+    "rof_ranged": 3.0,
+    "damage_type_ranged": "Siege",
+    "aoe_radius_ranged": 3,
+    "damage_cap_ranged": 160.0,
+    "multipliers": {
+      "ranged": [
+        {
+          "vs": "AbstractArtillery",
+          "value": 0.25
+        },
+        {
+          "vs": "Building",
+          "value": 6.0
+        },
+        {
+          "vs": "AbstractVillager",
+          "value": 0.25
+        },
+        {
+          "vs": "AbstractDock",
+          "value": 0.25
+        }
+      ]
+    },
+    "windups": {
+      "RangedAttack": 0.02
+    },
+    "aoe_radius": 3
+  },
+  {
     "id": "degunnerlevy",
     "name_en": "Levied Gunner",
     "name": "募集枪手",
@@ -5643,6 +6068,67 @@
     },
     "windup_ranged": 0.18,
     "windup_melee": 0.52
+  },
+  {
+    "id": "dehetman",
+    "name_en": "Hetman",
+    "name": "大元帅",
+    "type": [
+      "AbstractCanSeeStealth",
+      "AbstractCavalry",
+      "AbstractCavalryInfantry",
+      "AbstractHandCavalry",
+      "AbstractHeavyCavalry",
+      "Hero",
+      "LogicalTypeLandMilitary",
+      "Military",
+      "Unit",
+      "UnitClass"
+    ],
+    "civs": [],
+    "age": "Commerce Age",
+    "cost": {
+      "gold": 200
+    },
+    "pop": 0,
+    "train_time": 100,
+    "hp": 500,
+    "speed": 6.25,
+    "los": 12.0,
+    "armor_melee": 0.0,
+    "armor_ranged": 0.1,
+    "description_en": "Hetman. The hero of your civilization. Explores, fights, builds the Sejm, Town Centers, and Trading Posts. Cannot die. If he falls unconscious, he can be rescued.",
+    "description": "大元帅。你文明的英雄。可用来探索、战斗，并可建造色姆、城镇中心和贸易站。不会死亡。当他因昏迷而倒下时，可以派人去救他。",
+    "protoaction_melee": "HandAttack",
+    "attack_melee": 6.0,
+    "range_melee": 1.75,
+    "rof_melee": 1.5,
+    "damage_type_melee": "Hand",
+    "aoe_radius_melee": 2,
+    "damage_cap_melee": 50.0,
+    "multipliers": {
+      "melee": [
+        {
+          "vs": "Guardian",
+          "value": 3.0
+        },
+        {
+          "vs": "AbstractVillager",
+          "value": 0.25
+        }
+      ]
+    },
+    "attack_siege": 15.0,
+    "range_siege": 6.0,
+    "rof_siege": 3.0,
+    "windups": {
+      "BuildingAttack": 0.43,
+      "GuardianAttack": 0.54,
+      "HandAttack": 0.54,
+      "SharpshooterAttack": 0.1
+    },
+    "windup_melee": 0.54,
+    "aoe_radius": 2
   },
   {
     "id": "dehoopthrower",
@@ -5807,12 +6293,12 @@
       "gold": 80
     },
     "pop": 2,
-    "train_time": 38,
+    "train_time": 40,
     "hp": 225,
-    "speed": 4.5,
+    "speed": 4.25,
     "los": 17.0,
     "armor_melee": 0.0,
-    "armor_ranged": 0.3,
+    "armor_ranged": 0.25,
     "armor_siege": 0.2,
     "description_en": "Heavy grenade-throwing infantryman that is effective against buildings and artillery, but more vulnerable to infantry and cavalry.",
     "description": "投掷手榴弹的重型步兵，对建筑物和炮兵很有效，但更容易受到步兵和骑兵的攻击。",
@@ -5828,7 +6314,7 @@
       "ranged": [
         {
           "vs": "AbstractCavalry",
-          "value": 0.4
+          "value": 0.25
         },
         {
           "vs": "AbstractVillager",
@@ -5948,7 +6434,7 @@
       "gold": 40
     },
     "pop": 1,
-    "train_time": 30,
+    "train_time": 27,
     "hp": 140,
     "speed": 6.25,
     "los": 14.0,
@@ -6000,7 +6486,7 @@
     "civs": [],
     "age": "Commerce Age",
     "cost": {
-      "wood": 25,
+      "wood": 20,
       "food": 100
     },
     "pop": 1,
@@ -6128,6 +6614,188 @@
     "windup_melee": 0.5
   },
   {
+    "id": "deindependencebisonbatch",
+    "name_en": "Lakota Hunting Grounds",
+    "name": "拉科塔狩猎场",
+    "type": [
+      "AbstractBannerArmy",
+      "Military",
+      "Unit",
+      "UnitClass"
+    ],
+    "civs": [],
+    "age": "Industrial Age",
+    "cost": {
+      "wood": 300,
+      "gold": 300
+    },
+    "pop": 0,
+    "train_time": 50,
+    "hp": 200,
+    "speed": 7.0,
+    "los": 9.0,
+    "armor_melee": 0.0,
+    "armor_ranged": 0.1,
+    "description_en": "Large bovine. Harvest for Food.",
+    "description": "大型牛科动物，可以捕获作为食物。",
+    "protoaction_ranged": "VolleyRangedAttack",
+    "attack_ranged": 20.0,
+    "range": 16.0,
+    "range_min": 2.0,
+    "rof_ranged": 3.0,
+    "damage_type_ranged": "Ranged",
+    "windups": {
+      "VolleyRangedAttack": 0.45
+    },
+    "windup_ranged": 0.45
+  },
+  {
+    "id": "deindependencepolishlancer",
+    "name_en": "Vistula Uhlan",
+    "name": "维斯瓦马刀骑兵",
+    "type": [
+      "AbstractCavalry",
+      "AbstractCavalryInfantry",
+      "AbstractConsulateUnit",
+      "AbstractConsulateUnitColonial",
+      "AbstractHandCavalry",
+      "AbstractHeavyCavalry",
+      "AbstractLancer",
+      "LogicalTypeLandMilitary",
+      "Military",
+      "Unit",
+      "UnitClass"
+    ],
+    "civs": [],
+    "age": "Industrial Age",
+    "cost": {
+      "food": 150
+    },
+    "pop": 1,
+    "train_time": 35,
+    "hp": 190,
+    "speed": 6.75,
+    "los": 15.0,
+    "armor_melee": 0.0,
+    "armor_ranged": 0.2,
+    "description_en": "Revolutionary Polish lancer that is good against infantry.",
+    "description": "革命波兰长矛骑兵，擅长对付步兵。",
+    "protoaction_melee": "MeleeHandAttack",
+    "attack_melee": 28.0,
+    "range_melee": 1.75,
+    "rof_melee": 1.5,
+    "damage_type_melee": "Hand",
+    "multipliers": {
+      "melee": [
+        {
+          "vs": "AbstractInfantry",
+          "value": 1.5
+        },
+        {
+          "vs": "AbstractHeavyInfantry",
+          "value": 0.5
+        }
+      ]
+    },
+    "attack_siege": 10.0,
+    "range_siege": 6.0,
+    "rof_siege": 3.0,
+    "windups": {
+      "BuildingAttack": 0.43,
+      "DefendHandAttack": 0.57,
+      "GuardianAttack": 0.57,
+      "MeleeHandAttack": 0.57,
+      "TrampleHandAttack": 0.53,
+      "LanceChargeAttack": 0.53
+    },
+    "windup_melee": 0.57
+  },
+  {
+    "id": "deindependenceserdyuk",
+    "name_en": "Serdyuk",
+    "name": "谢尔久克",
+    "type": [
+      "AbstractCavalryInfantry",
+      "AbstractConsulateUnit",
+      "AbstractGunpowderTrooper",
+      "AbstractHeavyInfantry",
+      "AbstractInfantry",
+      "AbstractMusketeer",
+      "AbstractRangedInfantry",
+      "LogicalTypeLandMilitary",
+      "Military",
+      "Ranged",
+      "Unit",
+      "UnitClass"
+    ],
+    "civs": [],
+    "age": "Fortress Age",
+    "cost": {
+      "food": 75,
+      "gold": 90
+    },
+    "pop": 2,
+    "train_time": 40,
+    "hp": 300,
+    "speed": 4.0,
+    "los": 18.0,
+    "armor_melee": 0.0,
+    "armor_ranged": 0.2,
+    "description_en": "Elite Cossack infantry armed with a powerful musket. Good against mercenaries and native auxiliaries. Can regenerate hitpoints.",
+    "description": "装备强大火枪的精锐哥萨克步兵。擅长对付雇佣兵和原住辅助部队。可恢复生命值。",
+    "protoaction_ranged": "VolleyRangedAttack",
+    "attack_ranged": 26.0,
+    "range": 14.0,
+    "range_min": 2.0,
+    "rof_ranged": 3.0,
+    "damage_type_ranged": "Ranged",
+    "aoe_radius_ranged": 1,
+    "damage_cap_ranged": 52.0,
+    "multipliers": {
+      "ranged": [
+        {
+          "vs": "Mercenary",
+          "value": 2.0
+        },
+        {
+          "vs": "AbstractNativeWarrior",
+          "value": 2.0
+        }
+      ],
+      "melee": [
+        {
+          "vs": "AbstractCavalry",
+          "value": 2.0
+        },
+        {
+          "vs": "AbstractLightInfantry",
+          "value": 1.2
+        }
+      ]
+    },
+    "protoaction_melee": "VolleyHandAttack",
+    "attack_melee": 26.0,
+    "range_melee": 1.75,
+    "rof_melee": 1.5,
+    "damage_type_melee": "Hand",
+    "attack_siege": 18.0,
+    "range_siege": 6.0,
+    "rof_siege": 3.0,
+    "windups": {
+      "BuildingAttack": 0.61,
+      "DefendHandAttack": 0.41,
+      "DefendRangedAttack": 0.37,
+      "MeleeHandAttack": 0.41,
+      "StaggerHandAttack": 0.41,
+      "StaggerRangedAttack": 0.37,
+      "VolleyHandAttack": 0.41,
+      "VolleyRangedAttack": 0.37
+    },
+    "windup_ranged": 0.37,
+    "windup_melee": 0.41,
+    "aoe_radius": 1
+  },
+  {
     "id": "deinsurgente",
     "name_en": "Insurgente",
     "name": "叛乱者",
@@ -6219,7 +6887,7 @@
     "pop": 1,
     "train_time": 35,
     "hp": 160,
-    "speed": 6.75,
+    "speed": 7.0,
     "los": 15.0,
     "armor_melee": 0.0,
     "armor_ranged": 0.1,
@@ -6287,7 +6955,7 @@
     },
     "pop": 1,
     "train_time": 31,
-    "hp": 90,
+    "hp": 95,
     "speed": 4.5,
     "los": 20.0,
     "armor_melee": 0.0,
@@ -6789,7 +7457,7 @@
     },
     "pop": 2,
     "train_time": 50,
-    "hp": 375,
+    "hp": 390,
     "speed": 6.25,
     "los": 15.0,
     "armor_melee": 0.15,
@@ -6813,6 +7481,73 @@
       "TrampleHandAttack": 0.56
     },
     "windup_melee": 0.57
+  },
+  {
+    "id": "delithuanianrider",
+    "name_en": "Retainer",
+    "name": "扈从骑兵",
+    "type": [
+      "AbstractCavalry",
+      "AbstractCavalryInfantry",
+      "AbstractHandCavalry",
+      "AbstractHeavyCavalry",
+      "LogicalTypeLandMilitary",
+      "Military",
+      "Unit",
+      "UnitClass"
+    ],
+    "civs": [],
+    "age": "Commerce Age",
+    "cost": {
+      "food": 90,
+      "wood": 50
+    },
+    "pop": 1,
+    "train_time": 35,
+    "hp": 210,
+    "speed": 7.0,
+    "los": 15.0,
+    "armor_melee": 0.25,
+    "armor_ranged": 0.0,
+    "description_en": "Quick, Affordable Hand Cavalry. Good against other Cavalry.",
+    "description": "速度快、成本低廉的近战骑兵。擅长对付其他骑兵。",
+    "protoaction_melee": "MeleeHandAttack",
+    "attack_melee": 22.0,
+    "range_melee": 1.75,
+    "rof_melee": 1.5,
+    "damage_type_melee": "Hand",
+    "multipliers": {
+      "melee": [
+        {
+          "vs": "AbstractArtillery",
+          "value": 2.0
+        },
+        {
+          "vs": "AbstractCavalry",
+          "value": 1.5
+        },
+        {
+          "vs": "AbstractLightInfantry",
+          "value": 1.3
+        },
+        {
+          "vs": "AbstractHeavyInfantry",
+          "value": 0.5
+        }
+      ]
+    },
+    "attack_siege": 16.0,
+    "range_siege": 6.0,
+    "rof_siege": 3.0,
+    "windups": {
+      "BuildingAttack": 0.43,
+      "MeleeHandAttack": 0.56,
+      "HandAttack": 0.57,
+      "ChargeMusketAttack": 0.57,
+      "GuardianAttack": 0.57,
+      "TrampleHandAttack": 0.56
+    },
+    "windup_melee": 0.56
   },
   {
     "id": "demaceman",
@@ -6855,7 +7590,7 @@
     "protoaction_melee": "HandAttack",
     "attack_melee": 36.0,
     "range_melee": 2.0,
-    "rof_melee": 2.25,
+    "rof_melee": 2.0,
     "damage_type_melee": "Hand",
     "aoe_radius_melee": 2,
     "damage_cap_melee": 72.0,
@@ -7017,6 +7752,66 @@
     },
     "windup_melee": 0.0,
     "aoe_radius": 2
+  },
+  {
+    "id": "demaltesegun",
+    "name_en": "Fixed Gun",
+    "name": "固定炮",
+    "type": [
+      "AbstractArtillery",
+      "AbstractFindFort",
+      "AbstractOutpost",
+      "Building",
+      "Military"
+    ],
+    "civs": [],
+    "age": "Fortress Age",
+    "cost": {
+      "wood": 100,
+      "gold": 600
+    },
+    "pop": 4,
+    "train_time": 0,
+    "hp": 2250,
+    "speed": 0.0,
+    "los": 36.0,
+    "armor_melee": 0.0,
+    "armor_ranged": 0.0,
+    "description_en": "Powerful stationary artillery.",
+    "description": "威力强大的固定火炮。",
+    "protoaction_ranged": "LongRangeAttack",
+    "attack_ranged": 300.0,
+    "range": 60.0,
+    "range_min": 14.0,
+    "rof_ranged": 6.0,
+    "damage_type_ranged": "Siege",
+    "aoe_radius_ranged": 1,
+    "damage_cap_ranged": 600.0,
+    "multipliers": {
+      "ranged": [
+        {
+          "vs": "Building",
+          "value": 4.0
+        },
+        {
+          "vs": "AbstractWarship",
+          "value": 2.5
+        },
+        {
+          "vs": "LogicalTypeLandMilitary",
+          "value": 0.0
+        },
+        {
+          "vs": "LogicalTypeLandEconomy",
+          "value": 0.0
+        },
+        {
+          "vs": "deMalteseGun",
+          "value": 0.34
+        }
+      ]
+    },
+    "aoe_radius": 1
   },
   {
     "id": "demaltesemusketeer",
@@ -7200,7 +7995,7 @@
   {
     "id": "demercaskari",
     "name_en": "Askari",
-    "name": "非洲民兵",
+    "name": "阿斯卡里",
     "type": [
       "AbstractCavalryInfantry",
       "AbstractGunpowderTrooper",
@@ -7391,7 +8186,7 @@
   {
     "id": "demercbrigadier",
     "name_en": "Irish Brigadier",
-    "name": "爱尔兰准将",
+    "name": "爱尔兰旅士兵",
     "type": [
       "AbstractCavalryInfantry",
       "AbstractGunpowderTrooper",
@@ -7637,9 +8432,78 @@
     "aoe_radius": 4
   },
   {
+    "id": "demerccranequinier",
+    "name_en": "Cranequinier",
+    "name": "绞弦弩骑兵",
+    "type": [
+      "AbstractArcher",
+      "AbstractCavalry",
+      "AbstractCavalryInfantry",
+      "AbstractHeavyCavalry",
+      "AbstractRangedCavalry",
+      "AbstractRangedHeavyCavalry",
+      "LogicalTypeLandMilitary",
+      "Mercenary",
+      "Military",
+      "Ranged",
+      "Unit",
+      "UnitClass"
+    ],
+    "civs": [],
+    "age": "Commerce Age",
+    "cost": {
+      "gold": 290
+    },
+    "pop": 3,
+    "train_time": 44,
+    "hp": 360,
+    "speed": 6.75,
+    "los": 17.0,
+    "armor_melee": 0.3,
+    "armor_ranged": 0.0,
+    "description_en": "Heavy mounted Crossbowman mercenary that is good against infantry. Has a slower rate of fire, but benefits from promotions.",
+    "description": "骑马的重装弩手雇佣兵，擅长对付步兵。射速较慢，但可从晋升受益。",
+    "protoaction_ranged": "BowAttack",
+    "attack_ranged": 25.0,
+    "range": 12.0,
+    "range_min": 3.0,
+    "rof_ranged": 2.35,
+    "damage_type_ranged": "Ranged",
+    "multipliers": {
+      "ranged": [
+        {
+          "vs": "AbstractHeavyInfantry",
+          "value": 2.0
+        },
+        {
+          "vs": "AbstractCavalry",
+          "value": 0.75
+        },
+        {
+          "vs": "AbstractLightInfantry",
+          "value": 0.75
+        },
+        {
+          "vs": "AbstractSkirmisher",
+          "value": 0.5
+        }
+      ]
+    },
+    "attack_siege": 18.0,
+    "range_siege": 6.0,
+    "rof_siege": 3.0,
+    "windups": {
+      "BuildingAttack": 0.43,
+      "BowAttack": 0.5,
+      "ChargeAttack": 0.53,
+      "TrampleHandAttack": 0.54
+    },
+    "windup_ranged": 0.5
+  },
+  {
     "id": "demercdhow",
     "name_en": "War Dhow",
-    "name": "战争单桅帆船",
+    "name": "達烏战船",
     "type": [
       "AbstractWarShip",
       "Military",
@@ -7651,7 +8515,8 @@
     "civs": [],
     "age": "Fortress Age",
     "cost": {
-      "gold": 700
+      "gold": 700,
+      "wood": 700
     },
     "pop": 0,
     "train_time": 40,
@@ -7679,6 +8544,70 @@
       ]
     },
     "aoe_radius": 1
+  },
+  {
+    "id": "demercgallowglass",
+    "name_en": "Gallowglass",
+    "name": "加洛格拉什",
+    "type": [
+      "AbstractCavalryInfantry",
+      "AbstractHandInfantry",
+      "AbstractHeavyInfantry",
+      "AbstractInfantry",
+      "LogicalTypeLandMilitary",
+      "Mercenary",
+      "Military",
+      "Unit",
+      "UnitClass"
+    ],
+    "civs": [],
+    "age": "Commerce Age",
+    "cost": {
+      "gold": 220
+    },
+    "pop": 2,
+    "train_time": 40,
+    "hp": 222,
+    "speed": 5.5,
+    "los": 12.0,
+    "armor_melee": 0.4,
+    "armor_ranged": 0.0,
+    "description_en": "Quick heavy Gaelic Swordsman mercenary that inflicts damage in an area.",
+    "description": "行动迅速的重装盖尔剑士雇佣兵，可造成范围伤害。",
+    "protoaction_melee": "MeleeHandAttack",
+    "attack_melee": 30.0,
+    "range_melee": 1.75,
+    "rof_melee": 1.5,
+    "damage_type_melee": "Hand",
+    "aoe_radius_melee": 2,
+    "damage_cap_melee": 105.0,
+    "multipliers": {
+      "melee": [
+        {
+          "vs": "AbstractCavalry",
+          "value": 2.0
+        },
+        {
+          "vs": "AbstractLightInfantry",
+          "value": 1.5
+        }
+      ]
+    },
+    "attack_siege": 30.0,
+    "range_siege": 9.0,
+    "rof_siege": 3.0,
+    "windups": {
+      "BuildingAttack": 0.98,
+      "CoverBuildingAttack": 0.98,
+      "CoverHandAttack": 0.51,
+      "MeleeHandAttack": 0.51,
+      "ChargeSwashbucklerAttack": 0.59,
+      "ChargeSwashbucklerCoverAttack": 0.59,
+      "GuardianAttack": 0.51,
+      "GuardianCoverAttack": 0.51
+    },
+    "windup_melee": 0.51,
+    "aoe_radius": 2
   },
   {
     "id": "demercgatlingcamel",
@@ -7729,18 +8658,6 @@
           "value": 2.0
         },
         {
-          "vs": "AbstractHeavyInfantry",
-          "value": 1.25
-        },
-        {
-          "vs": "AbstractCavalry",
-          "value": 0.5
-        },
-        {
-          "vs": "AbstractLightInfantry",
-          "value": 0.5
-        },
-        {
           "vs": "AbstractArtillery",
           "value": 0.34
         },
@@ -7755,16 +8672,8 @@
           "value": 2.0
         },
         {
-          "vs": "AbstractHeavyInfantry",
-          "value": 1.25
-        },
-        {
-          "vs": "AbstractCavalry",
-          "value": 0.5
-        },
-        {
-          "vs": "AbstractLightInfantry",
-          "value": 0.5
+          "vs": "AbstractArtillery",
+          "value": 0.34
         },
         {
           "vs": "AbstractVillager",
@@ -7816,7 +8725,7 @@
     },
     "pop": 2,
     "train_time": 50,
-    "hp": 250,
+    "hp": 260,
     "speed": 4.0,
     "los": 16.0,
     "armor_melee": 0.3,
@@ -7915,7 +8824,7 @@
       ]
     },
     "protoaction_melee": "MeleeHandAttack",
-    "attack_melee": 121.0,
+    "attack_melee": 110.0,
     "range_melee": 1.75,
     "rof_melee": 1.5,
     "damage_type_melee": "Hand",
@@ -7938,7 +8847,7 @@
   {
     "id": "demercirishbrigadier",
     "name_en": "Irish Brigadier",
-    "name": "爱尔兰准将",
+    "name": "爱尔兰旅士兵",
     "type": [
       "AbstractCavalryInfantry",
       "AbstractGunpowderTrooper",
@@ -8102,7 +9011,6 @@
     "type": [
       "AbstractCavalry",
       "AbstractCavalryInfantry",
-      "AbstractCounterSkirmisher",
       "AbstractGunpowderCavalry",
       "AbstractHandCavalry",
       "AbstractHeavyCavalry",
@@ -8131,7 +9039,7 @@
     "description": "远程重装骑兵雇佣兵。反制步兵，尤其是长枪兵。受其他骑兵反制。",
     "protoaction_ranged": "StaggerRangedAttack",
     "attack_ranged": 70.0,
-    "range": 15.0,
+    "range": 18.0,
     "range_min": 2.0,
     "rof_ranged": 3.0,
     "damage_type_ranged": "Ranged",
@@ -8221,7 +9129,7 @@
     "civs": [],
     "age": "Fortress Age",
     "cost": {
-      "gold": 450
+      "gold": 475
     },
     "pop": 4,
     "train_time": 45,
@@ -8294,8 +9202,8 @@
     "los": 25.0,
     "armor_melee": 0.0,
     "armor_ranged": 0.4,
-    "description_en": "Notorious Skirmisher from the Balkans that counters Skirmishers. Can use stealth.",
-    "description": "来自巴尔干半岛的恶名昭彰的长枪兵，反制长枪兵。可以使用隐匿。",
+    "description_en": "Notorious Counter Skirmisher from the Balkans that counters Skirmishers. Can use stealth.",
+    "description": "来自巴尔干半岛的恶名昭彰的反制长枪兵类型，反制长枪兵。可以使用隐匿。",
     "protoaction_ranged": "VolleyRangedAttack",
     "attack_ranged": 25.0,
     "range": 20.0,
@@ -8453,7 +9361,7 @@
     },
     "pop": 4,
     "train_time": 60,
-    "hp": 900,
+    "hp": 1200,
     "speed": 6.25,
     "los": 15.0,
     "armor_melee": 0.0,
@@ -8537,9 +9445,70 @@
     "windup_melee": 0.57
   },
   {
+    "id": "demercwagon",
+    "name_en": "Fortified Wagon",
+    "name": "强化马车",
+    "type": [
+      "AbstractArtillery",
+      "LogicalTypeLandMilitary",
+      "Mercenary",
+      "Military",
+      "Ranged",
+      "Unit",
+      "UnitClass"
+    ],
+    "civs": [],
+    "age": "Commerce Age",
+    "cost": {
+      "gold": 500
+    },
+    "pop": 5,
+    "train_time": 60,
+    "hp": 250,
+    "speed": 5.0,
+    "los": 32.0,
+    "armor_melee": 0.0,
+    "armor_ranged": 0.5,
+    "description_en": "Light Artillery wagon that absorbs damage from nearby units. Good against artillery and infantry.",
+    "description": "轻型火炮马车，可吸收附近单位受到的伤害。擅长对付炮兵和步兵。",
+    "protoaction_ranged": "CannonAttack",
+    "attack_ranged": 60.0,
+    "range": 26.0,
+    "range_min": 0.0,
+    "rof_ranged": 4.0,
+    "damage_type_ranged": "Siege",
+    "aoe_radius_ranged": 2,
+    "damage_cap_ranged": 120.0,
+    "multipliers": {
+      "ranged": [
+        {
+          "vs": "AbstractInfantry",
+          "value": 2.0
+        },
+        {
+          "vs": "AbstractArtillery",
+          "value": 2.0
+        },
+        {
+          "vs": "AbstractLightInfantry",
+          "value": 0.75
+        },
+        {
+          "vs": "Building",
+          "value": 0.5
+        }
+      ]
+    },
+    "windups": {
+      "CannonAttack": 0.45
+    },
+    "windup_ranged": 0.45,
+    "aoe_radius": 2
+  },
+  {
     "id": "demercxebec",
     "name_en": "Xebec",
-    "name": "三桅帆船",
+    "name": "谢贝克帆船",
     "type": [
       "AbstractWarShip",
       "Military",
@@ -8551,7 +9520,8 @@
     "civs": [],
     "age": "Fortress Age",
     "cost": {
-      "gold": 700
+      "gold": 700,
+      "wood": 700
     },
     "pop": 0,
     "train_time": 40,
@@ -8651,7 +9621,7 @@
   {
     "id": "demerczouave",
     "name_en": "Zouave",
-    "name": "义勇军",
+    "name": "祖阿夫兵",
     "type": [
       "AbstractCavalryInfantry",
       "AbstractGunpowderTrooper",
@@ -8677,7 +9647,7 @@
     "armor_melee": 0.0,
     "armor_ranged": 0.4,
     "description_en": "Zouave. High hitpoint multi-purpose ranged infantry mercenary. Fights well against all units.",
-    "description": "义勇军。拥有高生命值的多用途雇佣远距步兵。非常擅长对付所有单位。",
+    "description": "祖阿夫兵。拥有高生命值的多用途雇佣远距步兵。非常擅长对付所有单位。",
     "protoaction_ranged": "VolleyRangedAttack",
     "attack_ranged": 38.0,
     "range": 17.0,
@@ -9159,9 +10129,62 @@
     "aoe_radius": 1
   },
   {
+    "id": "denatbagpiper",
+    "name_en": "Bagpiper",
+    "name": "风笛手",
+    "type": [
+      "AbstractCavalryInfantry",
+      "AbstractGunpowderTrooper",
+      "AbstractInfantry",
+      "AbstractNativeWarrior",
+      "AbstractRangedInfantry",
+      "LogicalTypeLandMilitary",
+      "Military",
+      "Ranged",
+      "Unit",
+      "UnitClass"
+    ],
+    "civs": [],
+    "age": "Commerce Age",
+    "cost": {
+      "food": 150,
+      "gold": 150
+    },
+    "pop": 0,
+    "train_time": 30,
+    "hp": 250,
+    "speed": 4.5,
+    "los": 24.0,
+    "armor_melee": 0.1,
+    "armor_ranged": 0.0,
+    "description_en": "Musician from the highlands whose traditional tunes amplify the hitpoints of nearby infantry and decrease the damage of close enemy infantry.",
+    "description": "来自高地的乐师，其演奏的传统曲调能提升附近步兵的生命值，并降低附近敌方步兵造成的伤害。",
+    "protoaction_ranged": "VolleyRangedAttack",
+    "attack_ranged": 20.0,
+    "range": 12.0,
+    "range_min": 2.0,
+    "rof_ranged": 3.0,
+    "damage_type_ranged": "Ranged",
+    "protoaction_melee": "HandAttack",
+    "attack_melee": 10.0,
+    "range_melee": 1.0,
+    "rof_melee": 1.5,
+    "damage_type_melee": "Hand",
+    "attack_siege": 10.0,
+    "range_siege": 6.0,
+    "rof_siege": 3.0,
+    "windups": {
+      "BuildingAttack": 0.61,
+      "HandAttack": 0.47,
+      "VolleyRangedAttack": 0.37
+    },
+    "windup_ranged": 0.37,
+    "windup_melee": 0.47
+  },
+  {
     "id": "denatberbersultan",
     "name_en": "Berber Sultan",
-    "name": "柏柏尔苏丹人",
+    "name": "柏柏尔苏丹",
     "type": [
       "AbstractCanSeeStealth",
       "AbstractCavalry",
@@ -9248,7 +10271,7 @@
     "attack_ranged": 14.0,
     "range": 12.0,
     "range_min": 3.0,
-    "rof_ranged": 3.5,
+    "rof_ranged": 3.0,
     "damage_type_ranged": "Ranged",
     "aoe_radius_ranged": 2,
     "damage_cap_ranged": 28.0,
@@ -9282,7 +10305,7 @@
     },
     "protoaction_melee": "MeleeHandAttack",
     "attack_melee": 11.0,
-    "range_melee": 1.75,
+    "range_melee": 3.0,
     "rof_melee": 1.5,
     "damage_type_melee": "Hand",
     "attack_siege": 9.0,
@@ -9567,7 +10590,7 @@
         },
         {
           "vs": "AbstractSkirmisher",
-          "value": 0.6
+          "value": 0.75
         }
       ]
     },
@@ -9590,6 +10613,99 @@
     },
     "windup_ranged": 0.57,
     "windup_melee": 0.54
+  },
+  {
+    "id": "denatclansman",
+    "name_en": "Clansman",
+    "name": "氏族战士",
+    "type": [
+      "AbstractCavalryInfantry",
+      "AbstractCoyoteMan",
+      "AbstractHandInfantry",
+      "AbstractLightInfantry",
+      "AbstractNativeWarrior",
+      "LogicalTypeLandMilitary",
+      "Military",
+      "Unit",
+      "UnitClass"
+    ],
+    "civs": [],
+    "age": "Commerce Age",
+    "cost": {
+      "food": 70,
+      "wood": 40
+    },
+    "pop": 0,
+    "train_time": 30,
+    "hp": 140,
+    "speed": 6.5,
+    "los": 12.0,
+    "armor_melee": 0.15,
+    "armor_ranged": 0.0,
+    "description_en": "Quick Scottish Shock Hand Infantry. Good against Light infantry, artillery, and villagers. Benefits from Attack Promotions that improve damage.",
+    "description": "速度快的苏格兰近战冲击兵。擅长对付轻型步兵、炮兵和村民。可通过攻击提升提高伤害。",
+    "protoaction_melee": "MeleeHandAttack",
+    "attack_melee": 18.0,
+    "range_melee": 1.75,
+    "rof_melee": 1.5,
+    "damage_type_melee": "Hand",
+    "attack_siege": 11.0,
+    "range_siege": 6.0,
+    "rof_siege": 3.0,
+    "windups": {
+      "BuildingAttack": 0.61,
+      "CoverBuildingAttack": 0.61,
+      "CoverHandAttack": 0.32,
+      "DefendHandAttack": 0.32,
+      "MeleeHandAttack": 0.32
+    },
+    "windup_melee": 0.32
+  },
+  {
+    "id": "denatcompanion",
+    "name_en": "Companion",
+    "name": "伙伴骑兵",
+    "type": [
+      "AbstractCavalry",
+      "AbstractCavalryInfantry",
+      "AbstractHandCavalry",
+      "AbstractHeavyCavalry",
+      "AbstractNativeWarrior",
+      "LogicalTypeLandMilitary",
+      "Military",
+      "Unit",
+      "UnitClass"
+    ],
+    "civs": [],
+    "age": "Commerce Age",
+    "cost": {
+      "food": 100,
+      "gold": 100
+    },
+    "pop": 0,
+    "train_time": 50,
+    "hp": 335,
+    "speed": 7.0,
+    "los": 12.0,
+    "armor_melee": 0.0,
+    "armor_ranged": 0.2,
+    "description_en": "Heavy cavalry armed with a war hammer that inflicts siege damage.",
+    "description": "重装骑兵，手持一把可造成攻城伤害的战锤。",
+    "protoaction_melee": "MeleeHandAttack",
+    "attack_melee": 17.0,
+    "range_melee": 1.75,
+    "rof_melee": 1.5,
+    "damage_type_melee": "Siege",
+    "attack_siege": 18.0,
+    "range_siege": 6.0,
+    "rof_siege": 3.0,
+    "windups": {
+      "BuildingAttack": 0.43,
+      "MeleeHandAttack": 0.56,
+      "TrampleHandAttack": 0.56,
+      "LanceChargeAttack": 0.53
+    },
+    "windup_melee": 0.56
   },
   {
     "id": "denatdrummer",
@@ -9790,7 +10906,7 @@
     "range_min": 2.0,
     "rof_ranged": 1.5,
     "damage_type_ranged": "Ranged",
-    "protoaction_melee": "VolleyHandAttack",
+    "protoaction_melee": "MeleeHandAttack",
     "attack_melee": 10.0,
     "range_melee": 1.75,
     "rof_melee": 1.5,
@@ -9811,17 +10927,14 @@
     "range_siege": 6.0,
     "rof_siege": 3.0,
     "windups": {
-      "BuildingAttack": 0.49,
-      "DefendHandAttack": 0.47,
+      "BuildingAttack": 0.75,
       "DefendRangedAttack": 0.49,
-      "MeleeHandAttack": 0.47,
-      "StaggerHandAttack": 0.47,
+      "MeleeHandAttack": 0.37,
       "StaggerRangedAttack": 0.49,
-      "VolleyHandAttack": 0.47,
       "VolleyRangedAttack": 0.49
     },
     "windup_ranged": 0.49,
-    "windup_melee": 0.47
+    "windup_melee": 0.37
   },
   {
     "id": "denathungariangrenadier",
@@ -9918,6 +11031,209 @@
     "aoe_radius": 3
   },
   {
+    "id": "denathusky",
+    "name_en": "Husky",
+    "name": "哈士奇",
+    "type": [
+      "AbstractCanSeeStealth",
+      "AbstractHandInfantry",
+      "AbstractNativeWarrior",
+      "AbstractPet",
+      "LogicalTypeLandMilitary",
+      "Military",
+      "Unit",
+      "UnitClass"
+    ],
+    "civs": [],
+    "age": "Commerce Age",
+    "cost": {
+      "food": 70,
+      "wood": 10
+    },
+    "pop": 0,
+    "train_time": 1,
+    "hp": 215,
+    "speed": 5.0,
+    "los": 15.0,
+    "armor_melee": 0.1,
+    "armor_ranged": 0.0,
+    "description_en": "A fierce and obedient .. apologies, wrong dog. Huskies are the divas of the Arctic, they do whatever they want.",
+    "description": "一种既凶猛又听话的……抱歉，弄错狗了。哈士奇是北极地区的明星，它们随心所欲。",
+    "protoaction_melee": "MeleeHandAttack",
+    "attack_melee": 9.0,
+    "range_melee": 1.75,
+    "rof_melee": 1.5,
+    "damage_type_melee": "Hand",
+    "multipliers": {
+      "melee": [
+        {
+          "vs": "Guardian",
+          "value": 3.0
+        }
+      ]
+    },
+    "windups": {
+      "MeleeHandAttack": 0.6
+    },
+    "windup_melee": 0.6
+  },
+  {
+    "id": "denatinuithunter",
+    "name_en": "Inuit Hunter",
+    "name": "因纽特猎人",
+    "type": [
+      "AbstractArchaicInfantry",
+      "AbstractArcher",
+      "AbstractCavalryInfantry",
+      "AbstractFootArcher",
+      "AbstractInfantry",
+      "AbstractNativeWarrior",
+      "AbstractRangedInfantry",
+      "AbstractSkirmisher",
+      "LogicalTypeLandMilitary",
+      "Military",
+      "Ranged",
+      "Unit",
+      "UnitClass"
+    ],
+    "civs": [],
+    "age": "Commerce Age",
+    "cost": {
+      "food": 60,
+      "wood": 50
+    },
+    "pop": 0,
+    "train_time": 30,
+    "hp": 130,
+    "speed": 4.5,
+    "los": 18.0,
+    "armor_melee": 0.0,
+    "armor_ranged": 0.2,
+    "description_en": "Resilient Inuit Archer that specializes in fighting Outlaws, Pets, Mercenaries and other Native warriors. Benefits from Hunting Promotions, improving attack range.",
+    "description": "坚韧不屈的因纽特步弓兵，擅长对抗亡命之徒、宠物、雇佣兵以及其他原住民战士。可通过狩猎晋升、提升攻击射程受益。",
+    "protoaction_ranged": "RangedAttack",
+    "attack_ranged": 13.0,
+    "range": 16.0,
+    "range_min": 2.0,
+    "rof_ranged": 1.5,
+    "damage_type_ranged": "Ranged",
+    "multipliers": {
+      "ranged": [
+        {
+          "vs": "Mercenary",
+          "value": 3.0
+        },
+        {
+          "vs": "AbstractOutlaw",
+          "value": 3.0
+        },
+        {
+          "vs": "AbstractNativeWarrior",
+          "value": 3.0
+        },
+        {
+          "vs": "AbstractPet",
+          "value": 5.0
+        }
+      ],
+      "melee": [
+        {
+          "vs": "Mercenary",
+          "value": 3.0
+        },
+        {
+          "vs": "AbstractOutlaw",
+          "value": 3.0
+        },
+        {
+          "vs": "AbstractNativeWarrior",
+          "value": 3.0
+        },
+        {
+          "vs": "AbstractPet",
+          "value": 5.0
+        }
+      ]
+    },
+    "protoaction_melee": "HandAttack",
+    "attack_melee": 10.0,
+    "range_melee": 1.75,
+    "rof_melee": 1.5,
+    "damage_type_melee": "Hand",
+    "attack_siege": 10.0,
+    "range_siege": 10.0,
+    "rof_siege": 3.0,
+    "windups": {
+      "BuildingAttack": 0.98,
+      "HandAttack": 0.27,
+      "RangedAttack": 0.98
+    },
+    "windup_ranged": 0.98,
+    "windup_melee": 0.27
+  },
+  {
+    "id": "denatinuitqamutik",
+    "name_en": "Inuit Qamutik",
+    "name": "因纽特人雪橇",
+    "type": [
+      "AbstractArcher",
+      "AbstractCavalry",
+      "AbstractCavalryInfantry",
+      "AbstractLightCavalry",
+      "AbstractNativeWarrior",
+      "AbstractRangedCavalry",
+      "LogicalTypeLandMilitary",
+      "Military",
+      "Ranged",
+      "Unit",
+      "UnitClass"
+    ],
+    "civs": [],
+    "age": "Fortress Age",
+    "cost": {
+      "food": 110,
+      "wood": 110
+    },
+    "pop": 0,
+    "train_time": 35,
+    "hp": 420,
+    "speed": 7.25,
+    "los": 19.0,
+    "armor_melee": 0.0,
+    "armor_ranged": 0.3,
+    "description_en": "Archer on a light dog sled. Good against heavy cavalry.",
+    "description": "坐在轻型狗拉雪橇上的弓兵。擅长对付重装骑兵。",
+    "protoaction_ranged": "BowAttack",
+    "attack_ranged": 15.0,
+    "range": 14.0,
+    "range_min": 0.0,
+    "rof_ranged": 1.5,
+    "damage_type_ranged": "Ranged",
+    "multipliers": {
+      "ranged": [
+        {
+          "vs": "AbstractHeavyCavalry",
+          "value": 2.5
+        },
+        {
+          "vs": "AbstractCoyoteMan",
+          "value": 2.0
+        },
+        {
+          "vs": "AbstractArtillery",
+          "value": 2.0
+        },
+        {
+          "vs": "AbstractVillager",
+          "value": 0.5
+        }
+      ]
+    },
+    "attack_siege": 15.0,
+    "range_siege": 10.0,
+    "rof_siege": 3.0
+  },
+  {
     "id": "denatlineinfantry",
     "name_en": "Line Infantry",
     "name": "线列步兵",
@@ -10009,8 +11325,8 @@
     "civs": [],
     "age": "Commerce Age",
     "cost": {
-      "food": 70,
-      "wood": 60
+      "food": 80,
+      "wood": 70
     },
     "pop": 0,
     "train_time": 35,
@@ -10022,7 +11338,7 @@
     "description_en": "Quick firing Cavalry Archer from Lithuania.",
     "description": "来自立陶宛的快速射击骑射手。",
     "protoaction_ranged": "BowAttack",
-    "attack_ranged": 12.5,
+    "attack_ranged": 10.0,
     "range": 12.0,
     "range_min": 0.0,
     "rof_ranged": 1.25,
@@ -10056,6 +11372,169 @@
       "ChargeAttack": 0.54
     },
     "windup_ranged": 0.1
+  },
+  {
+    "id": "denatlowlanderinfantry",
+    "name_en": "Lowlander",
+    "name": "低地人",
+    "type": [
+      "AbstractCavalryInfantry",
+      "AbstractGunpowderTrooper",
+      "AbstractHeavyInfantry",
+      "AbstractInfantry",
+      "AbstractMusketeer",
+      "AbstractNativeWarrior",
+      "AbstractRangedInfantry",
+      "LogicalTypeLandMilitary",
+      "Military",
+      "Ranged",
+      "Unit",
+      "UnitClass"
+    ],
+    "civs": [],
+    "age": "Commerce Age",
+    "cost": {
+      "food": 50,
+      "gold": 40
+    },
+    "pop": 0,
+    "train_time": 28,
+    "hp": 135,
+    "speed": 4.25,
+    "los": 12.0,
+    "armor_melee": 0.3,
+    "armor_ranged": 0.0,
+    "description_en": "Musketeer from the Scottish lowlands that uses a long pike in melee. Can mount a horse to turn into ranged cavalry. Good against cavalry.",
+    "description": "来自苏格兰低地的火枪手，近战时使用长矛。可上马变成远程骑兵。擅长对付骑兵。",
+    "protoaction_ranged": "VolleyRangedAttack",
+    "attack_ranged": 19.0,
+    "range": 12.0,
+    "range_min": 2.0,
+    "rof_ranged": 3.0,
+    "damage_type_ranged": "Ranged",
+    "protoaction_melee": "VolleyHandAttack",
+    "attack_melee": 15.0,
+    "range_melee": 1.75,
+    "rof_melee": 1.5,
+    "damage_type_melee": "Hand",
+    "multipliers": {
+      "melee": [
+        {
+          "vs": "AbstractCavalry",
+          "value": 3.0
+        },
+        {
+          "vs": "AbstractLightInfantry",
+          "value": 2.25
+        }
+      ]
+    },
+    "attack_siege": 19.0,
+    "range_siege": 6.0,
+    "rof_siege": 3.0,
+    "windups": {
+      "BuildingAttack": 0.61,
+      "DefendHandAttack": 0.53,
+      "DefendRangedAttack": 0.48,
+      "MeleeHandAttack": 0.53,
+      "StaggerHandAttack": 0.53,
+      "StaggerRangedAttack": 0.48,
+      "VolleyHandAttack": 0.53,
+      "VolleyRangedAttack": 0.48
+    },
+    "windup_ranged": 0.48,
+    "windup_melee": 0.53
+  },
+  {
+    "id": "denatlowlanderrider",
+    "name_en": "Lowland Dragoon",
+    "name": "低地枪骑兵",
+    "type": [
+      "AbstractCavalry",
+      "AbstractCavalryInfantry",
+      "AbstractGunpowderCavalry",
+      "AbstractLightCavalry",
+      "AbstractNativeWarrior",
+      "AbstractRangedCavalry",
+      "LogicalTypeLandMilitary",
+      "Military",
+      "Ranged",
+      "Unit",
+      "UnitClass"
+    ],
+    "civs": [],
+    "age": "Commerce Age",
+    "cost": {
+      "food": 50,
+      "gold": 40
+    },
+    "pop": 0,
+    "train_time": 28,
+    "hp": 140,
+    "speed": 7.0,
+    "los": 14.0,
+    "armor_melee": 0.0,
+    "armor_ranged": 0.1,
+    "description_en": "Dragoon from the Scottish lowlands thats uses a long lance in melee. Can dismount to turn into a Musketeer. Good against cavalry.",
+    "description": "来自苏格兰低地的枪骑兵，近战时使用长矛。可下马变成火枪手。擅长对付骑兵。",
+    "protoaction_ranged": "StaggerRangedAttack",
+    "attack_ranged": 12.0,
+    "range": 12.0,
+    "range_min": 3.0,
+    "rof_ranged": 3.0,
+    "damage_type_ranged": "Ranged",
+    "multipliers": {
+      "ranged": [
+        {
+          "vs": "AbstractHeavyCavalry",
+          "value": 3.0
+        },
+        {
+          "vs": "AbstractVillager",
+          "value": 0.5
+        },
+        {
+          "vs": "AbstractArtillery",
+          "value": 2.0
+        },
+        {
+          "vs": "AbstractCoyoteMan",
+          "value": 2.25
+        }
+      ],
+      "melee": [
+        {
+          "vs": "AbstractCavalry",
+          "value": 2.5
+        },
+        {
+          "vs": "AbstractLightInfantry",
+          "value": 2.0
+        },
+        {
+          "vs": "AbstractArtillery",
+          "value": 2.0
+        }
+      ]
+    },
+    "protoaction_melee": "MeleeHandAttack",
+    "attack_melee": 12.0,
+    "range_melee": 1.75,
+    "rof_melee": 1.5,
+    "damage_type_melee": "Hand",
+    "attack_siege": 14.0,
+    "range_siege": 6.0,
+    "rof_siege": 3.0,
+    "windups": {
+      "BuildingAttack": 0.43,
+      "DefendRangedAttack": 0.5,
+      "GuardianRangedAttack": 0.5,
+      "MeleeHandAttack": 0.54,
+      "GuardianAttack": 0.54,
+      "StaggerRangedAttack": 0.5
+    },
+    "windup_ranged": 0.5,
+    "windup_melee": 0.54
   },
   {
     "id": "denatmercakanmusketeer",
@@ -10220,6 +11699,59 @@
     },
     "windup_ranged": 0.57,
     "windup_melee": 0.53
+  },
+  {
+    "id": "denatmercbagpiper",
+    "name_en": "Bagpiper",
+    "name": "风笛手",
+    "type": [
+      "AbstractCavalryInfantry",
+      "AbstractGunpowderTrooper",
+      "AbstractInfantry",
+      "AbstractNativeWarrior",
+      "AbstractRangedInfantry",
+      "LogicalTypeLandMilitary",
+      "Military",
+      "Ranged",
+      "Unit",
+      "UnitClass"
+    ],
+    "civs": [],
+    "age": "Commerce Age",
+    "cost": {
+      "food": 150,
+      "gold": 150
+    },
+    "pop": 0,
+    "train_time": 30,
+    "hp": 250,
+    "speed": 4.5,
+    "los": 24.0,
+    "armor_melee": 0.1,
+    "armor_ranged": 0.0,
+    "description_en": "Musician from the highlands whose traditional tunes amplify the hitpoints of nearby infantry and decrease the damage of close enemy infantry.",
+    "description": "来自高地的乐师，其演奏的传统曲调能提升附近步兵的生命值，并降低附近敌方步兵造成的伤害。",
+    "protoaction_ranged": "VolleyRangedAttack",
+    "attack_ranged": 20.0,
+    "range": 12.0,
+    "range_min": 2.0,
+    "rof_ranged": 3.0,
+    "damage_type_ranged": "Ranged",
+    "protoaction_melee": "HandAttack",
+    "attack_melee": 10.0,
+    "range_melee": 1.0,
+    "rof_melee": 1.5,
+    "damage_type_melee": "Hand",
+    "attack_siege": 10.0,
+    "range_siege": 6.0,
+    "rof_siege": 3.0,
+    "windups": {
+      "BuildingAttack": 0.61,
+      "HandAttack": 0.47,
+      "VolleyRangedAttack": 0.37
+    },
+    "windup_ranged": 0.37,
+    "windup_melee": 0.47
   },
   {
     "id": "denatmercbolasrider",
@@ -10576,7 +12108,7 @@
         },
         {
           "vs": "AbstractSkirmisher",
-          "value": 0.6
+          "value": 0.75
         }
       ]
     },
@@ -10599,6 +12131,99 @@
     },
     "windup_ranged": 0.57,
     "windup_melee": 0.54
+  },
+  {
+    "id": "denatmercclansman",
+    "name_en": "Clansman",
+    "name": "氏族战士",
+    "type": [
+      "AbstractCavalryInfantry",
+      "AbstractCoyoteMan",
+      "AbstractHandInfantry",
+      "AbstractLightInfantry",
+      "AbstractNativeWarrior",
+      "LogicalTypeLandMilitary",
+      "Military",
+      "Unit",
+      "UnitClass"
+    ],
+    "civs": [],
+    "age": "Commerce Age",
+    "cost": {
+      "food": 70,
+      "wood": 40
+    },
+    "pop": 0,
+    "train_time": 30,
+    "hp": 140,
+    "speed": 6.5,
+    "los": 12.0,
+    "armor_melee": 0.15,
+    "armor_ranged": 0.0,
+    "description_en": "Quick Scottish Shock Hand Infantry. Good against Light infantry, artillery, and villagers. Benefits from Attack Promotions that improve damage.",
+    "description": "速度快的苏格兰近战冲击兵。擅长对付轻型步兵、炮兵和村民。可通过攻击提升提高伤害。",
+    "protoaction_melee": "MeleeHandAttack",
+    "attack_melee": 18.0,
+    "range_melee": 1.75,
+    "rof_melee": 1.5,
+    "damage_type_melee": "Hand",
+    "attack_siege": 11.0,
+    "range_siege": 6.0,
+    "rof_siege": 3.0,
+    "windups": {
+      "BuildingAttack": 0.61,
+      "CoverBuildingAttack": 0.61,
+      "CoverHandAttack": 0.32,
+      "DefendHandAttack": 0.32,
+      "MeleeHandAttack": 0.32
+    },
+    "windup_melee": 0.32
+  },
+  {
+    "id": "denatmerccompanion",
+    "name_en": "Companion",
+    "name": "伙伴骑兵",
+    "type": [
+      "AbstractCavalry",
+      "AbstractCavalryInfantry",
+      "AbstractHandCavalry",
+      "AbstractHeavyCavalry",
+      "AbstractNativeWarrior",
+      "LogicalTypeLandMilitary",
+      "Military",
+      "Unit",
+      "UnitClass"
+    ],
+    "civs": [],
+    "age": "Commerce Age",
+    "cost": {
+      "food": 100,
+      "gold": 100
+    },
+    "pop": 0,
+    "train_time": 50,
+    "hp": 335,
+    "speed": 6.5,
+    "los": 12.0,
+    "armor_melee": 0.0,
+    "armor_ranged": 0.2,
+    "description_en": "Heavy cavalry armed with a war hammer that inflicts siege damage.",
+    "description": "重装骑兵，手持一把可造成攻城伤害的战锤。",
+    "protoaction_melee": "MeleeHandAttack",
+    "attack_melee": 17.0,
+    "range_melee": 1.75,
+    "rof_melee": 1.5,
+    "damage_type_melee": "Siege",
+    "attack_siege": 18.0,
+    "range_siege": 6.0,
+    "rof_siege": 3.0,
+    "windups": {
+      "BuildingAttack": 0.43,
+      "MeleeHandAttack": 0.56,
+      "TrampleHandAttack": 0.56,
+      "LanceChargeAttack": 0.53
+    },
+    "windup_melee": 0.56
   },
   {
     "id": "denatmercdrummer",
@@ -10799,7 +12424,7 @@
     "range_min": 2.0,
     "rof_ranged": 1.5,
     "damage_type_ranged": "Ranged",
-    "protoaction_melee": "VolleyHandAttack",
+    "protoaction_melee": "MeleeHandAttack",
     "attack_melee": 10.0,
     "range_melee": 1.75,
     "rof_melee": 1.5,
@@ -10820,17 +12445,217 @@
     "range_siege": 6.0,
     "rof_siege": 3.0,
     "windups": {
-      "BuildingAttack": 0.49,
-      "DefendHandAttack": 0.47,
+      "BuildingAttack": 0.75,
       "DefendRangedAttack": 0.49,
-      "MeleeHandAttack": 0.47,
-      "StaggerHandAttack": 0.47,
+      "MeleeHandAttack": 0.37,
       "StaggerRangedAttack": 0.49,
-      "VolleyHandAttack": 0.47,
       "VolleyRangedAttack": 0.49
     },
     "windup_ranged": 0.49,
-    "windup_melee": 0.47
+    "windup_melee": 0.37
+  },
+  {
+    "id": "denatmerchusky",
+    "name_en": "Husky",
+    "name": "哈士奇",
+    "type": [
+      "AbstractCanSeeStealth",
+      "AbstractHandInfantry",
+      "AbstractNativeWarrior",
+      "AbstractPet",
+      "LogicalTypeLandMilitary",
+      "Military",
+      "Unit",
+      "UnitClass"
+    ],
+    "civs": [],
+    "age": "Commerce Age",
+    "cost": {
+      "food": 70,
+      "wood": 10
+    },
+    "pop": 0,
+    "train_time": 1,
+    "hp": 215,
+    "speed": 5.0,
+    "los": 15.0,
+    "armor_melee": 0.1,
+    "armor_ranged": 0.0,
+    "description_en": "A fierce and obedient .. apologies, wrong dog. Huskies are the divas of the Arctic, they do whatever they want.",
+    "description": "一种既凶猛又听话的……抱歉，弄错狗了。哈士奇是北极地区的明星，它们随心所欲。",
+    "protoaction_melee": "MeleeHandAttack",
+    "attack_melee": 9.0,
+    "range_melee": 1.75,
+    "rof_melee": 1.5,
+    "damage_type_melee": "Hand",
+    "multipliers": {
+      "melee": [
+        {
+          "vs": "Guardian",
+          "value": 3.0
+        }
+      ]
+    },
+    "windups": {
+      "MeleeHandAttack": 0.6
+    },
+    "windup_melee": 0.6
+  },
+  {
+    "id": "denatmercinuithunter",
+    "name_en": "Inuit Hunter",
+    "name": "因纽特猎人",
+    "type": [
+      "AbstractArchaicInfantry",
+      "AbstractArcher",
+      "AbstractCavalryInfantry",
+      "AbstractFootArcher",
+      "AbstractInfantry",
+      "AbstractNativeWarrior",
+      "AbstractRangedInfantry",
+      "AbstractSkirmisher",
+      "LogicalTypeLandMilitary",
+      "Military",
+      "Ranged",
+      "Unit",
+      "UnitClass"
+    ],
+    "civs": [],
+    "age": "Commerce Age",
+    "cost": {
+      "food": 60,
+      "wood": 50
+    },
+    "pop": 0,
+    "train_time": 30,
+    "hp": 130,
+    "speed": 4.5,
+    "los": 18.0,
+    "armor_melee": 0.0,
+    "armor_ranged": 0.2,
+    "description_en": "Resilient Inuit Archer that specializes in fighting Outlaws, Pets, Mercenaries and other Native warriors. Benefits from Hunting Promotions, improving attack range.",
+    "description": "坚韧不屈的因纽特步弓兵，擅长对抗亡命之徒、宠物、雇佣兵以及其他原住民战士。可通过狩猎晋升、提升攻击射程受益。",
+    "protoaction_ranged": "RangedAttack",
+    "attack_ranged": 13.0,
+    "range": 16.0,
+    "range_min": 2.0,
+    "rof_ranged": 1.5,
+    "damage_type_ranged": "Ranged",
+    "multipliers": {
+      "ranged": [
+        {
+          "vs": "Mercenary",
+          "value": 3.0
+        },
+        {
+          "vs": "AbstractOutlaw",
+          "value": 3.0
+        },
+        {
+          "vs": "AbstractNativeWarrior",
+          "value": 3.0
+        },
+        {
+          "vs": "AbstractPet",
+          "value": 5.0
+        }
+      ],
+      "melee": [
+        {
+          "vs": "Mercenary",
+          "value": 3.0
+        },
+        {
+          "vs": "AbstractOutlaw",
+          "value": 3.0
+        },
+        {
+          "vs": "AbstractNativeWarrior",
+          "value": 3.0
+        },
+        {
+          "vs": "AbstractPet",
+          "value": 5.0
+        }
+      ]
+    },
+    "protoaction_melee": "HandAttack",
+    "attack_melee": 10.0,
+    "range_melee": 1.75,
+    "rof_melee": 1.5,
+    "damage_type_melee": "Hand",
+    "attack_siege": 10.0,
+    "range_siege": 10.0,
+    "rof_siege": 3.0,
+    "windups": {
+      "BuildingAttack": 0.98,
+      "HandAttack": 0.27,
+      "RangedAttack": 0.98
+    },
+    "windup_ranged": 0.98,
+    "windup_melee": 0.27
+  },
+  {
+    "id": "denatmercinuitqamutik",
+    "name_en": "Inuit Qamutik",
+    "name": "因纽特人雪橇",
+    "type": [
+      "AbstractArcher",
+      "AbstractCavalry",
+      "AbstractCavalryInfantry",
+      "AbstractLightCavalry",
+      "AbstractNativeWarrior",
+      "AbstractRangedCavalry",
+      "LogicalTypeLandMilitary",
+      "Military",
+      "Ranged",
+      "Unit",
+      "UnitClass"
+    ],
+    "civs": [],
+    "age": "Fortress Age",
+    "cost": {
+      "food": 110,
+      "wood": 110
+    },
+    "pop": 0,
+    "train_time": 35,
+    "hp": 420,
+    "speed": 7.25,
+    "los": 19.0,
+    "armor_melee": 0.0,
+    "armor_ranged": 0.3,
+    "description_en": "Archer on a light dog sled. Good against heavy cavalry.",
+    "description": "坐在轻型狗拉雪橇上的弓兵。擅长对付重装骑兵。",
+    "protoaction_ranged": "BowAttack",
+    "attack_ranged": 15.0,
+    "range": 14.0,
+    "range_min": 0.0,
+    "rof_ranged": 1.5,
+    "damage_type_ranged": "Ranged",
+    "multipliers": {
+      "ranged": [
+        {
+          "vs": "AbstractHeavyCavalry",
+          "value": 2.5
+        },
+        {
+          "vs": "AbstractCoyoteMan",
+          "value": 2.0
+        },
+        {
+          "vs": "AbstractArtillery",
+          "value": 2.0
+        },
+        {
+          "vs": "AbstractVillager",
+          "value": 0.5
+        }
+      ]
+    },
+    "attack_siege": 15.0,
+    "range_siege": 10.0,
+    "rof_siege": 3.0
   },
   {
     "id": "denatmercjaguarwarrior",
@@ -10996,7 +12821,8 @@
       "StaggerHandAttack": 0.33,
       "StaggerRangedAttack": 0.46,
       "VolleyHandAttack": 0.33,
-      "VolleyRangedAttack": 0.46
+      "VolleyRangedAttack": 0.46,
+      "ChargeStun": 0.44
     },
     "windup_ranged": 0.46,
     "windup_melee": 0.33
@@ -11093,8 +12919,8 @@
     "civs": [],
     "age": "Commerce Age",
     "cost": {
-      "food": 70,
-      "wood": 60
+      "food": 80,
+      "wood": 70
     },
     "pop": 0,
     "train_time": 35,
@@ -11106,7 +12932,7 @@
     "description_en": "Quick firing Cavalry Archer from Lithuania.",
     "description": "来自立陶宛的快速射击骑射手。",
     "protoaction_ranged": "BowAttack",
-    "attack_ranged": 12.5,
+    "attack_ranged": 10.0,
     "range": 12.0,
     "range_min": 0.0,
     "rof_ranged": 1.25,
@@ -11140,6 +12966,169 @@
       "ChargeAttack": 0.54
     },
     "windup_ranged": 0.1
+  },
+  {
+    "id": "denatmerclowlanderinfantry",
+    "name_en": "Lowlander",
+    "name": "低地人",
+    "type": [
+      "AbstractCavalryInfantry",
+      "AbstractGunpowderTrooper",
+      "AbstractHeavyInfantry",
+      "AbstractInfantry",
+      "AbstractMusketeer",
+      "AbstractNativeWarrior",
+      "AbstractRangedInfantry",
+      "LogicalTypeLandMilitary",
+      "Military",
+      "Ranged",
+      "Unit",
+      "UnitClass"
+    ],
+    "civs": [],
+    "age": "Commerce Age",
+    "cost": {
+      "food": 50,
+      "gold": 40
+    },
+    "pop": 0,
+    "train_time": 28,
+    "hp": 135,
+    "speed": 4.25,
+    "los": 12.0,
+    "armor_melee": 0.3,
+    "armor_ranged": 0.0,
+    "description_en": "Musketeer from the Scottish lowlands that uses a long pike in melee. Can mount a horse to turn into ranged cavalry. Good against cavalry.",
+    "description": "来自苏格兰低地的火枪手，近战时使用长矛。可上马变成远程骑兵。擅长对付骑兵。",
+    "protoaction_ranged": "VolleyRangedAttack",
+    "attack_ranged": 19.0,
+    "range": 12.0,
+    "range_min": 2.0,
+    "rof_ranged": 3.0,
+    "damage_type_ranged": "Ranged",
+    "protoaction_melee": "VolleyHandAttack",
+    "attack_melee": 15.0,
+    "range_melee": 1.75,
+    "rof_melee": 1.5,
+    "damage_type_melee": "Hand",
+    "multipliers": {
+      "melee": [
+        {
+          "vs": "AbstractCavalry",
+          "value": 3.0
+        },
+        {
+          "vs": "AbstractLightInfantry",
+          "value": 2.25
+        }
+      ]
+    },
+    "attack_siege": 19.0,
+    "range_siege": 6.0,
+    "rof_siege": 3.0,
+    "windups": {
+      "BuildingAttack": 0.61,
+      "DefendHandAttack": 0.53,
+      "DefendRangedAttack": 0.48,
+      "MeleeHandAttack": 0.53,
+      "StaggerHandAttack": 0.53,
+      "StaggerRangedAttack": 0.48,
+      "VolleyHandAttack": 0.53,
+      "VolleyRangedAttack": 0.48
+    },
+    "windup_ranged": 0.48,
+    "windup_melee": 0.53
+  },
+  {
+    "id": "denatmerclowlanderrider",
+    "name_en": "Lowland Dragoon",
+    "name": "低地枪骑兵",
+    "type": [
+      "AbstractCavalry",
+      "AbstractCavalryInfantry",
+      "AbstractGunpowderCavalry",
+      "AbstractLightCavalry",
+      "AbstractNativeWarrior",
+      "AbstractRangedCavalry",
+      "LogicalTypeLandMilitary",
+      "Military",
+      "Ranged",
+      "Unit",
+      "UnitClass"
+    ],
+    "civs": [],
+    "age": "Commerce Age",
+    "cost": {
+      "food": 50,
+      "gold": 40
+    },
+    "pop": 0,
+    "train_time": 28,
+    "hp": 140,
+    "speed": 7.0,
+    "los": 14.0,
+    "armor_melee": 0.0,
+    "armor_ranged": 0.1,
+    "description_en": "Dragoon from the Scottish lowlands thats uses a long lance in melee. Can dismount to turn into a Musketeer. Good against cavalry.",
+    "description": "来自苏格兰低地的枪骑兵，近战时使用长矛。可下马变成火枪手。擅长对付骑兵。",
+    "protoaction_ranged": "StaggerRangedAttack",
+    "attack_ranged": 12.0,
+    "range": 12.0,
+    "range_min": 3.0,
+    "rof_ranged": 3.0,
+    "damage_type_ranged": "Ranged",
+    "multipliers": {
+      "ranged": [
+        {
+          "vs": "AbstractHeavyCavalry",
+          "value": 3.0
+        },
+        {
+          "vs": "AbstractVillager",
+          "value": 0.5
+        },
+        {
+          "vs": "AbstractArtillery",
+          "value": 2.0
+        },
+        {
+          "vs": "AbstractCoyoteMan",
+          "value": 2.25
+        }
+      ],
+      "melee": [
+        {
+          "vs": "AbstractCavalry",
+          "value": 2.5
+        },
+        {
+          "vs": "AbstractLightInfantry",
+          "value": 2.0
+        },
+        {
+          "vs": "AbstractArtillery",
+          "value": 2.0
+        }
+      ]
+    },
+    "protoaction_melee": "MeleeHandAttack",
+    "attack_melee": 12.0,
+    "range_melee": 1.75,
+    "rof_melee": 1.5,
+    "damage_type_melee": "Hand",
+    "attack_siege": 14.0,
+    "range_siege": 6.0,
+    "rof_siege": 3.0,
+    "windups": {
+      "BuildingAttack": 0.43,
+      "DefendRangedAttack": 0.5,
+      "GuardianRangedAttack": 0.5,
+      "MeleeHandAttack": 0.54,
+      "GuardianAttack": 0.54,
+      "StaggerRangedAttack": 0.5
+    },
+    "windup_ranged": 0.5,
+    "windup_melee": 0.54
   },
   {
     "id": "denatmercmapucheclubman",
@@ -11603,9 +13592,112 @@
     "windup_melee": 0.53
   },
   {
+    "id": "denatmercnoaidi",
+    "name_en": "Sámi Noaidi",
+    "name": "萨米巫师",
+    "type": [
+      "AbstractDoubleVillager",
+      "AbstractNativeWarrior",
+      "AbstractVillager",
+      "LogicalTypeLandEconomy",
+      "Unit",
+      "UnitClass"
+    ],
+    "civs": [],
+    "age": "Exploration Age",
+    "cost": {
+      "food": 50,
+      "gold": 100
+    },
+    "pop": 1,
+    "train_time": 25,
+    "hp": 240,
+    "speed": 4.0,
+    "los": 14.0,
+    "armor_melee": 0.0,
+    "armor_ranged": 0.3,
+    "description_en": "Shaman of the Sámi who gathers resources quickly and can heal units. Good against heroes, treasure guardians and native warriors.",
+    "description": "萨米人的萨满，采集资源速度快并能治疗单位。擅长对付英雄、宝藏守护者和原住民战士。",
+    "protoaction_ranged": "BlunderbussAttack",
+    "attack_ranged": 3.0,
+    "range": 12.0,
+    "range_min": 2.0,
+    "rof_ranged": 3.0,
+    "damage_type_ranged": "Ranged",
+    "multipliers": {
+      "ranged": [
+        {
+          "vs": "Hero",
+          "value": 3.0
+        },
+        {
+          "vs": "AbstractNativeWarrior",
+          "value": 3.0
+        },
+        {
+          "vs": "Guardian",
+          "value": 3.0
+        },
+        {
+          "vs": "Huntable",
+          "value": 7.0
+        },
+        {
+          "vs": "AbstractPet",
+          "value": 2.0
+        }
+      ],
+      "melee": [
+        {
+          "vs": "Llama",
+          "value": 5.0
+        },
+        {
+          "vs": "Hero",
+          "value": 2.0
+        },
+        {
+          "vs": "AbstractNativeWarrior",
+          "value": 2.0
+        },
+        {
+          "vs": "Guardian",
+          "value": 2.0
+        },
+        {
+          "vs": "AbstractPet",
+          "value": 3.0
+        }
+      ],
+      "siege": [
+        {
+          "vs": "AbstractResourceEnclosure",
+          "value": 3.0
+        }
+      ]
+    },
+    "protoaction_melee": "HandAttack",
+    "attack_melee": 10.0,
+    "range_melee": 2.0,
+    "rof_melee": 3.0,
+    "damage_type_melee": "Hand",
+    "attack_siege": 10.0,
+    "range_siege": 6.0,
+    "rof_siege": 3.0,
+    "windups": {
+      "BlunderbussAttack": 0.46,
+      "BuildingAttack": 0.47,
+      "ChopAttack": 0.6,
+      "HandAttack": 0.58,
+      "HandAttackCrate": 0.58
+    },
+    "windup_ranged": 0.46,
+    "windup_melee": 0.58
+  },
+  {
     "id": "denatmercnomad",
     "name_en": "Berber Nomad",
-    "name": "柏柏尔游牧民族",
+    "name": "柏柏尔游牧民",
     "type": [
       "AbstractBerberNomad",
       "AbstractVillager",
@@ -11809,19 +13901,6 @@
     "range_min": 4.0,
     "rof_ranged": 1.5,
     "damage_type_ranged": "Ranged",
-    "protoaction_melee": "MeleeHandAttack",
-    "attack_melee": 18.0,
-    "range_melee": 0.0,
-    "rof_melee": 1.5,
-    "damage_type_melee": "Hand",
-    "multipliers": {
-      "melee": [
-        {
-          "vs": "AbstractInfantry",
-          "value": 2.0
-        }
-      ]
-    },
     "attack_siege": 10.0,
     "range_siege": 6.0,
     "rof_siege": 1.5,
@@ -11973,7 +14052,7 @@
     "description": "法国精锐枪骑兵，射程更远，在近战中表现出色。可以践踏敌人。擅长对付骑兵。",
     "protoaction_ranged": "StaggerRangedAttack",
     "attack_ranged": 17.5,
-    "range": 16.0,
+    "range": 17.0,
     "range_min": 2.0,
     "rof_ranged": 2.5,
     "damage_type_ranged": "Ranged",
@@ -12034,7 +14113,7 @@
   {
     "id": "denatmercroyalhunter",
     "name_en": "Royal Hunter",
-    "name": "皇家猎人",
+    "name": "皇家猎兵",
     "type": [
       "AbstractCavalryInfantry",
       "AbstractCounterSkirmisher",
@@ -12129,6 +14208,97 @@
     "windup_melee": 0.51
   },
   {
+    "id": "denatmercroyalhuntsman",
+    "name_en": "Royal Huntsman",
+    "name": "皇家猎人",
+    "type": [
+      "AbstractCavalryInfantry",
+      "AbstractCounterSkirmisher",
+      "AbstractGunpowderTrooper",
+      "AbstractInfantry",
+      "AbstractNativeWarrior",
+      "AbstractRangedInfantry",
+      "AbstractRifleman",
+      "AbstractVillager",
+      "LogicalTypeLandEconomy",
+      "LogicalTypeLandMilitary",
+      "Ranged",
+      "Unit",
+      "UnitClass"
+    ],
+    "civs": [],
+    "age": "Commerce Age",
+    "cost": {
+      "food": 140
+    },
+    "pop": 1,
+    "train_time": 30,
+    "hp": 150,
+    "speed": 4.25,
+    "los": 14.0,
+    "armor_melee": 0.0,
+    "armor_ranged": 0.3,
+    "description_en": "Danish Counter Skirmisher and Villager that can only hunt and gather from huntable animals.",
+    "description": "丹麦反制长枪兵和村民，只能狩猎和采集可狩猎的动物。",
+    "protoaction_ranged": "VolleyRangedAttack",
+    "attack_ranged": 10.0,
+    "range": 12.0,
+    "range_min": 2.0,
+    "rof_ranged": 3.0,
+    "damage_type_ranged": "Ranged",
+    "multipliers": {
+      "ranged": [
+        {
+          "vs": "AbstractSkirmisher",
+          "value": 1.5
+        },
+        {
+          "vs": "AbstractCounterSkirmisher",
+          "value": 1.5
+        },
+        {
+          "vs": "AbstractCoyoteMan",
+          "value": 0.6
+        },
+        {
+          "vs": "AbstractHeavyCavalry",
+          "value": 0.6
+        }
+      ],
+      "melee": [
+        {
+          "vs": "AbstractHeavyCavalry",
+          "value": 0.75
+        },
+        {
+          "vs": "AbstractCoyoteMan",
+          "value": 0.75
+        }
+      ]
+    },
+    "protoaction_melee": "VolleyHandAttack",
+    "attack_melee": 10.0,
+    "range_melee": 1.75,
+    "rof_melee": 1.5,
+    "damage_type_melee": "Hand",
+    "attack_siege": 5.0,
+    "range_siege": 6.0,
+    "rof_siege": 3.0,
+    "windups": {
+      "BuildingAttack": 0.61,
+      "DefendHandAttack": 0.51,
+      "DefendRangedAttack": 0.46,
+      "MeleeHandAttack": 0.51,
+      "StaggerHandAttack": 0.51,
+      "StaggerRangedAttack": 0.46,
+      "VolleyHandAttack": 0.51,
+      "VolleyRangedAttack": 0.46,
+      "BlunderbussAttack": 0.18
+    },
+    "windup_ranged": 0.46,
+    "windup_melee": 0.51
+  },
+  {
     "id": "denatmercroyalmusketeer",
     "name_en": "Royal Musketeer",
     "name": "皇家火枪兵",
@@ -12157,7 +14327,7 @@
     "hp": 160,
     "speed": 4.5,
     "los": 16.0,
-    "armor_melee": 0.4,
+    "armor_melee": 0.3,
     "armor_ranged": 0.0,
     "description_en": "Royal Musketeer that will defend king and country with his sharp rapier in melee and charged pistol.",
     "description": "皇家火枪兵，在近战中用锋利的西洋剑和蓄力手枪保卫国王和国家。",
@@ -12184,7 +14354,7 @@
         }
       ]
     },
-    "attack_siege": 19.0,
+    "attack_siege": 16.0,
     "range_siege": 6.0,
     "rof_siege": 3.0,
     "windups": {
@@ -12286,7 +14456,7 @@
     "armor_ranged": 0.2,
     "description_en": "Ranged Native American archer with a short range and high attack.",
     "description": "美洲原住民远程步弓手单位，射程较短，但攻击力很高。",
-    "protoaction_ranged": "VolleyRangedAttack",
+    "protoaction_ranged": "RangedAttack",
     "attack_ranged": 16.0,
     "range": 16.0,
     "range_min": 2.0,
@@ -12338,7 +14508,7 @@
         }
       ]
     },
-    "protoaction_melee": "VolleyHandAttack",
+    "protoaction_melee": "HandAttack",
     "attack_melee": 8.0,
     "range_melee": 1.75,
     "rof_melee": 1.5,
@@ -12348,13 +14518,8 @@
     "rof_siege": 3.0,
     "windups": {
       "BuildingAttack": 0.98,
-      "DefendHandAttack": 0.27,
-      "DefendRangedAttack": 0.98,
-      "MeleeHandAttack": 0.27,
-      "StaggerHandAttack": 0.27,
-      "StaggerRangedAttack": 0.98,
-      "VolleyHandAttack": 0.27,
-      "VolleyRangedAttack": 0.98
+      "HandAttack": 0.27,
+      "RangedAttack": 0.98
     },
     "windup_ranged": 0.98,
     "windup_melee": 0.27
@@ -12611,7 +14776,7 @@
     "description_en": "Fast Sudanese infantry which tosses knives from range to inflict melee damage. Attacks faster at close range. Good against heavy infantry, particularly in melee.",
     "description": "快速苏丹步兵，可以从远处投掷飞刀造成近战伤害。在近距离的攻击速度更快。擅长对付重装步兵，近战攻击时特别强大。",
     "protoaction_ranged": "KnifeAttack",
-    "attack_ranged": 9.0,
+    "attack_ranged": 12.0,
     "range": 13.0,
     "range_min": 4.0,
     "rof_ranged": 2.5,
@@ -12647,7 +14812,7 @@
       ]
     },
     "protoaction_melee": "HandAttack",
-    "attack_melee": 9.0,
+    "attack_melee": 12.0,
     "range_melee": 1.75,
     "rof_melee": 1.0,
     "damage_type_melee": "Hand",
@@ -12665,7 +14830,7 @@
   {
     "id": "denatmerctatararcher",
     "name_en": "Tatar Archer",
-    "name": "鞑靼步弓手",
+    "name": "鞑靼弓手",
     "type": [
       "AbstractArcher",
       "AbstractCavalry",
@@ -12687,7 +14852,7 @@
     },
     "pop": 0,
     "train_time": 35,
-    "hp": 140,
+    "hp": 155,
     "speed": 7.25,
     "los": 15.0,
     "armor_melee": 0.2,
@@ -12753,7 +14918,7 @@
     "damage_type_melee": "Hand",
     "attack_siege": 7.0,
     "range_siege": 6.0,
-    "rof_siege": 1.25,
+    "rof_siege": 1.2,
     "windups": {
       "BowAttack": 0.54,
       "BuildingAttack": 0.6,
@@ -12874,57 +15039,6 @@
       "ChargePistolCoverAttack": 0.43
     },
     "windup_melee": 0.53
-  },
-  {
-    "id": "denatmercwingedhussar",
-    "name_en": "Winged Hussar",
-    "name": "翼骑兵",
-    "type": [
-      "AbstractCavalry",
-      "AbstractCavalryInfantry",
-      "AbstractHandCavalry",
-      "AbstractHeavyCavalry",
-      "AbstractNativeWarrior",
-      "LogicalTypeLandMilitary",
-      "Military",
-      "Unit",
-      "UnitClass"
-    ],
-    "civs": [],
-    "age": "Fortress Age",
-    "cost": {
-      "food": 200,
-      "gold": 100
-    },
-    "pop": 0,
-    "train_time": 50,
-    "hp": 395,
-    "speed": 7.0,
-    "los": 12.0,
-    "armor_melee": 0.0,
-    "armor_ranged": 0.2,
-    "description_en": "Fast heavy Polish elite cavalryman with extra attack range and a powerful Winged lance charge.",
-    "description": "快速重装波兰精锐卡努里骑兵，具有额外的攻击范围和强大的翼矛冲锋。",
-    "protoaction_melee": "MeleeHandAttack",
-    "attack_melee": 27.5,
-    "range_melee": 3.75,
-    "rof_melee": 1.5,
-    "damage_type_melee": "Hand",
-    "aoe_radius_melee": 1,
-    "damage_cap_melee": 55.0,
-    "attack_siege": 25.0,
-    "range_siege": 6.0,
-    "rof_siege": 3.0,
-    "windups": {
-      "BuildingAttack": 0.43,
-      "DefendHandAttack": 0.53,
-      "GuardianAttack": 0.53,
-      "MeleeHandAttack": 0.53,
-      "TrampleHandAttack": 0.56,
-      "LanceChargeAttack": 0.53
-    },
-    "windup_melee": 0.53,
-    "aoe_radius": 1
   },
   {
     "id": "denatmercyorubalegionary",
@@ -13352,9 +15466,112 @@
     "windup_melee": 0.53
   },
   {
+    "id": "denatnoaidi",
+    "name_en": "Sámi Noaidi",
+    "name": "萨米巫师",
+    "type": [
+      "AbstractDoubleVillager",
+      "AbstractNativeWarrior",
+      "AbstractVillager",
+      "LogicalTypeLandEconomy",
+      "Unit",
+      "UnitClass"
+    ],
+    "civs": [],
+    "age": "Exploration Age",
+    "cost": {
+      "food": 50,
+      "gold": 100
+    },
+    "pop": 1,
+    "train_time": 25,
+    "hp": 240,
+    "speed": 4.0,
+    "los": 14.0,
+    "armor_melee": 0.0,
+    "armor_ranged": 0.3,
+    "description_en": "Shaman of the Sámi who gathers resources quickly and can heal units. Good against heroes, treasure guardians and native warriors.",
+    "description": "萨米人的萨满，采集资源速度快并能治疗单位。擅长对付英雄、宝藏守护者和原住民战士。",
+    "protoaction_ranged": "BlunderbussAttack",
+    "attack_ranged": 5.0,
+    "range": 12.0,
+    "range_min": 2.0,
+    "rof_ranged": 3.0,
+    "damage_type_ranged": "Ranged",
+    "multipliers": {
+      "ranged": [
+        {
+          "vs": "Hero",
+          "value": 3.0
+        },
+        {
+          "vs": "AbstractNativeWarrior",
+          "value": 3.0
+        },
+        {
+          "vs": "Guardian",
+          "value": 3.0
+        },
+        {
+          "vs": "Huntable",
+          "value": 7.0
+        },
+        {
+          "vs": "AbstractPet",
+          "value": 2.0
+        }
+      ],
+      "melee": [
+        {
+          "vs": "Llama",
+          "value": 5.0
+        },
+        {
+          "vs": "Hero",
+          "value": 2.0
+        },
+        {
+          "vs": "AbstractNativeWarrior",
+          "value": 2.0
+        },
+        {
+          "vs": "Guardian",
+          "value": 2.0
+        },
+        {
+          "vs": "AbstractPet",
+          "value": 3.0
+        }
+      ],
+      "siege": [
+        {
+          "vs": "AbstractResourceEnclosure",
+          "value": 3.0
+        }
+      ]
+    },
+    "protoaction_melee": "HandAttack",
+    "attack_melee": 10.0,
+    "range_melee": 2.0,
+    "rof_melee": 3.0,
+    "damage_type_melee": "Hand",
+    "attack_siege": 10.0,
+    "range_siege": 6.0,
+    "rof_siege": 3.0,
+    "windups": {
+      "BlunderbussAttack": 0.46,
+      "BuildingAttack": 0.47,
+      "ChopAttack": 0.6,
+      "HandAttack": 0.58,
+      "HandAttackCrate": 0.58
+    },
+    "windup_ranged": 0.46,
+    "windup_melee": 0.58
+  },
+  {
     "id": "denatnomad",
     "name_en": "Berber Nomad",
-    "name": "柏柏尔游牧民族",
+    "name": "柏柏尔游牧民",
     "type": [
       "AbstractBerberNomad",
       "AbstractVillager",
@@ -13558,19 +15775,6 @@
     "range_min": 4.0,
     "rof_ranged": 1.5,
     "damage_type_ranged": "Ranged",
-    "protoaction_melee": "MeleeHandAttack",
-    "attack_melee": 18.0,
-    "range_melee": 0.0,
-    "rof_melee": 1.5,
-    "damage_type_melee": "Hand",
-    "multipliers": {
-      "melee": [
-        {
-          "vs": "AbstractInfantry",
-          "value": 2.0
-        }
-      ]
-    },
     "attack_siege": 10.0,
     "range_siege": 6.0,
     "rof_siege": 1.5,
@@ -13722,7 +15926,7 @@
     "description": "法国精锐枪骑兵，射程更远，在近战中表现出色。可以践踏敌人。擅长对付骑兵。",
     "protoaction_ranged": "StaggerRangedAttack",
     "attack_ranged": 17.5,
-    "range": 16.0,
+    "range": 17.0,
     "range_min": 2.0,
     "rof_ranged": 2.5,
     "damage_type_ranged": "Ranged",
@@ -13791,7 +15995,6 @@
       "AbstractHeavyInfantry",
       "AbstractInfantry",
       "AbstractRangedInfantry",
-      "LogicalTypeLandMilitary",
       "Mercenary",
       "Military",
       "Ranged",
@@ -13854,7 +16057,7 @@
   {
     "id": "denatroyalhunter",
     "name_en": "Royal Hunter",
-    "name": "皇家猎人",
+    "name": "皇家猎兵",
     "type": [
       "AbstractCavalryInfantry",
       "AbstractCounterSkirmisher",
@@ -13951,7 +16154,7 @@
   {
     "id": "denatroyalhuntsman",
     "name_en": "Royal Huntsman",
-    "name": "皇家狩猎者",
+    "name": "皇家猎人",
     "type": [
       "AbstractCavalryInfantry",
       "AbstractCounterSkirmisher",
@@ -14068,7 +16271,7 @@
     "hp": 160,
     "speed": 4.5,
     "los": 16.0,
-    "armor_melee": 0.4,
+    "armor_melee": 0.3,
     "armor_ranged": 0.0,
     "description_en": "Royal Musketeer that will defend king and country with his sharp rapier in melee and charged pistol.",
     "description": "皇家火枪兵，在近战中用锋利的西洋剑和蓄力手枪保卫国王和国家。",
@@ -14095,7 +16298,7 @@
         }
       ]
     },
-    "attack_siege": 19.0,
+    "attack_siege": 16.0,
     "range_siege": 6.0,
     "rof_siege": 3.0,
     "windups": {
@@ -14214,7 +16417,7 @@
   {
     "id": "denatsomaliaskariproxy",
     "name_en": "Askari",
-    "name": "非洲民兵",
+    "name": "阿斯卡里",
     "type": [
       "AbstractBannerArmy",
       "AbstractCavalryInfantry",
@@ -14222,7 +16425,6 @@
       "AbstractHeavyInfantry",
       "AbstractInfantry",
       "AbstractRangedInfantry",
-      "LogicalTypeLandMilitary",
       "Mercenary",
       "Military",
       "Ranged",
@@ -14552,7 +16754,8 @@
       "StaggerHandAttack": 0.33,
       "StaggerRangedAttack": 0.46,
       "VolleyHandAttack": 0.33,
-      "VolleyRangedAttack": 0.46
+      "VolleyRangedAttack": 0.46,
+      "ChargeStun": 0.44
     },
     "windup_ranged": 0.46,
     "windup_melee": 0.33
@@ -14643,7 +16846,7 @@
   {
     "id": "denatsudaneseaskariproxy",
     "name_en": "Askari",
-    "name": "非洲民兵",
+    "name": "阿斯卡里",
     "type": [
       "AbstractBannerArmy",
       "AbstractCavalryInfantry",
@@ -14651,7 +16854,6 @@
       "AbstractHeavyInfantry",
       "AbstractInfantry",
       "AbstractRangedInfantry",
-      "LogicalTypeLandMilitary",
       "Mercenary",
       "Military",
       "Ranged",
@@ -14746,7 +16948,7 @@
     "description_en": "Fast Sudanese infantry which tosses knives from range to inflict melee damage. Attacks faster at close range. Good against heavy infantry, particularly in melee.",
     "description": "快速苏丹步兵，可以从远处投掷飞刀造成近战伤害。在近距离的攻击速度更快。擅长对付重装步兵，近战攻击时特别强大。",
     "protoaction_ranged": "KnifeAttack",
-    "attack_ranged": 9.0,
+    "attack_ranged": 12.0,
     "range": 13.0,
     "range_min": 4.0,
     "rof_ranged": 2.5,
@@ -14782,7 +16984,7 @@
       ]
     },
     "protoaction_melee": "HandAttack",
-    "attack_melee": 9.0,
+    "attack_melee": 12.0,
     "range_melee": 1.75,
     "rof_melee": 1.0,
     "damage_type_melee": "Hand",
@@ -14807,7 +17009,6 @@
       "AbstractCavalryInfantry",
       "AbstractHandCavalry",
       "AbstractHeavyCavalry",
-      "LogicalTypeLandMilitary",
       "Mercenary",
       "Military",
       "Unit",
@@ -14851,7 +17052,7 @@
   {
     "id": "denattatararcher",
     "name_en": "Tatar Archer",
-    "name": "鞑靼步弓手",
+    "name": "鞑靼弓手",
     "type": [
       "AbstractArcher",
       "AbstractCavalry",
@@ -14873,7 +17074,7 @@
     },
     "pop": 0,
     "train_time": 35,
-    "hp": 140,
+    "hp": 155,
     "speed": 7.25,
     "los": 15.0,
     "armor_melee": 0.2,
@@ -14939,7 +17140,7 @@
     "damage_type_melee": "Hand",
     "attack_siege": 7.0,
     "range_siege": 6.0,
-    "rof_siege": 1.25,
+    "rof_siege": 1.2,
     "windups": {
       "BowAttack": 0.54,
       "BuildingAttack": 0.6,
@@ -15112,57 +17313,6 @@
     "windup_melee": 0.53
   },
   {
-    "id": "denatwingedhussar",
-    "name_en": "Winged Hussar",
-    "name": "翼骑兵",
-    "type": [
-      "AbstractCavalry",
-      "AbstractCavalryInfantry",
-      "AbstractHandCavalry",
-      "AbstractHeavyCavalry",
-      "AbstractNativeWarrior",
-      "LogicalTypeLandMilitary",
-      "Military",
-      "Unit",
-      "UnitClass"
-    ],
-    "civs": [],
-    "age": "Fortress Age",
-    "cost": {
-      "food": 200,
-      "gold": 100
-    },
-    "pop": 0,
-    "train_time": 50,
-    "hp": 395,
-    "speed": 7.0,
-    "los": 12.0,
-    "armor_melee": 0.0,
-    "armor_ranged": 0.2,
-    "description_en": "Fast heavy Polish elite cavalryman with extra attack range and a powerful Winged lance charge.",
-    "description": "快速重装波兰精锐卡努里骑兵，具有额外的攻击范围和强大的翼矛冲锋。",
-    "protoaction_melee": "MeleeHandAttack",
-    "attack_melee": 27.5,
-    "range_melee": 3.75,
-    "rof_melee": 1.5,
-    "damage_type_melee": "Hand",
-    "aoe_radius_melee": 1,
-    "damage_cap_melee": 55.0,
-    "attack_siege": 25.0,
-    "range_siege": 6.0,
-    "rof_siege": 3.0,
-    "windups": {
-      "BuildingAttack": 0.43,
-      "DefendHandAttack": 0.53,
-      "GuardianAttack": 0.53,
-      "MeleeHandAttack": 0.53,
-      "TrampleHandAttack": 0.56,
-      "LanceChargeAttack": 0.53
-    },
-    "windup_melee": 0.53,
-    "aoe_radius": 1
-  },
-  {
     "id": "denatyorubalegionary",
     "name_en": "Yoruba Oyo Legionary",
     "name": "约鲁巴奥约军团兵",
@@ -15318,7 +17468,7 @@
     "age": "Fortress Age",
     "cost": {
       "food": 65,
-      "gold": 70
+      "gold": 65
     },
     "pop": 1,
     "train_time": 33,
@@ -15484,7 +17634,7 @@
   {
     "id": "denmpandour",
     "name_en": "Schiavone",
-    "name": "双刃剑手",
+    "name": "斯基亚沃内兵",
     "type": [
       "AbstractBasilicaUnit",
       "AbstractCavalryInfantry",
@@ -15509,7 +17659,7 @@
     "los": 26.0,
     "armor_melee": 0.0,
     "armor_ranged": 0.3,
-    "description_en": "Specialized Light Infantry that only counters other Light Infantry, but does so very effectively.",
+    "description_en": "Specialized Light Infantry that primarily counters other Light Infantry, but does so very effectively.",
     "description": "特种轻型步兵，只能反制其他轻型步兵，但效果十分显著。",
     "protoaction_ranged": "VolleyRangedAttack",
     "attack_ranged": 13.5,
@@ -15689,7 +17839,7 @@
   {
     "id": "denmpapalzouave",
     "name_en": "Papal Zouave",
-    "name": "教宗义勇军",
+    "name": "教宗祖阿夫兵",
     "type": [
       "AbstractBasilicaUnit",
       "AbstractCavalryInfantry",
@@ -15745,7 +17895,7 @@
   {
     "id": "deordenanca",
     "name_en": "Ordinance Rifleman",
-    "name": "法令斯步枪兵",
+    "name": "法令步枪兵",
     "type": [
       "AbstractCavalryInfantry",
       "AbstractGunpowderTrooper",
@@ -15762,8 +17912,8 @@
     "civs": [],
     "age": "Commerce Age",
     "cost": {
-      "food": 35,
-      "wood": 35
+      "food": 40,
+      "wood": 40
     },
     "pop": 1,
     "train_time": 30,
@@ -15850,7 +18000,7 @@
   {
     "id": "deordergalley",
     "name_en": "Order Galley",
-    "name": "军团箭船",
+    "name": "军团桨帆船",
     "type": [
       "AbstractCountAsGatherer",
       "AbstractFishingBoat",
@@ -15875,7 +18025,7 @@
     "armor_melee": 0.0,
     "armor_ranged": 0.75,
     "description_en": "Armored, but fast Galley. Good at exploring, fishing and transport. Gains an attack boost after sinking enemy Ships.",
-    "description": "箭船被装甲覆盖，但移速快。适用于进行探索、捕鱼或运输。在击沉敌方船只后获得攻击力加成。",
+    "description": "桨帆船被装甲覆盖，但移速快。适用于进行探索、捕鱼或运输。在击沉敌方船只后获得攻击力加成。",
     "protoaction_ranged": "RangedAttack",
     "attack_ranged": 65.0,
     "range": 20.0,
@@ -15915,7 +18065,7 @@
       "gold": 120
     },
     "pop": 2,
-    "train_time": 50,
+    "train_time": 45,
     "hp": 350,
     "speed": 6.5,
     "los": 16.0,
@@ -16048,6 +18198,7 @@
     "name_en": "Desert Raider",
     "name": "沙漠突袭者",
     "type": [
+      "AbstractCamel",
       "AbstractCavalry",
       "AbstractCavalryInfantry",
       "AbstractHandCavalry",
@@ -16161,6 +18312,63 @@
     "windup_melee": 0.51
   },
   {
+    "id": "deoutlawwhalingship",
+    "name_en": "Whaling Ship",
+    "name": "捕鲸船",
+    "type": [
+      "AbstractCountAsGatherer",
+      "AbstractFishingBoat",
+      "AbstractSiegeTrooper",
+      "AbstractTrainingShip",
+      "AbstractWarShip",
+      "Military",
+      "Ranged",
+      "Ship",
+      "Unit",
+      "UnitClass"
+    ],
+    "civs": [],
+    "age": "Commerce Age",
+    "cost": {
+      "gold": 400,
+      "wood": 100
+    },
+    "pop": 0,
+    "train_time": 35,
+    "hp": 1500,
+    "speed": 8.5,
+    "los": 24.0,
+    "armor_melee": 0.0,
+    "armor_ranged": 0.5,
+    "description_en": "Outlaw Whaling ship armed with harpoons that pierce targets and inflict bleeding damage. Can assemble Outlaws, Fishing Boats, and Docks. Good at whaling and fishing.",
+    "description": "装备鱼叉的非法捕鲸船，鱼叉可穿透目标并造成流血伤害。可以生成亡命之徒、渔船和码头。擅长捕鲸和捕鱼。",
+    "protoaction_ranged": "RangedAttack",
+    "attack_ranged": 50.0,
+    "range": 18.0,
+    "range_min": 0.0,
+    "rof_ranged": 2.0,
+    "damage_type_ranged": "Siege",
+    "damage_cap_ranged": 100.0,
+    "multipliers": {
+      "ranged": [
+        {
+          "vs": "AbstractArtillery",
+          "value": 0.5
+        },
+        {
+          "vs": "AbstractVillager",
+          "value": 0.25
+        }
+      ]
+    },
+    "windups": {
+      "RangedAttack": 0.45,
+      "RangedAttackContained": 0.45,
+      "GrenadeAttack": 0.45
+    },
+    "windup_ranged": 0.45
+  },
+  {
     "id": "depadre",
     "name_en": "Padre",
     "name": "随军神父",
@@ -16269,7 +18477,7 @@
     "cost": {},
     "pop": 1,
     "train_time": 33,
-    "hp": 200,
+    "hp": 220,
     "speed": 4.25,
     "los": 16.0,
     "armor_melee": 0.0,
@@ -16331,8 +18539,8 @@
     "civs": [],
     "age": "Commerce Age",
     "cost": {
-      "food": 35,
-      "wood": 50
+      "food": 45,
+      "wood": 40
     },
     "pop": 1,
     "train_time": 32,
@@ -16712,6 +18920,93 @@
       "MeleeHandAttack": 0.45
     },
     "windup_melee": 0.45
+  },
+  {
+    "id": "depiechur",
+    "name_en": "Piechur",
+    "name": "波兰步兵",
+    "type": [
+      "AbstractCavalryInfantry",
+      "AbstractGunpowderTrooper",
+      "AbstractInfantry",
+      "AbstractRangedInfantry",
+      "AbstractRifleman",
+      "AbstractSkirmisher",
+      "LogicalTypeLandMilitary",
+      "Military",
+      "Ranged",
+      "Unit",
+      "UnitClass"
+    ],
+    "civs": [],
+    "age": "Commerce Age",
+    "cost": {
+      "food": 70,
+      "gold": 40
+    },
+    "pop": 1,
+    "train_time": 33,
+    "hp": 120,
+    "speed": 4.25,
+    "los": 20.0,
+    "armor_melee": 0.0,
+    "armor_ranged": 0.3,
+    "description_en": "Versatile Rifleman. Good against all infantry.",
+    "description": "多用途步枪兵。擅长对付所有步兵。",
+    "protoaction_ranged": "VolleyRangedAttack",
+    "attack_ranged": 16.0,
+    "range": 16.0,
+    "range_min": 2.0,
+    "rof_ranged": 3.0,
+    "damage_type_ranged": "Ranged",
+    "multipliers": {
+      "ranged": [
+        {
+          "vs": "AbstractHeavyInfantry",
+          "value": 1.5
+        },
+        {
+          "vs": "AbstractSkirmisher",
+          "value": 1.5
+        },
+        {
+          "vs": "AbstractLightCavalry",
+          "value": 3.0
+        },
+        {
+          "vs": "AbstractRangedShockInfantry",
+          "value": 3.0
+        },
+        {
+          "vs": "AbstractCavalry",
+          "value": 0.5
+        },
+        {
+          "vs": "AbstractLightInfantry",
+          "value": 0.5
+        }
+      ]
+    },
+    "protoaction_melee": "VolleyHandAttack",
+    "attack_melee": 10.0,
+    "range_melee": 1.75,
+    "rof_melee": 1.5,
+    "damage_type_melee": "Hand",
+    "attack_siege": 14.0,
+    "range_siege": 6.0,
+    "rof_siege": 3.0,
+    "windups": {
+      "BuildingAttack": 0.61,
+      "DefendHandAttack": 0.51,
+      "DefendRangedAttack": 0.48,
+      "MeleeHandAttack": 0.51,
+      "StaggerHandAttack": 0.51,
+      "StaggerRangedAttack": 0.46,
+      "VolleyHandAttack": 0.51,
+      "VolleyRangedAttack": 0.46
+    },
+    "windup_ranged": 0.46,
+    "windup_melee": 0.51
   },
   {
     "id": "depriestess",
@@ -17164,6 +19459,92 @@
     "windup_melee": 0.51
   },
   {
+    "id": "deregent",
+    "name_en": "Regent",
+    "name": "摄政王",
+    "type": [
+      "AbstractRegent",
+      "LogicalTypeLandMilitary",
+      "Unit",
+      "UnitClass"
+    ],
+    "civs": [],
+    "age": "Commerce Age",
+    "cost": {
+      "gold": 350
+    },
+    "pop": 0,
+    "train_time": 100,
+    "hp": 2500,
+    "speed": 6.0,
+    "los": 20.0,
+    "armor_melee": 0.0,
+    "armor_ranged": 0.6,
+    "description_en": "Regent. If he dies, you lose!",
+    "description": "摄政王。如果他死了，那么您就输了！",
+    "protoaction_melee": "MeleeHandAttack",
+    "attack_melee": 10.0,
+    "range_melee": 1.75,
+    "rof_melee": 1.5,
+    "damage_type_melee": "Hand",
+    "attack_siege": 5.0,
+    "range_siege": 6.0,
+    "rof_siege": 3.0,
+    "windups": {
+      "BuildingAttack": 0.61,
+      "DefendHandAttack": 0.52,
+      "GuardianAttack": 0.52,
+      "MeleeHandAttack": 0.52
+    },
+    "windup_melee": 0.52
+  },
+  {
+    "id": "deregenthorse",
+    "name_en": "Regent",
+    "name": "摄政王",
+    "type": [
+      "AbstractCavalry",
+      "AbstractCavalryInfantry",
+      "AbstractDaimyo",
+      "AbstractHandCavalry",
+      "AbstractHeavyCavalry",
+      "AbstractRegent",
+      "LogicalTypeLandMilitary",
+      "Unit",
+      "UnitClass"
+    ],
+    "civs": [],
+    "age": "Commerce Age",
+    "cost": {
+      "gold": 350
+    },
+    "pop": 0,
+    "train_time": 100,
+    "hp": 2000,
+    "speed": 8.1,
+    "los": 12.0,
+    "armor_melee": 0.0,
+    "armor_ranged": 0.6,
+    "description_en": "Local ruler under your army's protection who can receive Shipments. Lose your Regent and you are defeated.",
+    "description": "势力极为强大的日本领主，可训接收船运。只要失去您的摄政王，那么您就输了。",
+    "protoaction_melee": "MeleeHandAttack",
+    "attack_melee": 10.0,
+    "range_melee": 1.75,
+    "rof_melee": 1.5,
+    "damage_type_melee": "Hand",
+    "attack_siege": 5.0,
+    "range_siege": 6.0,
+    "rof_siege": 3.0,
+    "windups": {
+      "BuildingAttack": 0.43,
+      "DefendHandAttack": 0.64,
+      "GuardianAttack": 0.64,
+      "MeleeHandAttack": 0.64,
+      "TrampleHandAttack": 0.56
+    },
+    "windup_melee": 0.64
+  },
+  {
     "id": "deregular",
     "name_en": "Regular",
     "name": "正规军",
@@ -17441,7 +19822,7 @@
     "civs": [],
     "age": "Industrial Age",
     "cost": {
-      "food": 100
+      "food": 90
     },
     "pop": 1,
     "train_time": 30,
@@ -17477,7 +19858,7 @@
         }
       ]
     },
-    "attack_siege": 13.0,
+    "attack_siege": 16.0,
     "range_siege": 8.0,
     "rof_siege": 1.5,
     "windups": {
@@ -17626,6 +20007,152 @@
     "aoe_radius": 1
   },
   {
+    "id": "derevchern",
+    "name_en": "Khutorian",
+    "name": "哥萨克农夫",
+    "type": [
+      "AbstractArchaicInfantry",
+      "AbstractCavalryInfantry",
+      "AbstractHandInfantry",
+      "AbstractInfantry",
+      "AbstractPikeman",
+      "AbstractVillager",
+      "LogicalTypeLandEconomy",
+      "LogicalTypeLandMilitary",
+      "Unit",
+      "UnitClass"
+    ],
+    "civs": [],
+    "age": "Exploration Age",
+    "cost": {
+      "food": 100
+    },
+    "pop": 1,
+    "train_time": 25,
+    "hp": 135,
+    "speed": 5.0,
+    "los": 18.0,
+    "armor_melee": 0.0,
+    "armor_ranged": 0.25,
+    "description_en": "Defensive Cossack Settler that is stronger in groups and can repel cavalry attacks. Good at farming and mining.",
+    "description": "防御型哥萨克拓荒者，成群时更强大，可击退骑兵的攻击。擅长耕种和采矿。",
+    "protoaction_melee": "HandAttack",
+    "attack_melee": 8.0,
+    "range_melee": 2.0,
+    "rof_melee": 1.5,
+    "damage_type_melee": "Hand",
+    "multipliers": {
+      "melee": [
+        {
+          "vs": "AbstractCavalry",
+          "value": 3.0
+        },
+        {
+          "vs": "AbstractLightInfantry",
+          "value": 2.0
+        },
+        {
+          "vs": "Llama",
+          "value": 5.0
+        }
+      ],
+      "siege": [
+        {
+          "vs": "AbstractResourceEnclosure",
+          "value": 3.0
+        }
+      ]
+    },
+    "attack_siege": 36.0,
+    "range_siege": 6.0,
+    "rof_siege": 3.0,
+    "windups": {
+      "Build": 0.66,
+      "BuildingAttack": 0.47,
+      "HandAttack": 0.54,
+      "CoverHandAttack": 0.54,
+      "ChopAttack": 0.66,
+      "HandAttackCrate": 0.47
+    },
+    "windup_melee": 0.54
+  },
+  {
+    "id": "derevcossacktabor",
+    "name_en": "Tabor",
+    "name": "哥萨克战车",
+    "type": [
+      "AbstractCavalry",
+      "AbstractGunpowderCavalry",
+      "AbstractLightCavalry",
+      "AbstractRangedCavalry",
+      "LogicalTypeLandMilitary",
+      "Military",
+      "Ranged",
+      "Unit",
+      "UnitClass"
+    ],
+    "civs": [],
+    "age": "Fortress Age",
+    "cost": {
+      "wood": 200,
+      "gold": 200
+    },
+    "pop": 4,
+    "train_time": 60,
+    "hp": 535,
+    "speed": 5.75,
+    "los": 22.0,
+    "armor_melee": 0.0,
+    "armor_ranged": 0.4,
+    "description_en": "Ranged wagon cavalry that absorbs damage from nearby infantry and artillery. Good against artillery and cavalry.",
+    "description": "远程战车骑兵，可吸收附近步兵和炮兵受到的伤害。擅长对抗炮兵和骑兵。",
+    "protoaction_ranged": "StaggerRangedAttack",
+    "attack_ranged": 20.0,
+    "range": 16.0,
+    "range_min": 3.0,
+    "rof_ranged": 3.0,
+    "damage_type_ranged": "Ranged",
+    "num_projectiles_ranged": 2,
+    "multipliers": {
+      "ranged": [
+        {
+          "vs": "AbstractArtillery",
+          "value": 3.5
+        },
+        {
+          "vs": "AbstractHeavyCavalry",
+          "value": 2.5
+        },
+        {
+          "vs": "AbstractCoyoteMan",
+          "value": 2.0
+        },
+        {
+          "vs": "AbstractVillager",
+          "value": 0.5
+        }
+      ],
+      "melee": [
+        {
+          "vs": "AbstractHeavyCavalry",
+          "value": 2.0
+        },
+        {
+          "vs": "AbstractCoyoteMan",
+          "value": 1.5
+        }
+      ]
+    },
+    "protoaction_melee": "MeleeHandAttack",
+    "attack_melee": 20.0,
+    "range_melee": 3.0,
+    "rof_melee": 1.5,
+    "damage_type_melee": "Hand",
+    "attack_siege": 8.0,
+    "range_siege": 8.0,
+    "rof_siege": 3.0
+  },
+  {
     "id": "derevcruzobinfantry",
     "name_en": "Cruzob Infantry",
     "name": "克鲁佐布步兵",
@@ -17646,7 +20173,7 @@
     "age": "Imperial Age",
     "cost": {
       "food": 80,
-      "gold": 35
+      "gold": 30
     },
     "pop": 1,
     "train_time": 36,
@@ -17764,7 +20291,7 @@
         }
       ]
     },
-    "attack_siege": 24.0,
+    "attack_siege": 25.0,
     "range_siege": 12.0,
     "rof_siege": 3.0,
     "windups": {
@@ -17902,7 +20429,8 @@
     "civs": [],
     "age": "Commerce Age",
     "cost": {
-      "food": 150
+      "food": 120,
+      "gold": 50
     },
     "pop": 2,
     "train_time": 30,
@@ -17910,7 +20438,7 @@
     "speed": 6.5,
     "los": 15.0,
     "armor_melee": 0.0,
-    "armor_ranged": 0.3,
+    "armor_ranged": 0.2,
     "description_en": "Ranged cavalry with a powerful grenade attack. Very effective against buildings.",
     "description": "远程骑兵，可展开强大的手榴弹攻击。非常擅长攻击建筑。",
     "protoaction_ranged": "RangedAttack",
@@ -17921,6 +20449,26 @@
     "damage_type_ranged": "Siege",
     "aoe_radius_ranged": 2,
     "damage_cap_ranged": 32.0,
+    "multipliers": {
+      "ranged": [
+        {
+          "vs": "AbstractLightCavalry",
+          "value": 0.5
+        },
+        {
+          "vs": "AbstractRangedShockInfantry",
+          "value": 0.5
+        },
+        {
+          "vs": "AbstractArtillery",
+          "value": 0.25
+        },
+        {
+          "vs": "AbstractVillager",
+          "value": 0.25
+        }
+      ]
+    },
     "protoaction_melee": "HandAttack",
     "attack_melee": 9.0,
     "range_melee": 1.75,
@@ -17937,6 +20485,210 @@
     "windup_ranged": 0.55,
     "windup_melee": 0.64,
     "aoe_radius": 2
+  },
+  {
+    "id": "derevhaidamaka",
+    "name_en": "Haidamaka Rifleman",
+    "name": "海达马卡步枪兵",
+    "type": [
+      "AbstractCavalryInfantry",
+      "AbstractGunpowderTrooper",
+      "AbstractInfantry",
+      "AbstractOutlaw",
+      "AbstractRangedInfantry",
+      "AbstractRifleman",
+      "AbstractSiegeTrooper",
+      "AbstractSkirmisher",
+      "LogicalTypeLandMilitary",
+      "Military",
+      "Unit",
+      "UnitClass"
+    ],
+    "civs": [],
+    "age": "Commerce Age",
+    "cost": {
+      "food": 130
+    },
+    "pop": 1,
+    "train_time": 33,
+    "hp": 130,
+    "speed": 4.25,
+    "los": 20.0,
+    "armor_melee": 0.0,
+    "armor_ranged": 0.2,
+    "description_en": "Mobile Outlaw rifleman that is good against heavy infantry and has a decent siege attack. Can stealth and mount up to become a rider.",
+    "description": "机动性强的亡命之徒步枪兵，擅长对付重装步兵并拥有不俗的攻城攻击力。可隐身并骑上坐骑成为骑兵。",
+    "protoaction_ranged": "VolleyRangedAttack",
+    "attack_ranged": 14.0,
+    "range": 20.0,
+    "range_min": 2.0,
+    "rof_ranged": 3.0,
+    "damage_type_ranged": "Ranged",
+    "multipliers": {
+      "ranged": [
+        {
+          "vs": "AbstractHeavyInfantry",
+          "value": 2.0
+        },
+        {
+          "vs": "AbstractLightCavalry",
+          "value": 1.75
+        },
+        {
+          "vs": "AbstractRangedShockInfantry",
+          "value": 1.75
+        }
+      ]
+    },
+    "protoaction_melee": "MeleeHandAttack",
+    "attack_melee": 7.0,
+    "range_melee": 1.75,
+    "rof_melee": 1.5,
+    "damage_type_melee": "Hand",
+    "attack_siege": 20.0,
+    "range_siege": 6.0,
+    "rof_siege": 3.0,
+    "windups": {
+      "BuildingAttack": 0.61,
+      "MeleeHandAttack": 0.51,
+      "VolleyRangedAttack": 0.46,
+      "HandAttackCrate": 0.47
+    },
+    "windup_ranged": 0.46,
+    "windup_melee": 0.51
+  },
+  {
+    "id": "derevhaidamakarider",
+    "name_en": "Haidamaka",
+    "name": "海达马卡人",
+    "type": [
+      "AbstractCavalry",
+      "AbstractCavalryInfantry",
+      "AbstractGunpowderCavalry",
+      "AbstractLightCavalry",
+      "AbstractOutlaw",
+      "AbstractRangedCavalry",
+      "AbstractSiegeTrooper",
+      "LogicalTypeLandMilitary",
+      "Military",
+      "Unit",
+      "UnitClass"
+    ],
+    "civs": [],
+    "age": "Commerce Age",
+    "cost": {
+      "food": 130
+    },
+    "pop": 1,
+    "train_time": 33,
+    "hp": 140,
+    "speed": 7.0,
+    "los": 16.0,
+    "armor_melee": 0.0,
+    "armor_ranged": 0.2,
+    "description_en": "Outlaw rider that is good against other cavalry, villagers and buildings. Can stealth and dismount to turn into a Rifleman.",
+    "description": "亡命之徒骑士，擅长对付其他骑兵、村民和建筑。可以隐匿后下马变为步枪兵。",
+    "protoaction_ranged": "StaggerRangedAttack",
+    "attack_ranged": 14.0,
+    "range": 11.0,
+    "range_min": 3.0,
+    "rof_ranged": 3.0,
+    "damage_type_ranged": "Ranged",
+    "multipliers": {
+      "ranged": [
+        {
+          "vs": "AbstractHeavyCavalry",
+          "value": 2.0
+        },
+        {
+          "vs": "AbstractCoyoteMan",
+          "value": 1.75
+        },
+        {
+          "vs": "AbstractArtillery",
+          "value": 2.0
+        }
+      ],
+      "melee": [
+        {
+          "vs": "AbstractArtillery",
+          "value": 3.0
+        },
+        {
+          "vs": "AbstractCavalry",
+          "value": 3.0
+        },
+        {
+          "vs": "AbstractLightInfantry",
+          "value": 2.5
+        },
+        {
+          "vs": "AbstractVillager",
+          "value": 2.5
+        }
+      ]
+    },
+    "protoaction_melee": "MeleeHandAttack",
+    "attack_melee": 9.0,
+    "range_melee": 1.75,
+    "rof_melee": 1.5,
+    "damage_type_melee": "Hand",
+    "attack_siege": 14.0,
+    "range_siege": 6.0,
+    "rof_siege": 3.0,
+    "windups": {
+      "BuildingAttack": 0.43,
+      "GuardianAttack": 0.54,
+      "MeleeHandAttack": 0.54,
+      "StaggerRangedAttack": 0.5,
+      "GuardianRangedAttack": 0.5
+    },
+    "windup_ranged": 0.5,
+    "windup_melee": 0.54
+  },
+  {
+    "id": "derevhighmaster",
+    "name_en": "High Master",
+    "name": "大团长",
+    "type": [
+      "AbstractCavalry",
+      "AbstractCavalryInfantry",
+      "AbstractHandCavalry",
+      "AbstractHeavyCavalry",
+      "Hero",
+      "LogicalTypeLandMilitary",
+      "Military",
+      "Unit",
+      "UnitClass"
+    ],
+    "civs": [],
+    "age": "Exploration Age",
+    "cost": {
+      "gold": 500
+    },
+    "pop": 0,
+    "train_time": 0,
+    "hp": 900,
+    "speed": 6.5,
+    "los": 24.0,
+    "armor_melee": 0.0,
+    "armor_ranged": 0.4,
+    "description_en": "The hero of your civilization. Explores, fights, builds Fortifications and Trading Posts. Cannot die. If he falls unconscious, he can be rescued.",
+    "description": "您的文明所拥有的英雄，他会探索、战斗、建造防御工事和交易站。他不会死亡，当他倒下而不省人事时，您可以派人去救他。",
+    "protoaction_melee": "HandAttack",
+    "attack_melee": 45.0,
+    "range_melee": 1.75,
+    "rof_melee": 1.5,
+    "damage_type_melee": "Hand",
+    "attack_siege": 14.0,
+    "range_siege": 6.0,
+    "rof_siege": 3.0,
+    "windups": {
+      "BuildingAttack": 0.43,
+      "GuardianAttack": 0.54,
+      "HandAttack": 0.54
+    },
+    "windup_melee": 0.54
   },
   {
     "id": "derevjagunco",
@@ -18082,6 +20834,63 @@
     "windup_melee": 0.52
   },
   {
+    "id": "derevknightbrother",
+    "name_en": "Knight Brother",
+    "name": "骑士兄弟团",
+    "type": [
+      "AbstractBasilicaUnit",
+      "AbstractCavalry",
+      "AbstractCavalryInfantry",
+      "AbstractHandCavalry",
+      "AbstractHeavyCavalry",
+      "AbstractLancer",
+      "LogicalTypeLandMilitary",
+      "Military",
+      "Unit",
+      "UnitClass"
+    ],
+    "civs": [],
+    "age": "Fortress Age",
+    "cost": {
+      "gold": 120,
+      "food": 100
+    },
+    "pop": 3,
+    "train_time": 42,
+    "hp": 480,
+    "speed": 6.25,
+    "los": 12.0,
+    "armor_melee": 0.2,
+    "armor_ranged": 0.0,
+    "description_en": "Powerful heavy hand cavalry that inflicts area damage. Heals lost hitpoints.",
+    "description": "强大的重装近战骑兵，可造成范围伤害。回复失去的生命值。",
+    "protoaction_melee": "MeleeHandAttack",
+    "attack_melee": 24.0,
+    "range_melee": 1.75,
+    "rof_melee": 1.5,
+    "damage_type_melee": "Hand",
+    "multipliers": {
+      "melee": [
+        {
+          "vs": "AbstractInfantry",
+          "value": 1.5
+        }
+      ]
+    },
+    "attack_siege": 24.0,
+    "range_siege": 6.0,
+    "rof_siege": 3.0,
+    "windups": {
+      "BuildingAttack": 0.43,
+      "DefendHandAttack": 0.53,
+      "GuardianAttack": 0.53,
+      "MeleeHandAttack": 0.53,
+      "TrampleHandAttack": 0.56,
+      "LanceChargeAttack": 0.53
+    },
+    "windup_melee": 0.53
+  },
+  {
     "id": "derevllanero",
     "name_en": "Llanero",
     "name": "平原人",
@@ -18147,6 +20956,7 @@
       "AbstractHandInfantry",
       "AbstractHeavyInfantry",
       "AbstractInfantry",
+      "Hero",
       "LogicalTypeLandMilitary",
       "Military",
       "Unit",
@@ -18222,42 +21032,6 @@
       "SwashbucklerAttack": 0.7
     },
     "windup_melee": 0.5
-  },
-  {
-    "id": "derevmxminutemanbatch",
-    "name_en": "Militiaman",
-    "name": "民兵",
-    "type": [
-      "AbstractBannerArmy",
-      "LogicalTypeLandMilitary",
-      "Military",
-      "Unit",
-      "UnitClass"
-    ],
-    "civs": [],
-    "age": "Commerce Age",
-    "cost": {
-      "food": 100
-    },
-    "pop": 0,
-    "train_time": 0,
-    "hp": 200,
-    "speed": 7.0,
-    "los": 9.0,
-    "armor_melee": 0.0,
-    "armor_ranged": 0.1,
-    "description_en": "Quick-training ranged infantryman who quickly loses hitpoints, becoming less effective over time. Good against Siege troopers.",
-    "description": "训练速度快的远程步兵，但生命值会随时间快速减少，攻击力也会随之下降。擅长对付攻城山地兵。",
-    "protoaction_ranged": "VolleyRangedAttack",
-    "attack_ranged": 20.0,
-    "range": 16.0,
-    "range_min": 2.0,
-    "rof_ranged": 3.0,
-    "damage_type_ranged": "Ranged",
-    "windups": {
-      "VolleyRangedAttack": 0.45
-    },
-    "windup_ranged": 0.45
   },
   {
     "id": "derevnativevillager",
@@ -18343,43 +21117,6 @@
     "windup_melee": 0.65
   },
   {
-    "id": "derevnatvillagerbatch",
-    "name_en": "Native Villager",
-    "name": "原住民村民",
-    "type": [
-      "AbstractBannerArmy",
-      "AbstractVillager",
-      "LogicalTypeLandMilitary",
-      "Military",
-      "Unit",
-      "UnitClass"
-    ],
-    "civs": [],
-    "age": "Commerce Age",
-    "cost": {
-      "food": 100
-    },
-    "pop": 1,
-    "train_time": 0,
-    "hp": 200,
-    "speed": 7.0,
-    "los": 9.0,
-    "armor_melee": 0.0,
-    "armor_ranged": 0.1,
-    "description_en": "Villager that constructs buildings and gathers resources.",
-    "description": "建造建筑和收集资源的村民。",
-    "protoaction_ranged": "VolleyRangedAttack",
-    "attack_ranged": 20.0,
-    "range": 16.0,
-    "range_min": 2.0,
-    "rof_ranged": 3.0,
-    "damage_type_ranged": "Ranged",
-    "windups": {
-      "VolleyRangedAttack": 0.45
-    },
-    "windup_ranged": 0.45
-  },
-  {
     "id": "derevolutionaryscout",
     "name_en": "Eclaireur",
     "name": "埃克莱尔",
@@ -18441,12 +21178,178 @@
     "rof_siege": 3.0,
     "windups": {
       "BuildingAttack": 0.43,
-      "DefendHandAttack": 0.57,
-      "GuardianAttack": 0.57,
-      "MeleeHandAttack": 0.57,
-      "TrampleHandAttack": 0.53
+      "DefendHandAttack": 0.64,
+      "GuardianAttack": 0.64,
+      "MeleeHandAttack": 0.64,
+      "TrampleHandAttack": 0.56
     },
-    "windup_melee": 0.57
+    "windup_melee": 0.64
+  },
+  {
+    "id": "derevordermusketeer",
+    "name_en": "Order Musketeer",
+    "name": "火枪骑士团骑士",
+    "type": [
+      "AbstractCavalryInfantry",
+      "AbstractGunpowderTrooper",
+      "AbstractHeavyInfantry",
+      "AbstractInfantry",
+      "AbstractMusketeer",
+      "AbstractRangedInfantry",
+      "LogicalTypeLandMilitary",
+      "Military",
+      "Ranged",
+      "Unit",
+      "UnitClass"
+    ],
+    "civs": [],
+    "age": "Commerce Age",
+    "cost": {
+      "food": 65,
+      "gold": 40
+    },
+    "pop": 1,
+    "train_time": 30,
+    "hp": 160,
+    "speed": 4.25,
+    "los": 14.0,
+    "armor_melee": 0.3,
+    "armor_ranged": 0.0,
+    "description_en": "Heavy Musketeer that may construct Outposts. Heals lost hitpoints",
+    "description": "可建造哨站的重装火枪手。恢复失去的生命值。",
+    "protoaction_ranged": "VolleyRangedAttack",
+    "attack_ranged": 25.0,
+    "range": 13.0,
+    "range_min": 2.0,
+    "rof_ranged": 3.0,
+    "damage_type_ranged": "Ranged",
+    "protoaction_melee": "MeleeHandAttack",
+    "attack_melee": 18.0,
+    "range_melee": 1.75,
+    "rof_melee": 1.5,
+    "damage_type_melee": "Hand",
+    "multipliers": {
+      "melee": [
+        {
+          "vs": "AbstractCavalry",
+          "value": 2.5
+        },
+        {
+          "vs": "AbstractLightInfantry",
+          "value": 1.9
+        }
+      ]
+    },
+    "attack_siege": 18.0,
+    "range_siege": 6.0,
+    "rof_siege": 3.0,
+    "windups": {
+      "BuildingAttack": 0.61,
+      "MeleeHandAttack": 0.51,
+      "VolleyRangedAttack": 0.48,
+      "Build": 0.66
+    },
+    "windup_ranged": 0.48,
+    "windup_melee": 0.51
+  },
+  {
+    "id": "derevorderpavisier",
+    "name_en": "Order Crossbowman",
+    "name": "弩手骑士团骑士",
+    "type": [
+      "AbstractArchaicInfantry",
+      "AbstractArcher",
+      "AbstractCavalryInfantry",
+      "AbstractCrossbowman",
+      "AbstractFootArcher",
+      "AbstractInfantry",
+      "AbstractRangedInfantry",
+      "AbstractSkirmisher",
+      "LogicalTypeLandMilitary",
+      "Military",
+      "Ranged",
+      "Unit",
+      "UnitClass"
+    ],
+    "civs": [],
+    "age": "Commerce Age",
+    "cost": {
+      "food": 40,
+      "wood": 40
+    },
+    "pop": 1,
+    "train_time": 30,
+    "hp": 110,
+    "speed": 4.0,
+    "los": 20.0,
+    "armor_melee": 0.0,
+    "armor_ranged": 0.2,
+    "description_en": "Livonian Crossbowman equipped with a large shield providing high hitpoints. The shield grants different armor types when switching combat stances. Good against Heavy Infantry and Light Ranged Cavalry.",
+    "description": "利沃尼亚弩手装备大盾牌，生命值高。在切换战斗姿态时，盾牌会提供不同的装甲类型。擅长对付重装步兵和轻装远程骑兵。",
+    "protoaction_ranged": "VolleyRangedAttack",
+    "attack_ranged": 21.0,
+    "range": 16.0,
+    "range_min": 2.0,
+    "rof_ranged": 3.0,
+    "damage_type_ranged": "Ranged",
+    "multipliers": {
+      "ranged": [
+        {
+          "vs": "AbstractHeavyInfantry",
+          "value": 1.5
+        },
+        {
+          "vs": "AbstractLightCavalry",
+          "value": 1.5
+        },
+        {
+          "vs": "AbstractRangedShockInfantry",
+          "value": 1.5
+        },
+        {
+          "vs": "AbstractCavalry",
+          "value": 0.5
+        },
+        {
+          "vs": "AbstractLightInfantry",
+          "value": 0.5
+        }
+      ],
+      "melee": [
+        {
+          "vs": "AbstractHeavyInfantry",
+          "value": 1.5
+        },
+        {
+          "vs": "AbstractLightCavalry",
+          "value": 2.0
+        },
+        {
+          "vs": "AbstractRangedShockInfantry",
+          "value": 2.0
+        }
+      ]
+    },
+    "protoaction_melee": "MeleeHandAttack",
+    "attack_melee": 10.0,
+    "range_melee": 1.75,
+    "rof_melee": 1.5,
+    "damage_type_melee": "Hand",
+    "attack_siege": 10.0,
+    "range_siege": 6.0,
+    "rof_siege": 3.0,
+    "windups": {
+      "BuildingAttack": 0.48,
+      "MeleeHandAttack": 0.51,
+      "VolleyRangedAttack": 0.48,
+      "StaggerRangedAttack": 0.48,
+      "DefendRangedAttack": 0.48,
+      "DefendBuildingAttack": 0.48,
+      "RangedBuildingAttack": 0.48,
+      "RangedDefendBuildingAttack": 0.48
+    },
+    "windup_ranged": 0.48,
+    "windup_melee": 0.51
   },
   {
     "id": "derevpiratebatch",
@@ -18454,7 +21357,6 @@
     "name": "海盗",
     "type": [
       "AbstractBannerArmy",
-      "LogicalTypeLandMilitary",
       "Military",
       "Unit",
       "UnitClass"
@@ -18485,6 +21387,257 @@
     "windup_ranged": 0.45
   },
   {
+    "id": "derevpolishlancer",
+    "name_en": "Vistula Uhlan",
+    "name": "维斯瓦马刀骑兵",
+    "type": [
+      "AbstractCavalry",
+      "AbstractCavalryInfantry",
+      "AbstractHandCavalry",
+      "AbstractHeavyCavalry",
+      "AbstractLancer",
+      "LogicalTypeLandMilitary",
+      "Military",
+      "Unit",
+      "UnitClass"
+    ],
+    "civs": [],
+    "age": "Commerce Age",
+    "cost": {
+      "food": 150
+    },
+    "pop": 1,
+    "train_time": 35,
+    "hp": 190,
+    "speed": 6.75,
+    "los": 15.0,
+    "armor_melee": 0.0,
+    "armor_ranged": 0.2,
+    "description_en": "Revolutionary Polish lancer that is good against infantry.",
+    "description": "革命波兰长矛骑兵，擅长对付步兵。",
+    "protoaction_melee": "MeleeHandAttack",
+    "attack_melee": 28.0,
+    "range_melee": 1.75,
+    "rof_melee": 1.5,
+    "damage_type_melee": "Hand",
+    "multipliers": {
+      "melee": [
+        {
+          "vs": "AbstractInfantry",
+          "value": 1.5
+        },
+        {
+          "vs": "AbstractHeavyInfantry",
+          "value": 0.5
+        }
+      ]
+    },
+    "attack_siege": 10.0,
+    "range_siege": 6.0,
+    "rof_siege": 3.0,
+    "windups": {
+      "BuildingAttack": 0.43,
+      "DefendHandAttack": 0.57,
+      "GuardianAttack": 0.57,
+      "MeleeHandAttack": 0.57,
+      "TrampleHandAttack": 0.53,
+      "LanceChargeAttack": 0.53
+    },
+    "windup_melee": 0.57
+  },
+  {
+    "id": "derevscytheman",
+    "name_en": "Scytheman",
+    "name": "镰刀手",
+    "type": [
+      "AbstractArchaicInfantry",
+      "AbstractCavalryInfantry",
+      "AbstractHandInfantry",
+      "AbstractHeavyInfantry",
+      "AbstractInfantry",
+      "AbstractPikeman",
+      "LogicalTypeLandMilitary",
+      "Military",
+      "Unit",
+      "UnitClass"
+    ],
+    "civs": [],
+    "age": "Industrial Age",
+    "cost": {
+      "food": 100
+    },
+    "pop": 1,
+    "train_time": 30,
+    "hp": 190,
+    "speed": 5.0,
+    "los": 12.0,
+    "armor_melee": 0.0,
+    "armor_ranged": 0.1,
+    "description_en": "Revolutionary Polish hand infantryman that is quick and affordable. Defeats cavalry units with a terrifying scythe. Good against buildings.",
+    "description": "革命波兰近战步兵，行动迅速，性价比高。挥舞骇人的镰刀击败骑兵部队。擅长对付建筑物。",
+    "protoaction_melee": "MeleeHandAttack",
+    "attack_melee": 15.0,
+    "range_melee": 1.75,
+    "rof_melee": 1.25,
+    "damage_type_melee": "Hand",
+    "multipliers": {
+      "melee": [
+        {
+          "vs": "AbstractCavalry",
+          "value": 2.0
+        },
+        {
+          "vs": "AbstractLightInfantry",
+          "value": 1.25
+        }
+      ]
+    },
+    "attack_siege": 24.0,
+    "range_siege": 6.0,
+    "rof_siege": 1.5,
+    "windups": {
+      "BuildingAttack": 0.56,
+      "CoverBuildingAttack": 0.56,
+      "CoverHandAttack": 0.54,
+      "DefendHandAttack": 0.54,
+      "MeleeHandAttack": 0.54
+    },
+    "windup_melee": 0.54
+  },
+  {
+    "id": "derevserdyuk",
+    "name_en": "Serdyuk",
+    "name": "谢尔久克",
+    "type": [
+      "AbstractCavalryInfantry",
+      "AbstractGunpowderTrooper",
+      "AbstractHeavyInfantry",
+      "AbstractInfantry",
+      "AbstractMusketeer",
+      "AbstractRangedInfantry",
+      "LogicalTypeLandMilitary",
+      "Military",
+      "Ranged",
+      "Unit",
+      "UnitClass"
+    ],
+    "civs": [],
+    "age": "Fortress Age",
+    "cost": {
+      "food": 75,
+      "gold": 90
+    },
+    "pop": 2,
+    "train_time": 40,
+    "hp": 300,
+    "speed": 4.0,
+    "los": 18.0,
+    "armor_melee": 0.0,
+    "armor_ranged": 0.2,
+    "description_en": "Elite Cossack infantry armed with a powerful musket. Good against mercenaries and native auxiliaries. Can regenerate hitpoints.",
+    "description": "装备强大火枪的精锐哥萨克步兵。擅长对付雇佣兵和原住辅助部队。可恢复生命值。",
+    "protoaction_ranged": "VolleyRangedAttack",
+    "attack_ranged": 26.0,
+    "range": 14.0,
+    "range_min": 2.0,
+    "rof_ranged": 3.0,
+    "damage_type_ranged": "Ranged",
+    "aoe_radius_ranged": 1,
+    "damage_cap_ranged": 52.0,
+    "multipliers": {
+      "ranged": [
+        {
+          "vs": "Mercenary",
+          "value": 2.0
+        },
+        {
+          "vs": "AbstractNativeWarrior",
+          "value": 2.0
+        }
+      ],
+      "melee": [
+        {
+          "vs": "AbstractCavalry",
+          "value": 2.0
+        },
+        {
+          "vs": "AbstractLightInfantry",
+          "value": 1.2
+        }
+      ]
+    },
+    "protoaction_melee": "VolleyHandAttack",
+    "attack_melee": 26.0,
+    "range_melee": 1.75,
+    "rof_melee": 1.5,
+    "damage_type_melee": "Hand",
+    "attack_siege": 18.0,
+    "range_siege": 6.0,
+    "rof_siege": 3.0,
+    "windups": {
+      "BuildingAttack": 0.61,
+      "DefendHandAttack": 0.41,
+      "DefendRangedAttack": 0.37,
+      "MeleeHandAttack": 0.41,
+      "StaggerHandAttack": 0.41,
+      "StaggerRangedAttack": 0.37,
+      "VolleyHandAttack": 0.41,
+      "VolleyRangedAttack": 0.37
+    },
+    "windup_ranged": 0.37,
+    "windup_melee": 0.41,
+    "aoe_radius": 1
+  },
+  {
+    "id": "derevstarshyna",
+    "name_en": "Starshyna",
+    "name": "哥萨克军官",
+    "type": [
+      "AbstractCavalry",
+      "AbstractCavalryInfantry",
+      "AbstractHandCavalry",
+      "AbstractHeavyCavalry",
+      "LogicalTypeLandMilitary",
+      "Military",
+      "Unit",
+      "UnitClass"
+    ],
+    "civs": [],
+    "age": "Fortress Age",
+    "cost": {
+      "food": 140,
+      "gold": 100
+    },
+    "pop": 3,
+    "train_time": 42,
+    "hp": 450,
+    "speed": 6.5,
+    "los": 15.0,
+    "armor_melee": 0.0,
+    "armor_ranged": 0.2,
+    "description_en": "Heavy Cossack cavalry officer armed with a battle mace that inflicts damage in an area.",
+    "description": "重装哥萨克骑兵军官，装备可造成范围伤害的战锤。",
+    "protoaction_melee": "MeleeHandAttack",
+    "attack_melee": 32.0,
+    "range_melee": 1.75,
+    "rof_melee": 1.5,
+    "damage_type_melee": "Hand",
+    "aoe_radius_melee": 3,
+    "damage_cap_melee": 70.0,
+    "attack_siege": 30.0,
+    "range_siege": 6.0,
+    "rof_siege": 3.0,
+    "windups": {
+      "BuildingAttack": 0.43,
+      "DefendHandAttack": 0.54,
+      "GuardianAttack": 0.54,
+      "MeleeHandAttack": 0.54,
+      "TrampleHandAttack": 0.57
+    },
+    "windup_melee": 0.54,
+    "aoe_radius": 3
+  },
+  {
     "id": "derevstartrekwagon",
     "name_en": "Trek Wagon",
     "name": "长途马车",
@@ -18493,7 +21646,6 @@
       "AbstractCavalryInfantry",
       "AbstractGunpowderCavalry",
       "AbstractRangedCavalry",
-      "AbstractWagon",
       "LogicalTypeLandMilitary",
       "Military",
       "Unit",
@@ -18535,6 +21687,69 @@
       "RangedAttack": 0.39
     },
     "windup_ranged": 0.39
+  },
+  {
+    "id": "derevteutonicknight",
+    "name_en": "Teutonic Knight",
+    "name": "条顿骑士",
+    "type": [
+      "AbstractCavalryInfantry",
+      "AbstractHandInfantry",
+      "AbstractHeavyInfantry",
+      "AbstractInfantry",
+      "LogicalTypeLandMilitary",
+      "Military",
+      "Unit",
+      "UnitClass"
+    ],
+    "civs": [],
+    "age": "Commerce Age",
+    "cost": {
+      "food": 100,
+      "gold": 100
+    },
+    "pop": 2,
+    "train_time": 40,
+    "hp": 320,
+    "speed": 4.25,
+    "los": 12.0,
+    "armor_melee": 0.3,
+    "armor_ranged": 0.0,
+    "armor_siege": 0.2,
+    "description_en": "Powerful heavy hand infantry that absorbs damage from nearby units and inflicts area damage. Good against cavalry. Heals lost hitpoints.",
+    "description": "强大的重装近战步兵，可吸收附近单位造成的伤害并造成范围伤害。擅长对付骑兵。恢复失去的生命值。",
+    "protoaction_melee": "MeleeHandAttack",
+    "attack_melee": 35.0,
+    "range_melee": 1.75,
+    "rof_melee": 1.5,
+    "damage_type_melee": "Hand",
+    "aoe_radius_melee": 2,
+    "damage_cap_melee": 50.0,
+    "multipliers": {
+      "melee": [
+        {
+          "vs": "AbstractCavalry",
+          "value": 2.0
+        },
+        {
+          "vs": "AbstractLightInfantry",
+          "value": 1.5
+        }
+      ]
+    },
+    "attack_siege": 50.0,
+    "range_siege": 6.0,
+    "rof_siege": 3.0,
+    "windups": {
+      "BuildingAttack": 0.61,
+      "CoverBuildingAttack": 0.61,
+      "CoverHandAttack": 0.5,
+      "DefendHandAttack": 0.5,
+      "GuardianAttack": 0.5,
+      "MeleeHandAttack": 0.5
+    },
+    "windup_melee": 0.5,
+    "aoe_radius": 2
   },
   {
     "id": "derevusvolunteer",
@@ -18743,7 +21958,6 @@
     "name": "祖国志愿者",
     "type": [
       "AbstractBannerArmy",
-      "LogicalTypeLandMilitary",
       "Military",
       "Unit",
       "UnitClass"
@@ -18895,8 +22109,8 @@
     "civs": [],
     "age": "Commerce Age",
     "cost": {
-      "food": 50,
-      "gold": 70
+      "food": 70,
+      "gold": 50
     },
     "pop": 1,
     "train_time": 33,
@@ -19351,7 +22565,6 @@
       "AbstractInfantry",
       "AbstractMusketeer",
       "AbstractOutlaw",
-      "AbstractPistolero",
       "AbstractRangedInfantry",
       "LogicalTypeLandMilitary",
       "Military",
@@ -19420,7 +22633,6 @@
       "AbstractInfantry",
       "AbstractMusketeer",
       "AbstractOutlaw",
-      "AbstractPistolero",
       "AbstractRangedInfantry",
       "LogicalTypeLandMilitary",
       "Military",
@@ -19579,6 +22791,88 @@
     "windup_melee": 0.51
   },
   {
+    "id": "desaloonharpooner",
+    "name_en": "Harpooner",
+    "name": "鱼叉手",
+    "type": [
+      "AbstractCavalryInfantry",
+      "AbstractGunpowderTrooper",
+      "AbstractHeavyInfantry",
+      "AbstractInfantry",
+      "AbstractOutlaw",
+      "AbstractRangedInfantry",
+      "LogicalTypeLandMilitary",
+      "Military",
+      "Ranged",
+      "Unit",
+      "UnitClass"
+    ],
+    "civs": [],
+    "age": "Commerce Age",
+    "cost": {
+      "gold": 120
+    },
+    "pop": 4,
+    "train_time": 40,
+    "hp": 210,
+    "speed": 4.0,
+    "los": 22.0,
+    "armor_melee": 0.2,
+    "armor_ranged": 0.0,
+    "description_en": "Grumpy whaler firing a harpoon piercing and slowing down multiple enemies. Good against cavalry.",
+    "description": "脾气暴躁的捕鲸者，发射带有刺穿效果并能减缓多名敌人移动速度的鱼叉。擅长对付骑兵。",
+    "protoaction_ranged": "RangedAttack",
+    "attack_ranged": 20.0,
+    "range": 14.0,
+    "range_min": 2.0,
+    "rof_ranged": 3.0,
+    "damage_type_ranged": "Ranged",
+    "damage_cap_ranged": 60.0,
+    "multipliers": {
+      "ranged": [
+        {
+          "vs": "AbstractCavalry",
+          "value": 2.0
+        },
+        {
+          "vs": "AbstractLightInfantry",
+          "value": 2.0
+        },
+        {
+          "vs": "AbstractInfantry",
+          "value": 0.5
+        }
+      ],
+      "melee": [
+        {
+          "vs": "AbstractCavalry",
+          "value": 2.0
+        },
+        {
+          "vs": "AbstractLightInfantry",
+          "value": 2.0
+        }
+      ]
+    },
+    "protoaction_melee": "HandAttack",
+    "attack_melee": 14.0,
+    "range_melee": 1.75,
+    "rof_melee": 2.0,
+    "damage_type_melee": "Hand",
+    "attack_siege": 14.0,
+    "range_siege": 6.0,
+    "rof_siege": 3.0,
+    "windups": {
+      "BuildingAttack": 0.45,
+      "HandAttack": 0.51,
+      "RangedAttack": 0.46,
+      "HandAttackCrate": 0.47,
+      "GrenadeAttack": 0.46
+    },
+    "windup_ranged": 0.46,
+    "windup_melee": 0.51
+  },
+  {
     "id": "desaloonhighwayman",
     "name_en": "Highwayman",
     "name": "拦路强盗",
@@ -19589,7 +22883,6 @@
       "AbstractInfantry",
       "AbstractMusketeer",
       "AbstractOutlaw",
-      "AbstractPistolero",
       "AbstractRangedInfantry",
       "LogicalTypeLandMilitary",
       "Military",
@@ -19756,19 +23049,19 @@
     "civs": [],
     "age": "Commerce Age",
     "cost": {
-      "gold": 100
+      "gold": 110
     },
     "pop": 4,
-    "train_time": 35,
+    "train_time": 45,
     "hp": 150,
-    "speed": 4.25,
+    "speed": 4.75,
     "los": 12.0,
     "armor_melee": 0.2,
     "armor_ranged": 0.0,
     "description_en": "Sinister priest who spies and heals in the name of faith. Inflicts burning damage.",
     "description": "邪恶牧师，以信仰的名义进行侦查和治疗。造成燃烧伤害。",
     "protoaction_melee": "MeleeHandAttack",
-    "attack_melee": 15.0,
+    "attack_melee": 18.0,
     "range_melee": 1.75,
     "rof_melee": 1.5,
     "damage_type_melee": "Siege",
@@ -19891,7 +23184,7 @@
     "description_en": "Light artillery that throws fire bombs to destroy buildings.",
     "description": "轻型炮兵单位，会投掷燃烧弹来摧毁建筑。",
     "protoaction_ranged": "VolleyRangedAttack",
-    "attack_ranged": 20.0,
+    "attack_ranged": 25.0,
     "range": 16.0,
     "range_min": 2.0,
     "rof_ranged": 3.0,
@@ -19911,15 +23204,11 @@
         {
           "vs": "AbstractVillager",
           "value": 0.5
-        },
-        {
-          "vs": "AbstractArtillery",
-          "value": 0.5
         }
       ]
     },
     "protoaction_melee": "VolleyHandAttack",
-    "attack_melee": 8.0,
+    "attack_melee": 12.0,
     "range_melee": 2.0,
     "rof_melee": 1.5,
     "damage_type_melee": "Hand",
@@ -20509,6 +23798,186 @@
     "windup_melee": 0.51
   },
   {
+    "id": "desaloonqivittoq",
+    "name_en": "Qivittoq",
+    "name": "基维图克",
+    "type": [
+      "AbstractArcher",
+      "AbstractCavalryInfantry",
+      "AbstractLightInfantry",
+      "AbstractOutlaw",
+      "AbstractRangedShockInfantry",
+      "LogicalTypeLandMilitary",
+      "Military",
+      "Ranged",
+      "Unit",
+      "UnitClass"
+    ],
+    "civs": [],
+    "age": "Commerce Age",
+    "cost": {
+      "wood": 90
+    },
+    "pop": 3,
+    "train_time": 30,
+    "hp": 111,
+    "speed": 6.0,
+    "los": 18.0,
+    "armor_melee": 0.0,
+    "armor_ranged": 0.2,
+    "description_en": "A fast, stealthy Inuit outcast throwing harpoons. Good against Mercenaries, Native warriors, Pets and Cavalry. Has an ability to stun a military unit.",
+    "description": "因纽特弃儿，可隐秘行动，速度快，可投掷鱼叉。擅长对付雇佣兵、原住民战士、宠物和骑兵。拥有击昏一个军事单位的技能。",
+    "protoaction_ranged": "RangedAttack",
+    "attack_ranged": 15.0,
+    "range": 12.0,
+    "range_min": 2.0,
+    "rof_ranged": 1.5,
+    "damage_type_ranged": "Ranged",
+    "multipliers": {
+      "ranged": [
+        {
+          "vs": "Mercenary",
+          "value": 3.0
+        },
+        {
+          "vs": "AbstractNativeWarrior",
+          "value": 3.0
+        },
+        {
+          "vs": "AbstractPet",
+          "value": 3.0
+        },
+        {
+          "vs": "AbstractCavalry",
+          "value": 2.0
+        },
+        {
+          "vs": "AbstractLightInfantry",
+          "value": 2.0
+        }
+      ],
+      "melee": [
+        {
+          "vs": "Mercenary",
+          "value": 3.0
+        },
+        {
+          "vs": "AbstractNativeWarrior",
+          "value": 3.0
+        },
+        {
+          "vs": "AbstractPet",
+          "value": 3.0
+        },
+        {
+          "vs": "AbstractCavalry",
+          "value": 2.0
+        },
+        {
+          "vs": "AbstractLightInfantry",
+          "value": 2.0
+        }
+      ]
+    },
+    "protoaction_melee": "HandAttack",
+    "attack_melee": 15.0,
+    "range_melee": 1.75,
+    "rof_melee": 1.5,
+    "damage_type_melee": "Hand",
+    "attack_siege": 15.0,
+    "range_siege": 6.0,
+    "rof_siege": 3.0,
+    "windups": {
+      "BuildingAttack": 0.25,
+      "HandAttack": 0.51,
+      "RangedAttack": 0.25,
+      "Stun": 0.25
+    },
+    "windup_ranged": 0.25,
+    "windup_melee": 0.51
+  },
+  {
+    "id": "desaloonsailor",
+    "name_en": "Sailor",
+    "name": "水手",
+    "type": [
+      "AbstractCavalryInfantry",
+      "AbstractGunpowderTrooper",
+      "AbstractInfantry",
+      "AbstractOutlaw",
+      "AbstractRangedInfantry",
+      "AbstractRifleman",
+      "AbstractSkirmisher",
+      "LogicalTypeLandMilitary",
+      "Military",
+      "Ranged",
+      "Unit",
+      "UnitClass"
+    ],
+    "civs": [],
+    "age": "Commerce Age",
+    "cost": {
+      "gold": 100
+    },
+    "pop": 3,
+    "train_time": 28,
+    "hp": 190,
+    "speed": 4.0,
+    "los": 22.0,
+    "armor_melee": 0.3,
+    "armor_ranged": 0.0,
+    "description_en": "A rogue sailor armed with a blunderbuss dealing area damage. Good against heavy infantry. Can chop wood and repair ships.",
+    "description": "一种手持喇叭枪的无赖水手，可造成范围伤害。擅长对付重装步兵。可砍伐木材和修理船只。",
+    "protoaction_ranged": "RangedAttack",
+    "attack_ranged": 15.0,
+    "range": 12.0,
+    "range_min": 2.0,
+    "rof_ranged": 3.0,
+    "damage_type_ranged": "Ranged",
+    "aoe_radius_ranged": 1,
+    "multipliers": {
+      "ranged": [
+        {
+          "vs": "AbstractHeavyInfantry",
+          "value": 2.0
+        },
+        {
+          "vs": "AbstractCavalry",
+          "value": 0.5
+        },
+        {
+          "vs": "AbstractLightInfantry",
+          "value": 0.5
+        }
+      ],
+      "melee": [
+        {
+          "vs": "AbstractInfantry",
+          "value": 2.5
+        }
+      ]
+    },
+    "protoaction_melee": "HandAttack",
+    "attack_melee": 10.0,
+    "range_melee": 1.75,
+    "rof_melee": 1.5,
+    "damage_type_melee": "Hand",
+    "attack_siege": 22.0,
+    "range_siege": 6.0,
+    "rof_siege": 3.0,
+    "windups": {
+      "BuildingAttack": 0.45,
+      "HandAttack": 0.52,
+      "RangedAttack": 0.46,
+      "BuckshotChargeAttack": 0.46,
+      "HandAttackCrate": 0.47,
+      "ChopAttack": 0.45
+    },
+    "windup_ranged": 0.46,
+    "windup_melee": 0.52,
+    "aoe_radius": 1
+  },
+  {
     "id": "desaloonvaquero",
     "name_en": "Cuatrero",
     "name": "牲畜盗贼",
@@ -20800,7 +24269,6 @@
       "AbstractBannerArmy",
       "AbstractVillager",
       "LogicalTypeLandEconomy",
-      "LogicalTypeLandMilitary",
       "Military",
       "Unit",
       "UnitClass"
@@ -20857,8 +24325,8 @@
     "los": 12.0,
     "armor_melee": 0.0,
     "armor_ranged": 0.1,
-    "description_en": "Fast moving shock infantry that attacks quickly with two curved swords. Good against light infantry.",
-    "description": "快速移动的突击步兵，用两把弯刀快速攻击。擅长对抗轻型步兵。",
+    "description_en": "Fast moving shock trooper that attacks quickly with two curved swords. Good against light infantry.",
+    "description": "快速移动的冲击兵，用两把弯刀快速攻击。擅长对抗轻型步兵。",
     "protoaction_melee": "MeleeHandAttack",
     "attack_melee": 13.0,
     "range_melee": 1.75,
@@ -20909,7 +24377,8 @@
     "speed": 4.0,
     "los": 16.0,
     "armor_melee": 0.0,
-    "armor_ranged": 0.3,
+    "armor_ranged": 0.2,
+    "armor_siege": 0.2,
     "description_en": "Ranged infantry that inflicts siege damage. Good against Artillery and Infantry.",
     "description": "造成围攻破坏的远程步兵。擅长对付炮兵和步兵。",
     "protoaction_ranged": "VolleyRangedAttack",
@@ -20971,7 +24440,7 @@
     "range_melee": 2.0,
     "rof_melee": 1.5,
     "damage_type_melee": "Hand",
-    "attack_siege": 37.0,
+    "attack_siege": 40.0,
     "range_siege": 14.0,
     "rof_siege": 4.0,
     "windups": {
@@ -21108,42 +24577,6 @@
     },
     "windup_ranged": 0.48,
     "windup_melee": 0.53
-  },
-  {
-    "id": "despawnbajacaliforniaterritorybatch",
-    "name_en": "Settler",
-    "name": "拓荒者",
-    "type": [
-      "AbstractBannerArmy",
-      "LogicalTypeLandMilitary",
-      "Military",
-      "Unit",
-      "UnitClass"
-    ],
-    "civs": [],
-    "age": "Commerce Age",
-    "cost": {
-      "food": 100
-    },
-    "pop": 1,
-    "train_time": 0,
-    "hp": 200,
-    "speed": 7.0,
-    "los": 9.0,
-    "armor_melee": 0.0,
-    "armor_ranged": 0.1,
-    "description_en": "Villager that constructs buildings and gathers resources.",
-    "description": "建造建筑和收集资源的村民。",
-    "protoaction_ranged": "VolleyRangedAttack",
-    "attack_ranged": 20.0,
-    "range": 16.0,
-    "range_min": 2.0,
-    "rof_ranged": 3.0,
-    "damage_type_ranged": "Ranged",
-    "windups": {
-      "VolleyRangedAttack": 0.45
-    },
-    "windup_ranged": 0.45
   },
   {
     "id": "despccityguard",
@@ -21452,6 +24885,738 @@
     },
     "windup_ranged": 0.0,
     "aoe_radius": 5
+  },
+  {
+    "id": "despchmbonaght",
+    "name_en": "Bonaght Soldier",
+    "name": "博纳赫特佣兵",
+    "type": [
+      "AbstractCavalryInfantry",
+      "AbstractConsulateUnit",
+      "AbstractConsulateUnitColonial",
+      "AbstractGunpowderTrooper",
+      "AbstractHeavyInfantry",
+      "AbstractInfantry",
+      "AbstractMusketeer",
+      "AbstractRangedInfantry",
+      "LogicalTypeLandMilitary",
+      "Military",
+      "Ranged",
+      "Unit",
+      "UnitClass"
+    ],
+    "civs": [],
+    "age": "Commerce Age",
+    "cost": {
+      "food": 70,
+      "wood": 25
+    },
+    "pop": 1,
+    "train_time": 32,
+    "hp": 155,
+    "speed": 4.0,
+    "los": 16.0,
+    "armor_melee": 0.2,
+    "armor_ranged": 0.0,
+    "description_en": "Affordable Musketeer from Ireland with a high hand attack.",
+    "description": "来自爱尔兰的高性价比火枪兵，近战攻击高。",
+    "protoaction_ranged": "VolleyRangedAttack",
+    "attack_ranged": 19.0,
+    "range": 12.0,
+    "range_min": 2.0,
+    "rof_ranged": 3.0,
+    "damage_type_ranged": "Ranged",
+    "multipliers": {
+      "ranged": [
+        {
+          "vs": "AbstractNativeWarrior",
+          "value": 2.0
+        },
+        {
+          "vs": "Mercenary",
+          "value": 2.0
+        }
+      ],
+      "melee": [
+        {
+          "vs": "AbstractCavalry",
+          "value": 3.0
+        },
+        {
+          "vs": "AbstractLightInfantry",
+          "value": 2.5
+        },
+        {
+          "vs": "AbstractNativeWarrior",
+          "value": 2.0
+        },
+        {
+          "vs": "Mercenary",
+          "value": 2.0
+        }
+      ]
+    },
+    "protoaction_melee": "VolleyHandAttack",
+    "attack_melee": 14.0,
+    "range_melee": 2.0,
+    "rof_melee": 1.5,
+    "damage_type_melee": "Hand",
+    "attack_siege": 22.0,
+    "range_siege": 6.0,
+    "rof_siege": 3.0,
+    "windups": {
+      "BuildingAttack": 0.61,
+      "DefendHandAttack": 0.52,
+      "DefendRangedAttack": 0.18,
+      "MeleeHandAttack": 0.52,
+      "StaggerHandAttack": 0.52,
+      "StaggerRangedAttack": 0.18,
+      "VolleyHandAttack": 0.52,
+      "VolleyRangedAttack": 0.18
+    },
+    "windup_ranged": 0.18,
+    "windup_melee": 0.52
+  },
+  {
+    "id": "despchmcavalier",
+    "name_en": "Cavalier",
+    "name": "重装骑士",
+    "type": [
+      "AbstractCavalry",
+      "AbstractCavalryInfantry",
+      "AbstractConsulateUnit",
+      "AbstractConsulateUnitColonial",
+      "AbstractGunpowderCavalry",
+      "AbstractLightCavalry",
+      "AbstractRangedCavalry",
+      "LogicalTypeLandMilitary",
+      "Military",
+      "Ranged",
+      "Unit",
+      "UnitClass"
+    ],
+    "civs": [],
+    "age": "Commerce Age",
+    "cost": {
+      "food": 90,
+      "gold": 90
+    },
+    "pop": 2,
+    "train_time": 35,
+    "hp": 200,
+    "speed": 7.4,
+    "los": 15.0,
+    "armor_melee": 0.0,
+    "armor_ranged": 0.2,
+    "description_en": "Ranged Light Cavalry with a deadly hand attack. Good against Heavy Cavalry.",
+    "description": "远程轻型骑兵，具有致命的近战攻击能力。擅长对付重装骑兵。",
+    "protoaction_ranged": "StaggerRangedAttack",
+    "attack_ranged": 22.0,
+    "range": 12.0,
+    "range_min": 4.0,
+    "rof_ranged": 3.0,
+    "damage_type_ranged": "Ranged",
+    "multipliers": {
+      "ranged": [
+        {
+          "vs": "AbstractHeavyCavalry",
+          "value": 2.75
+        },
+        {
+          "vs": "AbstractArtillery",
+          "value": 2.0
+        },
+        {
+          "vs": "AbstractCoyoteMan",
+          "value": 2.0
+        },
+        {
+          "vs": "AbstractVillager",
+          "value": 0.5
+        }
+      ],
+      "melee": [
+        {
+          "vs": "AbstractArtillery",
+          "value": 1.6
+        },
+        {
+          "vs": "AbstractHeavyCavalry",
+          "value": 1.6
+        },
+        {
+          "vs": "AbstractCoyoteMan",
+          "value": 1.2
+        },
+        {
+          "vs": "AbstractSkirmisher",
+          "value": 0.75
+        },
+        {
+          "vs": "AbstractVillager",
+          "value": 0.75
+        }
+      ]
+    },
+    "protoaction_melee": "MeleeHandAttack",
+    "attack_melee": 18.0,
+    "range_melee": 1.75,
+    "rof_melee": 1.0,
+    "damage_type_melee": "Hand",
+    "attack_siege": 15.0,
+    "range_siege": 6.0,
+    "rof_siege": 3.0,
+    "windups": {
+      "BuildingAttack": 0.43,
+      "DefendRangedAttack": 0.4,
+      "MeleeHandAttack": 0.54,
+      "GuardianAttack": 0.54,
+      "TrampleHandAttack": 0.57,
+      "StaggerRangedAttack": 0.4,
+      "GuardianRangedAttack": 0.4
+    },
+    "windup_ranged": 0.4,
+    "windup_melee": 0.54
+  },
+  {
+    "id": "despchmcovenanter",
+    "name_en": "Covenanter",
+    "name": "誓约党",
+    "type": [
+      "AbstractCavalry",
+      "AbstractCavalryInfantry",
+      "AbstractConsulateUnit",
+      "AbstractConsulateUnitColonial",
+      "AbstractGunpowderCavalry",
+      "AbstractLightCavalry",
+      "AbstractRangedCavalry",
+      "LogicalTypeLandMilitary",
+      "Military",
+      "Ranged",
+      "Unit",
+      "UnitClass"
+    ],
+    "civs": [],
+    "age": "Commerce Age",
+    "cost": {
+      "food": 55,
+      "gold": 35
+    },
+    "pop": 1,
+    "train_time": 26,
+    "hp": 170,
+    "speed": 7.0,
+    "los": 14.0,
+    "armor_melee": 0.2,
+    "armor_ranged": 0.0,
+    "description_en": "Dragoon from the Scottish lowlands thats uses a long lance in melee. Can dismount to turn into a Musketeer. Good against cavalry.",
+    "description": "来自苏格兰低地的枪骑兵，近战时使用长矛。可下马变成火枪手。擅长对付骑兵。",
+    "protoaction_ranged": "StaggerRangedAttack",
+    "attack_ranged": 12.0,
+    "range": 12.0,
+    "range_min": 3.0,
+    "rof_ranged": 3.0,
+    "damage_type_ranged": "Ranged",
+    "multipliers": {
+      "ranged": [
+        {
+          "vs": "AbstractHeavyCavalry",
+          "value": 3.0
+        },
+        {
+          "vs": "AbstractVillager",
+          "value": 0.5
+        },
+        {
+          "vs": "AbstractArtillery",
+          "value": 2.0
+        },
+        {
+          "vs": "AbstractCoyoteMan",
+          "value": 2.25
+        }
+      ],
+      "melee": [
+        {
+          "vs": "AbstractCavalry",
+          "value": 2.5
+        },
+        {
+          "vs": "AbstractLightInfantry",
+          "value": 2.0
+        },
+        {
+          "vs": "AbstractArtillery",
+          "value": 2.0
+        }
+      ]
+    },
+    "protoaction_melee": "MeleeHandAttack",
+    "attack_melee": 12.0,
+    "range_melee": 1.75,
+    "rof_melee": 1.5,
+    "damage_type_melee": "Hand",
+    "attack_siege": 14.0,
+    "range_siege": 6.0,
+    "rof_siege": 3.0,
+    "windups": {
+      "BuildingAttack": 0.43,
+      "DefendRangedAttack": 0.5,
+      "GuardianRangedAttack": 0.5,
+      "MeleeHandAttack": 0.54,
+      "GuardianAttack": 0.54,
+      "StaggerRangedAttack": 0.5
+    },
+    "windup_ranged": 0.5,
+    "windup_melee": 0.54
+  },
+  {
+    "id": "despchmcovenanterinfantry",
+    "name_en": "Covenanter Infantry",
+    "name": "誓约党步兵",
+    "type": [
+      "AbstractCavalryInfantry",
+      "AbstractConsulateUnit",
+      "AbstractConsulateUnitColonial",
+      "AbstractGunpowderTrooper",
+      "AbstractHeavyInfantry",
+      "AbstractInfantry",
+      "AbstractMusketeer",
+      "AbstractRangedInfantry",
+      "LogicalTypeLandMilitary",
+      "Military",
+      "Ranged",
+      "Unit",
+      "UnitClass"
+    ],
+    "civs": [],
+    "age": "Commerce Age",
+    "cost": {
+      "food": 55,
+      "gold": 35
+    },
+    "pop": 1,
+    "train_time": 26,
+    "hp": 150,
+    "speed": 4.25,
+    "los": 12.0,
+    "armor_melee": 0.2,
+    "armor_ranged": 0.0,
+    "description_en": "Musketeer from the Scottish lowlands that uses a long pike in melee. Can mount a horse to turn into ranged cavalry. Good against cavalry.",
+    "description": "来自苏格兰低地的火枪手，近战时使用长矛。可上马变成远程骑兵。擅长对付骑兵。",
+    "protoaction_ranged": "VolleyRangedAttack",
+    "attack_ranged": 16.0,
+    "range": 12.0,
+    "range_min": 2.0,
+    "rof_ranged": 3.0,
+    "damage_type_ranged": "Ranged",
+    "multipliers": {
+      "ranged": [
+        {
+          "vs": "AbstractCavalry",
+          "value": 2.0
+        },
+        {
+          "vs": "AbstractLightInfantry",
+          "value": 1.5
+        }
+      ],
+      "melee": [
+        {
+          "vs": "AbstractCavalry",
+          "value": 3.0
+        },
+        {
+          "vs": "AbstractLightInfantry",
+          "value": 2.25
+        }
+      ]
+    },
+    "protoaction_melee": "VolleyHandAttack",
+    "attack_melee": 15.0,
+    "range_melee": 1.75,
+    "rof_melee": 1.5,
+    "damage_type_melee": "Hand",
+    "attack_siege": 16.0,
+    "range_siege": 6.0,
+    "rof_siege": 3.0,
+    "windups": {
+      "BuildingAttack": 0.61,
+      "DefendHandAttack": 0.53,
+      "MeleeHandAttack": 0.53,
+      "StaggerHandAttack": 0.53,
+      "StaggerRangedAttack": 0.48,
+      "VolleyHandAttack": 0.53,
+      "VolleyRangedAttack": 0.48
+    },
+    "windup_ranged": 0.48,
+    "windup_melee": 0.53
+  },
+  {
+    "id": "despchmirishhorseman",
+    "name_en": "Irish Horseman",
+    "name": "爱尔兰骑兵",
+    "type": [
+      "AbstractArcher",
+      "AbstractCavalry",
+      "AbstractCavalryInfantry",
+      "AbstractConsulateUnit",
+      "AbstractConsulateUnitColonial",
+      "AbstractLightCavalry",
+      "AbstractRangedCavalry",
+      "LogicalTypeLandMilitary",
+      "Military",
+      "Ranged",
+      "Unit",
+      "UnitClass"
+    ],
+    "civs": [],
+    "age": "Commerce Age",
+    "cost": {
+      "food": 80,
+      "gold": 90
+    },
+    "pop": 2,
+    "train_time": 36,
+    "hp": 275,
+    "speed": 6.75,
+    "los": 17.0,
+    "armor_melee": 0.35,
+    "armor_ranged": 0.0,
+    "description_en": "Ranged cavalry. Good against hand cavalry, particularly in melee.",
+    "description": "远程骑兵。擅长对付近战骑兵，近战攻击时特别强大。",
+    "protoaction_ranged": "BowAttack",
+    "attack_ranged": 11.0,
+    "range": 14.0,
+    "range_min": 3.0,
+    "rof_ranged": 1.5,
+    "damage_type_ranged": "Ranged",
+    "multipliers": {
+      "ranged": [
+        {
+          "vs": "AbstractHeavyCavalry",
+          "value": 3.0
+        },
+        {
+          "vs": "AbstractCoyoteMan",
+          "value": 2.5
+        },
+        {
+          "vs": "AbstractArtillery",
+          "value": 2.5
+        },
+        {
+          "vs": "AbstractVillager",
+          "value": 0.5
+        }
+      ]
+    },
+    "attack_siege": 12.0,
+    "range_siege": 6.0,
+    "rof_siege": 3.0,
+    "windups": {
+      "BuildingAttack": 0.43,
+      "BowAttack": 0.41,
+      "ChargeAttack": 0.54,
+      "TrampleHandAttack": 0.53
+    },
+    "windup_ranged": 0.41
+  },
+  {
+    "id": "despchmironside",
+    "name_en": "Ironside",
+    "name": "重装骑兵",
+    "type": [
+      "AbstractCavalry",
+      "AbstractCavalryInfantry",
+      "AbstractConsulateUnit",
+      "AbstractConsulateUnitColonial",
+      "AbstractGunpowderCavalry",
+      "AbstractLightCavalry",
+      "AbstractRangedCavalry",
+      "LogicalTypeLandMilitary",
+      "Military",
+      "Ranged",
+      "Unit",
+      "UnitClass"
+    ],
+    "civs": [],
+    "age": "Commerce Age",
+    "cost": {
+      "food": 100,
+      "gold": 90
+    },
+    "pop": 2,
+    "train_time": 38,
+    "hp": 260,
+    "speed": 7.0,
+    "los": 15.0,
+    "armor_melee": 0.0,
+    "armor_ranged": 0.2,
+    "description_en": "Ranged Light Cavalry with a deadly hand attack. Good against Heavy Cavalry.",
+    "description": "远程轻型骑兵，具有致命的近战攻击能力。擅长对付重装骑兵。",
+    "protoaction_ranged": "StaggerRangedAttack",
+    "attack_ranged": 18.0,
+    "range": 13.0,
+    "range_min": 4.0,
+    "rof_ranged": 3.0,
+    "damage_type_ranged": "Ranged",
+    "multipliers": {
+      "ranged": [
+        {
+          "vs": "AbstractHeavyCavalry",
+          "value": 2.75
+        },
+        {
+          "vs": "AbstractArtillery",
+          "value": 2.0
+        },
+        {
+          "vs": "AbstractCoyoteMan",
+          "value": 2.0
+        },
+        {
+          "vs": "AbstractVillager",
+          "value": 0.5
+        }
+      ],
+      "melee": [
+        {
+          "vs": "AbstractHeavyCavalry",
+          "value": 1.5
+        },
+        {
+          "vs": "AbstractCoyoteMan",
+          "value": 1.25
+        },
+        {
+          "vs": "AbstractArtillery",
+          "value": 1.25
+        },
+        {
+          "vs": "AbstractSkirmisher",
+          "value": 0.5
+        },
+        {
+          "vs": "AbstractVillager",
+          "value": 0.5
+        }
+      ]
+    },
+    "protoaction_melee": "MeleeHandAttack",
+    "attack_melee": 27.0,
+    "range_melee": 1.75,
+    "rof_melee": 1.5,
+    "damage_type_melee": "Hand",
+    "attack_siege": 10.0,
+    "range_siege": 6.0,
+    "rof_siege": 3.0,
+    "windups": {
+      "BuildingAttack": 0.43,
+      "DefendRangedAttack": 0.4,
+      "MeleeHandAttack": 0.54,
+      "GuardianAttack": 0.54,
+      "TrampleHandAttack": 0.57,
+      "StaggerRangedAttack": 0.4,
+      "GuardianRangedAttack": 0.4
+    },
+    "windup_ranged": 0.4,
+    "windup_melee": 0.54
+  },
+  {
+    "id": "despchmlord",
+    "name_en": "Lord",
+    "name": "领主",
+    "type": [
+      "AbstractCavalry",
+      "AbstractCavalryInfantry",
+      "AbstractHandCavalry",
+      "AbstractRegent",
+      "LogicalTypeLandMilitary",
+      "Unit",
+      "UnitClass"
+    ],
+    "civs": [],
+    "age": "Commerce Age",
+    "cost": {
+      "gold": 400
+    },
+    "pop": 0,
+    "train_time": 100,
+    "hp": 2026,
+    "speed": 7.5,
+    "los": 18.0,
+    "armor_melee": 0.0,
+    "armor_ranged": 0.5,
+    "description_en": "Regent. If he dies, you lose!",
+    "description": "摄政王大名。如果他死了，那么您就输了！",
+    "protoaction_melee": "MeleeHandAttack",
+    "attack_melee": 10.0,
+    "range_melee": 1.75,
+    "rof_melee": 1.5,
+    "damage_type_melee": "Hand",
+    "attack_siege": 5.0,
+    "range_siege": 6.0,
+    "rof_siege": 3.0,
+    "windups": {
+      "BuildingAttack": 0.43,
+      "DefendHandAttack": 0.53,
+      "GuardianAttack": 0.53,
+      "MeleeHandAttack": 0.53
+    },
+    "windup_melee": 0.53
+  },
+  {
+    "id": "despchmredcoat",
+    "name_en": "Redcoat",
+    "name": "红衫军",
+    "type": [
+      "AbstractCavalryInfantry",
+      "AbstractConsulateUnit",
+      "AbstractConsulateUnitColonial",
+      "AbstractGunpowderTrooper",
+      "AbstractHeavyInfantry",
+      "AbstractInfantry",
+      "AbstractMusketeer",
+      "AbstractRangedInfantry",
+      "LogicalTypeLandMilitary",
+      "Military",
+      "Ranged",
+      "Unit",
+      "UnitClass"
+    ],
+    "civs": [],
+    "age": "Commerce Age",
+    "cost": {
+      "food": 75,
+      "gold": 25
+    },
+    "pop": 1,
+    "train_time": 30,
+    "hp": 160,
+    "speed": 4.0,
+    "los": 16.0,
+    "armor_melee": 0.2,
+    "armor_ranged": 0.0,
+    "description_en": "Heavy ranged infantry. Good against cavalry.",
+    "description": "重装远程步兵，擅长对付骑兵。",
+    "protoaction_ranged": "VolleyRangedAttack",
+    "attack_ranged": 25.0,
+    "range": 12.0,
+    "range_min": 2.0,
+    "rof_ranged": 3.0,
+    "damage_type_ranged": "Ranged",
+    "protoaction_melee": "VolleyHandAttack",
+    "attack_melee": 13.0,
+    "range_melee": 1.75,
+    "rof_melee": 1.5,
+    "damage_type_melee": "Hand",
+    "multipliers": {
+      "melee": [
+        {
+          "vs": "AbstractCavalry",
+          "value": 3.0
+        },
+        {
+          "vs": "AbstractLightInfantry",
+          "value": 2.25
+        }
+      ]
+    },
+    "attack_siege": 19.0,
+    "range_siege": 6.0,
+    "rof_siege": 3.0,
+    "windups": {
+      "BuildingAttack": 0.61,
+      "DefendHandAttack": 0.53,
+      "DefendRangedAttack": 0.48,
+      "MeleeHandAttack": 0.53,
+      "StaggerHandAttack": 0.53,
+      "StaggerRangedAttack": 0.48,
+      "VolleyHandAttack": 0.53,
+      "VolleyRangedAttack": 0.48
+    },
+    "windup_ranged": 0.48,
+    "windup_melee": 0.53
+  },
+  {
+    "id": "despchmwhitecoat",
+    "name_en": "Whitecoat",
+    "name": "白衫军",
+    "type": [
+      "AbstractCavalryInfantry",
+      "AbstractConsulateUnit",
+      "AbstractConsulateUnitColonial",
+      "AbstractGunpowderTrooper",
+      "AbstractHeavyInfantry",
+      "AbstractInfantry",
+      "AbstractMusketeer",
+      "AbstractRangedInfantry",
+      "LogicalTypeLandMilitary",
+      "Military",
+      "Ranged",
+      "Unit",
+      "UnitClass"
+    ],
+    "civs": [],
+    "age": "Commerce Age",
+    "cost": {
+      "food": 70,
+      "gold": 20
+    },
+    "pop": 1,
+    "train_time": 27,
+    "hp": 145,
+    "speed": 4.25,
+    "los": 16.0,
+    "armor_melee": 0.2,
+    "armor_ranged": 0.0,
+    "description_en": "Heavy ranged infantry. Good against cavalry.",
+    "description": "重装远程步兵，擅长对付骑兵。",
+    "protoaction_ranged": "VolleyRangedAttack",
+    "attack_ranged": 21.0,
+    "range": 13.0,
+    "range_min": 2.5,
+    "rof_ranged": 3.0,
+    "damage_type_ranged": "Ranged",
+    "multipliers": {
+      "ranged": [
+        {
+          "vs": "AbstractLightCavalry",
+          "value": 1.5
+        }
+      ],
+      "melee": [
+        {
+          "vs": "AbstractCavalry",
+          "value": 4.5
+        },
+        {
+          "vs": "AbstractLightInfantry",
+          "value": 3.75
+        }
+      ]
+    },
+    "protoaction_melee": "VolleyHandAttack",
+    "attack_melee": 9.0,
+    "range_melee": 2.5,
+    "rof_melee": 1.5,
+    "damage_type_melee": "Hand",
+    "attack_siege": 20.0,
+    "range_siege": 6.0,
+    "rof_siege": 3.0,
+    "windups": {
+      "BuildingAttack": 0.61,
+      "DefendHandAttack": 0.53,
+      "DefendRangedAttack": 0.48,
+      "MeleeHandAttack": 0.53,
+      "StaggerHandAttack": 0.53,
+      "StaggerRangedAttack": 0.48,
+      "VolleyHandAttack": 0.53,
+      "VolleyRangedAttack": 0.48
+    },
+    "windup_ranged": 0.48,
+    "windup_melee": 0.53
   },
   {
     "id": "despchornskirmisher",
@@ -21974,8 +26139,8 @@
   },
   {
     "id": "despcoutlawlandsknecht",
-    "name_en": "Outlaw Landsknecht",
-    "name": "亡命之徒德国步兵",
+    "name_en": "Vagrant Landsknecht",
+    "name": "流浪的国土佣仆",
     "type": [
       "AbstractCavalryInfantry",
       "AbstractHandInfantry",
@@ -22020,19 +26185,7 @@
     },
     "attack_siege": 72.0,
     "range_siege": 6.0,
-    "rof_siege": 3.0,
-    "windups": {
-      "BuildingAttack": 0.61,
-      "CoverBuildingAttack": 0.61,
-      "CoverHandAttack": 0.51,
-      "DefendHandAttack": 0.51,
-      "MeleeHandAttack": 0.51,
-      "ChargeSwashbucklerAttack": 0.59,
-      "ChargeSwashbucklerCoverAttack": 0.59,
-      "GuardianAttack": 0.51,
-      "GuardianCoverAttack": 0.51
-    },
-    "windup_melee": 0.51
+    "rof_siege": 3.0
   },
   {
     "id": "despcoutlawmusketeer",
@@ -22510,6 +26663,56 @@
     "windup_melee": 0.27
   },
   {
+    "id": "despcwingedhussar",
+    "name_en": "Winged Hussar",
+    "name": "翼骑兵",
+    "type": [
+      "AbstractCavalry",
+      "AbstractCavalryInfantry",
+      "AbstractHandCavalry",
+      "AbstractHeavyCavalry",
+      "LogicalTypeLandMilitary",
+      "Military",
+      "Unit",
+      "UnitClass"
+    ],
+    "civs": [],
+    "age": "Fortress Age",
+    "cost": {
+      "food": 200,
+      "gold": 100
+    },
+    "pop": 0,
+    "train_time": 50,
+    "hp": 395,
+    "speed": 7.0,
+    "los": 12.0,
+    "armor_melee": 0.0,
+    "armor_ranged": 0.2,
+    "description_en": "Fast heavy Polish elite cavalryman with extra attack range and a powerful Winged lance charge.",
+    "description": "快速重装波兰精锐卡努里骑兵，具有额外的攻击范围和强大的翼矛冲锋。",
+    "protoaction_melee": "MeleeHandAttack",
+    "attack_melee": 27.5,
+    "range_melee": 3.75,
+    "rof_melee": 1.5,
+    "damage_type_melee": "Hand",
+    "aoe_radius_melee": 1,
+    "damage_cap_melee": 55.0,
+    "attack_siege": 25.0,
+    "range_siege": 6.0,
+    "rof_siege": 3.0,
+    "windups": {
+      "BuildingAttack": 0.43,
+      "DefendHandAttack": 0.53,
+      "GuardianAttack": 0.53,
+      "MeleeHandAttack": 0.53,
+      "TrampleHandAttack": 0.56,
+      "LanceChargeAttack": 0.53
+    },
+    "windup_melee": 0.53,
+    "aoe_radius": 1
+  },
+  {
     "id": "despearmanlevy",
     "name_en": "Levied Spearman",
     "name": "募集长矛兵",
@@ -22901,12 +27104,12 @@
     "description_en": "Armored vehicle with cannons pointing in all directions. Let's have a ride on the merry-go-round!",
     "description": "装甲车，装备有可指向四面八方的加农炮。让我们在旋转木马上兜兜风吧！",
     "protoaction_ranged": "RoundelMultiAttack",
-    "attack_ranged": 100.0,
+    "attack_ranged": 300.0,
     "range": 18.0,
     "range_min": 0.0,
     "rof_ranged": 2.0,
     "damage_type_ranged": "Siege",
-    "aoe_radius_ranged": 3,
+    "aoe_radius_ranged": 4,
     "damage_cap_ranged": 150.0,
     "multipliers": {
       "ranged": [
@@ -22934,7 +27137,7 @@
       "RoundelCascadeAttack": 0.0
     },
     "windup_ranged": 0.0,
-    "aoe_radius": 3
+    "aoe_radius": 4
   },
   {
     "id": "detotenkopf",
@@ -23014,8 +27217,8 @@
     "los": 18.0,
     "armor_melee": 0.0,
     "armor_ranged": 0.3,
-    "description_en": "Aztec infantry that flings javelins from an atlatl. Good against Cavalry and Hand Shock Infantry.",
-    "description": "阿兹特克步兵，会用掷矛器掷射标枪，擅长对付骑兵及近战突击步兵。",
+    "description_en": "Aztec infantry that flings javelins from an atlatl. Good against Cavalry and Hand Shock Troops.",
+    "description": "阿兹特克步兵，会用掷矛器掷射标枪，擅长对付骑兵及近战冲击部队。",
     "protoaction_ranged": "VolleyRangedAttack",
     "attack_ranged": 11.0,
     "range": 14.0,
@@ -23068,7 +27271,7 @@
         }
       ]
     },
-    "protoaction_melee": "VolleyHandAttack",
+    "protoaction_melee": "MeleeHandAttack",
     "attack_melee": 9.0,
     "range_melee": 1.75,
     "rof_melee": 1.5,
@@ -23077,17 +27280,14 @@
     "range_siege": 6.0,
     "rof_siege": 3.0,
     "windups": {
-      "BuildingAttack": 0.49,
-      "DefendHandAttack": 0.47,
+      "BuildingAttack": 0.75,
       "DefendRangedAttack": 0.49,
-      "MeleeHandAttack": 0.47,
-      "StaggerHandAttack": 0.47,
+      "MeleeHandAttack": 0.37,
       "StaggerRangedAttack": 0.49,
-      "VolleyHandAttack": 0.47,
       "VolleyRangedAttack": 0.49
     },
     "windup_ranged": 0.49,
-    "windup_melee": 0.47
+    "windup_melee": 0.37
   },
   {
     "id": "deunknownnatjaguarwarrior",
@@ -23307,7 +27507,6 @@
     "name": "后备民兵",
     "type": [
       "AbstractBannerArmy",
-      "LogicalTypeLandMilitary",
       "Military",
       "Unit",
       "UnitClass"
@@ -23338,9 +27537,65 @@
     "windup_ranged": 0.45
   },
   {
+    "id": "dewingedhussar",
+    "name_en": "Winged Hussar",
+    "name": "翼骑兵",
+    "type": [
+      "AbstractCavalry",
+      "AbstractCavalryInfantry",
+      "AbstractHandCavalry",
+      "AbstractHeavyCavalry",
+      "AbstractLancer",
+      "LogicalTypeLandMilitary",
+      "Military",
+      "Unit",
+      "UnitClass"
+    ],
+    "civs": [],
+    "age": "Commerce Age",
+    "cost": {
+      "food": 130,
+      "gold": 150
+    },
+    "pop": 3,
+    "train_time": 50,
+    "hp": 360,
+    "speed": 6.75,
+    "los": 12.0,
+    "armor_melee": 0.0,
+    "armor_ranged": 0.2,
+    "description_en": "Fast heavy Polish elite cavalryman with extra attack range and a powerful Winged lance charge.",
+    "description": "快速重装波兰精锐卡努里骑兵，具有额外的攻击范围和强大的翼矛冲锋。",
+    "protoaction_melee": "MeleeHandAttack",
+    "attack_melee": 30.0,
+    "range_melee": 3.75,
+    "rof_melee": 1.5,
+    "damage_type_melee": "Hand",
+    "multipliers": {
+      "melee": [
+        {
+          "vs": "AbstractInfantry",
+          "value": 1.5
+        }
+      ]
+    },
+    "attack_siege": 20.0,
+    "range_siege": 6.0,
+    "rof_siege": 3.0,
+    "windups": {
+      "BuildingAttack": 0.43,
+      "DefendHandAttack": 0.53,
+      "GuardianAttack": 0.53,
+      "MeleeHandAttack": 0.53,
+      "TrampleHandAttack": 0.56,
+      "LanceChargeAttack": 0.53
+    },
+    "windup_melee": 0.53
+  },
+  {
     "id": "dopplesoldner",
     "name_en": "Doppelsoldner",
-    "name": "都卜勒武士",
+    "name": "双酬剑士",
     "type": [
       "AbstractCavalryInfantry",
       "AbstractHandInfantry",
@@ -23511,7 +27766,7 @@
     "los": 26.0,
     "armor_melee": 0.0,
     "armor_ranged": 0.1,
-    "description_en": "Dutch reconnaissance unit with a good line that benefits from villager upgrades.",
+    "description_en": "Dutch reconnaissance unit with a good line of sight. Benefits from villager upgrades.",
     "description": "荷兰的侦察单位，优势在于可以由村民升级而成。",
     "protoaction_melee": "HandAttack",
     "attack_melee": 5.0,
@@ -23933,7 +28188,7 @@
   {
     "id": "galley",
     "name_en": "Galley",
-    "name": "箭船",
+    "name": "桨帆船",
     "type": [
       "AbstractCountAsGatherer",
       "AbstractFishingBoat",
@@ -23958,7 +28213,7 @@
     "armor_melee": 0.0,
     "armor_ranged": 0.6,
     "description_en": "Galley. Good at exploring, fishing or transport.",
-    "description": "箭船，适用于进行探索、捕鱼或运输。",
+    "description": "桨帆船，适用于进行探索、捕鱼或运输。",
     "protoaction_ranged": "RangedAttack",
     "attack_ranged": 100.0,
     "range": 20.0,
@@ -24041,7 +28296,7 @@
       "gold": 600
     },
     "pop": 7,
-    "train_time": 100,
+    "train_time": 115,
     "hp": 475,
     "speed": 3.5,
     "los": 32.0,
@@ -24500,7 +28755,7 @@
     },
     "pop": 1,
     "train_time": 34,
-    "hp": 215,
+    "hp": 210,
     "speed": 4.0,
     "los": 16.0,
     "armor_melee": 0.2,
@@ -24778,10 +29033,6 @@
           "value": 100.0
         },
         {
-          "vs": "AbstractCavalry",
-          "value": 100.0
-        },
-        {
           "vs": "AbstractLightCavalry",
           "value": 100.0
         },
@@ -24803,10 +29054,6 @@
         },
         {
           "vs": "AbstractPet",
-          "value": 100.0
-        },
-        {
-          "vs": "AbstractVillager",
           "value": 100.0
         },
         {
@@ -25331,6 +29578,7 @@
     "los": 32.0,
     "armor_melee": 0.0,
     "armor_ranged": 0.75,
+    "armor_siege": 0.25,
     "description_en": "Powerful heavy artillery from the foundries of Europe.",
     "description": "来自欧洲铸造厂的强大重装炮兵单位。",
     "protoaction_ranged": "CannonAttack",
@@ -25593,7 +29841,7 @@
   {
     "id": "merclandsknecht",
     "name_en": "Landsknecht",
-    "name": "德国步兵",
+    "name": "国土佣仆",
     "type": [
       "AbstractCavalryInfantry",
       "AbstractHandInfantry",
@@ -27132,8 +31380,8 @@
     "los": 18.0,
     "armor_melee": 0.0,
     "armor_ranged": 0.3,
-    "description_en": "Aztec infantry that flings javelins from an atlatl. Good against Cavalry and Hand Shock Infantry.",
-    "description": "阿兹特克步兵，会用掷矛器掷射标枪，擅长对付骑兵及近战突击步兵。",
+    "description_en": "Aztec infantry that flings javelins from an atlatl. Good against Cavalry and Hand Shock Troops.",
+    "description": "阿兹特克步兵，会用掷矛器掷射标枪，擅长对付骑兵及近战冲击部队。",
     "protoaction_ranged": "VolleyRangedAttack",
     "attack_ranged": 15.0,
     "range": 12.0,
@@ -27166,7 +31414,7 @@
         }
       ]
     },
-    "protoaction_melee": "VolleyHandAttack",
+    "protoaction_melee": "MeleeHandAttack",
     "attack_melee": 9.0,
     "range_melee": 1.75,
     "rof_melee": 1.5,
@@ -27175,17 +31423,14 @@
     "range_siege": 6.0,
     "rof_siege": 3.0,
     "windups": {
-      "BuildingAttack": 0.49,
-      "DefendHandAttack": 0.47,
+      "BuildingAttack": 0.75,
       "DefendRangedAttack": 0.49,
-      "MeleeHandAttack": 0.47,
-      "StaggerHandAttack": 0.47,
+      "MeleeHandAttack": 0.37,
       "StaggerRangedAttack": 0.49,
-      "VolleyHandAttack": 0.47,
       "VolleyRangedAttack": 0.49
     },
     "windup_ranged": 0.49,
-    "windup_melee": 0.47
+    "windup_melee": 0.37
   },
   {
     "id": "natholcanspearman",
@@ -27281,7 +31526,7 @@
     "description_en": "Comanche ranged cavalry. Good against cavalry.",
     "description": "卡曼契远程骑兵单位，擅长对付骑兵。",
     "protoaction_ranged": "BowAttack",
-    "attack_ranged": 13.0,
+    "attack_ranged": 15.0,
     "range": 12.0,
     "range_min": 0.0,
     "rof_ranged": 1.5,
@@ -27577,11 +31822,11 @@
     },
     "pop": 0,
     "train_time": 35,
-    "hp": 135,
+    "hp": 160,
     "speed": 4.25,
     "los": 18.0,
     "armor_melee": 0.0,
-    "armor_ranged": 0.25,
+    "armor_ranged": 0.3,
     "description_en": "Klamath skirmisher versed in a wide range of trades. Can pick up treasures and slowly gather from all natural resources except mines and huntable animals.",
     "description": "克拉马斯长枪兵所精通贸易，可捡起宝藏，也可慢慢从自然资源中（除矿山和可狩猎动物以外）进行收集。",
     "protoaction_ranged": "VolleyRangedAttack",
@@ -27851,8 +32096,8 @@
   },
   {
     "id": "natmedicineman",
-    "name_en": "Healer",
-    "name": "治疗者",
+    "name_en": "Maya Priest",
+    "name": "玛雅祭司",
     "type": [
       "AbstractFindHealer",
       "AbstractHealer",
@@ -27861,7 +32106,7 @@
       "UnitClass"
     ],
     "civs": [],
-    "age": "Commerce Age",
+    "age": "Exploration Age",
     "cost": {
       "food": 200
     },
@@ -28289,7 +32534,7 @@
     "description_en": "Comanche ranged cavalry. Good against cavalry.",
     "description": "卡曼契远程骑兵单位，擅长对付骑兵。",
     "protoaction_ranged": "BowAttack",
-    "attack_ranged": 13.0,
+    "attack_ranged": 15.0,
     "range": 12.0,
     "range_min": 0.0,
     "rof_ranged": 1.5,
@@ -28898,7 +33143,7 @@
     "armor_ranged": 0.2,
     "description_en": "Ranged Native American archer with a short range and high attack.",
     "description": "美洲原住民远程步弓手单位，射程较短，但攻击力很高。",
-    "protoaction_ranged": "VolleyRangedAttack",
+    "protoaction_ranged": "RangedAttack",
     "attack_ranged": 16.0,
     "range": 16.0,
     "range_min": 2.0,
@@ -28950,7 +33195,7 @@
         }
       ]
     },
-    "protoaction_melee": "VolleyHandAttack",
+    "protoaction_melee": "HandAttack",
     "attack_melee": 8.0,
     "range_melee": 1.75,
     "rof_melee": 1.5,
@@ -28960,13 +33205,8 @@
     "rof_siege": 3.0,
     "windups": {
       "BuildingAttack": 0.98,
-      "DefendHandAttack": 0.27,
-      "DefendRangedAttack": 0.98,
-      "MeleeHandAttack": 0.27,
-      "StaggerHandAttack": 0.27,
-      "StaggerRangedAttack": 0.98,
-      "VolleyHandAttack": 0.27,
-      "VolleyRangedAttack": 0.98
+      "HandAttack": 0.27,
+      "RangedAttack": 0.98
     },
     "windup_ranged": 0.98,
     "windup_melee": 0.27
@@ -30116,7 +34356,6 @@
       "AbstractInfantry",
       "AbstractMusketeer",
       "AbstractOutlaw",
-      "AbstractPistolero",
       "AbstractRangedInfantry",
       "LogicalTypeLandMilitary",
       "Military",
@@ -30796,7 +35035,7 @@
   {
     "id": "spahi",
     "name_en": "Sipahi",
-    "name": "突厥骑射",
+    "name": "西帕希",
     "type": [
       "AbstractCavalry",
       "AbstractCavalryInfantry",
@@ -30810,7 +35049,8 @@
     "civs": [],
     "age": "Fortress Age",
     "cost": {
-      "food": 400
+      "food": 200,
+      "gold": 200
     },
     "pop": 3,
     "train_time": 40,
@@ -31478,7 +35718,7 @@
     },
     "pop": 0,
     "train_time": 20,
-    "hp": 500,
+    "hp": 750,
     "speed": 8.1,
     "los": 18.0,
     "armor_melee": 0.0,
@@ -31486,7 +35726,7 @@
     "description_en": "A Cheyenne chief.",
     "description": "夏安酋长。",
     "protoaction_melee": "HandAttack",
-    "attack_melee": 6.0,
+    "attack_melee": 30.0,
     "range_melee": 1.75,
     "rof_melee": 1.5,
     "damage_type_melee": "Hand",
@@ -31495,21 +35735,22 @@
     "multipliers": {
       "melee": [
         {
-          "vs": "Guardian",
-          "value": 3.0
+          "vs": "AbstractInfantry",
+          "value": 1.5
         },
         {
-          "vs": "AbstractVillager",
-          "value": 0.25
+          "vs": "Guardian",
+          "value": 3.0
         }
       ]
     },
-    "attack_siege": 15.0,
+    "attack_siege": 30.0,
     "range_siege": 6.0,
     "rof_siege": 3.0,
     "windups": {
       "BuildingAttack": 0.43,
       "GuardianAttack": 0.57,
+      "BerserkAttack": 0.57,
       "HandAttack": 0.57,
       "SwashbucklerAttack": 0.57
     },
@@ -31538,7 +35779,7 @@
     },
     "pop": 0,
     "train_time": 60,
-    "hp": 475,
+    "hp": 750,
     "speed": 6.75,
     "los": 12.0,
     "armor_melee": 0.0,
@@ -31546,15 +35787,21 @@
     "description_en": "A Cheyenne chief.",
     "description": "夏安酋长。",
     "protoaction_melee": "HandAttack",
-    "attack_melee": 28.0,
+    "attack_melee": 30.0,
     "range_melee": 1.75,
     "rof_melee": 1.5,
     "damage_type_melee": "Hand",
+    "aoe_radius_melee": 1,
+    "damage_cap_melee": 50.0,
     "multipliers": {
       "melee": [
         {
           "vs": "AbstractInfantry",
           "value": 1.5
+        },
+        {
+          "vs": "Guardian",
+          "value": 3.0
         }
       ]
     },
@@ -31564,9 +35811,12 @@
     "windups": {
       "BuildingAttack": 0.43,
       "GuardianAttack": 0.57,
+      "BerserkAttack": 0.57,
+      "SwashbucklerAttack": 0.57,
       "HandAttack": 0.57
     },
-    "windup_melee": 0.57
+    "windup_melee": 0.57,
+    "aoe_radius": 1
   },
   {
     "id": "spcxpchieftwomoon",
@@ -31592,7 +35842,7 @@
     },
     "pop": 0,
     "train_time": 20,
-    "hp": 500,
+    "hp": 750,
     "speed": 4.5,
     "los": 18.0,
     "armor_melee": 0.0,
@@ -31600,17 +35850,13 @@
     "description_en": "A Cheyenne chief",
     "description": "夏安酋长。",
     "protoaction_ranged": "VolleyRangedAttack",
-    "attack_ranged": 12.0,
+    "attack_ranged": 24.0,
     "range": 16.0,
     "range_min": 2.0,
     "rof_ranged": 3.0,
     "damage_type_ranged": "Ranged",
     "multipliers": {
       "ranged": [
-        {
-          "vs": "AbstractVillager",
-          "value": 0.25
-        },
         {
           "vs": "Guardian",
           "value": 3.0
@@ -31620,15 +35866,11 @@
         {
           "vs": "Guardian",
           "value": 3.0
-        },
-        {
-          "vs": "AbstractVillager",
-          "value": 0.25
         }
       ]
     },
     "protoaction_melee": "HandAttack",
-    "attack_melee": 6.0,
+    "attack_melee": 15.0,
     "range_melee": 1.75,
     "rof_melee": 1.5,
     "damage_type_melee": "Hand",
@@ -31640,6 +35882,8 @@
       "BuildingAttack": 0.61,
       "CrackshotAttack": 0.59,
       "HandAttack": 0.32,
+      "SharpshooterAttack": 0.59,
+      "SwashbucklerAttack": 0.7,
       "VolleyRangedAttack": 0.39
     },
     "windup_ranged": 0.39,
@@ -31990,11 +36234,11 @@
     "description_en": "Hand cavalry that sacrifices hitpoints for attack.",
     "description": "近战骑兵单位，牺牲了自己的生命值来加强攻击力。",
     "protoaction_melee": "MeleeHandAttack",
-    "attack_melee": 37.0,
+    "attack_melee": 35.0,
     "range_melee": 1.75,
     "rof_melee": 1.5,
     "damage_type_melee": "Hand",
-    "attack_siege": 20.0,
+    "attack_siege": 19.0,
     "range_siege": 6.0,
     "rof_siege": 3.0,
     "windups": {
@@ -32084,12 +36328,12 @@
     "los": 22.0,
     "armor_melee": 0.2,
     "armor_ranged": 0.0,
-    "description_en": "Hussite horse-drawn wagon outfitted with cannon.",
-    "description": "由胡斯马拉动的马车，上面装备有加农炮。",
+    "description_en": "Ranged wagon cavalry from Southern Germany. Good against cavalry.",
+    "description": "来自南德意志的远程马车骑兵。擅长对抗骑兵。",
     "protoaction_ranged": "StaggerRangedAttack",
     "attack_ranged": 42.0,
     "range": 16.0,
-    "range_min": 0.0,
+    "range_min": 2.0,
     "rof_ranged": 3.0,
     "damage_type_ranged": "Ranged",
     "multipliers": {
@@ -32137,15 +36381,7 @@
     "damage_type_melee": "Hand",
     "attack_siege": 30.0,
     "range_siege": 6.0,
-    "rof_siege": 3.0,
-    "windups": {
-      "BuildingAttack": 0.33,
-      "DefendRangedAttack": 0.33,
-      "MeleeHandAttack": 0.33,
-      "StaggerRangedAttack": 0.33
-    },
-    "windup_ranged": 0.33,
-    "windup_melee": 0.33
+    "rof_siege": 3.0
   },
   {
     "id": "whitejaguar",
@@ -32534,7 +36770,7 @@
     },
     "pop": 2,
     "train_time": 40,
-    "hp": 225,
+    "hp": 230,
     "speed": 6.75,
     "los": 14.0,
     "armor_melee": 0.3,
@@ -32542,7 +36778,7 @@
     "description_en": "Ranged raiding cavalry. Good against cavalry.",
     "description": "远程突袭骑兵单位，擅长对付骑兵。",
     "protoaction_ranged": "BowAttack",
-    "attack_ranged": 20.0,
+    "attack_ranged": 18.0,
     "range": 12.0,
     "range_min": 0.0,
     "rof_ranged": 1.5,
@@ -32551,7 +36787,7 @@
       "ranged": [
         {
           "vs": "AbstractHeavyCavalry",
-          "value": 2.25
+          "value": 2.5
         },
         {
           "vs": "AbstractCoyoteMan",
@@ -32616,7 +36852,7 @@
     "pop": 1,
     "train_time": 30,
     "hp": 200,
-    "speed": 5.0,
+    "speed": 4.5,
     "los": 18.0,
     "armor_melee": 0.3,
     "armor_ranged": 0.0,
@@ -32688,14 +36924,14 @@
       "UnitClass"
     ],
     "civs": [],
-    "age": "Industrial Age",
+    "age": "Fortress Age",
     "cost": {
       "food": 125,
       "gold": 75
     },
     "pop": 2,
     "train_time": 43,
-    "hp": 220,
+    "hp": 215,
     "speed": 6.75,
     "los": 28.0,
     "armor_melee": 0.0,
@@ -32703,13 +36939,13 @@
     "description_en": "Stealthy horsemen that grow in strength as they grow in number. Good against buildings.",
     "description": "可隐秘行动的骑兵，并且他们的数量越多，攻击力越强。擅长攻击建筑。",
     "protoaction_melee": "MeleeHandAttack",
-    "attack_melee": 15.0,
+    "attack_melee": 14.0,
     "range_melee": 1.75,
     "rof_melee": 1.5,
     "damage_type_melee": "Hand",
     "aoe_radius_melee": 2,
     "damage_cap_melee": 40.0,
-    "attack_siege": 15.0,
+    "attack_siege": 14.0,
     "range_siege": 6.0,
     "rof_siege": 3.0,
     "multipliers": {
@@ -32870,8 +37106,8 @@
     "los": 18.0,
     "armor_melee": 0.0,
     "armor_ranged": 0.2,
-    "description_en": "Nobleman that flings javelins from an atlatl. Good against Cavalry and Hand Shock Infantry.",
-    "description": "贵族单位，会从掷矛器掷射标枪，擅长对付骑兵及近战突击步兵。",
+    "description_en": "Nobleman that flings javelins from an atlatl. Good against Cavalry and Hand Shock Troops.",
+    "description": "贵族单位，会从掷矛器掷射标枪，擅长对付骑兵及近战冲击部队。",
     "protoaction_ranged": "VolleyRangedAttack",
     "attack_ranged": 15.0,
     "range": 12.0,
@@ -32908,7 +37144,7 @@
         }
       ]
     },
-    "protoaction_melee": "VolleyHandAttack",
+    "protoaction_melee": "MeleeHandAttack",
     "attack_melee": 9.0,
     "range_melee": 1.75,
     "rof_melee": 1.5,
@@ -32917,17 +37153,14 @@
     "range_siege": 6.0,
     "rof_siege": 3.0,
     "windups": {
-      "BuildingAttack": 0.49,
-      "DefendHandAttack": 0.47,
+      "BuildingAttack": 0.75,
       "DefendRangedAttack": 0.49,
-      "MeleeHandAttack": 0.47,
-      "StaggerHandAttack": 0.47,
+      "MeleeHandAttack": 0.37,
       "StaggerRangedAttack": 0.49,
-      "VolleyHandAttack": 0.47,
       "VolleyRangedAttack": 0.49
     },
     "windup_ranged": 0.49,
-    "windup_melee": 0.47
+    "windup_melee": 0.37
   },
   {
     "id": "xpgatlinggun",
@@ -33256,7 +37489,8 @@
       "SharpshooterAttack": 0.59,
       "CrackshotAttack": 0.59,
       "HandAttack": 0.32,
-      "VolleyRangedAttack": 0.39
+      "VolleyRangedAttack": 0.39,
+      "SwashbucklerAttack": 0.7
     },
     "windup_ranged": 0.39,
     "windup_melee": 0.32
@@ -33473,10 +37707,10 @@
     "age": "Commerce Age",
     "cost": {
       "food": 40,
-      "wood": 30
+      "wood": 35
     },
     "pop": 1,
-    "train_time": 23,
+    "train_time": 25,
     "hp": 80,
     "speed": 4.5,
     "los": 20.0,
@@ -33662,7 +37896,7 @@
       "gold": 200
     },
     "pop": 0,
-    "train_time": 45,
+    "train_time": 50,
     "hp": 360,
     "speed": 4.5,
     "los": 16.0,
@@ -34077,7 +38311,8 @@
     "windups": {
       "BuildingAttack": 0.36,
       "CoverBuildingAttack": 0.36,
-      "HandAttack": 0.36
+      "HandAttack": 0.36,
+      "CoverHandAttack": 0.36
     },
     "windup_melee": 0.36
   },
@@ -34468,7 +38703,6 @@
     "name": "战斧兵",
     "type": [
       "AbstractCavalryInfantry",
-      "AbstractGunpowderTrooper",
       "AbstractHeavyInfantry",
       "AbstractInfantry",
       "AbstractMusketeer",
@@ -34487,7 +38721,7 @@
     },
     "pop": 1,
     "train_time": 28,
-    "hp": 145,
+    "hp": 150,
     "speed": 4.0,
     "los": 16.0,
     "armor_melee": 0.2,
@@ -34571,7 +38805,7 @@
       "ranged": [
         {
           "vs": "AbstractHeavyInfantry",
-          "value": 2.0
+          "value": 1.75
         },
         {
           "vs": "AbstractLightCavalry",
@@ -34593,7 +38827,7 @@
       "melee": [
         {
           "vs": "AbstractHeavyInfantry",
-          "value": 2.0
+          "value": 1.75
         },
         {
           "vs": "AbstractLightCavalry",
@@ -35183,7 +39417,6 @@
     "name": "黑旗军",
     "type": [
       "AbstractBannerArmy",
-      "LogicalTypeLandMilitary",
       "Military",
       "Unit",
       "UnitClass"
@@ -35216,7 +39449,6 @@
     "name": "黑旗军 (颐和园)",
     "type": [
       "AbstractBannerArmy",
-      "LogicalTypeLandMilitary",
       "Military",
       "Unit",
       "UnitClass"
@@ -35460,7 +39692,6 @@
       "AbstractBannerArmy",
       "AbstractConsulateUnit",
       "AbstractConsulateUnitColonial",
-      "LogicalTypeLandMilitary",
       "Military",
       "Ranged",
       "Unit",
@@ -35494,7 +39725,6 @@
     "type": [
       "AbstractBannerArmy",
       "AbstractConsulateUnit",
-      "LogicalTypeLandMilitary",
       "Military",
       "Ranged",
       "Unit",
@@ -35528,7 +39758,6 @@
     "type": [
       "AbstractBannerArmy",
       "AbstractConsulateUnit",
-      "LogicalTypeLandMilitary",
       "Military",
       "Ranged",
       "Unit",
@@ -35563,7 +39792,6 @@
       "AbstractBannerArmy",
       "AbstractConsulateUnit",
       "AbstractConsulateUnitColonial",
-      "LogicalTypeLandMilitary",
       "Military",
       "Unit",
       "UnitClass"
@@ -35596,7 +39824,6 @@
     "type": [
       "AbstractBannerArmy",
       "AbstractConsulateUnit",
-      "LogicalTypeLandMilitary",
       "Military",
       "Unit",
       "UnitClass"
@@ -35629,7 +39856,6 @@
     "type": [
       "AbstractBannerArmy",
       "AbstractConsulateUnit",
-      "LogicalTypeLandMilitary",
       "Military",
       "Unit",
       "UnitClass"
@@ -35663,7 +39889,6 @@
       "AbstractBannerArmy",
       "AbstractConsulateUnit",
       "AbstractConsulateUnitColonial",
-      "LogicalTypeLandMilitary",
       "Military",
       "Ranged",
       "Unit",
@@ -35701,7 +39926,6 @@
     "type": [
       "AbstractBannerArmy",
       "AbstractConsulateUnit",
-      "LogicalTypeLandMilitary",
       "Military",
       "Ranged",
       "Unit",
@@ -35739,7 +39963,6 @@
     "type": [
       "AbstractBannerArmy",
       "AbstractConsulateUnit",
-      "LogicalTypeLandMilitary",
       "Military",
       "Ranged",
       "Unit",
@@ -35778,7 +40001,6 @@
       "AbstractBannerArmy",
       "AbstractConsulateUnit",
       "AbstractConsulateUnitColonial",
-      "LogicalTypeLandMilitary",
       "Military",
       "Ranged",
       "Unit",
@@ -35797,7 +40019,7 @@
     "armor_melee": 0.0,
     "armor_ranged": 0.2,
     "description_en": "An army of German Zweihänders (Doppelsoldners).\\n3 Zweihänders: heavy swordsmen with a sweep attack, good against cavalry.",
-    "description": "由德国双手巨剑 (都卜勒武士) 组成的一支军队。\\n3 名双手巨剑：能发起扫荡攻击的重装剑士，擅长对付骑兵。",
+    "description": "由德国双手巨剑 (双酬剑士) 组成的一支军队。\\n3 名双手巨剑：能发起扫荡攻击的重装剑士，擅长对付骑兵。",
     "protoaction_ranged": "VolleyRangedAttack",
     "attack_ranged": 40.0,
     "range": 16.0,
@@ -35812,7 +40034,6 @@
     "type": [
       "AbstractBannerArmy",
       "AbstractConsulateUnit",
-      "LogicalTypeLandMilitary",
       "Military",
       "Ranged",
       "Unit",
@@ -35831,7 +40052,7 @@
     "armor_melee": 0.0,
     "armor_ranged": 0.2,
     "description_en": "An army of German Zweihänders (Doppelsoldners) and Prussian Needle Gunners (Skirmishers).\\n3 Zweihänders: heavy swordsmen with a sweep attack, good against cavalry.\\n7 Prussian Needle Gunners: riflemen armed with a long-ranged attack, but low hitpoints.",
-    "description": "由德国双手巨剑 (都卜勒武士) 和护卫德国长枪兵组成的一支军队。\\n3 名双手巨剑：能发起扫荡攻击的重装剑士，擅长对付骑兵。\\n7 名护卫德国长枪兵：远程攻击射程长的步枪兵单位，但生命值低。",
+    "description": "由德国双手巨剑 (双酬剑士) 和护卫德国长枪兵组成的一支军队。\\n3 名双手巨剑：能发起扫荡攻击的重装剑士，擅长对付骑兵。\\n7 名护卫德国长枪兵：远程攻击射程长的步枪兵单位，但生命值低。",
     "protoaction_ranged": "VolleyRangedAttack",
     "attack_ranged": 80.0,
     "range": 16.0,
@@ -35846,7 +40067,6 @@
     "type": [
       "AbstractBannerArmy",
       "AbstractConsulateUnit",
-      "LogicalTypeLandMilitary",
       "Military",
       "Ranged",
       "Unit",
@@ -35881,7 +40101,6 @@
       "AbstractBannerArmy",
       "AbstractConsulateUnit",
       "AbstractConsulateUnitColonial",
-      "LogicalTypeLandMilitary",
       "Military",
       "Ranged",
       "Unit",
@@ -35919,7 +40138,6 @@
     "type": [
       "AbstractBannerArmy",
       "AbstractConsulateUnit",
-      "LogicalTypeLandMilitary",
       "Military",
       "Ranged",
       "Unit",
@@ -35957,7 +40175,6 @@
     "type": [
       "AbstractBannerArmy",
       "AbstractConsulateUnit",
-      "LogicalTypeLandMilitary",
       "Military",
       "Ranged",
       "Unit",
@@ -35996,7 +40213,6 @@
       "AbstractBannerArmy",
       "AbstractConsulateUnit",
       "AbstractConsulateUnitColonial",
-      "LogicalTypeLandMilitary",
       "Military",
       "Ranged",
       "Unit",
@@ -36034,7 +40250,6 @@
     "type": [
       "AbstractBannerArmy",
       "AbstractConsulateUnit",
-      "LogicalTypeLandMilitary",
       "Military",
       "Ranged",
       "Unit",
@@ -36072,7 +40287,6 @@
     "type": [
       "AbstractBannerArmy",
       "AbstractConsulateUnit",
-      "LogicalTypeLandMilitary",
       "Military",
       "Ranged",
       "Unit",
@@ -36111,7 +40325,6 @@
       "AbstractBannerArmy",
       "AbstractConsulateUnit",
       "AbstractConsulateUnitColonial",
-      "LogicalTypeLandMilitary",
       "Military",
       "Ranged",
       "Unit",
@@ -36149,7 +40362,6 @@
     "type": [
       "AbstractBannerArmy",
       "AbstractConsulateUnit",
-      "LogicalTypeLandMilitary",
       "Military",
       "Ranged",
       "Unit",
@@ -36187,7 +40399,6 @@
     "type": [
       "AbstractBannerArmy",
       "AbstractConsulateUnit",
-      "LogicalTypeLandMilitary",
       "Military",
       "Ranged",
       "Unit",
@@ -36226,7 +40437,6 @@
       "AbstractBannerArmy",
       "AbstractConsulateUnit",
       "AbstractConsulateUnitColonial",
-      "LogicalTypeLandMilitary",
       "Military",
       "Unit",
       "UnitClass"
@@ -36259,7 +40469,6 @@
     "type": [
       "AbstractBannerArmy",
       "AbstractConsulateUnit",
-      "LogicalTypeLandMilitary",
       "Military",
       "Unit",
       "UnitClass"
@@ -36292,7 +40501,6 @@
     "type": [
       "AbstractBannerArmy",
       "AbstractConsulateUnit",
-      "LogicalTypeLandMilitary",
       "Military",
       "Unit",
       "UnitClass"
@@ -36326,7 +40534,6 @@
       "AbstractBannerArmy",
       "AbstractConsulateUnit",
       "AbstractConsulateUnitColonial",
-      "LogicalTypeLandMilitary",
       "Military",
       "Unit",
       "UnitClass"
@@ -36359,7 +40566,6 @@
     "type": [
       "AbstractBannerArmy",
       "AbstractConsulateUnit",
-      "LogicalTypeLandMilitary",
       "Military",
       "Unit",
       "UnitClass"
@@ -36392,7 +40598,6 @@
     "type": [
       "AbstractBannerArmy",
       "AbstractConsulateUnit",
-      "LogicalTypeLandMilitary",
       "Military",
       "Unit",
       "UnitClass"
@@ -36426,7 +40631,6 @@
       "AbstractBannerArmy",
       "AbstractConsulateUnit",
       "AbstractConsulateUnitColonial",
-      "LogicalTypeLandMilitary",
       "Military",
       "Unit",
       "UnitClass"
@@ -36459,7 +40663,6 @@
     "type": [
       "AbstractBannerArmy",
       "AbstractConsulateUnit",
-      "LogicalTypeLandMilitary",
       "Military",
       "Unit",
       "UnitClass"
@@ -36492,7 +40695,6 @@
     "type": [
       "AbstractBannerArmy",
       "AbstractConsulateUnit",
-      "LogicalTypeLandMilitary",
       "Military",
       "Unit",
       "UnitClass"
@@ -36526,7 +40728,6 @@
       "AbstractBannerArmy",
       "AbstractConsulateUnit",
       "AbstractConsulateUnitColonial",
-      "LogicalTypeLandMilitary",
       "Military",
       "Unit",
       "UnitClass"
@@ -36559,7 +40760,6 @@
     "type": [
       "AbstractBannerArmy",
       "AbstractConsulateUnit",
-      "LogicalTypeLandMilitary",
       "Military",
       "Unit",
       "UnitClass"
@@ -36592,7 +40792,6 @@
     "type": [
       "AbstractBannerArmy",
       "AbstractConsulateUnit",
-      "LogicalTypeLandMilitary",
       "Military",
       "Unit",
       "UnitClass"
@@ -36626,7 +40825,6 @@
       "AbstractBannerArmy",
       "AbstractConsulateUnit",
       "AbstractConsulateUnitColonial",
-      "LogicalTypeLandMilitary",
       "Military",
       "Unit",
       "UnitClass"
@@ -36659,7 +40857,6 @@
     "type": [
       "AbstractBannerArmy",
       "AbstractConsulateUnit",
-      "LogicalTypeLandMilitary",
       "Military",
       "Unit",
       "UnitClass"
@@ -36692,7 +40889,6 @@
     "type": [
       "AbstractBannerArmy",
       "AbstractConsulateUnit",
-      "LogicalTypeLandMilitary",
       "Military",
       "Unit",
       "UnitClass"
@@ -36726,7 +40922,6 @@
       "AbstractBannerArmy",
       "AbstractConsulateUnit",
       "AbstractConsulateUnitColonial",
-      "LogicalTypeLandMilitary",
       "Military",
       "Ranged",
       "Unit",
@@ -36764,7 +40959,6 @@
     "type": [
       "AbstractBannerArmy",
       "AbstractConsulateUnit",
-      "LogicalTypeLandMilitary",
       "Military",
       "Ranged",
       "Unit",
@@ -36802,7 +40996,6 @@
     "type": [
       "AbstractBannerArmy",
       "AbstractConsulateUnit",
-      "LogicalTypeLandMilitary",
       "Military",
       "Ranged",
       "Unit",
@@ -37230,8 +41423,8 @@
   },
   {
     "id": "ypconsulateczapakauhlan",
-    "name_en": "Prussian Uhlan",
-    "name": "护卫德国骑兵",
+    "name_en": "Uhlan",
+    "name": "德国骑兵",
     "type": [
       "AbstractCavalry",
       "AbstractCavalryInfantry",
@@ -37843,7 +42036,8 @@
       "BuildingAttack": 0.43,
       "DefendRangedAttack": 0.43,
       "MeleeHandAttack": 0.53,
-      "StaggerRangedAttack": 0.43
+      "StaggerRangedAttack": 0.43,
+      "LanceHandAttack": 0.64
     },
     "windup_ranged": 0.43,
     "windup_melee": 0.53
@@ -38104,6 +42298,10 @@
         {
           "vs": "Mercenary",
           "value": 10.0
+        },
+        {
+          "vs": "AbstractNativeWarrior",
+          "value": 5.0
         }
       ]
     },
@@ -38741,7 +42939,7 @@
       "gold": 25
     },
     "pop": 1,
-    "train_time": 34,
+    "train_time": 40,
     "hp": 215,
     "speed": 4.0,
     "los": 16.0,
@@ -39121,7 +43319,6 @@
     "name": "马拉塔土匪",
     "type": [
       "AbstractCavalryInfantry",
-      "AbstractDacoit",
       "AbstractGunpowderTrooper",
       "AbstractHeavyInfantry",
       "AbstractInfantry",
@@ -39330,7 +43527,7 @@
     "los": 12.0,
     "armor_melee": 0.0,
     "armor_ranged": 0.6,
-    "description_en": "Extremely powerful Japanese lord who can receive Shipments. Lose your Regent and you are defeated.",
+    "description_en": "Local ruler under your army's protection who can receive Shipments. Lose your Regent and you are defeated.",
     "description": "势力极为强大的日本领主，可训接收船运。只要失去您的摄政王，那么您就输了。",
     "protoaction_melee": "MeleeHandAttack",
     "attack_melee": 10.0,
@@ -39782,7 +43979,6 @@
     "name": "禁卫军",
     "type": [
       "AbstractBannerArmy",
-      "LogicalTypeLandMilitary",
       "Military",
       "Unit",
       "UnitClass"
@@ -39815,7 +44011,6 @@
     "name": "禁卫军 (颐和园)",
     "type": [
       "AbstractBannerArmy",
-      "LogicalTypeLandMilitary",
       "Military",
       "Unit",
       "UnitClass"
@@ -40020,7 +44215,7 @@
         },
         {
           "vs": "AbstractSiegeTrooper",
-          "value": 6.0
+          "value": 2.0
         },
         {
           "vs": "AbstractArtillery",
@@ -41541,7 +45736,6 @@
     "name": "御林军",
     "type": [
       "AbstractBannerArmy",
-      "LogicalTypeLandMilitary",
       "Military",
       "Unit",
       "UnitClass"
@@ -41574,7 +45768,6 @@
     "name": "御林军 (颐和园)",
     "type": [
       "AbstractBannerArmy",
-      "LogicalTypeLandMilitary",
       "Military",
       "Unit",
       "UnitClass"
@@ -41865,7 +46058,7 @@
         }
       ]
     },
-    "attack_siege": 67.0,
+    "attack_siege": 60.0,
     "range_siege": 6.0,
     "rof_siege": 3.0,
     "windups": {
@@ -42080,7 +46273,6 @@
     "name": "满清军队",
     "type": [
       "AbstractBannerArmy",
-      "LogicalTypeLandMilitary",
       "Mercenary",
       "Military",
       "Ranged",
@@ -42188,7 +46380,7 @@
     "description_en": "Mercenary siege infantry that is good against infantry. Throws fire bombs to destroy buildings.",
     "description": "雇佣攻城步兵，擅长攻击步兵。投掷燃烧弹摧毁建筑物。",
     "protoaction_ranged": "VolleyRangedAttack",
-    "attack_ranged": 28.0,
+    "attack_ranged": 42.0,
     "range": 12.0,
     "range_min": 2.0,
     "rof_ranged": 3.0,
@@ -42208,7 +46400,7 @@
       ]
     },
     "protoaction_melee": "VolleyHandAttack",
-    "attack_melee": 15.0,
+    "attack_melee": 22.0,
     "range_melee": 2.0,
     "rof_melee": 1.5,
     "damage_type_melee": "Siege",
@@ -42675,7 +46867,6 @@
     "name": "明军",
     "type": [
       "AbstractBannerArmy",
-      "LogicalTypeLandMilitary",
       "Military",
       "Unit",
       "UnitClass"
@@ -42708,7 +46899,6 @@
     "name": "明军 (颐和园)",
     "type": [
       "AbstractBannerArmy",
-      "LogicalTypeLandMilitary",
       "Military",
       "Unit",
       "UnitClass"
@@ -42741,7 +46931,6 @@
     "name": "蒙古军",
     "type": [
       "AbstractBannerArmy",
-      "LogicalTypeLandMilitary",
       "Military",
       "Unit",
       "UnitClass"
@@ -42774,7 +46963,6 @@
     "name": "蒙古军 (颐和园)",
     "type": [
       "AbstractBannerArmy",
-      "LogicalTypeLandMilitary",
       "Military",
       "Unit",
       "UnitClass"
@@ -43000,7 +47188,7 @@
       "food": 80
     },
     "pop": 0,
-    "train_time": 7,
+    "train_time": 14,
     "hp": 80,
     "speed": 5.0,
     "los": 9.0,
@@ -44573,49 +48761,11 @@
     "aoe_radius": 2
   },
   {
-    "id": "ypoldhanarmy",
-    "name_en": "Old Han Army",
-    "name": "旧汉军",
-    "type": [
-      "AbstractBannerArmy",
-      "LogicalTypeLandMilitary",
-      "Military",
-      "Unit",
-      "UnitClass"
-    ],
-    "civs": [],
-    "age": "Commerce Age",
-    "cost": {
-      "food": 255,
-      "wood": 180
-    },
-    "pop": 6,
-    "train_time": 27,
-    "hp": 200,
-    "speed": 7.0,
-    "los": 9.0,
-    "armor_melee": 0.0,
-    "armor_ranged": 0.1,
-    "description_en": "Well-rounded army of archers and pikemen.\\n3 Chu Ko Nu: Archaic archers good against infantry.\\n3 Qiang Pikemen: Archaic hand infantry good against cavalry and buildings.",
-    "description": "由步弓手和长矛兵单位组成的一支全面军队。\\n3 名中国连弩兵：古老的步弓手单位，擅长对付步兵。\\n3 名中国长矛兵：古老的近战步兵单位，擅长对付骑兵和建筑。",
-    "protoaction_ranged": "VolleyRangedAttack",
-    "attack_ranged": 20.0,
-    "range": 16.0,
-    "range_min": 2.0,
-    "rof_ranged": 3.0,
-    "damage_type_ranged": "Ranged",
-    "windups": {
-      "VolleyRangedAttack": 0.45
-    },
-    "windup_ranged": 0.45
-  },
-  {
     "id": "ypoldhanarmyspawn",
     "name_en": "Old Han Army (Summer Palace)",
     "name": "旧汉军 (颐和园)",
     "type": [
       "AbstractBannerArmy",
-      "LogicalTypeLandMilitary",
       "Military",
       "Ranged",
       "Unit",
@@ -45230,8 +49380,8 @@
     "los": 12.0,
     "armor_melee": 0.1,
     "armor_ranged": 0.0,
-    "description_en": "A tame tiger with white coloration that is good against guardians and shock infantry.",
-    "description": "一只驯服的白色斑纹老虎，擅长对付守护者和突击步兵。",
+    "description_en": "A tame tiger with white coloration that is good against guardians and shock troops.",
+    "description": "一只驯服的白色斑纹老虎，擅长对付守护者和冲击部队。",
     "protoaction_melee": "MeleeHandAttack",
     "attack_melee": 13.0,
     "range_melee": 1.75,
@@ -45776,7 +49926,6 @@
     "name": "归化的土匪",
     "type": [
       "AbstractCavalryInfantry",
-      "AbstractDacoit",
       "AbstractGunpowderTrooper",
       "AbstractHeavyInfantry",
       "AbstractInfantry",
@@ -46418,7 +50567,7 @@
   {
     "id": "yprepentantlandsknecht",
     "name_en": "Repentant Landsknecht",
-    "name": "归化的德国步兵",
+    "name": "归化的国土佣仆",
     "type": [
       "AbstractCavalryInfantry",
       "AbstractHandInfantry",
@@ -46664,7 +50813,6 @@
       "AbstractInfantry",
       "AbstractMusketeer",
       "AbstractOutlaw",
-      "AbstractPistolero",
       "AbstractRangedInfantry",
       "LogicalTypeLandMilitary",
       "Military",
@@ -48101,7 +52249,7 @@
     "speed": 4.0,
     "los": 34.0,
     "armor_melee": 0.0,
-    "armor_ranged": 0.3,
+    "armor_ranged": 0.35,
     "armor_siege": 0.1,
     "description_en": "Elephant armed with a cannon. Good against artillery and buildings.",
     "description": "装备有加农炮的大象，擅长攻击炮兵和建筑。",
@@ -48180,7 +52328,7 @@
     "speed": 4.0,
     "los": 34.0,
     "armor_melee": 0.0,
-    "armor_ranged": 0.3,
+    "armor_ranged": 0.35,
     "armor_siege": 0.1,
     "description_en": "Inspires all nearby Siege Elephants. Elephant armed with a  cannon. Good against artillery and buildings.",
     "description": "可鼓舞附近的所有攻城大象。装备有加农炮的大象，擅长攻击炮兵和建筑。",
@@ -48705,19 +52853,19 @@
     },
     "pop": 0,
     "train_time": 200,
-    "hp": 1250,
+    "hp": 2500,
     "speed": 9.0,
     "los": 12.0,
     "armor_melee": 0.0,
-    "armor_ranged": 0.6,
+    "armor_ranged": 0.7,
     "description_en": "Extremely powerful Japanese lord who can train troops and receive Shipments.",
     "description": "势力极其强大的日本领主，可训练部队并接收船运。",
     "protoaction_melee": "MeleeHandAttack",
-    "attack_melee": 10.0,
+    "attack_melee": 70.0,
     "range_melee": 1.75,
     "rof_melee": 1.5,
     "damage_type_melee": "Hand",
-    "attack_siege": 5.0,
+    "attack_siege": 25.0,
     "range_siege": 6.0,
     "rof_siege": 3.0,
     "windups": {
@@ -48765,7 +52913,6 @@
     "name": "正规军",
     "type": [
       "AbstractBannerArmy",
-      "LogicalTypeLandMilitary",
       "Military",
       "Unit",
       "UnitClass"
@@ -48802,7 +52949,6 @@
     "name": "正规军 (颐和园)",
     "type": [
       "AbstractBannerArmy",
-      "LogicalTypeLandMilitary",
       "Military",
       "Ranged",
       "Unit",
@@ -48943,7 +53089,6 @@
     "name": "防卫军",
     "type": [
       "AbstractBannerArmy",
-      "LogicalTypeLandMilitary",
       "Military",
       "Unit",
       "UnitClass"
@@ -48976,7 +53121,6 @@
     "name": "防卫军 (颐和园)",
     "type": [
       "AbstractBannerArmy",
-      "LogicalTypeLandMilitary",
       "Military",
       "Unit",
       "UnitClass"
@@ -49148,7 +53292,7 @@
         },
         {
           "vs": "AbstractCavalry",
-          "value": 0.75
+          "value": 0.6
         },
         {
           "vs": "AbstractLightInfantry",
@@ -49228,7 +53372,7 @@
         },
         {
           "vs": "AbstractCavalry",
-          "value": 0.75
+          "value": 0.6
         },
         {
           "vs": "AbstractLightInfantry",
@@ -49355,7 +53499,6 @@
     "type": [
       "AbstractBannerArmy",
       "Guardian",
-      "LogicalTypeLandMilitary",
       "Military",
       "Ranged",
       "Unit",
@@ -49583,9 +53726,9 @@
     "armor_ranged": 0.2,
     "description_en": "An Eastern pirate in search of booty. Good against villagers and skirmishers.",
     "description": "搜刮战利品的东方海盗，擅长攻击村民和长枪兵。",
-    "protoaction_melee": "HandAttack",
+    "protoaction_melee": "MeleeHandAttack",
     "attack_melee": 20.0,
-    "range_melee": 0.0,
+    "range_melee": 1.75,
     "rof_melee": 1.5,
     "damage_type_melee": "Hand",
     "multipliers": {
@@ -49602,8 +53745,10 @@
     "windups": {
       "BuildingAttack": 0.61,
       "CoverBuildingAttack": 0.61,
-      "DefendHandAttack": 0.5
-    }
+      "DefendHandAttack": 0.5,
+      "MeleeHandAttack": 0.5
+    },
+    "windup_melee": 0.5
   },
   {
     "id": "ypwokouwanderinghorseman",
@@ -49987,7 +54132,7 @@
     },
     "pop": 1,
     "train_time": 33,
-    "hp": 120,
+    "hp": 130,
     "speed": 7.5,
     "los": 15.0,
     "armor_melee": 0.0,

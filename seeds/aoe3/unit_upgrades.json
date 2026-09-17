@@ -1,6 +1,6 @@
 {
   "_meta": {
-    "generated_at": "2026-06-01T06:44:38.043687+00:00",
+    "generated_at": "2026-09-17T04:51:19.974422+00:00",
     "source": "data/aoe3/raw/techtreey.xml",
     "doc": "docs/games/aoe3-battle.md §3.10",
     "fields": [
@@ -232,7 +232,7 @@
       "5": {
         "hp_mult": 1.5,
         "damage_mult": 1.5,
-        "name": "传奇战斗独木舟"
+        "name": "传奇作战划艇"
       }
     },
     "debedouinhorsearcher": {
@@ -450,6 +450,16 @@
         "damage_mult": 1.5
       }
     },
+    "defriskytterider": {
+      "5": {
+        "hp_mult": 1.5,
+        "damage_mult": 1.5,
+        "range_add": {
+          "ranged": 2.0
+        },
+        "name": "帝国骑马自由枪手"
+      }
+    },
     "defulawarrior": {
       "3": {
         "hp_mult": 1.25,
@@ -499,6 +509,17 @@
         "hp_mult": 2.0,
         "damage_mult": 2.0,
         "name": "传奇募集枪手"
+      }
+    },
+    "dehetman": {
+      "3": {
+        "damage_mult": 1.6
+      },
+      "4": {
+        "damage_mult": 1.8
+      },
+      "5": {
+        "damage_mult": 2.3
       }
     },
     "dehoopthrower": {
@@ -594,7 +615,8 @@
       },
       "4": {
         "hp_mult": 1.5,
-        "damage_mult": 1.5
+        "damage_mult": 1.5,
+        "name": "护卫叛乱者"
       },
       "5": {
         "hp_mult": 2.0,
@@ -699,6 +721,23 @@
         "name": "传奇利菲迪骑士"
       }
     },
+    "delithuanianrider": {
+      "3": {
+        "hp_mult": 1.2,
+        "damage_mult": 1.2,
+        "name": "老练扈从骑兵"
+      },
+      "4": {
+        "hp_mult": 1.6,
+        "damage_mult": 1.6,
+        "name": "前锋部队"
+      },
+      "5": {
+        "hp_mult": 2.1,
+        "damage_mult": 2.1,
+        "name": "帝国前锋部队"
+      }
+    },
     "demaceman": {
       "3": {
         "hp_mult": 1.25,
@@ -731,6 +770,17 @@
         "hp_mult": 2.0,
         "damage_mult": 2.0,
         "name": "传奇迈加迪步兵"
+      }
+    },
+    "demaltesegun": {
+      "4": {
+        "hp_mult": 1.5,
+        "name": "重型固定炮"
+      },
+      "5": {
+        "hp_mult": 2.0,
+        "damage_mult": 1.5,
+        "name": "帝国固定炮"
       }
     },
     "demaltesemusketeer": {
@@ -793,6 +843,18 @@
         "name": "风云阿坎安科比亚"
       }
     },
+    "denatbagpiper": {
+      "3": {
+        "hp_mult": 1.2,
+        "damage_mult": 1.2,
+        "name": "老练风笛手"
+      },
+      "4": {
+        "hp_mult": 1.6,
+        "damage_mult": 1.6,
+        "name": "护卫风笛手"
+      }
+    },
     "denatbolasrider": {
       "3": {
         "hp_mult": 1.25,
@@ -853,6 +915,30 @@
         "name": "护卫近卫轻骑兵"
       }
     },
+    "denatclansman": {
+      "3": {
+        "hp_mult": 1.2,
+        "damage_mult": 1.2,
+        "name": "老练氏族战士"
+      },
+      "4": {
+        "hp_mult": 1.6,
+        "damage_mult": 1.6,
+        "name": "护卫氏族战士"
+      }
+    },
+    "denatcompanion": {
+      "3": {
+        "hp_mult": 1.2,
+        "damage_mult": 1.2,
+        "name": "老练伙伴骑兵"
+      },
+      "4": {
+        "hp_mult": 1.6,
+        "damage_mult": 1.6,
+        "name": "护卫伙伴骑兵"
+      }
+    },
     "denatdrummer": {
       "3": {
         "hp_mult": 1.2,
@@ -889,6 +975,30 @@
         "name": "风云霍尔坎标枪手"
       }
     },
+    "denatinuithunter": {
+      "3": {
+        "hp_mult": 1.25,
+        "damage_mult": 1.25,
+        "name": "精锐因纽特猎人"
+      },
+      "4": {
+        "hp_mult": 1.6,
+        "damage_mult": 1.6,
+        "name": "风云因纽特猎人"
+      }
+    },
+    "denatinuitqamutik": {
+      "3": {
+        "hp_mult": 1.25,
+        "damage_mult": 1.25,
+        "name": "精锐因纽特人雪橇"
+      },
+      "4": {
+        "hp_mult": 1.6,
+        "damage_mult": 1.6,
+        "name": "风云因纽特人雪橇"
+      }
+    },
     "denatlineinfantry": {
       "3": {
         "hp_mult": 1.2,
@@ -913,6 +1023,30 @@
         "name": "利普卡鞑靼人护卫"
       }
     },
+    "denatlowlanderinfantry": {
+      "3": {
+        "hp_mult": 1.2,
+        "damage_mult": 1.2,
+        "name": "老练低地人"
+      },
+      "4": {
+        "hp_mult": 1.6,
+        "damage_mult": 1.6,
+        "name": "护卫低地人"
+      }
+    },
+    "denatlowlanderrider": {
+      "3": {
+        "hp_mult": 1.2,
+        "damage_mult": 1.2,
+        "name": "老练低地枪骑兵"
+      },
+      "4": {
+        "hp_mult": 1.6,
+        "damage_mult": 1.6,
+        "name": "护卫低地枪骑兵"
+      }
+    },
     "denatmercakanmusketeer": {
       "3": {
         "hp_mult": 1.25,
@@ -935,6 +1069,18 @@
         "hp_mult": 1.6,
         "damage_mult": 1.6,
         "name": "风云阿帕切骑兵"
+      }
+    },
+    "denatmercbagpiper": {
+      "3": {
+        "hp_mult": 1.2,
+        "damage_mult": 1.2,
+        "name": "老练风笛手"
+      },
+      "4": {
+        "hp_mult": 1.6,
+        "damage_mult": 1.6,
+        "name": "护卫风笛手"
       }
     },
     "denatmercbolasrider": {
@@ -997,6 +1143,30 @@
         "name": "护卫近卫轻骑兵"
       }
     },
+    "denatmercclansman": {
+      "3": {
+        "hp_mult": 1.2,
+        "damage_mult": 1.2,
+        "name": "老练氏族战士"
+      },
+      "4": {
+        "hp_mult": 1.6,
+        "damage_mult": 1.6,
+        "name": "护卫氏族战士"
+      }
+    },
+    "denatmerccompanion": {
+      "3": {
+        "hp_mult": 1.2,
+        "damage_mult": 1.2,
+        "name": "老练伙伴骑兵"
+      },
+      "4": {
+        "hp_mult": 1.6,
+        "damage_mult": 1.6,
+        "name": "护卫伙伴骑兵"
+      }
+    },
     "denatmercdrummer": {
       "3": {
         "hp_mult": 1.2,
@@ -1031,6 +1201,30 @@
         "hp_mult": 1.6,
         "damage_mult": 1.6,
         "name": "风云霍尔坎标枪手"
+      }
+    },
+    "denatmercinuithunter": {
+      "3": {
+        "hp_mult": 1.25,
+        "damage_mult": 1.25,
+        "name": "精锐因纽特猎人"
+      },
+      "4": {
+        "hp_mult": 1.6,
+        "damage_mult": 1.6,
+        "name": "风云因纽特猎人"
+      }
+    },
+    "denatmercinuitqamutik": {
+      "3": {
+        "hp_mult": 1.25,
+        "damage_mult": 1.25,
+        "name": "精锐因纽特人雪橇"
+      },
+      "4": {
+        "hp_mult": 1.6,
+        "damage_mult": 1.6,
+        "name": "风云因纽特人雪橇"
       }
     },
     "denatmercjaguarwarrior": {
@@ -1074,6 +1268,30 @@
         "hp_mult": 1.6,
         "damage_mult": 1.6,
         "name": "利普卡鞑靼人护卫"
+      }
+    },
+    "denatmerclowlanderinfantry": {
+      "3": {
+        "hp_mult": 1.2,
+        "damage_mult": 1.2,
+        "name": "老练低地人"
+      },
+      "4": {
+        "hp_mult": 1.6,
+        "damage_mult": 1.6,
+        "name": "护卫低地人"
+      }
+    },
+    "denatmerclowlanderrider": {
+      "3": {
+        "hp_mult": 1.2,
+        "damage_mult": 1.2,
+        "name": "老练低地枪骑兵"
+      },
+      "4": {
+        "hp_mult": 1.6,
+        "damage_mult": 1.6,
+        "name": "护卫低地枪骑兵"
       }
     },
     "denatmercmapucheclubman": {
@@ -1136,6 +1354,18 @@
         "name": "风云纳瓦霍步枪兵"
       }
     },
+    "denatmercnoaidi": {
+      "3": {
+        "hp_mult": 1.25,
+        "damage_mult": 1.25,
+        "name": "精锐萨米巫师"
+      },
+      "4": {
+        "hp_mult": 1.6,
+        "damage_mult": 1.6,
+        "name": "风云萨米巫师"
+      }
+    },
     "denatmercnorthernmusketeer": {
       "3": {
         "hp_mult": 1.2,
@@ -1185,6 +1415,18 @@
       }
     },
     "denatmercroyalhunter": {
+      "3": {
+        "hp_mult": 1.2,
+        "damage_mult": 1.2,
+        "name": "老练皇家猎兵"
+      },
+      "4": {
+        "hp_mult": 1.6,
+        "damage_mult": 1.6,
+        "name": "皇家护卫猎兵"
+      }
+    },
+    "denatmercroyalhuntsman": {
       "3": {
         "hp_mult": 1.2,
         "damage_mult": 1.2,
@@ -1290,12 +1532,12 @@
       "3": {
         "hp_mult": 1.25,
         "damage_mult": 1.25,
-        "name": "纪律严明的鞑靼步弓手"
+        "name": "纪律严明的鞑靼弓手"
       },
       "4": {
         "hp_mult": 1.6,
         "damage_mult": 1.6,
-        "name": "光荣的鞑靼步弓手"
+        "name": "光荣的鞑靼弓手"
       }
     },
     "denatmerctotenkopf": {
@@ -1320,18 +1562,6 @@
         "hp_mult": 1.6,
         "damage_mult": 1.6,
         "name": "护卫亲随"
-      }
-    },
-    "denatmercwingedhussar": {
-      "3": {
-        "hp_mult": 1.2,
-        "damage_mult": 1.2,
-        "name": "老练翼骑兵"
-      },
-      "4": {
-        "hp_mult": 1.6,
-        "damage_mult": 1.6,
-        "name": "护卫翼骑兵"
       }
     },
     "denatmercyorubalegionary": {
@@ -1394,6 +1624,18 @@
         "name": "护卫骑马步兵"
       }
     },
+    "denatnoaidi": {
+      "3": {
+        "hp_mult": 1.25,
+        "damage_mult": 1.25,
+        "name": "精锐萨米巫师"
+      },
+      "4": {
+        "hp_mult": 1.6,
+        "damage_mult": 1.6,
+        "name": "风云萨米巫师"
+      }
+    },
     "denatnorthernmusketeer": {
       "3": {
         "hp_mult": 1.2,
@@ -1446,24 +1688,24 @@
       "3": {
         "hp_mult": 1.2,
         "damage_mult": 1.2,
-        "name": "老练皇家猎人"
+        "name": "老练皇家猎兵"
       },
       "4": {
         "hp_mult": 1.6,
         "damage_mult": 1.6,
-        "name": "皇家护卫猎人"
+        "name": "皇家护卫猎兵"
       }
     },
     "denatroyalhuntsman": {
       "3": {
         "hp_mult": 1.2,
         "damage_mult": 1.2,
-        "name": "老练皇家狩猎者"
+        "name": "老练皇家猎人"
       },
       "4": {
         "hp_mult": 1.6,
         "damage_mult": 1.6,
-        "name": "皇家护卫狩猎者"
+        "name": "皇家护卫猎人"
       }
     },
     "denatroyalmusketeer": {
@@ -1560,12 +1802,12 @@
       "3": {
         "hp_mult": 1.25,
         "damage_mult": 1.25,
-        "name": "纪律严明的鞑靼步弓手"
+        "name": "纪律严明的鞑靼弓手"
       },
       "4": {
         "hp_mult": 1.6,
         "damage_mult": 1.6,
-        "name": "光荣的鞑靼步弓手"
+        "name": "光荣的鞑靼弓手"
       }
     },
     "denattotenkopf": {
@@ -1590,18 +1832,6 @@
         "hp_mult": 1.6,
         "damage_mult": 1.6,
         "name": "护卫亲随"
-      }
-    },
-    "denatwingedhussar": {
-      "3": {
-        "hp_mult": 1.2,
-        "damage_mult": 1.2,
-        "name": "老练翼骑兵"
-      },
-      "4": {
-        "hp_mult": 1.6,
-        "damage_mult": 1.6,
-        "name": "护卫翼骑兵"
       }
     },
     "denatyorubalegionary": {
@@ -1671,7 +1901,7 @@
       "5": {
         "hp_mult": 1.5,
         "damage_mult": 1.5,
-        "name": "帝国法令斯步枪兵"
+        "name": "帝国法令步枪兵"
       }
     },
     "deoromowarrior": {
@@ -1709,6 +1939,32 @@
           "ranged": 1.0
         },
         "name": "帝国墙盾手"
+      }
+    },
+    "depiechur": {
+      "3": {
+        "hp_mult": 1.2,
+        "damage_mult": 1.2,
+        "range_add": {
+          "ranged": 2.0
+        },
+        "name": "老练波兰步兵"
+      },
+      "4": {
+        "hp_mult": 1.6,
+        "damage_mult": 1.6,
+        "range_add": {
+          "ranged": 4.0
+        },
+        "name": "库尔皮神射手"
+      },
+      "5": {
+        "hp_mult": 2.1,
+        "damage_mult": 2.1,
+        "range_add": {
+          "ranged": 5.0
+        },
+        "name": "帝国库尔皮神射手"
       }
     },
     "depriestess": {
@@ -1762,6 +2018,20 @@
         "hp_mult": 2.0,
         "damage_mult": 2.0,
         "name": "帝国游骑兵"
+      }
+    },
+    "deregenthorse": {
+      "3": {
+        "hp_mult": 1.2,
+        "damage_mult": 1.2
+      },
+      "4": {
+        "hp_mult": 1.5,
+        "damage_mult": 1.5
+      },
+      "5": {
+        "hp_mult": 2.0,
+        "damage_mult": 2.0
       }
     },
     "deregular": {
@@ -2089,7 +2359,7 @@
         "hp_mult": 1.2,
         "damage_mult": 1.2,
         "range_add": {
-          "ranged": 2.0
+          "ranged": 1.0
         },
         "name": "老练卡宾枪骑兵"
       },
@@ -2097,7 +2367,7 @@
         "hp_mult": 1.5,
         "damage_mult": 1.5,
         "range_add": {
-          "ranged": 2.0
+          "ranged": 1.0
         },
         "name": "护卫卡宾枪骑兵"
       },
@@ -2105,26 +2375,43 @@
         "hp_mult": 2.0,
         "damage_mult": 2.0,
         "range_add": {
-          "ranged": 2.0
+          "ranged": 1.0
         },
         "name": "帝国卡宾枪骑兵"
+      }
+    },
+    "dewingedhussar": {
+      "3": {
+        "hp_mult": 1.2,
+        "damage_mult": 1.2,
+        "name": "老练翼骑兵"
+      },
+      "4": {
+        "hp_mult": 1.6,
+        "damage_mult": 1.6,
+        "name": "护卫翼骑兵"
+      },
+      "5": {
+        "hp_mult": 2.1,
+        "damage_mult": 2.1,
+        "name": "帝国翼骑兵"
       }
     },
     "dopplesoldner": {
       "3": {
         "hp_mult": 1.2,
         "damage_mult": 1.2,
-        "name": "老练都卜勒武士"
+        "name": "老练双酬剑士"
       },
       "4": {
         "hp_mult": 1.5,
         "damage_mult": 1.5,
-        "name": "护卫都卜勒武士"
+        "name": "护卫双酬剑士"
       },
       "5": {
         "hp_mult": 2.0,
         "damage_mult": 2.0,
-        "name": "帝国都卜勒武士"
+        "name": "帝国双酬剑士"
       }
     },
     "dragoon": {
@@ -2283,8 +2570,31 @@
     },
     "mercswisspikeman": {
       "3": {
-        "hp_mult": 1.1,
-        "damage_mult": 1.1
+        "hp_mult": 1.2,
+        "damage_mult": 1.2,
+        "speed_add": 0.25
+      }
+    },
+    "minuteman": {
+      "3": {
+        "damage_mult": 1.2,
+        "name": "老练燧发枪手"
+      },
+      "4": {
+        "hp_mult": 1.3,
+        "damage_mult": 1.5,
+        "range_add": {
+          "ranged": 2.0
+        },
+        "name": "自由枪手"
+      },
+      "5": {
+        "hp_mult": 1.8,
+        "damage_mult": 2.0,
+        "range_add": {
+          "ranged": 4.0
+        },
+        "name": "帝国自由枪手"
       }
     },
     "monitor": {
@@ -2303,12 +2613,12 @@
       "4": {
         "hp_mult": 1.25,
         "damage_mult": 1.35,
-        "name": "加利利迫击炮"
+        "name": "皇家迫击炮"
       },
       "5": {
         "hp_mult": 1.75,
         "damage_mult": 1.85,
-        "name": "帝国加利利迫击炮"
+        "name": "帝国皇家迫击炮"
       }
     },
     "musketeer": {
@@ -2699,7 +3009,7 @@
       "3": {
         "hp_mult": 1.25,
         "damage_mult": 1.25,
-        "name": "精锐步枪兵"
+        "name": "精锐切罗基步枪兵"
       },
       "4": {
         "hp_mult": 1.6,
@@ -2860,12 +3170,12 @@
       "4": {
         "hp_mult": 1.3,
         "damage_mult": 1.3,
-        "name": "护卫突厥骑射"
+        "name": "护卫西帕希"
       },
       "5": {
         "hp_mult": 1.8,
         "damage_mult": 1.8,
-        "name": "帝国突厥骑射"
+        "name": "帝国西帕希"
       }
     },
     "spccherokeearcher": {
@@ -2892,18 +3202,24 @@
       "3": {
         "hp_mult": 1.2,
         "damage_mult": 1.2,
+        "range_add": {
+          "ranged": 1.0
+        },
         "name": "老练俄国长枪兵"
       },
       "4": {
         "hp_mult": 1.5,
         "damage_mult": 1.5,
+        "range_add": {
+          "ranged": 2.0
+        },
         "name": "护卫俄国长枪兵"
       },
       "5": {
         "hp_mult": 2.0,
         "damage_mult": 2.0,
         "range_add": {
-          "ranged": 2.0
+          "ranged": 3.0
         },
         "name": "帝国俄国长枪兵"
       }

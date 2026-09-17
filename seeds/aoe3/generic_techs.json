@@ -2,7 +2,7 @@
   "_meta": {
     "source": "techtreey.xml",
     "note": "通用科技池（roguelike，横向加成）。BROAD_TAGS+特色兵白名单收窄，按 (scope,效果结构) 去重取最强。op 保留 action，运行时按单位代表动作分槽。age 对卡片为启发式估计。",
-    "count": 66,
+    "count": 73,
     "dropped_unmatched": []
   },
   "techs": [
@@ -30,7 +30,7 @@
           "allactions": false
         }
       ],
-      "match_count": 77
+      "match_count": 90
     },
     {
       "id": "CavalryCuirass",
@@ -49,7 +49,7 @@
           "allactions": false
         }
       ],
-      "match_count": 106
+      "match_count": 118
     },
     {
       "id": "Flintlock",
@@ -68,7 +68,7 @@
           "allactions": false
         }
       ],
-      "match_count": 140
+      "match_count": 156
     },
     {
       "id": "IncendiaryGrenades",
@@ -104,7 +104,7 @@
           "value": 1.1
         }
       ],
-      "match_count": 303
+      "match_count": 327
     },
     {
       "id": "PaperCartridge",
@@ -123,11 +123,11 @@
           "allactions": true
         }
       ],
-      "match_count": 140
+      "match_count": 156
     },
     {
       "id": "ProfessionalGunners",
-      "name_zh": "职业枪手",
+      "name_zh": "专业炮兵",
       "source": "Arsenal",
       "age": 2,
       "scope": [
@@ -142,7 +142,7 @@
           "allactions": false
         }
       ],
-      "match_count": 41
+      "match_count": 44
     },
     {
       "id": "Rifling",
@@ -162,7 +162,7 @@
           "allactions": true
         }
       ],
-      "match_count": 64
+      "match_count": 68
     },
     {
       "id": "Trunion",
@@ -179,7 +179,7 @@
           "value": 1.15
         }
       ],
-      "match_count": 41
+      "match_count": 44
     },
     {
       "id": "ChurchCorsolet",
@@ -203,7 +203,7 @@
           "value": 0.85
         }
       ],
-      "match_count": 152
+      "match_count": 166
     },
     {
       "id": "ChurchThinRedLine",
@@ -262,7 +262,7 @@
           "resource": "wood"
         }
       ],
-      "match_count": 303
+      "match_count": 327
     },
     {
       "id": "DEChurchPikePush",
@@ -279,7 +279,7 @@
           "value": 1.1
         }
       ],
-      "match_count": 121
+      "match_count": 129
     },
     {
       "id": "HCHandInfantryHitpointsSpanish",
@@ -299,7 +299,7 @@
           "allactions": false
         }
       ],
-      "match_count": 159
+      "match_count": 170
     },
     {
       "id": "DEChurchSecondGuarantee",
@@ -325,7 +325,7 @@
           "allactions": true
         }
       ],
-      "match_count": 63
+      "match_count": 72
     },
     {
       "id": "DEHCContinentalRangers",
@@ -351,7 +351,7 @@
           "allactions": true
         }
       ],
-      "match_count": 64
+      "match_count": 68
     },
     {
       "id": "DEHCFedMXBustamante",
@@ -370,7 +370,7 @@
           "allactions": false
         }
       ],
-      "match_count": 63
+      "match_count": 72
     },
     {
       "id": "DEHCFedSeminolePonies",
@@ -401,7 +401,7 @@
           "value": 1.05
         }
       ],
-      "match_count": 113
+      "match_count": 124
     },
     {
       "id": "DEHCHandUnitDamage",
@@ -421,7 +421,7 @@
           "allactions": true
         }
       ],
-      "match_count": 234
+      "match_count": 253
     },
     {
       "id": "DEHCHandUnitHitpoints",
@@ -441,7 +441,7 @@
           "allactions": false
         }
       ],
-      "match_count": 234
+      "match_count": 253
     },
     {
       "id": "DEHCHeavyInfHitpointsOttoman",
@@ -486,7 +486,7 @@
           "allactions": true
         }
       ],
-      "match_count": 303
+      "match_count": 327
     },
     {
       "id": "DEHCInfantryHitpointsItalian",
@@ -505,7 +505,7 @@
           "allactions": false
         }
       ],
-      "match_count": 303
+      "match_count": 327
     },
     {
       "id": "DEHCLiberationMarch",
@@ -524,7 +524,7 @@
           "value": 1.05
         }
       ],
-      "match_count": 505
+      "match_count": 557
     },
     {
       "id": "DEHCPeninsularGuerrillas",
@@ -543,7 +543,7 @@
           "allactions": true
         }
       ],
-      "match_count": 223
+      "match_count": 243
     },
     {
       "id": "DEHCPlanCasaMata",
@@ -560,7 +560,7 @@
           "value": 1.05
         }
       ],
-      "match_count": 113
+      "match_count": 124
     },
     {
       "id": "DEHCPlanMiramare",
@@ -635,7 +635,7 @@
           "allactions": false
         }
       ],
-      "match_count": 64
+      "match_count": 68
     },
     {
       "id": "DEHCPlanTuxtepec",
@@ -675,7 +675,7 @@
           "allactions": false
         }
       ],
-      "match_count": 63
+      "match_count": 72
     },
     {
       "id": "DEHCRangedCavalryCombat",
@@ -701,7 +701,7 @@
           "allactions": true
         }
       ],
-      "match_count": 77
+      "match_count": 90
     },
     {
       "id": "DEHCRegularCombat",
@@ -727,7 +727,7 @@
           "allactions": true
         }
       ],
-      "match_count": 152
+      "match_count": 166
     },
     {
       "id": "HCArtilleryCombatFrench",
@@ -753,7 +753,7 @@
           "allactions": true
         }
       ],
-      "match_count": 41
+      "match_count": 44
     },
     {
       "id": "HCArtilleryCombatOttoman",
@@ -781,7 +781,7 @@
           "allactions": false
         }
       ],
-      "match_count": 60
+      "match_count": 63
     },
     {
       "id": "HCCaballeros",
@@ -898,7 +898,7 @@
           "allactions": false
         }
       ],
-      "match_count": 24
+      "match_count": 28
     },
     {
       "id": "HCCavalryDamageBritish",
@@ -917,7 +917,7 @@
           "allactions": true
         }
       ],
-      "match_count": 185
+      "match_count": 210
     },
     {
       "id": "HCCavalryHitpointsBritish",
@@ -936,7 +936,7 @@
           "allactions": false
         }
       ],
-      "match_count": 185
+      "match_count": 210
     },
     {
       "id": "HCHandCavalryCombatSpanish",
@@ -962,7 +962,7 @@
           "allactions": true
         }
       ],
-      "match_count": 185
+      "match_count": 210
     },
     {
       "id": "HCHandCavalryDamageSpanish",
@@ -981,7 +981,7 @@
           "allactions": true
         }
       ],
-      "match_count": 113
+      "match_count": 124
     },
     {
       "id": "HCHandCavalryHitpointsSpanish",
@@ -1000,7 +1000,7 @@
           "allactions": false
         }
       ],
-      "match_count": 113
+      "match_count": 124
     },
     {
       "id": "HCHandInfantryCombatSpanish",
@@ -1027,7 +1027,7 @@
           "allactions": true
         }
       ],
-      "match_count": 159
+      "match_count": 170
     },
     {
       "id": "HCLightArtilleryHitpointsOttoman",
@@ -1063,7 +1063,7 @@
           "value": 1.1
         }
       ],
-      "match_count": 185
+      "match_count": 210
     },
     {
       "id": "HCXPImprovedGrenades",
@@ -1077,7 +1077,7 @@
         {
           "stat": "damage",
           "kind": "mult",
-          "value": 1.15,
+          "value": 1.2,
           "action": null,
           "allactions": true
         }
@@ -1123,7 +1123,7 @@
           "allactions": false
         }
       ],
-      "match_count": 58
+      "match_count": 61
     },
     {
       "id": "YPHCArtilleryDamageChinese",
@@ -1150,7 +1150,7 @@
           "allactions": true
         }
       ],
-      "match_count": 58
+      "match_count": 61
     },
     {
       "id": "YPHCArtilleryHitpointsChinese",
@@ -1177,7 +1177,7 @@
           "allactions": false
         }
       ],
-      "match_count": 58
+      "match_count": 61
     },
     {
       "id": "YPHCInfantryCombatIndians",
@@ -1203,7 +1203,7 @@
           "allactions": true
         }
       ],
-      "match_count": 303
+      "match_count": 327
     },
     {
       "id": "YPHCOldHanArmyReforms",
@@ -1215,7 +1215,6 @@
         "ypkeshik",
         "ypmingarmy",
         "ypmongolianarmy",
-        "ypoldhanarmy",
         "ypqiangpikeman",
         "ypstandardarmy",
         "ypstepperider"
@@ -1239,13 +1238,13 @@
           "stat": "cost",
           "kind": "mult",
           "value": 1.25,
-          "resource": "wood"
+          "resource": "food"
         },
         {
           "stat": "cost",
           "kind": "mult",
           "value": 1.25,
-          "resource": "food"
+          "resource": "wood"
         },
         {
           "stat": "cost",
@@ -1254,25 +1253,7 @@
           "resource": "gold"
         }
       ],
-      "match_count": 8
-    },
-    {
-      "id": "ChurchKapikuluCorps",
-      "name_zh": "卡皮库鲁军团",
-      "source": "Church",
-      "age": 4,
-      "scope": [
-        "AbstractHeavyCavalry"
-      ],
-      "ops": [
-        {
-          "stat": "armor",
-          "kind": "add",
-          "value": 0.1,
-          "armor_kind": "melee"
-        }
-      ],
-      "match_count": 106
+      "match_count": 7
     },
     {
       "id": "DERGArbalester",
@@ -1396,6 +1377,227 @@
           "kind": "add",
           "value": 0.05,
           "armor_kind": "ranged"
+        }
+      ],
+      "match_count": 1
+    },
+    {
+      "id": "RGDalkarl",
+      "name_zh": "达拉纳长矛兵",
+      "source": "RoyalGuard",
+      "age": 4,
+      "scope": [
+        "pikeman"
+      ],
+      "ops": [
+        {
+          "stat": "damage",
+          "kind": "mult",
+          "value": 1.1,
+          "action": null,
+          "allactions": true
+        },
+        {
+          "stat": "hp",
+          "kind": "mult",
+          "value": 1.1,
+          "action": null,
+          "allactions": false
+        },
+        {
+          "stat": "cost",
+          "kind": "mult",
+          "value": 0.5,
+          "resource": "food"
+        }
+      ],
+      "match_count": 1
+    },
+    {
+      "id": "RGDanishCrossbowmen",
+      "name_zh": "皇家弩手",
+      "source": "RoyalGuard",
+      "age": 4,
+      "scope": [
+        "crossbowman"
+      ],
+      "ops": [
+        {
+          "stat": "hp",
+          "kind": "mult",
+          "value": 1.1,
+          "action": null,
+          "allactions": false
+        },
+        {
+          "stat": "damage",
+          "kind": "mult",
+          "value": 1.1,
+          "action": null,
+          "allactions": true
+        },
+        {
+          "stat": "armor",
+          "kind": "add",
+          "value": 0.15,
+          "armor_kind": "melee"
+        }
+      ],
+      "match_count": 1
+    },
+    {
+      "id": "RGDanishGrenadiers",
+      "name_zh": "皇家掷弹兵",
+      "source": "RoyalGuard",
+      "age": 4,
+      "scope": [
+        "grenadier"
+      ],
+      "ops": [
+        {
+          "stat": "hp",
+          "kind": "mult",
+          "value": 1.1,
+          "action": null,
+          "allactions": false
+        },
+        {
+          "stat": "damage",
+          "kind": "mult",
+          "value": 1.1,
+          "action": null,
+          "allactions": true
+        },
+        {
+          "stat": "speed",
+          "kind": "add",
+          "value": 0.25
+        }
+      ],
+      "match_count": 1
+    },
+    {
+      "id": "RGDanishHussars",
+      "name_zh": "骑兵卫队",
+      "source": "RoyalGuard",
+      "age": 4,
+      "scope": [
+        "hussar"
+      ],
+      "ops": [
+        {
+          "stat": "hp",
+          "kind": "mult",
+          "value": 1.1,
+          "action": null,
+          "allactions": false
+        },
+        {
+          "stat": "damage",
+          "kind": "mult",
+          "value": 1.1,
+          "action": null,
+          "allactions": true
+        },
+        {
+          "stat": "speed",
+          "kind": "add",
+          "value": 0.2
+        }
+      ],
+      "match_count": 1
+    },
+    {
+      "id": "RGDanishMusketeers",
+      "name_zh": "皇家卫队",
+      "source": "RoyalGuard",
+      "age": 4,
+      "scope": [
+        "musketeer"
+      ],
+      "ops": [
+        {
+          "stat": "hp",
+          "kind": "mult",
+          "value": 1.1,
+          "action": null,
+          "allactions": false
+        },
+        {
+          "stat": "damage",
+          "kind": "mult",
+          "value": 1.1,
+          "action": null,
+          "allactions": true
+        },
+        {
+          "stat": "armor",
+          "kind": "add",
+          "value": 0.05,
+          "armor_kind": "ranged"
+        }
+      ],
+      "match_count": 1
+    },
+    {
+      "id": "RGDanishPikemen",
+      "name_zh": "皇家长枪兵",
+      "source": "RoyalGuard",
+      "age": 4,
+      "scope": [
+        "pikeman"
+      ],
+      "ops": [
+        {
+          "stat": "hp",
+          "kind": "mult",
+          "value": 1.1,
+          "action": null,
+          "allactions": false
+        },
+        {
+          "stat": "damage",
+          "kind": "mult",
+          "value": 1.1,
+          "action": null,
+          "allactions": true
+        },
+        {
+          "stat": "armor",
+          "kind": "add",
+          "value": 0.05,
+          "armor_kind": "melee"
+        }
+      ],
+      "match_count": 1
+    },
+    {
+      "id": "RGDanishSkirmishers",
+      "name_zh": "滑雪部队",
+      "source": "RoyalGuard",
+      "age": 4,
+      "scope": [
+        "skirmisher"
+      ],
+      "ops": [
+        {
+          "stat": "hp",
+          "kind": "mult",
+          "value": 1.1,
+          "action": null,
+          "allactions": false
+        },
+        {
+          "stat": "damage",
+          "kind": "mult",
+          "value": 1.1,
+          "action": null,
+          "allactions": true
+        },
+        {
+          "stat": "speed",
+          "kind": "add",
+          "value": 0.25
         }
       ],
       "match_count": 1
@@ -1556,6 +1758,46 @@
           "kind": "mult",
           "value": 1.1,
           "action": null,
+          "allactions": false
+        }
+      ],
+      "match_count": 1
+    },
+    {
+      "id": "RGLeiciaiCrossbowmen",
+      "name_zh": "烈堤司弩手",
+      "source": "RoyalGuard",
+      "age": 4,
+      "scope": [
+        "crossbowman"
+      ],
+      "ops": [
+        {
+          "stat": "hp",
+          "kind": "mult",
+          "value": 1.1,
+          "action": null,
+          "allactions": false
+        },
+        {
+          "stat": "range",
+          "kind": "add",
+          "value": 1.0,
+          "action": "VolleyRangedAttack",
+          "allactions": false
+        },
+        {
+          "stat": "range",
+          "kind": "add",
+          "value": 1.0,
+          "action": "DefendRangedAttack",
+          "allactions": false
+        },
+        {
+          "stat": "range",
+          "kind": "add",
+          "value": 1.0,
+          "action": "StaggerRangedAttack",
           "allactions": false
         }
       ],
