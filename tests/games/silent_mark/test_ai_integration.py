@@ -191,6 +191,32 @@ async def test_ai_seats_never_go_through_the_ask_path() -> None:
     assert asked and all(qq in {1001, 1002, 1003} for qq in asked), asked
 
 
+async def test_solo_host_can_start_and_ai_fills_the_rest() -> None:
+    """群里最实际的场景：房主一个人 `@我 开始`，剩下 5 个座位由 AI 补满。
+
+    这是"默认 AI 补位"的意义所在 —— 12 人板子再也不需要真的凑 12 个人。
+    """
+    config = {"mode": "6standard", "seed": 21, "ai_seats": 5}
+    fake = FakePlayer()
+    harness = GameTestHarness(SilentMarkGame, players=[1001], config=config)
+    fake.harness = harness
+
+    with (
+        patch.object(session, "ask", fake.ask),
+        patch.object(llm, "chat", _fake_llm()),
+    ):
+        async with harness:
+            await harness.start()
+
+    assert harness.runner is not None
+    assert harness.runner._ended is True
+    state = harness.runner.ctx.state
+    assert len(state["players"]) == 6
+    assert sum(1 for p in state["players"] if p.get("ai")) == 5
+    # 房主自己不能被 AI 挤掉
+    assert any(p["pid"] == "1001" for p in state["players"])
+
+
 def test_ai_seats_change_the_board_size_check() -> None:
     """人数校验要把 AI 算进去：真人 + AI 之和必须等于板子人数。"""
     assert 2 + 2 == sum(C.PRESETS["4standard"].roles.values())

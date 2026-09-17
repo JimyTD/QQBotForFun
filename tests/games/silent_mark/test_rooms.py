@@ -98,15 +98,30 @@ def test_join_is_blocked_once_the_preset_is_full() -> None:
     assert "已经满了" in blocked
 
 
-def test_start_requires_exactly_the_preset_size() -> None:
-    few = _room("4standard", count=3)
-    blocked = _start_blockers(few, 1)
-    assert blocked is not None
-    assert "恰好 4 人" in blocked and "现在 3 人" in blocked
+def test_start_allows_fewer_players_because_ai_fills_the_gap() -> None:
+    """人不够也能开 —— **AI 会补满**（房主不必凑人，这是默认行为）。"""
+    assert _start_blockers(_room("4standard", count=3), 1) is None
+    assert _start_blockers(_room("6gods", count=1), 1) is None  # 一个人也能开
 
-    # 超过也不行（先报满 4 人再换小一点的板子时会出现）
+
+def test_start_rejects_more_players_than_the_board() -> None:
     many = _room("4standard", count=5)
-    assert _start_blockers(many, 1) is not None
+    blocked = _start_blockers(many, 1)
+    assert blocked is not None
+    assert "最多 4 人" in blocked and "现在 5 人" in blocked
+
+
+def test_start_needs_an_exact_count_when_ai_fill_is_off() -> None:
+    room = _room("4standard", count=3)
+    room.ai_fill = False
+
+    blocked = _start_blockers(room, 1)
+    assert blocked is not None
+    assert "关掉了 AI 补位" in blocked
+    assert "AI 开" in blocked  # 要告诉房主怎么恢复
+
+    room.ai_fill = True
+    assert _start_blockers(room, 1) is None
 
 
 def test_only_the_host_can_start() -> None:
@@ -131,6 +146,7 @@ def test_room_line_marks_host_debug_seat_and_missing_count() -> None:
     text = _room_line(room)
     assert "6 人神职" in text
     assert "3 / 6" in text and "还差 3 人" in text
+    assert "AI 会补满" in text  # 人不够不是问题，AI 会补齐
     assert "（房主）" in text
     assert "[调试位]" in text
     # 面板要写清"谁加机器人为好友"这件事——本作所有私密信息都靠私聊

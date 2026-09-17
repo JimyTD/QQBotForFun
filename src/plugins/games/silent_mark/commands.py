@@ -200,10 +200,11 @@ def _room_line(room: PendingRoom) -> str:
         f"{index}. {p.nickname}" for index, p in enumerate(room.players.values(), 1)
     )
     missing = required - len(room.players)
-    count_line = (
-        f"人数：{len(room.players)} / {required}"
-        + (f"（还差 {missing} 人）" if missing > 0 else " ✅")
-    )
+    if missing > 0:
+        gap_note = "，AI 会补满" if room.ai_fill else ""
+        count_line = f"人数：{len(room.players)} / {required}（还差 {missing} 人{gap_note}）"
+    else:
+        count_line = f"人数：{len(room.players)} / {required} ✅"
     return "\n".join(
         [
             "🌙 静夜标记 · 报名中",
@@ -213,7 +214,7 @@ def _room_line(room: PendingRoom) -> str:
             f"编号：{numbered}",
             "",
             "💡 @我 加入 报名；房主 @我 开始 开局；房主 @我 板子 6gods 换板子",
-            "💡 报满后房主 @我 开始（人数必须与板子一致）",
+            "💡 房主 @我 开始：人不够会用 AI 补满（@我 AI 关 可关掉）",
             "💡 房主：@我 板子 自定义 配自己的板子；@我 物品 关 关掉随身物品",
             "⚠️ 请先加机器人为好友：身份牌、夜间行动、投票都走私聊",
         ]
@@ -234,16 +235,22 @@ def _join_blockers(room: PendingRoom) -> str | None:
 def _start_blockers(room: PendingRoom, actor_id: int) -> str | None:
     """开局前的硬校验；返回 None = 可以开局，返回字符串 = 拒绝原因。
 
-    唯一的人数规则是**恰好等于**板子人数（源项目同口径：不多也不少）。
+    人数规则：**人不够用 AI 补满**（本侧默认行为，源项目也要房主手动加 AI）；
+    人多了不行（总不能把真人踢掉），关掉 AI 补位时才会要求恰好等于板子人数。
     """
     if actor_id != room.host_id:
         return "⚠️ 只有房主可以开始。（想收掉整局随时 @我 结束，那个人人可用）"
     required = room.required_players
-    if len(room.players) != required:
+    current = len(room.players)
+    if current > required:
         return (
-            f"⚠️ {room.describe_preset()} 需要恰好 {required} 人，"
-            f"现在 {len(room.players)} 人。\n"
-            "💡 房主可以 @我 板子 换个合身的板子。"
+            f"⚠️ {room.describe_preset()} 最多 {required} 人，现在 {current} 人。\n"
+            "💡 先 @我 踢人 N 减到人数以内。"
+        )
+    if current < required and not room.ai_fill:
+        return (
+            f"⚠️ 这个房间关掉了 AI 补位，需要恰好 {required} 人，现在 {current} 人。\n"
+            "💡 要么 @我 AI 开 让 AI 补满，要么 @我 板子 换个合身的板子。"
         )
     return None
 
