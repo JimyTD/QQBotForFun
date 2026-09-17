@@ -77,8 +77,6 @@
     <rof>1</rof>
     <maxheight>0</maxheight>
     <accuracy>1</accuracy>
-    <accuracyreductionfactor>0</accuracyreductionfactor>
-    <aimbonus>5</aimbonus>
     <trackrating>12</trackrating>
     <projectile>ypShuriken</projectile>
     <instantballistics>0</instantballistics>

@@ -18,6 +18,7 @@
     <anim>Attack_melee_charged</anim>
     <idleanim>Idle_charged</idleanim>
     <walkanim>Walk_charged</walkanim>
+    <joganim>Jog_charged</joganim>
     <runanim>Run_charged</runanim>
     <maxrange>3</maxrange>
     <trackrating>240</trackrating>

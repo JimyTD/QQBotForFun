@@ -8,9 +8,25 @@
     <include>units\mercenaries\bosniak_rider\bosniak_rider.xml</include>
   </attachment>
   <component>ModelComp
-    <assetreference type="GrannyModel">
-      <file>units\mercenaries\bosniak_rider\bosniak_rider_horse</file>
-    </assetreference>
+    <logic type="Tech">
+      <none>
+        <assetreference type="GrannyModel">
+          <file>units\mercenaries\bosniak_rider\bosniak_rider_horse</file>
+        </assetreference>
+      </none>
+      <dechurchzealandbosniaks>
+        <assetreference type="GrannyModel">
+          <file>units\mercenaries\bosniak_rider\bosniak_rider_horse</file>
+          <materialvariant index="1"/>
+        </assetreference>
+      </dechurchzealandbosniaks>
+      <deindependencedanish>
+        <assetreference type="GrannyModel">
+          <file>units\mercenaries\bosniak_rider\bosniak_rider_horse</file>
+          <materialvariant index="1"/>
+        </assetreference>
+      </deindependencedanish>
+    </logic>
     <decal>
       <effecttype>default</effecttype>
       <texture isfakeshadow="1">shadows_selections\shadow_hero_64x64</texture>

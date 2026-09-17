@@ -64,47 +64,20 @@
   <component>ModelComp
     <logic type="Tech">
       <none>
-        <logic type="LowPoly">
-          <normal>
-            <assetreference type="GrannyModel">
-              <file>units\natives\iroquois\tomahawk_warrior\tomahawk_warrior_1</file>
-            </assetreference>
-          </normal>
-          <lowpoly>
-            <assetreference type="GrannyModel">
-              <file>units\natives\iroquois\tomahawk_warrior\lp_tomahawk_warrior_1</file>
-            </assetreference>
-          </lowpoly>
-        </logic>
+        <assetreference type="GrannyModel">
+          <file>units\natives\iroquois\tomahawk_warrior\tomahawk_warrior_1</file>
+        </assetreference>
       </none>
       <elitetomahawks>
-        <logic type="LowPoly">
-          <normal>
-            <assetreference type="GrannyModel">
-              <file>units\natives\iroquois\tomahawk_warrior\tomahawk_warrior_2</file>
-            </assetreference>
-          </normal>
-          <lowpoly>
-            <assetreference type="GrannyModel">
-              <file>units\natives\iroquois\tomahawk_warrior\lp_tomahawk_warrior_2</file>
-            </assetreference>
-          </lowpoly>
-        </logic>
+        <assetreference type="GrannyModel">
+          <file>units\natives\iroquois\tomahawk_warrior\tomahawk_warrior_2</file>
+        </assetreference>
         <attach a="hat_2" frombone="bone_hat" tobone="HEAD" syncanims="0"/>
       </elitetomahawks>
       <championtomahawk>
-        <logic type="LowPoly">
-          <normal>
-            <assetreference type="GrannyModel">
-              <file>units\natives\iroquois\tomahawk_warrior\tomahawk_warrior_3</file>
-            </assetreference>
-          </normal>
-          <lowpoly>
-            <assetreference type="GrannyModel">
-              <file>units\natives\iroquois\tomahawk_warrior\lp_tomahawk_warrior_3</file>
-            </assetreference>
-          </lowpoly>
-        </logic>
+        <assetreference type="GrannyModel">
+          <file>units\natives\iroquois\tomahawk_warrior\tomahawk_warrior_3</file>
+        </assetreference>
         <attach a="hat_3" frombone="bone_hat" tobone="HEAD" syncanims="0"/>
       </championtomahawk>
     </logic>
@@ -134,16 +107,12 @@
       <weight>20</weight>
     </assetreference>
     <component>ModelComp</component>
-    <attach a="axe" frombone="bone_axe" tobone="bone_weapon1_attach" syncanims="0"/>
-    <attach a="axe" frombone="bone_axe" tobone="bone_weapon2_attach" syncanims="0"/>
   </anim>
   <anim>kidnap_hostageA_exit
     <assetreference type="GrannyAnim">
       <file>nuggets\outlaw_kidnap\kidnap_hostageA_exit</file>
     </assetreference>
     <component>ModelComp</component>
-    <attach a="axe" frombone="bone_axe" tobone="bone_weapon1_attach" syncanims="0"/>
-    <attach a="axe" frombone="bone_axe" tobone="bone_weapon2_attach" syncanims="0"/>
   </anim>
   <anim>Charge_Attack
     <assetreference type="GrannyAnim">
@@ -300,16 +269,12 @@
       <file>animation_library\shared\doorOpen</file>
     </assetreference>
     <component>ModelComp</component>
-    <attach a="axe" frombone="bone_axe" tobone="bone_weapon1_attach" syncanims="0"/>
-    <attach a="axe" frombone="bone_axe" tobone="bone_weapon2_attach" syncanims="0"/>
   </anim>
   <anim>HC_closeDoor
     <assetreference type="GrannyAnim">
       <file>animation_library\shared\doorClose</file>
     </assetreference>
     <component>ModelComp</component>
-    <attach a="axe" frombone="bone_axe" tobone="bone_weapon1_attach" syncanims="0"/>
-    <attach a="axe" frombone="bone_axe" tobone="bone_weapon2_attach" syncanims="0"/>
   </anim>
   <anim>Raze_Idle
     <assetreference type="GrannyAnim">
@@ -507,16 +472,12 @@
       <weight>10</weight>
     </assetreference>
     <component>ModelComp</component>
-    <attach a="axe" frombone="bone_axe" tobone="bone_weapon1_attach" syncanims="0"/>
-    <attach a="axe" frombone="bone_axe" tobone="bone_weapon2_attach" syncanims="0"/>
   </anim>
   <anim>Nugget_rock_exit
     <assetreference type="GrannyAnim">
       <file>nuggets\wolf_rock\rock_anim_exit</file>
     </assetreference>
     <component>ModelComp</component>
-    <attach a="axe" frombone="bone_axe" tobone="bone_weapon1_attach" syncanims="0"/>
-    <attach a="axe" frombone="bone_axe" tobone="bone_weapon2_attach" syncanims="0"/>
   </anim>
   <anim>Wolf_Treebent_Captive_Idle
     <assetreference type="GrannyAnim">
@@ -529,16 +490,12 @@
       <file>nuggets\wolf_treebent\wolf_treebent_captive_idle3</file>
     </assetreference>
     <component>ModelComp</component>
-    <attach a="axe" frombone="bone_axe" tobone="bone_weapon1_attach" syncanims="0"/>
-    <attach a="axe" frombone="bone_axe" tobone="bone_weapon2_attach" syncanims="0"/>
   </anim>
   <anim>Wolf_Treebent_Captive_Exit
     <assetreference type="GrannyAnim">
       <file>nuggets\wolf_treebent\wolf_treebent_captive_exit</file>
     </assetreference>
     <component>ModelComp</component>
-    <attach a="axe" frombone="bone_axe" tobone="bone_weapon1_attach" syncanims="0"/>
-    <attach a="axe" frombone="bone_axe" tobone="bone_weapon2_attach" syncanims="0"/>
   </anim>
   <anim>Bear_Tree_Captive_Idle
     <assetreference type="GrannyAnim">
@@ -548,16 +505,12 @@
       <file>nuggets\bear_tree\bear_tree_captive_idle2</file>
     </assetreference>
     <component>ModelComp</component>
-    <attach a="axe" frombone="bone_axe" tobone="bone_weapon1_attach" syncanims="0"/>
-    <attach a="axe" frombone="bone_axe" tobone="bone_weapon2_attach" syncanims="0"/>
   </anim>
   <anim>Bear_Tree_Captive_Exit
     <assetreference type="GrannyAnim">
       <file>nuggets\bear_tree\bear_tree_captive_exit</file>
     </assetreference>
     <component>ModelComp</component>
-    <attach a="axe" frombone="bone_axe" tobone="bone_weapon1_attach" syncanims="0"/>
-    <attach a="axe" frombone="bone_axe" tobone="bone_weapon2_attach" syncanims="0"/>
   </anim>
   <anim>BuildLifting
     <assetreference type="GrannyAnim">

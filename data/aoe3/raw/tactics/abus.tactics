@@ -11,14 +11,8 @@
     <idleanim>Volley_standing_idle</idleanim>
     <maxheight>0</maxheight>
     <accuracy>1.0</accuracy>
-    <accuracyreductionfactor>0.5</accuracyreductionfactor>
-    <aimbonus>0</aimbonus>
-    <maxspread>5</maxspread>
-    <spreadfactor>0.25</spreadfactor>
     <trackrating>12</trackrating>
-    <unintentionaldamagemultiplier>0.7</unintentionaldamagemultiplier>
     <projectile>InvisibleProjectile</projectile>
-    <numberprojectiles>1</numberprojectiles>
     <impacteffect>effects\impacts\gun</impacteffect>
     <rate type="Unit">1.0</rate>
     <instantballistics>1</instantballistics>
@@ -45,14 +39,8 @@
     <idleanim>Volley_standing_idle</idleanim>
     <maxheight>0</maxheight>
     <accuracy>1.0</accuracy>
-    <accuracyreductionfactor>0.5</accuracyreductionfactor>
-    <aimbonus>0</aimbonus>
-    <maxspread>5</maxspread>
-    <spreadfactor>0.25</spreadfactor>
     <trackrating>12</trackrating>
-    <unintentionaldamagemultiplier>0.7</unintentionaldamagemultiplier>
     <projectile>InvisibleProjectile</projectile>
-    <numberprojectiles>1</numberprojectiles>
     <impacteffect>effects\impacts\gun</impacteffect>
     <rate type="Unit">1.0</rate>
     <instantballistics>1</instantballistics>
@@ -79,14 +67,8 @@
     <idleanim>Volley_standing_idle</idleanim>
     <maxheight>0</maxheight>
     <accuracy>1.0</accuracy>
-    <accuracyreductionfactor>0.5</accuracyreductionfactor>
-    <aimbonus>0</aimbonus>
-    <maxspread>5</maxspread>
-    <spreadfactor>0.25</spreadfactor>
     <trackrating>12</trackrating>
-    <unintentionaldamagemultiplier>0.7</unintentionaldamagemultiplier>
     <projectile>InvisibleProjectile</projectile>
-    <numberprojectiles>1</numberprojectiles>
     <impacteffect>effects\impacts\gun</impacteffect>
     <rate type="Unit">1.0</rate>
     <instantballistics>1</instantballistics>
@@ -123,14 +105,8 @@
     <rate type="LogicalTypeShipsAndBuildings">1.0</rate>
     <maxheight>0</maxheight>
     <accuracy>1.0</accuracy>
-    <accuracyreductionfactor>0.5</accuracyreductionfactor>
-    <aimbonus>0</aimbonus>
-    <maxspread>5</maxspread>
-    <spreadfactor>0.25</spreadfactor>
     <trackrating>12</trackrating>
-    <unintentionaldamagemultiplier>0.7</unintentionaldamagemultiplier>
     <projectile>InvisibleProjectile</projectile>
-    <numberprojectiles>1</numberprojectiles>
     <impacteffect>effects\impacts\gun</impacteffect>
     <instantballistics>1</instantballistics>
     <anim>Volley_standing_attack</anim>

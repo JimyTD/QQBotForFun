@@ -11,11 +11,7 @@
     <anim>RangedAttack</anim>
     <maxheight>0</maxheight>
     <accuracy>1.0</accuracy>
-    <aimbonus>0</aimbonus>
-    <maxspread>5</maxspread>
-    <spreadfactor>0.25</spreadfactor>
     <trackrating>120</trackrating>
-    <unintentionaldamagemultiplier>0.7</unintentionaldamagemultiplier>
     <projectile>InvisibleProjectile</projectile>
     <impacteffect>effects\impacts\gun</impacteffect>
     <rate type="Unit">1.0</rate>
@@ -30,11 +26,7 @@
     <anim>RangedAttackShip</anim>
     <maxheight>0</maxheight>
     <accuracy>1.0</accuracy>
-    <aimbonus>0</aimbonus>
-    <maxspread>5</maxspread>
-    <spreadfactor>0.25</spreadfactor>
     <trackrating>120</trackrating>
-    <unintentionaldamagemultiplier>0.7</unintentionaldamagemultiplier>
     <projectile>Cannonball</projectile>
     <impacteffect>effects\impacts\cannon</impacteffect>
     <perfectaccuracy>1</perfectaccuracy>
@@ -184,11 +176,7 @@
     <anim>RangedAttackShip</anim>
     <maxheight>0</maxheight>
     <accuracy>1.0</accuracy>
-    <aimbonus>0</aimbonus>
-    <maxspread>5</maxspread>
-    <spreadfactor>0.25</spreadfactor>
     <trackrating>120</trackrating>
-    <unintentionaldamagemultiplier>0.7</unintentionaldamagemultiplier>
     <projectile>Cannonball</projectile>
     <impacteffect>effects\impacts\cannon</impacteffect>
     <rate type="Unit">1.0</rate>
@@ -257,6 +245,7 @@
     <active>0</active>
     <maxrange>40</maxrange>
     <modifyabstracttype>AbstractVillager</modifyabstracttype>
+    <modifyabstracttype>Priest</modifyabstracttype>
     <persistent>1</persistent>
     <nostack>1</nostack>
     <nostackignorepuid>1</nostackignorepuid>
@@ -272,6 +261,7 @@
     <active>0</active>
     <maxrange>40</maxrange>
     <modifyabstracttype>AbstractVillager</modifyabstracttype>
+    <modifyabstracttype>Priest</modifyabstracttype>
     <persistent>1</persistent>
     <nostack>1</nostack>
     <nostackignorepuid>1</nostackignorepuid>
@@ -287,6 +277,7 @@
     <type>AutoRangedModify</type>
     <maxrange>40</maxrange>
     <modifyabstracttype>AbstractVillager</modifyabstracttype>
+    <modifyabstracttype>Priest</modifyabstracttype>
     <persistent>1</persistent>
     <nostack>1</nostack>
     <nostackignorepuid>1</nostackignorepuid>

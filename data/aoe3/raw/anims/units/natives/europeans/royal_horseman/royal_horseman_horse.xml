@@ -8,17 +8,34 @@
     <include>units\natives\europeans\royal_horseman\royal_horseman_rider.xml</include>
   </attachment>
   <component>ModelComp
-    <assetreference type="GrannyModel">
-      <file>units\natives\europeans\royal_horseman\royal_horseman_horse</file>
-    </assetreference>
-    <decal>
-      <effecttype>default</effecttype>
-      <texture isfakeshadow="1">shadows_selections\shadow_hero_64x64</texture>
-      <selectedtexture>shadows_selections\selection_hero_64x64</selectedtexture>
-      <width>1.50</width>
-      <height>3.00</height>
-    </decal>
-    <attach a="RiderAttachment" frombone="hotspot" tobone="Attachpoint" syncanims="1"/>
+    <logic type="Tech">
+      <none>
+        <assetreference type="GrannyModel">
+          <file>units\natives\europeans\royal_horseman\royal_horseman_horse</file>
+        </assetreference>
+        <decal>
+          <effecttype>default</effecttype>
+          <texture isfakeshadow="1">shadows_selections\shadow_hero_64x64</texture>
+          <selectedtexture>shadows_selections\selection_hero_64x64</selectedtexture>
+          <width>1.50</width>
+          <height>3.00</height>
+        </decal>
+        <attach a="RiderAttachment" frombone="hotspot" tobone="Attachpoint" syncanims="1"/>
+      </none>
+      <dehcrevgardeducorps>
+        <assetreference type="GrannyModel">
+          <file>units\natives\europeans\royal_horseman\royal_horseman_horse</file>
+        </assetreference>
+        <decal>
+          <effecttype>default</effecttype>
+          <texture isfakeshadow="1">shadows_selections\shadow_circle_128x128</texture>
+          <selectedtexture>shadows_selections\selection_oval_32x64</selectedtexture>
+          <width>1.50</width>
+          <height>3.00</height>
+        </decal>
+        <attach a="RiderAttachment" frombone="hotspot" tobone="Attachpoint" syncanims="1"/>
+      </dehcrevgardeducorps>
+    </logic>
   </component>
   <anim>Walk
     <assetreference type="GrannyAnim">

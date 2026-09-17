@@ -8,9 +8,18 @@
   </attachment>
   <attachment>hat
     <component>hat
-      <assetreference type="GrannyModel">
-        <file>units\infantry_ranged\rifleman\rifleman_cylinder_rank01</file>
-      </assetreference>
+      <logic type="Tech">
+        <none>
+          <assetreference type="GrannyModel">
+            <file>units\infantry_ranged\rifleman\rifleman_cylinder_rank01</file>
+          </assetreference>
+        </none>
+        <dehcroyalarquebusierguardshadow>
+          <assetreference type="GrannyModel">
+            <file>units\infantry_ranged\sentinel\sentinel_age3_helmet</file>
+          </assetreference>
+        </dehcroyalarquebusierguardshadow>
+      </logic>
     </component>
     <anim>Idle
       <component>hat</component>
@@ -28,19 +37,39 @@
   </attachment>
   <attachment>gun
     <component>gun
-      <assetreference type="GrannyModel">
-        <file>units\spc\yermak\yermak_matchlock</file>
-      </assetreference>
+      <logic type="Tech">
+        <none>
+          <assetreference type="GrannyModel">
+            <file>units\spc\yermak\yermak_matchlock</file>
+          </assetreference>
+        </none>
+        <dehcroyalarquebusierguardshadow>
+          <assetreference type="GrannyModel">
+            <file>units\infantry_ranged\rifleman\rifleman_gun_rank01</file>
+          </assetreference>
+        </dehcroyalarquebusierguardshadow>
+      </logic>
     </component>
     <anim>Idle
       <component>gun</component>
     </anim>
   </attachment>
   <component>ModelComp
-    <assetreference type="GrannyModel">
-      <file>units\infantry_ranged\musketeer\musketeer_1age</file>
-    </assetreference>
-    <attach a="hat" frombone="bone_hat" tobone="HEAD" syncanims="0"/>
+    <logic type="Tech">
+      <none>
+        <assetreference type="GrannyModel">
+          <file>units\infantry_ranged\musketeer\musketeer_1age</file>
+        </assetreference>
+        <attach a="hat" frombone="bone_hat" tobone="HEAD" syncanims="0"/>
+      </none>
+      <dehcroyalarquebusierguardshadow>
+        <assetreference type="GrannyModel">
+          <file>units\villagers\envoy</file>
+          <materialvariant index="2"/>
+        </assetreference>
+        <attach a="hat" frombone="bone_hat" tobone="HEAD" syncanims="0"/>
+      </dehcroyalarquebusierguardshadow>
+    </logic>
     <decal>
       <effecttype>default</effecttype>
       <texture isfakeshadow="1">shadows_selections\shadow_circle_32x32</texture>

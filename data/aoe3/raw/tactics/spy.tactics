@@ -17,8 +17,6 @@
     <idleanim>SharpshootIdle</idleanim>
     <maxheight>0</maxheight>
     <accuracy>1.0</accuracy>
-    <accuracyreductionfactor>0.001</accuracyreductionfactor>
-    <aimbonus>5</aimbonus>
     <trackrating>120</trackrating>
     <rate type="Mercenary">1.0</rate>
     <rate type="Hero">1.0</rate>
@@ -39,8 +37,6 @@
     <idleanim>Volley_standing_reload</idleanim>
     <maxheight>0</maxheight>
     <accuracy>1.0</accuracy>
-    <accuracyreductionfactor>0.001</accuracyreductionfactor>
-    <aimbonus>5</aimbonus>
     <trackrating>120</trackrating>
     <rate type="Unit">1.0</rate>
     <minrange>2</minrange>
@@ -61,11 +57,7 @@
     <maxheight>0</maxheight>
     <accuracy>1.0</accuracy>
     <perfectaccuracy>1</perfectaccuracy>
-    <aimbonus>0</aimbonus>
-    <maxspread>5</maxspread>
-    <spreadfactor>0.25</spreadfactor>
     <trackrating>120</trackrating>
-    <unintentionaldamagemultiplier>0.7</unintentionaldamagemultiplier>
     <projectile>InvisibleProjectile</projectile>
     <impacteffect>effects\impacts\gun</impacteffect>
     <minrange>2</minrange>

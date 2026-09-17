@@ -7,12 +7,7 @@
     <rangedlogic>1</rangedlogic>
     <anim>RangedAttack</anim>
     <accuracy>1.0</accuracy>
-    <accuracyreductionfactor>0.01</accuracyreductionfactor>
-    <aimbonus>0</aimbonus>
-    <maxspread>5</maxspread>
-    <spreadfactor>0.25</spreadfactor>
     <trackrating>12</trackrating>
-    <unintentionaldamagemultiplier>0.7</unintentionaldamagemultiplier>
     <projectile>MortarShell</projectile>
     <impacteffect>effects\impacts\mortar</impacteffect>
     <rate type="Unit">1.0 </rate>
@@ -30,12 +25,7 @@
     <rangedlogic>1</rangedlogic>
     <anim>RangedAttack</anim>
     <accuracy>1.0</accuracy>
-    <accuracyreductionfactor>0.01</accuracyreductionfactor>
-    <aimbonus>0</aimbonus>
-    <maxspread>5</maxspread>
-    <spreadfactor>0.25</spreadfactor>
     <trackrating>12</trackrating>
-    <unintentionaldamagemultiplier>0.7</unintentionaldamagemultiplier>
     <projectile>MortarShell</projectile>
     <impacteffect>effects\impacts\mortar</impacteffect>
     <rate type="Building">1.0 </rate>
@@ -54,10 +44,8 @@
     <anim>RangedAttack</anim>
     <idleanim>Idle</idleanim>
     <projectile>MortarShell</projectile>
-    <numberprojectiles>1</numberprojectiles>
     <impacteffect>effects\impacts\mortar</impacteffect>
     <accuracy>1.0</accuracy>
-    <aimbonus>5</aimbonus>
     <throw>1</throw>
     <rate type="LogicalTypeRangedUnitsAttack">1.0 </rate>
     <perfectaccuracy>1</perfectaccuracy>

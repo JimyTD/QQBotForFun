@@ -8,12 +8,7 @@
     <anim>RangedAttack</anim>
     <maxheight>0</maxheight>
     <accuracy>1.0</accuracy>
-    <accuracyreductionfactor>0.01</accuracyreductionfactor>
-    <aimbonus>0</aimbonus>
-    <maxspread>5</maxspread>
-    <spreadfactor>0.25</spreadfactor>
     <trackrating>12</trackrating>
-    <unintentionaldamagemultiplier>0.7</unintentionaldamagemultiplier>
     <projectile>InvisibleProjectile</projectile>
     <impacteffect>effects\impacts\gun</impacteffect>
     <rate type="Unit">1.0</rate>
@@ -28,12 +23,7 @@
     <anim>RangedAttack</anim>
     <maxheight>0</maxheight>
     <accuracy>1.0</accuracy>
-    <accuracyreductionfactor>0.01</accuracyreductionfactor>
-    <aimbonus>0</aimbonus>
-    <maxspread>5</maxspread>
-    <spreadfactor>0.25</spreadfactor>
     <trackrating>12</trackrating>
-    <unintentionaldamagemultiplier>0.7</unintentionaldamagemultiplier>
     <damagefactorcap>10</damagefactorcap>
     <scalebycontainedunits>1</scalebycontainedunits>
     <projectile>InvisibleProjectile</projectile>
@@ -45,30 +35,20 @@
   <action>
     <name stringid="110597">ChargeRangedAttack</name>
     <type>Attack</type>
+    <active>0</active>
     <attackaction>1</attackaction>
     <rangedlogic>1</rangedlogic>
     <chargeaction>1</chargeaction>
-    <anim>RangedAttackCannon</anim>
+    <anim>RangedAttackSpecial</anim>
     <maxheight>0</maxheight>
     <accuracy>1.0</accuracy>
-    <accuracyreductionfactor>0.01</accuracyreductionfactor>
-    <aimbonus>0</aimbonus>
-    <maxspread>5</maxspread>
-    <spreadfactor>0.25</spreadfactor>
     <trackrating>12</trackrating>
-    <unintentionaldamagemultiplier>0.7</unintentionaldamagemultiplier>
-    <projectile>Cannonball</projectile>
-    <impacteffect>effects\impacts\cannon</impacteffect>
+    <projectile>InvisibleProjectile</projectile>
+    <impacteffect>effects\impacts\gun</impacteffect>
     <rate type="Military">1.0</rate>
-    <active>0</active>
-    <throw>1</throw>
-    <outerdamageareadistance>.25</outerdamageareadistance>
-    <outerdamageareafactor>.20</outerdamageareafactor>
-    <areasortmode>Directional</areasortmode>
-    <perfectaccuracy>1</perfectaccuracy>
-    <targetground>1</targetground>
-    <numberbounces>1</numberbounces>
+    <instantballistics>1</instantballistics>
     <basedamagecap>1</basedamagecap>
+    <displayednumberprojectiles>6</displayednumberprojectiles>
   </action>
   <action>
     <name stringid="48954">HPAura</name>
@@ -319,6 +299,24 @@
     <persistent>1</persistent>
     <subcivtype>3</subcivtype>
   </action>
+  <action>
+    <name stringid="43019">AutoGatherKontorsFood</name>
+    <type>AutoGather</type>
+    <active>0</active>
+    <persistent>1</persistent>
+  </action>
+  <action>
+    <name stringid="43019">AutoGatherKontorsWood</name>
+    <type>AutoGather</type>
+    <active>0</active>
+    <persistent>1</persistent>
+  </action>
+  <action>
+    <name stringid="43019">AutoGatherKontorsGold</name>
+    <type>AutoGather</type>
+    <active>0</active>
+    <persistent>1</persistent>
+  </action>
   <tactic>Normal
     <attacktype>LogicalTypeRangedUnitsAttack</attacktype>
     <autoattacktype>LogicalTypeRangedUnitsAutoAttack</autoattacktype>
@@ -358,5 +356,8 @@
     <action>AutoGatherXPSouthNative</action>
     <action>AutoGatherXPAsianNative</action>
     <action>AutoGatherXPAfricanNative</action>
+    <action>AutoGatherKontorsFood</action>
+    <action>AutoGatherKontorsWood</action>
+    <action>AutoGatherKontorsGold</action>
   </tactic>
 </tactics>

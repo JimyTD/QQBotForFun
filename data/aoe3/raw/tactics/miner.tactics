@@ -38,12 +38,7 @@
     <rangedlogic>1</rangedlogic>
     <anim>RangedAttack</anim>
     <accuracy>0.9</accuracy>
-    <accuracyreductionfactor>2</accuracyreductionfactor>
-    <aimbonus>0</aimbonus>
-    <maxspread>5</maxspread>
-    <spreadfactor>0.25</spreadfactor>
     <trackrating>12</trackrating>
-    <unintentionaldamagemultiplier>1.0</unintentionaldamagemultiplier>
     <projectile>Dynamite</projectile>
     <impacteffect>effects\impacts\dynamite</impacteffect>
     <minrange>4</minrange>
@@ -64,12 +59,7 @@
     <rangedlogic>1</rangedlogic>
     <anim>RangedAttack</anim>
     <accuracy>0.9</accuracy>
-    <accuracyreductionfactor>2</accuracyreductionfactor>
-    <aimbonus>0</aimbonus>
-    <maxspread>5</maxspread>
-    <spreadfactor>0.25</spreadfactor>
     <trackrating>12</trackrating>
-    <unintentionaldamagemultiplier>1.0</unintentionaldamagemultiplier>
     <projectile>Dynamite</projectile>
     <impacteffect>effects\impacts\dynamite</impacteffect>
     <rate type="LogicalTypeShipsAndBuildings">1.0 </rate>
@@ -112,6 +102,13 @@
     <rate type="AbstractInfiniteCrate">1.0</rate>
     <typedmaxrange type="AbstractInfiniteCrate">0</typedmaxrange>
   </action>
+  <action>
+    <name stringid="69149">AutoGatherTrade</name>
+    <type>AutoGather</type>
+    <donotautogatherunlessgathering>1</donotautogatherunlessgathering>
+    <active>0</active>
+    <persistent>1</persistent>
+  </action>
   <tactic>Volley
     <speedmodifier>1.0</speedmodifier>
     <action>Build</action>
@@ -119,6 +116,7 @@
     <action>CrateGather</action>
     <action>Hunting</action>
     <action>Discover</action>
+    <action>AutoGatherTrade</action>
     <action priority="100">GrenadeAttack</action>
     <action priority="75">BuildingAttack</action>
     <action priority="30">HandAttackCrate</action>
@@ -142,6 +140,7 @@
     <action>CrateGather</action>
     <action>Hunting</action>
     <action>Discover</action>
+    <action>AutoGatherTrade</action>
     <action priority="100">GrenadeAttack</action>
     <action priority="75">BuildingAttack</action>
     <action priority="30">HandAttackCrate</action>
@@ -165,6 +164,7 @@
     <action>CrateGather</action>
     <action>Hunting</action>
     <action>Discover</action>
+    <action>AutoGatherTrade</action>
     <action priority="100">GrenadeAttack</action>
     <action priority="75">BuildingAttack</action>
     <action priority="30">HandAttackCrate</action>
@@ -188,6 +188,7 @@
     <action>CrateGather</action>
     <action>Hunting</action>
     <action>Discover</action>
+    <action>AutoGatherTrade</action>
     <action priority="75">BuildingAttack</action>
     <action priority="30">HandAttackCrate</action>
     <action priority="25">HandAttack</action>
@@ -209,6 +210,7 @@
     <action>Gather</action>
     <action>CrateGather</action>
     <action>Hunting</action>
+    <action>AutoGatherTrade</action>
     <action priority="100">GrenadeAttack</action>
     <action priority="75">BuildingAttack</action>
     <action priority="30">HandAttackCrate</action>

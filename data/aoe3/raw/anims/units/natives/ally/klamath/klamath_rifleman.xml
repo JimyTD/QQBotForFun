@@ -3,6 +3,7 @@
   <definebone>Bip01 Prop1</definebone>
   <definebone>Bip01 Prop2</definebone>
   <definebone>bone_rifle</definebone>
+  <definebone>Bip01</definebone>
   <attachment>rifle
     <component>rifle
       <assetreference type="GrannyModel">
@@ -45,6 +46,26 @@
   </attachment>
   <attachment>torch
     <include>effects\projectiles\torch.xml</include>
+  </attachment>
+  <attachment>fishingrod
+    <component>fishingrod
+      <assetreference type="GrannyModel">
+        <file>units\attachments\fishing_rod\fishing_rod</file>
+      </assetreference>
+    </component>
+    <anim>Idle
+      <component>fishingrod</component>
+    </anim>
+  </attachment>
+  <attachment>fishingbasket
+    <component>fishingbasket
+      <assetreference type="GrannyModel">
+        <file>units\attachments\fishing_rod\fishing_basket</file>
+      </assetreference>
+    </component>
+    <anim>Idle
+      <component>fishingbasket</component>
+    </anim>
   </attachment>
   <component>ModelComp
     <assetreference type="GrannyModel">
@@ -397,6 +418,14 @@
       <tag type="SpecificSoundSet" checkvisible="1" set="GatherFruit">0.56</tag>
     </assetreference>
     <component>ModelComp</component>
+  </anim>
+  <anim>GatherFish
+    <assetreference type="GrannyAnim">
+      <file>animation_library\villager\villager_gatherfish</file>
+    </assetreference>
+    <component>ModelComp</component>
+    <attach a="fishingrod" frombone="MASTER" tobone="Bip01 Prop1" syncanims="0"/>
+    <attach a="fishingbasket" frombone="MASTER" tobone="Bip01" syncanims="0"/>
   </anim>
   <anim animlengthoverride="3.333333">Pickup
     <assetreference type="GrannyAnim">

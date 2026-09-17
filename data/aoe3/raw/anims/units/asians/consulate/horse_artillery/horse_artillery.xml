@@ -55,6 +55,13 @@
             </assetreference>
             <attach a="hats" frombone="bone_hat" tobone="Bip01 Head" syncanims="0"/>
           </fieldgun>
+          <ypjapanesemeijivisualsshadow>
+            <assetreference type="GrannyModel">
+              <file>units\artillery\horse_artillery\horse_artillery</file>
+              <materialvariant index="1"/>
+            </assetreference>
+            <attach a="hats" frombone="bone_hat" tobone="Bip01 Head" syncanims="0"/>
+          </ypjapanesemeijivisualsshadow>
         </logic>
       </normal>
       <lowpoly>
@@ -69,6 +76,11 @@
               <file>units\artillery\horse_artillery\lp_horse_artillery</file>
             </assetreference>
           </fieldgun>
+          <ypjapanesemeijivisualsshadow>
+            <assetreference type="GrannyModel">
+              <file>units\artillery\horse_artillery\lp_horse_artillery</file>
+            </assetreference>
+          </ypjapanesemeijivisualsshadow>
         </logic>
       </lowpoly>
     </logic>
@@ -113,6 +125,13 @@
             </assetreference>
             <attach a="hats" frombone="bone_hat" tobone="Bip01 Head" syncanims="0"/>
           </fieldgun>
+          <ypjapanesemeijivisualsshadow>
+            <assetreference type="GrannyModel">
+              <file>units\artillery\horse_artillery\horse_artillery_stripped</file>
+              <materialvariant index="1"/>
+            </assetreference>
+            <attach a="hats" frombone="bone_hat" tobone="Bip01 Head" syncanims="0"/>
+          </ypjapanesemeijivisualsshadow>
         </logic>
       </normal>
       <lowpoly>
@@ -127,6 +146,11 @@
               <file>units\artillery\horse_artillery\lp_horse_artillery_stripped</file>
             </assetreference>
           </fieldgun>
+          <ypjapanesemeijivisualsshadow>
+            <assetreference type="GrannyModel">
+              <file>units\artillery\horse_artillery\lp_horse_artillery_stripped</file>
+            </assetreference>
+          </ypjapanesemeijivisualsshadow>
         </logic>
       </lowpoly>
     </logic>
@@ -171,6 +195,13 @@
             </assetreference>
             <attach a="hats" frombone="bone_hat" tobone="Bip01 Head" syncanims="0"/>
           </fieldgun>
+          <ypjapanesemeijivisualsshadow>
+            <assetreference type="GrannyModel">
+              <file>units\artillery\horse_artillery\horse_artillery_limber</file>
+              <materialvariant index="1"/>
+            </assetreference>
+            <attach a="hats" frombone="bone_hat" tobone="Bip01 Head" syncanims="0"/>
+          </ypjapanesemeijivisualsshadow>
         </logic>
       </normal>
       <lowpoly>
@@ -185,6 +216,11 @@
               <file>units\artillery\horse_artillery\lp_horse_artillery_limber</file>
             </assetreference>
           </fieldgun>
+          <ypjapanesemeijivisualsshadow>
+            <assetreference type="GrannyModel">
+              <file>units\artillery\horse_artillery\lp_horse_artillery_limber</file>
+            </assetreference>
+          </ypjapanesemeijivisualsshadow>
         </logic>
       </lowpoly>
     </logic>

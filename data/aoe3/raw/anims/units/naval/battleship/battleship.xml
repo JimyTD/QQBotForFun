@@ -219,6 +219,26 @@
       <component>bear</component>
     </anim>
   </attachment>
+  <attachment>elephant
+    <component>elephant
+      <assetreference type="GrannyModel">
+        <file>units\naval\battleship\elephant</file>
+      </assetreference>
+    </component>
+    <anim>Idle
+      <component>elephant</component>
+    </anim>
+  </attachment>
+  <attachment>crab
+    <component>crab
+      <assetreference type="GrannyModel">
+        <file>units\naval\battleship\crab</file>
+      </assetreference>
+    </component>
+    <anim>Idle
+      <component>crab</component>
+    </anim>
+  </attachment>
   <component>battleship
     <logic type="Tech">
       <none>
@@ -402,6 +422,40 @@
         </logic>
         <attach a="eagle" frombone="bone_battleship_m0" tobone="bone_battleship_m0" syncanims="0"/>
       </dehcgermanbattleshipcard>
+      <dehcdanishbattleshipcard>
+        <logic type="Destruction">
+          <p1>
+            <assetreference type="GrannyModel">
+              <file>units\naval\battleship\battleship_damaged</file>
+              <materialvariant index="3"/>
+            </assetreference>
+          </p1>
+          <p99>
+            <assetreference type="GrannyModel">
+              <file>units\naval\battleship\battleship</file>
+              <materialvariant index="3"/>
+            </assetreference>
+          </p99>
+        </logic>
+        <attach a="elephant" frombone="bone_battleship_m0" tobone="bone_battleship_m0" syncanims="0"/>
+      </dehcdanishbattleshipcard>
+      <dehcpolishbattleshipcard>
+        <logic type="Destruction">
+          <p1>
+            <assetreference type="GrannyModel">
+              <file>units\naval\battleship\battleship_damaged</file>
+              <materialvariant index="4"/>
+            </assetreference>
+          </p1>
+          <p99>
+            <assetreference type="GrannyModel">
+              <file>units\naval\battleship\battleship</file>
+              <materialvariant index="4"/>
+            </assetreference>
+          </p99>
+        </logic>
+        <attach a="crab" frombone="bone_battleship_m0" tobone="bone_battleship_m0" syncanims="0"/>
+      </dehcpolishbattleshipcard>
     </logic>
     <decal>
       <effecttype>default</effecttype>
@@ -486,6 +540,20 @@
         </assetreference>
         <attach a="eagle" frombone="bone_battleship_m0" tobone="bone_battleship_m0" syncanims="0"/>
       </dehcgermanbattleshipcard>
+      <dehcdanishbattleshipcard>
+        <assetreference type="GrannyModel">
+          <file>units\naval\battleship\battleship_damaged</file>
+          <materialvariant index="3"/>
+        </assetreference>
+        <attach a="elephant" frombone="bone_battleship_m0" tobone="bone_battleship_m0" syncanims="0"/>
+      </dehcdanishbattleshipcard>
+      <dehcpolishbattleshipcard>
+        <assetreference type="GrannyModel">
+          <file>units\naval\battleship\battleship_damaged</file>
+          <materialvariant index="4"/>
+        </assetreference>
+        <attach a="crab" frombone="bone_battleship_m0" tobone="bone_battleship_m0" syncanims="0"/>
+      </dehcpolishbattleshipcard>
     </logic>
   </component>
   <anim>Idle

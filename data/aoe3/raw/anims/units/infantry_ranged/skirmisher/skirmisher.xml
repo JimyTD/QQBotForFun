@@ -3,6 +3,7 @@
   <definebone>bone_gun</definebone>
   <definebone>bone_hat</definebone>
   <definebone>BIP01 PROP1</definebone>
+  <definebone>Bip01</definebone>
   <attachment>torch
     <include>effects\projectiles\torch.xml</include>
   </attachment>
@@ -11,6 +12,9 @@
   </attachment>
   <attachment>hats
     <include>units\infantry_ranged\skirmisher\skirmisher_hats.xml</include>
+  </attachment>
+  <attachment>meleeweapons
+    <include>units\infantry_ranged\skirmisher\skirmisher_melee_weapons.xml</include>
   </attachment>
   <attachment>pickaxe
     <component>pickaxe
@@ -82,6 +86,26 @@
       <component>d_hat</component>
     </anim>
   </attachment>
+  <attachment>fishingrod
+    <component>fishingrod
+      <assetreference type="GrannyModel">
+        <file>units\attachments\fishing_rod\fishing_rod</file>
+      </assetreference>
+    </component>
+    <anim>Idle
+      <component>fishingrod</component>
+    </anim>
+  </attachment>
+  <attachment>fishingbasket
+    <component>fishingbasket
+      <assetreference type="GrannyModel">
+        <file>units\attachments\fishing_rod\fishing_basket</file>
+      </assetreference>
+    </component>
+    <anim>Idle
+      <component>fishingbasket</component>
+    </anim>
+  </attachment>
   <component>ModelComp
     <logic type="Tech">
       <none>
@@ -115,6 +139,11 @@
         </assetreference>
         <attach a="hats" frombone="bone_hat" tobone="HEAD" syncanims="0"/>
       </imperialskirmishers>
+      <rgdanishskirmishers>
+        <assetreference type="GrannyModel">
+          <file>units\infantry_ranged\skirmisher\ski_trooper</file>
+        </assetreference>
+      </rgdanishskirmishers>
       <rgvoltigeur>
         <assetreference type="GrannyModel">
           <file>units\infantry_ranged\skirmisher\voltigeur</file>
@@ -132,6 +161,13 @@
         </assetreference>
         <attach a="hats" frombone="bone_hat" tobone="HEAD" syncanims="0"/>
       </derevolutionfinland>
+      <deindependenceswedish>
+        <assetreference type="GrannyModel">
+          <file>units\infantry_ranged\carolean\carolean_age4</file>
+          <materialvariant index="1"/>
+        </assetreference>
+        <attach a="hats" frombone="bone_hat" tobone="HEAD" syncanims="0"/>
+      </deindependenceswedish>
       <imperialvoltigeur>
         <assetreference type="GrannyModel">
           <file>units\infantry_ranged\skirmisher\voltigeur</file>
@@ -142,6 +178,16 @@
           <file>units\infantry_ranged\skirmisher\prussian_jager</file>
         </assetreference>
       </imperialneedlegun>
+      <derevolutionwarsaw>
+        <assetreference type="GrannyModel">
+          <file>units\infantry_ranged\skirmisher\polish_skirmisher</file>
+        </assetreference>
+      </derevolutionwarsaw>
+      <deindependencepolish>
+        <assetreference type="GrannyModel">
+          <file>units\infantry_ranged\skirmisher\polish_skirmisher</file>
+        </assetreference>
+      </deindependencepolish>
     </logic>
     <decal>
       <effecttype>default</effecttype>
@@ -469,14 +515,14 @@
       <file>animation_library\range\charge\charge_idleB</file>
     </assetreference>
     <component>ModelComp</component>
-    <attach a="guns" frombone="bone_gun" tobone="BIP01 PROP1" syncanims="0"/>
+    <attach a="meleeweapons" frombone="bone_gun" tobone="BIP01 PROP1" syncanims="0"/>
   </anim>
   <anim>Charge_bored
     <assetreference type="GrannyAnim">
       <file>animation_library\range\charge\charge_bored</file>
     </assetreference>
     <component>ModelComp</component>
-    <attach a="guns" frombone="bone_gun" tobone="BIP01 PROP1" syncanims="0"/>
+    <attach a="meleeweapons" frombone="bone_gun" tobone="BIP01 PROP1" syncanims="0"/>
   </anim>
   <anim>Charge_attack
     <assetreference type="GrannyAnim">
@@ -503,7 +549,7 @@
       <tag type="SpecificSoundSet" checkvisible="1" set="Swoosh">0.42</tag>
     </assetreference>
     <component>ModelComp</component>
-    <attach a="guns" frombone="bone_gun" tobone="BIP01 PROP1" syncanims="0"/>
+    <attach a="meleeweapons" frombone="bone_gun" tobone="BIP01 PROP1" syncanims="0"/>
   </anim>
   <anim>Charge_Walk
     <assetreference type="GrannyAnim">
@@ -512,7 +558,7 @@
       <tag type="FootstepRight" footprinttype="HumanRight">0.06</tag>
     </assetreference>
     <component>ModelComp</component>
-    <attach a="guns" frombone="bone_gun" tobone="BIP01 PROP1" syncanims="0"/>
+    <attach a="meleeweapons" frombone="bone_gun" tobone="BIP01 PROP1" syncanims="0"/>
   </anim>
   <anim>Charge_Jog
     <assetreference type="GrannyAnim">
@@ -521,7 +567,7 @@
       <tag type="FootstepRight" footprinttype="HumanRight">0.11</tag>
     </assetreference>
     <component>ModelComp</component>
-    <attach a="guns" frombone="bone_gun" tobone="BIP01 PROP1" syncanims="0"/>
+    <attach a="meleeweapons" frombone="bone_gun" tobone="BIP01 PROP1" syncanims="0"/>
   </anim>
   <anim>Charge_Run
     <assetreference type="GrannyAnim">
@@ -530,7 +576,7 @@
       <tag type="FootstepRight" footprinttype="HumanRight">0.12</tag>
     </assetreference>
     <component>ModelComp</component>
-    <attach a="guns" frombone="bone_gun" tobone="BIP01 PROP1" syncanims="0"/>
+    <attach a="meleeweapons" frombone="bone_gun" tobone="BIP01 PROP1" syncanims="0"/>
   </anim>
   <anim>GatherChop
     <assetreference type="GrannyAnim">
@@ -580,6 +626,14 @@
       <tag type="SpecificSoundSet" checkvisible="1" set="GatherFruit">0.56</tag>
     </assetreference>
     <component>ModelComp</component>
+  </anim>
+  <anim>GatherFish
+    <assetreference type="GrannyAnim">
+      <file>animation_library\villager\villager_gatherfish</file>
+    </assetreference>
+    <component>ModelComp</component>
+    <attach a="fishingrod" frombone="MASTER" tobone="Bip01 Prop1" syncanims="0"/>
+    <attach a="fishingbasket" frombone="MASTER" tobone="Bip01" syncanims="0"/>
   </anim>
   <anim>BuildLifting
     <assetreference type="GrannyAnim">

@@ -14,19 +14,16 @@
   <component>ModelComp
     <logic type="Tech">
       <none>
-        <logic type="LowPoly">
-          <normal>
-            <assetreference type="GrannyModel">
-              <file>units\asians\natives\war_elephant\war_elephant_3</file>
-            </assetreference>
-          </normal>
-          <lowpoly>
-            <assetreference type="GrannyModel">
-              <file>units\asians\natives\war_elephant\war_elephant_3</file>
-            </assetreference>
-          </lowpoly>
-        </logic>
+        <assetreference type="GrannyModel">
+          <file>units\asians\natives\war_elephant\war_elephant_3</file>
+        </assetreference>
       </none>
+      <dedanishorderelephantshadow>
+        <assetreference type="GrannyModel">
+          <file>units\asians\natives\war_elephant\war_elephant_3</file>
+          <materialvariant index="1"/>
+        </assetreference>
+      </dedanishorderelephantshadow>
     </logic>
     <decal>
       <effecttype>default</effecttype>

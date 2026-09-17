@@ -8,29 +8,6 @@
         <logic type="LowPoly">
           <normal>
             <assetreference type="GrannyModel">
-              <file>units\wardogs\wardog1</file>
-            </assetreference>
-          </normal>
-          <lowpoly>
-            <assetreference type="GrannyModel">
-              <file>units\wardogs\lp_wardog1</file>
-            </assetreference>
-          </lowpoly>
-        </logic>
-        <decal>
-          <effecttype>default</effecttype>
-          <texture isfakeshadow="1">shadows_selections\shadow_circle_64x64</texture>
-          <selectedtexture>shadows_selections\selection_oval_32x64</selectedtexture>
-          <width>1.0</width>
-          <height>1.0</height>
-          <selectionextrawidth>1.0</selectionextrawidth>
-          <selectionextraheight>1.0</selectionextraheight>
-        </decal>
-      </data>
-      <data>
-        <logic type="LowPoly">
-          <normal>
-            <assetreference type="GrannyModel">
               <file>units\wardogs\wardog2</file>
             </assetreference>
           </normal>

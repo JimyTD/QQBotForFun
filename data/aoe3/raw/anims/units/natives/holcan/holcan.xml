@@ -7,14 +7,14 @@
   <attachment>torch
     <include>effects\projectiles\torch.xml</include>
   </attachment>
-  <attachment>attachment_atlatl
-    <component>attachment_atlatl
+  <attachment>atlatl
+    <component>atlatl
       <assetreference type="GrannyModel">
         <file>units\natives\aztec\eagle_knight\eagle_knight_atlatl</file>
       </assetreference>
     </component>
     <anim>Idle
-      <component>attachment_atlatl</component>
+      <component>atlatl</component>
     </anim>
   </attachment>
   <attachment>shield
@@ -27,12 +27,21 @@
       <component>shield</component>
     </anim>
   </attachment>
+  <attachment>melee
+    <component>melee
+      <assetreference type="GrannyModel">
+        <file>units\natives\aztec\eagle_knight\eagle_knight_atlatl_melee</file>
+      </assetreference>
+    </component>
+    <anim>Idle
+      <component>melee</component>
+    </anim>
+  </attachment>
   <component>ModelComp
     <assetreference type="GrannyModel">
       <file>units\natives\holcan\holcan</file>
     </assetreference>
-    <attach a="shield" frombone="bone_shield" tobone="Bip01 L ForeArm" syncanims="0"/>
-    <attach a="attachment_atlatl" frombone="bip01_attach_rt" tobone="Bip01 Prop1" syncanims="1"/>
+    <attach a="shield" frombone="bone_shield" tobone="L FOREARM" syncanims="0"/>
     <decal>
       <effecttype>default</effecttype>
       <texture isfakeshadow="1">shadows_selections\shadow_circle_32x32</texture>
@@ -41,6 +50,46 @@
       <height>1.0</height>
     </decal>
   </component>
+  <anim>Charge_Attack
+    <assetreference type="GrannyAnim">
+      <file>animation_library\natives\puma_lord\charge_attack</file>
+      <tag type="Attack">0.37</tag>
+      <tag type="SpecificSoundSet" checkvisible="1" set="Swoosh">0.30</tag>
+    </assetreference>
+    <assetreference type="GrannyAnim">
+      <file>animation_library\natives\puma_lord\charge_attack2</file>
+      <tag type="Attack">0.41</tag>
+      <tag type="SpecificSoundSet" checkvisible="1" set="Swoosh">0.34</tag>
+    </assetreference>
+    <assetreference type="GrannyAnim">
+      <file>animation_library\africa\charge_attack_b</file>
+      <tag type="Attack">0.51</tag>
+      <tag type="SpecificSoundSet" checkvisible="1" set="Swoosh">0.45</tag>
+    </assetreference>
+    <assetreference type="GrannyAnim">
+      <file>animation_library\africa\charge_attack_c</file>
+      <tag type="Attack">0.51</tag>
+      <tag type="SpecificSoundSet" checkvisible="1" set="Swoosh">0.45</tag>
+    </assetreference>
+    <component>ModelComp</component>
+    <attach a="melee" frombone="bone_spear" tobone="Bip01 Prop1" syncanims="1"/>
+  </anim>
+  <anim>Volley_standing_attack
+    <assetreference type="GrannyAnim">
+      <file>animation_library\natives\eagle_warrior\attack_native_atlatl_a</file>
+      <tag type="Attack">0.49</tag>
+      <tag type="SpecificSoundSet" checkvisible="1" set="Arrows">0.49</tag>
+    </assetreference>
+    <component>ModelComp</component>
+    <attach a="atlatl" frombone="bip01_attach_rt" tobone="Bip01 Prop1" syncanims="1"/>
+  </anim>
+  <anim>Volley_standing_reload
+    <assetreference type="GrannyAnim">
+      <file>animation_library\africa\volley_in</file>
+    </assetreference>
+    <component>ModelComp</component>
+    <attach a="melee" frombone="bone_spear" tobone="Bip01 Prop1" syncanims="1"/>
+  </anim>
   <anim>Death_by_melee
     <assetreference type="GrannyAnim">
       <file>animation_library\shared\human_sword_death_a</file>
@@ -91,6 +140,7 @@
       <file>animation_library\shared\cheer_C</file>
     </assetreference>
     <component>ModelComp</component>
+    <attach a="melee" frombone="bone_spear" tobone="Bip01 Prop1" syncanims="1"/>
   </anim>
   <anim>Recoil
     <assetreference type="GrannyAnim">
@@ -106,6 +156,7 @@
       <file>animation_library\shared\recoil_G</file>
     </assetreference>
     <component>ModelComp</component>
+    <attach a="atlatl" frombone="bip01_attach_rt" tobone="Bip01 Prop1" syncanims="1"/>
   </anim>
   <anim>HC_openDoor
     <assetreference type="GrannyAnim">
@@ -124,77 +175,73 @@
       <file>animation_library\natives\eagle_warrior\raze_idle</file>
     </assetreference>
     <component>ModelComp</component>
+    <attach a="atlatl" frombone="bip01_attach_rt" tobone="Bip01 Prop1" syncanims="1"/>
     <attach a="torch" frombone="ATTACHPOINT" tobone="L HAND" syncanims="0"/>
   </anim>
   <anim>Raze_Attack
     <assetreference type="GrannyAnim">
       <file>animation_library\natives\eagle_warrior\raze_attack</file>
-      <tag type="Attack">0.50</tag>
+      <tag type="Attack">0.75</tag>
       <tag type="SpecificSoundSet" checkvisible="1" set="TorchSwing">0.42</tag>
     </assetreference>
     <component>ModelComp</component>
+    <attach a="atlatl" frombone="bip01_attach_rt" tobone="Bip01 Prop1" syncanims="1"/>
     <attach a="torch" frombone="ATTACHPOINT" tobone="L HAND" syncanims="0"/>
   </anim>
   <anim>Cover_ranged_idle
     <assetreference type="GrannyAnim">
-      <file>animation_library\natives\eagle_warrior\idle</file>
+      <file>animation_library\africa\cover_ranged_idle</file>
     </assetreference>
     <component>ModelComp</component>
+    <attach a="melee" frombone="bone_spear" tobone="Bip01 Prop1" syncanims="1"/>
   </anim>
   <anim>Cover_Bored
     <assetreference type="GrannyAnim">
-      <file>animation_library\natives\eagle_warrior\bored</file>
+      <file>animation_library\africa\cover_ranged_idle</file>
     </assetreference>
     <component>ModelComp</component>
+    <attach a="melee" frombone="bone_spear" tobone="Bip01 Prop1" syncanims="1"/>
   </anim>
   <anim>Cover_Walk
     <assetreference type="GrannyAnim">
-      <file>animation_library\natives\eagle_warrior\walk</file>
-      <tag type="FootstepLeft" footprinttype="HumanLeft">0.61</tag>
-      <tag type="FootstepRight" footprinttype="HumanRight">0.07</tag>
+      <file>animation_library\africa\cover_jog</file>
+      <tag type="FootstepLeft" footprinttype="HumanLeft">0.71</tag>
+      <tag type="FootstepRight" footprinttype="HumanRight">0.14</tag>
     </assetreference>
     <component>ModelComp</component>
+    <attach a="melee" frombone="bone_spear" tobone="Bip01 Prop1" syncanims="1"/>
   </anim>
   <anim>Cover_Jog
     <assetreference type="GrannyAnim">
-      <file>animation_library\natives\eagle_warrior\jog</file>
-      <tag type="FootstepLeft" footprinttype="HumanLeft">0.69</tag>
-      <tag type="FootstepRight" footprinttype="HumanRight">0.15</tag>
+      <file>animation_library\africa\cover_jog</file>
+      <tag type="FootstepLeft" footprinttype="HumanLeft">0.71</tag>
+      <tag type="FootstepRight" footprinttype="HumanRight">0.14</tag>
     </assetreference>
     <component>ModelComp</component>
+    <attach a="melee" frombone="bone_spear" tobone="Bip01 Prop1" syncanims="1"/>
   </anim>
   <anim>Cover_Run
     <assetreference type="GrannyAnim">
-      <file>animation_library\natives\eagle_warrior\run</file>
-      <tag type="FootstepLeft" footprinttype="HumanLeft">0.69</tag>
+      <file>animation_library\africa\cover_run</file>
+      <tag type="FootstepLeft" footprinttype="HumanLeft">0.70</tag>
       <tag type="FootstepRight" footprinttype="HumanRight">0.15</tag>
     </assetreference>
     <component>ModelComp</component>
-  </anim>
-  <anim>Volley_standing_attack
-    <assetreference type="GrannyAnim">
-      <file>animation_library\natives\eagle_warrior\attack_native_atlatl_a</file>
-      <tag type="Attack">0.49</tag>
-    </assetreference>
-    <component>ModelComp</component>
-  </anim>
-  <anim>Volley_standing_reload
-    <assetreference type="GrannyAnim">
-      <file>animation_library\natives\eagle_warrior\idle</file>
-    </assetreference>
-    <component>ModelComp</component>
+    <attach a="melee" frombone="bone_spear" tobone="Bip01 Prop1" syncanims="1"/>
   </anim>
   <anim>Volley_standing_idle
     <assetreference type="GrannyAnim">
       <file>animation_library\natives\eagle_warrior\idle</file>
     </assetreference>
     <component>ModelComp</component>
+    <attach a="atlatl" frombone="bip01_attach_rt" tobone="Bip01 Prop1" syncanims="1"/>
   </anim>
   <anim>Volley_standing_bored
     <assetreference type="GrannyAnim">
       <file>animation_library\natives\eagle_warrior\bored</file>
     </assetreference>
     <component>ModelComp</component>
+    <attach a="atlatl" frombone="bip01_attach_rt" tobone="Bip01 Prop1" syncanims="1"/>
   </anim>
   <anim>Volley_Walk
     <assetreference type="GrannyAnim">
@@ -203,6 +250,7 @@
       <tag type="FootstepRight" footprinttype="HumanRight">0.07</tag>
     </assetreference>
     <component>ModelComp</component>
+    <attach a="atlatl" frombone="bip01_attach_rt" tobone="Bip01 Prop1" syncanims="1"/>
   </anim>
   <anim>Volley_Jog
     <assetreference type="GrannyAnim">
@@ -211,6 +259,7 @@
       <tag type="FootstepRight" footprinttype="HumanRight">0.15</tag>
     </assetreference>
     <component>ModelComp</component>
+    <attach a="atlatl" frombone="bip01_attach_rt" tobone="Bip01 Prop1" syncanims="1"/>
   </anim>
   <anim>Volley_Run
     <assetreference type="GrannyAnim">
@@ -219,61 +268,62 @@
       <tag type="FootstepRight" footprinttype="HumanRight">0.15</tag>
     </assetreference>
     <component>ModelComp</component>
+    <attach a="atlatl" frombone="bip01_attach_rt" tobone="Bip01 Prop1" syncanims="1"/>
   </anim>
   <anim>Defend_Idle
     <assetreference type="GrannyAnim">
-      <file>animation_library\natives\eagle_warrior\idle</file>
+      <file>animation_library\range\defend\defend_idle</file>
     </assetreference>
     <component>ModelComp</component>
+    <attach a="melee" frombone="bone_spear" tobone="Bip01 Prop1" syncanims="1"/>
   </anim>
   <anim>Defend_Bored
     <assetreference type="GrannyAnim">
-      <file>animation_library\natives\eagle_warrior\bored</file>
+      <file>animation_library\range\defend\defend_boredA</file>
     </assetreference>
     <component>ModelComp</component>
+    <attach a="melee" frombone="bone_spear" tobone="Bip01 Prop1" syncanims="1"/>
   </anim>
   <anim>Charge_Idle
     <assetreference type="GrannyAnim">
-      <file>animation_library\natives\eagle_warrior\idle</file>
+      <file>animation_library\africa\charge_idle</file>
     </assetreference>
     <component>ModelComp</component>
+    <attach a="melee" frombone="bone_spear" tobone="Bip01 Prop1" syncanims="1"/>
   </anim>
   <anim>Charge_Bored
     <assetreference type="GrannyAnim">
-      <file>animation_library\natives\eagle_warrior\bored</file>
+      <file>animation_library\africa\charge_bored_a</file>
     </assetreference>
     <component>ModelComp</component>
-  </anim>
-  <anim>Charge_Attack
-    <assetreference type="GrannyAnim">
-      <file>animation_library\natives\eagle_warrior\attack_native_atlatl_a</file>
-      <tag type="Attack">0.47</tag>
-    </assetreference>
-    <component>ModelComp</component>
+    <attach a="melee" frombone="bone_spear" tobone="Bip01 Prop1" syncanims="1"/>
   </anim>
   <anim>Charge_Walk
     <assetreference type="GrannyAnim">
-      <file>animation_library\natives\eagle_warrior\walk</file>
-      <tag type="FootstepLeft" footprinttype="HumanLeft">0.61</tag>
-      <tag type="FootstepRight" footprinttype="HumanRight">0.07</tag>
+      <file>animation_library\natives\puma_lord\charge_walk</file>
+      <tag type="FootstepLeft" footprinttype="HumanLeft">0.58</tag>
+      <tag type="FootstepRight" footprinttype="HumanRight">0.08</tag>
     </assetreference>
     <component>ModelComp</component>
+    <attach a="melee" frombone="bone_spear" tobone="Bip01 Prop1" syncanims="1"/>
   </anim>
   <anim>Charge_Jog
     <assetreference type="GrannyAnim">
-      <file>animation_library\natives\eagle_warrior\jog</file>
-      <tag type="FootstepLeft" footprinttype="HumanLeft">0.69</tag>
+      <file>animation_library\natives\puma_lord\charge_jog</file>
+      <tag type="FootstepLeft" footprinttype="HumanLeft">0.60</tag>
       <tag type="FootstepRight" footprinttype="HumanRight">0.15</tag>
     </assetreference>
     <component>ModelComp</component>
+    <attach a="melee" frombone="bone_spear" tobone="Bip01 Prop1" syncanims="1"/>
   </anim>
   <anim>Charge_Run
     <assetreference type="GrannyAnim">
-      <file>animation_library\natives\eagle_warrior\run</file>
-      <tag type="FootstepLeft" footprinttype="HumanLeft">0.69</tag>
-      <tag type="FootstepRight" footprinttype="HumanRight">0.15</tag>
+      <file>animation_library\natives\puma_lord\charge_run</file>
+      <tag type="FootstepLeft" footprinttype="HumanLeft">0.12</tag>
+      <tag type="FootstepRight" footprinttype="HumanRight">0.62</tag>
     </assetreference>
     <component>ModelComp</component>
+    <attach a="melee" frombone="bone_spear" tobone="Bip01 Prop1" syncanims="1"/>
   </anim>
   <anim>kidnap_hostageA_idle
     <assetreference type="GrannyAnim">

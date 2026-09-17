@@ -86,6 +86,7 @@
     <rate type="Huntable">1.0</rate>
     <rate type="ypBerryBuilding">1.0</rate>
     <rate type="ypGroveBuilding">1.0</rate>
+    <typedanim type="deFishingHole">GatherFish</typedanim>
   </action>
   <action>
     <name stringid="69183">NoWork</name>
@@ -130,18 +131,13 @@
     <idleanim>Aim</idleanim>
     <maxheight>2</maxheight>
     <accuracy>10.0</accuracy>
-    <accuracyreductionfactor>0.5</accuracyreductionfactor>
-    <aimbonus>0</aimbonus>
-    <maxspread>5</maxspread>
-    <spreadfactor>0.25</spreadfactor>
     <trackrating>12</trackrating>
-    <unintentionaldamagemultiplier>0.7</unintentionaldamagemultiplier>
     <projectile>Javelin</projectile>
     <maxrange>10</maxrange>
-    <rate type="Military">1.0 </rate>
-    <rate type="Huntable">1.0 </rate>
-    <rate type="Economic">1.0 </rate>
-    <rate type="Guardian">1.0 </rate>
+    <rate type="Military">1.0</rate>
+    <rate type="Huntable">1.0</rate>
+    <rate type="Economic">1.0</rate>
+    <rate type="Guardian">1.0</rate>
     <instantballistics>0</instantballistics>
   </action>
   <action>
@@ -154,19 +150,14 @@
     <idleanim>Aim</idleanim>
     <maxheight>0</maxheight>
     <accuracy>1.0</accuracy>
-    <accuracyreductionfactor>0.5</accuracyreductionfactor>
-    <aimbonus>0</aimbonus>
-    <maxspread>5</maxspread>
-    <spreadfactor>0.25</spreadfactor>
     <trackrating>12</trackrating>
-    <unintentionaldamagemultiplier>0.7</unintentionaldamagemultiplier>
     <projectile>InvisibleProjectile</projectile>
     <impacteffect>effects\impacts\gun</impacteffect>
     <maxrange>10</maxrange>
-    <rate type="Military">1.0 </rate>
-    <rate type="Huntable">1.0 </rate>
-    <rate type="Economic">1.0 </rate>
-    <rate type="Guardian">1.0 </rate>
+    <rate type="Military">1.0</rate>
+    <rate type="Huntable">1.0</rate>
+    <rate type="Economic">1.0</rate>
+    <rate type="Guardian">1.0</rate>
     <typedminrange type="Huntable">0</typedminrange>
     <instantballistics>1</instantballistics>
   </action>
@@ -175,7 +166,7 @@
     <type>Attack</type>
     <rangedlogic>1</rangedlogic>
     <maxrange>6</maxrange>
-    <rate type="LogicalTypeShipsAndBuildings">1.0 </rate>
+    <rate type="LogicalTypeShipsAndBuildings">1.0</rate>
     <attackaction>1</attackaction>
     <speedboost>1</speedboost>
     <anim>Raze_Attack</anim>
@@ -190,10 +181,10 @@
     <handlogic>1</handlogic>
     <anim>HandAttack</anim>
     <maxrange>2</maxrange>
-    <rate type="Military">1.0 </rate>
-    <rate type="Economic">1.0 </rate>
-    <rate type="Guardian">1.0 </rate>
-    <rate type="Herdable">1.0 </rate>
+    <rate type="Military">1.0</rate>
+    <rate type="Economic">1.0</rate>
+    <rate type="Guardian">1.0</rate>
+    <rate type="Herdable">1.0</rate>
     <impacteffect>effects\impacts\melee</impacteffect>
   </action>
   <action>
@@ -203,7 +194,7 @@
     <handlogic>1</handlogic>
     <anim>GatherCrateAttack</anim>
     <maxrange>2</maxrange>
-    <rate type="AbstractInfiniteCrate">1.0 </rate>
+    <rate type="AbstractInfiniteCrate">1.0</rate>
     <impacteffect>effects\impacts\melee</impacteffect>
     <hidefromstats>1</hidefromstats>
   </action>
@@ -214,7 +205,7 @@
     <handlogic>1</handlogic>
     <anim>GatherChop</anim>
     <maxrange>2</maxrange>
-    <rate type="Tree">1.0 </rate>
+    <rate type="Tree">1.0</rate>
     <hidefromstats>1</hidefromstats>
   </action>
   <action>
@@ -227,6 +218,19 @@
     <autogatherscalebygatherrate>1</autogatherscalebygatherrate>
     <persistent>1</persistent>
     <rate type="Gold">0.100000</rate>
+  </action>
+  <action>
+    <name stringid="110152">IncreaseHPWithUnits</name>
+    <type>LikeBonus</type>
+    <modifyratebytype>1</modifyratebytype>
+    <modifyabstracttype>Settler</modifyabstracttype>
+    <active>0</active>
+    <maxrange>20</maxrange>
+    <rate type="Settler">0.05</rate>
+    <persistent>1</persistent>
+    <modifytype>MaxHP</modifytype>
+    <modifybase>1.0</modifybase>
+    <modifyratecap>1.13</modifyratecap>
   </action>
   <tactic>Normal
     <speedmodifier>1.0</speedmodifier>
@@ -242,6 +246,7 @@
     <action>AutoGatherCoinHunt</action>
     <action>NATAutoGatherCoinAnimal</action>
     <action>NATAutoGatherCoinPlant</action>
+    <action>IncreaseHPWithUnits</action>
     <action priority="100">BuildingAttack</action>
     <action priority="90">ChopAttack</action>
     <action priority="50">SpearAttack</action>

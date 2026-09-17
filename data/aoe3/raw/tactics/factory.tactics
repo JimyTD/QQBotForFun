@@ -23,6 +23,13 @@
     <persistent>1</persistent>
   </action>
   <action>
+    <name stringid="43297">SpawnConsulateCannon</name>
+    <type>Maintain</type>
+    <rate type="ypConsulateCannon">1.0 </rate>
+    <active>0</active>
+    <persistent>1</persistent>
+  </action>
+  <action>
     <name stringid="43298">SpawnRocket</name>
     <type>Maintain</type>
     <rate type="Rocket">1.0 </rate>
@@ -43,6 +50,12 @@
     <active>0</active>
     <persistent>1</persistent>
   </action>
+  <action>
+    <name stringid="69149">AutoGatherTrade</name>
+    <active>0</active>
+    <type>AutoGather</type>
+    <persistent>1</persistent>
+  </action>
   <tactic>Normal
     <protounitcommand>Tactic10</protounitcommand>
     <action>AutoGatherCoin</action>
@@ -53,6 +66,11 @@
     </transition>
     <transition>
       <tactic>Wood</tactic>
+      <length>2</length>
+      <exit>1</exit>
+    </transition>
+    <transition>
+      <tactic>Trade</tactic>
       <length>2</length>
       <exit>1</exit>
     </transition>
@@ -76,6 +94,11 @@
       <exit>1</exit>
     </transition>
     <transition>
+      <tactic>Trade</tactic>
+      <length>2</length>
+      <exit>1</exit>
+    </transition>
+    <transition>
       <tactic>Cannon</tactic>
       <length>2</length>
       <exit>1</exit>
@@ -95,6 +118,11 @@
       <exit>1</exit>
     </transition>
     <transition>
+      <tactic>Trade</tactic>
+      <length>2</length>
+      <exit>1</exit>
+    </transition>
+    <transition>
       <tactic>Cannon</tactic>
       <length>2</length>
       <exit>1</exit>
@@ -106,6 +134,7 @@
     <action>SpawnRocket</action>
     <action>SpawnBombard</action>
     <action>SpawnPapalBombard</action>
+    <action>SpawnConsulateCannon</action>
     <transition>
       <tactic>Normal</tactic>
       <length>2</length>
@@ -118,6 +147,36 @@
     </transition>
     <transition>
       <tactic>Wood</tactic>
+      <length>2</length>
+      <exit>1</exit>
+    </transition>
+    <transition>
+      <tactic>Trade</tactic>
+      <length>2</length>
+      <exit>1</exit>
+    </transition>
+  </tactic>
+  <tactic>Trade
+    <active>0</active>
+    <protounitcommand>FactoryTrade</protounitcommand>
+    <action>AutoGatherTrade</action>
+    <transition>
+      <tactic>Normal</tactic>
+      <length>2</length>
+      <exit>1</exit>
+    </transition>
+    <transition>
+      <tactic>Food</tactic>
+      <length>2</length>
+      <exit>1</exit>
+    </transition>
+    <transition>
+      <tactic>Wood</tactic>
+      <length>2</length>
+      <exit>1</exit>
+    </transition>
+    <transition>
+      <tactic>Cannon</tactic>
       <length>2</length>
       <exit>1</exit>
     </transition>

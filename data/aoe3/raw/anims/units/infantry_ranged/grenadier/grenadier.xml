@@ -150,6 +150,12 @@
         </assetreference>
         <attach a="pouch" frombone="bone_pouch" tobone="PELVIS" syncanims="0"/>
       </rgpavlovgrenadiers>
+      <rgdanishgrenadiers>
+        <assetreference type="GrannyModel">
+          <file>units\infantry_ranged\grenadier\danish_grenadier</file>
+        </assetreference>
+        <attach a="pouch" frombone="bone_pouch" tobone="PELVIS" syncanims="0"/>
+      </rgdanishgrenadiers>
       <dehcrevoldguardskinshadow>
         <assetreference type="GrannyModel">
           <file>units\infantry_ranged\grenadier\old_guard</file>

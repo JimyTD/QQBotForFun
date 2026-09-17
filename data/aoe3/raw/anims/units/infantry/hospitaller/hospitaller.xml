@@ -117,6 +117,12 @@
           <materialvariant index="2"/>
         </assetreference>
       </deimperialhospitallers>
+      <dehcdanishorderdannebrog>
+        <assetreference type="GrannyModel">
+          <file>units\infantry\hospitaller\hospitaller_01</file>
+          <materialvariant index="1"/>
+        </assetreference>
+      </dehcdanishorderdannebrog>
     </logic>
     <attach a="hat" frombone="bone_hat" tobone="HEAD" syncanims="0"/>
     <decal>

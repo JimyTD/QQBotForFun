@@ -16,11 +16,7 @@
     <idleanim>Combat_Idle</idleanim>
     <maxheight>0</maxheight>
     <accuracy>1.0</accuracy>
-    <aimbonus>0</aimbonus>
-    <maxspread>5</maxspread>
-    <spreadfactor>0.25</spreadfactor>
     <trackrating>12</trackrating>
-    <unintentionaldamagemultiplier>1.0</unintentionaldamagemultiplier>
     <projectile>Cannonball</projectile>
     <impacteffect>effects\impacts\cannon</impacteffect>
     <rate type="All">1.0 </rate>
@@ -45,30 +41,6 @@
     <action>AutoGatherWood</action>
     <action>CannonAttack</action>
     <throw>1</throw>
-    <transition>
-      <tactic>Limber</tactic>
-      <action>Limber</action>
-      <exit>1</exit>
-    </transition>
-    <idleanim>Idle</idleanim>
-    <boredanim>Bored</boredanim>
-    <deathanim>Death_by_melee</deathanim>
-    <walkanim>Walk</walkanim>
-    <joganim>Jog</joganim>
-    <runanim>Run</runanim>
-  </tactic>
-  <tactic>Limber
-    <speedmodifier>1.0</speedmodifier>
-    <attacktype>LogicalTypeRangedUnitsAttack</attacktype>
-    <attackresponsetype>LogicalTypeRangedUnitsAttack</attackresponsetype>
-    <action>AutoGatherWood</action>
-    <transition>
-      <tactic>Bombard</tactic>
-      <action>Limber</action>
-      <exit>1</exit>
-      <commandautomatic>1</commandautomatic>
-      <automatic>1</automatic>
-    </transition>
     <idleanim>Idle</idleanim>
     <boredanim>Bored</boredanim>
     <deathanim>Death_by_melee</deathanim>

@@ -71,7 +71,7 @@
     <anim>Cheer</anim>
   </action>
   <action>
-    <name stringid="38124">Stun</name>
+    <name stringid="62770">Stun</name>
     <type>StunAttack</type>
     <handlogic>1</handlogic>
     <anim>stun_attack</anim>

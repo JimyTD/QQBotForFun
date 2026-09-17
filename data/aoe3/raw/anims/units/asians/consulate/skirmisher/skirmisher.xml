@@ -19,6 +19,11 @@
             <file>units\infantry_ranged\skirmisher\needle_gun</file>
           </assetreference>
         </ypbigconsulategermans>
+        <ypjapanesemeijivisualsshadow>
+          <assetreference type="GrannyModel">
+            <file>units\infantry_ranged\skirmisher\needle_gun</file>
+          </assetreference>
+        </ypjapanesemeijivisualsshadow>
       </logic>
     </component>
     <anim>Idle
@@ -47,6 +52,12 @@
           <file>units\infantry_ranged\skirmisher\prussian_jager</file>
         </assetreference>
       </ypbigconsulategermans>
+      <ypjapanesemeijivisualsshadow>
+        <assetreference type="GrannyModel">
+          <file>units\infantry_ranged\cacadore\cacadore_2age</file>
+          <materialvariant index="1"/>
+        </assetreference>
+      </ypjapanesemeijivisualsshadow>
     </logic>
     <attach a="gun" frombone="bone_gun" tobone="BIP01 PROP1" syncanims="0"/>
     <decal>

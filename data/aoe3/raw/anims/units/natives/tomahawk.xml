@@ -16,18 +16,9 @@
     <include>effects\projectiles\torch.xml</include>
   </attachment>
   <component>ModelComp
-    <logic type="LowPoly">
-      <normal>
-        <assetreference type="GrannyModel">
-          <file>units\natives\tomahawk_warrior</file>
-        </assetreference>
-      </normal>
-      <lowpoly>
-        <assetreference type="GrannyModel">
-          <file>units\natives\lp_tomahawk_warrior</file>
-        </assetreference>
-      </lowpoly>
-    </logic>
+    <assetreference type="GrannyModel">
+      <file>units\natives\tomahawk_warrior</file>
+    </assetreference>
     <decal>
       <effecttype>default</effecttype>
       <texture isfakeshadow="1">shadows_selections\shadow_circle_32x32</texture>
@@ -35,8 +26,6 @@
       <width>1.0</width>
       <height>1.0</height>
     </decal>
-    <attach a="tomahawk" frombone="bone_tomahawk" tobone="Bip01 Prop1" syncanims="0"/>
-    <attach a="tomahawk" frombone="bone_tomahawk" tobone="Bip01 Prop2" syncanims="0"/>
   </component>
   <component>ModelCompNoTom
     <logic type="LowPoly">
@@ -101,6 +90,8 @@
       <tag type="SpecificSoundSet" checkvisible="1" set="Swoosh">0.30</tag>
     </assetreference>
     <component>ModelComp</component>
+    <attach a="tomahawk" frombone="bone_tomahawk" tobone="Bip01 Prop1" syncanims="0"/>
+    <attach a="tomahawk" frombone="bone_tomahawk" tobone="Bip01 Prop2" syncanims="0"/>
   </anim>
   <anim>Volley_standing_attack
     <assetreference type="GrannyAnim">
@@ -119,12 +110,16 @@
       <tag type="SpecificSoundSet" checkvisible="1" set="Swoosh">0.27</tag>
     </assetreference>
     <component>ModelComp</component>
+    <attach a="tomahawk" frombone="bone_tomahawk" tobone="Bip01 Prop1" syncanims="0"/>
+    <attach a="tomahawk" frombone="bone_tomahawk" tobone="Bip01 Prop2" syncanims="0"/>
   </anim>
   <anim>Volley_standing_reload
     <assetreference type="GrannyAnim">
       <file>animation_library\natives\tomahawk\iroquois\volley_reload</file>
     </assetreference>
     <component>ModelComp</component>
+    <attach a="tomahawk" frombone="bone_tomahawk" tobone="Bip01 Prop1" syncanims="0"/>
+    <attach a="tomahawk" frombone="bone_tomahawk" tobone="Bip01 Prop2" syncanims="0"/>
   </anim>
   <anim>Death_by_melee
     <assetreference type="GrannyAnim">
@@ -140,6 +135,8 @@
       <tag type="SpecificSoundSet" checkvisible="1" set="RagdollImpact">0.73</tag>
     </assetreference>
     <component>ModelComp</component>
+    <attach a="tomahawk" frombone="bone_tomahawk" tobone="Bip01 Prop1" syncanims="0"/>
+    <attach a="tomahawk" frombone="bone_tomahawk" tobone="Bip01 Prop2" syncanims="0"/>
   </anim>
   <anim>Death_by_range
     <assetreference type="GrannyAnim">
@@ -155,6 +152,8 @@
       <tag type="SpecificSoundSet" checkvisible="1" set="RagdollImpact">0.73</tag>
     </assetreference>
     <component>ModelComp</component>
+    <attach a="tomahawk" frombone="bone_tomahawk" tobone="Bip01 Prop1" syncanims="0"/>
+    <attach a="tomahawk" frombone="bone_tomahawk" tobone="Bip01 Prop2" syncanims="0"/>
   </anim>
   <anim>Death_by_havoc
     <assetreference type="GrannyAnim">
@@ -170,18 +169,24 @@
       <file>animation_library\range\havoc_deathD</file>
     </assetreference>
     <component>ModelComp</component>
+    <attach a="tomahawk" frombone="bone_tomahawk" tobone="Bip01 Prop1" syncanims="0"/>
+    <attach a="tomahawk" frombone="bone_tomahawk" tobone="Bip01 Prop2" syncanims="0"/>
   </anim>
   <anim>Death_havoc_flail
     <assetreference type="GrannyAnim">
       <file>animation_library\range\havoc_flail</file>
     </assetreference>
     <component>ModelComp</component>
+    <attach a="tomahawk" frombone="bone_tomahawk" tobone="Bip01 Prop1" syncanims="0"/>
+    <attach a="tomahawk" frombone="bone_tomahawk" tobone="Bip01 Prop2" syncanims="0"/>
   </anim>
   <anim>Death_havoc_spin
     <assetreference type="GrannyAnim">
       <file>animation_library\range\havoc_spin</file>
     </assetreference>
     <component>ModelComp</component>
+    <attach a="tomahawk" frombone="bone_tomahawk" tobone="Bip01 Prop1" syncanims="0"/>
+    <attach a="tomahawk" frombone="bone_tomahawk" tobone="Bip01 Prop2" syncanims="0"/>
   </anim>
   <anim>Cheer
     <assetreference type="GrannyAnim">
@@ -200,6 +205,8 @@
       <file>animation_library\shared\cheer_E</file>
     </assetreference>
     <component>ModelComp</component>
+    <attach a="tomahawk" frombone="bone_tomahawk" tobone="Bip01 Prop1" syncanims="0"/>
+    <attach a="tomahawk" frombone="bone_tomahawk" tobone="Bip01 Prop2" syncanims="0"/>
   </anim>
   <anim>Recoil
     <assetreference type="GrannyAnim">
@@ -215,18 +222,24 @@
       <file>animation_library\shared\recoil_G</file>
     </assetreference>
     <component>ModelComp</component>
+    <attach a="tomahawk" frombone="bone_tomahawk" tobone="Bip01 Prop1" syncanims="0"/>
+    <attach a="tomahawk" frombone="bone_tomahawk" tobone="Bip01 Prop2" syncanims="0"/>
   </anim>
   <anim>HC_openDoor
     <assetreference type="GrannyAnim">
       <file>animation_library\shared\doorOpen</file>
     </assetreference>
     <component>ModelComp</component>
+    <attach a="tomahawk" frombone="bone_tomahawk" tobone="Bip01 Prop1" syncanims="0"/>
+    <attach a="tomahawk" frombone="bone_tomahawk" tobone="Bip01 Prop2" syncanims="0"/>
   </anim>
   <anim>HC_closeDoor
     <assetreference type="GrannyAnim">
       <file>animation_library\shared\doorClose</file>
     </assetreference>
     <component>ModelComp</component>
+    <attach a="tomahawk" frombone="bone_tomahawk" tobone="Bip01 Prop1" syncanims="0"/>
+    <attach a="tomahawk" frombone="bone_tomahawk" tobone="Bip01 Prop2" syncanims="0"/>
   </anim>
   <anim>Raze_Idle
     <assetreference type="GrannyAnim">
@@ -254,12 +267,16 @@
       <file>animation_library\natives\tomahawk\cover_idle</file>
     </assetreference>
     <component>ModelComp</component>
+    <attach a="tomahawk" frombone="bone_tomahawk" tobone="Bip01 Prop1" syncanims="0"/>
+    <attach a="tomahawk" frombone="bone_tomahawk" tobone="Bip01 Prop2" syncanims="0"/>
   </anim>
   <anim>Cover_Bored
     <assetreference type="GrannyAnim">
       <file>animation_library\natives\tomahawk\cover_bored</file>
     </assetreference>
     <component>ModelComp</component>
+    <attach a="tomahawk" frombone="bone_tomahawk" tobone="Bip01 Prop1" syncanims="0"/>
+    <attach a="tomahawk" frombone="bone_tomahawk" tobone="Bip01 Prop2" syncanims="0"/>
   </anim>
   <anim>Cover_Walk
     <assetreference type="GrannyAnim">
@@ -268,6 +285,8 @@
       <tag type="FootstepRight" footprinttype="HumanRight">0.70</tag>
     </assetreference>
     <component>ModelComp</component>
+    <attach a="tomahawk" frombone="bone_tomahawk" tobone="Bip01 Prop1" syncanims="0"/>
+    <attach a="tomahawk" frombone="bone_tomahawk" tobone="Bip01 Prop2" syncanims="0"/>
   </anim>
   <anim>Cover_Jog
     <assetreference type="GrannyAnim">
@@ -276,6 +295,8 @@
       <tag type="FootstepRight" footprinttype="HumanRight">0.15</tag>
     </assetreference>
     <component>ModelComp</component>
+    <attach a="tomahawk" frombone="bone_tomahawk" tobone="Bip01 Prop1" syncanims="0"/>
+    <attach a="tomahawk" frombone="bone_tomahawk" tobone="Bip01 Prop2" syncanims="0"/>
   </anim>
   <anim>Cover_Run
     <assetreference type="GrannyAnim">
@@ -284,12 +305,16 @@
       <tag type="FootstepRight" footprinttype="HumanRight">0.15</tag>
     </assetreference>
     <component>ModelComp</component>
+    <attach a="tomahawk" frombone="bone_tomahawk" tobone="Bip01 Prop1" syncanims="0"/>
+    <attach a="tomahawk" frombone="bone_tomahawk" tobone="Bip01 Prop2" syncanims="0"/>
   </anim>
   <anim>Volley_standing_idle
     <assetreference type="GrannyAnim">
       <file>animation_library\natives\tomahawk\iroquois\idle</file>
     </assetreference>
     <component>ModelComp</component>
+    <attach a="tomahawk" frombone="bone_tomahawk" tobone="Bip01 Prop1" syncanims="0"/>
+    <attach a="tomahawk" frombone="bone_tomahawk" tobone="Bip01 Prop2" syncanims="0"/>
   </anim>
   <anim>Volley_standing_bored
     <assetreference type="GrannyAnim">
@@ -299,6 +324,8 @@
       <file>animation_library\natives\tomahawk\volley_boredB</file>
     </assetreference>
     <component>ModelComp</component>
+    <attach a="tomahawk" frombone="bone_tomahawk" tobone="Bip01 Prop1" syncanims="0"/>
+    <attach a="tomahawk" frombone="bone_tomahawk" tobone="Bip01 Prop2" syncanims="0"/>
   </anim>
   <anim>Volley_Walk
     <assetreference type="GrannyAnim">
@@ -307,6 +334,8 @@
       <tag type="FootstepRight" footprinttype="HumanRight">0.11</tag>
     </assetreference>
     <component>ModelComp</component>
+    <attach a="tomahawk" frombone="bone_tomahawk" tobone="Bip01 Prop1" syncanims="0"/>
+    <attach a="tomahawk" frombone="bone_tomahawk" tobone="Bip01 Prop2" syncanims="0"/>
   </anim>
   <anim>Volley_Jog
     <assetreference type="GrannyAnim">
@@ -315,6 +344,8 @@
       <tag type="FootstepRight" footprinttype="HumanRight">0.15</tag>
     </assetreference>
     <component>ModelComp</component>
+    <attach a="tomahawk" frombone="bone_tomahawk" tobone="Bip01 Prop1" syncanims="0"/>
+    <attach a="tomahawk" frombone="bone_tomahawk" tobone="Bip01 Prop2" syncanims="0"/>
   </anim>
   <anim>Volley_Run
     <assetreference type="GrannyAnim">
@@ -323,30 +354,40 @@
       <tag type="FootstepRight" footprinttype="HumanRight">0.15</tag>
     </assetreference>
     <component>ModelComp</component>
+    <attach a="tomahawk" frombone="bone_tomahawk" tobone="Bip01 Prop1" syncanims="0"/>
+    <attach a="tomahawk" frombone="bone_tomahawk" tobone="Bip01 Prop2" syncanims="0"/>
   </anim>
   <anim>Defend_Idle
     <assetreference type="GrannyAnim">
       <file>animation_library\natives\tomahawk\defend_idle</file>
     </assetreference>
     <component>ModelComp</component>
+    <attach a="tomahawk" frombone="bone_tomahawk" tobone="Bip01 Prop1" syncanims="0"/>
+    <attach a="tomahawk" frombone="bone_tomahawk" tobone="Bip01 Prop2" syncanims="0"/>
   </anim>
   <anim>Defend_Bored
     <assetreference type="GrannyAnim">
       <file>animation_library\natives\tomahawk\defend_bored</file>
     </assetreference>
     <component>ModelComp</component>
+    <attach a="tomahawk" frombone="bone_tomahawk" tobone="Bip01 Prop1" syncanims="0"/>
+    <attach a="tomahawk" frombone="bone_tomahawk" tobone="Bip01 Prop2" syncanims="0"/>
   </anim>
   <anim>Charge_Idle
     <assetreference type="GrannyAnim">
       <file>animation_library\natives\tomahawk\iroquois\idle</file>
     </assetreference>
     <component>ModelComp</component>
+    <attach a="tomahawk" frombone="bone_tomahawk" tobone="Bip01 Prop1" syncanims="0"/>
+    <attach a="tomahawk" frombone="bone_tomahawk" tobone="Bip01 Prop2" syncanims="0"/>
   </anim>
   <anim>Charge_Bored
     <assetreference type="GrannyAnim">
       <file>animation_library\natives\tomahawk\charge_idle</file>
     </assetreference>
     <component>ModelComp</component>
+    <attach a="tomahawk" frombone="bone_tomahawk" tobone="Bip01 Prop1" syncanims="0"/>
+    <attach a="tomahawk" frombone="bone_tomahawk" tobone="Bip01 Prop2" syncanims="0"/>
   </anim>
   <anim>Charge_Walk
     <assetreference type="GrannyAnim">
@@ -355,6 +396,8 @@
       <tag type="FootstepRight" footprinttype="HumanRight">0.11</tag>
     </assetreference>
     <component>ModelComp</component>
+    <attach a="tomahawk" frombone="bone_tomahawk" tobone="Bip01 Prop1" syncanims="0"/>
+    <attach a="tomahawk" frombone="bone_tomahawk" tobone="Bip01 Prop2" syncanims="0"/>
   </anim>
   <anim>Charge_Jog
     <assetreference type="GrannyAnim">
@@ -363,6 +406,8 @@
       <tag type="FootstepRight" footprinttype="HumanRight">0.15</tag>
     </assetreference>
     <component>ModelComp</component>
+    <attach a="tomahawk" frombone="bone_tomahawk" tobone="Bip01 Prop1" syncanims="0"/>
+    <attach a="tomahawk" frombone="bone_tomahawk" tobone="Bip01 Prop2" syncanims="0"/>
   </anim>
   <anim>Charge_Run
     <assetreference type="GrannyAnim">
@@ -371,6 +416,8 @@
       <tag type="FootstepRight" footprinttype="HumanRight">0.15</tag>
     </assetreference>
     <component>ModelComp</component>
+    <attach a="tomahawk" frombone="bone_tomahawk" tobone="Bip01 Prop1" syncanims="0"/>
+    <attach a="tomahawk" frombone="bone_tomahawk" tobone="Bip01 Prop2" syncanims="0"/>
   </anim>
   <anim>Nugget_rock_idle
     <assetreference type="GrannyAnim">

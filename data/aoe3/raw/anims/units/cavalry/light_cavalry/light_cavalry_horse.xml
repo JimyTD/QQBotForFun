@@ -29,6 +29,11 @@
           <file>units\cavalry\light_cavalry\light_cavalry_age4_horse</file>
         </assetreference>
       </rglifeguardhussars>
+      <rgdanishhussars>
+        <assetreference type="GrannyModel">
+          <file>units\cavalry\light_cavalry\light_cavalry_age4_horse</file>
+        </assetreference>
+      </rgdanishhussars>
       <despcmerchussars>
         <assetreference type="GrannyModel">
           <file>units\cavalry\light_cavalry\light_cavalry_age4_horse</file>

@@ -8,10 +8,8 @@
     <anim>RangedAttack</anim>
     <idleanim>Idle</idleanim>
     <projectile>MortarShell</projectile>
-    <numberprojectiles>1</numberprojectiles>
     <impacteffect>effects\impacts\mortar</impacteffect>
     <accuracy>1.0</accuracy>
-    <aimbonus>5</aimbonus>
     <throw>1</throw>
     <rate type="All">1.0 </rate>
     <areasortmode>Radial</areasortmode>
@@ -28,10 +26,8 @@
     <anim>RangedAttack</anim>
     <idleanim>Idle</idleanim>
     <projectile>MortarShell</projectile>
-    <numberprojectiles>1</numberprojectiles>
     <impacteffect>effects\impacts\mortar</impacteffect>
     <accuracy>1.0</accuracy>
-    <aimbonus>5</aimbonus>
     <scalebycontainedunittype>
       <rate type="Minuteman">0.1</rate>
       <rate type="deStateMilitia">0.1</rate>
@@ -52,10 +48,8 @@
     <anim>BombardAttack</anim>
     <idleanim>Idle</idleanim>
     <projectile>MortarShell</projectile>
-    <numberprojectiles>1</numberprojectiles>
     <impacteffect>effects\impacts\mortar</impacteffect>
     <accuracy>1.0</accuracy>
-    <aimbonus>5</aimbonus>
     <throw>1</throw>
     <rate type="LogicalTypeRangedUnitsAttack">1.0 </rate>
     <perfectaccuracy>1</perfectaccuracy>

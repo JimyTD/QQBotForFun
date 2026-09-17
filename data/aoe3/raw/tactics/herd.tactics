@@ -5,6 +5,7 @@
     <type>Gather</type>
     <maxrange>0.5</maxrange>
     <rate type="LivestockPen">1.0</rate>
+    <rate type="deFolwarkLivestock">1.0</rate>
     <rate type="Farm">1.0</rate>
     <rate type="ypVillage">1.0</rate>
     <addresourcestoinventory>1</addresourcestoinventory>

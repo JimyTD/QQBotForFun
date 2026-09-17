@@ -9,14 +9,8 @@
     <reloadanim>Volley_standing_reload</reloadanim>
     <idleanim>Volley_standing_idle</idleanim>
     <accuracy>1.0</accuracy>
-    <accuracyreductionfactor>1.0</accuracyreductionfactor>
-    <aimbonus>0</aimbonus>
-    <maxspread>5</maxspread>
-    <spreadfactor>0.25</spreadfactor>
     <trackrating>120</trackrating>
-    <unintentionaldamagemultiplier>0.7</unintentionaldamagemultiplier>
     <projectile>Ball</projectile>
-    <numberprojectiles>1</numberprojectiles>
     <impacteffect>effects\impacts\gun</impacteffect>
     <rate type="Unit">1.0</rate>
     <perfectaccuracy>1</perfectaccuracy>
@@ -40,14 +34,8 @@
     <reloadanim>Volley_standing_reload</reloadanim>
     <idleanim>Volley_standing_idle</idleanim>
     <accuracy>1.0</accuracy>
-    <accuracyreductionfactor>0.5</accuracyreductionfactor>
-    <aimbonus>0</aimbonus>
-    <maxspread>5</maxspread>
-    <spreadfactor>0.25</spreadfactor>
     <trackrating>120</trackrating>
-    <unintentionaldamagemultiplier>0.7</unintentionaldamagemultiplier>
     <projectile>Ball</projectile>
-    <numberprojectiles>1</numberprojectiles>
     <impacteffect>effects\impacts\gun</impacteffect>
     <rate type="Unit">1.0</rate>
     <perfectaccuracy>1</perfectaccuracy>
@@ -71,14 +59,8 @@
     <reloadanim>Volley_standing_reload</reloadanim>
     <idleanim>Volley_standing_idle</idleanim>
     <accuracy>1.0</accuracy>
-    <accuracyreductionfactor>0.5</accuracyreductionfactor>
-    <aimbonus>0</aimbonus>
-    <maxspread>5</maxspread>
-    <spreadfactor>0.25</spreadfactor>
     <trackrating>120</trackrating>
-    <unintentionaldamagemultiplier>0.7</unintentionaldamagemultiplier>
     <projectile>Ball</projectile>
-    <numberprojectiles>1</numberprojectiles>
     <impacteffect>effects\impacts\gun</impacteffect>
     <rate type="Unit">1.0</rate>
     <perfectaccuracy>1</perfectaccuracy>
@@ -112,14 +94,8 @@
     <reloadanim>Raze_reload</reloadanim>
     <idleanim>Raze_idle</idleanim>
     <accuracy>1.0</accuracy>
-    <accuracyreductionfactor>0.5</accuracyreductionfactor>
-    <aimbonus>1</aimbonus>
-    <maxspread>5</maxspread>
-    <spreadfactor>0.25</spreadfactor>
     <trackrating>120</trackrating>
-    <unintentionaldamagemultiplier>0.7</unintentionaldamagemultiplier>
     <projectile>FireBall</projectile>
-    <numberprojectiles>1</numberprojectiles>
     <impacteffect>effects\impacts\torch</impacteffect>
     <rate type="LogicalTypeShipsAndBuildings">1.0</rate>
     <perfectaccuracy>1</perfectaccuracy>

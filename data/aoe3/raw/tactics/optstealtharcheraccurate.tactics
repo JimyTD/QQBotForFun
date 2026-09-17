@@ -8,7 +8,7 @@
     <persistent>1</persistent>
   </action>
   <action>
-    <name stringid="38127">VolleyRangedAttack</name>
+    <name stringid="38133">RangedAttack</name>
     <type>Attack</type>
     <attackaction>1</attackaction>
     <rangedlogic>1</rangedlogic>
@@ -16,19 +16,14 @@
     <reloadanim>Volley_standing_reload</reloadanim>
     <idleanim>Volley_standing_idle</idleanim>
     <accuracy>1.0</accuracy>
-    <accuracyreductionfactor>0.5</accuracyreductionfactor>
-    <aimbonus>0</aimbonus>
-    <maxspread>5</maxspread>
-    <spreadfactor>0.25</spreadfactor>
     <trackrating>120</trackrating>
-    <unintentionaldamagemultiplier>0.7</unintentionaldamagemultiplier>
     <projectile>Arrow</projectile>
     <minrange>2</minrange>
     <rate type="Unit">1.0 </rate>
     <perfectaccuracy>1</perfectaccuracy>
   </action>
   <action>
-    <name stringid="38130">VolleyHandAttack</name>
+    <name stringid="38134">HandAttack</name>
     <type>Attack</type>
     <maxrange>1.75</maxrange>
     <rate type="Unit">1.0 </rate>
@@ -53,87 +48,6 @@
     <reloadanim>Volley_standing_reload</reloadanim>
   </action>
   <action>
-    <name stringid="38136">DefendRangedAttack</name>
-    <type>Attack</type>
-    <attackaction>1</attackaction>
-    <rangedlogic>1</rangedlogic>
-    <impacteffect>effects\impacts\arrow</impacteffect>
-    <anim>Volley_standing_attack</anim>
-    <reloadanim>Volley_standing_reload</reloadanim>
-    <accuracy>1.0</accuracy>
-    <accuracyreductionfactor>0.5</accuracyreductionfactor>
-    <aimbonus>0</aimbonus>
-    <maxspread>5</maxspread>
-    <spreadfactor>0.25</spreadfactor>
-    <trackrating>120</trackrating>
-    <unintentionaldamagemultiplier>0.7</unintentionaldamagemultiplier>
-    <projectile>Arrow</projectile>
-    <minrange>2</minrange>
-    <rate type="Unit">1.0 </rate>
-    <perfectaccuracy>1</perfectaccuracy>
-  </action>
-  <action>
-    <name stringid="38137">DefendHandAttack</name>
-    <type>Attack</type>
-    <maxrange>1.75</maxrange>
-    <rate type="Unit">1.0 </rate>
-    <attackaction>1</attackaction>
-    <handlogic>1</handlogic>
-    <speedboost>1</speedboost>
-    <anim>charge_attack</anim>
-    <idleanim>charge_idle</idleanim>
-    <impacteffect>effects\impacts\melee</impacteffect>
-  </action>
-  <action>
-    <name stringid="38135">MeleeHandAttack</name>
-    <type>Attack</type>
-    <maxrange>1.75</maxrange>
-    <rate type="Unit">1.0 </rate>
-    <attackaction>1</attackaction>
-    <handlogic>1</handlogic>
-    <speedboost>1</speedboost>
-    <impacteffect>effects\impacts\melee</impacteffect>
-    <anim>Charge_attack</anim>
-    <idleanim>Charge_idle</idleanim>
-    <impacteffect>effects\impacts\melee</impacteffect>
-    <damage>6.5</damage>
-    <rof>1.0</rof>
-  </action>
-  <action>
-    <name stringid="38129">StaggerRangedAttack</name>
-    <type>Attack</type>
-    <attackaction>1</attackaction>
-    <rangedlogic>1</rangedlogic>
-    <anim>Volley_standing_attack</anim>
-    <reloadanim>Volley_standing_reload</reloadanim>
-    <idleanim>Volley_standing_idle</idleanim>
-    <accuracy>1.0</accuracy>
-    <accuracyreductionfactor>0.5</accuracyreductionfactor>
-    <aimbonus>0</aimbonus>
-    <maxspread>5</maxspread>
-    <spreadfactor>0.25</spreadfactor>
-    <trackrating>120</trackrating>
-    <unintentionaldamagemultiplier>0.7</unintentionaldamagemultiplier>
-    <projectile>Arrow</projectile>
-    <minrange>2</minrange>
-    <rate type="Unit">1.0 </rate>
-    <perfectaccuracy>1</perfectaccuracy>
-  </action>
-  <action>
-    <name stringid="38132">StaggerHandAttack</name>
-    <type>Attack</type>
-    <maxrange>1.75</maxrange>
-    <rate type="Unit">1.0 </rate>
-    <attackaction>1</attackaction>
-    <handlogic>1</handlogic>
-    <speedboost>1</speedboost>
-    <anim>charge_attack</anim>
-    <idleanim>charge_idle</idleanim>
-    <impacteffect>effects\impacts\melee</impacteffect>
-    <damage>6.5</damage>
-    <rof>1.0</rof>
-  </action>
-  <action>
     <name stringid="69147">Build</name>
     <type>Build</type>
     <anim>Build</anim>
@@ -145,9 +59,9 @@
     <rate type="ArtilleryDepot">2.0</rate>
   </action>
   <tactic>Volley
-    <action priority="100">VolleyRangedAttack</action>
+    <action priority="100">RangedAttack</action>
     <action priority="75">BuildingAttack</action>
-    <action priority="25">VolleyHandAttack</action>
+    <action priority="25">HandAttack</action>
     <action>Build</action>
     <attacktype>LogicalTypeRangedUnitsAttack</attacktype>
     <autoattacktype>LogicalTypeRangedUnitsAutoAttack</autoattacktype>
@@ -168,9 +82,9 @@
     <runanim>Volley_run</runanim>
   </tactic>
   <tactic>Defend
-    <action priority="100">DefendRangedAttack</action>
+    <action priority="100">RangedAttack</action>
     <action priority="75">BuildingAttack</action>
-    <action priority="25">DefendHandAttack</action>
+    <action priority="25">HandAttack</action>
     <action>Build</action>
     <attacktype>LogicalTypeRangedUnitsAttack</attacktype>
     <autoattacktype>LogicalTypeRangedUnitsAutoAttack</autoattacktype>
@@ -191,9 +105,9 @@
     <runanim>Cover_run</runanim>
   </tactic>
   <tactic>Stagger
-    <action priority="100">StaggerRangedAttack</action>
+    <action priority="100">RangedAttack</action>
     <action priority="75">BuildingAttack</action>
-    <action priority="25">StaggerHandAttack</action>
+    <action priority="25">HandAttack</action>
     <action>Build</action>
     <attacktype>LogicalTypeRangedUnitsAttack</attacktype>
     <autoattacktype>LogicalTypeRangedUnitsAutoAttack</autoattacktype>
@@ -215,7 +129,7 @@
   </tactic>
   <tactic>Melee
     <action priority="100">BuildingAttack</action>
-    <action priority="75">MeleeHandAttack</action>
+    <action priority="75">HandAttack</action>
     <action>Build</action>
     <attacktype>LogicalTypeRangedUnitsAttack</attacktype>
     <autoattacktype>LogicalTypeRangedUnitsAutoAttack</autoattacktype>
@@ -236,9 +150,9 @@
     <runanim>Charge_run</runanim>
   </tactic>
   <tactic>StandGround
-    <action priority="100">DefendRangedAttack</action>
+    <action priority="100">RangedAttack</action>
     <action priority="75">BuildingAttack</action>
-    <action priority="25">DefendHandAttack</action>
+    <action priority="25">HandAttack</action>
     <action>Build</action>
     <attacktype>LogicalTypeRangedUnitsAttack</attacktype>
     <autoattacktype>LogicalTypeRangedUnitsAutoAttack</autoattacktype>

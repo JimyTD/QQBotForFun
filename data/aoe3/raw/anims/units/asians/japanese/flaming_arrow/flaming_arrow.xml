@@ -17,15 +17,8 @@
       <component>battlefield_smoke</component>
     </anim>
   </attachment>
-  <attachment>hat_0
-    <component>hat_0
-      <assetreference type="GrannyModel">
-        <file>units\asians\japanese\ashigaru\ashigaru_0age_hat</file>
-      </assetreference>
-    </component>
-    <anim>Idle
-      <component>hat_0</component>
-    </anim>
+  <attachment>hats
+    <include>units\asians\japanese\flaming_arrow\flaming_arrow_hats.xml</include>
   </attachment>
   <attachment>flaming_stick
     <include>units\attachments\flaming_stick.xml</include>
@@ -77,7 +70,7 @@
       <width>1.75</width>
       <height>2.00</height>
     </watersplash>
-    <attach a="hat_0" frombone="bone_hat" tobone="HEAD" syncanims="0"/>
+    <attach a="hats" frombone="bone_hat" tobone="HEAD" syncanims="0"/>
   </component>
   <anim>Walk
     <assetreference type="GrannyAnim">

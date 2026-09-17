@@ -46,7 +46,7 @@
   <action>
     <name stringid="70488">Heal</name>
     <type>Heal</type>
-    <maxrange>12</maxrange>
+    <maxrange>14</maxrange>
     <rate type="LogicalTypeHealed">5.0</rate>
     <active>0</active>
     <anim>Heal</anim>

@@ -8,11 +8,7 @@
     <anim>RangedAttack</anim>
     <maxheight>0</maxheight>
     <accuracy>1.0</accuracy>
-    <aimbonus>0</aimbonus>
-    <maxspread>5</maxspread>
-    <spreadfactor>0.25</spreadfactor>
     <trackrating>120</trackrating>
-    <unintentionaldamagemultiplier>0.7</unintentionaldamagemultiplier>
     <projectile>Cannonball</projectile>
     <impacteffect>effects\impacts\cannon</impacteffect>
     <rate type="Unit">1.0 </rate>
@@ -34,11 +30,7 @@
     <anim>RangedAttack</anim>
     <maxheight>0</maxheight>
     <accuracy>1.0</accuracy>
-    <aimbonus>0</aimbonus>
-    <maxspread>5</maxspread>
-    <spreadfactor>0.25</spreadfactor>
     <trackrating>120</trackrating>
-    <unintentionaldamagemultiplier>0.7</unintentionaldamagemultiplier>
     <projectile>Cannonball</projectile>
     <impacteffect>effects\impacts\cannon</impacteffect>
     <rate type="AbstractWarship">1.0 </rate>

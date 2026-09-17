@@ -30,14 +30,33 @@
     </linksection>
     <logic type="LowPoly">
       <normal>
-        <assetreference type="GrannyModel">
-          <file>units\artillery\culverin\culverin</file>
-        </assetreference>
+        <logic type="Tech">
+          <none>
+            <assetreference type="GrannyModel">
+              <file>units\artillery\culverin\culverin</file>
+            </assetreference>
+          </none>
+          <ypjapanesemeijivisualsshadow>
+            <assetreference type="GrannyModel">
+              <file>units\artillery\culverin\culverin</file>
+              <materialvariant index="1"/>
+            </assetreference>
+          </ypjapanesemeijivisualsshadow>
+        </logic>
       </normal>
       <lowpoly>
-        <assetreference type="GrannyModel">
-          <file>units\artillery\culverin\lp_culverin</file>
-        </assetreference>
+        <logic type="Tech">
+          <none>
+            <assetreference type="GrannyModel">
+              <file>units\artillery\culverin\lp_culverin</file>
+            </assetreference>
+          </none>
+          <ypjapanesemeijivisualsshadow>
+            <assetreference type="GrannyModel">
+              <file>units\artillery\culverin\lp_culverin</file>
+            </assetreference>
+          </ypjapanesemeijivisualsshadow>
+        </logic>
       </lowpoly>
     </logic>
     <decal>
@@ -62,14 +81,33 @@
     </linksection>
     <logic type="LowPoly">
       <normal>
-        <assetreference type="GrannyModel">
-          <file>units\artillery\culverin\culverin_stripped</file>
-        </assetreference>
+        <logic type="Tech">
+          <none>
+            <assetreference type="GrannyModel">
+              <file>units\artillery\culverin\culverin_stripped</file>
+            </assetreference>
+          </none>
+          <ypjapanesemeijivisualsshadow>
+            <assetreference type="GrannyModel">
+              <file>units\artillery\culverin\culverin_stripped</file>
+              <materialvariant index="1"/>
+            </assetreference>
+          </ypjapanesemeijivisualsshadow>
+        </logic>
       </normal>
       <lowpoly>
-        <assetreference type="GrannyModel">
-          <file>units\artillery\culverin\lp_culverin_stripped</file>
-        </assetreference>
+        <logic type="Tech">
+          <none>
+            <assetreference type="GrannyModel">
+              <file>units\artillery\culverin\lp_culverin_stripped</file>
+            </assetreference>
+          </none>
+          <ypjapanesemeijivisualsshadow>
+            <assetreference type="GrannyModel">
+              <file>units\artillery\culverin\lp_culverin_stripped</file>
+            </assetreference>
+          </ypjapanesemeijivisualsshadow>
+        </logic>
       </lowpoly>
     </logic>
     <decal>

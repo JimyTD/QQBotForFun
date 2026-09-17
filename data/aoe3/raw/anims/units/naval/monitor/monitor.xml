@@ -162,9 +162,25 @@
     </watersplash>
   </component>
   <component>death
-    <assetreference type="GrannyModel">
-      <file>units\naval\monitor\monitor_damaged</file>
-    </assetreference>
+    <logic type="Tech">
+      <none>
+        <assetreference type="GrannyModel">
+          <file>units\naval\monitor\monitor_damaged</file>
+        </assetreference>
+      </none>
+      <desailsottoman>
+        <assetreference type="GrannyModel">
+          <file>units\naval\monitor\monitor_damaged</file>
+          <materialvariant index="1"/>
+        </assetreference>
+      </desailsottoman>
+      <desailsindian>
+        <assetreference type="GrannyModel">
+          <file>units\naval\monitor\monitor_damaged</file>
+          <materialvariant index="2"/>
+        </assetreference>
+      </desailsindian>
+    </logic>
     <decal>
       <effecttype>default</effecttype>
       <texture>shadows_selections\shadow_circle_128x128</texture>

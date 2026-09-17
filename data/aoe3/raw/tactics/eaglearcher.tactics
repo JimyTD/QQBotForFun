@@ -9,29 +9,11 @@
     <reloadanim>Volley_standing_reload</reloadanim>
     <idleanim>Volley_standing_idle</idleanim>
     <accuracy>1.0</accuracy>
-    <accuracyreductionfactor>0.5</accuracyreductionfactor>
-    <aimbonus>0</aimbonus>
-    <maxspread>5</maxspread>
-    <spreadfactor>0.25</spreadfactor>
     <trackrating>120</trackrating>
-    <unintentionaldamagemultiplier>0.7</unintentionaldamagemultiplier>
     <projectile>Javelin</projectile>
     <minrange>2</minrange>
     <rate type="Unit">1.0 </rate>
     <perfectaccuracy>1</perfectaccuracy>
-  </action>
-  <action>
-    <name stringid="38130">VolleyHandAttack</name>
-    <type>Attack</type>
-    <maxrange>1.75</maxrange>
-    <rate type="Unit">1.0 </rate>
-    <attackaction>1</attackaction>
-    <handlogic>1</handlogic>
-    <speedboost>1</speedboost>
-    <impacteffect>effects\impacts\melee</impacteffect>
-    <anim>charge_attack</anim>
-    <idleanim>charge_idle</idleanim>
-    <targetspeedboost>1</targetspeedboost>
   </action>
   <action>
     <name stringid="38118">BuildingAttack</name>
@@ -42,9 +24,9 @@
     <rangedlogic>1</rangedlogic>
     <speedboost>1</speedboost>
     <impacteffect>effects\impacts\torch</impacteffect>
-    <projectile>Javelin</projectile>
-    <anim>Volley_standing_attack</anim>
-    <reloadanim>Volley_standing_reload</reloadanim>
+    <projectile>TorchProjectile</projectile>
+    <anim>Raze_Attack</anim>
+    <reloadanim>Raze_Idle</reloadanim>
   </action>
   <action>
     <name stringid="38136">DefendRangedAttack</name>
@@ -54,29 +36,11 @@
     <anim>Volley_standing_attack</anim>
     <reloadanim>Volley_standing_reload</reloadanim>
     <accuracy>1.0</accuracy>
-    <accuracyreductionfactor>0.5</accuracyreductionfactor>
-    <aimbonus>0</aimbonus>
-    <maxspread>5</maxspread>
-    <spreadfactor>0.25</spreadfactor>
     <trackrating>120</trackrating>
-    <unintentionaldamagemultiplier>0.7</unintentionaldamagemultiplier>
     <projectile>Javelin</projectile>
     <minrange>2</minrange>
     <rate type="Unit">1.0 </rate>
     <perfectaccuracy>1</perfectaccuracy>
-  </action>
-  <action>
-    <name stringid="38137">DefendHandAttack</name>
-    <type>Attack</type>
-    <maxrange>1.75</maxrange>
-    <rate type="Unit">1.0 </rate>
-    <attackaction>1</attackaction>
-    <handlogic>1</handlogic>
-    <speedboost>1</speedboost>
-    <anim>charge_attack</anim>
-    <idleanim>charge_idle</idleanim>
-    <impacteffect>effects\impacts\melee</impacteffect>
-    <targetspeedboost>1</targetspeedboost>
   </action>
   <action>
     <name stringid="38135">MeleeHandAttack</name>
@@ -86,9 +50,8 @@
     <attackaction>1</attackaction>
     <handlogic>1</handlogic>
     <speedboost>1</speedboost>
-    <impacteffect>effects\impacts\melee</impacteffect>
-    <anim>Charge_attack</anim>
-    <idleanim>Charge_idle</idleanim>
+    <anim>Charge_Attack</anim>
+    <idleanim>Charge_Idle</idleanim>
     <impacteffect>effects\impacts\melee</impacteffect>
     <damage>6.5</damage>
     <rof>1.0</rof>
@@ -103,31 +66,11 @@
     <reloadanim>Volley_standing_reload</reloadanim>
     <idleanim>Volley_standing_idle</idleanim>
     <accuracy>1.0</accuracy>
-    <accuracyreductionfactor>0.5</accuracyreductionfactor>
-    <aimbonus>0</aimbonus>
-    <maxspread>5</maxspread>
-    <spreadfactor>0.25</spreadfactor>
     <trackrating>120</trackrating>
-    <unintentionaldamagemultiplier>0.7</unintentionaldamagemultiplier>
     <projectile>Javelin</projectile>
     <minrange>2</minrange>
     <rate type="Unit">1.0 </rate>
     <perfectaccuracy>1</perfectaccuracy>
-  </action>
-  <action>
-    <name stringid="38132">StaggerHandAttack</name>
-    <type>Attack</type>
-    <maxrange>1.75</maxrange>
-    <rate type="Unit">1.0 </rate>
-    <attackaction>1</attackaction>
-    <handlogic>1</handlogic>
-    <speedboost>1</speedboost>
-    <anim>charge_attack</anim>
-    <idleanim>charge_idle</idleanim>
-    <impacteffect>effects\impacts\melee</impacteffect>
-    <damage>6.5</damage>
-    <rof>1.0</rof>
-    <targetspeedboost>1</targetspeedboost>
   </action>
   <action>
     <name stringid="69147">Build</name>
@@ -143,7 +86,7 @@
   <tactic>Volley
     <action priority="100">VolleyRangedAttack</action>
     <action priority="75">BuildingAttack</action>
-    <action priority="25">VolleyHandAttack</action>
+    <action priority="25">MeleeHandAttack</action>
     <action>Build</action>
     <attacktype>LogicalTypeRangedUnitsAttack</attacktype>
     <autoattacktype>LogicalTypeRangedUnitsAutoAttack</autoattacktype>
@@ -153,14 +96,14 @@
     <idleanim>Volley_standing_idle</idleanim>
     <boredanim>Volley_standing_bored</boredanim>
     <deathanim>Death_by_melee</deathanim>
-    <walkanim>Volley_walk</walkanim>
+    <walkanim>Volley_Walk</walkanim>
     <joganim>Volley_jog</joganim>
     <runanim>Volley_run</runanim>
   </tactic>
   <tactic>Defend
     <action priority="100">DefendRangedAttack</action>
     <action priority="75">BuildingAttack</action>
-    <action priority="25">DefendHandAttack</action>
+    <action priority="25">MeleeHandAttack</action>
     <action>Build</action>
     <attacktype>LogicalTypeRangedUnitsAttack</attacktype>
     <autoattacktype>LogicalTypeRangedUnitsAutoAttack</autoattacktype>
@@ -170,26 +113,26 @@
     <idleanim>Defend_idle</idleanim>
     <boredanim>Defend_bored</boredanim>
     <deathanim>Death_by_melee</deathanim>
-    <walkanim>Cover_walk</walkanim>
-    <joganim>Cover_jog</joganim>
-    <runanim>Cover_run</runanim>
+    <walkanim>Cover_Walk</walkanim>
+    <joganim>Cover_Jog</joganim>
+    <runanim>Cover_Run</runanim>
   </tactic>
   <tactic>Stagger
     <action priority="100">StaggerRangedAttack</action>
     <action priority="75">BuildingAttack</action>
-    <action priority="25">StaggerHandAttack</action>
+    <action priority="25">MeleeHandAttack</action>
     <action>Build</action>
     <attacktype>LogicalTypeRangedUnitsAttack</attacktype>
     <autoattacktype>LogicalTypeRangedUnitsAutoAttack</autoattacktype>
     <attackresponsetype>LogicalTypeRangedUnitsAttack</attackresponsetype>
     <runaway>0</runaway>
     <autoretarget>1</autoretarget>
-    <idleanim>Cover_ranged_idle</idleanim>
-    <boredanim>Cover_bored</boredanim>
+    <idleanim>Volley_standing_idle</idleanim>
+    <boredanim>Volley_standing_bored</boredanim>
     <deathanim>Death_by_melee</deathanim>
-    <walkanim>Cover_walk</walkanim>
-    <joganim>Cover_jog</joganim>
-    <runanim>Cover_run</runanim>
+    <walkanim>Volley_Walk</walkanim>
+    <joganim>Volley_jog</joganim>
+    <runanim>Volley_run</runanim>
   </tactic>
   <tactic>Melee
     <action priority="100">BuildingAttack</action>
@@ -203,14 +146,14 @@
     <idleanim>Charge_idle</idleanim>
     <boredanim>Charge_bored</boredanim>
     <deathanim>Death_by_melee</deathanim>
-    <walkanim>Charge_walk</walkanim>
-    <joganim>Charge_jog</joganim>
-    <runanim>Charge_run</runanim>
+    <walkanim>Cover_Walk</walkanim>
+    <joganim>Cover_Jog</joganim>
+    <runanim>Cover_Run</runanim>
   </tactic>
   <tactic>StandGround
     <action priority="100">DefendRangedAttack</action>
     <action priority="75">BuildingAttack</action>
-    <action priority="25">DefendHandAttack</action>
+    <action priority="25">MeleeHandAttack</action>
     <action>Build</action>
     <attacktype>LogicalTypeRangedUnitsAttack</attacktype>
     <autoattacktype>LogicalTypeRangedUnitsAutoAttack</autoattacktype>
@@ -220,7 +163,7 @@
     <idleanim>Defend_idle</idleanim>
     <boredanim>Defend_bored</boredanim>
     <deathanim>Death_by_melee</deathanim>
-    <walkanim>Cover_walk</walkanim>
+    <walkanim>Cover_Walk</walkanim>
     <joganim>Cover_jog</joganim>
     <runanim>Cover_run</runanim>
   </tactic>

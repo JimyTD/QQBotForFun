@@ -74,6 +74,11 @@
           <file>units\infantry_ranged\landwehr\landwehr_lvl2</file>
         </assetreference>
       </deimperiallandwehrsshadow>
+      <dehcrevhonved>
+        <assetreference type="GrannyModel">
+          <file>units\infantry_ranged\skirmisher\honved</file>
+        </assetreference>
+      </dehcrevhonved>
     </logic>
     <attach a="gun" frombone="bone_crossbow" tobone="BIP01 PROP1" syncanims="0"/>
     <decal>

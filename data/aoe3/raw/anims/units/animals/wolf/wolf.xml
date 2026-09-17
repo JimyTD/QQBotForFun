@@ -3,9 +3,19 @@
   <definebone>Bone_rt_foot</definebone>
   <definebone>Bone_lt_foot</definebone>
   <component>ModelComp
-    <assetreference type="GrannyModel">
-      <file>units\animals\wolf\wolf</file>
-    </assetreference>
+    <logic type="Tech">
+      <none>
+        <assetreference type="GrannyModel">
+          <file>units\animals\wolf\wolf</file>
+        </assetreference>
+      </none>
+      <demaparctic>
+        <assetreference type="GrannyModel">
+          <file>units\animals\wolf\wolf</file>
+          <materialvariant index="1"/>
+        </assetreference>
+      </demaparctic>
+    </logic>
     <decal>
       <effecttype>default</effecttype>
       <texture isfakeshadow="1">shadows_selections\shadow_circle_64x64</texture>
@@ -96,7 +106,7 @@
   </anim>
   <anim>Nugget_wolfA_exit
     <assetreference type="GrannyAnim">
-      <file>nuggets\wolf_rock\wolf_wagon_wolfa_exit</file>
+      <file>nuggets\wolf_wagon\wolf_wagon_wolfa_exit</file>
     </assetreference>
     <component>ModelComp</component>
   </anim>

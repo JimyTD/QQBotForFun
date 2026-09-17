@@ -9,12 +9,7 @@
     <idleanim>Grenade_idle</idleanim>
     <active>0</active>
     <accuracy>1.0</accuracy>
-    <accuracyreductionfactor>0.5</accuracyreductionfactor>
-    <aimbonus>0</aimbonus>
-    <maxspread>5</maxspread>
-    <spreadfactor>0.25</spreadfactor>
     <trackrating>12</trackrating>
-    <unintentionaldamagemultiplier>1.0</unintentionaldamagemultiplier>
     <projectile>Grenade</projectile>
     <impacteffect>effects\impacts\grenade</impacteffect>
     <minrange>2</minrange>
@@ -37,12 +32,7 @@
     <idleanim>Volley_standing_idle</idleanim>
     <maxheight>0</maxheight>
     <accuracy>1.0</accuracy>
-    <accuracyreductionfactor>1.5</accuracyreductionfactor>
-    <aimbonus>0</aimbonus>
-    <maxspread>5</maxspread>
-    <spreadfactor>0.25</spreadfactor>
     <trackrating>12</trackrating>
-    <unintentionaldamagemultiplier>0.7</unintentionaldamagemultiplier>
     <projectile>InvisibleProjectile</projectile>
     <impacteffect>effects\impacts\gun</impacteffect>
     <minrange>2</minrange>
@@ -76,12 +66,7 @@
     <idleanim>Defend_idle</idleanim>
     <maxheight>0</maxheight>
     <accuracy>1.0</accuracy>
-    <accuracyreductionfactor>1.5</accuracyreductionfactor>
-    <aimbonus>0</aimbonus>
-    <maxspread>5</maxspread>
-    <spreadfactor>0.25</spreadfactor>
     <trackrating>12</trackrating>
-    <unintentionaldamagemultiplier>0.7</unintentionaldamagemultiplier>
     <projectile>InvisibleProjectile</projectile>
     <impacteffect>effects\impacts\gun</impacteffect>
     <minrange>2</minrange>
@@ -117,12 +102,7 @@
     <idleanim>Volley_standing_idle</idleanim>
     <maxheight>0</maxheight>
     <accuracy>1.0</accuracy>
-    <accuracyreductionfactor>1.5</accuracyreductionfactor>
-    <aimbonus>0</aimbonus>
-    <maxspread>5</maxspread>
-    <spreadfactor>0.25</spreadfactor>
     <trackrating>12</trackrating>
-    <unintentionaldamagemultiplier>0.7</unintentionaldamagemultiplier>
     <projectile>InvisibleProjectile</projectile>
     <impacteffect>effects\impacts\gun</impacteffect>
     <minrange>2</minrange>
@@ -198,12 +178,7 @@
     <anim>Bow_standing_attack</anim>
     <idleanim>Bow_standing_idle</idleanim>
     <accuracy>1.0</accuracy>
-    <accuracyreductionfactor>0.5</accuracyreductionfactor>
-    <aimbonus>0</aimbonus>
-    <maxspread>5</maxspread>
-    <spreadfactor>0.25</spreadfactor>
     <trackrating>12</trackrating>
-    <unintentionaldamagemultiplier>0.7</unintentionaldamagemultiplier>
     <projectile>Arrow</projectile>
     <minrange>2</minrange>
     <rate type="LogicalTypeShipsAndBuildings">1.0</rate>

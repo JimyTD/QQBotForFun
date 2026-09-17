@@ -10,11 +10,7 @@
     <idleanim>Volley_standing_idle</idleanim>
     <maxheight>0</maxheight>
     <accuracy>1.0</accuracy>
-    <aimbonus>0</aimbonus>
-    <maxspread>5</maxspread>
-    <spreadfactor>0.25</spreadfactor>
     <trackrating>12</trackrating>
-    <unintentionaldamagemultiplier>0.7</unintentionaldamagemultiplier>
     <projectile>InvisibleProjectile</projectile>
     <impacteffect>effects\impacts\gun</impacteffect>
     <minrange>2</minrange>
@@ -31,8 +27,6 @@
     <attackaction>1</attackaction>
     <handlogic>1</handlogic>
     <accuracy>1.0</accuracy>
-    <aimbonus>0</aimbonus>
-    <spreadfactor>0.25</spreadfactor>
     <trackrating>120</trackrating>
     <projectile>Knife</projectile>
     <anim>Charge_attack_ranged</anim>

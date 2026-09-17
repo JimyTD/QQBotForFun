@@ -8,15 +8,10 @@
     <rangedlogic>1</rangedlogic>
     <anim>Attack_ranged</anim>
     <accuracy>1.0</accuracy>
-    <accuracyreductionfactor>0.5</accuracyreductionfactor>
-    <aimbonus>0</aimbonus>
-    <maxspread>5</maxspread>
-    <spreadfactor>0.25</spreadfactor>
     <trackrating>120</trackrating>
-    <unintentionaldamagemultiplier>0.7</unintentionaldamagemultiplier>
     <projectile>Arrow</projectile>
     <impacteffect>effects\impacts\arrow</impacteffect>
-    <rate type="Unit">1.0 </rate>
+    <rate type="Unit">1.0</rate>
     <perfectaccuracy>1</perfectaccuracy>
   </action>
   <action>
@@ -27,15 +22,10 @@
     <rangedlogic>1</rangedlogic>
     <anim>Attack_ranged2</anim>
     <accuracy>1.0</accuracy>
-    <accuracyreductionfactor>0.5</accuracyreductionfactor>
-    <aimbonus>0</aimbonus>
-    <maxspread>5</maxspread>
-    <spreadfactor>0.25</spreadfactor>
     <trackrating>120</trackrating>
-    <unintentionaldamagemultiplier>0.7</unintentionaldamagemultiplier>
     <projectile>Arrow</projectile>
     <impacteffect>effects\impacts\arrow</impacteffect>
-    <rate type="Unit">1.0 </rate>
+    <rate type="Unit">1.0</rate>
     <perfectaccuracy>1</perfectaccuracy>
   </action>
   <action>
@@ -43,7 +33,7 @@
     <type>Attack</type>
     <rangedlogic>1</rangedlogic>
     <maxrange>6</maxrange>
-    <rate type="LogicalTypeShipsAndBuildings">1.0 </rate>
+    <rate type="LogicalTypeShipsAndBuildings">1.0</rate>
     <attackaction>1</attackaction>
     <speedboost>1</speedboost>
     <anim>Raze_Attack</anim>
@@ -55,7 +45,7 @@
     <name stringid="38135">ChargeAttack</name>
     <type>Attack</type>
     <maxrange>1.75</maxrange>
-    <rate type="Unit">1.0 </rate>
+    <rate type="Unit">1.0</rate>
     <attackaction>1</attackaction>
     <handlogic>1</handlogic>
     <speedboost>1</speedboost>
@@ -65,6 +55,36 @@
     <damage>6.5</damage>
     <rof>1.0</rof>
     <targetspeedboost>1</targetspeedboost>
+  </action>
+  <action>
+    <name stringid="38142">TrampleHandAttack</name>
+    <active>0</active>
+    <type>Attack</type>
+    <maxrange>1.75</maxrange>
+    <rate type="Unit">1.0</rate>
+    <attackaction>1</attackaction>
+    <handlogic>1</handlogic>
+    <speedboost>1</speedboost>
+    <anim>Attack_trample</anim>
+    <idleanim>Idle</idleanim>
+    <impacteffect>effects\impacts\melee</impacteffect>
+    <damage>6.5</damage>
+    <rof>1.0</rof>
+    <targetspeedboost>1</targetspeedboost>
+    <basedamagecap>1</basedamagecap>
+  </action>
+  <action>
+    <name stringid="42873">GuardianAttack</name>
+    <type>Attack</type>
+    <maxrange>1.75</maxrange>
+    <rate type="Guardian">1.0</rate>
+    <attackaction>1</attackaction>
+    <handlogic>1</handlogic>
+    <anim>Attack_melee</anim>
+    <idleanim>Idle</idleanim>
+    <impacteffect>effects\impacts\melee</impacteffect>
+    <targetspeedboost>1</targetspeedboost>
+    <basedamagecap>1</basedamagecap>
   </action>
   <tactic>Stagger
     <action priority="75">BuildingAttack</action>
@@ -126,6 +146,26 @@
     <boredanim>Bored</boredanim>
     <deathanim>Death_by_melee</deathanim>
     <walkanim>Walk</walkanim>
+    <joganim>Jog</joganim>
+    <runanim>Run</runanim>
+  </tactic>
+  <tactic>Trample
+    <active>0</active>
+    <speedmodifier>0.5</speedmodifier>
+    <action priority="100">BuildingAttack</action>
+    <action priority="75">GuardianAttack</action>
+    <action priority="25">TrampleHandAttack</action>
+    <action>Discover</action>
+    <action>AutoGatherInfluence</action>
+    <attacktype>LogicalTypeHandUnitsAttack</attacktype>
+    <autoattacktype>LogicalTypeHandUnitsAutoAttack</autoattacktype>
+    <attackresponsetype>LogicalTypeHandUnitsAttack</attackresponsetype>
+    <runaway>0</runaway>
+    <autoretarget>1</autoretarget>
+    <idleanim>Idle</idleanim>
+    <boredanim>Bored</boredanim>
+    <deathanim>Death_by_melee</deathanim>
+    <walkanim>Highstep</walkanim>
     <joganim>Jog</joganim>
     <runanim>Run</runanim>
   </tactic>

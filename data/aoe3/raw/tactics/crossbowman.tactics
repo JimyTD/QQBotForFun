@@ -9,12 +9,7 @@
     <reloadanim>Volley_standing_reload</reloadanim>
     <idleanim>Volley_standing_idle</idleanim>
     <accuracy>1.0</accuracy>
-    <accuracyreductionfactor>0.5</accuracyreductionfactor>
-    <aimbonus>0</aimbonus>
-    <maxspread>5</maxspread>
-    <spreadfactor>0.25</spreadfactor>
     <trackrating>120</trackrating>
-    <unintentionaldamagemultiplier>0.7</unintentionaldamagemultiplier>
     <projectile>Arrow</projectile>
     <minrange>2</minrange>
     <rate type="Unit">1.0</rate>
@@ -56,12 +51,7 @@
     <anim>Volley_standing_attack</anim>
     <reloadanim>Volley_standing_reload</reloadanim>
     <accuracy>1.0</accuracy>
-    <accuracyreductionfactor>0.5</accuracyreductionfactor>
-    <aimbonus>0</aimbonus>
-    <maxspread>5</maxspread>
-    <spreadfactor>0.25</spreadfactor>
     <trackrating>120</trackrating>
-    <unintentionaldamagemultiplier>0.7</unintentionaldamagemultiplier>
     <projectile>Arrow</projectile>
     <minrange>2</minrange>
     <rate type="Unit">1.0</rate>
@@ -104,12 +94,7 @@
     <reloadanim>Volley_standing_reload</reloadanim>
     <idleanim>Volley_standing_idle</idleanim>
     <accuracy>1.0</accuracy>
-    <accuracyreductionfactor>0.5</accuracyreductionfactor>
-    <aimbonus>0</aimbonus>
-    <maxspread>5</maxspread>
-    <spreadfactor>0.25</spreadfactor>
     <trackrating>120</trackrating>
-    <unintentionaldamagemultiplier>0.7</unintentionaldamagemultiplier>
     <projectile>Arrow</projectile>
     <minrange>2</minrange>
     <rate type="Unit">1.0</rate>
@@ -139,18 +124,31 @@
     <reloadanim>Volley_standing_reload</reloadanim>
     <idleanim>Volley_standing_idle</idleanim>
     <accuracy>1.0</accuracy>
-    <accuracyreductionfactor>0.5</accuracyreductionfactor>
-    <aimbonus>0</aimbonus>
-    <maxspread>5</maxspread>
-    <spreadfactor>0.25</spreadfactor>
     <trackrating>120</trackrating>
-    <unintentionaldamagemultiplier>0.7</unintentionaldamagemultiplier>
     <projectile>ArrowFlaming</projectile>
     <minrange>2</minrange>
     <rate type="LogicalTypeShipsAndBuildings">1.0</rate>
     <perfectaccuracy>1</perfectaccuracy>
     <targetlock>1</targetlock>
     <active>0</active>
+  </action>
+  <action>
+    <name stringid="38133">LockRangedAttack</name>
+    <type>Attack</type>
+    <active>0</active>
+    <attackaction>1</attackaction>
+    <rangedlogic>1</rangedlogic>
+    <anim>Volley_standing_attack</anim>
+    <reloadanim>Volley_standing_reload</reloadanim>
+    <idleanim>Volley_standing_idle</idleanim>
+    <accuracy>1.0</accuracy>
+    <trackrating>120</trackrating>
+    <projectile>Arrow</projectile>
+    <minrange>2</minrange>
+    <throw>0</throw>
+    <rate type="Unit">1.0</rate>
+    <perfectaccuracy>1</perfectaccuracy>
+    <targetlock>1</targetlock>
   </action>
   <action>
     <name stringid="69147">Build</name>
@@ -171,6 +169,7 @@
   </action>
   <tactic>Volley
     <action priority="100">VolleyRangedAttack</action>
+    <action priority="100">LockRangedAttack</action>
     <action priority="75">BuildingAttack</action>
     <action priority="80">RangedBuildingAttack</action>
     <action priority="25">VolleyHandAttack</action>
@@ -190,6 +189,7 @@
   </tactic>
   <tactic>Defend
     <action priority="100">DefendRangedAttack</action>
+    <action priority="100">LockRangedAttack</action>
     <action priority="75">BuildingAttack</action>
     <action priority="80">RangedBuildingAttack</action>
     <action priority="25">DefendHandAttack</action>
@@ -209,6 +209,7 @@
   </tactic>
   <tactic>Stagger
     <action priority="100">StaggerRangedAttack</action>
+    <action priority="100">LockRangedAttack</action>
     <action priority="75">BuildingAttack</action>
     <action priority="80">RangedBuildingAttack</action>
     <action priority="25">StaggerHandAttack</action>
@@ -246,6 +247,7 @@
   </tactic>
   <tactic>StandGround
     <action priority="100">DefendRangedAttack</action>
+    <action priority="100">LockRangedAttack</action>
     <action priority="75">BuildingAttack</action>
     <action priority="80">RangedBuildingAttack</action>
     <action priority="25">DefendHandAttack</action>

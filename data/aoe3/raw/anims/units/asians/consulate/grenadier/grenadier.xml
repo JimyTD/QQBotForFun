@@ -27,9 +27,18 @@
   </attachment>
   <attachment>sword
     <component>sword
-      <assetreference type="GrannyModel">
-        <file>units\cavalry\us_cavalry\us_cavalry_sword</file>
-      </assetreference>
+      <logic type="Tech">
+        <none>
+          <assetreference type="GrannyModel">
+            <file>units\cavalry\us_cavalry\us_cavalry_sword</file>
+          </assetreference>
+        </none>
+        <ypjapanesemeijivisualsshadow>
+          <assetreference type="GrannyModel">
+            <file>units\asians\japanese\kensei\grenadierkatana</file>
+          </assetreference>
+        </ypjapanesemeijivisualsshadow>
+      </logic>
     </component>
     <anim>Idle
       <component>sword</component>
@@ -133,9 +142,15 @@
         <assetreference type="GrannyModel">
           <file>units\infantry_ranged\grenadier\old_guard</file>
         </assetreference>
+        <attach a="pouch" frombone="bone_pouch" tobone="PELVIS" syncanims="0"/>
       </churchgardeimperial3>
+      <ypjapanesemeijivisualsshadow>
+        <assetreference type="GrannyModel">
+          <file>units\infantry_ranged\grenadier\jpn_grenadier</file>
+        </assetreference>
+        <attach a="hats" frombone="bone_hat" tobone="HEAD" syncanims="0"/>
+      </ypjapanesemeijivisualsshadow>
     </logic>
-    <attach a="pouch" frombone="bone_pouch" tobone="PELVIS" syncanims="0"/>
     <decal>
       <effecttype>default</effecttype>
       <texture isfakeshadow="1">shadows_selections\shadow_consulate_64x64</texture>

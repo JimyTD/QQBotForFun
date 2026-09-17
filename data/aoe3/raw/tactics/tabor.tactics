@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="utf-8"?>
+<tactics>
+  <action>
+    <name stringid="38133">StaggerRangedAttack</name>
+    <type>Attack</type>
+    <attackaction>1</attackaction>
+    <rangedlogic>1</rangedlogic>
+    <anim>Attack_ranged</anim>
+    <idleanim>Idle</idleanim>
+    <reloadanim>Attack_ranged_reload</reloadanim>
+    <maxheight>0</maxheight>
+    <accuracy>1.0</accuracy>
+    <trackrating>12</trackrating>
+    <minrange>3</minrange>
+    <projectile>InvisibleProjectile</projectile>
+    <displayednumberprojectiles>2</displayednumberprojectiles>
+    <impacteffect>effects\impacts\gun</impacteffect>
+    <rate type="Unit">1.0 </rate>
+    <instantballistics>1</instantballistics>
+  </action>
+  <action>
+    <name stringid="38118">BuildingAttack</name>
+    <type>Attack</type>
+    <rangedlogic>1</rangedlogic>
+    <maxrange>6</maxrange>
+    <rate type="LogicalTypeShipsAndBuildings">1.0</rate>
+    <attackaction>1</attackaction>
+    <speedboost>1</speedboost>
+    <anim>Raze_attack</anim>
+    <idleanim>Raze_idle</idleanim>
+    <impacteffect>effects\impacts\torch</impacteffect>
+    <projectile>TorchProjectile</projectile>
+    <displayednumberprojectiles>2</displayednumberprojectiles>
+  </action>
+  <action>
+    <name stringid="38135">MeleeHandAttack</name>
+    <type>Attack</type>
+    <maxrange>3.0</maxrange>
+    <rate type="Unit">1.0</rate>
+    <attackaction>1</attackaction>
+    <handlogic>1</handlogic>
+    <anim>Attack_melee</anim>
+    <idleanim>Idle_melee</idleanim>
+    <impacteffect>effects\impacts\melee</impacteffect>
+    <targetspeedboost>1</targetspeedboost>
+    <basedamagecap>1</basedamagecap>
+  </action>
+  <action>
+    <name stringid="122267">ShieldAura</name>
+    <type>AutoRangedModify</type>
+    <maxrange>12</maxrange>
+    <modifyabstracttype>AbstractArtillery</modifyabstracttype>
+    <modifyabstracttype>AbstractInfantry</modifyabstracttype>
+    <persistent>1</persistent>
+    <modifytype>Shield</modifytype>
+    <modifymultiplier>0.20</modifymultiplier>
+    <modelattachment>effects\ypack_auras\papal_guard_power.xml</modelattachment>
+    <modelattachmentbone>bonethatdoesntexist</modelattachmentbone>
+  </action>
+  <action>
+    <name stringid="69146">AutoGather</name>
+    <type>AutoGather</type>
+    <persistent>1</persistent>
+    <active>0</active>
+    <rate type="Gold">0.02</rate>
+  </action>
+  <tactic>Stagger
+    <action priority="75">BuildingAttack</action>
+    <action priority="100">StaggerRangedAttack</action>
+    <action priority="90">MeleeHandAttack</action>
+    <action>ShieldAura</action>
+    <attacktype>LogicalTypeRangedUnitsAttack</attacktype>
+    <autoattacktype>LogicalTypeRangedUnitsAutoAttack</autoattacktype>
+    <attackresponsetype>LogicalTypeRangedUnitsAttack</attackresponsetype>
+    <runaway>0</runaway>
+    <autoretarget>1</autoretarget>
+    <idleanim>Idle</idleanim>
+    <boredanim>Bored</boredanim>
+    <deathanim>Death_by_melee</deathanim>
+    <walkanim>Walk</walkanim>
+    <joganim>Jog</joganim>
+    <runanim>Run</runanim>
+  </tactic>
+  <tactic>Defend
+    <action priority="75">BuildingAttack</action>
+    <action priority="100">StaggerRangedAttack</action>
+    <action priority="90">MeleeHandAttack</action>
+    <action>ShieldAura</action>
+    <attacktype>LogicalTypeRangedUnitsAttack</attacktype>
+    <autoattacktype>LogicalTypeRangedUnitsAutoAttack</autoattacktype>
+    <attackresponsetype>LogicalTypeRangedUnitsAttack</attackresponsetype>
+    <runaway>0</runaway>
+    <autoretarget>1</autoretarget>
+    <idleanim>Idle</idleanim>
+    <boredanim>Bored</boredanim>
+    <deathanim>Death_by_melee</deathanim>
+    <walkanim>Walk</walkanim>
+    <joganim>Jog</joganim>
+    <runanim>Run</runanim>
+  </tactic>
+  <tactic>Melee
+    <action priority="75">BuildingAttack</action>
+    <action priority="100">MeleeHandAttack</action>
+    <action>ShieldAura</action>
+    <attacktype>LogicalTypeHandUnitsAttack</attacktype>
+    <autoattacktype>LogicalTypeHandUnitsAutoAttack</autoattacktype>
+    <attackresponsetype>LogicalTypeHandUnitsAttack</attackresponsetype>
+    <runaway>0</runaway>
+    <autoretarget>1</autoretarget>
+    <idleanim>Idle_melee</idleanim>
+    <boredanim>Bored_melee</boredanim>
+    <deathanim>Death_by_melee</deathanim>
+    <walkanim>Walk_melee</walkanim>
+    <joganim>Walk_melee</joganim>
+    <runanim>Walk_melee</runanim>
+  </tactic>
+  <tactic>StandGround
+    <action priority="75">BuildingAttack</action>
+    <action priority="100">StaggerRangedAttack</action>
+    <action>ShieldAura</action>
+    <attacktype>LogicalTypeRangedUnitsAttack</attacktype>
+    <autoattacktype>LogicalTypeRangedUnitsAutoAttack</autoattacktype>
+    <attackresponsetype>LogicalTypeRangedUnitsAttack</attackresponsetype>
+    <runaway>0</runaway>
+    <autoretarget>1</autoretarget>
+    <idleanim>Idle</idleanim>
+    <boredanim>Bored</boredanim>
+    <deathanim>Death_by_melee</deathanim>
+    <walkanim>Walk</walkanim>
+    <joganim>Jog</joganim>
+    <runanim>Run</runanim>
+  </tactic>
+</tactics>

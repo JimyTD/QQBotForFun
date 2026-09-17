@@ -5,6 +5,7 @@
   <definebone>bone_drum</definebone>
   <definebone>bone_drumstick</definebone>
   <definebone>bone_rattle</definebone>
+  <definebone>Bip01</definebone>
   <submodel>Eth_Villager
     <attachment>pickaxe
       <component>pickaxe
@@ -161,6 +162,26 @@
     </attachment>
     <attachment>gun
       <include>units\villagers\villager_gun.xml</include>
+    </attachment>
+    <attachment>fishingrod
+      <component>fishingrod
+        <assetreference type="GrannyModel">
+          <file>units\attachments\fishing_rod\fishing_rod</file>
+        </assetreference>
+      </component>
+      <anim>Idle
+        <component>fishingrod</component>
+      </anim>
+    </attachment>
+    <attachment>fishingbasket
+      <component>fishingbasket
+        <assetreference type="GrannyModel">
+          <file>units\attachments\fishing_rod\fishing_basket</file>
+        </assetreference>
+      </component>
+      <anim>Idle
+        <component>fishingbasket</component>
+      </anim>
     </attachment>
     <component>Villager
       <logic type="LowPoly">
@@ -637,6 +658,14 @@
       <component>Villager</component>
       <attach a="gun" frombone="bone_gun" tobone="Bip01 Prop1" syncanims="0"/>
     </anim>
+    <anim>GatherFish
+      <assetreference type="GrannyAnim">
+        <file>animation_library\villager\villager_gatherfish</file>
+      </assetreference>
+      <component>Villager</component>
+      <attach a="fishingrod" frombone="MASTER" tobone="Bip01 Prop1" syncanims="0"/>
+      <attach a="fishingbasket" frombone="MASTER" tobone="Bip01" syncanims="0"/>
+    </anim>
   </submodel>
   <submodel>Eth_Villager_Female
     <attachment>gun
@@ -783,6 +812,26 @@
       </component>
       <anim>Idle
         <component>attachment_atlatl</component>
+      </anim>
+    </attachment>
+    <attachment>fishingrod
+      <component>fishingrod
+        <assetreference type="GrannyModel">
+          <file>units\attachments\fishing_rod\fishing_rod</file>
+        </assetreference>
+      </component>
+      <anim>Idle
+        <component>fishingrod</component>
+      </anim>
+    </attachment>
+    <attachment>fishingbasket
+      <component>fishingbasket
+        <assetreference type="GrannyModel">
+          <file>units\attachments\fishing_rod\fishing_basket</file>
+        </assetreference>
+      </component>
+      <anim>Idle
+        <component>fishingbasket</component>
       </anim>
     </attachment>
     <component>Villager
@@ -1265,6 +1314,14 @@
       </assetreference>
       <component>Villager</component>
       <attach a="gun" frombone="bone_gun" tobone="Bip01 Prop1" syncanims="0"/>
+    </anim>
+    <anim>GatherFish
+      <assetreference type="GrannyAnim">
+        <file>animation_library\villager\villager_gatherfish</file>
+      </assetreference>
+      <component>Villager</component>
+      <attach a="fishingrod" frombone="MASTER" tobone="Bip01 Prop1" syncanims="0"/>
+      <attach a="fishingbasket" frombone="MASTER" tobone="Bip01" syncanims="0"/>
     </anim>
   </submodel>
   <component>Villager

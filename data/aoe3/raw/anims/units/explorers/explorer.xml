@@ -231,6 +231,11 @@
           <file>units\explorers\i_explorer</file>
         </assetreference>
       </deitalians>
+      <dedanish>
+        <assetreference type="GrannyModel">
+          <file>units\explorers\dk_explorer\dk_explorer</file>
+        </assetreference>
+      </dedanish>
     </logic>
     <decal>
       <effecttype>default</effecttype>
@@ -615,6 +620,13 @@
       <file>animation_library\villager\villager_male_gathercrate1</file>
       <tag type="Attack">0.29</tag>
       <tag type="SpecificSoundSet" checkvisible="1" set="GatherFruit">0.56</tag>
+    </assetreference>
+    <component>ModelComp</component>
+  </anim>
+  <anim>AblBeastMaster
+    <assetreference type="GrannyAnim">
+      <file>animation_library\natives\warchief_iroquois\heal2</file>
+      <tag type="SpecificSoundSet" checkvisible="1" set="UI_WarChiefConverting">0.11</tag>
     </assetreference>
     <component>ModelComp</component>
   </anim>

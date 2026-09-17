@@ -12,8 +12,17 @@
     <maxrange>0.5</maxrange>
     <deposittogathersiteowner>1</deposittogathersiteowner>
   </action>
+  <action>
+    <name>NoaidiGather</name>
+    <type>Gather</type>
+    <maxrange>1</maxrange>
+    <donotdepositresources>1</donotdepositresources>
+    <rate type="deNatNoaidi">1.0</rate>
+    <rate type="deNatMercNoaidi">1.0</rate>
+  </action>
   <tactic>Normal
     <action>ShrineGather</action>
     <action>HaciendaGather</action>
+    <action>NoaidiGather</action>
   </tactic>
 </tactics>

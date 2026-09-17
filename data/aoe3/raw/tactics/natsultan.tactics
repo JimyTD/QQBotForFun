@@ -11,12 +11,7 @@
     <reloadanim>Rifle_Attack_Ranged_Reload</reloadanim>
     <idleanim>Rifle_Idle</idleanim>
     <accuracy>1.0</accuracy>
-    <accuracyreductionfactor>0.5</accuracyreductionfactor>
-    <aimbonus>0</aimbonus>
-    <maxspread>5</maxspread>
-    <spreadfactor>0.25</spreadfactor>
     <trackrating>12</trackrating>
-    <unintentionaldamagemultiplier>0.7</unintentionaldamagemultiplier>
     <projectile>InvisibleProjectile</projectile>
     <impacteffect>effects\impacts\gun</impacteffect>
     <rate type="Unit">1.0</rate>
@@ -156,8 +151,6 @@
     <rof>1</rof>
     <maxheight>0</maxheight>
     <accuracy>1</accuracy>
-    <accuracyreductionfactor>0</accuracyreductionfactor>
-    <aimbonus>5</aimbonus>
     <trackrating>12</trackrating>
     <projectile>InvisibleProjectile</projectile>
     <instantballistics>0</instantballistics>

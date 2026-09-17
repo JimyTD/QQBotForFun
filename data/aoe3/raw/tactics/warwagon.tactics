@@ -10,12 +10,8 @@
     <reloadanim>Attack_ranged_reload</reloadanim>
     <maxheight>0</maxheight>
     <accuracy>1.0</accuracy>
-    <accuracyreductionfactor>0.5</accuracyreductionfactor>
-    <aimbonus>0</aimbonus>
-    <maxspread>5</maxspread>
-    <spreadfactor>0.25</spreadfactor>
     <trackrating>12</trackrating>
-    <unintentionaldamagemultiplier>0.7</unintentionaldamagemultiplier>
+    <minrange>2</minrange>
     <projectile>InvisibleProjectile</projectile>
     <impacteffect>effects\impacts\gun</impacteffect>
     <rate type="Unit">1.0 </rate>
@@ -31,12 +27,7 @@
     <idleanim>Idle</idleanim>
     <maxheight>0</maxheight>
     <accuracy>1.0</accuracy>
-    <accuracyreductionfactor>1.5</accuracyreductionfactor>
-    <aimbonus>0</aimbonus>
-    <maxspread>5</maxspread>
-    <spreadfactor>0.25</spreadfactor>
     <trackrating>12</trackrating>
-    <unintentionaldamagemultiplier>0.7</unintentionaldamagemultiplier>
     <projectile>InvisibleProjectile</projectile>
     <impacteffect>effects\impacts\gun</impacteffect>
     <minrange>2</minrange>
@@ -51,34 +42,26 @@
     <type>Attack</type>
     <rangedlogic>1</rangedlogic>
     <maxrange>6</maxrange>
-    <rate type="LogicalTypeShipsAndBuildings">1.0 </rate>
+    <rate type="LogicalTypeShipsAndBuildings">1.0</rate>
     <attackaction>1</attackaction>
     <speedboost>1</speedboost>
     <anim>Raze_attack</anim>
     <idleanim>Raze_idle</idleanim>
-    <projectile>TorchProjectile</projectile>
     <impacteffect>effects\impacts\torch</impacteffect>
+    <projectile>TorchProjectile</projectile>
   </action>
   <action>
     <name stringid="38135">MeleeHandAttack</name>
     <type>Attack</type>
+    <maxrange>1.75</maxrange>
+    <rate type="Unit">1.0</rate>
     <attackaction>1</attackaction>
-    <rangedlogic>1</rangedlogic>
-    <anim>Attack_ranged</anim>
+    <handlogic>1</handlogic>
+    <anim>Attack_melee</anim>
     <idleanim>Idle</idleanim>
-    <reloadanim>Attack_ranged_reload</reloadanim>
-    <maxheight>0</maxheight>
-    <accuracy>1.0</accuracy>
-    <accuracyreductionfactor>0.5</accuracyreductionfactor>
-    <aimbonus>0</aimbonus>
-    <maxspread>5</maxspread>
-    <spreadfactor>0.25</spreadfactor>
-    <trackrating>12</trackrating>
-    <unintentionaldamagemultiplier>0.7</unintentionaldamagemultiplier>
-    <projectile>InvisibleProjectile</projectile>
-    <impacteffect>effects\impacts\gun</impacteffect>
-    <rate type="Unit">1.0 </rate>
-    <instantballistics>1</instantballistics>
+    <impacteffect>effects\impacts\melee</impacteffect>
+    <targetspeedboost>1</targetspeedboost>
+    <basedamagecap>1</basedamagecap>
   </action>
   <action>
     <name stringid="69146">AutoGather</name>
@@ -90,6 +73,7 @@
   <tactic>Stagger
     <action priority="75">BuildingAttack</action>
     <action priority="100">StaggerRangedAttack</action>
+    <action priority="90">MeleeHandAttack</action>
     <attacktype>LogicalTypeRangedUnitsAttack</attacktype>
     <autoattacktype>LogicalTypeRangedUnitsAutoAttack</autoattacktype>
     <attackresponsetype>LogicalTypeRangedUnitsAttack</attackresponsetype>
@@ -105,6 +89,7 @@
   <tactic>Defend
     <action priority="75">BuildingAttack</action>
     <action priority="100">DefendRangedAttack</action>
+    <action priority="90">MeleeHandAttack</action>
     <attacktype>LogicalTypeRangedUnitsAttack</attacktype>
     <autoattacktype>LogicalTypeRangedUnitsAutoAttack</autoattacktype>
     <attackresponsetype>LogicalTypeRangedUnitsAttack</attackresponsetype>
@@ -135,6 +120,7 @@
   <tactic>StandGround
     <action priority="75">BuildingAttack</action>
     <action priority="100">DefendRangedAttack</action>
+    <action priority="90">MeleeHandAttack</action>
     <attacktype>LogicalTypeRangedUnitsAttack</attacktype>
     <autoattacktype>LogicalTypeRangedUnitsAutoAttack</autoattacktype>
     <attackresponsetype>LogicalTypeRangedUnitsAttack</attackresponsetype>

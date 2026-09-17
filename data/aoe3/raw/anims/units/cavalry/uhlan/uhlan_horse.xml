@@ -10,47 +10,25 @@
   <component>ModelComp
     <logic type="Tech">
       <none>
-        <logic type="LowPoly">
-          <normal>
-            <assetreference type="GrannyModel">
-              <file>units\cavalry\uhlan\uhlan_age02_horse</file>
-            </assetreference>
-          </normal>
-          <lowpoly>
-            <assetreference type="GrannyModel">
-              <file>units\cavalry\uhlan\lp_uhlan_age02_horse</file>
-            </assetreference>
-          </lowpoly>
-        </logic>
+        <assetreference type="GrannyModel">
+          <file>units\cavalry\uhlan\uhlan_age02_horse</file>
+        </assetreference>
       </none>
       <veteranuhlans>
-        <logic type="LowPoly">
-          <normal>
-            <assetreference type="GrannyModel">
-              <file>units\cavalry\uhlan\uhlan_age03_horse</file>
-            </assetreference>
-          </normal>
-          <lowpoly>
-            <assetreference type="GrannyModel">
-              <file>units\cavalry\uhlan\lp_uhlan_age03_horse</file>
-            </assetreference>
-          </lowpoly>
-        </logic>
+        <assetreference type="GrannyModel">
+          <file>units\cavalry\uhlan\uhlan_age03_horse</file>
+        </assetreference>
       </veteranuhlans>
       <guarduhlans>
-        <logic type="LowPoly">
-          <normal>
-            <assetreference type="GrannyModel">
-              <file>units\cavalry\uhlan\uhlan_age04_horse</file>
-            </assetreference>
-          </normal>
-          <lowpoly>
-            <assetreference type="GrannyModel">
-              <file>units\cavalry\uhlan\lp_uhlan_age04_horse</file>
-            </assetreference>
-          </lowpoly>
-        </logic>
+        <assetreference type="GrannyModel">
+          <file>units\cavalry\uhlan\uhlan_age04_horse</file>
+        </assetreference>
       </guarduhlans>
+      <polishuhlans>
+        <assetreference type="GrannyModel">
+          <file>units\cavalry\uhlan\uhlan_age04_horse</file>
+        </assetreference>
+      </polishuhlans>
     </logic>
     <decal>
       <effecttype>default</effecttype>

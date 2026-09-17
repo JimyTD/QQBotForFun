@@ -83,6 +83,18 @@
         </assetreference>
         <attach a="crossbows" frombone="bone_crossbow" tobone="BIP01 PROP1" syncanims="0"/>
       </dergarbalester>
+      <rgdanishcrossbowmen>
+        <assetreference type="GrannyModel">
+          <file>units\infantry_ranged\crossbow\danish_crossbowman</file>
+        </assetreference>
+        <attach a="crossbows" frombone="bone_crossbow" tobone="BIP01 PROP1" syncanims="0"/>
+      </rgdanishcrossbowmen>
+      <rgleiciaicrossbowmen>
+        <assetreference type="GrannyModel">
+          <file>units\infantry_ranged\crossbow\polish_crossbowman</file>
+        </assetreference>
+        <attach a="crossbows" frombone="bone_crossbow" tobone="BIP01 PROP1" syncanims="0"/>
+      </rgleiciaicrossbowmen>
       <imperialcrossbowmen>
         <logic type="LowPoly">
           <normal>

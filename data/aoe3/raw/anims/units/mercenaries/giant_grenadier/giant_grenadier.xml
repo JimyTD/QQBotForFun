@@ -51,16 +51,45 @@
     </anim>
   </attachment>
   <component>ModelComp
-    <assetreference type="GrannyModel">
-      <file>units\mercenaries\giant_grenadier\giant_grenadier</file>
-    </assetreference>
-    <decal>
-      <effecttype>default</effecttype>
-      <texture isfakeshadow="1">shadows_selections\shadow_hero_64x64</texture>
-      <selectedtexture>shadows_selections\selection_hero_64x64</selectedtexture>
-      <width>1.0</width>
-      <height>1.0</height>
-    </decal>
+    <logic type="Tech">
+      <none>
+        <assetreference type="GrannyModel">
+          <file>units\mercenaries\giant_grenadier\giant_grenadier</file>
+        </assetreference>
+        <decal>
+          <effecttype>default</effecttype>
+          <texture isfakeshadow="1">shadows_selections\shadow_hero_64x64</texture>
+          <selectedtexture>shadows_selections\selection_hero_64x64</selectedtexture>
+          <width>1.0</width>
+          <height>1.0</height>
+        </decal>
+      </none>
+      <dechurchcrowngrenadiers>
+        <assetreference type="GrannyModel">
+          <file>units\mercenaries\giant_grenadier\polish_grenadier</file>
+        </assetreference>
+        <decal>
+          <effecttype>default</effecttype>
+          <texture isfakeshadow="1">shadows_selections\shadow_hero_64x64</texture>
+          <selectedtexture>shadows_selections\selection_hero_64x64</selectedtexture>
+          <width>1.0</width>
+          <height>1.0</height>
+        </decal>
+      </dechurchcrowngrenadiers>
+      <dehcrevleibgarde>
+        <assetreference type="GrannyModel">
+          <file>units\mercenaries\giant_grenadier\giant_grenadier</file>
+          <materialvariant index="1"/>
+        </assetreference>
+        <decal>
+          <effecttype>default</effecttype>
+          <texture isfakeshadow="1">shadows_selections\shadow_circle_32x32</texture>
+          <selectedtexture>shadows_selections\selection_circle_32x32</selectedtexture>
+          <width>1.0</width>
+          <height>1.0</height>
+        </decal>
+      </dehcrevleibgarde>
+    </logic>
   </component>
   <anim>Death_by_melee
     <assetreference type="GrannyAnim">

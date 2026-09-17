@@ -142,9 +142,18 @@
   <component>ModelComp
     <logic type="RevolutionCiv">
       <none>
-        <assetreference type="GrannyModel">
-          <file>units\infantry_ranged\colonial_militia\colonial_militia</file>
-        </assetreference>
+        <logic type="Tech">
+          <none>
+            <assetreference type="GrannyModel">
+              <file>units\infantry_ranged\colonial_militia\colonial_militia</file>
+            </assetreference>
+          </none>
+          <deindependenceinca>
+            <assetreference type="GrannyModel">
+              <file>units\revolution\peruvian_guard\peruvian_guard</file>
+            </assetreference>
+          </deindependenceinca>
+        </logic>
       </none>
       <derevbrazil>
         <logic type="Variation">
@@ -209,6 +218,12 @@
           </dehcrevkratonguards>
         </logic>
       </derevindonesia>
+      <derevgermany>
+        <assetreference type="GrannyModel">
+          <file>units\infantry_ranged\colonial_militia\colonial_militia</file>
+          <materialvariant index="2"/>
+        </assetreference>
+      </derevgermany>
       <derevbarbarystates>
         <logic type="Variation">
           <data>

@@ -7,12 +7,7 @@
     <rangedlogic>1</rangedlogic>
     <anim>RangedAttack</anim>
     <accuracy>1.0</accuracy>
-    <accuracyreductionfactor>0.01</accuracyreductionfactor>
-    <aimbonus>0</aimbonus>
-    <maxspread>5</maxspread>
-    <spreadfactor>0.25</spreadfactor>
     <trackrating>12</trackrating>
-    <unintentionaldamagemultiplier>0.7</unintentionaldamagemultiplier>
     <projectile>FixedGunBall</projectile>
     <impacteffect>effects\impacts\mortar</impacteffect>
     <rate type="Unit">1.0</rate>
@@ -29,12 +24,7 @@
     <rangedlogic>1</rangedlogic>
     <anim>RangedAttack</anim>
     <accuracy>1.0</accuracy>
-    <accuracyreductionfactor>0.01</accuracyreductionfactor>
-    <aimbonus>0</aimbonus>
-    <maxspread>5</maxspread>
-    <spreadfactor>0.25</spreadfactor>
     <trackrating>12</trackrating>
-    <unintentionaldamagemultiplier>0.7</unintentionaldamagemultiplier>
     <projectile>FixedGunBall</projectile>
     <impacteffect>effects\impacts\mortar</impacteffect>
     <rate type="LogicalTypeShipsAndBuildings">1.0</rate>
@@ -69,12 +59,7 @@
     <rangedlogic>1</rangedlogic>
     <anim>RangedAttack</anim>
     <accuracy>1.0</accuracy>
-    <accuracyreductionfactor>0.01</accuracyreductionfactor>
-    <aimbonus>0</aimbonus>
-    <maxspread>5</maxspread>
-    <spreadfactor>0.25</spreadfactor>
     <trackrating>12</trackrating>
-    <unintentionaldamagemultiplier>0.7</unintentionaldamagemultiplier>
     <projectile>FixedGunBall</projectile>
     <impacteffect>effects\impacts\mortar</impacteffect>
     <rate type="Guardian">1.0</rate>

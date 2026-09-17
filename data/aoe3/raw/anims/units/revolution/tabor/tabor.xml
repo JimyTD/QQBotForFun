@@ -1,0 +1,376 @@
+<?xml version="1.0" encoding="utf-8"?>
+<animfile>
+  <definebone>bone_wheel03</definebone>
+  <definebone>bone_wheel04</definebone>
+  <definebone>bone_attach_horse_a</definebone>
+  <definebone>bone_attach_horse_b</definebone>
+  <definebone>bone_attach_horse_c</definebone>
+  <definebone>bone_attachment_horse</definebone>
+  <definebone>HS Bone Hoof Back Rt</definebone>
+  <definebone>HS Bone Hoof Back Lt</definebone>
+  <definebone>HS Bone Master</definebone>
+  <definebone>HS Bone Master</definebone>
+  <definebone>bone_wheel01</definebone>
+  <definebone>bone_wheel02</definebone>
+  <definebone>bone_gunner01</definebone>
+  <definebone>bone_gunner02</definebone>
+  <definebone>bone_gunner03</definebone>
+  <definebone>bone_launchpoint</definebone>
+  <attachment>horse
+    <component>horse</component>
+    <include>units\revolution\tabor\tabor_horse.xml</include>
+  </attachment>
+  <attachment>horse2
+    <component>horse2</component>
+    <include>units\revolution\tabor\tabor_horse2.xml</include>
+  </attachment>
+  <attachment>gunner
+    <component>gunner</component>
+    <include>units\revolution\tabor\tabor_gunner01.xml</include>
+  </attachment>
+  <attachment>gunner02
+    <component>gunner</component>
+    <include>units\revolution\tabor\tabor_gunner02.xml</include>
+  </attachment>
+  <attachment>gunner03
+    <component>gunner</component>
+    <include>units\revolution\tabor\tabor_gunner03.xml</include>
+  </attachment>
+  <attachment>gunner04
+    <component>gunner</component>
+    <include>units\revolution\tabor\tabor_gunner04.xml</include>
+  </attachment>
+  <component>wagon
+    <linksection>
+      <linkoffset>0</linkoffset>
+      <linkcomponent>covered_wagon_horse</linkcomponent>
+      <linkcomponent>covered_wagon_horse2</linkcomponent>
+      <linkcomponent>covered_wagon_m0</linkcomponent>
+      <linkconstraint>0</linkconstraint>
+    </linksection>
+    <linksection>
+      <linkoffset>-1.6</linkoffset>
+      <linkcomponent>covered_wagon</linkcomponent>
+      <linkcomponent>covered_wagon_m1</linkcomponent>
+      <linkcomponent>janissary_standardShape</linkcomponent>
+      <linkcomponent>wokouShape</linkcomponent>
+      <linkcomponent>pirate_3aShape</linkcomponent>
+      <linkcomponent>middle_class_butcherShape</linkcomponent>
+      <linkcomponent>gunner</linkcomponent>
+      <linkcomponent>gunner02</linkcomponent>
+      <linkcomponent>gunner03</linkcomponent>
+      <linkconstraint>1</linkconstraint>
+    </linksection>
+    <linksection>
+      <linkoffset>-2.0</linkoffset>
+      <linkconstraint>1</linkconstraint>
+    </linksection>
+    <linksection>
+      <linkoffset>-3.0</linkoffset>
+      <linkconstraint>1</linkconstraint>
+    </linksection>
+    <logic type="Tech">
+      <none>
+        <assetreference type="GrannyModel">
+          <file>units\revolution\tabor\tabor</file>
+        </assetreference>
+        <attach a="gunner" frombone="hotspot" tobone="bone_gunner01" syncanims="1"/>
+      </none>
+      <derevolutiongermany>
+        <assetreference type="GrannyModel">
+          <file>units\revolution\tabor\tabor</file>
+        </assetreference>
+        <attach a="gunner03" frombone="hotspot" tobone="bone_gunner01" syncanims="1"/>
+      </derevolutiongermany>
+    </logic>
+    <decal>
+      <effecttype>default</effecttype>
+      <texture isfakeshadow="1">shadows_selections\shadow_circle_64x64</texture>
+      <selectedtexture>shadows_selections\selection_oval_64x128</selectedtexture>
+      <width>3.00</width>
+      <height>7.00</height>
+      <xoffset>0.00</xoffset>
+      <zoffset>1.00</zoffset>
+    </decal>
+    <watersplash>
+      <texture>units\artillery\cannon\wheel_B</texture>
+      <width>1.75</width>
+      <height>2.00</height>
+    </watersplash>
+    <attach a="horse" frombone="hotspot" tobone="bone_attach_horse_a" syncanims="1"/>
+    <attach a="horse2" frombone="hotspot" tobone="bone_attach_horse_b" syncanims="1"/>
+    <attach a="gunner02" frombone="hotspot" tobone="bone_gunner03" syncanims="1"/>
+    <attach a="gunner04" frombone="hotspot" tobone="bone_gunner02" syncanims="1"/>
+  </component>
+  <anim>Idle
+    <assetreference type="GrannyAnim">
+      <file>units\villagers\covered_wagon\covered_wagon_idle</file>
+      <weight>10</weight>
+    </assetreference>
+    <assetreference type="GrannyAnim">
+      <file>units\villagers\covered_wagon\covered_wagon_idle</file>
+      <weight>10</weight>
+    </assetreference>
+    <assetreference type="GrannyAnim">
+      <file>units\villagers\covered_wagon\covered_wagon_idle</file>
+      <weight>10</weight>
+    </assetreference>
+    <assetreference type="GrannyAnim">
+      <file>units\villagers\covered_wagon\covered_wagon_idle</file>
+      <weight>15</weight>
+    </assetreference>
+    <assetreference type="GrannyAnim">
+      <file>units\villagers\covered_wagon\covered_wagon_idle</file>
+      <weight>25</weight>
+    </assetreference>
+    <assetreference type="GrannyAnim">
+      <file>units\villagers\covered_wagon\covered_wagon_idle</file>
+      <weight>45</weight>
+    </assetreference>
+    <component>wagon</component>
+  </anim>
+  <anim>Bored
+    <assetreference type="GrannyAnim">
+      <file>units\villagers\covered_wagon\covered_wagon_idle</file>
+      <weight>10</weight>
+    </assetreference>
+    <assetreference type="GrannyAnim">
+      <file>units\villagers\covered_wagon\covered_wagon_idle</file>
+      <weight>10</weight>
+    </assetreference>
+    <assetreference type="GrannyAnim">
+      <file>units\villagers\covered_wagon\covered_wagon_idle</file>
+      <weight>45</weight>
+    </assetreference>
+    <assetreference type="GrannyAnim">
+      <file>units\villagers\covered_wagon\covered_wagon_idle</file>
+      <weight>45</weight>
+    </assetreference>
+    <component>wagon</component>
+  </anim>
+  <anim animlengthoverride="1.0">Attack_ranged
+    <assetreference type="GrannyAnim">
+      <file>units\revolution\tabor\tabor_attack</file>
+      <tag type="Attack">0.30</tag>
+      <tag type="Attack">0.25</tag>
+      <tag type="SpecificSoundSet" checkvisible="1" set="PistolShot">0.30</tag>
+      <tag type="Particles" particlename="rifleshot">0.30</tag>
+      <tag type="SpecificSoundSet" checkvisible="1" set="PistolShot">0.25</tag>
+      <tag type="Particles" particlename="rifleshot_left">0.25</tag>
+    </assetreference>
+    <component>wagon</component>
+  </anim>
+  <anim animlengthoverride="2.0">Attack_ranged_reload
+    <assetreference type="GrannyAnim">
+      <file>units\revolution\tabor\tabor_attack</file>
+    </assetreference>
+    <component>wagon</component>
+  </anim>
+  <anim animlengthoverride="1.5">Attack_melee
+    <assetreference type="GrannyAnim">
+      <file>units\revolution\tabor\tabor_melee_attack</file>
+      <tag type="Attack">0.43</tag>
+      <tag type="SpecificSoundSet" checkvisible="1" set="Swoosh">0.43</tag>
+    </assetreference>
+    <assetreference type="GrannyAnim">
+      <file>units\revolution\tabor\tabor_melee_attack</file>
+      <tag type="Attack">0.43</tag>
+      <tag type="SpecificSoundSet" checkvisible="1" set="Swoosh">0.43</tag>
+    </assetreference>
+    <assetreference type="GrannyAnim">
+      <file>units\revolution\tabor\tabor_melee_attack</file>
+      <tag type="Attack">0.43</tag>
+      <tag type="SpecificSoundSet" checkvisible="1" set="Swoosh">0.43</tag>
+    </assetreference>
+    <assetreference type="GrannyAnim">
+      <file>units\revolution\tabor\tabor_melee_attack</file>
+      <tag type="Attack">0.43</tag>
+      <tag type="SpecificSoundSet" checkvisible="1" set="Swoosh">0.43</tag>
+    </assetreference>
+    <assetreference type="GrannyAnim">
+      <file>units\revolution\tabor\tabor_melee_attack</file>
+      <tag type="Attack">0.43</tag>
+      <tag type="SpecificSoundSet" checkvisible="1" set="Swoosh">0.43</tag>
+    </assetreference>
+    <component>wagon</component>
+  </anim>
+  <anim>Idle_melee
+    <assetreference type="GrannyAnim">
+      <file>units\villagers\covered_wagon\covered_wagon_idle</file>
+    </assetreference>
+    <assetreference type="GrannyAnim">
+      <file>units\villagers\covered_wagon\covered_wagon_idle</file>
+    </assetreference>
+    <assetreference type="GrannyAnim">
+      <file>units\villagers\covered_wagon\covered_wagon_idle</file>
+    </assetreference>
+    <assetreference type="GrannyAnim">
+      <file>units\villagers\covered_wagon\covered_wagon_idle</file>
+    </assetreference>
+    <assetreference type="GrannyAnim">
+      <file>units\villagers\covered_wagon\covered_wagon_idle</file>
+    </assetreference>
+    <component>wagon</component>
+  </anim>
+  <anim>Bored_melee
+    <assetreference type="GrannyAnim">
+      <file>units\villagers\covered_wagon\covered_wagon_idle</file>
+      <weight>10</weight>
+    </assetreference>
+    <assetreference type="GrannyAnim">
+      <file>units\villagers\covered_wagon\covered_wagon_idle</file>
+      <weight>10</weight>
+    </assetreference>
+    <assetreference type="GrannyAnim">
+      <file>units\villagers\covered_wagon\covered_wagon_idle</file>
+      <weight>45</weight>
+    </assetreference>
+    <assetreference type="GrannyAnim">
+      <file>units\villagers\covered_wagon\covered_wagon_idle</file>
+      <weight>45</weight>
+    </assetreference>
+    <component>wagon</component>
+  </anim>
+  <anim>Walk_melee
+    <assetreference type="GrannyAnim">
+      <file>units\villagers\covered_wagon\covered_wagon_walk</file>
+      <tag type="SpecificSoundSet" checkvisible="1" set="HorseHoof1">0.10</tag>
+      <tag type="SpecificSoundSet" checkvisible="1" set="HorseHoof2">0.27</tag>
+      <tag type="SpecificSoundSet" checkvisible="1" set="HorseHoof3">0.44</tag>
+      <tag type="SpecificSoundSet" checkvisible="1" set="HorseHoof4">0.61</tag>
+      <tag type="SpecificSoundSet" checkvisible="1" set="HorseHoof2">0.78</tag>
+      <tag type="SpecificSoundSet" checkvisible="1" set="HorseHoof3">0.94</tag>
+      <tag type="FootstepLeft" footprinttype="Wheel" footprintbone="BONE_FRNT_LEFT">0.00</tag>
+      <tag type="FootstepLeft" footprinttype="Wheel" footprintbone="BONE_BACK_LEFT">0.00</tag>
+      <tag type="FootstepLeft" footprinttype="Horse" footprintbone="HS BONE HOOF FRNT LT">1.00</tag>
+      <tag type="FootstepLeft" footprinttype="Horse" footprintbone="HS BONE HOOF BACK LT">0.83</tag>
+      <tag type="FootstepRight" footprinttype="Wheel" footprintbone="BONE_FRNT_RIGHT">0.00</tag>
+      <tag type="FootstepRight" footprinttype="Wheel" footprintbone="BONE_BACK_RIGHT">0.00</tag>
+      <tag type="FootstepRight" footprinttype="Horse" footprintbone="HS BONE HOOF FRNT RT">0.70</tag>
+      <tag type="FootstepRight" footprinttype="Horse" footprintbone="HS BONE HOOF BACK RT">0.50</tag>
+    </assetreference>
+    <component>wagon</component>
+  </anim>
+  <anim>Walk
+    <assetreference type="GrannyAnim">
+      <file>units\villagers\covered_wagon\covered_wagon_walk</file>
+      <tag type="SpecificSoundSet" checkvisible="1" set="HorseHoof1">0.10</tag>
+      <tag type="SpecificSoundSet" checkvisible="1" set="HorseHoof2">0.27</tag>
+      <tag type="SpecificSoundSet" checkvisible="1" set="HorseHoof3">0.44</tag>
+      <tag type="SpecificSoundSet" checkvisible="1" set="HorseHoof4">0.61</tag>
+      <tag type="SpecificSoundSet" checkvisible="1" set="HorseHoof2">0.78</tag>
+      <tag type="SpecificSoundSet" checkvisible="1" set="HorseHoof3">0.94</tag>
+      <tag type="FootstepLeft" footprinttype="Wheel" footprintbone="BONE_FRNT_LEFT">0.00</tag>
+      <tag type="FootstepLeft" footprinttype="Wheel" footprintbone="BONE_BACK_LEFT">0.00</tag>
+      <tag type="FootstepLeft" footprinttype="Horse" footprintbone="HS BONE HOOF FRNT LT">1.00</tag>
+      <tag type="FootstepLeft" footprinttype="Horse" footprintbone="HS BONE HOOF BACK LT">0.83</tag>
+      <tag type="FootstepRight" footprinttype="Wheel" footprintbone="BONE_FRNT_RIGHT">0.00</tag>
+      <tag type="FootstepRight" footprinttype="Wheel" footprintbone="BONE_BACK_RIGHT">0.00</tag>
+      <tag type="FootstepRight" footprinttype="Horse" footprintbone="HS BONE HOOF FRNT RT">0.70</tag>
+      <tag type="FootstepRight" footprinttype="Horse" footprintbone="HS BONE HOOF BACK RT">0.50</tag>
+    </assetreference>
+    <component>wagon</component>
+  </anim>
+  <anim>Jog
+    <assetreference type="GrannyAnim">
+      <file>units\villagers\covered_wagon\covered_wagon_walk</file>
+      <tag type="SpecificSoundSet" checkvisible="1" set="HorseHoof1">0.10</tag>
+      <tag type="SpecificSoundSet" checkvisible="1" set="HorseHoof2">0.27</tag>
+      <tag type="SpecificSoundSet" checkvisible="1" set="HorseHoof3">0.44</tag>
+      <tag type="SpecificSoundSet" checkvisible="1" set="HorseHoof4">0.61</tag>
+      <tag type="SpecificSoundSet" checkvisible="1" set="HorseHoof2">0.78</tag>
+      <tag type="SpecificSoundSet" checkvisible="1" set="HorseHoof3">0.94</tag>
+      <tag type="FootstepLeft" footprinttype="Wheel" footprintbone="BONE_FRNT_LEFT">0.00</tag>
+      <tag type="FootstepLeft" footprinttype="Wheel" footprintbone="BONE_BACK_LEFT">0.00</tag>
+      <tag type="FootstepLeft" footprinttype="Horse" footprintbone="HS BONE HOOF FRNT LT">1.00</tag>
+      <tag type="FootstepLeft" footprinttype="Horse" footprintbone="HS BONE HOOF BACK LT">0.83</tag>
+      <tag type="FootstepRight" footprinttype="Wheel" footprintbone="BONE_FRNT_RIGHT">0.00</tag>
+      <tag type="FootstepRight" footprinttype="Wheel" footprintbone="BONE_BACK_RIGHT">0.00</tag>
+      <tag type="FootstepRight" footprinttype="Horse" footprintbone="HS BONE HOOF FRNT RT">0.70</tag>
+      <tag type="FootstepRight" footprinttype="Horse" footprintbone="HS BONE HOOF BACK RT">0.50</tag>
+    </assetreference>
+    <component>wagon</component>
+  </anim>
+  <anim>Run
+    <assetreference type="GrannyAnim">
+      <file>units\villagers\covered_wagon\covered_wagon_walk</file>
+      <tag type="SpecificSoundSet" checkvisible="1" set="HorseHoof1">0.10</tag>
+      <tag type="SpecificSoundSet" checkvisible="1" set="HorseHoof2">0.27</tag>
+      <tag type="SpecificSoundSet" checkvisible="1" set="HorseHoof3">0.44</tag>
+      <tag type="SpecificSoundSet" checkvisible="1" set="HorseHoof4">0.61</tag>
+      <tag type="SpecificSoundSet" checkvisible="1" set="HorseHoof2">0.78</tag>
+      <tag type="SpecificSoundSet" checkvisible="1" set="HorseHoof3">0.94</tag>
+      <tag type="FootstepLeft" footprinttype="Wheel" footprintbone="BONE_FRNT_LEFT">0.00</tag>
+      <tag type="FootstepLeft" footprinttype="Wheel" footprintbone="BONE_BACK_LEFT">0.00</tag>
+      <tag type="FootstepLeft" footprinttype="Horse" footprintbone="HS BONE HOOF FRNT LT">1.00</tag>
+      <tag type="FootstepLeft" footprinttype="Horse" footprintbone="HS BONE HOOF BACK LT">0.83</tag>
+      <tag type="FootstepRight" footprinttype="Wheel" footprintbone="BONE_FRNT_RIGHT">0.00</tag>
+      <tag type="FootstepRight" footprinttype="Wheel" footprintbone="BONE_BACK_RIGHT">0.00</tag>
+      <tag type="FootstepRight" footprinttype="Horse" footprintbone="HS BONE HOOF FRNT RT">0.70</tag>
+      <tag type="FootstepRight" footprinttype="Horse" footprintbone="HS BONE HOOF BACK RT">0.50</tag>
+    </assetreference>
+    <component>wagon</component>
+  </anim>
+  <anim>Death_by_melee
+    <assetreference type="GrannyAnim">
+      <file>animation_library\wagon\wagon_death</file>
+      <tag type="SpecificSoundSet" checkvisible="1" set="RagdollImpact">0.50</tag>
+      <tag type="SpecificSoundSet" checkvisible="1" set="CartBreak">0.03</tag>
+      <tag type="SpecificSoundSet" checkvisible="1" set="Thud">0.04</tag>
+    </assetreference>
+    <component>wagon</component>
+  </anim>
+  <anim>Death_by_range
+    <assetreference type="GrannyAnim">
+      <file>animation_library\wagon\wagon_death</file>
+      <tag type="SpecificSoundSet" checkvisible="1" set="RagdollImpact">0.50</tag>
+      <tag type="SpecificSoundSet" checkvisible="1" set="CartBreak">0.03</tag>
+      <tag type="SpecificSoundSet" checkvisible="1" set="Thud">0.04</tag>
+    </assetreference>
+    <component>wagon</component>
+  </anim>
+  <anim>Death_by_havoc
+    <assetreference type="GrannyAnim">
+      <file>animation_library\wagon\wagon_death</file>
+      <tag type="SpecificSoundSet" checkvisible="1" set="RagdollImpact">0.50</tag>
+      <tag type="SpecificSoundSet" checkvisible="1" set="CartBreak">0.03</tag>
+      <tag type="SpecificSoundSet" checkvisible="1" set="Thud">0.04</tag>
+    </assetreference>
+    <component>wagon</component>
+  </anim>
+  <anim>Cheer
+    <assetreference type="GrannyAnim">
+      <file>units\villagers\covered_wagon\covered_wagon_idle</file>
+      <weight>10</weight>
+    </assetreference>
+    <assetreference type="GrannyAnim">
+      <file>units\villagers\covered_wagon\covered_wagon_idle</file>
+      <weight>10</weight>
+    </assetreference>
+    <assetreference type="GrannyAnim">
+      <file>units\villagers\covered_wagon\covered_wagon_idle</file>
+      <weight>45</weight>
+    </assetreference>
+    <assetreference type="GrannyAnim">
+      <file>units\villagers\covered_wagon\covered_wagon_idle</file>
+      <weight>45</weight>
+    </assetreference>
+    <component>wagon</component>
+  </anim>
+  <anim>Raze_idle
+    <assetreference type="GrannyAnim">
+      <file>units\villagers\covered_wagon\covered_wagon_idle</file>
+    </assetreference>
+    <component>wagon</component>
+  </anim>
+  <anim animlengthoverride="3.0">Raze_attack
+    <assetreference type="GrannyAnim">
+      <file>units\revolution\tabor\tabor_attack</file>
+      <tag type="Attack">0.61</tag>
+      <tag type="Attack">0.56</tag>
+      <tag type="SpecificSoundSet" checkvisible="1" set="TorchSwing">0.52</tag>
+      <tag type="SpecificSoundSet" checkvisible="1" set="TorchSwing">0.44</tag>
+    </assetreference>
+    <component>wagon</component>
+  </anim>
+</animfile>

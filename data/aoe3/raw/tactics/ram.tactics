@@ -98,8 +98,8 @@
   <tactic>Cover
     <attackprioritytype bonusfactor="100000.00">LogicalTypeShipsAndBuildings</attackprioritytype>
     <speedmodifier>0.5</speedmodifier>
-    <action priority="100">BuildingAttack</action>
-    <action priority="90">HandAttack</action>
+    <action priority="100">CoverBuildingAttack</action>
+    <action priority="90">CoverHandAttack</action>
     <attacktype>LogicalTypeHandUnitsAttack</attacktype>
     <autoattacktype>LogicalTypeHandUnitsAutoAttack</autoattacktype>
     <attackresponsetype>LogicalTypeHandUnitsAttack</attackresponsetype>

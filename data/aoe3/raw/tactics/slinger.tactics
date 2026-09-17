@@ -9,12 +9,7 @@
     <reloadanim>Volley_standing_reload</reloadanim>
     <idleanim>Volley_standing_idle</idleanim>
     <accuracy>1.0</accuracy>
-    <accuracyreductionfactor>1.5</accuracyreductionfactor>
-    <aimbonus>0</aimbonus>
-    <maxspread>5</maxspread>
-    <spreadfactor>0.25</spreadfactor>
     <trackrating>120</trackrating>
-    <unintentionaldamagemultiplier>0.7</unintentionaldamagemultiplier>
     <projectile>Ball</projectile>
     <impacteffect>effects\impacts\gun</impacteffect>
     <minrange>2</minrange>
@@ -47,12 +42,7 @@
     <reloadanim>Volley_standing_reload</reloadanim>
     <idleanim>Volley_standing_idle</idleanim>
     <accuracy>1.0</accuracy>
-    <accuracyreductionfactor>1.5</accuracyreductionfactor>
-    <aimbonus>0</aimbonus>
-    <maxspread>5</maxspread>
-    <spreadfactor>0.25</spreadfactor>
     <trackrating>120</trackrating>
-    <unintentionaldamagemultiplier>0.7</unintentionaldamagemultiplier>
     <projectile>Ball</projectile>
     <impacteffect>effects\impacts\gun</impacteffect>
     <minrange>2</minrange>
@@ -87,12 +77,7 @@
     <reloadanim>Volley_standing_reload</reloadanim>
     <idleanim>Volley_standing_idle</idleanim>
     <accuracy>1.0</accuracy>
-    <accuracyreductionfactor>1.5</accuracyreductionfactor>
-    <aimbonus>0</aimbonus>
-    <maxspread>5</maxspread>
-    <spreadfactor>0.25</spreadfactor>
     <trackrating>120</trackrating>
-    <unintentionaldamagemultiplier>0.7</unintentionaldamagemultiplier>
     <projectile>Ball</projectile>
     <impacteffect>effects\impacts\gun</impacteffect>
     <minrange>2</minrange>

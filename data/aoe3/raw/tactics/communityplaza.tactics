@@ -267,7 +267,7 @@
     <persistent>1</persistent>
     <dancebonustype>UnitModification</dancebonustype>
     <modifyabstracttype>Unit</modifyabstracttype>
-    <modifymultiplier>0.0056</modifymultiplier>
+    <modifymultiplier>0.0050</modifymultiplier>
     <modifyexponent>1.005</modifyexponent>
     <modifybase>1.0</modifybase>
     <modifytype>UnitDamage</modifytype>
@@ -312,8 +312,8 @@
     <persistent>1</persistent>
     <dancebonustype>UnitSpawn</dancebonustype>
     <modifyprotoid>deMaceman</modifyprotoid>
-    <modifymultiplier>0.059</modifymultiplier>
-    <modifyexponent>1.01</modifyexponent>
+    <modifymultiplier>0.065</modifymultiplier>
+    <modifyexponent>1.03</modifyexponent>
     <modifybase>0.0</modifybase>
   </action>
   <action>
@@ -322,9 +322,9 @@
     <active>1</active>
     <persistent>1</persistent>
     <dancebonustype>AgeUpCostAbsolute</dancebonustype>
-    <modifymultiplier>0.5</modifymultiplier>
+    <modifymultiplier>0.45</modifymultiplier>
     <modifyexponent>0.0</modifyexponent>
-    <modifybase>1.0</modifybase>
+    <modifybase>0.9</modifybase>
   </action>
   <tactic>FertilityDance
     <action>MilitaryTrainFaster</action>

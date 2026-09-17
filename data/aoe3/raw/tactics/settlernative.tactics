@@ -83,6 +83,7 @@
     <rate type="ypGroveBuilding">1.0</rate>
     <rate type="deSPCFarmAfrican">1.0</rate>
     <rate type="AbstractInfiniteCrate">1.0</rate>
+    <typedanim type="deFishingHole">GatherFish</typedanim>
   </action>
   <action>
     <name stringid="69183">NoWork</name>
@@ -126,12 +127,7 @@
     <idleanim>Aim</idleanim>
     <maxheight>2</maxheight>
     <accuracy>10.0</accuracy>
-    <accuracyreductionfactor>0.5</accuracyreductionfactor>
-    <aimbonus>0</aimbonus>
-    <maxspread>5</maxspread>
-    <spreadfactor>0.25</spreadfactor>
     <trackrating>12</trackrating>
-    <unintentionaldamagemultiplier>0.7</unintentionaldamagemultiplier>
     <projectile>Javelin</projectile>
     <maxrange>10</maxrange>
     <rate type="Military">1.0 </rate>
@@ -151,12 +147,7 @@
     <idleanim>Aim</idleanim>
     <maxheight>0</maxheight>
     <accuracy>1.0</accuracy>
-    <accuracyreductionfactor>0.5</accuracyreductionfactor>
-    <aimbonus>0</aimbonus>
-    <maxspread>5</maxspread>
-    <spreadfactor>0.25</spreadfactor>
     <trackrating>12</trackrating>
-    <unintentionaldamagemultiplier>0.7</unintentionaldamagemultiplier>
     <projectile>InvisibleProjectile</projectile>
     <impacteffect>effects\impacts\gun</impacteffect>
     <maxrange>10</maxrange>

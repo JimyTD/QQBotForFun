@@ -8,12 +8,9 @@
     <anim>Idle</anim>
     <idleanim>Idle</idleanim>
     <projectile>Cannonball</projectile>
-    <numberprojectiles>1</numberprojectiles>
     <impacteffect>effects\impacts\cannon</impacteffect>
     <accuracy>1.0</accuracy>
     <maxheight>0</maxheight>
-    <accuracyreductionfactor>0.5</accuracyreductionfactor>
-    <aimbonus>5</aimbonus>
     <rof>3</rof>
     <rate type="All">1.0 </rate>
     <areasortmode>Directional</areasortmode>
@@ -31,12 +28,9 @@
     <anim>Idle</anim>
     <idleanim>Idle</idleanim>
     <projectile>Cannonball</projectile>
-    <numberprojectiles>1</numberprojectiles>
     <impacteffect>effects\impacts\cannon</impacteffect>
     <accuracy>1.0</accuracy>
     <maxheight>0</maxheight>
-    <accuracyreductionfactor>0.5</accuracyreductionfactor>
-    <aimbonus>5</aimbonus>
     <rof>3</rof>
     <rate type="Guardian">1.0 </rate>
     <areasortmode>Directional</areasortmode>
@@ -54,12 +48,9 @@
     <anim>Idle</anim>
     <idleanim>Idle</idleanim>
     <projectile>MortarShell</projectile>
-    <numberprojectiles>1</numberprojectiles>
     <impacteffect>effects\impacts\cannon</impacteffect>
     <accuracy>1.0</accuracy>
     <maxheight>0</maxheight>
-    <accuracyreductionfactor>0.01</accuracyreductionfactor>
-    <aimbonus>5</aimbonus>
     <rof>3</rof>
     <rate type="All">1.0 </rate>
     <areasortmode>Directional</areasortmode>

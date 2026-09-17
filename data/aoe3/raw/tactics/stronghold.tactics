@@ -7,9 +7,6 @@
     <rangedlogic>1</rangedlogic>
     <anim>RangedAttack</anim>
     <accuracy>1</accuracy>
-    <aimbonus>0</aimbonus>
-    <maxspread>35</maxspread>
-    <spreadfactor>100</spreadfactor>
     <trackrating>100</trackrating>
     <scalebycontainedunittype>
       <rate type="Military">0.101</rate>
@@ -18,8 +15,7 @@
     <projectile>Arrow</projectile>
     <rate type="Unit">1.0 </rate>
     <throw>1</throw>
-    <numberprojectiles>6</numberprojectiles>
-    <displayednumberprojectiles>6</displayednumberprojectiles>
+    <displayednumberprojectiles>8</displayednumberprojectiles>
     <instantballistics>0</instantballistics>
   </action>
   <action>
@@ -30,13 +26,9 @@
     <anim>RangedAttack</anim>
     <maxheight>0</maxheight>
     <accuracy>1.0</accuracy>
-    <aimbonus>0</aimbonus>
-    <maxspread>8</maxspread>
-    <spreadfactor>0.40</spreadfactor>
     <trackrating>12</trackrating>
-    <unintentionaldamagemultiplier>0.7</unintentionaldamagemultiplier>
     <projectile>ArrowFlaming</projectile>
-    <displayednumberprojectiles>6</displayednumberprojectiles>
+    <displayednumberprojectiles>8</displayednumberprojectiles>
     <impacteffect>effects\impacts\torch</impacteffect>
     <perfectaccuracy>1</perfectaccuracy>
     <rate type="AbstractWarship">1.0 </rate>

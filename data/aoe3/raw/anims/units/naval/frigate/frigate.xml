@@ -166,9 +166,25 @@
     </watersplash>
   </component>
   <component>death
-    <assetreference type="GrannyModel">
-      <file>units\naval\frigate\frigate_damaged</file>
-    </assetreference>
+    <logic type="Tech">
+      <none>
+        <assetreference type="GrannyModel">
+          <file>units\naval\frigate\frigate_damaged</file>
+        </assetreference>
+      </none>
+      <desailsottoman>
+        <assetreference type="GrannyModel">
+          <file>units\naval\frigate\frigate_damaged</file>
+          <materialvariant index="1"/>
+        </assetreference>
+      </desailsottoman>
+      <desailsindian>
+        <assetreference type="GrannyModel">
+          <file>units\naval\frigate\frigate_damaged</file>
+          <materialvariant index="2"/>
+        </assetreference>
+      </desailsindian>
+    </logic>
     <decal>
       <effecttype>default</effecttype>
       <selectedtexture>shadows_selections\selection_oval_64x128</selectedtexture>

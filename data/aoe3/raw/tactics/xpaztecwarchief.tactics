@@ -160,6 +160,17 @@
     <active>0</active>
     <persistent>1</persistent>
   </action>
+  <action>
+    <name>ExtraArmor</name>
+    <type>AutoRangedModify</type>
+    <active>0</active>
+    <maxrange>24</maxrange>
+    <persistent>1</persistent>
+    <modifytype>Armor</modifytype>
+    <modifymultiplier>1.1</modifymultiplier>
+    <modelattachment>effects\chiefpower\chiefpower.xml</modelattachment>
+    <modelattachmentbone>bonethatdoesntexist</modelattachmentbone>
+  </action>
   <tactic>Melee
     <action priority="100">BuildingAttack</action>
     <action priority="75">HandAttack</action>
@@ -172,6 +183,7 @@
     <action>ExtraBounty2</action>
     <action>ExtraHitPointsHM02</action>
     <action>SpawnKnockoutEvzone</action>
+    <action>ExtraArmor</action>
     <attacktype>LogicalTypeHandUnitsAttack</attacktype>
     <autoattacktype>LogicalTypeHandUnitsAutoAttack</autoattacktype>
     <attackresponsetype>LogicalTypeHandUnitsAttack</attackresponsetype>
@@ -190,6 +202,7 @@
     <action>ExtraBounty2</action>
     <action>ExtraHitPointsHM02</action>
     <action>SpawnKnockoutEvzone</action>
+    <action>ExtraArmor</action>
     <attacktype>LogicalTypeHandUnitsAttack</attacktype>
     <autoattacktype>LogicalTypeHandUnitsAutoAttack</autoattacktype>
     <attackresponsetype>LogicalTypeHandUnitsAttack</attackresponsetype>
@@ -209,6 +222,7 @@
     <action>ExtraBounty2</action>
     <action>ExtraHitPointsHM02</action>
     <action>SpawnKnockoutEvzone</action>
+    <action>ExtraArmor</action>
     <attacktype>LogicalTypeHandUnitsAttack</attacktype>
     <autoattacktype>LogicalTypeHandUnitsAutoAttack</autoattacktype>
     <attackresponsetype>LogicalTypeHandUnitsAttack</attackresponsetype>
@@ -227,6 +241,7 @@
     <action>ExtraBounty2</action>
     <action>ExtraHitPointsHM02</action>
     <action>SpawnKnockoutEvzone</action>
+    <action>ExtraArmor</action>
     <attacktype>LogicalTypeHandUnitsAttack</attacktype>
     <autoattacktype>LogicalTypeHandUnitsAutoAttack</autoattacktype>
     <attackresponsetype>LogicalTypeHandUnitsAttack</attackresponsetype>

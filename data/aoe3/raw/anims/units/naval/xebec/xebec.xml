@@ -146,6 +146,16 @@
             </flag>
           </assetreference>
         </demaltese>
+        <depolish>
+          <assetreference type="ClothFlag">
+            <flag>
+              <blending>alphatest_color</blending>
+              <specialtexture/>
+              <width>2.00</width>
+              <height>1.50</height>
+            </flag>
+          </assetreference>
+        </depolish>
       </logic>
     </component>
     <anim>Idle
@@ -184,6 +194,22 @@
           </p99>
         </logic>
       </demaltese>
+      <depolish>
+        <logic type="Destruction">
+          <p1>
+            <assetreference type="GrannyModel">
+              <file>units\naval\xebec\xebec_damaged</file>
+              <materialvariant index="1"/>
+            </assetreference>
+          </p1>
+          <p99>
+            <assetreference type="GrannyModel">
+              <file>units\naval\xebec\xebec</file>
+              <materialvariant index="1"/>
+            </assetreference>
+          </p99>
+        </logic>
+      </depolish>
     </logic>
     <decal>
       <effecttype>default</effecttype>
@@ -212,6 +238,12 @@
           <materialvariant index="1"/>
         </assetreference>
       </demaltese>
+      <depolish>
+        <assetreference type="GrannyModel">
+          <file>units\naval\xebec\xebec_damaged</file>
+          <materialvariant index="1"/>
+        </assetreference>
+      </depolish>
     </logic>
     <decal>
       <effecttype>default</effecttype>

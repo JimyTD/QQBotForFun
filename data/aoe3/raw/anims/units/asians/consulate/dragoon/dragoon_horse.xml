@@ -8,18 +8,9 @@
     <include>units\asians\consulate\dragoon\dragoon_rider.xml</include>
   </attachment>
   <component>ModelComp
-    <logic type="LowPoly">
-      <normal>
-        <assetreference type="GrannyModel">
-          <file>units\cavalry\dragoon\dragoon_horse_age4</file>
-        </assetreference>
-      </normal>
-      <lowpoly>
-        <assetreference type="GrannyModel">
-          <file>units\cavalry\dragoon\lp_dragoon_horse_age4</file>
-        </assetreference>
-      </lowpoly>
-    </logic>
+    <assetreference type="GrannyModel">
+      <file>units\cavalry\dragoon\dragoon_horse_age4</file>
+    </assetreference>
     <decal>
       <effecttype>default</effecttype>
       <texture isfakeshadow="1">shadows_selections\shadow_consulate_64x64</texture>
@@ -380,6 +371,96 @@
     </assetreference>
     <assetreference type="GrannyAnim">
       <file>animation_library\cavalry\horse_idle_I</file>
+      <weight>50</weight>
+    </assetreference>
+    <component>ModelComp</component>
+  </anim>
+  <anim>Lance_Idle
+    <assetreference type="GrannyAnim">
+      <file>animation_library\cavalry\horse_idle_A</file>
+      <weight>40</weight>
+    </assetreference>
+    <assetreference type="GrannyAnim">
+      <file>animation_library\cavalry\horse_idle_B</file>
+      <weight>10</weight>
+    </assetreference>
+    <assetreference type="GrannyAnim">
+      <file>animation_library\cavalry\horse_idle_C</file>
+      <weight>10</weight>
+    </assetreference>
+    <assetreference type="GrannyAnim">
+      <file>animation_library\cavalry\horse_idle_D</file>
+      <weight>10</weight>
+    </assetreference>
+    <assetreference type="GrannyAnim">
+      <file>animation_library\cavalry\horse_idle_F</file>
+      <weight>10</weight>
+    </assetreference>
+    <assetreference type="GrannyAnim">
+      <file>animation_library\cavalry\horse_idle_G</file>
+      <weight>10</weight>
+    </assetreference>
+    <component>ModelComp</component>
+  </anim>
+  <anim>Lance_Attack_melee
+    <assetreference type="GrannyAnim">
+      <file>animation_library\cavalry\horse_1-5_attack_A</file>
+      <weight>40</weight>
+      <tag type="Attack">0.64</tag>
+    </assetreference>
+    <assetreference type="GrannyAnim">
+      <file>animation_library\cavalry\horse_1-5_attack_B</file>
+      <weight>10</weight>
+      <tag type="Attack">0.57</tag>
+    </assetreference>
+    <assetreference type="GrannyAnim">
+      <file>animation_library\cavalry\horse_1-5_attack_C</file>
+      <weight>10</weight>
+      <tag type="Attack">0.61</tag>
+    </assetreference>
+    <component>ModelComp</component>
+  </anim>
+  <anim>Lance_Jog
+    <assetreference type="GrannyAnim">
+      <file>animation_library\cavalry\horse_jog</file>
+      <tag type="FootstepLeft" footprinttype="Horse" footprintbone="HS BONE HOOF FRNT LT">0.80</tag>
+      <tag type="FootstepLeft" footprinttype="Horse" footprintbone="HS BONE HOOF BACK LT">0.50</tag>
+      <tag type="FootstepRight" footprinttype="Horse" footprintbone="HS BONE HOOF FRNT RT">0.95</tag>
+      <tag type="FootstepRight" footprinttype="Horse" footprintbone="HS BONE HOOF BACK RT">0.75</tag>
+    </assetreference>
+    <component>ModelComp</component>
+  </anim>
+  <anim>Lance_Run
+    <assetreference type="GrannyAnim">
+      <file>animation_library\cavalry\horse_gallop</file>
+      <tag type="FootstepLeft" footprinttype="Horse" footprintbone="HS BONE HOOF FRNT LT">0.73</tag>
+      <tag type="FootstepLeft" footprinttype="Horse" footprintbone="HS BONE HOOF BACK LT">0.50</tag>
+      <tag type="FootstepRight" footprinttype="Horse" footprintbone="HS BONE HOOF FRNT RT">1.00</tag>
+      <tag type="FootstepRight" footprinttype="Horse" footprintbone="HS BONE HOOF BACK RT">0.70</tag>
+    </assetreference>
+    <component>ModelComp</component>
+  </anim>
+  <anim>Lance_Walk
+    <assetreference type="GrannyAnim">
+      <file>animation_library\cavalry\horse_canter</file>
+      <tag type="FootstepLeft" footprinttype="Horse" footprintbone="HS BONE HOOF FRNT LT">1.00</tag>
+      <tag type="FootstepLeft" footprinttype="Horse" footprintbone="HS BONE HOOF BACK LT">0.83</tag>
+      <tag type="FootstepRight" footprinttype="Horse" footprintbone="HS BONE HOOF FRNT RT">0.70</tag>
+      <tag type="FootstepRight" footprinttype="Horse" footprintbone="HS BONE HOOF BACK RT">0.50</tag>
+    </assetreference>
+    <component>ModelComp</component>
+  </anim>
+  <anim>Lance_Bored
+    <assetreference type="GrannyAnim">
+      <file>animation_library\cavalry\horse_bored_A</file>
+      <weight>10</weight>
+    </assetreference>
+    <assetreference type="GrannyAnim">
+      <file>animation_library\cavalry\horse_idle_E</file>
+      <weight>10</weight>
+    </assetreference>
+    <assetreference type="GrannyAnim">
+      <file>animation_library\cavalry\horse_idle_A</file>
       <weight>50</weight>
     </assetreference>
     <component>ModelComp</component>

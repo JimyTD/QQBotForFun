@@ -9,12 +9,8 @@
     <reloadanim>Idle</reloadanim>
     <idleanim>Idle</idleanim>
     <accuracy>1.0</accuracy>
-    <aimbonus>0</aimbonus>
     <perfectaccuracy>1</perfectaccuracy>
-    <maxspread>3</maxspread>
-    <spreadfactor>2.5</spreadfactor>
     <trackrating>12</trackrating>
-    <unintentionaldamagemultiplier>0.7</unintentionaldamagemultiplier>
     <throw>1</throw>
     <projectile>Arrow</projectile>
     <impacteffect>effects\impacts\gun</impacteffect>
@@ -33,8 +29,6 @@
     <anim>Raze_attack</anim>
     <idleanim>Raze_idle</idleanim>
     <perfectaccuracy>1</perfectaccuracy>
-    <maxspread>3</maxspread>
-    <spreadfactor>2.5</spreadfactor>
     <displayednumberprojectiles>5</displayednumberprojectiles>
     <hidefromstats>1</hidefromstats>
     <throw>1</throw>

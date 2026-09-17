@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<tactics>
+  <action>
+    <name stringid="46491">Stealth</name>
+    <type>Stealth</type>
+    <maxrange>25.0</maxrange>
+    <active>0</active>
+    <persistent>1</persistent>
+  </action>
+  <action>
+    <name stringid="38135">MeleeHandAttack</name>
+    <type>Attack</type>
+    <maxrange>1.75</maxrange>
+    <rate type="Unit">1.0 </rate>
+    <attackaction>1</attackaction>
+    <handlogic>1</handlogic>
+    <speedboost>1</speedboost>
+    <anim>HandAttack</anim>
+    <impacteffect>effects\impacts\melee_no_weapon</impacteffect>
+  </action>
+  <action>
+    <name stringid="69148">Discover</name>
+    <type>Discover</type>
+    <anim>HandAttack</anim>
+    <maxrange>0.2</maxrange>
+    <rate type="AbstractNuggetLand">1.0</rate>
+  </action>
+  <action>
+    <name stringid="69150">CrateGather</name>
+    <anim>GatherCrate</anim>
+    <type>Gather</type>
+    <maxrange>0.5</maxrange>
+    <rate type="AbstractResourceCrate">1.0</rate>
+    <typedanim type="AbstractResourceCrate">HandAttack</typedanim>
+  </action>
+  <tactic>Melee
+    <action priority="100">MeleeHandAttack</action>
+    <action>Discover</action>
+    <action>CrateGather</action>
+    <speedmodifier>1.0</speedmodifier>
+    <attacktype>LogicalTypeHandUnitsAttack</attacktype>
+    <autoattacktype>LogicalTypeHandUnitsAutoAttack</autoattacktype>
+    <attackresponsetype>LogicalTypeHandUnitsAttack</attackresponsetype>
+    <runaway>1</runaway>
+    <autoretarget>1</autoretarget>
+    <transition>
+      <tactic>Stealth</tactic>
+      <length>2</length>
+      <anim>Idle</anim>
+      <exit>1</exit>
+    </transition>
+  </tactic>
+</tactics>

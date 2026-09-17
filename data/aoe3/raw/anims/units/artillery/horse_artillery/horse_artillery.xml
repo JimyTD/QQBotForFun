@@ -68,6 +68,11 @@
           <file>units\artillery\horse_artillery\ottoman_horse_artillery</file>
         </assetreference>
       </age0ottoman>
+      <rgdanishhorseartillery>
+        <assetreference type="GrannyModel">
+          <file>units\artillery\horse_artillery\danish_horse_artillery</file>
+        </assetreference>
+      </rgdanishhorseartillery>
     </logic>
     <decal>
       <effecttype>default</effecttype>
@@ -123,6 +128,11 @@
           <file>units\artillery\horse_artillery\ottoman_horse_artillery_stripped</file>
         </assetreference>
       </age0ottoman>
+      <rgdanishhorseartillery>
+        <assetreference type="GrannyModel">
+          <file>units\artillery\horse_artillery\danish_horse_artillery_stripped</file>
+        </assetreference>
+      </rgdanishhorseartillery>
     </logic>
     <decal>
       <effecttype>default</effecttype>
@@ -178,6 +188,11 @@
           <file>units\artillery\horse_artillery\ottoman_horse_artillery_limber</file>
         </assetreference>
       </age0ottoman>
+      <rgdanishhorseartillery>
+        <assetreference type="GrannyModel">
+          <file>units\artillery\horse_artillery\danish_horse_artillery_limber</file>
+        </assetreference>
+      </rgdanishhorseartillery>
     </logic>
     <decal>
       <effecttype>default</effecttype>

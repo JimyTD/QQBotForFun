@@ -13,14 +13,28 @@
       <logic type="Tech">
         <none>
           <assetreference type="GrannyModel">
-            <file>units\cavalry\hakkapelit\hakkapelit_age2_horse</file>
+            <file>units\cavalry\hakkapelit\hakkapelit_age4_horse</file>
+            <materialvariant index="1"/>
           </assetreference>
         </none>
         <guardwarwagons>
           <assetreference type="GrannyModel">
             <file>units\cavalry\hakkapelit\hakkapelit_age4_horse</file>
+            <materialvariant index="1"/>
           </assetreference>
         </guardwarwagons>
+        <imperialwarwagons>
+          <assetreference type="GrannyModel">
+            <file>units\cavalry\hakkapelit\hakkapelit_age4_horse</file>
+            <materialvariant index="1"/>
+          </assetreference>
+        </imperialwarwagons>
+        <derevolutionprussia>
+          <assetreference type="GrannyModel">
+            <file>units\cavalry\hakkapelit\hakkapelit_age4_horse</file>
+            <materialvariant index="2"/>
+          </assetreference>
+        </derevolutionprussia>
       </logic>
       <decal>
         <effecttype>default</effecttype>
@@ -419,6 +433,7 @@
     <component>ModelComp
       <assetreference type="GrannyModel">
         <file>units\cavalry\hakkapelit\hakkapelit_age4_horse</file>
+        <materialvariant index="1"/>
       </assetreference>
       <decal>
         <effecttype>default</effecttype>
@@ -818,6 +833,9 @@
       <denatwittelsbachducallancers>
         <submodelref ref="lancer"/>
       </denatwittelsbachducallancers>
+      <derevolutionprussia>
+        <submodelref ref="default"/>
+      </derevolutionprussia>
     </logic>
   </component>
 </animfile>

@@ -53,6 +53,11 @@
           <file>units\artillery\mortar\Ottoman_mortar</file>
         </assetreference>
       </age0ottoman>
+      <rgdanishmortars>
+        <assetreference type="GrannyModel">
+          <file>units\artillery\mortar\danish_mortar</file>
+        </assetreference>
+      </rgdanishmortars>
     </logic>
     <decal>
       <effecttype>default</effecttype>

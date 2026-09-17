@@ -8,7 +8,18 @@
     <modifytype>Bounty</modifytype>
     <modifymultiplier>1.6</modifymultiplier>
   </action>
+  <action>
+    <name>ExtraTrade</name>
+    <active>0</active>
+    <type>AutoRangedModify</type>
+    <modifyabstracttype>AbstractVillager</modifyabstracttype>
+    <forbidunittype>AbstractFishingBoat</forbidunittype>
+    <persistent>1</persistent>
+    <modifytype>AutoGatherRate</modifytype>
+    <modifymultiplier>1.3</modifymultiplier>
+  </action>
   <tactic>Normal
     <action>ExtraBounty</action>
+    <action>ExtraTrade</action>
   </tactic>
 </tactics>

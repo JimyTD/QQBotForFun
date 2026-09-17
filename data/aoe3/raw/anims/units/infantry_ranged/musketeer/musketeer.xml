@@ -120,6 +120,12 @@
         </assetreference>
         <attach a="hats" frombone="bone_hat" tobone="HEAD" syncanims="0"/>
       </rgguerreiros>
+      <rgdanishmusketeers>
+        <assetreference type="GrannyModel">
+          <file>units\infantry_ranged\musketeer\danish_musketeer</file>
+        </assetreference>
+        <attach a="hats" frombone="bone_hat" tobone="HEAD" syncanims="0"/>
+      </rgdanishmusketeers>
       <rgredcoats>
         <logic type="Tech">
           <none>
@@ -166,6 +172,28 @@
         </assetreference>
         <attach a="hats" frombone="bone_hat" tobone="HEAD" syncanims="0"/>
       </dehcrevfencibles>
+      <derevolutionwarsaw>
+        <assetreference type="GrannyModel">
+          <file>units\infantry_ranged\musketeer\polish_musketeer</file>
+        </assetreference>
+      </derevolutionwarsaw>
+      <deindependencepolish>
+        <assetreference type="GrannyModel">
+          <file>units\infantry_ranged\musketeer\polish_musketeer</file>
+        </assetreference>
+      </deindependencepolish>
+      <dehcrevleibgarde>
+        <assetreference type="GrannyModel">
+          <file>units\mercenaries\fusilier\walloon_guard</file>
+          <materialvariant index="1"/>
+        </assetreference>
+      </dehcrevleibgarde>
+      <deindependencegermans>
+        <assetreference type="GrannyModel">
+          <file>units\mercenaries\fusilier\walloon_guard</file>
+          <materialvariant index="1"/>
+        </assetreference>
+      </deindependencegermans>
     </logic>
     <decal>
       <effecttype>default</effecttype>

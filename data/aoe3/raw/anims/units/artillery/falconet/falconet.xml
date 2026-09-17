@@ -47,42 +47,38 @@
       <linkcomponent>falconet_M1Shape</linkcomponent>
       <linkconstraint>1</linkconstraint>
     </linksection>
-    <logic type="LowPoly">
-      <normal>
-        <logic type="Tech">
-          <none>
-            <assetreference type="GrannyModel">
-              <file>units\artillery\falconet\falconet</file>
-            </assetreference>
-          </none>
-          <fieldgun>
-            <assetreference type="GrannyModel">
-              <file>units\artillery\falconet\falconet</file>
-            </assetreference>
-            <attach a="hats" frombone="bone_hat" tobone="Bip01_Head2" syncanims="0"/>
-          </fieldgun>
-          <swedishleathercannonshadow>
-            <assetreference type="GrannyModel">
-              <file>units\artillery\falconet\falconet</file>
-            </assetreference>
-          </swedishleathercannonshadow>
-          <swedishfalconet>
-            <assetreference type="GrannyModel">
-              <file>units\artillery\falconet\falconet</file>
-            </assetreference>
-          </swedishfalconet>
-          <age0ottoman>
-            <assetreference type="GrannyModel">
-              <file>units\artillery\falconet\ottoman_falconet</file>
-            </assetreference>
-          </age0ottoman>
-        </logic>
-      </normal>
-      <lowpoly>
+    <logic type="Tech">
+      <none>
         <assetreference type="GrannyModel">
           <file>units\artillery\falconet\falconet</file>
         </assetreference>
-      </lowpoly>
+      </none>
+      <fieldgun>
+        <assetreference type="GrannyModel">
+          <file>units\artillery\falconet\falconet</file>
+        </assetreference>
+        <attach a="hats" frombone="bone_hat" tobone="Bip01_Head2" syncanims="0"/>
+      </fieldgun>
+      <swedishleathercannonshadow>
+        <assetreference type="GrannyModel">
+          <file>units\artillery\falconet\falconet</file>
+        </assetreference>
+      </swedishleathercannonshadow>
+      <swedishfalconet>
+        <assetreference type="GrannyModel">
+          <file>units\artillery\falconet\falconet</file>
+        </assetreference>
+      </swedishfalconet>
+      <age0ottoman>
+        <assetreference type="GrannyModel">
+          <file>units\artillery\falconet\ottoman_falconet</file>
+        </assetreference>
+      </age0ottoman>
+      <rgdanishfalconets>
+        <assetreference type="GrannyModel">
+          <file>units\artillery\falconet\danish_falconet</file>
+        </assetreference>
+      </rgdanishfalconets>
     </logic>
     <decal>
       <effecttype>default</effecttype>
@@ -118,42 +114,38 @@
       <linkcomponent>falconet</linkcomponent>
       <linkconstraint>1</linkconstraint>
     </linksection>
-    <logic type="LowPoly">
-      <normal>
-        <logic type="Tech">
-          <none>
-            <assetreference type="GrannyModel">
-              <file>units\artillery\falconet\falconet_stripped model</file>
-            </assetreference>
-          </none>
-          <fieldgun>
-            <assetreference type="GrannyModel">
-              <file>units\artillery\falconet\falconet_stripped model</file>
-            </assetreference>
-            <attach a="hats2" frombone="bone_hat" tobone="Bip01_Head2" syncanims="0"/>
-          </fieldgun>
-          <swedishleathercannonshadow>
-            <assetreference type="GrannyModel">
-              <file>units\artillery\falconet\falconet_stripped model</file>
-            </assetreference>
-          </swedishleathercannonshadow>
-          <swedishfalconet>
-            <assetreference type="GrannyModel">
-              <file>units\artillery\falconet\falconet_stripped model</file>
-            </assetreference>
-          </swedishfalconet>
-          <age0ottoman>
-            <assetreference type="GrannyModel">
-              <file>units\artillery\falconet\ottoman_falconet_stripped</file>
-            </assetreference>
-          </age0ottoman>
-        </logic>
-      </normal>
-      <lowpoly>
+    <logic type="Tech">
+      <none>
         <assetreference type="GrannyModel">
           <file>units\artillery\falconet\falconet_stripped model</file>
         </assetreference>
-      </lowpoly>
+      </none>
+      <fieldgun>
+        <assetreference type="GrannyModel">
+          <file>units\artillery\falconet\falconet_stripped model</file>
+        </assetreference>
+        <attach a="hats2" frombone="bone_hat" tobone="Bip01_Head2" syncanims="0"/>
+      </fieldgun>
+      <swedishleathercannonshadow>
+        <assetreference type="GrannyModel">
+          <file>units\artillery\falconet\falconet_stripped model</file>
+        </assetreference>
+      </swedishleathercannonshadow>
+      <swedishfalconet>
+        <assetreference type="GrannyModel">
+          <file>units\artillery\falconet\falconet_stripped model</file>
+        </assetreference>
+      </swedishfalconet>
+      <age0ottoman>
+        <assetreference type="GrannyModel">
+          <file>units\artillery\falconet\ottoman_falconet_stripped</file>
+        </assetreference>
+      </age0ottoman>
+      <rgdanishfalconets>
+        <assetreference type="GrannyModel">
+          <file>units\artillery\falconet\danish_falconet_stripped</file>
+        </assetreference>
+      </rgdanishfalconets>
     </logic>
     <decal>
       <effecttype>default</effecttype>

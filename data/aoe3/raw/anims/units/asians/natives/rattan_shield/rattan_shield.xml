@@ -18,34 +18,38 @@
     <include>effects\projectiles\torch.xml</include>
   </attachment>
   <attachment>shield
-    <component>shield</component>
+    <component>shield
+      <assetreference type="GrannyModel">
+        <file>units\asians\natives\rattan_shield\shield</file>
+      </assetreference>
+    </component>
     <anim>Idle
       <component>shield</component>
     </anim>
   </attachment>
   <component>ModelComp
-    <logic type="LowPoly">
-      <normal>
+    <logic type="Tech">
+      <none>
         <assetreference type="GrannyModel">
           <file>units\asians\natives\rattan_shield\rattan_shield</file>
         </assetreference>
         <attach a="sword" frombone="MASTER" tobone="bip01 Prop1" syncanims="0"/>
-        <attach a="shield" frombone="bone_shield" tobone="L FOREARM" syncanims="0"/>
-      </normal>
-      <lowpoly>
+      </none>
+      <detigermen>
         <assetreference type="GrannyModel">
-          <file>units\asians\natives\rattan_shield\rattan_shield_lp</file>
+          <file>units\natives\aztec\coyote_man\coyote_man_age1</file>
+          <materialvariant index="1"/>
         </assetreference>
         <attach a="sword" frombone="MASTER" tobone="bip01 Prop1" syncanims="0"/>
         <attach a="shield" frombone="bone_shield" tobone="L FOREARM" syncanims="0"/>
-      </lowpoly>
+      </detigermen>
     </logic>
     <decal>
       <effecttype>default</effecttype>
       <texture isfakeshadow="1">shadows_selections\shadow_circle_32x32</texture>
       <selectedtexture>shadows_selections\selection_circle_32x32</selectedtexture>
-      <width>1.0</width>
-      <height>1.0</height>
+      <width>1.3</width>
+      <height>1.3</height>
     </decal>
   </component>
   <anim>Death_by_melee
@@ -160,7 +164,7 @@
   </anim>
   <anim>Cover_walk
     <assetreference type="GrannyAnim">
-      <file>units\asians\natives\rattan_shield\rattan_shield_cover_walk</file>
+      <file>units\asians\natives\rattan_shield\rattan_shield_cover_jog</file>
       <tag type="FootstepLeft" footprinttype="HumanLeft">0.71</tag>
       <tag type="FootstepRight" footprinttype="HumanRight">0.14</tag>
     </assetreference>
@@ -229,9 +233,9 @@
   </anim>
   <anim>Charge_walk
     <assetreference type="GrannyAnim">
-      <file>units\asians\natives\rattan_shield\rattan_shield_walk</file>
-      <tag type="FootstepLeft" footprinttype="HumanLeft">0.03</tag>
-      <tag type="FootstepRight" footprinttype="HumanRight">0.53</tag>
+      <file>animation_library\natives\zapotec_lightning_warrior\charge_jog</file>
+      <tag type="FootstepLeft" footprinttype="HumanLeft">0.09</tag>
+      <tag type="FootstepRight" footprinttype="HumanRight">0.52</tag>
     </assetreference>
     <component>ModelComp</component>
   </anim>

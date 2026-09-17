@@ -15,12 +15,7 @@
     <rangedlogic>1</rangedlogic>
     <anim>RangedAttack</anim>
     <accuracy>0.9</accuracy>
-    <accuracyreductionfactor>2</accuracyreductionfactor>
-    <aimbonus>0</aimbonus>
-    <maxspread>5</maxspread>
-    <spreadfactor>0.25</spreadfactor>
     <trackrating>12</trackrating>
-    <unintentionaldamagemultiplier>1.0</unintentionaldamagemultiplier>
     <projectile>Dynamite</projectile>
     <impacteffect>effects\impacts\dynamite</impacteffect>
     <minrange>4</minrange>
@@ -41,12 +36,7 @@
     <rangedlogic>1</rangedlogic>
     <anim>RangedAttack</anim>
     <accuracy>0.9</accuracy>
-    <accuracyreductionfactor>2</accuracyreductionfactor>
-    <aimbonus>0</aimbonus>
-    <maxspread>5</maxspread>
-    <spreadfactor>0.25</spreadfactor>
     <trackrating>12</trackrating>
-    <unintentionaldamagemultiplier>1.0</unintentionaldamagemultiplier>
     <projectile>Dynamite</projectile>
     <impacteffect>effects\impacts\dynamite</impacteffect>
     <rate type="LogicalTypeShipsAndBuildings">1.0 </rate>

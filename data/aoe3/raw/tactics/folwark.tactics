@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="utf-8"?>
+<tactics>
+  <action>
+    <name stringid="68994">FarmSlowEnemyMilitary</name>
+    <type>AutoRangedModify</type>
+    <targetenemy>1</targetenemy>
+    <active>0</active>
+    <maxrange>9.5</maxrange>
+    <persistent>1</persistent>
+    <squareaura>1</squareaura>
+    <nostack>1</nostack>
+    <nostackignorepuid>1</nostackignorepuid>
+    <modifytype>Speed</modifytype>
+    <modifymultiplier>0.70</modifymultiplier>
+    <modelattachment>effects\ypack_auras\frightpower.xml</modelattachment>
+    <modelattachmentbone>bonethatdoesntexist</modelattachmentbone>
+  </action>
+  <action>
+    <name stringid="69158">SpawnPig</name>
+    <type>Spawn</type>
+    <rate type="Pig">0.0</rate>
+    <singleuseunit>1</singleuseunit>
+    <animationrate>1</animationrate>
+    <active>1</active>
+    <persistent>1</persistent>
+  </action>
+  <action>
+    <name>GrantFood</name>
+    <type>Spawn</type>
+    <rate type="Food">50.0</rate>
+    <singleuseunit>1</singleuseunit>
+    <animationrate>1</animationrate>
+    <active>0</active>
+    <persistent>1</persistent>
+  </action>
+  <action>
+    <name>SpawnPigLivestock</name>
+    <type>Spawn</type>
+    <rate type="Pig">1.0</rate>
+    <singleuseunit>1</singleuseunit>
+    <animationrate>1</animationrate>
+    <active>0</active>
+    <persistent>1</persistent>
+  </action>
+  <action>
+    <name>SpawnPiechur</name>
+    <type>Spawn</type>
+    <rate type="dePiechur">1.0</rate>
+    <singleuseunit>1</singleuseunit>
+    <animationrate>1</animationrate>
+    <active>0</active>
+    <persistent>1</persistent>
+  </action>
+  <action>
+    <name>SpawnSerdyuk</name>
+    <type>Spawn</type>
+    <rate type="deREVSerdyuk">1.0</rate>
+    <singleuseunit>1</singleuseunit>
+    <animationrate>1</animationrate>
+    <active>0</active>
+    <persistent>1</persistent>
+  </action>
+  <action>
+    <name stringid="112252">AreaHeal</name>
+    <type>AutoRangedModify</type>
+    <active>0</active>
+    <maxrange>20</maxrange>
+    <modifyabstracttype>LogicalTypeHealed</modifyabstracttype>
+    <persistent>1</persistent>
+    <modifytype>HealRate</modifytype>
+    <modifyamount>10</modifyamount>
+    <modifytargetlimit>50</modifytargetlimit>
+    <restricttoidleunits>1</restricttoidleunits>
+    <modelattachment>effects\areaheal.xml</modelattachment>
+    <modelattachmentbone>bonethatdoesntexist</modelattachmentbone>
+  </action>
+  <action>
+    <name stringid="38133">RangedAttack</name>
+    <type>Attack</type>
+    <active>0</active>
+    <attackaction>1</attackaction>
+    <rangedlogic>1</rangedlogic>
+    <activeifcontainsunits>1</activeifcontainsunits>
+    <damagefactorcap>10</damagefactorcap>
+    <scalebycontainedunits>1</scalebycontainedunits>
+    <anim>RangedAttack</anim>
+    <maxheight>0</maxheight>
+    <accuracy>1.0</accuracy>
+    <trackrating>120</trackrating>
+    <projectile>InvisibleProjectile</projectile>
+    <impacteffect>effects\impacts\gun</impacteffect>
+    <rate type="Unit">1.0</rate>
+    <instantballistics>1</instantballistics>
+    <perfectaccuracy>1</perfectaccuracy>
+  </action>
+  <action>
+    <name stringid="113171">AreaGatherHerdable</name>
+    <type>AutoRangedModify</type>
+    <modifyabstracttype>Herdable</modifyabstracttype>
+    <includegaia>1</includegaia>
+    <active>0</active>
+    <maxrange>16</maxrange>
+    <persistent>1</persistent>
+    <donotignoredead>1</donotignoredead>
+    <modifytype>UnitResource</modifytype>
+    <modifyamount>4.0</modifyamount>
+    <modifytargetlimit>5</modifytargetlimit>
+    <restricttofullcapacitygatherers>1</restricttofullcapacitygatherers>
+    <modelattachment>effects\ypack_auras\torpgatherpower.xml</modelattachment>
+    <modelattachmentbone>bonethatdoesntexist</modelattachmentbone>
+  </action>
+  <tactic>Normal
+    <attacktype>LogicalTypeRangedUnitsAttack</attacktype>
+    <autoattacktype>LogicalTypeRangedUnitsAutoAttack</autoattacktype>
+    <attackresponsetype>LogicalTypeRangedUnitsAttack</attackresponsetype>
+    <action priority="100">RangedAttack</action>
+    <action>SpawnPig</action>
+    <action>GrantFood</action>
+    <action>SpawnPigLivestock</action>
+    <action>SpawnPiechur</action>
+    <action>SpawnSerdyuk</action>
+    <action>FarmSlowEnemyMilitary</action>
+    <action>AreaHeal</action>
+    <action>AreaGatherHerdable</action>
+  </tactic>
+</tactics>

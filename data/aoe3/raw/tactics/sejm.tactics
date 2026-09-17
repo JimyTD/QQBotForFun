@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="utf-8"?>
+<tactics>
+  <action>
+    <name stringid="43295">AutoGatherFoodPopulation</name>
+    <type>AutoGather</type>
+    <persistent>1</persistent>
+    <populationscaling type="LogicalTypeLandEconomy">1.0</populationscaling>
+  </action>
+  <action>
+    <name stringid="43296">AutoGatherWoodPopulation</name>
+    <type>AutoGather</type>
+    <persistent>1</persistent>
+    <populationscaling type="LogicalTypeLandEconomy">1.0</populationscaling>
+  </action>
+  <action>
+    <name stringid="43294">AutoGatherCoinPopulation</name>
+    <type>AutoGather</type>
+    <persistent>1</persistent>
+    <populationscaling type="LogicalTypeLandEconomy">1.0</populationscaling>
+  </action>
+  <action>
+    <name stringid="43295">AutoGatherFoodFixed</name>
+    <active>0</active>
+    <type>AutoGather</type>
+    <persistent>1</persistent>
+  </action>
+  <action>
+    <name stringid="43296">AutoGatherWoodFixed</name>
+    <active>0</active>
+    <type>AutoGather</type>
+    <persistent>1</persistent>
+  </action>
+  <action>
+    <name stringid="43294">AutoGatherCoinFixed</name>
+    <active>0</active>
+    <type>AutoGather</type>
+    <persistent>1</persistent>
+  </action>
+  <action>
+    <name stringid="43297">SpawnCannon</name>
+    <active>0</active>
+    <type>Maintain</type>
+    <rate type="Cannon">1.0</rate>
+    <persistent>1</persistent>
+    <maintainworkratemultiplier>0.5</maintainworkratemultiplier>
+    <populationscaling type="LogicalTypeLandEconomy">0.01</populationscaling>
+    <populationscalingcap>0.5</populationscalingcap>
+  </action>
+  <action>
+    <name stringid="130361">SpawnWagon</name>
+    <active>0</active>
+    <type>Maintain</type>
+    <rate type="deMercWagon">1.0</rate>
+    <persistent>1</persistent>
+    <populationscaling type="Unit">0.005</populationscaling>
+    <populationscalingcap>1</populationscalingcap>
+    <forcemultiplicativescaling>1</forcemultiplicativescaling>
+  </action>
+  <tactic>PolicyFood
+    <protounitcommand>PolicyFood</protounitcommand>
+    <action>AutoGatherFoodPopulation</action>
+    <action>AutoGatherFoodFixed</action>
+    <transition>
+      <tactic>PolicyWood</tactic>
+      <length>2</length>
+      <exit>1</exit>
+    </transition>
+    <transition>
+      <tactic>PolicyCoin</tactic>
+      <length>2</length>
+      <exit>1</exit>
+    </transition>
+    <transition>
+      <tactic>PolicyCannon</tactic>
+      <length>2</length>
+      <exit>1</exit>
+    </transition>
+  </tactic>
+  <tactic>PolicyWood
+    <protounitcommand>PolicyWood</protounitcommand>
+    <action>AutoGatherWoodPopulation</action>
+    <action>AutoGatherWoodFixed</action>
+    <transition>
+      <tactic>PolicyFood</tactic>
+      <length>2</length>
+      <exit>1</exit>
+    </transition>
+    <transition>
+      <tactic>PolicyCoin</tactic>
+      <length>2</length>
+      <exit>1</exit>
+    </transition>
+    <transition>
+      <tactic>PolicyCannon</tactic>
+      <length>2</length>
+      <exit>1</exit>
+    </transition>
+  </tactic>
+  <tactic>PolicyCoin
+    <protounitcommand>PolicyCoin</protounitcommand>
+    <action>AutoGatherCoinPopulation</action>
+    <action>AutoGatherCoinFixed</action>
+    <transition>
+      <tactic>PolicyFood</tactic>
+      <length>2</length>
+      <exit>1</exit>
+    </transition>
+    <transition>
+      <tactic>PolicyWood</tactic>
+      <length>2</length>
+      <exit>1</exit>
+    </transition>
+    <transition>
+      <tactic>PolicyCannon</tactic>
+      <length>2</length>
+      <exit>1</exit>
+    </transition>
+  </tactic>
+  <tactic>PolicyCannon
+    <active>0</active>
+    <protounitcommand>PolicyCannon</protounitcommand>
+    <action>SpawnCannon</action>
+    <action>SpawnWagon</action>
+    <transition>
+      <tactic>PolicyFood</tactic>
+      <length>2</length>
+      <exit>1</exit>
+    </transition>
+    <transition>
+      <tactic>PolicyWood</tactic>
+      <length>2</length>
+      <exit>1</exit>
+    </transition>
+    <transition>
+      <tactic>PolicyCoin</tactic>
+      <length>2</length>
+      <exit>1</exit>
+    </transition>
+  </tactic>
+</tactics>

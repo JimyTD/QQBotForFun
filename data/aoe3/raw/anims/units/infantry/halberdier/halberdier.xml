@@ -63,6 +63,12 @@
         </assetreference>
         <attach a="pikes" frombone="bone_pike" tobone="Pikeman Prop1" syncanims="0"/>
       </rgnassauslineartactics>
+      <rgdanishhalberdiers>
+        <assetreference type="GrannyModel">
+          <file>units\infantry\halberdier\danish_drabant</file>
+        </assetreference>
+        <attach a="pikes" frombone="bone_pike" tobone="Pikeman Prop1" syncanims="0"/>
+      </rgdanishhalberdiers>
       <churchquatrefage>
         <assetreference type="GrannyModel">
           <file>units\infantry\halberdier\alabardero</file>

@@ -8,9 +8,23 @@
     <include>units\mercenaries\elmeti\elmeti_rider.xml</include>
   </attachment>
   <component>ModelComp
-    <assetreference type="GrannyModel">
-      <file>units\mercenaries\elmeti\elmeti_horse</file>
-    </assetreference>
+    <logic type="Tech">
+      <none>
+        <assetreference type="GrannyModel">
+          <file>units\mercenaries\elmeti\elmeti_horse</file>
+        </assetreference>
+      </none>
+      <dehcmercselmetiportuguese>
+        <assetreference type="GrannyModel">
+          <file>units\cavalry\elmeti\elmeti_horse3</file>
+        </assetreference>
+      </dehcmercselmetiportuguese>
+      <deindependenceportuguese>
+        <assetreference type="GrannyModel">
+          <file>units\cavalry\elmeti\elmeti_horse3</file>
+        </assetreference>
+      </deindependenceportuguese>
+    </logic>
     <decal>
       <effecttype>default</effecttype>
       <texture isfakeshadow="1">shadows_selections\shadow_hero_64x64</texture>

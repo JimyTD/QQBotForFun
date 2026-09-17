@@ -8,12 +8,7 @@
     <anim>RangedAttack</anim>
     <maxheight>0</maxheight>
     <accuracy>1.0</accuracy>
-    <accuracyreductionfactor>1.5</accuracyreductionfactor>
-    <aimbonus>0</aimbonus>
-    <maxspread>5</maxspread>
-    <spreadfactor>0.25</spreadfactor>
     <trackrating>12</trackrating>
-    <unintentionaldamagemultiplier>0.7</unintentionaldamagemultiplier>
     <projectile>Arrow</projectile>
     <impacteffect>effects\impacts\gun</impacteffect>
     <rate type="Unit">1.0 </rate>
@@ -53,6 +48,9 @@
     <maxrange>1.0</maxrange>
     <rate type="AbstractFish">0.4</rate>
     <rate type="AbstractWhale">0.4</rate>
+    <typedminrange type="deFishTrap">3.000000</typedminrange>
+    <typedmaxrange type="deFishTrap">6.000000</typedmaxrange>
+    <typedanim type="deFishTrap">GatherFish</typedanim>
   </action>
   <action>
     <name stringid="43019">AutoGatherCoinFish</name>
@@ -65,6 +63,14 @@
     <persistent>1</persistent>
     <rate type="Gold">0.100000</rate>
   </action>
+  <action>
+    <name>Build</name>
+    <type>Build</type>
+    <rate type="deFishTrap">1.0</rate>
+    <typedanim type="deFishTrap">GatherFish</typedanim>
+    <typedminrange type="deFishTrap">3.000000</typedminrange>
+    <typedmaxrange type="deFishTrap">6.000000</typedmaxrange>
+  </action>
   <tactic>Normal
     <speedmodifier>1.0</speedmodifier>
     <action priority="100">BuildingAttack</action>
@@ -73,6 +79,7 @@
     <action>Gather</action>
     <action>BoatManager</action>
     <action>AutoGatherCoinFish</action>
+    <action>Build</action>
     <attacktype>LogicalTypeRangedUnitsAttack</attacktype>
     <autoattacktype>LogicalTypeRangedUnitsAutoAttack</autoattacktype>
     <attackresponsetype>LogicalTypeRangedUnitsAttack</attackresponsetype>

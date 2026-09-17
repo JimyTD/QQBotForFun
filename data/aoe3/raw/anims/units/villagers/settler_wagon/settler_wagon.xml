@@ -105,6 +105,9 @@
   <attachment>donkey_gather_wood
     <include>units\villagers\settler_wagon\settler_wagon_wood.xml</include>
   </attachment>
+  <attachment>donkey_gather_fish
+    <include>units\villagers\settler_wagon\settler_wagon_fish.xml</include>
+  </attachment>
   <attachment>torch
     <include>effects\projectiles\torch.xml</include>
   </attachment>
@@ -126,6 +129,26 @@
     </component>
     <anim>Idle
       <component>saw_villager</component>
+    </anim>
+  </attachment>
+  <attachment>HealRays
+    <component>HealFXEmitter
+      <assetreference type="PopcornFx">
+        <file>units\explorers\heal_rays.pkfx</file>
+      </assetreference>
+    </component>
+    <anim>None
+      <component>HealFXEmitter</component>
+    </anim>
+  </attachment>
+  <attachment>fishingrod
+    <component>fishingrod
+      <assetreference type="GrannyModel">
+        <file>units\attachments\fishing_rod\fishing_rod</file>
+      </assetreference>
+    </component>
+    <anim>Idle
+      <component>fishingrod</component>
     </anim>
   </attachment>
   <component>ModelComp
@@ -275,6 +298,15 @@
     <component>ModelComp</component>
     <attach a="donkey" frombone="MASTER" tobone="MASTER" syncanims="0"/>
   </anim>
+  <anim>GatherFish
+    <assetreference type="GrannyAnim">
+      <file>animation_library\villager\wagon_guy_gatherfish</file>
+    </assetreference>
+    <component>ModelComp</component>
+    <attach a="donkey" frombone="MASTER" tobone="MASTER" syncanims="0"/>
+    <attach a="fishingrod" frombone="MASTER" tobone="Bip01 Prop1" syncanims="0"/>
+    <attach a="donkey_gather_fish" frombone="MASTER" tobone="MASTER" syncanims="0"/>
+  </anim>
   <anim>Death
     <assetreference type="GrannyAnim">
       <file>units\villagers\settler_wagon\settler_wagon_death</file>
@@ -415,6 +447,14 @@
     </assetreference>
     <component>ModelComp</component>
     <attach a="saw" frombone="MASTER" tobone="Bip01 Prop1" syncanims="0"/>
+    <attach a="donkey" frombone="MASTER" tobone="MASTER" syncanims="0"/>
+  </anim>
+  <anim>Heal
+    <assetreference type="GrannyAnim">
+      <file>animation_library\natives\priest\heal2</file>
+    </assetreference>
+    <component>ModelComp Heal</component>
+    <attach a="HealRays" frombone="ATTACHPOINT" tobone="ATTACHPOINT" syncanims="0"/>
     <attach a="donkey" frombone="MASTER" tobone="MASTER" syncanims="0"/>
   </anim>
 </animfile>

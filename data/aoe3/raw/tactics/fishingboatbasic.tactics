@@ -6,6 +6,8 @@
     <maxrange>1.0</maxrange>
     <rate type="AbstractFish">0.4</rate>
     <rate type="AbstractWhale">0.4</rate>
+    <typedminrange type="deFishTrap">3.000000</typedminrange>
+    <typedanim type="deFishTrap">GatherFish</typedanim>
   </action>
   <action>
     <dbaction>BoatManager</dbaction>

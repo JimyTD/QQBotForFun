@@ -13,52 +13,32 @@
   <attachment>musket
     <include>units\infantry_ranged\strelet\strelet_musket.xml</include>
   </attachment>
+  <attachment>musket2
+    <component>musket
+      <assetreference type="GrannyModel">
+        <file>units\infantry_ranged\strelet\strelet_musket_age04</file>
+      </assetreference>
+    </component>
+    <anim>Idle
+      <component>musket</component>
+    </anim>
+  </attachment>
   <component>ModelComp
     <logic type="Tech">
-      <data>
-        <logic type="LowPoly">
-          <normal>
-            <assetreference type="GrannyModel">
-              <file>units\infantry_ranged\strelet\strelet_age2</file>
-            </assetreference>
-            <attach a="musket" frombone="bone_gun" tobone="Bip01 Prop1" syncanims="0"/>
-          </normal>
-          <lowpoly>
-            <assetreference type="GrannyModel">
-              <file>units\infantry_ranged\strelet\lp_strelet_2age</file>
-            </assetreference>
-          </lowpoly>
-        </logic>
-      </data>
+      <none>
+        <assetreference type="GrannyModel">
+          <file>units\infantry_ranged\strelet\strelet_age2</file>
+        </assetreference>
+      </none>
       <veteranstrelets>
-        <logic type="LowPoly">
-          <normal>
-            <assetreference type="GrannyModel">
-              <file>units\infantry_ranged\strelet\strelet_age3</file>
-            </assetreference>
-            <attach a="musket" frombone="bone_gun" tobone="Bip01 Prop1" syncanims="0"/>
-          </normal>
-          <lowpoly>
-            <assetreference type="GrannyModel">
-              <file>units\infantry_ranged\strelet\lp_strelet_3age</file>
-            </assetreference>
-          </lowpoly>
-        </logic>
+        <assetreference type="GrannyModel">
+          <file>units\infantry_ranged\strelet\strelet_age3</file>
+        </assetreference>
       </veteranstrelets>
       <guardstrelets>
-        <logic type="LowPoly">
-          <normal>
-            <assetreference type="GrannyModel">
-              <file>units\infantry_ranged\strelet\strelet_age4</file>
-            </assetreference>
-            <attach a="musket" frombone="bone_gun" tobone="Bip01 Prop1" syncanims="0"/>
-          </normal>
-          <lowpoly>
-            <assetreference type="GrannyModel">
-              <file>units\infantry_ranged\strelet\lp_strelet_4age</file>
-            </assetreference>
-          </lowpoly>
-        </logic>
+        <assetreference type="GrannyModel">
+          <file>units\infantry_ranged\strelet\strelet_age4</file>
+        </assetreference>
       </guardstrelets>
     </logic>
     <decal>
@@ -80,6 +60,7 @@
       <file>animation_library\range\death_standing_rifleman_C</file>
     </assetreference>
     <component>ModelComp</component>
+    <attach a="musket" frombone="bone_gun" tobone="Bip01 Prop1" syncanims="0"/>
   </anim>
   <anim>Death_by_range
     <assetreference type="GrannyAnim">
@@ -92,6 +73,7 @@
       <file>animation_library\shared\death_by_rangeC</file>
     </assetreference>
     <component>ModelComp</component>
+    <attach a="musket" frombone="bone_gun" tobone="Bip01 Prop1" syncanims="0"/>
   </anim>
   <anim>Death_by_havoc
     <assetreference type="GrannyAnim">
@@ -107,18 +89,21 @@
       <file>animation_library\range\havoc_deathD</file>
     </assetreference>
     <component>ModelComp</component>
+    <attach a="musket" frombone="bone_gun" tobone="Bip01 Prop1" syncanims="0"/>
   </anim>
   <anim>Death_havoc_flail
     <assetreference type="GrannyAnim">
       <file>animation_library\range\havoc_flail</file>
     </assetreference>
     <component>ModelComp</component>
+    <attach a="musket" frombone="bone_gun" tobone="Bip01 Prop1" syncanims="0"/>
   </anim>
   <anim>Death_havoc_spin
     <assetreference type="GrannyAnim">
       <file>animation_library\range\havoc_spin</file>
     </assetreference>
     <component>ModelComp</component>
+    <attach a="musket" frombone="bone_gun" tobone="Bip01 Prop1" syncanims="0"/>
   </anim>
   <anim>Cheer
     <assetreference type="GrannyAnim">
@@ -137,6 +122,7 @@
       <file>animation_library\shared\cheer_E</file>
     </assetreference>
     <component>ModelComp</component>
+    <attach a="musket" frombone="bone_gun" tobone="Bip01 Prop1" syncanims="0"/>
   </anim>
   <anim>Recoil
     <assetreference type="GrannyAnim">
@@ -152,18 +138,21 @@
       <file>animation_library\shared\recoil_G</file>
     </assetreference>
     <component>ModelComp</component>
+    <attach a="musket" frombone="bone_gun" tobone="Bip01 Prop1" syncanims="0"/>
   </anim>
   <anim>HC_openDoor
     <assetreference type="GrannyAnim">
       <file>animation_library\shared\doorOpen</file>
     </assetreference>
     <component>ModelComp</component>
+    <attach a="musket" frombone="bone_gun" tobone="Bip01 Prop1" syncanims="0"/>
   </anim>
   <anim>HC_closeDoor
     <assetreference type="GrannyAnim">
       <file>animation_library\shared\doorClose</file>
     </assetreference>
     <component>ModelComp</component>
+    <attach a="musket" frombone="bone_gun" tobone="Bip01 Prop1" syncanims="0"/>
   </anim>
   <anim>Raze_Idle
     <assetreference type="GrannyAnim">
@@ -171,6 +160,7 @@
     </assetreference>
     <component>ModelComp</component>
     <attach a="torch" frombone="ATTACHPOINT" tobone="L HAND" syncanims="0"/>
+    <attach a="musket" frombone="bone_gun" tobone="Bip01 Prop1" syncanims="0"/>
   </anim>
   <anim>Raze_Attack
     <assetreference type="GrannyAnim">
@@ -185,18 +175,21 @@
     </assetreference>
     <component>ModelComp</component>
     <attach a="torch" frombone="ATTACHPOINT" tobone="L HAND" syncanims="0"/>
+    <attach a="musket" frombone="bone_gun" tobone="Bip01 Prop1" syncanims="0"/>
   </anim>
   <anim>Cover_ranged_idle
     <assetreference type="GrannyAnim">
       <file>animation_library\range\cover\cover_idle</file>
     </assetreference>
     <component>ModelComp</component>
+    <attach a="musket" frombone="bone_gun" tobone="Bip01 Prop1" syncanims="0"/>
   </anim>
   <anim>Cover_bored
     <assetreference type="GrannyAnim">
       <file>animation_library\range\cover\cover_bored</file>
     </assetreference>
     <component>ModelComp</component>
+    <attach a="musket" frombone="bone_gun" tobone="Bip01 Prop1" syncanims="0"/>
   </anim>
   <anim>Cover_Walk
     <assetreference type="GrannyAnim">
@@ -205,6 +198,7 @@
       <tag type="FootstepRight" footprinttype="HumanRight">0.80</tag>
     </assetreference>
     <component>ModelComp</component>
+    <attach a="musket" frombone="bone_gun" tobone="Bip01 Prop1" syncanims="0"/>
   </anim>
   <anim>Cover_Jog
     <assetreference type="GrannyAnim">
@@ -213,6 +207,7 @@
       <tag type="FootstepRight" footprinttype="HumanRight">0.76</tag>
     </assetreference>
     <component>ModelComp</component>
+    <attach a="musket" frombone="bone_gun" tobone="Bip01 Prop1" syncanims="0"/>
   </anim>
   <anim>Cover_Run
     <assetreference type="GrannyAnim">
@@ -221,34 +216,38 @@
       <tag type="FootstepRight" footprinttype="HumanRight">0.12</tag>
     </assetreference>
     <component>ModelComp</component>
+    <attach a="musket" frombone="bone_gun" tobone="Bip01 Prop1" syncanims="0"/>
   </anim>
   <anim>Volley_standing_idle
     <assetreference type="GrannyAnim">
       <file>animation_library\range\unique_infantry\jannisary_idle</file>
     </assetreference>
     <component>ModelComp</component>
+    <attach a="musket" frombone="bone_gun" tobone="Bip01 Prop1" syncanims="0"/>
   </anim>
   <anim>Volley_standing_attack
     <assetreference type="GrannyAnim">
       <file>animation_library\range\volley\volley_standing_fire</file>
       <tag type="Attack">0.45</tag>
-      <tag type="SpecificSoundSet" checkvisible="1" set="MusketShot">0.45</tag>
+      <tag type="SpecificSoundSet" checkvisible="1" set="RifleShot">0.45</tag>
       <tag type="Particles" particlename="MusketShot">0.50</tag>
     </assetreference>
     <component>ModelComp</component>
+    <attach a="musket" frombone="bone_gun" tobone="Bip01 Prop1" syncanims="0"/>
   </anim>
   <anim>Volley_standing_reload
     <assetreference type="GrannyAnim">
       <file>animation_library\range\volley\volley_standing_reload</file>
     </assetreference>
     <component>ModelComp</component>
+    <attach a="musket" frombone="bone_gun" tobone="Bip01 Prop1" syncanims="0"/>
   </anim>
   <anim>Volley_standing_bored
     <assetreference type="GrannyAnim">
-      <file>animation_library\range\unique_infantry\jannisary_bored</file>
+      <file>animation_library\range\volley\volley_standing_boredA</file>
     </assetreference>
     <component>ModelComp</component>
-    <attach a="axe" frombone="bone_sword" tobone="Bip01 Prop2" syncanims="0"/>
+    <attach a="musket" frombone="bone_gun" tobone="Bip01 Prop1" syncanims="0"/>
   </anim>
   <anim>Volley_walk
     <assetreference type="GrannyAnim">
@@ -257,6 +256,7 @@
       <tag type="FootstepRight" footprinttype="HumanRight">0.16</tag>
     </assetreference>
     <component>ModelComp</component>
+    <attach a="musket" frombone="bone_gun" tobone="Bip01 Prop1" syncanims="0"/>
   </anim>
   <anim>Volley_jog
     <assetreference type="GrannyAnim">
@@ -265,6 +265,7 @@
       <tag type="FootstepRight" footprinttype="HumanRight">0.15</tag>
     </assetreference>
     <component>ModelComp</component>
+    <attach a="musket" frombone="bone_gun" tobone="Bip01 Prop1" syncanims="0"/>
   </anim>
   <anim>Volley_run
     <assetreference type="GrannyAnim">
@@ -273,23 +274,21 @@
       <tag type="FootstepRight" footprinttype="HumanRight">0.15</tag>
     </assetreference>
     <component>ModelComp</component>
+    <attach a="musket" frombone="bone_gun" tobone="Bip01 Prop1" syncanims="0"/>
   </anim>
   <anim>Defend_idle
     <assetreference type="GrannyAnim">
-      <file>animation_library\range\defend\strelet_defend_idle</file>
+      <file>animation_library\range\defend\defend_idle</file>
     </assetreference>
     <component>ModelComp</component>
-    <attach a="axe" frombone="bone_sword" tobone="Bip01 Prop2" syncanims="0"/>
+    <attach a="musket" frombone="bone_gun" tobone="Bip01 Prop1" syncanims="0"/>
   </anim>
   <anim>Defend_bored
     <assetreference type="GrannyAnim">
-      <file>animation_library\range\defend\strelet_defend_bored</file>
-    </assetreference>
-    <assetreference type="GrannyAnim">
-      <file>animation_library\range\defend\strelet_defend_boredB</file>
+      <file>animation_library\range\defend\defend_boredA</file>
     </assetreference>
     <component>ModelComp</component>
-    <attach a="axe" frombone="bone_sword" tobone="Bip01 Prop2" syncanims="0"/>
+    <attach a="musket" frombone="bone_gun" tobone="Bip01 Prop1" syncanims="0"/>
   </anim>
   <anim>Charge_idle
     <assetreference type="GrannyAnim">
@@ -297,6 +296,7 @@
     </assetreference>
     <component>ModelComp</component>
     <attach a="axe" frombone="bone_sword" tobone="Bip01 Prop2" syncanims="0"/>
+    <attach a="musket" frombone="bone_gun" tobone="Bip01 Prop1" syncanims="0"/>
   </anim>
   <anim>Charge_bored
     <assetreference type="GrannyAnim">
@@ -304,6 +304,7 @@
     </assetreference>
     <component>ModelComp</component>
     <attach a="axe" frombone="bone_sword" tobone="Bip01 Prop2" syncanims="0"/>
+    <attach a="musket" frombone="bone_gun" tobone="Bip01 Prop1" syncanims="0"/>
   </anim>
   <anim>Charge_attack
     <assetreference type="GrannyAnim">
@@ -316,32 +317,46 @@
     </assetreference>
     <component>ModelComp</component>
     <attach a="axe" frombone="bone_sword" tobone="Bip01 Prop2" syncanims="0"/>
+    <attach a="musket" frombone="bone_gun" tobone="Bip01 Prop1" syncanims="0"/>
   </anim>
   <anim>Charge_Walk
     <assetreference type="GrannyAnim">
-      <file>animation_library\range\charge\charge_walk</file>
-      <tag type="FootstepLeft" footprinttype="HumanLeft">0.65</tag>
-      <tag type="FootstepRight" footprinttype="HumanRight">0.06</tag>
+      <file>animation_library\range\charge\strelet_charge_walk</file>
+      <tag type="FootstepLeft" footprinttype="HumanLeft">0.14</tag>
+      <tag type="FootstepRight" footprinttype="HumanRight">0.61</tag>
+    </assetreference>
+    <assetreference type="GrannyAnim">
+      <file>animation_library\range\defend\strelet_defend_walk</file>
+      <tag type="FootstepLeft" footprinttype="HumanLeft">0.28</tag>
+      <tag type="FootstepRight" footprinttype="HumanRight">0.80</tag>
     </assetreference>
     <component>ModelComp</component>
     <attach a="axe" frombone="bone_sword" tobone="Bip01 Prop2" syncanims="0"/>
+    <attach a="musket" frombone="bone_gun" tobone="Bip01 Prop1" syncanims="0"/>
   </anim>
   <anim>Charge_Jog
     <assetreference type="GrannyAnim">
-      <file>animation_library\range\charge\charge_jog</file>
-      <tag type="FootstepLeft" footprinttype="HumanLeft">0.65</tag>
-      <tag type="FootstepRight" footprinttype="HumanRight">0.11</tag>
+      <file>animation_library\range\charge\strelet_charge_jog</file>
+      <tag type="FootstepLeft" footprinttype="HumanLeft">0.70</tag>
+      <tag type="FootstepRight" footprinttype="HumanRight">0.15</tag>
     </assetreference>
     <component>ModelComp</component>
     <attach a="axe" frombone="bone_sword" tobone="Bip01 Prop2" syncanims="0"/>
+    <attach a="musket" frombone="bone_gun" tobone="Bip01 Prop1" syncanims="0"/>
   </anim>
   <anim>Charge_Run
     <assetreference type="GrannyAnim">
-      <file>animation_library\range\charge\charge_runA</file>
-      <tag type="FootstepLeft" footprinttype="HumanLeft">0.66</tag>
+      <file>animation_library\range\charge\strelet_charge_run</file>
+      <tag type="FootstepLeft" footprinttype="HumanLeft">0.70</tag>
+      <tag type="FootstepRight" footprinttype="HumanRight">0.15</tag>
+    </assetreference>
+    <assetreference type="GrannyAnim">
+      <file>animation_library\range\defend\strelet_defend_run</file>
+      <tag type="FootstepLeft" footprinttype="HumanLeft">0.68</tag>
       <tag type="FootstepRight" footprinttype="HumanRight">0.12</tag>
     </assetreference>
     <component>ModelComp</component>
     <attach a="axe" frombone="bone_sword" tobone="Bip01 Prop2" syncanims="0"/>
+    <attach a="musket" frombone="bone_gun" tobone="Bip01 Prop1" syncanims="0"/>
   </anim>
 </animfile>

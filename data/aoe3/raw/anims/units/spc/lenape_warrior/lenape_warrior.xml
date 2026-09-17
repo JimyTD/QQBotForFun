@@ -441,7 +441,9 @@
   </anim>
   <anim>Stun
     <assetreference type="GrannyAnim">
-      <file>animation_library\natives\tomahawk\volley_boredA</file>
+      <file>units\asians\natives\chakram\chakram_throwA</file>
+      <tag type="Attack">0.44</tag>
+      <tag type="SpecificSoundSet" checkvisible="1" set="Arrows">0.44</tag>
     </assetreference>
     <component>ModelComp</component>
     <attach a="musket" frombone="bone_gun" tobone="Bip01_R_Hand" syncanims="0"/>

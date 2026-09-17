@@ -81,6 +81,7 @@
     <rate type="ypGroveBuilding">1.0</rate>
     <rate type="ypRicePaddy">1.0</rate>
     <rate type="AbstractInfiniteCrate">1.0</rate>
+    <typedanim type="deFishingHole">GatherFish</typedanim>
   </action>
   <action>
     <name stringid="69151">Hunting</name>
@@ -114,12 +115,7 @@
     <rangedlogic>1</rangedlogic>
     <anim>RangedAttack</anim>
     <accuracy>1.0</accuracy>
-    <accuracyreductionfactor>0.5</accuracyreductionfactor>
-    <aimbonus>0</aimbonus>
-    <maxspread>5</maxspread>
-    <spreadfactor>0.25</spreadfactor>
     <trackrating>120</trackrating>
-    <unintentionaldamagemultiplier>0.7</unintentionaldamagemultiplier>
     <projectile>Arrow</projectile>
     <impacteffect>effects\impacts\arrow</impacteffect>
     <maxrange>10</maxrange>

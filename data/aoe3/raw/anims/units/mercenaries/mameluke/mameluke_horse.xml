@@ -10,19 +10,22 @@
   <component>ModelComp
     <logic type="Tech">
       <none>
-        <logic type="LowPoly">
-          <normal>
-            <assetreference type="GrannyModel">
-              <file>units\mercenaries\mameluke\mameluke_horse</file>
-            </assetreference>
-          </normal>
-          <lowpoly>
-            <assetreference type="GrannyModel">
-              <file>units\mercenaries\mameluke\lp_mameluke_horse</file>
-            </assetreference>
-          </lowpoly>
-        </logic>
+        <assetreference type="GrannyModel">
+          <file>units\cavalry\elmeti\elmeti_horse3</file>
+          <materialvariant index="1"/>
+        </assetreference>
       </none>
+      <debarbaryspcspecialunits>
+        <assetreference type="GrannyModel">
+          <file>units\mercenaries\mameluke\mameluke_horse</file>
+        </assetreference>
+      </debarbaryspcspecialunits>
+      <deguardmameluke>
+        <assetreference type="GrannyModel">
+          <file>units\cavalry\elmeti\elmeti_horse3</file>
+          <materialvariant index="1"/>
+        </assetreference>
+      </deguardmameluke>
     </logic>
     <decal>
       <effecttype>default</effecttype>

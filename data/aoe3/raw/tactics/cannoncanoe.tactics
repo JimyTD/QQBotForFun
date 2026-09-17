@@ -8,10 +8,8 @@
     <anim>BombardAttack</anim>
     <idleanim>Idle</idleanim>
     <projectile>MortarShell</projectile>
-    <numberprojectiles>1</numberprojectiles>
     <impacteffect>effects\impacts\mortar</impacteffect>
     <accuracy>1.0</accuracy>
-    <aimbonus>5</aimbonus>
     <throw>1</throw>
     <rate type="Unit">1.0 </rate>
     <rate type="Building">1.0 </rate>
@@ -28,12 +26,9 @@
     <anim>BombardAttack</anim>
     <idleanim>Idle</idleanim>
     <projectile>Cannonball</projectile>
-    <numberprojectiles>1</numberprojectiles>
     <impacteffect>effects\impacts\cannon</impacteffect>
     <accuracy>1.0</accuracy>
     <maxheight>0</maxheight>
-    <accuracyreductionfactor>0.5</accuracyreductionfactor>
-    <aimbonus>5</aimbonus>
     <rate type="Unit">1.0 </rate>
     <rate type="Building">1.0 </rate>
     <areasortmode>Directional</areasortmode>

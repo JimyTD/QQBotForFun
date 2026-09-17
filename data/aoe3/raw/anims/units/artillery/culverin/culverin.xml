@@ -61,6 +61,11 @@
           <file>units\artillery\culverin\maltese_culverin</file>
         </assetreference>
       </debasilisks>
+      <rgdanishculverins>
+        <assetreference type="GrannyModel">
+          <file>units\artillery\culverin\danish_culverin</file>
+        </assetreference>
+      </rgdanishculverins>
     </logic>
     <decal>
       <effecttype>default</effecttype>
@@ -110,6 +115,11 @@
           <file>units\artillery\culverin\maltese_culverin_stripped</file>
         </assetreference>
       </debasilisks>
+      <rgdanishculverins>
+        <assetreference type="GrannyModel">
+          <file>units\artillery\culverin\danish_culverin_stripped</file>
+        </assetreference>
+      </rgdanishculverins>
     </logic>
     <decal>
       <effecttype>default</effecttype>

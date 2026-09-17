@@ -10,9 +10,20 @@
       <include>units\natives\europeans\bavarian_horseman\bavarian_horseman_rider.xml</include>
     </attachment>
     <component>ModelComp
-      <assetreference type="GrannyModel">
-        <file>units\cavalry\hakkapelit\hakkapelit_age4_horse</file>
-      </assetreference>
+      <logic type="Tech">
+        <none>
+          <assetreference type="GrannyModel">
+            <file>units\cavalry\hakkapelit\hakkapelit_age4_horse</file>
+            <materialvariant index="1"/>
+          </assetreference>
+        </none>
+        <denatwittelsbachducallancers>
+          <assetreference type="GrannyModel">
+            <file>units\cavalry\hakkapelit\hakkapelit_age4_horse</file>
+            <materialvariant index="1"/>
+          </assetreference>
+        </denatwittelsbachducallancers>
+      </logic>
       <decal>
         <effecttype>default</effecttype>
         <texture isfakeshadow="1">shadows_selections\shadow_circle_128x128</texture>

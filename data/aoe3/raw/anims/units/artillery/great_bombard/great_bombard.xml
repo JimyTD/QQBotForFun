@@ -13,14 +13,14 @@
       <linkoffset>.1</linkoffset>
       <linkcomponent>great_bombard_horsesShape</linkcomponent>
       <linkcomponent>great_bombard_horsesAShape</linkcomponent>
-      <linkcomponent>falconet_M0Shape.001</linkcomponent>
+      <linkcomponent>great_bombard_gunner3Shape</linkcomponent>
       <linkcomponent>great_bombard_loaderShape</linkcomponent>
       <linkconstraint>0</linkconstraint>
     </linksection>
     <linksection>
       <linkoffset>-1.6</linkoffset>
       <linkcomponent>great_bombardShape</linkcomponent>
-      <linkcomponent>falconet_M0Shape</linkcomponent>
+      <linkcomponent>great_bombard_gunner1Shape</linkcomponent>
       <linkcomponent>great_bombard_brushShape</linkcomponent>
       <linkconstraint>1</linkconstraint>
     </linksection>

@@ -11,6 +11,7 @@
   <definebone>bone_gun_frnt_right</definebone>
   <definebone>bone_gun_frnt_left</definebone>
   <definebone>bone_attachpoint</definebone>
+  <definebone>bone_launchpoint</definebone>
   <attachment>War wagon horse
     <include>units\cavalry\war_wagon\war_wagon_horse.xml</include>
   </attachment>
@@ -30,32 +31,15 @@
     </linksection>
     <logic type="Tech">
       <none>
-        <logic type="LowPoly">
-          <normal>
-            <assetreference type="GrannyModel">
-              <file>units\cavalry\war_wagon\war_wagon_age1</file>
-            </assetreference>
-          </normal>
-          <lowpoly>
-            <assetreference type="GrannyModel">
-              <file>units\cavalry\war_wagon\lp_war_wagon_age1</file>
-            </assetreference>
-          </lowpoly>
-        </logic>
+        <assetreference type="GrannyModel">
+          <file>units\cavalry\war_wagon\war_wagon</file>
+        </assetreference>
       </none>
       <guardwarwagons>
-        <logic type="LowPoly">
-          <normal>
-            <assetreference type="GrannyModel">
-              <file>units\cavalry\war_wagon\war_wagon_age2</file>
-            </assetreference>
-          </normal>
-          <lowpoly>
-            <assetreference type="GrannyModel">
-              <file>units\cavalry\war_wagon\lp_war_wagon_age2</file>
-            </assetreference>
-          </lowpoly>
-        </logic>
+        <assetreference type="GrannyModel">
+          <file>units\cavalry\war_wagon\war_wagon</file>
+          <materialvariant index="1"/>
+        </assetreference>
       </guardwarwagons>
     </logic>
     <decal>
@@ -165,64 +149,47 @@
     </assetreference>
     <component>ModelComp</component>
   </anim>
-  <anim>Attack_ranged
+  <anim animlengthoverride="1.0">Attack_ranged
     <assetreference type="GrannyAnim">
       <file>units\cavalry\war_wagon\war_wagon_attackR</file>
       <weight>40</weight>
       <tag type="Attack">0.33</tag>
-      <tag type="SpecificSoundSet" checkvisible="1" set="RifleShot">0.33</tag>
+      <tag type="SpecificSoundSet" checkvisible="1" set="MusketShot">0.33</tag>
       <tag type="Particles" particlename="rifleshot">0.33</tag>
     </assetreference>
     <assetreference type="GrannyAnim">
       <file>units\cavalry\war_wagon\war_wagon_attackR</file>
       <weight>10</weight>
       <tag type="Attack">0.33</tag>
-      <tag type="SpecificSoundSet" checkvisible="1" set="RifleShot">0.33</tag>
+      <tag type="SpecificSoundSet" checkvisible="1" set="MusketShot">0.33</tag>
       <tag type="Particles" particlename="rifleshot">0.33</tag>
     </assetreference>
     <assetreference type="GrannyAnim">
       <file>units\cavalry\war_wagon\war_wagon_attackL</file>
       <weight>10</weight>
       <tag type="Attack">0.27</tag>
-      <tag type="SpecificSoundSet" checkvisible="1" set="RifleShot">0.27</tag>
+      <tag type="SpecificSoundSet" checkvisible="1" set="MusketShot">0.27</tag>
       <tag type="Particles" particlename="rifleshot_left">0.27</tag>
     </assetreference>
     <assetreference type="GrannyAnim">
       <file>units\cavalry\war_wagon\war_wagon_attackL</file>
       <weight>40</weight>
       <tag type="Attack">0.27</tag>
-      <tag type="SpecificSoundSet" checkvisible="1" set="RifleShot">0.27</tag>
+      <tag type="SpecificSoundSet" checkvisible="1" set="MusketShot">0.27</tag>
       <tag type="Particles" particlename="rifleshot_left">0.27</tag>
     </assetreference>
     <component>ModelComp</component>
   </anim>
   <anim>Attack_ranged_reload
+    <assetreference type="GrannyAnim">
+      <file>units\cavalry\war_wagon\war_wagon_idle_110</file>
+    </assetreference>
     <component>ModelComp</component>
   </anim>
-  <anim>Attack_melee
+  <anim animlengthoverride="1.5">Attack_melee
     <assetreference type="GrannyAnim">
-      <file>units\cavalry\war_wagon\war_wagon_attackR</file>
-      <weight>25</weight>
-      <tag type="Attack">0.33</tag>
-      <tag type="SpecificSoundSet" checkvisible="1" set="RifleShot">0.33</tag>
-    </assetreference>
-    <assetreference type="GrannyAnim">
-      <file>units\cavalry\war_wagon\war_wagon_attackR</file>
-      <weight>10</weight>
-      <tag type="Attack">0.33</tag>
-      <tag type="SpecificSoundSet" checkvisible="1" set="RifleShot">0.33</tag>
-    </assetreference>
-    <assetreference type="GrannyAnim">
-      <file>units\cavalry\war_wagon\war_wagon_attackL</file>
-      <weight>10</weight>
-      <tag type="Attack">0.27</tag>
-      <tag type="SpecificSoundSet" checkvisible="1" set="RifleShot">0.27</tag>
-    </assetreference>
-    <assetreference type="GrannyAnim">
-      <file>units\cavalry\war_wagon\war_wagon_attackL</file>
-      <weight>25</weight>
-      <tag type="Attack">0.27</tag>
-      <tag type="SpecificSoundSet" checkvisible="1" set="RifleShot">0.27</tag>
+      <file>units\cavalry\war_wagon\war_wagon_idle_110</file>
+      <tag type="Attack">0.57</tag>
     </assetreference>
     <component>ModelComp</component>
   </anim>
@@ -295,68 +262,18 @@
   </anim>
   <anim>Raze_idle
     <assetreference type="GrannyAnim">
-      <file>units\cavalry\war_wagon\war_wagon_idle_130</file>
-      <weight>40</weight>
-    </assetreference>
-    <assetreference type="GrannyAnim">
-      <file>units\cavalry\war_wagon\war_wagon_idle_120</file>
-      <weight>10</weight>
-    </assetreference>
-    <assetreference type="GrannyAnim">
-      <file>units\cavalry\war_wagon\war_wagon_idle_120</file>
-      <weight>10</weight>
-    </assetreference>
-    <assetreference type="GrannyAnim">
-      <file>units\cavalry\war_wagon\war_wagon_idle_120</file>
-      <weight>10</weight>
-    </assetreference>
-    <assetreference type="GrannyAnim">
-      <file>units\cavalry\war_wagon\war_wagon_idle_120</file>
-      <weight>10</weight>
-    </assetreference>
-    <assetreference type="GrannyAnim">
-      <file>units\cavalry\war_wagon\war_wagon_idle_120</file>
-      <weight>10</weight>
-    </assetreference>
-    <assetreference type="GrannyAnim">
-      <file>units\cavalry\war_wagon\war_wagon_idle_110</file>
-      <weight>10</weight>
-    </assetreference>
-    <assetreference type="GrannyAnim">
-      <file>units\cavalry\war_wagon\war_wagon_idle_110</file>
-      <weight>40</weight>
+      <file>units\cavalry\war_wagon\war_wagon_raze_attack</file>
     </assetreference>
     <component>ModelComp</component>
+    <attach a="torch" frombone="ATTACHPOINT" tobone="R HAND" syncanims="0"/>
   </anim>
-  <anim>Raze_attack
+  <anim animlengthoverride="3.0">Raze_attack
     <assetreference type="GrannyAnim">
-      <file>units\cavalry\war_wagon\war_wagon_attackR</file>
-      <weight>40</weight>
-      <tag type="Attack">0.33</tag>
-      <tag type="SpecificSoundSet" checkvisible="1" set="RifleShot">0.33</tag>
-      <tag type="Particles" particlename="pistolshot_right">0.33</tag>
-    </assetreference>
-    <assetreference type="GrannyAnim">
-      <file>units\cavalry\war_wagon\war_wagon_attackR</file>
-      <weight>10</weight>
-      <tag type="Attack">0.33</tag>
-      <tag type="SpecificSoundSet" checkvisible="1" set="RifleShot">0.33</tag>
-      <tag type="Particles" particlename="pistolshot_right">0.33</tag>
-    </assetreference>
-    <assetreference type="GrannyAnim">
-      <file>units\cavalry\war_wagon\war_wagon_attackL</file>
-      <weight>10</weight>
-      <tag type="Attack">0.27</tag>
-      <tag type="SpecificSoundSet" checkvisible="1" set="RifleShot">0.27</tag>
-      <tag type="Particles" particlename="pistolshot_left">0.27</tag>
-    </assetreference>
-    <assetreference type="GrannyAnim">
-      <file>units\cavalry\war_wagon\war_wagon_attackL</file>
-      <weight>40</weight>
-      <tag type="Attack">0.27</tag>
-      <tag type="SpecificSoundSet" checkvisible="1" set="RifleShot">0.27</tag>
-      <tag type="Particles" particlename="pistolshot_left">0.27</tag>
+      <file>units\cavalry\war_wagon\war_wagon_raze_attack</file>
+      <tag type="Attack">0.43</tag>
+      <tag type="SpecificSoundSet" checkvisible="1" set="TorchSwing">0.35</tag>
     </assetreference>
     <component>ModelComp</component>
+    <attach a="torch" frombone="ATTACHPOINT" tobone="R HAND" syncanims="0"/>
   </anim>
 </animfile>

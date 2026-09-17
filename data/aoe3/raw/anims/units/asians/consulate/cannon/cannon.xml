@@ -127,14 +127,28 @@
     </linksection>
     <logic type="LowPoly">
       <normal>
-        <assetreference type="GrannyModel">
-          <file>units\artillery\cannon\cannon</file>
-        </assetreference>
+        <logic type="Tech">
+          <none>
+            <assetreference type="GrannyModel">
+              <file>units\artillery\cannon\cannon</file>
+            </assetreference>
+          </none>
+          <ypjapanesemeijivisualsshadow>
+            <assetreference type="GrannyModel">
+              <file>units\artillery\cannon\cannon</file>
+              <materialvariant index="1"/>
+            </assetreference>
+          </ypjapanesemeijivisualsshadow>
+        </logic>
       </normal>
       <lowpoly>
-        <assetreference type="GrannyModel">
-          <file>units\artillery\cannon\cannon_lp</file>
-        </assetreference>
+        <logic type="Tech">
+          <none>
+            <assetreference type="GrannyModel">
+              <file>units\artillery\cannon\cannon_lp</file>
+            </assetreference>
+          </none>
+        </logic>
       </lowpoly>
     </logic>
     <decal>
@@ -153,14 +167,34 @@
   <component>cannon stripped
     <logic type="LowPoly">
       <normal>
-        <assetreference type="GrannyModel">
-          <file>units\artillery\cannon\cannon_stripped_model</file>
-        </assetreference>
+        <logic type="Tech">
+          <none>
+            <assetreference type="GrannyModel">
+              <file>units\artillery\cannon\cannon_stripped_model</file>
+            </assetreference>
+          </none>
+          <ypjapanesemeijivisualsshadow>
+            <assetreference type="GrannyModel">
+              <file>units\artillery\cannon\cannon_stripped_model</file>
+              <materialvariant index="1"/>
+            </assetreference>
+          </ypjapanesemeijivisualsshadow>
+        </logic>
       </normal>
       <lowpoly>
-        <assetreference type="GrannyModel">
-          <file>units\artillery\cannon\cannon_stripped_lp</file>
-        </assetreference>
+        <logic type="Tech">
+          <none>
+            <assetreference type="GrannyModel">
+              <file>units\artillery\cannon\cannon_stripped_model_lp</file>
+            </assetreference>
+          </none>
+          <ypjapanesemeijivisualsshadow>
+            <assetreference type="GrannyModel">
+              <file>units\artillery\cannon\cannon_stripped_model_lp</file>
+              <materialvariant index="1"/>
+            </assetreference>
+          </ypjapanesemeijivisualsshadow>
+        </logic>
       </lowpoly>
     </logic>
     <decal>

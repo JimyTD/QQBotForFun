@@ -10,16 +10,11 @@
     <idleanim>Volley_standing_idle</idleanim>
     <maxheight>0</maxheight>
     <accuracy>1.0</accuracy>
-    <accuracyreductionfactor>1.5</accuracyreductionfactor>
-    <aimbonus>0</aimbonus>
-    <maxspread>5</maxspread>
-    <spreadfactor>0.25</spreadfactor>
     <trackrating>12</trackrating>
-    <unintentionaldamagemultiplier>0.7</unintentionaldamagemultiplier>
     <projectile>InvisibleProjectile</projectile>
     <impacteffect>effects\impacts\gun</impacteffect>
     <minrange>2</minrange>
-    <rate type="Unit">1.0 </rate>
+    <rate type="Unit">1.0</rate>
     <throw>1</throw>
     <damage>13.000000</damage>
     <maxrange>12.000000</maxrange>
@@ -30,7 +25,7 @@
     <name stringid="38130">VolleyHandAttack</name>
     <type>Attack</type>
     <maxrange>1.75</maxrange>
-    <rate type="Unit">1.0 </rate>
+    <rate type="Unit">1.0</rate>
     <attackaction>1</attackaction>
     <handlogic>1</handlogic>
     <speedboost>1</speedboost>
@@ -49,16 +44,11 @@
     <idleanim>Volley_standing_idle</idleanim>
     <maxheight>0</maxheight>
     <accuracy>1.0</accuracy>
-    <accuracyreductionfactor>1.5</accuracyreductionfactor>
-    <aimbonus>0</aimbonus>
-    <maxspread>5</maxspread>
-    <spreadfactor>0.25</spreadfactor>
     <trackrating>12</trackrating>
-    <unintentionaldamagemultiplier>0.7</unintentionaldamagemultiplier>
     <projectile>InvisibleProjectile</projectile>
     <impacteffect>effects\impacts\gun</impacteffect>
     <minrange>2</minrange>
-    <rate type="Unit">1.0 </rate>
+    <rate type="Unit">1.0</rate>
     <throw>1</throw>
     <damage>13.000000</damage>
     <maxrange>12.000000</maxrange>
@@ -69,7 +59,7 @@
     <name stringid="38137">DefendHandAttack</name>
     <type>Attack</type>
     <maxrange>1.75</maxrange>
-    <rate type="Unit">1.0 </rate>
+    <rate type="Unit">1.0</rate>
     <attackaction>1</attackaction>
     <handlogic>1</handlogic>
     <speedboost>1</speedboost>
@@ -90,16 +80,11 @@
     <idleanim>Volley_standing_idle</idleanim>
     <maxheight>0</maxheight>
     <accuracy>1.0</accuracy>
-    <accuracyreductionfactor>1.5</accuracyreductionfactor>
-    <aimbonus>0</aimbonus>
-    <maxspread>5</maxspread>
-    <spreadfactor>0.25</spreadfactor>
     <trackrating>12</trackrating>
-    <unintentionaldamagemultiplier>0.7</unintentionaldamagemultiplier>
     <projectile>InvisibleProjectile</projectile>
     <impacteffect>effects\impacts\gun</impacteffect>
     <minrange>2</minrange>
-    <rate type="Unit">1.0 </rate>
+    <rate type="Unit">1.0</rate>
     <throw>1</throw>
     <damage>13.000000</damage>
     <maxrange>12.000000</maxrange>
@@ -110,7 +95,7 @@
     <name stringid="38132">StaggerHandAttack</name>
     <type>Attack</type>
     <maxrange>1.75</maxrange>
-    <rate type="Unit">1.0 </rate>
+    <rate type="Unit">1.0</rate>
     <attackaction>1</attackaction>
     <handlogic>1</handlogic>
     <speedboost>1</speedboost>
@@ -125,7 +110,7 @@
     <name stringid="38135">MeleeHandAttack</name>
     <type>Attack</type>
     <maxrange>1.75</maxrange>
-    <rate type="Unit">1.0 </rate>
+    <rate type="Unit">1.0</rate>
     <attackaction>1</attackaction>
     <handlogic>1</handlogic>
     <speedboost>1</speedboost>
@@ -141,13 +126,20 @@
     <type>Attack</type>
     <rangedlogic>1</rangedlogic>
     <maxrange>6</maxrange>
-    <rate type="LogicalTypeShipsAndBuildings">1.0 </rate>
+    <rate type="LogicalTypeShipsAndBuildings">1.0</rate>
     <attackaction>1</attackaction>
     <speedboost>1</speedboost>
     <anim>Raze_attack</anim>
     <idleanim>Raze_idle</idleanim>
     <impacteffect>effects\impacts\torch</impacteffect>
     <projectile>TorchProjectile</projectile>
+  </action>
+  <action>
+    <name stringid="46491">Stealth</name>
+    <type>Stealth</type>
+    <maxrange>25.0</maxrange>
+    <active>0</active>
+    <persistent>1</persistent>
   </action>
   <action>
     <name stringid="69147">Build</name>
@@ -165,14 +157,46 @@
     <rate type="ypCaravanserai">2.0</rate>
     <rate type="ypCastle">2.0</rate>
   </action>
+  <action>
+    <name stringid="69148">DelayedTransform</name>
+    <type>DelayedTransform</type>
+    <anim>Mount</anim>
+    <active>0</active>
+    <animationrate>0.46875</animationrate>
+    <modifyprotoid>deFriskytteRider</modifyprotoid>
+  </action>
+  <action>
+    <name stringid="69150">CrateGather</name>
+    <anim>GatherCrate</anim>
+    <type>Gather</type>
+    <active>0</active>
+    <maxrange>0.5</maxrange>
+    <rate type="AbstractResourceCrate">1.0</rate>
+  </action>
+  <action>
+    <name stringid="69148">Discover</name>
+    <type>Discover</type>
+    <anim>Pickup</anim>
+    <active>0</active>
+    <maxrange>0.2</maxrange>
+    <rate type="AbstractNuggetLand">1.0</rate>
+  </action>
   <tactic>Volley
     <action priority="100">VolleyRangedAttack</action>
     <action priority="75">BuildingAttack</action>
     <action priority="25">VolleyHandAttack</action>
     <action>Build</action>
+    <action>CrateGather</action>
+    <action>Discover</action>
     <attacktype>LogicalTypeRangedUnitsAttack</attacktype>
     <autoattacktype>LogicalTypeRangedUnitsAutoAttack</autoattacktype>
     <attackresponsetype>LogicalTypeRangedUnitsAttack</attackresponsetype>
+    <transition>
+      <tactic>Stealth</tactic>
+      <length>2</length>
+      <anim>Cover_In</anim>
+      <exit>1</exit>
+    </transition>
     <runaway>1</runaway>
     <autoretarget>1</autoretarget>
     <idleanim>Volley_standing_idle</idleanim>
@@ -187,9 +211,17 @@
     <action priority="75">BuildingAttack</action>
     <action priority="25">DefendHandAttack</action>
     <action>Build</action>
+    <action>CrateGather</action>
+    <action>Discover</action>
     <attacktype>LogicalTypeRangedUnitsAttack</attacktype>
     <autoattacktype>LogicalTypeRangedUnitsAutoAttack</autoattacktype>
     <attackresponsetype>LogicalTypeRangedUnitsAttack</attackresponsetype>
+    <transition>
+      <tactic>Stealth</tactic>
+      <length>2</length>
+      <anim>Cover_In</anim>
+      <exit>1</exit>
+    </transition>
     <runaway>0</runaway>
     <autoretarget>1</autoretarget>
     <idleanim>Defend_idle</idleanim>
@@ -204,9 +236,17 @@
     <action priority="75">BuildingAttack</action>
     <action priority="25">StaggerHandAttack</action>
     <action>Build</action>
+    <action>CrateGather</action>
+    <action>Discover</action>
     <attacktype>LogicalTypeRangedUnitsAttack</attacktype>
     <autoattacktype>LogicalTypeRangedUnitsAutoAttack</autoattacktype>
     <attackresponsetype>LogicalTypeRangedUnitsAttack</attackresponsetype>
+    <transition>
+      <tactic>Stealth</tactic>
+      <length>2</length>
+      <anim>Cover_In</anim>
+      <exit>1</exit>
+    </transition>
     <runaway>0</runaway>
     <autoretarget>1</autoretarget>
     <idleanim>Cover_ranged_idle</idleanim>
@@ -220,9 +260,17 @@
     <action priority="100">BuildingAttack</action>
     <action priority="75">MeleeHandAttack</action>
     <action>Build</action>
+    <action>CrateGather</action>
+    <action>Discover</action>
     <attacktype>LogicalTypeRangedUnitsAttack</attacktype>
     <autoattacktype>LogicalTypeRangedUnitsAutoAttack</autoattacktype>
     <attackresponsetype>LogicalTypeRangedUnitsAttack</attackresponsetype>
+    <transition>
+      <tactic>Stealth</tactic>
+      <length>2</length>
+      <anim>Cover_In</anim>
+      <exit>1</exit>
+    </transition>
     <runaway>0</runaway>
     <autoretarget>1</autoretarget>
     <idleanim>Charge_idle</idleanim>
@@ -237,11 +285,65 @@
     <action priority="75">BuildingAttack</action>
     <action priority="25">DefendHandAttack</action>
     <action>Build</action>
+    <action>CrateGather</action>
+    <action>Discover</action>
     <attacktype>LogicalTypeRangedUnitsAttack</attacktype>
     <autoattacktype>LogicalTypeRangedUnitsAutoAttack</autoattacktype>
     <attackresponsetype>LogicalTypeRangedUnitsAttack</attackresponsetype>
+    <transition>
+      <tactic>Stealth</tactic>
+      <length>2</length>
+      <anim>Cover_In</anim>
+      <exit>1</exit>
+    </transition>
     <runaway>0</runaway>
     <autoretarget>1</autoretarget>
+    <idleanim>Defend_idle</idleanim>
+    <boredanim>Defend_bored</boredanim>
+    <deathanim>Death_by_melee</deathanim>
+    <walkanim>Cover_walk</walkanim>
+    <joganim>Cover_jog</joganim>
+    <runanim>Cover_run</runanim>
+  </tactic>
+  <tactic>Stealth
+    <action>Stealth</action>
+    <active>0</active>
+    <checkifcanstealth range="25.0">1</checkifcanstealth>
+    <speedmodifier>0.65</speedmodifier>
+    <attacktype>LogicalTypeHandUnitsAttack</attacktype>
+    <transition>
+      <tactic>Volley</tactic>
+      <length>0.3</length>
+      <anim>Cover_Out</anim>
+      <exit>1</exit>
+      <automatic>1</automatic>
+      <commandautomatic>1</commandautomatic>
+    </transition>
+    <transition>
+      <tactic>Melee</tactic>
+      <length>0.3</length>
+      <anim>Cover_Out</anim>
+      <exit>1</exit>
+      <automatic>1</automatic>
+      <commandautomatic>1</commandautomatic>
+    </transition>
+    <transition>
+      <tactic>Defend</tactic>
+      <length>0.3</length>
+      <anim>Cover_Out</anim>
+      <exit>1</exit>
+      <automatic>1</automatic>
+      <commandautomatic>1</commandautomatic>
+    </transition>
+    <transition>
+      <tactic>StandGround</tactic>
+      <length>0.3</length>
+      <anim>Cover_Out</anim>
+      <exit>1</exit>
+      <automatic>1</automatic>
+      <commandautomatic>1</commandautomatic>
+    </transition>
+    <autoretarget>0</autoretarget>
     <idleanim>Defend_idle</idleanim>
     <boredanim>Defend_bored</boredanim>
     <deathanim>Death_by_melee</deathanim>

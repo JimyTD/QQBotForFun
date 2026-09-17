@@ -207,6 +207,13 @@
           </derevolutionmxmaya>
         </logic>
       </demexicans>
+      <germans>
+        <assetreference type="GrannyModel">
+          <file>units\explorers\g_explorer\frederick</file>
+          <materialvariant index="1"/>
+        </assetreference>
+        <attach a="bag" frombone="bone_bag" tobone="PELVIS" syncanims="0"/>
+      </germans>
     </logic>
     <decal>
       <effecttype>default</effecttype>

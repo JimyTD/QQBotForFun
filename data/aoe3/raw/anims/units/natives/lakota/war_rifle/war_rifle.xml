@@ -50,32 +50,14 @@
   <component>ModelComp
     <logic type="Tech">
       <none>
-        <logic type="LowPoly">
-          <normal>
-            <assetreference type="GrannyModel">
-              <file>units\natives\lakota\war_rifle\rifle_warrior_elite</file>
-            </assetreference>
-          </normal>
-          <lowpoly>
-            <assetreference type="GrannyModel">
-              <file>units\natives\lakota\war_rifle\lp_rifle_warrior_elite</file>
-            </assetreference>
-          </lowpoly>
-        </logic>
+        <assetreference type="GrannyModel">
+          <file>units\natives\lakota\war_rifle\rifle_warrior_elite</file>
+        </assetreference>
       </none>
       <championwarrifles>
-        <logic type="LowPoly">
-          <normal>
-            <assetreference type="GrannyModel">
-              <file>units\natives\lakota\war_rifle\rifle_warrior_champion</file>
-            </assetreference>
-          </normal>
-          <lowpoly>
-            <assetreference type="GrannyModel">
-              <file>units\natives\lakota\war_rifle\lp_rifle_champion</file>
-            </assetreference>
-          </lowpoly>
-        </logic>
+        <assetreference type="GrannyModel">
+          <file>units\natives\lakota\war_rifle\rifle_warrior_champion</file>
+        </assetreference>
       </championwarrifles>
     </logic>
     <decal>
@@ -104,14 +86,12 @@
       <weight>20</weight>
     </assetreference>
     <component>ModelComp</component>
-    <attach a="rifle_elite" frombone="bone_rifle" tobone="bone_gun_attach" syncanims="0"/>
   </anim>
   <anim>kidnap_hostageA_exit
     <assetreference type="GrannyAnim">
       <file>nuggets\outlaw_kidnap\kidnap_hostageA_exit</file>
     </assetreference>
     <component>ModelComp</component>
-    <attach a="rifle_elite" frombone="bone_rifle" tobone="bone_gun_attach" syncanims="0"/>
   </anim>
   <anim>Charge_Attack
     <assetreference type="GrannyAnim">
@@ -421,14 +401,12 @@
       <file>nuggets\wolf_rock\rock_captive_boredB</file>
     </assetreference>
     <component>ModelComp</component>
-    <attach a="rifle_elite" frombone="bone_rifle" tobone="bone_gun_attach" syncanims="0"/>
   </anim>
   <anim>Nugget_rock_exit
     <assetreference type="GrannyAnim">
       <file>nuggets\wolf_rock\rock_captive_exit</file>
     </assetreference>
     <component>ModelComp</component>
-    <attach a="rifle_elite" frombone="bone_rifle" tobone="bone_gun_attach" syncanims="0"/>
   </anim>
   <anim>Wolf_Treebent_Captive_Idle
     <assetreference type="GrannyAnim">
@@ -441,14 +419,12 @@
       <file>nuggets\wolf_treebent\wolf_treebent_captive_idle3</file>
     </assetreference>
     <component>ModelComp</component>
-    <attach a="rifle_elite" frombone="bone_rifle" tobone="bone_gun_attach" syncanims="0"/>
   </anim>
   <anim>Wolf_Treebent_Captive_Exit
     <assetreference type="GrannyAnim">
       <file>nuggets\wolf_treebent\wolf_treebent_captive_exit</file>
     </assetreference>
     <component>ModelComp</component>
-    <attach a="rifle_elite" frombone="bone_rifle" tobone="bone_gun_attach" syncanims="0"/>
   </anim>
   <anim>Bear_Tree_Captive_Idle
     <assetreference type="GrannyAnim">
@@ -458,14 +434,12 @@
       <file>nuggets\bear_tree\bear_tree_captive_idle2</file>
     </assetreference>
     <component>ModelComp</component>
-    <attach a="rifle_elite" frombone="bone_rifle" tobone="bone_gun_attach" syncanims="0"/>
   </anim>
   <anim>Bear_Tree_Captive_Exit
     <assetreference type="GrannyAnim">
       <file>nuggets\bear_tree\bear_tree_captive_exit</file>
     </assetreference>
     <component>ModelComp</component>
-    <attach a="rifle_elite" frombone="bone_rifle" tobone="bone_gun_attach" syncanims="0"/>
   </anim>
   <anim>BuildLifting
     <assetreference type="GrannyAnim">

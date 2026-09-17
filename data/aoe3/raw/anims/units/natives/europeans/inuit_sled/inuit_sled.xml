@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<animfile>
+  <definebone>bone_hitpointbar</definebone>
+  <definebone>bone_sled</definebone>
+  <definebone>bone_dog1</definebone>
+  <definebone>bone_dog2</definebone>
+  <definebone>bone_dog3</definebone>
+  <definebone>bone_dog4</definebone>
+  <definebone>bone_dog5</definebone>
+  <definebone>bone_dog6</definebone>
+  <definebone>bone_attachpoint</definebone>
+  <definebone>bone_master</definebone>
+  <definebone>bone_main</definebone>
+  <attachment>inuit_rider
+    <component>husky</component>
+    <include>units\natives\europeans\inuit_sled\inuit_rider.xml</include>
+  </attachment>
+  <attachment>huskies
+    <component>husky</component>
+    <include>units\natives\europeans\inuit_sled\inuit_huskies.xml</include>
+  </attachment>
+  <component>sled
+    <linksection>
+      <linkoffset>.1</linkoffset>
+      <linkcomponent>huskies</linkcomponent>
+      <linkcomponent>plane</linkcomponent>
+      <linkconstraint>0</linkconstraint>
+    </linksection>
+    <linksection>
+      <linkoffset>-1.6</linkoffset>
+      <linkcomponent>arctic</linkcomponent>
+      <linkcomponent>inuit_rider</linkcomponent>
+      <linkcomponent>Cube</linkcomponent>
+      <linkconstraint>1</linkconstraint>
+    </linksection>
+    <assetreference type="GrannyModel">
+      <file>units\natives\europeans\inuit_sled\inuit_sled</file>
+    </assetreference>
+    <decal>
+      <effecttype>default</effecttype>
+      <texture isfakeshadow="1">shadows_selections\shadow_circle_128x128</texture>
+      <selectedtexture>shadows_selections\selection_oval_32x64</selectedtexture>
+      <width>2.50</width>
+      <height>6.50</height>
+    </decal>
+    <attach a="inuit_rider" frombone="hotspot" tobone="bone_attachpoint" syncanims="1"/>
+    <attach a="huskies" frombone="bone_main" tobone="bone_main" syncanims="1"/>
+  </component>
+  <anim>Idle
+    <component>sled</component>
+  </anim>
+  <anim>Bored
+    <component>sled</component>
+  </anim>
+  <anim animlengthoverride="3.000000">Volley_standing_attack
+    <assetreference type="GrannyAnim">
+      <file>animation_library\building\ranged_attack</file>
+      <tag type="Attack">0.98</tag>
+      <tag type="SpecificSoundSet" checkvisible="1" set="Arrows">0.98</tag>
+    </assetreference>
+    <component>sled</component>
+  </anim>
+  <anim>Walk
+    <component>sled</component>
+  </anim>
+  <anim>Cheer
+    <component>sled</component>
+  </anim>
+  <anim>Death
+    <component>sled</component>
+  </anim>
+  <anim>Raze_idle
+    <component>sled</component>
+  </anim>
+  <anim animlengthoverride="3.000000">Raze_attack
+    <assetreference type="GrannyAnim">
+      <file>animation_library\building\ranged_attack</file>
+      <tag type="Attack">0.98</tag>
+      <tag type="SpecificSoundSet" checkvisible="1" set="Arrows">0.98</tag>
+    </assetreference>
+    <component>sled</component>
+  </anim>
+</animfile>

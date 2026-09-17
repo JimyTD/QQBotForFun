@@ -28,8 +28,8 @@
       <effecttype>default</effecttype>
       <texture isfakeshadow="1">shadows_selections\shadow_circle_32x32</texture>
       <selectedtexture>shadows_selections\selection_circle_32x32</selectedtexture>
-      <width>1.10</width>
-      <height>1.10</height>
+      <width>1.3</width>
+      <height>1.3</height>
       <selectionextrawidth>1.0</selectionextrawidth>
       <selectionextraheight>1.0</selectionextraheight>
     </decal>

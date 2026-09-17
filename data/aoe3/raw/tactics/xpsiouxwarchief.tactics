@@ -31,7 +31,6 @@
     <anim>Attack_melee</anim>
     <idleanim>Idle</idleanim>
     <impacteffect>effects\impacts\melee</impacteffect>
-    <targetspeedboost>1</targetspeedboost>
     <basedamagecap>1</basedamagecap>
   </action>
   <action>
