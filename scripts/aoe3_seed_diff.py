@@ -87,6 +87,21 @@ def _canon(v) -> str:
     return json.dumps(v, sort_keys=True, ensure_ascii=False)
 
 
+def _index_techs(container) -> dict:
+    """收拢 generic_techs 的科技条目为 {id: entry}；techs 可能是 list[dict] 或 dict。"""
+    techs = container.get("techs", {}) if isinstance(container, dict) else {}
+    if isinstance(techs, dict):
+        return techs
+    idx: dict[str, object] = {}
+    for item in techs:
+        if isinstance(item, dict):
+            key = item.get("id") or item.get("name") or _canon(item)
+        else:
+            key = str(item)
+        idx[key] = item
+    return idx
+
+
 def _fmt(v, limit: int = 120) -> str:
     if v is None:
         return "—"
@@ -305,6 +320,12 @@ def build_report(prev: Path, cur: Path) -> tuple[str, str]:
     prev_pools = pool_snapshot(prev_seeds / "units.json")
     cur_pools = pool_snapshot(cur_seeds / "units.json")
 
+    # 单位改良 / 通用科技
+    old_up = _load_json(prev_seeds / "unit_upgrades.json") or {}
+    new_up = _load_json(cur_seeds / "unit_upgrades.json") or {}
+    old_gt = _load_json(prev_seeds / "generic_techs.json") or {}
+    new_gt = _load_json(cur_seeds / "generic_techs.json") or {}
+
     # icon
     old_icon = (_load_json(prev / "icon_manifest.json") or {}).get("entries", {})
     new_icon = (_load_json(cur / "data" / "aoe3" / "icon_manifest.json") or {}).get("entries", {})
@@ -353,6 +374,10 @@ def build_report(prev: Path, cur: Path) -> tuple[str, str]:
         n = sum(1 for u in new_u.values() if pred(u))
         A(f"| {label} | {o} | {n} | {n - o:+} |")
     A(f"| 单位总量 | {len(old_u)} | {len(new_u)} | {len(new_u) - len(old_u):+} |")
+    o_up, n_up = len(old_up.get("units", {})), len(new_up.get("units", {}))
+    A(f"| 有改良数据的单位 | {o_up} | {n_up} | {n_up - o_up:+} |")
+    o_gt, n_gt = len(old_gt.get("techs", {})), len(new_gt.get("techs", {}))
+    A(f"| 通用科技条数 | {o_gt} | {n_gt} | {n_gt - o_gt:+} |")
     A("")
 
     # ---- 2 新增
@@ -478,8 +503,73 @@ def build_report(prev: Path, cur: Path) -> tuple[str, str]:
         A(f"- 来源变化 id（前 40）：{', '.join('`' + i + '`' for i in icon_src_changed[:40])}")
     A("")
 
-    # ---- 9 待决
-    A("## 9. 待决问题（自动汇总）")
+    # ---- 9 单位改良 / 通用科技
+    A("## 9. 单位改良 / 通用科技变化")
+    A("")
+    A("### 9.1 单位改良（unit_upgrades.json）")
+    A("")
+    ou, nu = old_up.get("units", {}), new_up.get("units", {})
+    added_up, lost_up = sorted(set(nu) - set(ou)), sorted(set(ou) - set(nu))
+    chg_up = [k for k in sorted(set(ou) & set(nu)) if _canon(ou[k]) != _canon(nu[k])]
+    A(
+        f"- 覆盖单位：{len(ou)} → {len(nu)}"
+        f"（新增覆盖 {len(added_up)}，失去覆盖 {len(lost_up)}，数据变化 {len(chg_up)}）"
+    )
+    if added_up:
+        A(f"- 新增覆盖：{', '.join('`' + i + '`' for i in added_up[:40])}")
+    if lost_up:
+        A(f"- 失去覆盖：{', '.join('`' + i + '`' for i in lost_up[:40])}")
+    A("")
+    if chg_up:
+        A("| 单位 | 变化明细（按时代） |")
+        A("|---|---|")
+        for uid in chg_up:
+            bits = []
+            for age in sorted(set(ou[uid]) | set(nu[uid]), key=lambda x: str(x)):
+                ov, nv = ou[uid].get(age), nu[uid].get(age)
+                if _canon(ov) == _canon(nv):
+                    continue
+                if ov is None:
+                    bits.append(f"**+{age}** {_fmt(nv, 110)}")
+                elif nv is None:
+                    bits.append(f"**-{age}**")
+                else:
+                    sub = [
+                        f"{k}: {_fmt(ov.get(k))} → {_fmt(nv.get(k))}"
+                        for k in sorted(set(ov) | set(nv))
+                        if _canon(ov.get(k)) != _canon(nv.get(k))
+                    ]
+                    bits.append(f"**{age}** " + "; ".join(sub))
+            A(f"| `{uid}` | {'<br>'.join(bits)} |")
+        A("")
+
+    oc, nc = old_up.get("category", {}), new_up.get("category", {})
+    A("### 9.2 类别科技（土著 / 亡命徒 / 佣兵）")
+    A("")
+    for k in sorted(set(oc) | set(nc)):
+        ov, nv = oc.get(k), nc.get(k)
+        mark = "（新增）" if ov is None else ("（消失）" if nv is None else None)
+        if mark is None:
+            mark = "**数据变化**" if _canon(ov) != _canon(nv) else "无变化"
+        A(f"- `{k}`：{mark}")
+    A("")
+
+    A("### 9.3 通用科技（generic_techs.json）")
+    A("")
+    ot, nt = _index_techs(old_gt), _index_techs(new_gt)
+    added_t, lost_t = sorted(set(nt) - set(ot)), sorted(set(ot) - set(nt))
+    chg_t = [k for k in sorted(set(ot) & set(nt)) if _canon(ot[k]) != _canon(nt[k])]
+    A(f"- 科技条数：{len(ot)} → {len(nt)}")
+    if added_t:
+        A(f"- 新增（{len(added_t)}）：{', '.join('`' + i + '`' for i in added_t[:60])}")
+    if lost_t:
+        A(f"- 消失（{len(lost_t)}）：{', '.join('`' + i + '`' for i in lost_t[:60])}")
+    if chg_t:
+        A(f"- 数据变化（{len(chg_t)}）：{', '.join('`' + i + '`' for i in chg_t[:60])}")
+    A("")
+
+    # ---- 10 待决
+    A("## 10. 待决问题（自动汇总）")
     A("")
     todo: list[str] = []
     manual_ids = {uid for rows in manual_check.values() for uid, _, _ in rows}
@@ -544,6 +634,16 @@ def build_report(prev: Path, cur: Path) -> tuple[str, str]:
     T.append("[POOLS]")
     for name in prev_pools:
         T.append(f"  {name}: {len(prev_pools[name])} -> {len(cur_pools[name])}")
+    T.append("")
+    T.append("[UPGRADES / TECHS]")
+    T.append(f"  unit_upgrades: {len(ou)} -> {len(nu)} units (new {len(added_up)}, lost {len(lost_up)}, changed {len(chg_up)})")
+    for uid in chg_up[:40]:
+        T.append(f"    ~ {uid}")
+    T.append(f"  generic_techs: {len(ot)} -> {len(nt)} (new {len(added_t)}, lost {len(lost_t)}, changed {len(chg_t)})")
+    for name_t in added_t[:40]:
+        T.append(f"    + {name_t}")
+    for name_t in chg_t[:20]:
+        T.append(f"    ~ {name_t}")
     T.append("")
     T.append("[MANUAL LISTS]")
     for group, rows in manual_check.items():
