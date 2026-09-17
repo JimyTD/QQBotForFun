@@ -10,22 +10,25 @@ import nonebot
 
 nonebot.init()
 
-from unittest.mock import patch  # noqa: E402
+from unittest.mock import AsyncMock, call, patch  # noqa: E402
 
-from core import session  # noqa: E402
+from core import game_base, session  # noqa: E402
 from core.types import User  # noqa: E402
 from src.plugins.games.silent_mark.commands import (  # noqa: E402
     PendingRoom,
     _board_options,
+    _drop_room_panel,
     _join_blockers,
     _pick_board,
     _preset_of,
+    _refresh_room_panel,
     _required_players,
     _room_line,
     _rooms,
     _start_blockers,
     cancel_room,
     has_pending_room,
+    new_room_blocked,
 )
 from src.plugins.games.silent_mark.engine import constants as C  # noqa: E402
 from src.plugins.games.silent_mark.game import SilentMarkGame  # noqa: E402
@@ -92,6 +95,62 @@ def test_required_players_matches_every_preset() -> None:
         assert _required_players(preset) == sum(C.PRESETS[preset].roles.values())
     assert _required_players("4standard") == 4
     assert _required_players("6gods") == 6
+
+
+# =====================================================================
+# 开新房：已有对局 / 已有房间都要拦（别再静默顶掉现有房间）
+# =====================================================================
+def test_new_room_is_blocked_when_a_game_is_running(monkeypatch) -> None:  # noqa: ANN001
+    monkeypatch.setattr(game_base, "get_runner_by_group", lambda _gid: object())
+
+    blocked = new_room_blocked(424299)
+    assert blocked is not None
+    assert "已有进行中的游戏" in blocked
+
+
+def test_new_room_is_blocked_when_a_room_is_already_pending() -> None:
+    room = PendingRoom(group_id=424298, host_id=1)
+    _rooms[424298] = room
+    try:
+        blocked = new_room_blocked(424298)
+        assert blocked is not None
+        assert "已有报名中的静夜标记房间" in blocked
+        # 关键：要告诉对方下一步做什么，而不是只说"不行"
+        assert "@我 加入" in blocked and "@我 结束" in blocked
+    finally:
+        _rooms.pop(424298, None)
+
+
+def test_new_room_is_allowed_when_nothing_is_pending() -> None:
+    assert new_room_blocked(424297) is None
+
+
+# =====================================================================
+# 房间面板：原地更新（撤旧发新），而不是每步堆一条
+# =====================================================================
+async def test_room_panel_updates_in_place() -> None:
+    room = PendingRoom(group_id=424296, host_id=1)
+    room.players[1] = _user(1, "房主")
+    room.seat_owners[1] = 1
+    broadcast = AsyncMock(return_value=777)
+    delete = AsyncMock()
+
+    with (
+        patch.object(session, "broadcast", broadcast),
+        patch.object(session, "delete_message", delete),
+    ):
+        first = await _refresh_room_panel(room)
+        assert delete.await_count == 0  # 第一次没有上一版可撤
+        second = await _refresh_room_panel(room, note="👢 已把 X 请出房间。")
+        assert delete.await_args_list == [call(777)]  # 第二次撤掉了上一版
+
+        await _drop_room_panel(room)
+        assert delete.await_args_list == [call(777), call(777)]
+        assert room.panel_message_id is None
+
+    assert first == 777 and second == 777
+    # 一次性说明并进面板文本，不单独占一条消息
+    assert "已把 X 请出房间" in broadcast.await_args.args[1]
 
 
 # =====================================================================

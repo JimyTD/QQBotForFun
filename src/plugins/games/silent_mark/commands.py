@@ -60,6 +60,8 @@ class PendingRoom:
     items_enabled: bool = True
     #: 默认 AI 补位：人数不够就用 AI 填满（房主可 `@我 AI 关` 关掉）
     ai_fill: bool = True
+    #: 房间面板的消息 id —— 面板**原地更新**用它撤回上一版（见 `_refresh_room_panel`）
+    panel_message_id: int | None = None
 
     @property
     def required_players(self) -> int:
@@ -225,6 +227,51 @@ def _room_line(room: PendingRoom) -> str:
     )
 
 
+async def _refresh_room_panel(room: PendingRoom, *, note: str = "") -> int:
+    """房间面板**原地更新**：撤掉旧的那条，再发新的。
+
+    房间里发生的每一步（加入 / 离开 / 换板子 / 开关物品 / AI / 踢人）都不该在群里
+    堆一条新面板 —— 12 人房下来就是十几版，翻都翻不过来。
+
+    ``note`` 承载"刚刚发生了什么"这类一次性说明（比如谁被踢了），
+    这样它也不用单独占一条消息。
+    """
+    await _drop_room_panel(room)
+    text = f"{note}\n\n{_room_line(room)}" if note else _room_line(room)
+    room.panel_message_id = await session.broadcast(room.group_id, text)
+    return room.panel_message_id
+
+
+async def _drop_room_panel(room: PendingRoom) -> None:
+    """撤掉房间面板（房间取消、或开局时用 —— 别让过期信息留在群里）。"""
+    if room.panel_message_id is None:
+        return
+    await session.delete_message(int(room.panel_message_id))
+    room.panel_message_id = None
+
+
+def new_room_blocked(group_id: int) -> str | None:
+    """能不能在这个群开一个新的报名房间；返回 None = 可以，否则是拒绝文案。
+
+    两条都要拦：
+
+    - **本群已有进行中的游戏** —— 文案沿用深海任务那一套；
+    - **本群已有报名中的房间** —— 照 aoe3「已在选主题」的做法，直接告诉对方下一步做什么。
+
+    拦后者的实际收益：以前第二次 `@我 静夜标记` 会**静默顶掉**现有房间，
+    已经报名的人连同房主配置一起没了。
+    """
+    if game_base.get_runner_by_group(group_id) is not None:
+        return "⚠️ 本群已有进行中的游戏，先 @我 结束 终止当前游戏。"
+    if has_pending_room(group_id):
+        return (
+            "⚠️ 本群已有报名中的静夜标记房间。\n"
+            "💡 直接 @我 加入 报名；房主 @我 开始 开局。\n"
+            "💡 想重开一局：先 @我 结束 撤掉这个房间，再 @我 静夜标记。"
+        )
+    return None
+
+
 def _join_blockers(room: PendingRoom) -> str | None:
     """报名前的校验；返回 None = 可以加入，返回字符串 = 拒绝原因。"""
     required = room.required_players
@@ -342,8 +389,9 @@ async def _(
     matcher: Matcher, event: GroupMessageEvent, args: Message = CommandArg()
 ) -> None:
     group_id = int(event.group_id)
-    if game_base.get_runner_by_group(group_id) is not None:
-        await matcher.finish("⚠️ 本群已有进行中的游戏，先 @我 结束 终止当前游戏。")
+    blocked = new_room_blocked(group_id)
+    if blocked is not None:
+        await matcher.finish(blocked)
         return
 
     token = args.extract_plain_text().strip()
@@ -376,7 +424,8 @@ async def _(
         # 房主一开口就要自定义 → 直接把向导跑起来（免得他再发一次"板子 自定义"）
         await _apply_custom_board(matcher, room)
         return
-    await matcher.finish(_room_line(room))
+    await _refresh_room_panel(room)
+    matcher.stop_propagation()
 
 
 # =====================================================================
@@ -410,7 +459,8 @@ async def _(matcher: Matcher, event: GroupMessageEvent) -> None:
         return
     player = await user.get(int(event.user_id), int(event.group_id))
     if player.qq_id in room.players:
-        await matcher.finish(_room_line(room))
+        await _refresh_room_panel(room)
+        matcher.stop_propagation()
         return
     blocked = _join_blockers(room)
     if blocked is not None:
@@ -418,7 +468,8 @@ async def _(matcher: Matcher, event: GroupMessageEvent) -> None:
         return
     room.players[player.qq_id] = player
     room.seat_owners[player.qq_id] = player.qq_id
-    await matcher.finish(_room_line(room))
+    await _refresh_room_panel(room)
+    matcher.stop_propagation()
 
 
 _duplicate_join = on_command(
@@ -458,7 +509,8 @@ async def _(matcher: Matcher, event: GroupMessageEvent) -> None:
         group_id=group_id,
     )
     room.seat_owners[seat_id] = owner.qq_id
-    await matcher.finish(_room_line(room))
+    await _refresh_room_panel(room)
+    matcher.stop_propagation()
 
 
 _leave_room = on_command(
@@ -483,12 +535,14 @@ async def _(matcher: Matcher, event: GroupMessageEvent) -> None:
             room.seat_owners.pop(seat_id, None)
     if not room.players:
         _rooms.pop(group_id, None)
+        await _drop_room_panel(room)
         await matcher.finish("🌙 静夜标记房间已取消。")
         return
     if qq_id == room.host_id:
         # 房主走了就把房主顺延给下一个报名的人，房间不会因为房主跑了而卡死
         room.host_id = next(iter(room.players))
-    await matcher.finish(_room_line(room))
+    await _refresh_room_panel(room)
+    matcher.stop_propagation()
 
 
 _change_preset = on_command(
@@ -533,7 +587,8 @@ async def _(
         )
         return
     room.preset = preset
-    await matcher.finish(_room_line(room))
+    await _refresh_room_panel(room)
+    matcher.stop_propagation()
 
 
 async def _apply_custom_board(matcher: Matcher, room: PendingRoom) -> None:
@@ -557,7 +612,8 @@ async def _apply_custom_board(matcher: Matcher, room: PendingRoom) -> None:
     room.custom_roles = dict(board.roles)
     room.win_condition = board.win_condition
     room.items_enabled = board.items_enabled
-    await matcher.finish(_room_line(room))
+    await _refresh_room_panel(room)
+    matcher.stop_propagation()
 
 
 _items = on_command(
@@ -601,7 +657,8 @@ async def _(
         state = "开" if room.items_enabled else "关"
         await matcher.finish(f"用法：@我 物品 开 / @我 物品 关（当前：{state}）")
         return
-    await matcher.finish(_room_line(room))
+    await _refresh_room_panel(room)
+    matcher.stop_propagation()
 
 
 async def _test_ai() -> str:
@@ -670,7 +727,8 @@ async def _(
             + "\n用法：@我 AI（给选项）/ @我 AI 开 / @我 AI 关 / @我 AI 测试"
         )
         return
-    await matcher.finish(_room_line(room))
+    await _refresh_room_panel(room)
+    matcher.stop_propagation()
 
 
 _kick = on_command(
@@ -712,7 +770,9 @@ async def _(
         return
     if room.host_id not in room.players:
         room.host_id = next(iter(room.players))
-    await matcher.finish(f"👢 已把 {target.nickname} 请出房间。\n\n" + _room_line(room))
+    # 踢人说明并进面板（note），不单独占一条消息
+    await _refresh_room_panel(room, note=f"👢 已把 {target.nickname} 请出房间。")
+    matcher.stop_propagation()
 
 
 # =====================================================================
@@ -741,6 +801,8 @@ async def _(matcher: Matcher, event: GroupMessageEvent) -> None:
     players = list(room.players.values())
     _rooms.pop(group_id, None)
     await _cancel_room_expiry(group_id)
+    # 房间面板到此为止：对局面板会接手（群里不留两份互相过期的信息）
+    await _drop_room_panel(room)
     config: dict[str, object] = {
         "mode": room.preset,
         "items": room.items_enabled,
