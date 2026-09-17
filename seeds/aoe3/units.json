@@ -4104,7 +4104,15 @@
     "armor_melee": 0.9,
     "armor_ranged": 0.0,
     "description_en": "Heavy metal on ice and Fatih's little toy. Plows through snow and your pathetic little army.",
-    "description": "冰上的重金属，也是 Fatih 的小玩具. 碾碎积雪和你那可怜的小军队。"
+    "description": "冰上的重金属，也是 Fatih 的小玩具. 碾碎积雪和你那可怜的小军队。",
+    "protoaction_melee": "TrampleHandAttack",
+    "attack_melee": 1000.0,
+    "range_melee": 8.0,
+    "rof_melee": 2.0,
+    "damage_type_melee": "Hand",
+    "aoe_radius_melee": 8,
+    "damage_cap_melee": 2000.0,
+    "aoe_radius": 8
   },
   {
     "id": "deeggleonardostank",
@@ -30456,7 +30464,15 @@
     "armor_melee": 0.9,
     "armor_ranged": 0.0,
     "description_en": "Andy's coming to crush you!",
-    "description": "安迪要来压垮您了！"
+    "description": "安迪要来压垮您了！",
+    "protoaction_melee": "TrampleHandAttack",
+    "attack_melee": 1000.0,
+    "range_melee": 8.0,
+    "rof_melee": 2.0,
+    "damage_type_melee": "Hand",
+    "aoe_radius_melee": 8,
+    "damage_cap_melee": 2000.0,
+    "aoe_radius": 8
   },
   {
     "id": "monstertruckt",
@@ -30486,7 +30502,15 @@
     "armor_melee": 0.9,
     "armor_ranged": 0.0,
     "description_en": "Watch out for Tommy. He's a maniac.",
-    "description": "千万要小心汤米。他是个疯子。"
+    "description": "千万要小心汤米。他是个疯子。",
+    "protoaction_melee": "TrampleHandAttack",
+    "attack_melee": 1200.0,
+    "range_melee": 8.0,
+    "rof_melee": 2.0,
+    "damage_type_melee": "Hand",
+    "aoe_radius_melee": 6,
+    "damage_cap_melee": 3000.0,
+    "aoe_radius": 6
   },
   {
     "id": "mortar",
@@ -43633,7 +43657,15 @@
     "armor_melee": 0.9,
     "armor_ranged": 0.0,
     "description_en": "Andy's coming to crush you!",
-    "description": "安迪要来压垮您了！"
+    "description": "安迪要来压垮您了！",
+    "protoaction_melee": "TrampleHandAttack",
+    "attack_melee": 1000.0,
+    "range_melee": 8.0,
+    "rof_melee": 2.0,
+    "damage_type_melee": "Hand",
+    "aoe_radius_melee": 8,
+    "damage_cap_melee": 2000.0,
+    "aoe_radius": 8
   },
   {
     "id": "ypfireship",

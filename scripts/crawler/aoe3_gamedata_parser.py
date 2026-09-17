@@ -113,6 +113,18 @@ NAMED_MELEE_ATTACK_ORDER = [
     "HandAttack",
 ]
 
+# 「碾压型」彩蛋/怪物单位白名单：它们**唯一**的攻击动作名含 Trample，会被通用跳过规则
+# 剔除，导致 attack_melee 为空 → has_attack=False → 黑名单乱斗池永远抽不到它们。
+# 精确点名放行（2026-09-17 用户决议），而不是把 "Trample" 从跳过规则里移除：
+# 后者会让 denatqizilbash 之类"近战动作已改名为 Charge/Trample"的单位顶上一个
+# 非预期的代表动作，与「如实反映游戏数据」的既有结论冲突。
+TRAMPLE_ONLY_ATTACK_UNITS = frozenset({
+    "monstertrucka",
+    "monstertruckt",
+    "ypeggicecreamtruck",
+    "deeggarctictruck",
+})
+
 
 def _primary_ranged_stances(unit_types: set[str]) -> tuple[str, str]:
     """返回 (第一优先姿态, 第二优先姿态)。全员齐射 > 交错。"""
@@ -634,7 +646,13 @@ def _parse_attacks(
                 multipliers.append({"vs": vs_type, "value": mult_val})
 
         # Skip non-combat actions and hero skills (斗蛐蛐只用常态 DPS 循环)
-        if any(kw in name for kw in ("Charge", "Trample", "Ability", "AutoGather", "Heal")):
+        # 例外：TRAMPLE_ONLY_ATTACK_UNITS 里只有碾压动作的彩蛋单位（黑名单乱斗要用）
+        trample_whitelisted = (
+            "Trample" in name and el.get("name", "").lower() in TRAMPLE_ONLY_ATTACK_UNITS
+        )
+        if not trample_whitelisted and any(
+            kw in name for kw in ("Charge", "Trample", "Ability", "AutoGather", "Heal")
+        ):
             continue
         if name in NON_DPS_RANGED_ATTACKS:
             continue
