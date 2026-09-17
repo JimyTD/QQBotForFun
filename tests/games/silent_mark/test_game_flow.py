@@ -482,6 +482,8 @@ async def test_no_idle_chatter_in_the_group():
     harness = await _play(fake)
 
     assert not any("已投票" in text for text in harness.broadcasts)
+    # 投票进度同样是废话：中间态对玩家零信息量，票型在明细里一次性公布
+    assert not any("已收" in text for text in harness.broadcasts)
     # 标记结果也不再逐人播报——它们进看板（看板里能看到"本轮标记"）
     assert not any(text.startswith("📌") for text in harness.broadcasts)
     board = next((m for m in harness.broadcasts if "本轮标记" in m), "")

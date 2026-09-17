@@ -885,7 +885,8 @@ class SilentMarkGame(GameBase):
         )
         # 标记阶段那条提问到此为止，别让它杵在群里
         await self._delete_state_message(ctx, "prompt_message_id")
-        await self._refresh_board(ctx, extra_lines=[self._vote_progress_line(0, len(voters))])
+        # 面板报到「进入投票」为止；投票过程中一个字都不发（见下面的说明）
+        await self._refresh_board(ctx)
 
         votes: list[dict[str, str]] = []
         for voter in voters:
@@ -916,11 +917,9 @@ class SilentMarkGame(GameBase):
             if target is None:
                 continue  # 没有可投目标 → 就是弃票，看板里看得到，不必单独公告
             votes.append({"voter": voter["pid"], "target": target})
-            # ⚠️ 这里**刻意不发**「✅ X 已投票」：那是纯粹的废话（投票明细最后会一次性公布）。
-            # 进度通过看板原地更新表达。
-            await self._refresh_board(
-                ctx, extra_lines=[self._vote_progress_line(len(votes), len(voters))]
-            )
+            # ⚠️ 投票过程中**一条都不发**：既不发「✅ X 已投票」，也不发「已收 3/6」。
+            # 两者是同一件事的两种说法；后者还逼着面板为了一个纯计数器反复撤回重发 ——
+            # 而这种中间态对玩家零信息量：票型在下面那条明细里一次性公布，那才是要看的。
 
         st["history"]["votes"].append(votes)
         result = resolve.resolve_voting(votes)
@@ -1101,10 +1100,6 @@ class SilentMarkGame(GameBase):
         if phase == C.PHASE_DAY_VOTING:
             return f"🗳 静夜标记 · {day} · 投票放逐"
         return f"🌙 静夜标记 · {day}"
-
-    @staticmethod
-    def _vote_progress_line(received: int, total: int) -> str:
-        return f"🗳 投票：已收 {received}/{total}（收齐后一次性公布明细）"
 
     # =================================================================
     # 超时原则：AI 有超时，真实玩家没有
