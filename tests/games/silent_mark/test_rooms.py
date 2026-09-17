@@ -10,10 +10,15 @@ import nonebot
 
 nonebot.init()
 
+from unittest.mock import patch  # noqa: E402
+
+from core import session  # noqa: E402
 from core.types import User  # noqa: E402
 from src.plugins.games.silent_mark.commands import (  # noqa: E402
     PendingRoom,
+    _board_options,
     _join_blockers,
+    _pick_board,
     _preset_of,
     _required_players,
     _room_line,
@@ -23,6 +28,7 @@ from src.plugins.games.silent_mark.commands import (  # noqa: E402
     has_pending_room,
 )
 from src.plugins.games.silent_mark.engine import constants as C  # noqa: E402
+from src.plugins.games.silent_mark.game import SilentMarkGame  # noqa: E402
 
 GROUP = 424242
 
@@ -86,6 +92,41 @@ def test_required_players_matches_every_preset() -> None:
         assert _required_players(preset) == sum(C.PRESETS[preset].roles.values())
     assert _required_players("4standard") == 4
     assert _required_players("6gods") == 6
+
+
+# =====================================================================
+# 板子选择：**给选项**，不让人背参数
+# =====================================================================
+def test_board_options_list_every_board_with_its_roles() -> None:
+    options = _board_options()
+
+    assert len(options) == len(SilentMarkGame.MODES) == 13  # 12 预设 + 自定义
+    # 预选项要能看出角色构成（这是玩家真正在选的东西）
+    assert "4 人标准" in options[0] and "狼人×1" in options[0]
+    assert options[-1].startswith("自定义板子")
+
+
+async def test_pick_board_returns_the_chosen_board() -> None:
+    chosen = {"index": 3}
+
+    async def fake_choose(qq_id, options, **kwargs):  # noqa: ANN001, ANN003, ANN202
+        assert qq_id == 1
+        assert kwargs.get("group_id") == GROUP  # 在群里问，不是躲私聊
+        assert len(options) == 13
+        return chosen["index"]
+
+    with patch.object(session, "choose", fake_choose):
+        assert await _pick_board(GROUP, 1) == SilentMarkGame.MODES[3].id
+
+
+async def test_pick_board_returns_none_when_the_host_bails_out() -> None:
+    from core.errors import PlayerQuitError
+
+    async def quitting(*_args, **_kwargs):  # noqa: ANN002, ANN003, ANN202
+        raise PlayerQuitError("no")
+
+    with patch.object(session, "choose", quitting):
+        assert await _pick_board(GROUP, 1) is None
 
 
 # =====================================================================

@@ -29,7 +29,8 @@ from nonebot.params import CommandArg
 from nonebot.rule import Rule, to_me
 
 from core import game_base, llm, session, user
-from core.errors import LLMConfigError, LLMError
+from core.errors import LLMConfigError, LLMError, PlayerQuitError, WhisperFailedError
+from core.errors import TimeoutError as GameTimeoutError
 from core.errors import GameAlreadyRunningError
 from core.game_base import resolve_mode
 from core.types import User
@@ -213,7 +214,7 @@ def _room_line(room: PendingRoom) -> str:
             f"玩家：{names}",
             f"编号：{numbered}",
             "",
-            "💡 @我 加入 报名；房主 @我 开始 开局；房主 @我 板子 6gods 换板子",
+            "💡 @我 加入 报名；房主 @我 开始 开局；房主 @我 板子 换板子（会给你选项）",
             "💡 房主 @我 开始：人不够会用 AI 补满（@我 AI 关 可关掉）",
             "💡 房主：@我 板子 自定义 配自己的板子；@我 物品 关 关掉随身物品",
             "⚠️ 请先加机器人为好友：身份牌、夜间行动、投票都走私聊",
@@ -255,6 +256,46 @@ def _start_blockers(room: PendingRoom, actor_id: int) -> str | None:
     return None
 
 
+# =====================================================================
+# 板子选择：**给选项，不要让人背参数**
+# =====================================================================
+def _board_options() -> list[str]:
+    """板子的编号选项文本。预设有角色构成，自定义有说明 —— 一眼能选。"""
+    options: list[str] = []
+    for mode in SilentMarkGame.MODES:
+        if mode.id in C.PRESETS:
+            options.append(_preset_label(mode.id))
+        else:
+            options.append(f"{mode.name}（{mode.description}）")
+    return options
+
+
+async def _pick_in_group(
+    group_id: int, qq_id: int, options: list[str], *, prompt: str
+) -> int | None:
+    """群内编号选择：返回下标，拿不到输入返回 None。
+
+    时长不设限：**真人永远不超时**（本仓库大原则）。
+    """
+    try:
+        return await session.choose(
+            qq_id, options, group_id=group_id, prompt=prompt
+        )
+    except (GameTimeoutError, PlayerQuitError, WhisperFailedError, ValueError):
+        return None
+
+
+async def _pick_board(group_id: int, host_qq: int) -> str | None:
+    """群里给编号选项让房主选板子（取消/答错用尽返回 None）。"""
+    index = await _pick_in_group(
+        group_id,
+        host_qq,
+        _board_options(),
+        prompt="🌙 静夜标记 · 选个板子（回复编号）",
+    )
+    return None if index is None else SilentMarkGame.MODES[index].id
+
+
 def _new_debug_seat_id(room: PendingRoom) -> int:
     while True:
         seat_id = 9_000_000_000_000_000 + uuid.uuid4().int % 900_000_000_000_000
@@ -284,14 +325,20 @@ async def _(
         return
 
     token = args.extract_plain_text().strip()
-    preset = DEFAULT_PRESET
+    preset: str | None = None
     if token:
-        resolved = _preset_of(token)
-        if resolved is None:
+        # 参数式保留成快捷方式（老手可以直接 @我 静夜标记 6gods）
+        preset = _preset_of(token)
+        if preset is None:
             options = "、".join(m.id for m in SilentMarkGame.MODES)
             await matcher.finish(f"⚠️ 没有这个板子。可用：{options}")
             return
-        preset = resolved
+    else:
+        # 不打参数 → 直接给编号选项（群友最烦背一长串板子 id）
+        preset = await _pick_board(group_id, int(event.user_id))
+        if preset is None:
+            await matcher.finish("🌙 已取消开局（下次 @我 静夜标记 重新开始）。")
+            return
 
     player = await user.get(int(event.user_id), group_id)
     room = PendingRoom(
@@ -442,11 +489,14 @@ async def _(
         await matcher.finish("⚠️ 只有房主可以换板子。")
         return
     token = args.extract_plain_text().strip()
-    if not token:
-        options = "、".join(f"{m.name}[{m.id}]" for m in SilentMarkGame.MODES)
-        await matcher.finish(f"用法：@我 板子 <板子>。可用：{options}")
-        return
-    preset = _preset_of(token)
+    if token:
+        preset = _preset_of(token)
+    else:
+        # 不带参数就**给选项**，而不是丢一句"用法：@我 板子 <板子>"
+        preset = await _pick_board(room.group_id, room.host_id)
+        if preset is None:
+            await matcher.finish("🌙 已取消换板子。")
+            return
     if preset is None:
         await matcher.finish("⚠️ 没有这个板子，@我 板子 可以看全部板子。")
         return
@@ -508,7 +558,20 @@ async def _(
         await matcher.finish("⚠️ 只有房主可以改物品开关。")
         return
     token = args.extract_plain_text().strip().lower()
-    if token in {"开", "on", "1", "true"}:
+    if not token:
+        # 不带参数就给选项（同「板子」的道理：不打字的人才是多数）
+        state = "开" if room.items_enabled else "关"
+        index = await _pick_in_group(
+            room.group_id,
+            int(event.user_id),
+            ["开（随身物品→出局公开为遗物）", "关"],
+            prompt=f"🛠 随身物品：现在是「{state}」，要改吗？",
+        )
+        if index is None:
+            await matcher.finish("🌙 已取消（物品开关没变）。")
+            return
+        room.items_enabled = index == 0
+    elif token in {"开", "on", "1", "true"}:
         room.items_enabled = True
     elif token in {"关", "off", "0", "false"}:
         room.items_enabled = False
@@ -557,7 +620,22 @@ async def _(
     if token in {"测试", "test"}:
         await matcher.finish(await _test_ai())
         return
-    if token in {"开", "on", "1"}:
+    if not token:
+        # 不带参数就给选项
+        index = await _pick_in_group(
+            room.group_id,
+            int(event.user_id),
+            ["开 AI 补位", "关 AI 补位", "测试 AI 链路"],
+            prompt="🤖 AI 补位怎么设置？",
+        )
+        if index is None:
+            await matcher.finish("🌙 已取消（AI 设置没变）。")
+            return
+        if index == 2:
+            await matcher.finish(await _test_ai())
+            return
+        room.ai_fill = index == 0
+    elif token in {"开", "on", "1"}:
         room.ai_fill = True
     elif token in {"关", "off", "0"}:
         room.ai_fill = False
@@ -567,7 +645,7 @@ async def _(
         await matcher.finish(
             f"🤖 AI 补位：{state}"
             + (f"（开局会补 {gap} 个座位）" if room.ai_fill and gap else "")
-            + "\n用法：@我 AI 开 / @我 AI 关 / @我 AI 测试"
+            + "\n用法：@我 AI（给选项）/ @我 AI 开 / @我 AI 关 / @我 AI 测试"
         )
         return
     await matcher.finish(_room_line(room))
