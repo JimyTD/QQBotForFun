@@ -68,6 +68,11 @@ def has_pending_room(group_id: int) -> bool:
     return group_id in _rooms
 
 
+def cancel_room(group_id: int) -> bool:
+    """撤掉等待中的报名房间。供全局 `@我 结束` 使用（见 `game_launcher.handlers`）。"""
+    return _rooms.pop(group_id, None) is not None
+
+
 async def _is_pending_room(event: GroupMessageEvent) -> bool:
     return has_pending_room(int(event.group_id))
 
