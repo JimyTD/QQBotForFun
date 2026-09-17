@@ -22,11 +22,24 @@
 
 | 文件 | 内容 | 来源 |
 |------|------|------|
-| `data/aoe3/raw/` | 权威解包源（protoy、tactics、anims、stringtable） | 游戏 BAR，**入库 git**（≈20 MB） |
+| `data/aoe3/raw/` | 权威解包源（protoy、tactics、anims、stringtable） | 游戏 BAR，**入库 git**（≈38 MB） |
 | `data/aoe3/manifest.json` | 灌库/生成元数据 | parser 自动生成 |
 | `seeds/aoe3/units.json` | 单位属性（斗蛐蛐/卡片用派生视图） | parser 从 raw 生成 |
 | `seeds/aoe3/i18n_zh.json` | `AbstractXxx` → 中文显示名映射（仅展示层用） | parser 生成 + 手工维护 tags |
 | `resources/aoe3/icons/{id}.png` | 单位头像 (128×128) | 游戏 BAR 包提取 + Wiki 补充 |
+
+**当前快照版本**（2026-09-17 刷新，对应游戏 2026-09-11 更新）：
+
+| 项 | 值 |
+|---|---|
+| protoy.xml | 8.47 MB |
+| 战斗单位 | 815 |
+| tactics / anims 文件 | 472 / 535 |
+| icon 记录 / PNG | 2225 / 2218 |
+| 对照上一版 | 756 → 815 单位（+65 新增 / -6 消失），押注池 495 → 550 |
+
+> 刷新流程、人工干预清单复核结论与逐单位改动名单见 `docs/aoe3-data-refresh-20260917.md`；
+> 对比工具 `scripts/aoe3_seed_diff.py`（`--prev <旧快照>` 生成前后差异报告）。
 
 **灌库（仅初次或自愿刷新快照，需本机游戏）**：
 
@@ -219,11 +232,17 @@ class UnitRepo:
 
 ## 6. 资源文件
 
-- icon 图片存 `resources/aoe3/icons/{unit.id}.png`
+- icon 图片存 `resources/aoe3/icons/{unit.id}.png`（当前 2218 个）
 - 统一尺寸 128×128px，单个 ≤50KB（经 `compress_aoe3_icons.py` 压缩）
 - 来源：从游戏 `ArtUnitsTextures*.bar` / `UIResources1.bar` 直接提取 RTS3 DDT 格式图标（`aoe3_icon_extractor.py`）
-- **所有游戏单位图标 100% 真实提取**（2026-06-19 修复 64-bit offset bug 后，2005 个 bar 图标全覆盖）
-- 统一尺寸 128×128px，单个 ≤50KB（经 `compress_aoe3_icons.py` 压缩）
+- **来源统计（2026-09-17 重提取，2225 条记录）**：
+  - `bar` 2205 —— 直接从 BAR 解出
+  - `variant_copy` 1 / `local_reuse` 9 —— 变体复制 / 历史遗留本地图（本次 BAR 未解出，来源不可回溯）
+  - `missing` 10 —— 无图（多为建筑/装饰/彩蛋，不影响斗蛐蛐兵种卡）
+- `source` 合法取值：`bar | bar_alt | bar_portrait | wiki_api | variant_copy | local_reuse | missing`
+  （`bar_legacy` 不是合法值；历史快照中的 9 条是手工编辑产物，已由 `local_reuse` 取代）
+- **人工覆盖** `data/aoe3/icon_overrides.json`：`force_copy_from` 强制从另一单位复制图标、`block_wiki` 禁止 Wiki 回退；extractor 优先读取。当前 2 条（`ypmandarinarmy` ← 铁军、`dedeli` ← 骠骑兵）。
+- **所有战斗兵种图标均来自游戏 BAR**（2026-09-17 验证：2205/2225 BAR 命中）
 
 ---
 

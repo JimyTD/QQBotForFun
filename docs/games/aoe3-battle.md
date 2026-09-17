@@ -1911,3 +1911,32 @@ DE 部分科技含**离谱占位值**，无法靠语义识别（6074 条），�
 - ✅ **细红线类「研发科技」归属厘清（2026-05-29，方案甲修正版）**：细红线 = `ChurchThinRedLine`，flag 是 **`UniqueTech`（教堂主动研发的独有科技）**，不是 tier 升级也不是卡 → 当前不在范围（火枪 +20%血未给）。它与兵工厂研发科技（Rifling 等）**同类：玩家主动研发、不随时代自动生效**。决议：**统一归入后续「通用/研发科技白名单」，且绝不随时代自动生效**（作为可选/手动启用），届时严格如实带副作用（细红线 = +20%血 −10%速一起算）。
 - ✅ **革命「搭便车」混入已厘清并排除**：tier 自动档靠 `Shadow` 标记捞，而革命/开局/文明专属隐藏档复用同一 `Shadow` 标记 → 误入候选；按 `Rev*`/`DEREV*`/`DEHCREV*` 等前缀排除（§3.10.5 第 6 步）。
 - ✅ **通用科技 roguelike 系统已实现（2026-05-29）**：`src/plugins/aoe3/generic_techs.py` + `seeds/aoe3/generic_techs.json`。每局随机抽取与己方阵容相关的横向增益（兵工厂 Rifling/Paper Cartridge、教堂细红线等），叠在 tier 之上，不随时代自动生效。
+
+### 2026-09-17 追加决议（游戏大版本更新 · 数据快照刷新）
+
+> 起因：AoE3 DE 2026-09-11 版本更新（Data.bar / ArtUnits.bar 均为当日），需重灌兵种数据。
+> 全流程与核实名单见 `docs/aoe3-data-refresh-20260917.md`，对比工具 `scripts/aoe3_seed_diff.py`。
+
+**快照对比**
+
+| 项 | 旧（2026-05-29） | 新（2026-09-17） |
+|---|---|---|
+| protoy.xml | 7.88 MB | 8.47 MB |
+| 战斗单位 | 756 | **815**（+65 新增 / -6 消失） |
+| tactics 文件 | 432 | 472 |
+| anim 文件 | 485 | 535 |
+| 押注池 / 单挑池 | 495 / 511 | **550 / 566** |
+| 黑名单乱斗池 | 21 | 21 |
+| icon 记录 | 2024 | 2225 |
+
+- ✅ **P0 生成物纯净度已验**：不动 raw 重跑三个 parser，`units.json` / `i18n_zh.json` 零 diff（仅 `generated_at`/`git_head` 时间戳变化）→ 所有人工干预都在源码/覆盖文件里，生成物可整体替换。
+- ✅ **人工清单全部复核保留**：`BLACKLIST` 5 个、`BATTLE_BLACKLIST` 27 个、`_EXCLUDED_IDS` 25 个、`icon_overrides` 2 条，刷新后**全部仍然存在**，无失效条目需要清理。
+- ✅ **新增彩蛋单位入黑名单**：`deeggarctictruck`（极地掠夺者 hp 60000）加入 `BATTLE_BLACKLIST`，与既有 3 辆怪兽卡车同型同处理（`TrampleHandAttack` 被跳过 → 无远/近攻击槽，仅普通对战禁用、搜索可见）。
+- ✅ **不新增 hp 阈值规则（沿用显式枚举）**：新版新增的 `deregent` / `deregenthorse` / `despchmlord`（hp 2000~2500、atk 10、`populationcount=0`、`RegicideAlertOnDeath` 弑君模式）与**既有在池单位** `ypdaimyoregicide`（hp 2000 / atk 10）完全同型 → 按既有实践保留在池，不为新数据引入新过滤规则。
+- ✅ **`denatqizilbash` / `denatmercqizilbash` 近战槽消失属如实反映**：新版把其近战动作名从 `MeleeHandAttack` 改为 `ChargeAttack`，后者被既有「`Charge`/`Trample` 关键字跳过」规则排除 → 结果与既有骑射手（`nathorsearcher` / `xpbowrider` / `ypyabusame` 等一向无近战）一致，非新 bug（新增审计脚本 `scripts/aoe3_attack_slot_audit.py` 扫描确认全库仅此 2 例「旧有槽 → 新无槽」）。
+- ✅ **`cavalryarcher` 新增近战槽为确定行为**：新版新增 `ChargeAttack` / `GuardianAttack` / `TrampleHandAttack`，前两者被跳过、第三人称动作不是常态 → 唯一候选 `GuardianAttack`（6.5 伤害）中选，可复现。
+- ✅ **`delithuanianrider`（新增扈从骑兵）无远程槽**：其唯一远程动作是 `ChargeMusketAttack`（25 伤害 / 射程 12），同样被 `Charge` 规则跳过 → 纯近战。与既有 `demerczenata`（同为 `ChargeMusketAttack` 被跳过）一致，**记录为已知行为**，如后续要改为「远程常态」需单独立项（会连带影响既有同类单位）。
+- ✅ **icon 管线修复**：`aoe3_icon_extractor.py` 的 Pass 2 原先「磁盘已有 PNG 就跳过」，导致本次 BAR 未解出但存在历史 PNG 的单位在 manifest 里被记成 `missing`（历史快照里的 `bar_legacy` 实为**手工编辑**产物，代码中不存在该值）。现改为：PNG 存在但无来源记录时也走 backfill，并新增 source 值 **`local_reuse`**（诚实标记「历史遗留本地图，来源不可回溯」），同时 `icon_overrides.json` 的强制覆盖可正常生效（`ypmandarinarmy` → `variant_copy`）。
+- ✅ **`dedeli` 图标人工覆盖已解除**：新版 BAR 解出的 deli 图标与火枪兵图标像素差 32.2（非同一张，旧版「与火枪兵同图」问题不复现）→ 2026-05-28 的临时覆盖（← `hussar`）不再需要，已从 `icon_overrides.json` 移除并记入 `_resolved`（保留处理沿革）。`ypmandarinarmy` ← `ypmercirontroop` 经复核**仍必要**（新版 BAR 依然没有该图标），保留。
+- ✅ **测试期望值随数据更新**：`abusgun` 远程伤害 36→34（改为数据驱动断言）、瑞士长枪兵 3 时代逐兵档 +10%→+20%、新增孤儿倍率标签 `WaterGuardian` / `AbstractWarship`（游戏侧拼写笔误，正确应为 `AbstractWarShip`）加入非战斗豁免。
+- ⚠️ **已知缺口（登记，不处理）**：`deeggarctictruck` 与 3 辆怪兽卡车因 `TrampleHandAttack` 被跳过而 `has_attack=False`，进不了黑名单乱斗池（与 §2026-05-21 记录一致）。
