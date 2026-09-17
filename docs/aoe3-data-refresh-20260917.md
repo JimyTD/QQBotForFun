@@ -1,8 +1,8 @@
 # AoE3 数据刷新对比报告
 
-- 生成时间：2026-09-17 13:34
+- 生成时间：2026-09-17 22:38
 - 旧快照：`generated_at 2026-05-29T05:09:37.076054+00:00` / `git_head 2ef17ca`
-- 新快照：`generated_at 2026-09-17T04:51:16.011514+00:00` / `git_head 7cfab49`
+- 新快照：`generated_at 2026-09-17T14:32:27.881888+00:00` / `git_head 3377814`
 - 旧 raw：protoy 7.88 MB / tactics 432
 - 新 raw：protoy 8.47 MB / tactics 472
 
@@ -15,12 +15,14 @@
 | tactics 文件 | 432 | 472 | +40 |
 | anim 文件 | 485 | 535 | +50 |
 | 有远程攻击 | 507 | 545 | +38 |
-| 有近战攻击 | 571 | 622 | +51 |
-| 有 AOE | 147 | 158 | +11 |
-| 有 damage_cap | 160 | 172 | +12 |
+| 有近战攻击 | 571 | 626 | +55 |
+| 有 AOE | 147 | 162 | +15 |
+| 有 damage_cap | 160 | 176 | +16 |
 | 有 windup | 661 | 713 | +52 |
 | 有三槽代表动作 | 327 | 358 | +31 |
 | 单位总量 | 756 | 815 | +59 |
+| 有改良数据的单位 | 319 | 342 | +23 |
+| 通用科技条数 | 66 | 73 | +7 |
 
 ## 2. 新增单位（65）
 
@@ -28,7 +30,7 @@
 |---|---|---|---|---|---|---|---|
 | `deconsulateindependencedragoon` | 军团枪骑兵 | Legion Dragoon | AbstractCavalry/AbstractCavalryInfantry/AbstractConsulateUnit | 200 | 22/11/9 | StaggerRangedAttack / MeleeHandAttack |  |
 | `deconsulatejanissary` | 皇家奥斯曼火枪兵 | Crown Janissary | AbstractCavalryInfantry/AbstractConsulateUnit/AbstractConsulateUnitColonial | 215 | 20/15/25 | VolleyRangedAttack / MeleeHandAttack |  |
-| `deeggarctictruck` | 极地掠夺者 | Arctic PredatoR | AbstractCavalry/AbstractCavalryInfantry/AbstractHandCavalry | 60000 | —/—/— | — / — | **无远/近攻击槽**、无 windup |
+| `deeggarctictruck` | 极地掠夺者 | Arctic PredatoR | AbstractCavalry/AbstractCavalryInfantry/AbstractHandCavalry | 60000 | —/1000/— | — / TrampleHandAttack | 无 windup |
 | `deespingol` | 雷筒 | Espingol | AbstractArtillery/LogicalTypeLandMilitary/Military | 150 | 66/—/— | CannonAttack / — |  |
 | `defriskytterider` | 骑马自由枪手 | Mounted Friskytte | AbstractCavalry/AbstractCavalryInfantry/AbstractGunpowderCavalry | 170 | 12/12/14 | StaggerRangedAttack / MeleeHandAttack |  |
 | `degunboat` | 炮舰 | Gunboat | AbstractSiegeTrooper/AbstractWarShip/Military | 250 | 80/—/— | LongRangeAttack / — |  |
@@ -103,7 +105,7 @@
 | `despawnbajacaliforniaterritorybatch` | 拓荒者 | Settler | 200 | 旧数据独有 |
 | `ypoldhanarmy` | 旧汉军 | Old Han Army | 200 | 旧数据独有 |
 
-## 4. 结构性变更（代表动作 / 攻击槽增删）（28）
+## 4. 结构性变更（代表动作 / 攻击槽增删）（31）
 
 > 代表动作变更意味着整包攻击数据（damage/rof/aoe/倍率/windup）换了一套，比单纯数值变动严重，需重点核对。
 
@@ -125,6 +127,8 @@
 | `desalooninquisitor` | 审判官 | 4 项 | attack_melee: 15 → 18<br>cost: {"gold": 100} → {"gold": 110}<br>speed: 4.25 → 4.75<br>train_time: 35 → 45 |
 | `detank` | 莱昂纳多的战车 | 3 项 | aoe_radius: 3 → 4<br>aoe_radius_ranged: 3 → 4<br>attack_ranged: 100 → 300 |
 | `deunknownnateaglewarrior` | 阿兹特克鹰勇士 | 5 项 | description: 阿兹特克步兵，会用掷矛器掷射标枪，擅长对付骑兵及近战突击步兵。 → 阿兹特克步兵，会用掷矛器掷射标枪，擅长对付骑兵及近战冲击部队。<br>description_en: Aztec infantry that flings javelins from an atlatl. Good against Cavalry and Hand Shock Infantry. → Aztec infantry that flings javelins from an atlatl. Good against Cavalry and Hand Shock Troops.<br>**protoaction_melee**: VolleyHandAttack → MeleeHandAttack<br>windup_melee: 0.47 → 0.37<br>BuildingAttack 0.49→0.75s, -DefendHandAttack, MeleeHandAttack 0.47→0.37s, -StaggerHandAttack, -VolleyHandAttack |
+| `monstertrucka` | 大安迪 | 8 项 | aoe_radius: — → 8<br>aoe_radius_melee: — → 8<br>attack_melee: — → 1000<br>damage_cap_melee: — → 2000<br>damage_type_melee: — → Hand<br>**protoaction_melee**: — → TrampleHandAttack<br>range_melee: — → 8<br>rof_melee: — → 2 |
+| `monstertruckt` | 汤米卡车 | 8 项 | aoe_radius: — → 6<br>aoe_radius_melee: — → 6<br>attack_melee: — → 1200<br>damage_cap_melee: — → 3000<br>damage_type_melee: — → Hand<br>**protoaction_melee**: — → TrampleHandAttack<br>range_melee: — → 8<br>rof_melee: — → 2 |
 | `nateaglewarrior` | 阿兹特克鹰勇士 | 5 项 | description: 阿兹特克步兵，会用掷矛器掷射标枪，擅长对付骑兵及近战突击步兵。 → 阿兹特克步兵，会用掷矛器掷射标枪，擅长对付骑兵及近战冲击部队。<br>description_en: Aztec infantry that flings javelins from an atlatl. Good against Cavalry and Hand Shock Infantry. → Aztec infantry that flings javelins from an atlatl. Good against Cavalry and Hand Shock Troops.<br>**protoaction_melee**: VolleyHandAttack → MeleeHandAttack<br>windup_melee: 0.47 → 0.37<br>BuildingAttack 0.49→0.75s, -DefendHandAttack, MeleeHandAttack 0.47→0.37s, -StaggerHandAttack, -VolleyHandAttack |
 | `nathorsearcher` | 卡曼契骑马弓兵 | 1 项 | attack_ranged: 13 → 15 |
 | `natmerchorsearcher` | 卡曼契骑马弓兵 | 1 项 | attack_ranged: 13 → 15 |
@@ -135,6 +139,7 @@
 | `xpbowrider` | 弓骑士 | 3 项 | attack_ranged: 20 → 18<br>hp: 225 → 230<br>ranged: AbstractHeavyCavalry x2.25→x2.5 |
 | `xpcouprider` | 塔斯云坎游荡者 | 4 项 | age: Industrial Age → Fortress Age<br>attack_melee: 15 → 14<br>attack_siege: 15 → 14<br>hp: 220 → 215 |
 | `xpeagleknight` | 鹰游击武士 | 5 项 | description: 贵族单位，会从掷矛器掷射标枪，擅长对付骑兵及近战突击步兵。 → 贵族单位，会从掷矛器掷射标枪，擅长对付骑兵及近战冲击部队。<br>description_en: Nobleman that flings javelins from an atlatl. Good against Cavalry and Hand Shock Infantry. → Nobleman that flings javelins from an atlatl. Good against Cavalry and Hand Shock Troops.<br>**protoaction_melee**: VolleyHandAttack → MeleeHandAttack<br>windup_melee: 0.47 → 0.37<br>BuildingAttack 0.49→0.75s, -DefendHandAttack, MeleeHandAttack 0.47→0.37s, -StaggerHandAttack, -VolleyHandAttack |
+| `ypeggicecreamtruck` | 冰淇淋大脚车 | 8 项 | aoe_radius: — → 8<br>aoe_radius_melee: — → 8<br>attack_melee: — → 1000<br>damage_cap_melee: — → 2000<br>damage_type_melee: — → Hand<br>**protoaction_melee**: — → TrampleHandAttack<br>range_melee: — → 8<br>rof_melee: — → 2 |
 | `ypspcishida` | 石田大名 | 4 项 | armor_ranged: 0.6 → 0.7<br>attack_melee: 10 → 70<br>attack_siege: 5 → 25<br>hp: 1250 → 2500 |
 | `ypwokoupirate` | 倭寇海盗 | 4 项 | **protoaction_melee**: HandAttack → MeleeHandAttack<br>range_melee: 0 → 1.75<br>windup_melee: — → 0.5<br>+MeleeHandAttack 0.5s |
 
@@ -355,9 +360,12 @@
 
 | id | 状态 | 新数据关键值 |
 |---|---|---|
-| `deeggarctictruck` | 新增 | hp 60000 / 远 — / 近 —  `[lineup.py]` |
+| `deeggarctictruck` | 新增 | hp 60000 / 远 — / 近 1000  `[lineup.py]` |
 | `deeggleonardostank` | 无变化 | hp 5000 / 远 800 / 近 —  `[lineup.py]` |
+| `deregent` | 新增 | hp 2500 / 远 — / 近 10  `[lineup.py]` |
+| `deregenthorse` | 新增 | hp 2000 / 远 — / 近 10  `[lineup.py]` |
 | `despcgreatbombardnopop` | 无变化 | hp 475 / 远 500 / 近 —  `[lineup.py]` |
+| `despchmlord` | 新增 | hp 2026 / 远 — / 近 10  `[lineup.py]` |
 | `despckassahailu` | 无变化 | hp 650 / 远 — / 近 40  `[lineup.py]` |
 | `despcmansur` | 无变化 | hp 1000 / 远 — / 近 30  `[lineup.py]` |
 | `despcmilitiaofficer` | 无变化 | hp 500 / 远 15 / 近 6  `[lineup.py]` |
@@ -367,15 +375,15 @@
 | `georgecrushington` | 无变化 | hp 999999 / 远 — / 近 800  `[lineup.py]` |
 | `lazerbear` | 无变化 | hp 106106 / 远 800 / 近 400  `[lineup.py]` |
 | `legacygatlingcamel` | 变更 1 项 | hp 9001 / 远 150 / 近 1  `[lineup.py]` |
-| `monstertrucka` | 无变化 | hp 60000 / 远 — / 近 —  `[lineup.py]` |
-| `monstertruckt` | 无变化 | hp 60000 / 远 — / 近 —  `[lineup.py]` |
+| `monstertrucka` | 变更 8 项 | hp 60000 / 远 — / 近 1000  `[lineup.py]` |
+| `monstertruckt` | 变更 8 项 | hp 60000 / 远 — / 近 1200  `[lineup.py]` |
 | `spcdeunclefrankhorse` | 无变化 | hp 1000 / 远 — / 近 6  `[lineup.py]` |
 | `spcxpchiefbravewolf` | 变更 5 项 | hp 750 / 远 — / 近 30  `[lineup.py]` |
 | `spcxpchiefbullbear` | 变更 7 项 | hp 750 / 远 — / 近 30  `[lineup.py]` |
 | `spcxpchieftwomoon` | 变更 5 项 | hp 750 / 远 24 / 近 15  `[lineup.py]` |
 | `spcxpcrazyhorse` | 无变化 | hp 1000 / 远 — / 近 6  `[lineup.py]` |
 | `spcxpredoubtcannon` | 无变化 | hp 1000 / 远 650 / 近 —  `[lineup.py]` |
-| `ypeggicecreamtruck` | 无变化 | hp 60000 / 远 — / 近 —  `[lineup.py]` |
+| `ypeggicecreamtruck` | 变更 8 项 | hp 60000 / 远 — / 近 1000  `[lineup.py]` |
 | `ypspcdaimyokiyomasa` | 无变化 | hp 1000 / 远 — / 近 40  `[lineup.py]` |
 | `ypspcdaimyomasamune` | 无变化 | hp 1000 / 远 — / 近 40  `[lineup.py]` |
 | `ypspcdaimyotadaoki` | 无变化 | hp 1000 / 远 — / 近 40  `[lineup.py]` |
@@ -420,14 +428,14 @@
 
 | 池子 | 旧 | 新 | 变化 | 进池（新增） | 出池（消失） |
 |---|---|---|---|---|---|
-| 押注池 | 495 | 550 | +55 | `deconsulateindependencedragoon`, `deconsulatejanissary`, `deespingol`, `defriskytterider`, `dehetman`, `deindependencepolishlancer`, `deindependenceserdyuk`, `delithuanianrider`, `demerccranequinier`, `demercgallowglass`, `demercwagon`, `denatbagpiper`, `denatclansman`, `denatcompanion`, `denathusky`, `denatinuithunter`, `denatinuitqamutik`, `denatlowlanderinfantry`, `denatlowlanderrider`, `denatmercbagpiper`, `denatmercclansman`, `denatmerccompanion`, `denatmerchusky`, `denatmercinuithunter`, `denatmercinuitqamutik` | `denatmercwingedhussar`, `denatwingedhussar` |
-| 单挑池 | 511 | 566 | +55 | `deconsulateindependencedragoon`, `deconsulatejanissary`, `deespingol`, `defriskytterider`, `dehetman`, `deindependencepolishlancer`, `deindependenceserdyuk`, `delithuanianrider`, `demerccranequinier`, `demercgallowglass`, `demercwagon`, `denatbagpiper`, `denatclansman`, `denatcompanion`, `denathusky`, `denatinuithunter`, `denatinuitqamutik`, `denatlowlanderinfantry`, `denatlowlanderrider`, `denatmercbagpiper`, `denatmercclansman`, `denatmerccompanion`, `denatmerchusky`, `denatmercinuithunter`, `denatmercinuitqamutik` | `denatmercwingedhussar`, `denatwingedhussar` |
-| 黑名单乱斗池 | 21 | 21 | +0 | — | — |
+| 押注池 | 495 | 547 | +52 | `deconsulateindependencedragoon`, `deconsulatejanissary`, `deespingol`, `defriskytterider`, `dehetman`, `deindependencepolishlancer`, `deindependenceserdyuk`, `delithuanianrider`, `demerccranequinier`, `demercgallowglass`, `demercwagon`, `denatbagpiper`, `denatclansman`, `denatcompanion`, `denathusky`, `denatinuithunter`, `denatinuitqamutik`, `denatlowlanderinfantry`, `denatlowlanderrider`, `denatmercbagpiper`, `denatmercclansman`, `denatmerccompanion`, `denatmerchusky`, `denatmercinuithunter`, `denatmercinuitqamutik` | `denatmercwingedhussar`, `denatwingedhussar` |
+| 单挑池 | 511 | 563 | +52 | `deconsulateindependencedragoon`, `deconsulatejanissary`, `deespingol`, `defriskytterider`, `dehetman`, `deindependencepolishlancer`, `deindependenceserdyuk`, `delithuanianrider`, `demerccranequinier`, `demercgallowglass`, `demercwagon`, `denatbagpiper`, `denatclansman`, `denatcompanion`, `denathusky`, `denatinuithunter`, `denatinuitqamutik`, `denatlowlanderinfantry`, `denatlowlanderrider`, `denatmercbagpiper`, `denatmercclansman`, `denatmerccompanion`, `denatmerchusky`, `denatmercinuithunter`, `denatmercinuitqamutik` | `denatmercwingedhussar`, `denatwingedhussar` |
+| 黑名单乱斗池 | 21 | 28 | +7 | `deeggarctictruck`, `deregent`, `deregenthorse`, `despchmlord`, `monstertrucka`, `monstertruckt`, `ypeggicecreamtruck` | — |
 
 当前黑名单乱斗池内容：
 
 ```
-deeggleonardostank, despcgreatbombardnopop, despckassahailu, despcmansur, despcmilitiaofficer, despcoutlawlandsknecht, fluffy, flyingpurpletapir, georgecrushington, lazerbear, legacygatlingcamel, spcdeunclefrankhorse, spcxpchiefbravewolf, spcxpchiefbullbear, spcxpchieftwomoon, spcxpcrazyhorse, spcxpredoubtcannon, ypspcdaimyokiyomasa, ypspcdaimyomasamune, ypspcdaimyotadaoki, ypspcishida
+deeggarctictruck, deeggleonardostank, deregent, deregenthorse, despcgreatbombardnopop, despchmlord, despckassahailu, despcmansur, despcmilitiaofficer, despcoutlawlandsknecht, fluffy, flyingpurpletapir, georgecrushington, lazerbear, legacygatlingcamel, monstertrucka, monstertruckt, spcdeunclefrankhorse, spcxpchiefbravewolf, spcxpchiefbullbear, spcxpchieftwomoon, spcxpcrazyhorse, spcxpredoubtcannon, ypeggicecreamtruck, ypspcdaimyokiyomasa, ypspcdaimyomasamune, ypspcdaimyotadaoki, ypspcishida
 ```
 
 ## 8. icon 变化
@@ -438,9 +446,47 @@ deeggleonardostank, despcgreatbombardnopop, despckassahailu, despcmansur, despcm
 - 消失 id：`denatmercwingedhussar`, `denatwingedhussar`
 - 来源变化 id（前 40）：`deiconbashkirarcher`, `shrine`, `treechristmas`, `ypigctreasureship`, `ypmandarinarmy`, `ypspctreasureship`, `ypspctreasureshipstage1`, `ypspctreasureshipstage2`, `ypspctreasureshipstage3`
 
-## 9. 待决问题（自动汇总）
+## 9. 单位改良 / 通用科技变化
 
-- [x] 1 个新单位无远/近攻击槽，但已列入人工名单（黑名单/排除规则）：`deeggarctictruck`
+### 9.1 单位改良（unit_upgrades.json）
+
+- 覆盖单位：319 → 342（新增覆盖 25，失去覆盖 2，数据变化 15）
+- 新增覆盖：`defriskytterider`, `dehetman`, `delithuanianrider`, `demaltesegun`, `denatbagpiper`, `denatclansman`, `denatcompanion`, `denatinuithunter`, `denatinuitqamutik`, `denatlowlanderinfantry`, `denatlowlanderrider`, `denatmercbagpiper`, `denatmercclansman`, `denatmerccompanion`, `denatmercinuithunter`, `denatmercinuitqamutik`, `denatmerclowlanderinfantry`, `denatmerclowlanderrider`, `denatmercnoaidi`, `denatmercroyalhuntsman`, `denatnoaidi`, `depiechur`, `deregenthorse`, `dewingedhussar`, `minuteman`
+- 失去覆盖：`denatmercwingedhussar`, `denatwingedhussar`
+
+| 单位 | 变化明细（按时代） |
+|---|---|
+| `debattlecanoe` | **5** name: 传奇战斗独木舟 → 传奇作战划艇 |
+| `deinsurgente` | **4** name: — → 护卫叛乱者 |
+| `denatmercroyalhunter` | **3** name: 老练皇家猎人 → 老练皇家猎兵<br>**4** name: 皇家护卫猎人 → 皇家护卫猎兵 |
+| `denatmerctatararcher` | **3** name: 纪律严明的鞑靼步弓手 → 纪律严明的鞑靼弓手<br>**4** name: 光荣的鞑靼步弓手 → 光荣的鞑靼弓手 |
+| `denatroyalhunter` | **3** name: 老练皇家猎人 → 老练皇家猎兵<br>**4** name: 皇家护卫猎人 → 皇家护卫猎兵 |
+| `denatroyalhuntsman` | **3** name: 老练皇家狩猎者 → 老练皇家猎人<br>**4** name: 皇家护卫狩猎者 → 皇家护卫猎人 |
+| `denattatararcher` | **3** name: 纪律严明的鞑靼步弓手 → 纪律严明的鞑靼弓手<br>**4** name: 光荣的鞑靼步弓手 → 光荣的鞑靼弓手 |
+| `deordenanca` | **5** name: 帝国法令斯步枪兵 → 帝国法令步枪兵 |
+| `deuscavalry` | **3** range_add: {"ranged": 2.0} → {"ranged": 1.0}<br>**4** range_add: {"ranged": 2.0} → {"ranged": 1.0}<br>**5** range_add: {"ranged": 2.0} → {"ranged": 1.0} |
+| `dopplesoldner` | **3** name: 老练都卜勒武士 → 老练双酬剑士<br>**4** name: 护卫都卜勒武士 → 护卫双酬剑士<br>**5** name: 帝国都卜勒武士 → 帝国双酬剑士 |
+| `mercswisspikeman` | **3** damage_mult: 1.1 → 1.2; hp_mult: 1.1 → 1.2; speed_add: — → 0.25 |
+| `mortar` | **4** name: 加利利迫击炮 → 皇家迫击炮<br>**5** name: 帝国加利利迫击炮 → 帝国皇家迫击炮 |
+| `natrifleman` | **3** name: 精锐步枪兵 → 精锐切罗基步枪兵 |
+| `spahi` | **4** name: 护卫突厥骑射 → 护卫西帕希<br>**5** name: 帝国突厥骑射 → 帝国西帕希 |
+| `strelet` | **3** range_add: — → {"ranged": 1.0}<br>**4** range_add: — → {"ranged": 2.0}<br>**5** range_add: {"ranged": 2.0} → {"ranged": 3.0} |
+
+### 9.2 类别科技（土著 / 亡命徒 / 佣兵）
+
+- `AbstractNativeWarrior`：无变化
+- `AbstractOutlaw`：无变化
+- `Mercenary`：无变化
+
+### 9.3 通用科技（generic_techs.json）
+
+- 科技条数：66 → 73
+- 新增（8）：`RGDalkarl`, `RGDanishCrossbowmen`, `RGDanishGrenadiers`, `RGDanishHussars`, `RGDanishMusketeers`, `RGDanishPikemen`, `RGDanishSkirmishers`, `RGLeiciaiCrossbowmen`
+- 消失（1）：`ChurchKapikuluCorps`
+- 数据变化（43）：`Caracole`, `CavalryCuirass`, `ChurchCorsolet`, `ChurchTillysDiscipline`, `DEChurchPikePush`, `DEChurchSecondGuarantee`, `DEHCContinentalRangers`, `DEHCFedMXBustamante`, `DEHCFedSeminolePonies`, `DEHCHandUnitDamage`, `DEHCHandUnitHitpoints`, `DEHCInfantryDamageItalian`, `DEHCInfantryHitpointsItalian`, `DEHCLiberationMarch`, `DEHCPeninsularGuerrillas`, `DEHCPlanCasaMata`, `DEHCPlanMiramare`, `DEHCPlanTuxtepec`, `DEHCRangedCavalryCombat`, `DEHCRegularCombat`, `Flintlock`, `HCArtilleryCombatFrench`, `HCArtilleryCombatOttoman`, `HCCaballeros`, `HCCavalryDamageBritish`, `HCCavalryHitpointsBritish`, `HCHandCavalryCombatSpanish`, `HCHandCavalryDamageSpanish`, `HCHandCavalryHitpointsSpanish`, `HCHandInfantryCombatSpanish`, `HCHandInfantryHitpointsSpanish`, `HCRidingSchoolGerman2`, `HCXPImprovedGrenades`, `MilitaryDrummers`, `PaperCartridge`, `ProfessionalGunners`, `Rifling`, `Trunion`, `YPHCArtilleryCombatChinese`, `YPHCArtilleryDamageChinese`, `YPHCArtilleryHitpointsChinese`, `YPHCInfantryCombatIndians`, `YPHCOldHanArmyReforms`
+
+## 10. 待决问题（自动汇总）
+
 - [ ] 结构性变更需确认代表动作是否仍正确：`abusgun`
 - [ ] 结构性变更需确认代表动作是否仍正确：`cavalryarcher`
 - [ ] 结构性变更需确认代表动作是否仍正确：`debolaswarrior`
@@ -457,6 +503,8 @@ deeggleonardostank, despcgreatbombardnopop, despckassahailu, despcmansur, despcm
 - [ ] 结构性变更需确认代表动作是否仍正确：`desalooninquisitor`
 - [ ] 结构性变更需确认代表动作是否仍正确：`detank`
 - [ ] 结构性变更需确认代表动作是否仍正确：`deunknownnateaglewarrior`
+- [ ] 结构性变更需确认代表动作是否仍正确：`monstertrucka`
+- [ ] 结构性变更需确认代表动作是否仍正确：`monstertruckt`
 - [ ] 结构性变更需确认代表动作是否仍正确：`nateaglewarrior`
 - [ ] 结构性变更需确认代表动作是否仍正确：`nathorsearcher`
 - [ ] 结构性变更需确认代表动作是否仍正确：`natmerchorsearcher`
@@ -467,6 +515,7 @@ deeggleonardostank, despcgreatbombardnopop, despckassahailu, despcmansur, despcm
 - [ ] 结构性变更需确认代表动作是否仍正确：`xpbowrider`
 - [ ] 结构性变更需确认代表动作是否仍正确：`xpcouprider`
 - [ ] 结构性变更需确认代表动作是否仍正确：`xpeagleknight`
+- [ ] 结构性变更需确认代表动作是否仍正确：`ypeggicecreamtruck`
 - [ ] 结构性变更需确认代表动作是否仍正确：`ypspcishida`
 - [ ] 结构性变更需确认代表动作是否仍正确：`ypwokoupirate`
 

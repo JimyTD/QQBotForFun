@@ -18,6 +18,7 @@
 | [trivia-bank-generation-guide.md](trivia-bank-generation-guide.md) | trivia | 题库生成规范（多 Agent 协作） |
 | [aoe3-battle-state-machine.md](aoe3-battle-state-machine.md) | aoe3_battle | 状态机参考 |
 | [aoe3.md](aoe3.md) | aoe3_battle | 帝国3 数据解析相关 |
+| [aoe3-data-refresh.md](aoe3-data-refresh.md) | aoe3_battle | 帝国3 数据刷新 SOP（游戏更新后重建兵种数据） |
 
 ## 设计中（Shelved）
 

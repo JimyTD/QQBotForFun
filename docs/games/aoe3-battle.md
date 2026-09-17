@@ -1211,10 +1211,11 @@ range/aoe/rof/速度/护甲/倍率 **不单独全局扫描**，而是**每条已
 
 ##### 脏数据护栏（v15 复核结论）
 
-DE 部分科技含**离谱占位值**，无法靠语义识别（6074 条），用「合理上限」丢弃：
+DE 部分科技含**离谱占位值**，无法靠语义识别（6074 条）：
 
-- 例：`DEEliteSlingersShadow` 给投石手 `VolleyRangedAttack` **+147 射程**（同 tech 里其余动作才 +7）——代表动作恰是 Volley 会漏进来，被 `SANE_CAP` 丢弃。
-- 上限：射程 ≤10、AOE ≤4、速度 ≤12、护甲 ≤0.5、倍率 ≤5（正常改良远小于此）。
+- 例：`DEEliteSlingersShadow` 给投石手 `VolleyRangedAttack` **+147 射程**（同 tech 里其余动作才 +7）——代表动作恰是 Volley 会漏进来。
+- **处理方式：精确点名丢弃**（`aoe3_upgrades_parser.py :: DIRTY_EFFECTS`，键为 `(tech_name, subtype)`）。不用数值上限一刀切，以免误伤真实大改良。当前名单仅此 1 条。
+  > 注：文档早期提到的 `SANE_CAP`（射程 ≤10 / AOE ≤4 / 速度 ≤12 / 护甲 ≤0.5 / 倍率 ≤5 的「合理上限」机制）**已随 v15 重构移除**，代码中不存在，现由 `DIRTY_EFFECTS` 取代（2026-09-17 核对）。
 - **削弱档复核**：血攻 `<1` 的增量是兵工厂护甲副作用/置换（如 azap 胸甲 −10%），**不是 tier 线**；tier 线（`DEVeteran/Guard/ImperialAzaps` +20/30/50）另被正确捕获 → azap = 100/120/150/200。丢弃负增量正确。
 - **action 去重**：同一 effect 常对 Volley/Defend/Stagger/BuildingAttack 各出一条；**只取等于 `protoaction_*` 的代表动作那一条**，绝不四条相加（铁律）。
 - 全量扫描：对所有有攻击单位 ×age{3,4,5} apply 后，**升级造成的越界 = 0**（基础数据自带的海军 x10/间谍 x40 等不在升级范围内，未被触碰）。
@@ -1254,7 +1255,7 @@ DE 部分科技含**离谱占位值**，无法靠语义识别（6074 条），�
 
   > 4 条 age3 +20% 是**同一档的建筑变体**（合并为一档 +20%，非四份）；真正的逐时代自动线是两条 `Shadow`（age4 +30、age5 +50）。合并后 = **100/120/150/200**，与普通兵同曲线。
 
-- **其余广谱兵工厂科技 → 已实现为「通用科技 roguelike」（§3.10.6b）**：从 68 条 `Abstract*` + 卡片 + RG 里手工精选 66 条精华池（按 scope+effect 去重），以 roguelike 随机方式叠在 tier 之上。详见 §3.10.6b。
+- **其余广谱兵工厂科技 → 已实现为「通用科技 roguelike」（§3.10.6b）**：从 `Abstract*` + 卡片 + RG 里手工精选精华池（按 scope+effect 去重），以 roguelike 随机方式叠在 tier 之上。池子条数随游戏数据浮动：2026-05-29 为 66 条，**2026-09-17 数据刷新后为 73 条**。详见 §3.10.6b。
 
 #### 3.10.5 选链规则：沿一条 prereq 链累加，优先通用线
 
@@ -1297,7 +1298,7 @@ DE 部分科技含**离谱占位值**，无法靠语义识别（6074 条），�
 
 **定义**：通用科技 = 兵工厂/教堂研发 + 本城卡片 + 文明近卫 RG 等**横向战斗增益**，区别于上述 §3.10.1~§3.10.5 的纵向 tier 成长（精锐→近卫→帝王）。
 
-**数据来源**：`seeds/aoe3/generic_techs.json`（由 `scripts/crawler/aoe3_generic_techs_parser.py` 离线生成），66 条去重后的精华池，全部能匹配到 `units.json` 真实单位。
+**数据来源**：`seeds/aoe3/generic_techs.json`（由 `scripts/crawler/aoe3_generic_techs_parser.py` 离线生成），去重后的精华池——**2026-09-17 数据刷新后为 73 条**（上一版 66 条），全部能匹配到 `units.json` 真实单位。
 
 **池子构成**：
 - **兵工厂广谱**（age2）：步兵胸甲、骑兵胸甲、燧发枪、纸包弹、职业炮手、炮架耳轴、军乐鼓手、半回旋、来复线、燃烧弹
@@ -1861,8 +1862,9 @@ DE 部分科技含**离谱占位值**，无法靠语义识别（6074 条），�
 - ✅ **不搞群友点将**：复杂度高，首期不做。等基础玩法稳定后再考虑
 - ✅ **不搞同组对决 / 单挑模式**：玩腻了，乱斗就是要全池随机
 - ✅ **不搞胜率/历史排行**：与 §8.7 "不实现"哲学一致
-- ✅ **3 辆怪兽卡车暂时进不了池**：parser 把它们的攻击误归到 `attack_siege` 槽（`has_attack=False`），
-  `get_blacklist_pool` 自动剔除 + WARNING。等 parser 修了自然回到池里（类似沙漠突袭者）
+- ✅ **3 辆怪兽卡车暂时进不了池**（历史状态，2026-09-17 已修复）：它们的攻击动作名含 `Trample`，
+  被 parser 通用跳过规则剔除 → `attack_melee` 为空 → `has_attack=False` 被 `get_blacklist_pool` 自动剔除。
+  **2026-09-17 放行**：见本页「2026-09-17 追加决议 · 用户把关决议」第 4 条
 - 验证：seed=42 跑 20 局，总人数稳定在 1~30，模拟时长 5~50 秒，节目效果（碾压 / 平衡 / 神仙打架）三种局面均有出现
 
 ### 2026-05-27 追加决议（王中王模式规格，详见 §一 模式 D、§2.5）
@@ -1939,4 +1941,28 @@ DE 部分科技含**离谱占位值**，无法靠语义识别（6074 条），�
 - ✅ **icon 管线修复**：`aoe3_icon_extractor.py` 的 Pass 2 原先「磁盘已有 PNG 就跳过」，导致本次 BAR 未解出但存在历史 PNG 的单位在 manifest 里被记成 `missing`（历史快照里的 `bar_legacy` 实为**手工编辑**产物，代码中不存在该值）。现改为：PNG 存在但无来源记录时也走 backfill，并新增 source 值 **`local_reuse`**（诚实标记「历史遗留本地图，来源不可回溯」），同时 `icon_overrides.json` 的强制覆盖可正常生效（`ypmandarinarmy` → `variant_copy`）。
 - ✅ **`dedeli` 图标人工覆盖已解除**：新版 BAR 解出的 deli 图标与火枪兵图标像素差 32.2（非同一张，旧版「与火枪兵同图」问题不复现）→ 2026-05-28 的临时覆盖（← `hussar`）不再需要，已从 `icon_overrides.json` 移除并记入 `_resolved`（保留处理沿革）。`ypmandarinarmy` ← `ypmercirontroop` 经复核**仍必要**（新版 BAR 依然没有该图标），保留。
 - ✅ **测试期望值随数据更新**：`abusgun` 远程伤害 36→34（改为数据驱动断言）、瑞士长枪兵 3 时代逐兵档 +10%→+20%、新增孤儿倍率标签 `WaterGuardian` / `AbstractWarship`（游戏侧拼写笔误，正确应为 `AbstractWarShip`）加入非战斗豁免。
-- ⚠️ **已知缺口（登记，不处理）**：`deeggarctictruck` 与 3 辆怪兽卡车因 `TrampleHandAttack` 被跳过而 `has_attack=False`，进不了黑名单乱斗池（与 §2026-05-21 记录一致）。
+### 2026-09-17 追加决议 · 用户把关决议（对上述数据的处置）
+
+> 用户完整审阅对比名单（`docs/aoe3-data-refresh-20260917.md`）后逐条拍板。
+
+- ✅ **加强 / 削弱一律照搬游戏**：官方平衡改动即权威，不做人工修正（本次未发现"看起来奇怪、其实该修"的数据）。
+- ✅ **弑君模式国王归入黑名单**：`deregent`（hp 2500）/ `deregenthorse`（hp 2000）/ `despchmlord`（hp 2026）加入 `BATTLE_BLACKLIST`（标签「剧情·摄政王(步) / 摄政王(骑) / 领主」）。理由：不占人口、攻击仅 10 却 hp 2000+，进普通对战只会变成「打不死的肉盾」拖到超时按 HP 判胜。
+  → 押注池 550 → **547**，黑名单乱斗池 21 → **28**。
+- ✅ **`denatqizilbash` / `denatmercqizilbash` 近战槽消失：如实反映**（游戏把动作名改为 `ChargeAttack`，被既有跳过规则排除，与既有骑射手一致），**不**为此改 parser。
+- ✅ **`delithuanianrider` 不特殊处理**：其唯一远程动作 `ChargeMusketAttack` 被 `Charge` 规则跳过 → 维持「纯近战」，与既有 `demerczenata` 一致。
+- ✅ **放开「碾压型」彩蛋单位进黑名单池**：新增精确白名单 `aoe3_gamedata_parser.py :: TRAMPLE_ONLY_ATTACK_UNITS`（`monstertrucka` / `monstertruckt` / `ypeggicecreamtruck` / `deeggarctictruck`），这 4 辆 hp 60000 的卡车因此拿到 `TrampleHandAttack`（1000~1200 伤害 / AOE 6~8 / cap 2000~3000）并进入黑名单乱斗池。
+  **刻意不放宽全局 `Trample` 规则**：那会让 qizilbash 等单位的 `TrampleHandAttack` 顶上代表动作，与上一条「如实反映」的结论冲突。
+- ✅ **`warwagon` / `demercgatlingcamel` 等官方重做**：照搬新数据，不做人工干预。
+- 📌 **规则级修正复核（2026-09-17）**：本项目**没有**手工编辑过 `units.json` 等生成物（P0 零 diff 证明）；所有属性修正都以「代码规则」形式存在，刷新后自动生效。本次逐条核对：
+  - 臼炮系 `BarrageAttack` 优先（`ARTILLERY_RANGED_PRIORITY`）→ `mortar` 仍选 BarrageAttack ✅
+  - 英雄技 / 一次性射击不进 DPS 循环（`NON_DPS_RANGED_ATTACKS`）→ 审计脚本通过 ✅
+  - `Charge` / `Trample` 跳过（`aoe3_gamedata_parser._parse_attacks`）→ 仍生效（本次 +4 辆卡车白名单）✅
+  - 投石手 `DEEliteSlingersShadow` +147 射程丢弃（`DIRTY_EFFECTS`）→ 该科技仍存在，投石手升级射程为 +1/+2 ✅
+  - 战役 / 代币 / 守护者排除（`repository._EXCLUDED_IDS` + `is_excluded_unit`）→ 25 个 id 全部仍存在 ✅
+  - 对战黑名单（`lineup.BLACKLIST` / `BATTLE_BLACKLIST`）→ 全部仍存在（本次 +4）✅
+  - 图标人工覆盖（`icon_overrides.json`）→ `ypmandarinarmy` 仍必要、`dedeli` 已解除 ✅
+- ✅ **科技侧复核（2026-09-17）**：
+  - **单位改良（tier）**：覆盖 319 → **342** 个单位（新增 25 个随新单位入选，失去 2 个随翼骑兵旧 id 消失）。15 条数据变化里 12 条只是中文名更新（都卜勒武士→双酬剑士、突厥骑射→西帕希…），**3 条影响战斗数值**：`deuscavalry` 射程加成 2.0→1.0（3/4/5 档）、`strelet` **新增**射程加成（+1/+2/+3）、`mercswisspikeman` 精锐档攻/血 1.1→1.2 并新增速度 +0.25。
+  - **类别科技**（土著/亡命徒/佣兵）：3 条全部无变化。
+  - **通用科技（roguelike）**：66 → **73** 条。新增 8 条（丹麦 7 + 立陶宛 1 的皇家卫队 RG 系）、消失 1 条（`ChurchKapikuluCorps`，游戏侧删除，parser 自动不再产出）。43 条"数据变化"里 **41 条只是 `match_count` 随新单位变大**（加成数值未变），真正数值变化仅 `HCXPImprovedGrenades`（掷弹兵改良卡 1.15→1.2）与 `ProfessionalGunners`（中文名）；`YPHCOldHanArmyReforms` 的 scope 自动剔除已消失的 `ypoldhanarmy`（自洽）。
+- ✅ **图标侧复核（2026-09-17）**：PNG **新增 203 / 更新 170 / 删除 0**（战斗单位：新增 64、更新 122）。其中 122 个"更新"经**像素级比对**只有 **11 个是真换图**（`demercbattleship`、`spccherokeechief`、`despcoutlawmusketeer`、`mercmameluke`/`yprepentantmameluke`、`wardog`、`derevolutionaryscout`、`desaloonoutlawarsonist` 等 4 个火兵系），其余 111 个是 Pillow 重新编码的字节差异（显示效果不变）。新增的 65 个战斗单位**图标全覆盖、无 missing**。
