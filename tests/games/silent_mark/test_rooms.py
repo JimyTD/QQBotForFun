@@ -107,16 +107,40 @@ def test_board_options_list_every_board_with_its_roles() -> None:
 
 
 async def test_pick_board_returns_the_chosen_board() -> None:
-    chosen = {"index": 3}
-
-    async def fake_choose(qq_id, options, **kwargs):  # noqa: ANN001, ANN003, ANN202
+    async def fake_ask(qq_id, prompt, **kwargs):  # noqa: ANN001, ANN003, ANN202
         assert qq_id == 1
         assert kwargs.get("group_id") == GROUP  # 在群里问，不是躲私聊
-        assert len(options) == 13
-        return chosen["index"]
+        assert "6 人神职" in prompt  # 选项都列在提示里
+        assert prompt.rstrip().endswith("请回复编号")
+        return "4"
 
-    with patch.object(session, "choose", fake_choose):
+    with patch.object(session, "ask", fake_ask):
         assert await _pick_board(GROUP, 1) == SilentMarkGame.MODES[3].id
+
+
+async def test_pick_board_gives_up_on_a_non_number_without_asking_again() -> None:
+    """答的不是编号 → **只问一次**就收场。
+
+    那条消息很可能是用户其实想打的别的命令（比如 `@我 斗蛐蛐`），
+    连着重问三次把它吃掉才是真的讨厌。
+    """
+    calls: list[str] = []
+
+    async def fake_ask(qq_id, prompt, **kwargs):  # noqa: ANN001, ANN003, ANN202
+        calls.append(prompt)
+        return "斗蛐蛐"
+
+    with patch.object(session, "ask", fake_ask):
+        assert await _pick_board(GROUP, 1) is None
+    assert len(calls) == 1
+
+
+async def test_pick_board_rejects_an_out_of_range_number() -> None:
+    async def fake_ask(*_args, **_kwargs):  # noqa: ANN002, ANN003, ANN202
+        return "99"
+
+    with patch.object(session, "ask", fake_ask):
+        assert await _pick_board(GROUP, 1) is None
 
 
 async def test_pick_board_returns_none_when_the_host_bails_out() -> None:
@@ -125,7 +149,7 @@ async def test_pick_board_returns_none_when_the_host_bails_out() -> None:
     async def quitting(*_args, **_kwargs):  # noqa: ANN002, ANN003, ANN202
         raise PlayerQuitError("no")
 
-    with patch.object(session, "choose", quitting):
+    with patch.object(session, "ask", quitting):
         assert await _pick_board(GROUP, 1) is None
 
 

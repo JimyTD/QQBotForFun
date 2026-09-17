@@ -91,6 +91,9 @@ def cancel_room(group_id: int) -> bool:
 
 #: 报名房间空闲多久自动撤掉（秒）
 ROOM_TTL_SECONDS = 30 * 60
+#: 房间设置阶段单次提问的时限（秒）。**不是**对局内的等待 ——
+#: 对局里真人永远不被计时，这里只是等一个可选设置，不能让它永远挂着。
+ROOM_ASK_TIMEOUT = 5 * 60
 
 
 def _room_tag(group_id: int) -> str:
@@ -271,18 +274,37 @@ def _board_options() -> list[str]:
 
 
 async def _pick_in_group(
-    group_id: int, qq_id: int, options: list[str], *, prompt: str
+    group_id: int,
+    qq_id: int,
+    options: list[str],
+    *,
+    prompt: str,
+    timeout: float | None = ROOM_ASK_TIMEOUT,
 ) -> int | None:
     """群内编号选择：返回下标，拿不到输入返回 None。
 
-    时长不设限：**真人永远不超时**（本仓库大原则）。
+    **只问一次**，答的不是编号就当"你不想选了"立刻收场 —— 这里刻意不用
+    `session.choose`：它答错会重问（`max_retries=3`），而这几条消息很可能
+    是用户其实想打的**别的命令**，一条条吃掉才是真的讨厌（对局内的重问才有意义）。
+
+    ``timeout`` 默认 :data:`ROOM_ASK_TIMEOUT`：房间设置阶段的提问**有**时限。
+    这不违反"真人没有超时"——那条原则管的是**对局里谁被卡住**；
+    房间设置只是等一个可选设置，晾着不管会让等待协程永远挂着。
     """
+    listing = "\n".join(
+        f"{index + 1}. {option}" for index, option in enumerate(options)
+    )
     try:
-        return await session.choose(
-            qq_id, options, group_id=group_id, prompt=prompt
+        text = await session.ask(
+            qq_id, f"{prompt}\n{listing}\n请回复编号", group_id=group_id, timeout=timeout
         )
-    except (GameTimeoutError, PlayerQuitError, WhisperFailedError, ValueError):
+    except (GameTimeoutError, PlayerQuitError, WhisperFailedError):
         return None
+    token = text.strip()
+    if not token.isdigit():
+        return None  # 不是编号 → 视为放弃，把消息留给别的东西去用
+    index = int(token) - 1
+    return index if 0 <= index < len(options) else None
 
 
 async def _pick_board(group_id: int, host_qq: int) -> str | None:
