@@ -2,7 +2,8 @@
 
 产出:
   - resources/aoe3/icons/{unit_id}.png
-  - data/aoe3/icon_manifest.json（source: bar | bar_alt | bar_portrait | wiki_api | variant_copy | missing）
+  - data/aoe3/icon_manifest.json
+    （source: bar | bar_alt | bar_portrait | wiki_api | variant_copy | local_reuse | missing）
 
 依赖: pip install Pillow lz4
 
@@ -517,7 +518,9 @@ def _backfill_unit_icon(
             rec.copy_from = force_from
             rec.note = "icon_overrides.json"
         else:
-            rec.source = "bar"
+            # PNG 已存在但本次 BAR 未解出：来源是历史遗留（旧版本 BAR 解出或人工放置），
+            # 无法回溯，标记为 local_reuse 而不是 "bar"，避免污染审计信息。
+            rec.source = "local_reuse"
         return rec
 
     ov = overrides.get(unit_id, {})
@@ -758,9 +761,13 @@ def main() -> None:
             _save_png(outcome.image, OUTPUT_DIR / f"{unit_id}.png")
         manifest[unit_id] = outcome.record
 
-    # Pass 2: overrides + wiki + variant_copy for units still missing PNG
+    # Pass 2: overrides + wiki + variant_copy for units without a usable record.
+    # 注意：不能只按「PNG 是否存在」跳过 —— 磁盘上有历史遗留 PNG、但本次 BAR 未解出的单位
+    # （source 仍为 missing）必须走一次 backfill，否则 manifest 会丢掉它们的来源信息
+    # （历史快照里这些条目曾被手工写成 bar_legacy，代码里并不存在该值）。
     for unit_id in unit_icon_paths:
-        if _has_valid_png(OUTPUT_DIR, unit_id):
+        prev_rec = manifest.get(unit_id)
+        if _has_valid_png(OUTPUT_DIR, unit_id) and prev_rec is not None and prev_rec.source != "missing":
             continue
 
         proto_icon = unit_proto_icon.get(unit_id, "")

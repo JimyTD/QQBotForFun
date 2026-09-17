@@ -1,13 +1,12 @@
 {
   "_comment": "AoE3 单位 icon 手动覆盖。extractor 在 variant_copy 之前读取。force_copy_from：从已有 unit_id 的 PNG 复制；block_wiki：禁止 Wiki 回退。",
+  "_resolved": {
+    "dedeli": "2026-09-17 复核已移除：2026-05-28 因旧版 BAR 解出的 deli_icon 与火枪兵同图，曾临时改用 hussar 图标。新版 BAR 已能解出该单位专属骑兵图标（与火枪兵图标像素差 32.2，非同一张），故删除覆盖、恢复使用游戏原生图标。"
+  },
   "overrides": {
     "ypmandarinarmy": {
       "force_copy_from": "ypmercirontroop",
-      "_note": "BAR 无 mandarin_army_icon_64；临时用铁军 merc 图标，待人工核对"
-    },
-    "dedeli": {
-      "force_copy_from": "hussar",
-      "_note": "手动覆盖(2026-05-28)：BAR deli_icon 解出与火枪兵同图；暂用 hussar(轻骑兵) 避免误导"
+      "_note": "BAR 无 mandarin_army_icon_64（2026-09-17 复核仍无，BAR 未匹配）；临时用铁军 merc 图标，待人工核对"
     }
   }
 }

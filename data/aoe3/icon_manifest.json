@@ -1,14 +1,17 @@
 {
   "_comment": "由 aoe3_icon_extractor.py 生成。优先审 audit.wiki_api 与 audit.variant_copy。",
-  "generated_at": "2026-06-18T15:58:55.689814+00:00",
+  "generated_at": "2026-09-17T05:34:11.672238+00:00",
   "stats": {
-    "bar": 2005,
-    "bar_legacy": 9,
-    "missing": 10
+    "bar": 2205,
+    "local_reuse": 9,
+    "missing": 10,
+    "variant_copy": 1
   },
   "audit": {
     "wiki_api": [],
-    "variant_copy": []
+    "variant_copy": [
+      "ypmandarinarmy"
+    ]
   },
   "entries": {
     "abusgun": {
@@ -95,6 +98,16 @@
       "source": "bar",
       "proto_icon": "resources/art/units/spc/boneguard/boneguard_age2_icon_64x64.png",
       "bar_entry": "resources\\art\\units\\spc\\boneguard\\boneguard_age2_icon_64x64.png"
+    },
+    "bpnuggetabandonedigloo": {
+      "source": "bar",
+      "proto_icon": "resources/art/objects/treasure/treasure_icon_64x64.png",
+      "bar_entry": "resources\\art\\objects\\treasure\\treasure_icon_64x64.png"
+    },
+    "bpnuggetwhale": {
+      "source": "bar",
+      "proto_icon": "resources/art/objects/treasure/treasure_icon_64x64.png",
+      "bar_entry": "resources\\art\\objects\\treasure\\treasure_icon_64x64.png"
     },
     "buzzardflock": {
       "source": "bar",
@@ -321,6 +334,26 @@
       "proto_icon": "resources/art/units/villagers/architect_icon.png",
       "bar_entry": "resources\\art\\units\\villagers\\architect_icon.png"
     },
+    "dearctictrader": {
+      "source": "bar",
+      "proto_icon": "resources/art/units/trade/trade_arctic_land_01_trader.png",
+      "bar_entry": "resources\\art\\units\\trade\\trade_arctic_land_01_trader.png"
+    },
+    "dearctictraderdogs": {
+      "source": "bar",
+      "proto_icon": "resources/art/units/wardogs/husky_icon.png",
+      "bar_entry": "resources\\art\\units\\wardogs\\husky_icon.png"
+    },
+    "dearctictraderdogsled": {
+      "source": "bar",
+      "proto_icon": "resources/art/units/trade/trade_arctic_land_03_driver.png",
+      "bar_entry": "resources\\art\\units\\trade\\trade_arctic_land_03_driver.png"
+    },
+    "dearctictradersled": {
+      "source": "bar",
+      "proto_icon": "resources/art/units/trade/trade_arctic_land_02_sledger.png",
+      "bar_entry": "resources\\art\\units\\trade\\trade_arctic_land_02_sledger.png"
+    },
     "deartilleryfoundrywagon": {
       "source": "bar",
       "proto_icon": "resources/art/units/bank_wagon_icon.png",
@@ -506,6 +539,16 @@
       "proto_icon": "resources/images/icons/techs/africans/hausa/prize_bull.png",
       "bar_entry": "resources\\images\\icons\\techs\\africans\\hausa\\prize_bull.png"
     },
+    "dechurchdanish": {
+      "source": "bar",
+      "proto_icon": "resources/art/buildings/church/round_church_icon.png",
+      "bar_entry": "resources\\art\\buildings\\church\\round_church_icon.png"
+    },
+    "dechurchpolish": {
+      "source": "bar",
+      "proto_icon": "resources/art/buildings/church/church_icon.png",
+      "bar_entry": "resources\\art\\buildings\\church\\church_icon.png"
+    },
     "decolonialmilitia": {
       "source": "bar",
       "proto_icon": "resources/art/units/colonial_militia_icon.png",
@@ -551,6 +594,16 @@
       "proto_icon": "resources/art/units/cavalry/cav_archer/cav_archer_icon_64x64.png",
       "bar_entry": "resources\\art\\units\\cavalry\\cav_archer\\cav_archer_icon_64x64.png"
     },
+    "deconsulateindependencedragoon": {
+      "source": "bar",
+      "proto_icon": "resources/art/units/cavalry/dragoon/dragoon_icon_64x64.png",
+      "bar_entry": "resources\\art\\units\\cavalry\\dragoon\\dragoon_icon_64x64.png"
+    },
+    "deconsulatejanissary": {
+      "source": "bar",
+      "proto_icon": "resources/art/units/infantry_ranged/janissary/janissary_icon_64x64.png",
+      "bar_entry": "resources\\art\\units\\infantry_ranged\\janissary\\janissary_icon_64x64.png"
+    },
     "deconsulatelongbowman": {
       "source": "bar",
       "proto_icon": "resources/art/units/infantry_ranged/longbow/longbow_icon.png",
@@ -592,6 +645,11 @@
       "bar_entry": "resources\\images\\icons\\command\\generate_food_icon.png"
     },
     "decrateofcoin": {
+      "source": "bar",
+      "proto_icon": "resources/images/icons/command/generate_coin_icon.png",
+      "bar_entry": "resources\\images\\icons\\command\\generate_coin_icon.png"
+    },
+    "decrateofcoin50": {
       "source": "bar",
       "proto_icon": "resources/images/icons/command/generate_coin_icon.png",
       "bar_entry": "resources\\images\\icons\\command\\generate_coin_icon.png"
@@ -726,6 +784,11 @@
       "proto_icon": "resources/images/icons/command/generate_wood_icon.png",
       "bar_entry": "resources\\images\\icons\\command\\generate_wood_icon.png"
     },
+    "decrateofwood50": {
+      "source": "bar",
+      "proto_icon": "resources/images/icons/command/generate_wood_icon.png",
+      "bar_entry": "resources\\images\\icons\\command\\generate_wood_icon.png"
+    },
     "decrateofwoodafrican": {
       "source": "bar",
       "proto_icon": "resources/images/icons/command/generate_wood_icon.png",
@@ -796,6 +859,31 @@
       "proto_icon": "resources/art/units/animals/alligator/alligator_icon_64x64.png",
       "bar_entry": "resources\\art\\units\\animals\\alligator\\alligator_icon_64x64.png"
     },
+    "decustomshouse": {
+      "source": "bar",
+      "proto_icon": "resources/art/buildings/customs_house/customs_house_icon.png",
+      "bar_entry": "resources\\art\\buildings\\customs_house\\customs_house_icon.png"
+    },
+    "decustomshousewagon": {
+      "source": "bar",
+      "proto_icon": "resources/art/buildings/customs_house/customs_house_icon.png",
+      "bar_entry": "resources\\art\\buildings\\customs_house\\customs_house_icon.png"
+    },
+    "dedanishcrateofcoin": {
+      "source": "bar",
+      "proto_icon": "resources/images/icons/command/generate_coin_icon.png",
+      "bar_entry": "resources\\images\\icons\\command\\generate_coin_icon.png"
+    },
+    "dedanishcrateoffood": {
+      "source": "bar",
+      "proto_icon": "resources/images/icons/command/generate_food_icon.png",
+      "bar_entry": "resources\\images\\icons\\command\\generate_food_icon.png"
+    },
+    "dedanishcrateofwood": {
+      "source": "bar",
+      "proto_icon": "resources/images/icons/command/generate_wood_icon.png",
+      "bar_entry": "resources\\images\\icons\\command\\generate_wood_icon.png"
+    },
     "dedeli": {
       "source": "bar",
       "proto_icon": "resources/art/units/cavalry/deli/deli_icon.png",
@@ -803,8 +891,8 @@
     },
     "dedepot": {
       "source": "bar",
-      "proto_icon": "resources/art/buildings/spc/weapons_cache/weapons_cache_icon.png",
-      "bar_entry": "resources\\art\\buildings\\spc\\weapons_cache\\weapons_cache_icon.png"
+      "proto_icon": "resources/art/buildings/spc/weapons_cache/maltese_depot_icon.png",
+      "bar_entry": "resources\\art\\buildings\\spc\\weapons_cache\\maltese_depot_icon.png"
     },
     "dedepotwagon": {
       "source": "bar",
@@ -826,10 +914,40 @@
       "proto_icon": "resources/art/units/trade/outpost_wagon_icon_64x64.png",
       "bar_entry": "resources\\art\\units\\trade\\outpost_wagon_icon_64x64.png"
     },
+    "dedojodragoonarmy": {
+      "source": "bar",
+      "proto_icon": "resources/art/units/asians/dojo_dragoon.png",
+      "bar_entry": "resources\\art\\units\\asians\\dojo_dragoon.png"
+    },
+    "dedojogrenadierarmy": {
+      "source": "bar",
+      "proto_icon": "resources/art/units/asians/dojo_grenadier.png",
+      "bar_entry": "resources\\art\\units\\asians\\dojo_grenadier.png"
+    },
+    "dedojoriflemanarmy": {
+      "source": "bar",
+      "proto_icon": "resources/art/units/asians/dojo_rifleman.png",
+      "bar_entry": "resources\\art\\units\\asians\\dojo_rifleman.png"
+    },
+    "dedojouhlanarmy": {
+      "source": "bar",
+      "proto_icon": "resources/art/units/asians/dojo_naginata.png",
+      "bar_entry": "resources\\art\\units\\asians\\dojo_naginata.png"
+    },
+    "dedrydock": {
+      "source": "bar",
+      "proto_icon": "resources/art/buildings/spc/dry_dock/dry_dock_icon.png",
+      "bar_entry": "resources\\art\\buildings\\spc\\dry_dock\\dry_dock_icon.png"
+    },
     "deeaglescout": {
       "source": "bar",
       "proto_icon": "resources/art/units/az_eagle_scout_icon.png",
       "bar_entry": "resources\\art\\units\\az_eagle_scout_icon.png"
+    },
+    "deeggarctictruck": {
+      "source": "bar",
+      "proto_icon": "resources/art/units/monster_truck/snow_truck_icon.png",
+      "bar_entry": "resources\\art\\units\\monster_truck\\snow_truck_icon.png"
     },
     "deeggleonardostank": {
       "source": "bar",
@@ -840,6 +958,15 @@
       "source": "bar",
       "proto_icon": "resources/art/challenges/ageiversary/penguin_portrait.png",
       "bar_entry": "resources\\art\\challenges\\ageiversary\\penguin_portrait.png"
+    },
+    "deeggsleigh": {
+      "source": "bar",
+      "proto_icon": "resources/art/profiles/avatar_event0_08.png",
+      "bar_entry": "resources\\art\\profiles\\avatar_event0_08.png"
+    },
+    "deeggsnowboxer": {
+      "source": "local_reuse",
+      "proto_icon": "resources/art/units/snow_creature/snow_creature_icon_64.png"
     },
     "deeggwoodcattle": {
       "source": "bar",
@@ -875,6 +1002,11 @@
       "source": "bar",
       "proto_icon": "resources/art/units/animals/deer/deer_icon_64x64.png",
       "bar_entry": "resources\\art\\units\\animals\\deer\\deer_icon_64x64.png"
+    },
+    "deespingol": {
+      "source": "bar",
+      "proto_icon": "resources/art/units/artillery/organ_gun/organ_gun_icon_64x64.png",
+      "bar_entry": "resources\\art\\units\\artillery\\organ_gun\\organ_gun_icon_64x64.png"
     },
     "deethiopianwolf": {
       "source": "bar",
@@ -916,6 +1048,11 @@
       "proto_icon": "resources/art/units/villagers/villager_icon.png",
       "bar_entry": "resources\\art\\units\\villagers\\villager_icon.png"
     },
+    "deferalsheep": {
+      "source": "bar",
+      "proto_icon": "resources/art/units/animals/bighorn_sheep/bighorn_sheep_icon.png",
+      "bar_entry": "resources\\art\\units\\animals\\bighorn_sheep\\bighorn_sheep_icon.png"
+    },
     "defield": {
       "source": "bar",
       "proto_icon": "resources/art/buildings/african_civs/field_icon.png",
@@ -933,13 +1070,23 @@
     },
     "defishingground": {
       "source": "bar",
-      "proto_icon": "resources/art/units/animals/fish/salmon_icon_64x64.png",
-      "bar_entry": "resources\\art\\units\\animals\\fish\\salmon_icon_64x64.png"
+      "proto_icon": "resources/art/units/animals/fish/fishing_ground_icon.png",
+      "bar_entry": "resources\\art\\units\\animals\\fish\\fishing_ground_icon.png"
+    },
+    "defishinghole": {
+      "source": "bar",
+      "proto_icon": "resources/art/units/animals/fish/carp_icon_64.png",
+      "bar_entry": "resources\\art\\units\\animals\\fish\\carp_icon_64.png"
     },
     "defishnileperch": {
       "source": "bar",
       "proto_icon": "resources/art/units/animals/fish/tuna_icon.png",
       "bar_entry": "resources\\art\\units\\animals\\fish\\tuna_icon.png"
+    },
+    "defishtrap": {
+      "source": "bar",
+      "proto_icon": "resources/art/units/naval/fishing_ship/fishtrap_icon.png",
+      "bar_entry": "resources\\art\\units\\naval\\fishing_ship\\fishtrap_icon.png"
     },
     "deflamingoflock": {
       "source": "bar",
@@ -950,6 +1097,36 @@
       "source": "bar",
       "proto_icon": "resources/art/units/flt_boat_portrait.png",
       "bar_entry": "resources\\art\\units\\flt_boat_portrait.png"
+    },
+    "defolwark": {
+      "source": "bar",
+      "proto_icon": "resources/art/buildings/folwark/folwark_icon.png",
+      "bar_entry": "resources\\art\\buildings\\folwark\\folwark_icon.png"
+    },
+    "defolwarkdefensive": {
+      "source": "bar",
+      "proto_icon": "resources/art/buildings/folwark/folwark_military_icon.png",
+      "bar_entry": "resources\\art\\buildings\\folwark\\folwark_military_icon.png"
+    },
+    "defolwarkfarm": {
+      "source": "bar",
+      "proto_icon": "resources/art/buildings/folwark/folwark_farm_icon.png",
+      "bar_entry": "resources\\art\\buildings\\folwark\\folwark_farm_icon.png"
+    },
+    "defolwarkfoodcrate": {
+      "source": "bar",
+      "proto_icon": "resources/images/icons/command/generate_food_icon.png",
+      "bar_entry": "resources\\images\\icons\\command\\generate_food_icon.png"
+    },
+    "defolwarklivestock": {
+      "source": "bar",
+      "proto_icon": "resources/art/buildings/folwark/folwark_livestock_icon.png",
+      "bar_entry": "resources\\art\\buildings\\folwark\\folwark_livestock_icon.png"
+    },
+    "defolwarksich": {
+      "source": "bar",
+      "proto_icon": "resources/art/buildings/folwark/folwark_sich_icon.png",
+      "bar_entry": "resources\\art\\buildings\\folwark\\folwark_sich_icon.png"
     },
     "defortgatlinggunbatch": {
       "source": "bar",
@@ -1005,6 +1182,11 @@
       "source": "bar",
       "proto_icon": "resources/art/units/cavalry/us_cavalry/us_cavalry_icon.png",
       "bar_entry": "resources\\art\\units\\cavalry\\us_cavalry\\us_cavalry_icon.png"
+    },
+    "defriskytterider": {
+      "source": "bar",
+      "proto_icon": "resources/art/units/infantry_ranged/minuteman/friskytte_mounted_icon.png",
+      "bar_entry": "resources\\art\\units\\infantry_ranged\\minuteman\\friskytte_mounted_icon.png"
     },
     "defrontierwagon": {
       "source": "bar",
@@ -1076,6 +1258,11 @@
       "proto_icon": "resources/art/units/africans/outlaws/african_guardian/african_spearman_portrait.png",
       "bar_entry": "resources\\art\\units\\africans\\outlaws\\african_guardian\\african_spearman_portrait.png"
     },
+    "deguardianarcticfox": {
+      "source": "bar",
+      "proto_icon": "resources/art/units/animals/ethiopian_wolf/arctic_fox_portrait.png",
+      "bar_entry": "resources\\art\\units\\animals\\ethiopian_wolf\\arctic_fox_portrait.png"
+    },
     "deguardianbeast": {
       "source": "bar",
       "proto_icon": "resources/art/units/animals/beast/beast_icon.png",
@@ -1096,6 +1283,26 @@
       "proto_icon": "resources/art/units/natives/europeans/highwayman_mounted_icon.png",
       "bar_entry": "resources\\art\\units\\natives\\europeans\\highwayman_mounted_icon.png"
     },
+    "deguardianbritisharquebusier": {
+      "source": "bar",
+      "proto_icon": "resources/art/units/natives/europeans/lowlander_foot_icon.png",
+      "bar_entry": "resources\\art\\units\\natives\\europeans\\lowlander_foot_icon.png"
+    },
+    "deguardianbritishdragoon": {
+      "source": "bar",
+      "proto_icon": "resources/art/units/natives/europeans/guardians/moss_trooper_icon.png",
+      "bar_entry": "resources\\art\\units\\natives\\europeans\\guardians\\moss_trooper_icon.png"
+    },
+    "deguardianbritishlancer": {
+      "source": "bar",
+      "proto_icon": "resources/art/units/natives/europeans/guardians/border_reiver_icon.png",
+      "bar_entry": "resources\\art\\units\\natives\\europeans\\guardians\\border_reiver_icon.png"
+    },
+    "deguardianbritishrider": {
+      "source": "bar",
+      "proto_icon": "resources/art/units/natives/europeans/cossack_daredevil_rider_icon.png",
+      "bar_entry": "resources\\art\\units\\natives\\europeans\\cossack_daredevil_rider_icon.png"
+    },
     "deguardianbrownbear": {
       "source": "bar",
       "proto_icon": "resources/art/units/animals/bear/beargrizzly_icon_64x64.png",
@@ -1110,6 +1317,16 @@
       "source": "bar",
       "proto_icon": "resources/art/units/africans/outlaws/african_guardian/caravan_bandit_portrait.png",
       "bar_entry": "resources\\art\\units\\africans\\outlaws\\african_guardian\\caravan_bandit_portrait.png"
+    },
+    "deguardianclanchief": {
+      "source": "bar",
+      "proto_icon": "resources/art/units/spc/england/irish_horseman_icon.png",
+      "bar_entry": "resources\\art\\units\\spc\\england\\irish_horseman_icon.png"
+    },
+    "deguardianclansman": {
+      "source": "bar",
+      "proto_icon": "resources/art/units/natives/europeans/guardians/cateran_icon.png",
+      "bar_entry": "resources\\art\\units\\natives\\europeans\\guardians\\cateran_icon.png"
     },
     "deguardiancologeneral": {
       "source": "bar",
@@ -1156,6 +1373,11 @@
       "proto_icon": "resources/art/units/natives/europeans/guardian_robber_knight_portrait.png",
       "bar_entry": "resources\\art\\units\\natives\\europeans\\guardian_robber_knight_portrait.png"
     },
+    "deguardiangallowglass": {
+      "source": "bar",
+      "proto_icon": "resources/art/units/mercenaries/gallowglass/gallowglass_icon.png",
+      "bar_entry": "resources\\art\\units\\mercenaries\\gallowglass\\gallowglass_icon.png"
+    },
     "deguardianhalberdier": {
       "source": "bar",
       "proto_icon": "resources/art/units/natives/europeans/guardian_halberdier_portrait.png",
@@ -1165,6 +1387,11 @@
       "source": "bar",
       "proto_icon": "resources/art/units/natives/europeans/guardian_haramija_portrait.png",
       "bar_entry": "resources\\art\\units\\natives\\europeans\\guardian_haramija_portrait.png"
+    },
+    "deguardianharpooneer": {
+      "source": "bar",
+      "proto_icon": "resources/art/units/spc/outlaws/harpooner_icon.png",
+      "bar_entry": "resources\\art\\units\\spc\\outlaws\\harpooner_icon.png"
     },
     "deguardianhighlander": {
       "source": "bar",
@@ -1226,6 +1453,16 @@
       "proto_icon": "resources/art/units/natives/europeans/deserted_musketeer_portrait.png",
       "bar_entry": "resources\\art\\units\\natives\\europeans\\deserted_musketeer_portrait.png"
     },
+    "deguardianmutineer": {
+      "source": "bar",
+      "proto_icon": "resources/art/units/natives/europeans/guardians/mutineer_portrait.png",
+      "bar_entry": "resources\\art\\units\\natives\\europeans\\guardians\\mutineer_portrait.png"
+    },
+    "deguardiannavalwhaler": {
+      "source": "bar",
+      "proto_icon": "resources/art/units/naval/whaling_ship/whaling_ship_icon.png",
+      "bar_entry": "resources\\art\\units\\naval\\whaling_ship\\whaling_ship_icon.png"
+    },
     "deguardianpikeman": {
       "source": "bar",
       "proto_icon": "resources/art/units/natives/europeans/guardian_pikeman_portrait.png",
@@ -1235,6 +1472,26 @@
       "source": "bar",
       "proto_icon": "resources/art/units/natives/europeans/plague_doctor_portrait.png",
       "bar_entry": "resources\\art\\units\\natives\\europeans\\plague_doctor_portrait.png"
+    },
+    "deguardianpoacher": {
+      "source": "bar",
+      "proto_icon": "resources/art/units/natives/europeans/guardians/poacher_icon.png",
+      "bar_entry": "resources\\art\\units\\natives\\europeans\\guardians\\poacher_icon.png"
+    },
+    "deguardianpoucher": {
+      "source": "bar",
+      "proto_icon": "resources/art/units/natives/europeans/guardians/poacher_icon.png",
+      "bar_entry": "resources\\art\\units\\natives\\europeans\\guardians\\poacher_icon.png"
+    },
+    "deguardianqivittoq": {
+      "source": "bar",
+      "proto_icon": "resources/art/units/natives/europeans/guardians/vengeful_qivittoq_portrait.png",
+      "bar_entry": "resources\\art\\units\\natives\\europeans\\guardians\\vengeful_qivittoq_portrait.png"
+    },
+    "deguardianrapparee": {
+      "source": "bar",
+      "proto_icon": "resources/art/units/natives/europeans/guardians/rapparee_portrait.png",
+      "bar_entry": "resources\\art\\units\\natives\\europeans\\guardians\\rapparee_portrait.png"
     },
     "deguardianshongothrower": {
       "source": "bar",
@@ -1258,8 +1515,13 @@
     },
     "deguardoutlawmusketeer": {
       "source": "bar",
-      "proto_icon": "resources/art/units/mercenaries/barbary_corsair/barbary_corsair_icon_64x64.png",
-      "bar_entry": "resources\\art\\units\\mercenaries\\barbary_corsair\\barbary_corsair_icon_64x64.png"
+      "proto_icon": "resources/art/units/spc/outlaws/outlaw_musketeer_icon.png",
+      "bar_entry": "resources\\art\\units\\spc\\outlaws\\outlaw_musketeer_icon.png"
+    },
+    "degunboat": {
+      "source": "bar",
+      "proto_icon": "resources/art/units/naval/gunboat/gunboat2_icon.png",
+      "bar_entry": "resources\\art\\units\\naval\\gunboat\\gunboat2_icon.png"
     },
     "degunnerlevy": {
       "source": "bar",
@@ -1285,6 +1547,11 @@
       "source": "bar",
       "proto_icon": "resources/art/units/trade/factory_wagon_icon_64x64.png",
       "bar_entry": "resources\\art\\units\\trade\\factory_wagon_icon_64x64.png"
+    },
+    "dehetman": {
+      "source": "bar",
+      "proto_icon": "resources/art/units/explorers/hetman_icon.png",
+      "bar_entry": "resources\\art\\units\\explorers\\hetman_icon.png"
     },
     "dehetmandamagecontainer": {
       "source": "bar",
@@ -1336,6 +1603,11 @@
       "proto_icon": "resources/art/buildings/eth_hut_icon.png",
       "bar_entry": "resources\\art\\buildings\\eth_hut_icon.png"
     },
+    "dehousedanish": {
+      "source": "bar",
+      "proto_icon": "resources/art/buildings/house/house_danish_icon.png",
+      "bar_entry": "resources\\art\\buildings\\house\\house_danish_icon.png"
+    },
     "dehouseinca": {
       "source": "bar",
       "proto_icon": "resources/art/buildings/kancha_house_icon.png",
@@ -1355,6 +1627,11 @@
       "source": "bar",
       "proto_icon": "resources/art/units/animals/hyena/hyena_icon.png",
       "bar_entry": "resources\\art\\units\\animals\\hyena\\hyena_icon.png"
+    },
+    "deicebreaker": {
+      "source": "bar",
+      "proto_icon": "resources/art/units/trade/trade_ship_a_03_icon.png",
+      "bar_entry": "resources\\art\\units\\trade\\trade_ship_A_03_icon.png"
     },
     "deiconafricanembassy": {
       "source": "bar",
@@ -1391,6 +1668,11 @@
       "proto_icon": "resources/art/units/africans/natives/akan_musketeer/akan_musketeer_dutch_icon.png",
       "bar_entry": "resources\\art\\units\\africans\\natives\\akan_musketeer\\akan_musketeer_dutch_icon.png"
     },
+    "deiconarcticbeast": {
+      "source": "bar",
+      "proto_icon": "resources/art/units/animals/beast/arctic_beast_portrait.png",
+      "bar_entry": "resources\\art\\units\\animals\\beast\\arctic_beast_portrait.png"
+    },
     "deiconarsenalbritish": {
       "source": "bar",
       "proto_icon": "resources/art/buildings/african_civs/british_arsenal_icon.png",
@@ -1402,9 +1684,18 @@
       "bar_entry": "resources\\art\\buildings\\african_civs\\portuguese_arsenal_icon.png"
     },
     "deiconbashkirarcher": {
-      "source": "bar_legacy",
-      "proto_icon": "resources/art/units/natives/europeans/bashkir_tatar_archer_icon.png",
-      "note": "restored from pre-fix snapshot"
+      "source": "local_reuse",
+      "proto_icon": "resources/art/units/natives/europeans/bashkir_tatar_archer_icon.png"
+    },
+    "deiconconquistadorspanish": {
+      "source": "bar",
+      "proto_icon": "resources/art/units/asians/natives/conquistador/conquistador_spanish_icon.png",
+      "bar_entry": "resources\\art\\units\\asians\\natives\\conquistador\\conquistador_spanish_icon.png"
+    },
+    "deiconemirmaigadi": {
+      "source": "bar",
+      "proto_icon": "resources/art/units/explorers/emir_maigadi.png",
+      "bar_entry": "resources\\art\\units\\explorers\\emir_maigadi.png"
     },
     "deiconeuropeanembassy": {
       "source": "bar",
@@ -1446,6 +1737,11 @@
       "proto_icon": "resources/art/units/trains/train_europe_icon.png",
       "bar_entry": "resources\\art\\units\\trains\\train_europe_icon.png"
     },
+    "deiconexplorerarctic": {
+      "source": "bar",
+      "proto_icon": "resources/art/units/explorers/arctic_explorer_portrait.png",
+      "bar_entry": "resources\\art\\units\\explorers\\arctic_explorer_portrait.png"
+    },
     "deiconexplorerbrdrake": {
       "source": "bar",
       "proto_icon": "resources/art/units/explorers/explorer_british_drake.png",
@@ -1456,10 +1752,30 @@
       "proto_icon": "resources/art/units/explorers/explorer_british_warwick.png",
       "bar_entry": "resources\\art\\units\\explorers\\explorer_british_warwick.png"
     },
+    "deiconexplorerdkleif": {
+      "source": "bar",
+      "proto_icon": "resources/art/units/explorers/explorer_danish_leif.png",
+      "bar_entry": "resources\\art\\units\\explorers\\explorer_danish_leif.png"
+    },
+    "deiconexplorerdknorwegianpro": {
+      "source": "bar",
+      "proto_icon": "resources/art/units/explorers/streamer_icon.png",
+      "bar_entry": "resources\\art\\units\\explorers\\streamer_icon.png"
+    },
+    "deiconexplorerdktordenskjold": {
+      "source": "bar",
+      "proto_icon": "resources/art/units/explorers/explorer_danish_tordenskjold.png",
+      "bar_entry": "resources\\art\\units\\explorers\\explorer_danish_tordenskjold.png"
+    },
     "deiconexplorerfrpecaudy": {
       "source": "bar",
       "proto_icon": "resources/art/units/explorers/explorer_french_pecaudy_portrait.png",
       "bar_entry": "resources\\art\\units\\explorers\\explorer_french_pecaudy_portrait.png"
+    },
+    "deiconexplorergermanfrederick": {
+      "source": "bar",
+      "proto_icon": "resources/art/units/explorers/explorer_german_frederick.png",
+      "bar_entry": "resources\\art\\units\\explorers\\explorer_german_frederick.png"
     },
     "deiconexploreritcenturion": {
       "source": "bar",
@@ -1471,10 +1787,25 @@
       "proto_icon": "resources/art/units/explorers/explorer_portuguese_cangaceiro.png",
       "bar_entry": "resources\\art\\units\\explorers\\explorer_portuguese_cangaceiro.png"
     },
+    "deiconexplorerptjesuit": {
+      "source": "bar",
+      "proto_icon": "resources/art/units/explorers/explorer_portuguese_jesuit.png",
+      "bar_entry": "resources\\art\\units\\explorers\\explorer_portuguese_jesuit.png"
+    },
     "deiconexplorerspdelgado": {
       "source": "bar",
       "proto_icon": "resources/art/units/explorers/explorer_spanish_delgado.png",
       "bar_entry": "resources\\art\\units\\explorers\\explorer_spanish_delgado.png"
+    },
+    "deiconexplorersppizarro": {
+      "source": "bar",
+      "proto_icon": "resources/art/units/explorers/explorer_spanish_pizarro.png",
+      "bar_entry": "resources\\art\\units\\explorers\\explorer_spanish_pizarro.png"
+    },
+    "deiconexplorerswgustavus": {
+      "source": "bar",
+      "proto_icon": "resources/art/units/explorers/explorer_swedish_gustavus.png",
+      "bar_entry": "resources\\art\\units\\explorers\\explorer_swedish_gustavus.png"
     },
     "deiconexplorerswthor": {
       "source": "bar",
@@ -1496,6 +1827,11 @@
       "proto_icon": "resources/art/units/explorers/explorer_female_lovelace_portrait.png",
       "bar_entry": "resources\\art\\units\\explorers\\explorer_female_lovelace_portrait.png"
     },
+    "deiconfemaleexplorerdk": {
+      "source": "bar",
+      "proto_icon": "resources/art/units/explorers/explorer_danish_female.png",
+      "bar_entry": "resources\\art\\units\\explorers\\explorer_danish_female.png"
+    },
     "deiconfemaleexplorerfrfernig": {
       "source": "bar",
       "proto_icon": "resources/art/units/explorers/explorer_french_female_fernig.png",
@@ -1515,6 +1851,16 @@
       "source": "bar",
       "proto_icon": "resources/art/units/explorers/explorer_italian_female_venetian.png",
       "bar_entry": "resources\\art\\units\\explorers\\explorer_italian_female_venetian.png"
+    },
+    "deiconfemaleexplorerottoman": {
+      "source": "bar",
+      "proto_icon": "resources/art/units/explorers/explorer_female_ottoman_sultan.png",
+      "bar_entry": "resources\\art\\units\\explorers\\explorer_female_ottoman_sultan.png"
+    },
+    "deiconfemaleexplorerptdancer": {
+      "source": "bar",
+      "proto_icon": "resources/art/units/explorers/explorer_female_portuguese_dancer.png",
+      "bar_entry": "resources\\art\\units\\explorers\\explorer_female_portuguese_dancer.png"
     },
     "deiconfemaleexplorerptdunoble": {
       "source": "bar",
@@ -1541,6 +1887,11 @@
       "proto_icon": "resources/art/units/explorers/explorer_swedish_female_queen_kristina.png",
       "bar_entry": "resources\\art\\units\\explorers\\explorer_swedish_female_queen_kristina.png"
     },
+    "deiconfemaleexplorerswvalkyrie": {
+      "source": "bar",
+      "proto_icon": "resources/art/units/explorers/explorer_female_danish_valkyrie.png",
+      "bar_entry": "resources\\art\\units\\explorers\\explorer_female_danish_valkyrie.png"
+    },
     "deiconfemalegeneralmxadelita": {
       "source": "bar",
       "proto_icon": "resources/art/units/explorers/general_mexican_female_adelita_portrait.png",
@@ -1551,10 +1902,35 @@
       "proto_icon": "resources/art/units/explorers/general_mexican_female_catrina_portrait.png",
       "bar_entry": "resources\\art\\units\\explorers\\general_mexican_female_catrina_portrait.png"
     },
+    "deiconfemalegeneralusharriet": {
+      "source": "bar",
+      "proto_icon": "resources/art/units/explorers/general_us_harriet.png",
+      "bar_entry": "resources\\art\\units\\explorers\\general_us_harriet.png"
+    },
     "deiconfemalegrandmaster": {
       "source": "bar",
       "proto_icon": "resources/art/units/explorers/grandmaster_female_portrait.png",
       "bar_entry": "resources\\art\\units\\explorers\\grandmaster_female_portrait.png"
+    },
+    "deiconfemalehetmanemilia": {
+      "source": "bar",
+      "proto_icon": "resources/art/units/explorers/hetman_female_emilia.png",
+      "bar_entry": "resources\\art\\units\\explorers\\hetman_female_emilia.png"
+    },
+    "deiconfemalehetmanhuzarka": {
+      "source": "bar",
+      "proto_icon": "resources/art/units/explorers/hetman_female_huzarka.png",
+      "bar_entry": "resources\\art\\units\\explorers\\hetman_female_huzarka.png"
+    },
+    "deiconfemalemonkidbegum": {
+      "source": "bar",
+      "proto_icon": "resources/art/units/explorers/monk_indian_begum.png",
+      "bar_entry": "resources\\art\\units\\explorers\\monk_indian_begum.png"
+    },
+    "deiconfemalemonkidlakshmibai": {
+      "source": "bar",
+      "proto_icon": "resources/art/units/explorers/monk_indian_lakshmibai.png",
+      "bar_entry": "resources\\art\\units\\explorers\\monk_indian_lakshmibai.png"
     },
     "deiconfemalemonkjpkunoichi": {
       "source": "bar",
@@ -1566,6 +1942,16 @@
       "proto_icon": "resources/art/units/explorers/monk_japanese_female_nakano.png",
       "bar_entry": "resources\\art\\units\\explorers\\monk_japanese_female_nakano.png"
     },
+    "deiconfemaleprincesabla": {
+      "source": "bar",
+      "proto_icon": "resources/art/units/explorers/ras_queen_sabla_icon.png",
+      "bar_entry": "resources\\art\\units\\explorers\\ras_queen_sabla_icon.png"
+    },
+    "deiconfemaleprinceyodit": {
+      "source": "bar",
+      "proto_icon": "resources/art/units/explorers/ras_yodit_portrait.png",
+      "bar_entry": "resources\\art\\units\\explorers\\ras_yodit_portrait.png"
+    },
     "deiconfemaleshaolinmaster": {
       "source": "bar",
       "proto_icon": "resources/art/units/explorers/monk_chinese_female.png",
@@ -1576,6 +1962,11 @@
       "proto_icon": "resources/art/units/explorers/warchief_aztec_female_portrait.png",
       "bar_entry": "resources\\art\\units\\explorers\\warchief_aztec_female_portrait.png"
     },
+    "deiconfemalewarchiefhdjemison": {
+      "source": "bar",
+      "proto_icon": "resources/art/units/explorers/warchief_iroquois_jemison_portrait.png",
+      "bar_entry": "resources\\art\\units\\explorers\\warchief_iroquois_jemison_portrait.png"
+    },
     "deiconfemalewarchiefhdnonahkee": {
       "source": "bar",
       "proto_icon": "resources/art/units/spc/nonahkee_x/nonahkee_portrait.png",
@@ -1585,6 +1976,11 @@
       "source": "bar",
       "proto_icon": "resources/art/units/explorers/warchief_inca_female_portrait.png",
       "bar_entry": "resources\\art\\units\\explorers\\warchief_inca_female_portrait.png"
+    },
+    "deiconfemalewarchieflamovingrobes": {
+      "source": "bar",
+      "proto_icon": "resources/art/units/explorers/warchief_lakota_female_movingrobes.png",
+      "bar_entry": "resources\\art\\units\\explorers\\warchief_lakota_female_movingrobes.png"
     },
     "deiconfemalewarchieflawisewoman": {
       "source": "bar",
@@ -1606,6 +2002,11 @@
       "proto_icon": "resources/art/units/natives/europeans/royal_musketeer_french_icon.png",
       "bar_entry": "resources\\art\\units\\natives\\europeans\\royal_musketeer_french_icon.png"
     },
+    "deiconfriskytte": {
+      "source": "bar",
+      "proto_icon": "resources/art/units/infantry_ranged/minuteman/friskytte_icon.png",
+      "bar_entry": "resources\\art\\units\\infantry_ranged\\minuteman\\friskytte_icon.png"
+    },
     "deicongeneralmexican": {
       "source": "bar",
       "proto_icon": "resources/art/units/general_mx_icon.png",
@@ -1626,6 +2027,16 @@
       "proto_icon": "resources/art/units/africans/hausa/villager/villager_icon.png",
       "bar_entry": "resources\\art\\units\\africans\\hausa\\villager\\villager_icon.png"
     },
+    "deiconhetmanchopin": {
+      "source": "bar",
+      "proto_icon": "resources/art/units/explorers/hetman_chopin.png",
+      "bar_entry": "resources\\art\\units\\explorers\\hetman_chopin.png"
+    },
+    "deiconhetmanleitis": {
+      "source": "bar",
+      "proto_icon": "resources/art/units/explorers/hetman_leitis.png",
+      "bar_entry": "resources\\art\\units\\explorers\\hetman_leitis.png"
+    },
     "deiconmedicinemanlakota": {
       "source": "bar",
       "proto_icon": "resources/art/units/sx_priest_icon.png",
@@ -1636,6 +2047,11 @@
       "proto_icon": "resources/art/buildings/church/meeting_house_icon.png",
       "bar_entry": "resources\\art\\buildings\\church\\meeting_house_icon.png"
     },
+    "deiconmeijirifleman": {
+      "source": "bar",
+      "proto_icon": "resources/art/units/asians/japanese/meiji_rifleman/meiji_rifleman_icon.png",
+      "bar_entry": "resources\\art\\units\\asians\\japanese\\meiji_rifleman\\meiji_rifleman_icon.png"
+    },
     "deiconmercenarycamp": {
       "source": "bar",
       "proto_icon": "resources/art/buildings/mercenary_camp_icon.png",
@@ -1645,6 +2061,11 @@
       "source": "bar",
       "proto_icon": "resources/art/objects/inspiring_flag_mexico_portrait.png",
       "bar_entry": "resources\\art\\objects\\inspiring_flag_mexico_portrait.png"
+    },
+    "deiconmilitiamanburgher": {
+      "source": "bar",
+      "proto_icon": "resources/art/units/infantry_ranged/minuteman/burgher_militia_icon.png",
+      "bar_entry": "resources\\art\\units\\infantry_ranged\\minuteman\\burgher_militia_icon.png"
     },
     "deiconmilitiamanottoman": {
       "source": "bar",
@@ -1660,6 +2081,11 @@
       "source": "bar",
       "proto_icon": "resources/art/units/explorers/monk_indian_nanib_portrait.png",
       "bar_entry": "resources\\art\\units\\explorers\\monk_indian_nanib_portrait.png"
+    },
+    "deiconmosque": {
+      "source": "bar",
+      "proto_icon": "resources/art/buildings/church/mosque_icon.png",
+      "bar_entry": "resources\\art\\buildings\\church\\mosque_icon.png"
     },
     "deiconnatfootcarabinier": {
       "source": "bar",
@@ -1751,15 +2177,75 @@
       "proto_icon": "resources/art/units/spc/pirates/pirate_ranged_icon.png",
       "bar_entry": "resources\\art\\units\\spc\\pirates\\pirate_ranged_icon.png"
     },
+    "deiconprincealula": {
+      "source": "bar",
+      "proto_icon": "resources/art/units/explorers/emir_ras_alula_icon.png",
+      "bar_entry": "resources\\art\\units\\explorers\\emir_ras_alula_icon.png"
+    },
     "deiconprincetewodros": {
       "source": "bar",
       "proto_icon": "resources/art/units/explorers/prince_tewodros_portrait.png",
       "bar_entry": "resources\\art\\units\\explorers\\prince_tewodros_portrait.png"
     },
+    "deiconregicideafricaeast": {
+      "source": "bar",
+      "proto_icon": "resources/art/units/spc/regent/regent_africa_east.png",
+      "bar_entry": "resources\\art\\units\\spc\\regent\\regent_africa_east.png"
+    },
+    "deiconregicideafricanorth": {
+      "source": "bar",
+      "proto_icon": "resources/art/units/spc/regent/regent_africa_north.png",
+      "bar_entry": "resources\\art\\units\\spc\\regent\\regent_africa_north.png"
+    },
+    "deiconregicideafricawest": {
+      "source": "bar",
+      "proto_icon": "resources/art/units/spc/regent/regent_africa_west.png",
+      "bar_entry": "resources\\art\\units\\spc\\regent\\regent_africa_west.png"
+    },
+    "deiconregicideamericanorth": {
+      "source": "bar",
+      "proto_icon": "resources/art/units/spc/regent/regent_america_north.png",
+      "bar_entry": "resources\\art\\units\\spc\\regent\\regent_america_north.png"
+    },
+    "deiconregicideamericasouth": {
+      "source": "bar",
+      "proto_icon": "resources/art/units/spc/regent/regent_america_south.png",
+      "bar_entry": "resources\\art\\units\\spc\\regent\\regent_america_south.png"
+    },
+    "deiconregicidearctic": {
+      "source": "bar",
+      "proto_icon": "resources/art/units/spc/regent/regent_arctic.png",
+      "bar_entry": "resources\\art\\units\\spc\\regent\\regent_arctic.png"
+    },
+    "deiconregicidechina": {
+      "source": "bar",
+      "proto_icon": "resources/art/units/spc/regent/regent_china.png",
+      "bar_entry": "resources\\art\\units\\spc\\regent\\regent_china.png"
+    },
+    "deiconregicideeurope": {
+      "source": "bar",
+      "proto_icon": "resources/art/units/spc/regent/regent_europe.png",
+      "bar_entry": "resources\\art\\units\\spc\\regent\\regent_europe.png"
+    },
+    "deiconregicideindia": {
+      "source": "bar",
+      "proto_icon": "resources/art/units/spc/regent/regent_india.png",
+      "bar_entry": "resources\\art\\units\\spc\\regent\\regent_india.png"
+    },
+    "deiconretainerlancer": {
+      "source": "bar",
+      "proto_icon": "resources/art/units/cavalry/lithuanian_rider/lithuanian_rider_icon.png",
+      "bar_entry": "resources\\art\\units\\cavalry\\lithuanian_rider\\lithuanian_rider_icon.png"
+    },
     "deiconrevbajaflag": {
       "source": "bar",
       "proto_icon": "resources/art/objects/inspiring_flag_baja_california_portrait.png",
       "bar_entry": "resources\\art\\objects\\inspiring_flag_baja_california_portrait.png"
+    },
+    "deiconrevbarricadewagon": {
+      "source": "bar",
+      "proto_icon": "resources/art/units/revolution/prussians/barricade_wagon_portrait.png",
+      "bar_entry": "resources\\art\\units\\revolution\\prussians\\barricade_wagon_portrait.png"
     },
     "deiconrevcaliforniaflag": {
       "source": "bar",
@@ -1801,10 +2287,20 @@
       "proto_icon": "resources/art/units/revolution/general_revolution_icon.png",
       "bar_entry": "resources\\art\\units\\revolution\\general_revolution_icon.png"
     },
+    "deiconrevgeneralprussian": {
+      "source": "bar",
+      "proto_icon": "resources/art/units/revolution/prussians/general_prussia_icon.png",
+      "bar_entry": "resources\\art\\units\\revolution\\prussians\\general_prussia_icon.png"
+    },
     "deiconrevhajduk": {
       "source": "bar",
       "proto_icon": "resources/art/units/revolution/hajduk_icon.png",
       "bar_entry": "resources\\art\\units\\revolution\\hajduk_icon.png"
+    },
+    "deiconrevhonved": {
+      "source": "bar",
+      "proto_icon": "resources/art/units/revolution/honved_icon.png",
+      "bar_entry": "resources\\art\\units\\revolution\\honved_icon.png"
     },
     "deiconrevhungarianhussar": {
       "source": "bar",
@@ -1821,6 +2317,11 @@
       "proto_icon": "resources/art/units/revolution/karelian_jaeger_icon.png",
       "bar_entry": "resources\\art\\units\\revolution\\karelian_jaeger_icon.png"
     },
+    "deiconrevkrakus": {
+      "source": "bar",
+      "proto_icon": "resources/art/units/revolution/warsaw/krakus_icon.png",
+      "bar_entry": "resources\\art\\units\\revolution\\warsaw\\krakus_icon.png"
+    },
     "deiconrevmayaflag": {
       "source": "bar",
       "proto_icon": "resources/art/objects/inspiring_flag_maya_portrait.png",
@@ -1836,6 +2337,11 @@
       "proto_icon": "resources/art/units/revolution/padre_revolution_icon.png",
       "bar_entry": "resources\\art\\units\\revolution\\padre_revolution_icon.png"
     },
+    "deiconrevrada": {
+      "source": "bar",
+      "proto_icon": "resources/art/buildings/capitol/rada_icon.png",
+      "bar_entry": "resources\\art\\buildings\\capitol\\rada_icon.png"
+    },
     "deiconrevriograndeflag": {
       "source": "bar",
       "proto_icon": "resources/art/objects/inspiring_flag_rio_portrait.png",
@@ -1846,10 +2352,30 @@
       "proto_icon": "resources/art/units/revolution/rosior_dragoon_icon.png",
       "bar_entry": "resources\\art\\units\\revolution\\rosior_dragoon_icon.png"
     },
+    "deiconrevscytheman": {
+      "source": "bar",
+      "proto_icon": "resources/art/units/revolution/warsaw/scytheman_icon.png",
+      "bar_entry": "resources\\art\\units\\revolution\\warsaw\\scytheman_icon.png"
+    },
     "deiconrevtexasflag": {
       "source": "bar",
       "proto_icon": "resources/art/objects/inspiring_flag_texas_portrait.png",
       "bar_entry": "resources\\art\\objects\\inspiring_flag_texas_portrait.png"
+    },
+    "deiconrevvistulahussar": {
+      "source": "bar",
+      "proto_icon": "resources/art/units/revolution/warsaw/vistula_hussar_icon.png",
+      "bar_entry": "resources\\art\\units\\revolution\\warsaw\\vistula_hussar_icon.png"
+    },
+    "deiconrevvistulalegionary": {
+      "source": "bar",
+      "proto_icon": "resources/art/units/revolution/warsaw/vistula_legionary_icon.png",
+      "bar_entry": "resources\\art\\units\\revolution\\warsaw\\vistula_legionary_icon.png"
+    },
+    "deiconrevvistularifleman": {
+      "source": "bar",
+      "proto_icon": "resources/art/units/revolution/warsaw/vistula_rifleman_icon.png",
+      "bar_entry": "resources\\art\\units\\revolution\\warsaw\\vistula_rifleman_icon.png"
     },
     "deiconrevwallachianhorsearcher": {
       "source": "bar",
@@ -1880,6 +2406,11 @@
       "source": "bar",
       "proto_icon": "resources/art/units/explorers/shaolin_master_huang_portrait.png",
       "bar_entry": "resources\\art\\units\\explorers\\shaolin_master_huang_portrait.png"
+    },
+    "deiconsnaphane": {
+      "source": "bar",
+      "proto_icon": "resources/art/units/infantry_ranged/minuteman/snaphane_icon.png",
+      "bar_entry": "resources\\art\\units\\infantry_ranged\\minuteman\\snaphane_icon.png"
     },
     "deiconspccanadianflag": {
       "source": "bar",
@@ -2006,6 +2537,26 @@
       "proto_icon": "resources/art/units/ic_warchief_icon.png",
       "bar_entry": "resources\\art\\units\\ic_warchief_icon.png"
     },
+    "deindependencebisonbatch": {
+      "source": "bar",
+      "proto_icon": "resources/art/units/animals/bison/bison_icon_64.png",
+      "bar_entry": "resources\\art\\units\\animals\\bison\\bison_icon_64.png"
+    },
+    "deindependencenativestronghold": {
+      "source": "bar",
+      "proto_icon": "resources/art/buildings/fort/stronghold_native_icon.png",
+      "bar_entry": "resources\\art\\buildings\\fort\\stronghold_native_icon.png"
+    },
+    "deindependencepolishlancer": {
+      "source": "bar",
+      "proto_icon": "resources/art/units/revolution/warsaw/polish_lancer_icon.png",
+      "bar_entry": "resources\\art\\units\\revolution\\warsaw\\polish_lancer_icon.png"
+    },
+    "deindependenceserdyuk": {
+      "source": "bar",
+      "proto_icon": "resources/art/units/revolution/cossacks/serdyuk_icon.png",
+      "bar_entry": "resources\\art\\units\\revolution\\cossacks\\serdyuk_icon.png"
+    },
     "deindianmarketrickshaw": {
       "source": "bar",
       "proto_icon": "resources/art/units/asians/shared/rickshaw/indian_rickshaw_icon.png",
@@ -2051,6 +2602,11 @@
       "proto_icon": "resources/art/units/infantry_ranged/landwehr/landwehr_icon.png",
       "bar_entry": "resources\\art\\units\\infantry_ranged\\landwehr\\landwehr_icon.png"
     },
+    "delavramonastery": {
+      "source": "bar",
+      "proto_icon": "resources/art/buildings/church/lavra_monastery_icon.png",
+      "bar_entry": "resources\\art\\buildings\\church\\lavra_monastery_icon.png"
+    },
     "deleathercannon": {
       "source": "bar",
       "proto_icon": "resources/art/units/artillery/leather_cannon/leather_cannon_icon.png",
@@ -2085,6 +2641,11 @@
       "source": "bar",
       "proto_icon": "resources/art/units/events/dancinglion_icon.png",
       "bar_entry": "resources\\art\\units\\events\\DancingLion_icon.png"
+    },
+    "delithuanianrider": {
+      "source": "bar",
+      "proto_icon": "resources/art/units/cavalry/lithuanian_rider/lithuanian_rider_icon.png",
+      "bar_entry": "resources\\art\\units\\cavalry\\lithuanian_rider\\lithuanian_rider_icon.png"
     },
     "delivestockmarket": {
       "source": "bar",
@@ -2141,6 +2702,11 @@
       "proto_icon": "resources/art/units/infantry_ranged/sentinel/sentinel_icon.png",
       "bar_entry": "resources\\art\\units\\infantry_ranged\\sentinel\\sentinel_icon.png"
     },
+    "demanor": {
+      "source": "bar",
+      "proto_icon": "resources/art/buildings/house/house_icon.png",
+      "bar_entry": "resources\\art\\buildings\\house\\house_icon.png"
+    },
     "demarkettravois": {
       "source": "bar",
       "proto_icon": "resources/art/buildings/market/market_icon.png",
@@ -2186,10 +2752,20 @@
       "proto_icon": "resources/art/units/mercenaries/captured_mortar/captured_mortar_icon.png",
       "bar_entry": "resources\\art\\units\\mercenaries\\captured_mortar\\captured_mortar_icon.png"
     },
+    "demerccranequinier": {
+      "source": "bar",
+      "proto_icon": "resources/art/units/mercenaries/cranequinier/cranequinier_icon.png",
+      "bar_entry": "resources\\art\\units\\mercenaries\\cranequinier\\cranequinier_icon.png"
+    },
     "demercdhow": {
       "source": "bar",
       "proto_icon": "resources/art/units/naval/dhow_warship/dhow_warship_icon.png",
       "bar_entry": "resources\\art\\units\\naval\\dhow_warship\\dhow_warship_icon.png"
+    },
+    "demercgallowglass": {
+      "source": "bar",
+      "proto_icon": "resources/art/units/mercenaries/gallowglass/gallowglass_icon.png",
+      "bar_entry": "resources\\art\\units\\mercenaries\\gallowglass\\gallowglass_icon.png"
     },
     "demercgatlingcamel": {
       "source": "bar",
@@ -2246,6 +2822,11 @@
       "proto_icon": "resources/art/units/africans/mercenaries/sudanese_horseman/sudanese_horseman_icon.png",
       "bar_entry": "resources\\art\\units\\africans\\mercenaries\\sudanese_horseman\\sudanese_horseman_icon.png"
     },
+    "demercwagon": {
+      "source": "bar",
+      "proto_icon": "resources/art/units/revolution/livonians/wagon_icon.png",
+      "bar_entry": "resources\\art\\units\\revolution\\livonians\\wagon_icon.png"
+    },
     "demercxebec": {
       "source": "bar",
       "proto_icon": "resources/art/units/naval/xebec/xebec_icon.png",
@@ -2296,6 +2877,11 @@
       "proto_icon": "resources/art/buildings/gold_mine/gold_mine_icon_64x64.png",
       "bar_entry": "resources\\art\\buildings\\gold_mine\\gold_mine_icon_64x64.png"
     },
+    "deminesaltbuildableeuropean": {
+      "source": "bar",
+      "proto_icon": "resources/art/buildings/gold_mine/gold_mine_icon_64x64.png",
+      "bar_entry": "resources\\art\\buildings\\gold_mine\\gold_mine_icon_64x64.png"
+    },
     "deminesilverbuildable": {
       "source": "bar",
       "proto_icon": "resources/art/buildings/silver_mine/silver_mine_icon.png",
@@ -2305,6 +2891,11 @@
       "source": "bar",
       "proto_icon": "resources/art/units/infantry_ranged/minuteman/us_minuteman_icon.png",
       "bar_entry": "resources\\art\\units\\infantry_ranged\\minuteman\\us_minuteman_icon.png"
+    },
+    "demountainchapel": {
+      "source": "bar",
+      "proto_icon": "resources/art/buildings/african_civs/mountain_chapel_icon.png",
+      "bar_entry": "resources\\art\\buildings\\african_civs\\mountain_chapel_icon.png"
     },
     "demountainmonastery": {
       "source": "bar",
@@ -2341,6 +2932,11 @@
       "proto_icon": "resources/art/units/africans/natives/akan_tufohen/akan_tufohen_icon.png",
       "bar_entry": "resources\\art\\units\\africans\\natives\\akan_tufohen\\akan_tufohen_icon.png"
     },
+    "denatbagpiper": {
+      "source": "bar",
+      "proto_icon": "resources/art/units/natives/europeans/bagpiper_icon.png",
+      "bar_entry": "resources\\art\\units\\natives\\europeans\\bagpiper_icon.png"
+    },
     "denatberbersultan": {
       "source": "bar",
       "proto_icon": "resources/art/units/africans/natives/berber_sultan/berber_sultan_icon.png",
@@ -2371,6 +2967,16 @@
       "proto_icon": "resources/art/units/natives/europeans/bavarian_horseman_icon.png",
       "bar_entry": "resources\\art\\units\\natives\\europeans\\bavarian_horseman_icon.png"
     },
+    "denatclansman": {
+      "source": "bar",
+      "proto_icon": "resources/art/units/natives/europeans/clansman_icon.png",
+      "bar_entry": "resources\\art\\units\\natives\\europeans\\clansman_icon.png"
+    },
+    "denatcompanion": {
+      "source": "bar",
+      "proto_icon": "resources/art/units/natives/europeans/companion_icon.png",
+      "bar_entry": "resources\\art\\units\\natives\\europeans\\companion_icon.png"
+    },
     "denatdrummer": {
       "source": "bar",
       "proto_icon": "resources/art/units/natives/europeans/drummer_icon.png",
@@ -2396,6 +3002,21 @@
       "proto_icon": "resources/art/units/infantry_ranged/grenadier/grenadier_icon_64x64.png",
       "bar_entry": "resources\\art\\units\\infantry_ranged\\grenadier\\grenadier_icon_64x64.png"
     },
+    "denathusky": {
+      "source": "bar",
+      "proto_icon": "resources/art/units/wardogs/husky_icon.png",
+      "bar_entry": "resources\\art\\units\\wardogs\\husky_icon.png"
+    },
+    "denatinuithunter": {
+      "source": "bar",
+      "proto_icon": "resources/art/units/natives/inuit_hunter_icon.png",
+      "bar_entry": "resources\\art\\units\\natives\\inuit_hunter_icon.png"
+    },
+    "denatinuitqamutik": {
+      "source": "bar",
+      "proto_icon": "resources/art/units/natives/inuit_qamutik_icon.png",
+      "bar_entry": "resources\\art\\units\\natives\\inuit_qamutik_icon.png"
+    },
     "denativetempletengri": {
       "source": "bar",
       "proto_icon": "resources/art/buildings/native_settlement/sm_indian_guy_icon_64.png",
@@ -2411,6 +3032,16 @@
       "proto_icon": "resources/art/units/natives/europeans/lipka_tatar_icon.png",
       "bar_entry": "resources\\art\\units\\natives\\europeans\\lipka_tatar_icon.png"
     },
+    "denatlowlanderinfantry": {
+      "source": "bar",
+      "proto_icon": "resources/art/units/natives/europeans/lowlander_foot_icon.png",
+      "bar_entry": "resources\\art\\units\\natives\\europeans\\lowlander_foot_icon.png"
+    },
+    "denatlowlanderrider": {
+      "source": "bar",
+      "proto_icon": "resources/art/units/natives/europeans/lowlander_horse_icon.png",
+      "bar_entry": "resources\\art\\units\\natives\\europeans\\lowlander_horse_icon.png"
+    },
     "denatmayatravois": {
       "source": "bar",
       "proto_icon": "resources/art/units/trade/travois_icon_64.png",
@@ -2425,6 +3056,11 @@
       "source": "bar",
       "proto_icon": "resources/art/units/apache_cavalry_icon.png",
       "bar_entry": "resources\\art\\units\\apache_cavalry_icon.png"
+    },
+    "denatmercbagpiper": {
+      "source": "bar",
+      "proto_icon": "resources/art/units/natives/europeans/bagpiper_icon.png",
+      "bar_entry": "resources\\art\\units\\natives\\europeans\\bagpiper_icon.png"
     },
     "denatmercbolasrider": {
       "source": "bar",
@@ -2451,6 +3087,16 @@
       "proto_icon": "resources/art/units/natives/europeans/bavarian_horseman_icon.png",
       "bar_entry": "resources\\art\\units\\natives\\europeans\\bavarian_horseman_icon.png"
     },
+    "denatmercclansman": {
+      "source": "bar",
+      "proto_icon": "resources/art/units/natives/europeans/clansman_icon.png",
+      "bar_entry": "resources\\art\\units\\natives\\europeans\\clansman_icon.png"
+    },
+    "denatmerccompanion": {
+      "source": "bar",
+      "proto_icon": "resources/art/units/natives/europeans/companion_icon.png",
+      "bar_entry": "resources\\art\\units\\natives\\europeans\\companion_icon.png"
+    },
     "denatmercdrummer": {
       "source": "bar",
       "proto_icon": "resources/art/units/natives/europeans/drummer_icon.png",
@@ -2465,6 +3111,21 @@
       "source": "bar",
       "proto_icon": "resources/art/units/natives/holcan_spearman_icon.png",
       "bar_entry": "resources\\art\\units\\natives\\holcan_spearman_icon.png"
+    },
+    "denatmerchusky": {
+      "source": "bar",
+      "proto_icon": "resources/art/units/wardogs/husky_icon.png",
+      "bar_entry": "resources\\art\\units\\wardogs\\husky_icon.png"
+    },
+    "denatmercinuithunter": {
+      "source": "bar",
+      "proto_icon": "resources/art/units/natives/inuit_hunter_icon.png",
+      "bar_entry": "resources\\art\\units\\natives\\inuit_hunter_icon.png"
+    },
+    "denatmercinuitqamutik": {
+      "source": "bar",
+      "proto_icon": "resources/art/units/natives/inuit_qamutik_icon.png",
+      "bar_entry": "resources\\art\\units\\natives\\inuit_qamutik_icon.png"
     },
     "denatmercjaguarwarrior": {
       "source": "bar",
@@ -2485,6 +3146,16 @@
       "source": "bar",
       "proto_icon": "resources/art/units/natives/europeans/lipka_tatar_icon.png",
       "bar_entry": "resources\\art\\units\\natives\\europeans\\lipka_tatar_icon.png"
+    },
+    "denatmerclowlanderinfantry": {
+      "source": "bar",
+      "proto_icon": "resources/art/units/natives/europeans/lowlander_foot_icon.png",
+      "bar_entry": "resources\\art\\units\\natives\\europeans\\lowlander_foot_icon.png"
+    },
+    "denatmerclowlanderrider": {
+      "source": "bar",
+      "proto_icon": "resources/art/units/natives/europeans/lowlander_horse_icon.png",
+      "bar_entry": "resources\\art\\units\\natives\\europeans\\lowlander_horse_icon.png"
     },
     "denatmercmapucheclubman": {
       "source": "bar",
@@ -2510,6 +3181,11 @@
       "source": "bar",
       "proto_icon": "resources/art/units/navajo_rifleman_icon.png",
       "bar_entry": "resources\\art\\units\\navajo_rifleman_icon.png"
+    },
+    "denatmercnoaidi": {
+      "source": "bar",
+      "proto_icon": "resources/art/units/natives/sami_noaidi_icon.png",
+      "bar_entry": "resources\\art\\units\\natives\\sami_noaidi_icon.png"
     },
     "denatmercnomad": {
       "source": "bar",
@@ -2537,6 +3213,11 @@
       "bar_entry": "resources\\art\\units\\natives\\europeans\\royal_dragoon_icon.png"
     },
     "denatmercroyalhunter": {
+      "source": "bar",
+      "proto_icon": "resources/art/units/natives/europeans/royal_hunter_icon.png",
+      "bar_entry": "resources\\art\\units\\natives\\europeans\\royal_hunter_icon.png"
+    },
+    "denatmercroyalhuntsman": {
       "source": "bar",
       "proto_icon": "resources/art/units/natives/europeans/royal_hunter_icon.png",
       "bar_entry": "resources\\art\\units\\natives\\europeans\\royal_hunter_icon.png"
@@ -2591,11 +3272,6 @@
       "proto_icon": "resources/art/units/natives/europeans/trabant_icon.png",
       "bar_entry": "resources\\art\\units\\natives\\europeans\\trabant_icon.png"
     },
-    "denatmercwingedhussar": {
-      "source": "bar",
-      "proto_icon": "resources/art/units/natives/europeans/winged_hussar_icon.png",
-      "bar_entry": "resources\\art\\units\\natives\\europeans\\winged_hussar_icon.png"
-    },
     "denatmercyorubalegionary": {
       "source": "bar",
       "proto_icon": "resources/art/units/africans/natives/yoruba_legionary/yoruba_legionary_icon.png",
@@ -2620,6 +3296,11 @@
       "source": "bar",
       "proto_icon": "resources/art/units/natives/europeans/mounted_infantry_icon.png",
       "bar_entry": "resources\\art\\units\\natives\\europeans\\mounted_infantry_icon.png"
+    },
+    "denatnoaidi": {
+      "source": "bar",
+      "proto_icon": "resources/art/units/natives/sami_noaidi_icon.png",
+      "bar_entry": "resources\\art\\units\\natives\\sami_noaidi_icon.png"
     },
     "denatnomad": {
       "source": "bar",
@@ -2670,6 +3351,16 @@
       "source": "bar",
       "proto_icon": "resources/art/units/africans/natives/berber_salt_camel/hc_berber_salt_camel_icon.png",
       "bar_entry": "resources\\art\\units\\africans\\natives\\berber_salt_camel\\hc_berber_salt_camel_icon.png"
+    },
+    "denatsamireindeer": {
+      "source": "bar",
+      "proto_icon": "resources/art/units/animals/deer/sami_reindeer_icon.png",
+      "bar_entry": "resources\\art\\units\\animals\\deer\\sami_reindeer_icon.png"
+    },
+    "denatsamireindeerherd": {
+      "source": "bar",
+      "proto_icon": "resources/art/units/animals/deer/sami_reindeer_icon.png",
+      "bar_entry": "resources\\art\\units\\animals\\deer\\sami_reindeer_icon.png"
     },
     "denatsaxoncuirassier": {
       "source": "bar",
@@ -2740,11 +3431,6 @@
       "source": "bar",
       "proto_icon": "resources/art/units/natives/europeans/trabant_icon.png",
       "bar_entry": "resources\\art\\units\\natives\\europeans\\trabant_icon.png"
-    },
-    "denatwingedhussar": {
-      "source": "bar",
-      "proto_icon": "resources/art/units/natives/europeans/winged_hussar_icon.png",
-      "bar_entry": "resources\\art\\units\\natives\\europeans\\winged_hussar_icon.png"
     },
     "denatyorubalegionary": {
       "source": "bar",
@@ -2831,10 +3517,25 @@
       "proto_icon": "resources/art/objects/treasure/treasure_icon_64x64.png",
       "bar_entry": "resources\\art\\objects\\treasure\\treasure_icon_64x64.png"
     },
+    "denuggetfishingboat": {
+      "source": "bar",
+      "proto_icon": "resources/art/objects/treasure/treasure_icon_64x64.png",
+      "bar_entry": "resources\\art\\objects\\treasure\\treasure_icon_64x64.png"
+    },
+    "denuggetflotsam": {
+      "source": "bar",
+      "proto_icon": "resources/art/objects/treasure/treasure_icon_64x64.png",
+      "bar_entry": "resources\\art\\objects\\treasure\\treasure_icon_64x64.png"
+    },
     "denuggethouseafricangaia": {
       "source": "bar",
       "proto_icon": "resources/art/buildings/eth_hut_icon.png",
       "bar_entry": "resources\\art\\buildings\\eth_hut_icon.png"
+    },
+    "denuggetlighthouse": {
+      "source": "bar",
+      "proto_icon": "resources/art/nuggets/lighthouse_portrait.png",
+      "bar_entry": "resources\\art\\nuggets\\lighthouse_portrait.png"
     },
     "denuggetmeerkatden": {
       "source": "bar",
@@ -2847,6 +3548,11 @@
       "bar_entry": "resources\\art\\objects\\treasure\\treasure_icon_64x64.png"
     },
     "denuggetobelisk": {
+      "source": "bar",
+      "proto_icon": "resources/art/objects/treasure/treasure_icon_64x64.png",
+      "bar_entry": "resources\\art\\objects\\treasure\\treasure_icon_64x64.png"
+    },
+    "denuggetsnowman": {
       "source": "bar",
       "proto_icon": "resources/art/objects/treasure/treasure_icon_64x64.png",
       "bar_entry": "resources\\art\\objects\\treasure\\treasure_icon_64x64.png"
@@ -2905,6 +3611,11 @@
       "source": "bar",
       "proto_icon": "resources/art/units/africans/outlaws/desert_warrior/desert_warrior_icon.png",
       "bar_entry": "resources\\art\\units\\africans\\outlaws\\desert_warrior\\desert_warrior_icon.png"
+    },
+    "deoutlawwhalingship": {
+      "source": "bar",
+      "proto_icon": "resources/art/units/naval/whaling_ship/whaling_ship_icon.png",
+      "bar_entry": "resources\\art\\units\\naval\\whaling_ship\\whaling_ship_icon.png"
     },
     "deoutpostafrican": {
       "source": "bar",
@@ -2971,6 +3682,11 @@
       "proto_icon": "resources/art/units/hc_pet_warthog.png",
       "bar_entry": "resources\\art\\units\\hc_pet_warthog.png"
     },
+    "depiechur": {
+      "source": "bar",
+      "proto_icon": "resources/art/units/infantry_ranged/piechur/piechur_icon.png",
+      "bar_entry": "resources\\art\\units\\infantry_ranged\\piechur\\piechur_icon.png"
+    },
     "deplantationtravois": {
       "source": "bar",
       "proto_icon": "resources/art/buildings/plantation/plantation_icon.png",
@@ -3021,10 +3737,20 @@
       "proto_icon": "resources/art/units/trade/factory_wagon_icon_64x64.png",
       "bar_entry": "resources\\art\\units\\trade\\factory_wagon_icon_64x64.png"
     },
+    "deprospectorwagonsalt": {
+      "source": "bar",
+      "proto_icon": "resources/art/units/trade/factory_wagon_icon_64x64.png",
+      "bar_entry": "resources\\art\\units\\trade\\factory_wagon_icon_64x64.png"
+    },
     "deprospectorwagonsilver": {
       "source": "bar",
       "proto_icon": "resources/art/units/trade/factory_wagon_icon_64x64.png",
       "bar_entry": "resources\\art\\units\\trade\\factory_wagon_icon_64x64.png"
+    },
+    "deprotoactioncontainer": {
+      "source": "bar",
+      "proto_icon": "resources/art/units/asians/chinese/standard_army/standard_army_icon_64.png",
+      "bar_entry": "resources\\art\\units\\asians\\chinese\\standard_army\\standard_army_icon_64.png"
     },
     "dequakergun": {
       "source": "bar",
@@ -3045,6 +3771,16 @@
       "source": "bar",
       "proto_icon": "resources/art/buildings/african_civs/trading_post_icon.png",
       "bar_entry": "resources\\art\\buildings\\african_civs\\trading_post_icon.png"
+    },
+    "deregent": {
+      "source": "bar",
+      "proto_icon": "resources/art/units/spc/regent/regent_europe.png",
+      "bar_entry": "resources\\art\\units\\spc\\regent\\regent_europe.png"
+    },
+    "deregenthorse": {
+      "source": "bar",
+      "proto_icon": "resources/art/units/asians/japanese/shogun/regecide_shogun_icon_64.png",
+      "bar_entry": "resources\\art\\units\\asians\\japanese\\shogun\\regecide_shogun_icon_64.png"
     },
     "deregular": {
       "source": "bar",
@@ -3086,10 +3822,20 @@
       "proto_icon": "resources/art/units/revolution/cetbang_icon.png",
       "bar_entry": "resources\\art\\units\\revolution\\cetbang_icon.png"
     },
+    "derevchern": {
+      "source": "bar",
+      "proto_icon": "resources/art/units/revolution/cossacks/chern_icon.png",
+      "bar_entry": "resources\\art\\units\\revolution\\cossacks\\chern_icon.png"
+    },
     "derevcorsaircaptain": {
       "source": "bar",
       "proto_icon": "resources/art/units/spc/oruc_reis/oruc_reis_icon.png",
       "bar_entry": "resources\\art\\units\\spc\\oruc_reis\\oruc_reis_icon.png"
+    },
+    "derevcossacktabor": {
+      "source": "bar",
+      "proto_icon": "resources/art/units/revolution/cossacks/tabor_icon.png",
+      "bar_entry": "resources\\art\\units\\revolution\\cossacks\\tabor_icon.png"
     },
     "derevcruzobinfantry": {
       "source": "bar",
@@ -3111,6 +3857,21 @@
       "proto_icon": "resources/art/units/revolution/granadero_icon.png",
       "bar_entry": "resources\\art\\units\\revolution\\granadero_icon.png"
     },
+    "derevhaidamaka": {
+      "source": "bar",
+      "proto_icon": "resources/art/units/revolution/cossacks/haidamaka_rifleman_icon.png",
+      "bar_entry": "resources\\art\\units\\revolution\\cossacks\\haidamaka_rifleman_icon.png"
+    },
+    "derevhaidamakarider": {
+      "source": "bar",
+      "proto_icon": "resources/art/units/revolution/cossacks/haidamaka_icon.png",
+      "bar_entry": "resources\\art\\units\\revolution\\cossacks\\haidamaka_icon.png"
+    },
+    "derevhighmaster": {
+      "source": "bar",
+      "proto_icon": "resources/art/units/revolution/livonians/high_master_icon.png",
+      "bar_entry": "resources\\art\\units\\revolution\\livonians\\high_master_icon.png"
+    },
     "derevjagunco": {
       "source": "bar",
       "proto_icon": "resources/art/units/spc/outlaws/outlaw_rider_icon_64x64.png",
@@ -3120,6 +3881,11 @@
       "source": "bar",
       "proto_icon": "resources/art/units/revolution/java_spearman_icon.png",
       "bar_entry": "resources\\art\\units\\revolution\\java_spearman_icon.png"
+    },
+    "derevknightbrother": {
+      "source": "bar",
+      "proto_icon": "resources/art/units/revolution/livonians/knight_brother_icon.png",
+      "bar_entry": "resources\\art\\units\\revolution\\livonians\\knight_brother_icon.png"
     },
     "derevllanero": {
       "source": "bar",
@@ -3156,10 +3922,25 @@
       "proto_icon": "resources/art/units/revolution/revolutionary_scout_icon.png",
       "bar_entry": "resources\\art\\units\\revolution\\revolutionary_scout_icon.png"
     },
+    "derevordermusketeer": {
+      "source": "bar",
+      "proto_icon": "resources/art/units/revolution/livonians/order_musketeer_icon.png",
+      "bar_entry": "resources\\art\\units\\revolution\\livonians\\order_musketeer_icon.png"
+    },
+    "derevorderpavisier": {
+      "source": "bar",
+      "proto_icon": "resources/art/units/revolution/livonians/order_pavisier_icon.png",
+      "bar_entry": "resources\\art\\units\\revolution\\livonians\\order_pavisier_icon.png"
+    },
     "derevpiratebatch": {
       "source": "bar",
       "proto_icon": "resources/art/units/spc/pirates/pirate_icon.png",
       "bar_entry": "resources\\art\\units\\spc\\pirates\\pirate_icon.png"
+    },
+    "derevpolishlancer": {
+      "source": "bar",
+      "proto_icon": "resources/art/units/revolution/warsaw/polish_lancer_icon.png",
+      "bar_entry": "resources\\art\\units\\revolution\\warsaw\\polish_lancer_icon.png"
     },
     "derevprospectorwagon": {
       "source": "bar",
@@ -3171,10 +3952,30 @@
       "proto_icon": "resources/art/units/revolution/san_martin_icon.png",
       "bar_entry": "resources\\art\\units\\revolution\\san_martin_icon.png"
     },
+    "derevscytheman": {
+      "source": "bar",
+      "proto_icon": "resources/art/units/revolution/java_spearman_icon.png",
+      "bar_entry": "resources\\art\\units\\revolution\\java_spearman_icon.png"
+    },
+    "derevserdyuk": {
+      "source": "bar",
+      "proto_icon": "resources/art/units/revolution/cossacks/serdyuk_icon.png",
+      "bar_entry": "resources\\art\\units\\revolution\\cossacks\\serdyuk_icon.png"
+    },
+    "derevstarshyna": {
+      "source": "bar",
+      "proto_icon": "resources/art/units/revolution/cossacks/starshyna_icon.png",
+      "bar_entry": "resources\\art\\units\\revolution\\cossacks\\starshyna_icon.png"
+    },
     "derevstartrekwagon": {
       "source": "bar",
       "proto_icon": "resources/art/units/villagers/covered_wagon/covered_wagon_icon_64.png",
       "bar_entry": "resources\\art\\units\\villagers\\covered_wagon\\covered_wagon_icon_64.png"
+    },
+    "derevteutonicknight": {
+      "source": "bar",
+      "proto_icon": "resources/art/units/revolution/livonians/teutonic_knight_icon.png",
+      "bar_entry": "resources\\art\\units\\revolution\\livonians\\teutonic_knight_icon.png"
     },
     "derevusvolunteer": {
       "source": "bar",
@@ -3210,6 +4011,11 @@
       "source": "bar",
       "proto_icon": "resources/art/buildings/mill/mill_icon.png",
       "bar_entry": "resources\\art\\buildings\\mill\\mill_icon.png"
+    },
+    "dermwoodcabin": {
+      "source": "bar",
+      "proto_icon": "resources/art/nuggets/timber_importer_portrait.png",
+      "bar_entry": "resources\\art\\nuggets\\timber_importer_portrait.png"
     },
     "derussianhalberdier": {
       "source": "bar",
@@ -3255,6 +4061,11 @@
       "source": "bar",
       "proto_icon": "resources/art/units/revolution/hajduk_icon.png",
       "bar_entry": "resources\\art\\units\\revolution\\hajduk_icon.png"
+    },
+    "desaloonharpooner": {
+      "source": "bar",
+      "proto_icon": "resources/art/units/spc/outlaws/harpooner_icon.png",
+      "bar_entry": "resources\\art\\units\\spc\\outlaws\\harpooner_icon.png"
     },
     "desaloonhighwayman": {
       "source": "bar",
@@ -3316,6 +4127,16 @@
       "proto_icon": "resources/art/units/spc/outlaws/owlhoot_icon.png",
       "bar_entry": "resources\\art\\units\\spc\\outlaws\\owlhoot_icon.png"
     },
+    "desaloonqivittoq": {
+      "source": "bar",
+      "proto_icon": "resources/art/units/spc/outlaws/qivittoq_icon.png",
+      "bar_entry": "resources\\art\\units\\spc\\outlaws\\qivittoq_icon.png"
+    },
+    "desaloonsailor": {
+      "source": "bar",
+      "proto_icon": "resources/art/units/spc/outlaws/sailor_icon.png",
+      "bar_entry": "resources\\art\\units\\spc\\outlaws\\sailor_icon.png"
+    },
     "desaloonvaquero": {
       "source": "bar",
       "proto_icon": "resources/art/units/spc/outlaws/vaquero_icon.png",
@@ -3330,6 +4151,11 @@
       "source": "bar",
       "proto_icon": "resources/art/units/africans/ethiopians/mortar/sebastopol_mortar_icon.png",
       "bar_entry": "resources\\art\\units\\africans\\ethiopians\\mortar\\sebastopol_mortar_icon.png"
+    },
+    "desejm": {
+      "source": "bar",
+      "proto_icon": "resources/art/buildings/capitol/sejm_icon.png",
+      "bar_entry": "resources\\art\\buildings\\capitol\\sejm_icon.png"
     },
     "desettlerafrican": {
       "source": "bar",
@@ -3395,6 +4221,11 @@
       "source": "bar",
       "proto_icon": "resources/art/units/spc/brock/brock_icon.png",
       "bar_entry": "resources\\art\\units\\spc\\brock\\brock_icon.png"
+    },
+    "despccapturablechurchpropv": {
+      "source": "bar",
+      "proto_icon": "resources/art/buildings/church/church_icon.png",
+      "bar_entry": "resources\\art\\buildings\\church\\church_icon.png"
     },
     "despccapturablefactory": {
       "source": "bar",
@@ -3566,6 +4397,51 @@
       "proto_icon": "resources/art/units/spc/hidalgo/igc_hidalgo_icon.png",
       "bar_entry": "resources\\art\\units\\spc\\hidalgo\\igc_hidalgo_icon.png"
     },
+    "despchmbonaght": {
+      "source": "bar",
+      "proto_icon": "resources/art/units/spc/england/bonaght_soldier_icon.png",
+      "bar_entry": "resources\\art\\units\\spc\\england\\bonaght_soldier_icon.png"
+    },
+    "despchmcavalier": {
+      "source": "bar",
+      "proto_icon": "resources/art/units/cavalry/reiter/reiter_icon.png",
+      "bar_entry": "resources\\art\\units\\cavalry\\reiter\\reiter_icon.png"
+    },
+    "despchmcovenanter": {
+      "source": "bar",
+      "proto_icon": "resources/art/units/natives/europeans/lowlander_horse_icon.png",
+      "bar_entry": "resources\\art\\units\\natives\\europeans\\lowlander_horse_icon.png"
+    },
+    "despchmcovenanterinfantry": {
+      "source": "bar",
+      "proto_icon": "resources/art/units/natives/europeans/lowlander_foot_icon.png",
+      "bar_entry": "resources\\art\\units\\natives\\europeans\\lowlander_foot_icon.png"
+    },
+    "despchmirishhorseman": {
+      "source": "bar",
+      "proto_icon": "resources/art/units/spc/england/irish_horseman_icon.png",
+      "bar_entry": "resources\\art\\units\\spc\\england\\irish_horseman_icon.png"
+    },
+    "despchmironside": {
+      "source": "bar",
+      "proto_icon": "resources/art/units/mercenaries/harquebusier/harquebusier_icon.png",
+      "bar_entry": "resources\\art\\units\\mercenaries\\harquebusier\\harquebusier_icon.png"
+    },
+    "despchmlord": {
+      "source": "bar",
+      "proto_icon": "resources/art/units/spc/england/lord_icon.png",
+      "bar_entry": "resources\\art\\units\\spc\\england\\lord_icon.png"
+    },
+    "despchmredcoat": {
+      "source": "bar",
+      "proto_icon": "resources/art/units/infantry_ranged/musketeer/musketeer_icon_64x64.png",
+      "bar_entry": "resources\\art\\units\\infantry_ranged\\musketeer\\musketeer_icon_64x64.png"
+    },
+    "despchmwhitecoat": {
+      "source": "bar",
+      "proto_icon": "resources/art/units/natives/europeans/lowlander_foot_icon.png",
+      "bar_entry": "resources\\art\\units\\natives\\europeans\\lowlander_foot_icon.png"
+    },
     "despchornskirmisher": {
       "source": "bar",
       "proto_icon": "resources/art/units/african/horn_skirmisher_icon.png",
@@ -3606,6 +4482,11 @@
       "proto_icon": "resources/art/units/african/knife_thrower_icon.png",
       "bar_entry": "resources\\art\\units\\african\\knife_thrower_icon.png"
     },
+    "despclandmarkminster": {
+      "source": "bar",
+      "proto_icon": "resources/art/buildings/town_center/command_post_icon.png",
+      "bar_entry": "resources\\art\\buildings\\town_center\\command_post_icon.png"
+    },
     "despcmansur": {
       "source": "bar",
       "proto_icon": "resources/art/units/spc/ahmad_al_mansur/ahmad_al_mansur.png",
@@ -3643,8 +4524,8 @@
     },
     "despcoutlawmusketeer": {
       "source": "bar",
-      "proto_icon": "resources/art/units/infantry_ranged/musketeer/musketeer_icon_64x64.png",
-      "bar_entry": "resources\\art\\units\\infantry_ranged\\musketeer\\musketeer_icon_64x64.png"
+      "proto_icon": "resources/art/units/spc/outlaws/outlaw_musketeer_icon.png",
+      "bar_entry": "resources\\art\\units\\spc\\outlaws\\outlaw_musketeer_icon.png"
     },
     "despcpapalembassy": {
       "source": "bar",
@@ -3826,6 +4707,11 @@
       "proto_icon": "resources/art/buildings/livestock pen/livestock_pen_icon.png",
       "bar_entry": "resources\\art\\buildings\\livestock pen\\livestock_pen_icon.png"
     },
+    "despcwingedhussar": {
+      "source": "bar",
+      "proto_icon": "resources/art/units/natives/europeans/winged_hussar_icon.png",
+      "bar_entry": "resources\\art\\units\\natives\\europeans\\winged_hussar_icon.png"
+    },
     "despcwoodentower": {
       "source": "bar",
       "proto_icon": "resources/art/buildings/spc/fort/spc_fort_wall_icon64x64.png",
@@ -3996,6 +4882,21 @@
       "proto_icon": "resources/art/buildings/outpost/outpost_icon_64x64.png",
       "bar_entry": "resources\\art\\buildings\\outpost\\outpost_icon_64x64.png"
     },
+    "detradecrateall": {
+      "source": "bar",
+      "proto_icon": "resources/images/icons/techs/native/hc_mix_crate.png",
+      "bar_entry": "resources\\images\\icons\\techs\\native\\hc_mix_crate.png"
+    },
+    "detradecrateofexport": {
+      "source": "bar",
+      "proto_icon": "resources/images/icons/command/generate_influence_icon.png",
+      "bar_entry": "resources\\images\\icons\\command\\generate_influence_icon.png"
+    },
+    "detradecrateofexportcapture": {
+      "source": "bar",
+      "proto_icon": "resources/images/icons/command/generate_influence_icon.png",
+      "bar_entry": "resources\\images\\icons\\command\\generate_influence_icon.png"
+    },
     "detradecrateofinfluence": {
       "source": "bar",
       "proto_icon": "resources/images/icons/command/generate_influence_icon.png",
@@ -4136,6 +5037,11 @@
       "proto_icon": "resources/art/terrain/trees/tree_icon_64.png",
       "bar_entry": "resources\\art\\terrain\\trees\\tree_icon_64.png"
     },
+    "deumiak": {
+      "source": "bar",
+      "proto_icon": "resources/art/units/trade/trade_ship_a_01_icon.png",
+      "bar_entry": "resources\\art\\units\\trade\\trade_ship_A_01_icon.png"
+    },
     "deuniquetower": {
       "source": "bar",
       "proto_icon": "resources/art/buildings/african_civs/tower_icon.png",
@@ -4210,6 +5116,11 @@
       "source": "bar",
       "proto_icon": "resources/art/units/animals/warthog/warthog_icon.png",
       "bar_entry": "resources\\art\\units\\animals\\warthog\\warthog_icon.png"
+    },
+    "dewingedhussar": {
+      "source": "bar",
+      "proto_icon": "resources/art/units/cavalry/winged_hussar/winged_hussar_icon.png",
+      "bar_entry": "resources\\art\\units\\cavalry\\winged_hussar\\winged_hussar_icon.png"
     },
     "dezebra": {
       "source": "bar",
@@ -4470,6 +5381,11 @@
       "source": "bar",
       "proto_icon": "resources/images/icons/command/generate_wood_icon.png",
       "bar_entry": "resources\\images\\icons\\command\\generate_wood_icon.png"
+    },
+    "goose": {
+      "source": "bar",
+      "proto_icon": "resources/art/units/animals/warthog/warthog_icon.png",
+      "bar_entry": "resources\\art\\units\\animals\\warthog\\warthog_icon.png"
     },
     "gooseflock": {
       "source": "bar",
@@ -5506,8 +6422,8 @@
     },
     "outlawmusketeer": {
       "source": "bar",
-      "proto_icon": "resources/art/units/mercenaries/barbary_corsair/barbary_corsair_icon_64x64.png",
-      "bar_entry": "resources\\art\\units\\mercenaries\\barbary_corsair\\barbary_corsair_icon_64x64.png"
+      "proto_icon": "resources/art/units/spc/outlaws/outlaw_musketeer_icon.png",
+      "bar_entry": "resources\\art\\units\\spc\\outlaws\\outlaw_musketeer_icon.png"
     },
     "outlawpistol": {
       "source": "bar",
@@ -5573,6 +6489,11 @@
       "source": "bar",
       "proto_icon": "resources/art/units/animals/wolf/wolf_icon_64x64.png",
       "bar_entry": "resources\\art\\units\\animals\\wolf\\wolf_icon_64x64.png"
+    },
+    "pig": {
+      "source": "bar",
+      "proto_icon": "resources/art/units/animals/pig/pig_icon.png",
+      "bar_entry": "resources\\art\\units\\animals\\pig\\pig_icon.png"
     },
     "pikeman": {
       "source": "bar",
@@ -5745,9 +6666,8 @@
       "bar_entry": "resources\\art\\units\\animals\\sheep\\sheep_icon_64.png"
     },
     "shrine": {
-      "source": "bar_legacy",
-      "proto_icon": "resources/art/buildings/medicine_shrine.png",
-      "note": "restored from pre-fix snapshot"
+      "source": "local_reuse",
+      "proto_icon": "resources/art/buildings/medicine_shrine.png"
     },
     "skirmisher": {
       "source": "bar",
@@ -5951,8 +6871,8 @@
     },
     "spccherokeechief": {
       "source": "bar",
-      "proto_icon": "resources/art/units/natives/rifleman_icon_64x64.png",
-      "bar_entry": "resources\\art\\units\\natives\\rifleman_icon_64x64.png"
+      "proto_icon": "resources/art/units/spc/lakota_chief/lakotachief_icon_64x64.png",
+      "bar_entry": "resources\\art\\units\\spc\\lakota_chief\\lakotachief_icon_64x64.png"
     },
     "spccherokeehorsearcher": {
       "source": "bar",
@@ -6294,6 +7214,11 @@
       "bar_entry": "resources\\art\\buildings\\baker_portrait.png"
     },
     "spcxpbarn": {
+      "source": "bar",
+      "proto_icon": "resources/art/buildings/barn_portrait.png",
+      "bar_entry": "resources\\art\\buildings\\barn_portrait.png"
+    },
+    "spcxpbarncapturable": {
       "source": "bar",
       "proto_icon": "resources/art/buildings/barn_portrait.png",
       "bar_entry": "resources\\art\\buildings\\barn_portrait.png"
@@ -6682,9 +7607,8 @@
       "bar_entry": "resources\\art\\terrain\\trees\\tree_icon_64.png"
     },
     "treechristmas": {
-      "source": "bar_legacy",
-      "proto_icon": "resources/art/terrain/trees/christmas_tree_icon_64.png",
-      "note": "restored from pre-fix snapshot"
+      "source": "local_reuse",
+      "proto_icon": "resources/art/terrain/trees/christmas_tree_icon_64.png"
     },
     "treegreatlakes": {
       "source": "bar",
@@ -6896,10 +7820,15 @@
       "proto_icon": "resources/art/buildings/wall/wall_icon_64x64.png",
       "bar_entry": "resources\\art\\buildings\\wall\\wall_icon_64x64.png"
     },
+    "walrus": {
+      "source": "bar",
+      "proto_icon": "resources/art/units/animals/walrus/walrus_icon.png",
+      "bar_entry": "resources\\art\\units\\animals\\walrus\\walrus_icon.png"
+    },
     "wardog": {
       "source": "bar",
-      "proto_icon": "resources/art/units/wardogs/war_dog_icon_64x64.png",
-      "bar_entry": "resources\\art\\units\\wardogs\\war_dog_icon_64x64.png"
+      "proto_icon": "resources/art/units/wardogs/war_dog_spanish_icon.png",
+      "bar_entry": "resources\\art\\units\\wardogs\\war_dog_spanish_icon.png"
     },
     "warhut": {
       "source": "bar",
@@ -8177,9 +9106,8 @@
       "bar_entry": "resources\\art\\units\\asians\\spc\\tokugawa\\tokugawa_icon.png"
     },
     "ypigctreasureship": {
-      "source": "bar_legacy",
-      "proto_icon": "resources/art/units/asians/spc/treasure_ship/china_ship_icon_64.png",
-      "note": "restored from pre-fix snapshot"
+      "source": "local_reuse",
+      "proto_icon": "resources/art/units/asians/spc/treasure_ship/china_ship_icon_64.png"
     },
     "ypimperialarmy": {
       "source": "bar",
@@ -8252,9 +9180,10 @@
       "bar_entry": "resources\\art\\units\\asians\\indians\\mansabdar\\mahout_mansabdar_icon_64.png"
     },
     "ypmandarinarmy": {
-      "source": "bar_legacy",
+      "source": "variant_copy",
       "proto_icon": "resources/art/units/asians/chinese/mandarin_army/mandarin_army_icon_64.png",
-      "note": "restored from pre-fix snapshot"
+      "copy_from": "ypmercirontroop",
+      "note": "icon_overrides.json"
     },
     "ypmarathancatamaran": {
       "source": "bar",
@@ -9467,24 +10396,20 @@
       "bar_entry": "resources\\art\\units\\asians\\spc\\tokugawa\\tokugawa_icon.png"
     },
     "ypspctreasureship": {
-      "source": "bar_legacy",
-      "proto_icon": "resources/art/units/asians/spc/treasure_ship/china_ship_icon_64.png",
-      "note": "restored from pre-fix snapshot"
+      "source": "local_reuse",
+      "proto_icon": "resources/art/units/asians/spc/treasure_ship/china_ship_icon_64.png"
     },
     "ypspctreasureshipstage1": {
-      "source": "bar_legacy",
-      "proto_icon": "resources/art/units/asians/spc/treasure_ship/china_ship_icon_64.png",
-      "note": "restored from pre-fix snapshot"
+      "source": "local_reuse",
+      "proto_icon": "resources/art/units/asians/spc/treasure_ship/china_ship_icon_64.png"
     },
     "ypspctreasureshipstage2": {
-      "source": "bar_legacy",
-      "proto_icon": "resources/art/units/asians/spc/treasure_ship/china_ship_icon_64.png",
-      "note": "restored from pre-fix snapshot"
+      "source": "local_reuse",
+      "proto_icon": "resources/art/units/asians/spc/treasure_ship/china_ship_icon_64.png"
     },
     "ypspctreasureshipstage3": {
-      "source": "bar_legacy",
-      "proto_icon": "resources/art/units/asians/spc/treasure_ship/china_ship_icon_64.png",
-      "note": "restored from pre-fix snapshot"
+      "source": "local_reuse",
+      "proto_icon": "resources/art/units/asians/spc/treasure_ship/china_ship_icon_64.png"
     },
     "ypspcwarhut": {
       "source": "bar",
@@ -9766,6 +10691,11 @@
       "proto_icon": "resources/art/buildings/wonders/confucian_academy/confucian_academy_icon_64.png",
       "bar_entry": "resources\\art\\buildings\\wonders\\confucian_academy\\confucian_academy_icon_64.png"
     },
+    "ypwcconfucianacademyindependence": {
+      "source": "bar",
+      "proto_icon": "resources/art/buildings/wonders/confucian_academy/confucian_academy_icon_64.png",
+      "bar_entry": "resources\\art\\buildings\\wonders\\confucian_academy\\confucian_academy_icon_64.png"
+    },
     "ypwcporcelaintower2": {
       "source": "bar",
       "proto_icon": "resources/art/buildings/wonders/porcelain_tower/porcelain_tower_icon_64.png",
@@ -9782,6 +10712,11 @@
       "bar_entry": "resources\\art\\buildings\\wonders\\porcelain_tower\\porcelain_tower_icon_64.png"
     },
     "ypwcporcelaintower5": {
+      "source": "bar",
+      "proto_icon": "resources/art/buildings/wonders/porcelain_tower/porcelain_tower_icon_64.png",
+      "bar_entry": "resources\\art\\buildings\\wonders\\porcelain_tower\\porcelain_tower_icon_64.png"
+    },
+    "ypwcporcelaintowerindependence": {
       "source": "bar",
       "proto_icon": "resources/art/buildings/wonders/porcelain_tower/porcelain_tower_icon_64.png",
       "bar_entry": "resources\\art\\buildings\\wonders\\porcelain_tower\\porcelain_tower_icon_64.png"
@@ -9806,6 +10741,11 @@
       "proto_icon": "resources/art/buildings/wonders/summer_palace/summer_palace_icon_64.png",
       "bar_entry": "resources\\art\\buildings\\wonders\\summer_palace\\summer_palace_icon_64.png"
     },
+    "ypwcsummerpalaceindependence": {
+      "source": "bar",
+      "proto_icon": "resources/art/buildings/wonders/summer_palace/summer_palace_icon_64.png",
+      "bar_entry": "resources\\art\\buildings\\wonders\\summer_palace\\summer_palace_icon_64.png"
+    },
     "ypwctempleofheaven2": {
       "source": "bar",
       "proto_icon": "resources/art/buildings/wonders/temple_of_heaven/temple_of_heaven_icon_64.png",
@@ -9826,6 +10766,11 @@
       "proto_icon": "resources/art/buildings/wonders/temple_of_heaven/temple_of_heaven_icon_64.png",
       "bar_entry": "resources\\art\\buildings\\wonders\\temple_of_heaven\\temple_of_heaven_icon_64.png"
     },
+    "ypwctempleofheavenindependence": {
+      "source": "bar",
+      "proto_icon": "resources/art/buildings/wonders/temple_of_heaven/temple_of_heaven_icon_64.png",
+      "bar_entry": "resources\\art\\buildings\\wonders\\temple_of_heaven\\temple_of_heaven_icon_64.png"
+    },
     "ypwcwhitepagoda2": {
       "source": "bar",
       "proto_icon": "resources/art/buildings/wonders/white_pagoda/white_pagoda_icon_64.png",
@@ -9842,6 +10787,11 @@
       "bar_entry": "resources\\art\\buildings\\wonders\\white_pagoda\\white_pagoda_icon_64.png"
     },
     "ypwcwhitepagoda5": {
+      "source": "bar",
+      "proto_icon": "resources/art/buildings/wonders/white_pagoda/white_pagoda_icon_64.png",
+      "bar_entry": "resources\\art\\buildings\\wonders\\white_pagoda\\white_pagoda_icon_64.png"
+    },
+    "ypwcwhitepagodaindependence": {
       "source": "bar",
       "proto_icon": "resources/art/buildings/wonders/white_pagoda/white_pagoda_icon_64.png",
       "bar_entry": "resources\\art\\buildings\\wonders\\white_pagoda\\white_pagoda_icon_64.png"
@@ -9871,10 +10821,15 @@
       "proto_icon": "resources/art/buildings/wonders/agra_fort/agra_fort_icon_64.png",
       "bar_entry": "resources\\art\\buildings\\wonders\\agra_fort\\agra_fort_icon_64.png"
     },
+    "ypwiagrafortindependence": {
+      "source": "bar",
+      "proto_icon": "resources/art/buildings/wonders/agra_fort/agra_fort_icon_64.png",
+      "bar_entry": "resources\\art\\buildings\\wonders\\agra_fort\\agra_fort_icon_64.png"
+    },
     "ypwicharminargate2": {
       "source": "bar",
-      "proto_icon": "resources/art/buildings/wonders/charminar_gate/charminar_gate_icon_portrait.png",
-      "bar_entry": "resources\\art\\buildings\\wonders\\charminar_gate\\charminar_gate_icon_portrait.png"
+      "proto_icon": "resources/art/buildings/wonders/charminar_gate/charminar_gate_icon_64.png",
+      "bar_entry": "resources\\art\\buildings\\wonders\\charminar_gate\\charminar_gate_icon_64.png"
     },
     "ypwicharminargate3": {
       "source": "bar",
@@ -9887,6 +10842,11 @@
       "bar_entry": "resources\\art\\buildings\\wonders\\charminar_gate\\charminar_gate_icon_portrait.png"
     },
     "ypwicharminargate5": {
+      "source": "bar",
+      "proto_icon": "resources/art/buildings/wonders/charminar_gate/charminar_gate_icon_portrait.png",
+      "bar_entry": "resources\\art\\buildings\\wonders\\charminar_gate\\charminar_gate_icon_portrait.png"
+    },
+    "ypwicharminargateindependence": {
       "source": "bar",
       "proto_icon": "resources/art/buildings/wonders/charminar_gate/charminar_gate_icon_portrait.png",
       "bar_entry": "resources\\art\\buildings\\wonders\\charminar_gate\\charminar_gate_icon_portrait.png"
@@ -9907,6 +10867,11 @@
       "bar_entry": "resources\\art\\buildings\\wonders\\karni_mata\\karni_mata_icon_64.png"
     },
     "ypwikarnimata5": {
+      "source": "bar",
+      "proto_icon": "resources/art/buildings/wonders/karni_mata/karni_mata_icon_64.png",
+      "bar_entry": "resources\\art\\buildings\\wonders\\karni_mata\\karni_mata_icon_64.png"
+    },
+    "ypwikarnimataindependence": {
       "source": "bar",
       "proto_icon": "resources/art/buildings/wonders/karni_mata/karni_mata_icon_64.png",
       "bar_entry": "resources\\art\\buildings\\wonders\\karni_mata\\karni_mata_icon_64.png"
@@ -9936,6 +10901,11 @@
       "proto_icon": "resources/art/buildings/wonders/taj_mahal/taj_mahal_icon.png",
       "bar_entry": "resources\\art\\buildings\\wonders\\taj_mahal\\taj_mahal_icon.png"
     },
+    "ypwitajmahalindependence": {
+      "source": "bar",
+      "proto_icon": "resources/art/buildings/wonders/taj_mahal/taj_mahal_icon.png",
+      "bar_entry": "resources\\art\\buildings\\wonders\\taj_mahal\\taj_mahal_icon.png"
+    },
     "ypwitowerofvictory2": {
       "source": "bar",
       "proto_icon": "resources/art/buildings/wonders/tower_of_victory/tower_of_victory_icon_64.png",
@@ -9952,6 +10922,11 @@
       "bar_entry": "resources\\art\\buildings\\wonders\\tower_of_victory\\tower_of_victory_icon_64.png"
     },
     "ypwitowerofvictory5": {
+      "source": "bar",
+      "proto_icon": "resources/art/buildings/wonders/tower_of_victory/tower_of_victory_icon_64.png",
+      "bar_entry": "resources\\art\\buildings\\wonders\\tower_of_victory\\tower_of_victory_icon_64.png"
+    },
+    "ypwitowerofvictoryindependence": {
       "source": "bar",
       "proto_icon": "resources/art/buildings/wonders/tower_of_victory/tower_of_victory_icon_64.png",
       "bar_entry": "resources\\art\\buildings\\wonders\\tower_of_victory\\tower_of_victory_icon_64.png"
@@ -9976,6 +10951,11 @@
       "proto_icon": "resources/art/buildings/wonders/giant_buddha/giant_buddha_icon.png",
       "bar_entry": "resources\\art\\buildings\\wonders\\giant_buddha\\giant_buddha_icon.png"
     },
+    "ypwjgiantbuddhaindependence": {
+      "source": "bar",
+      "proto_icon": "resources/art/buildings/wonders/giant_buddha/giant_buddha_icon.png",
+      "bar_entry": "resources\\art\\buildings\\wonders\\giant_buddha\\giant_buddha_icon.png"
+    },
     "ypwjgoldenpavillion2": {
       "source": "bar",
       "proto_icon": "resources/art/buildings/wonders/golden_pavillion/golden_pavillion_icon_64.png",
@@ -9992,6 +10972,11 @@
       "bar_entry": "resources\\art\\buildings\\wonders\\golden_pavillion\\golden_pavillion_icon_64.png"
     },
     "ypwjgoldenpavillion5": {
+      "source": "bar",
+      "proto_icon": "resources/art/buildings/wonders/golden_pavillion/golden_pavillion_icon_64.png",
+      "bar_entry": "resources\\art\\buildings\\wonders\\golden_pavillion\\golden_pavillion_icon_64.png"
+    },
+    "ypwjgoldenpavillionindependence": {
       "source": "bar",
       "proto_icon": "resources/art/buildings/wonders/golden_pavillion/golden_pavillion_icon_64.png",
       "bar_entry": "resources\\art\\buildings\\wonders\\golden_pavillion\\golden_pavillion_icon_64.png"
@@ -10016,6 +11001,11 @@
       "proto_icon": "resources/art/buildings/wonders/imperial_palace/shogunate_icon_64.png",
       "bar_entry": "resources\\art\\buildings\\wonders\\imperial_palace\\shogunate_icon_64.png"
     },
+    "ypwjshogunateindependence": {
+      "source": "bar",
+      "proto_icon": "resources/art/buildings/wonders/imperial_palace/shogunate_icon_64.png",
+      "bar_entry": "resources\\art\\buildings\\wonders\\imperial_palace\\shogunate_icon_64.png"
+    },
     "ypwjtoriigates2": {
       "source": "bar",
       "proto_icon": "resources/art/buildings/wonders/torii_gates/torii_gates_icon_64.png",
@@ -10036,6 +11026,11 @@
       "proto_icon": "resources/art/buildings/wonders/torii_gates/torii_gates_icon_64.png",
       "bar_entry": "resources\\art\\buildings\\wonders\\torii_gates\\torii_gates_icon_64.png"
     },
+    "ypwjtoriigatesindependence": {
+      "source": "bar",
+      "proto_icon": "resources/art/buildings/wonders/torii_gates/torii_gates_icon_64.png",
+      "bar_entry": "resources\\art\\buildings\\wonders\\torii_gates\\torii_gates_icon_64.png"
+    },
     "ypwjtoshogushrine2": {
       "source": "bar",
       "proto_icon": "resources/art/buildings/wonders/toshogu_shrine/toshogu_shrine_icon_64.png",
@@ -10052,6 +11047,11 @@
       "bar_entry": "resources\\art\\buildings\\wonders\\toshogu_shrine\\toshogu_shrine_icon_64.png"
     },
     "ypwjtoshogushrine5": {
+      "source": "bar",
+      "proto_icon": "resources/art/buildings/wonders/toshogu_shrine/toshogu_shrine_icon_64.png",
+      "bar_entry": "resources\\art\\buildings\\wonders\\toshogu_shrine\\toshogu_shrine_icon_64.png"
+    },
+    "ypwjtoshogushrineindependence": {
       "source": "bar",
       "proto_icon": "resources/art/buildings/wonders/toshogu_shrine/toshogu_shrine_icon_64.png",
       "bar_entry": "resources\\art\\buildings\\wonders\\toshogu_shrine\\toshogu_shrine_icon_64.png"
