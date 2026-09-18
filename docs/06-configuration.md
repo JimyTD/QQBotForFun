@@ -64,6 +64,12 @@ LLM_CONFIG_PATH=./config/llm.yaml
 # 各供应商的 API Key
 ZHIPU_API_KEY=your_key
 LONGCAT_API_KEY=your_key
+
+# 腾讯云 TokenHub（广州站）：多模型阶梯链。只消费免费额度，不充钱。
+# 控制台需按模型逐个「开通服务」，未开通会返回 402（会被判为额度耗尽而降档）。
+# ⚠️ 广州站与新加坡站 Key 不互通；本项对应 https://tokenhub.tencentmaas.com/v1
+TOKENHUB_API_KEY=your_key
+
 # 可选
 OPENAI_API_KEY=
 OPENROUTER_API_KEY=
@@ -95,74 +101,84 @@ GAME_TURTLE_SOUP_REWARD_ON_WIN=100
 
 ## 3. LLM 场景配置 `config/llm.yaml`
 
+每个 scene 配的不是单个模型，而是一条**阶梯链**（有序候选）：
+链头是首选档，某档额度耗尽/限流/故障时自动降下一档。
+机制细节见 [`08-llm-integration.md`](./08-llm-integration.md) §4.2。
+
 ```yaml
 providers:
   zhipu:
     base_url: https://open.bigmodel.cn/api/paas/v4
     api_key: ${ZHIPU_API_KEY}
     timeout_seconds: 60
-  longcat:
-    base_url: https://api.longcat.chat/openai
-    api_key: ${LONGCAT_API_KEY}
-    timeout_seconds: 30
-  # 未来可加：
-  # openrouter:
-  #   base_url: https://openrouter.ai/api/v1
-  #   api_key: ${OPENROUTER_API_KEY}
 
-# 默认重试策略
+  tokenhub:                                  # 腾讯云 TokenHub（广州站）
+    base_url: https://tokenhub.tencentmaas.com/v1
+    api_key: ${TOKENHUB_API_KEY}
+    timeout_seconds: 60
+
+# 默认重试策略（用于单档内的就地重试）
 defaults:
   retries: 3
   backoff_base_seconds: 1.0
   backoff_max_seconds: 10.0
 
-# 场景 → 模型 映射（详见 config/llm.yaml 顶部注释）
 scenes:
   default:
-    provider: zhipu
-    model: glm-4-flash-250414
+    chain:                                   # 有序候选，按序降级
+      - tokenhub:glm-5.1                     # 显式指定 provider
+      - qwen3.5-flash                        # 不带前缀 → 继承 scene 的 provider
+      - zhipu:glm-4-flash-250414             # 跨家兜底
     temperature: 0.7
     max_tokens: 1024
 
-  turtle_soup_host:
-    provider: zhipu
-    model: glm-4-flash-250414
-    temperature: 0.9
-    max_tokens: 2048
-    json_mode_default: true
-
   turtle_soup_judge:
-    provider: longcat
-    model: LongCat-Flash-Chat
+    chain:
+      - tokenhub:qwen3.5-plus
+      - tokenhub:deepseek-v4-flash-202605
+      - zhipu:glm-4-flash-250414
     temperature: 0.1
     max_tokens: 256
     json_mode_default: true
     timeout_seconds: 30
-
-  turtle_soup_claim:
-    provider: longcat
-    model: LongCat-Flash-Chat
-    temperature: 0.2
-    max_tokens: 512
-    json_mode_default: true
-    timeout_seconds: 45
 ```
 
 ### 3.1 变量插值
-配置文件中 `${VAR_NAME}` 会被替换为同名环境变量。
+配置文件中 `${VAR_NAME}` 会被替换为同名环境变量
+（优先从 `Settings` 取，其次 `os.environ`）。
 
-### 3.2 场景 fallback
-未来可扩展：
-```yaml
-scenes:
-  turtle_soup_judge:
-    provider: zhipu
-    model: glm-4-flash
-    fallback:
-      - provider: longcat
-        model: LongCat-Flash-Lite
-```
-当主模型失败达重试上限后，自动切换到 fallback。v1 暂不启用。
+### 3.2 链元素写法
+
+| 写法 | 含义 |
+|---|---|
+| `chain: [a, b]` + `provider: p` | `a`、`b` 都用 provider `p` |
+| `chain: [p1:a, p2:b]` | 逐档显式指定 provider（可跨家兜底） |
+| `provider: p` + `model: m` | **旧写法仍然有效**，等价于 `chain: [p:m]`（单档链） |
+
+`provider:model` 按**第一个**冒号切分，所以模型名里的斜杠是安全的
+（如 `tokenhub:deepseek/deepseek-flash`）。
+
+链上任一 provider 未在 `providers` 声明 → 启动报 `LLMConfigError`；
+链上 provider 缺 api_key → 只 WARNING（该档会被跳过并降级），不阻断启动。
+
+### 3.3 启动时自动裁剪死档
+
+`llm.init()` 会拉一次 TokenHub `GET /v1/models`，把**已停服**的档从链上剔除
+—— 模型下线后**不必改配置**。该接口的 `status` 有三种取值：
+
+| status | 含义 | 处理 |
+|---|---|---|
+| `online` | 正常在服 | 可用 |
+| **`pre-offline`** | **已公告下线，但仍可调用** | ✅ **保留** —— 这正是最该优先烧的那批 |
+| `discontinued` | 已停服 | 剔除 |
+
+采用**黑名单**策略（只剔 `discontinued`）：字段没见过时宁可当成可用，
+也不要把能调的档误剔掉。注意：
+
+- 该接口返回的是**平台全量清单**（实测 121 个），**不代表当前 Key 已开通哪些**；
+  能否调用仍以实际请求为准（未开通 / 额度耗尽都是 402）；
+- 该接口**不反映额度是否耗尽**（额度只能靠 402 实际探测）；
+- 接口失败**只告警、不阻断启动**（退化为「不裁剪，按配置原样跑」）。
 
 ## 4. NoneBot 内部配置
 
@@ -189,3 +205,4 @@ COMMAND_SEP=[" "]
 | 版本 | 日期 | 变更 |
 |---|---|---|
 | v1 | 2026-04-28 | 初版 |
+| v2 | 2026-09-17 | 新增 `TOKENHUB_API_KEY`；§3 改为**阶梯链**语法（`chain:` + `provider:model`），补充 §3.2 链元素写法与 §3.3 启动时自动裁剪死档 |

@@ -9,96 +9,249 @@ providers:
     api_key: ${LONGCAT_API_KEY}
     timeout_seconds: 30
 
+  # 腾讯云 TokenHub（广州站）——单 Key 多模型，OpenAI 兼容。
+  # 本项目**只消费免费额度**：额度按模型各自独立、不刷新、用完/下线即失效。
+  # 每个模型要在控制台单独开通，未开通会返回 402（会被判为「额度耗尽」而降档）。
+  # ⚠️ 广州站与新加坡站 Key 不互通；此处对应广州站的 base_url。
+  tokenhub:
+    base_url: https://tokenhub.tencentmaas.com/v1
+    api_key: ${TOKENHUB_API_KEY}
+    timeout_seconds: 60
+
 defaults:
   retries: 3
   backoff_base_seconds: 1.0
   backoff_max_seconds: 10.0
 
-# 生产模型矩阵（2026-06-02 更新 · LongCat 旧模型 2026-05-29 全部下线）
+# =====================================================================
+# 阶梯链（ladder）配置说明
+# =====================================================================
+# 设计文档：docs/plans/2026-09-17-llm-tokenhub-model-ladder.md
 #
-# | scene              | 模块                 | model                |
-# |--------------------|----------------------|----------------------|
-# | turtle_soup_judge  | 海龟汤 · 提问判定    | glm-4-flash-250414   |
-# | turtle_soup_claim  | 海龟汤 · 宣告判定    | glm-4-flash-250414   |
-# | web_search         | 查资料 · 搜索总结    | glm-4-flash-250414   |
-# | ask_ai             | 查资料 · LLM 兜底    | glm-4-flash-250414   |
-# | turtle_soup_host   | 海龟汤 · LLM 出题    | glm-4-flash-250414   |
-# | trivia_host        | 趣味问答 · LLM 补题  | glm-4-flash-250414   |
-# | finance_report     | 经济天气 · 播报生成  | glm-4-flash-250414   |
-# | default            | 兜底                 | glm-4-flash-250414   |
+# 每个 scene 的 `chain` 是一条**有序候选链**：
+#   - 链头是首选档，依次往后是降级档；
+#   - 某档**额度耗尽 / 鉴权失败 / 模型下线**时打冷却并**自动降下一档**；
+#   - 限流与网络抖动只在档内退避重试，不降档；
+#   - 冷却中的档会被**直接跳过**（不浪费一次调用）；
+#   - 返回值里的 model/provider 是**实际生效**的那一档，chain_index>0 表示降过档。
+#
+# 链元素的两种写法：
+#   - `glm-5.1`          → 继承本 scene 的 `provider`
+#   - `tokenhub:glm-5.1` → 显式指定 provider（可跨家兜底）
+#
+# 旧的 `provider:` + `model:` 单模型写法仍然有效（等价于只有一个元素的链）。
+#
+# ---------------------------------------------------------------------
+# A 类公共序：只串「旧 / 临期」档 —— 额度不用就是作废，好资源留给别的安排
+# ---------------------------------------------------------------------
+# 组 1（标称 2026-09-08 已下线，随时失效，最先烧）
+#   tokenhub:qwen3.5-plus / qwen3.5-flash
+# 组 2（2026-10-08 下线）
+#   tokenhub:glm-5.1 / glm-5 / glm-5-turbo
+# 组 3（旧版本快照，会被优先清理）
+#   tokenhub:deepseek-v4-pro-202606 / -0813
+#   tokenhub:deepseek-v4-flash-202605 / -0731
+# 组 4（上代通用 + 角色扮演）
+#   tokenhub:kimi-k2.5 / minimax-m2.7 / hunyuan-role-latest / hy-role
+# 尾档（另一家的免费池，永续兜底）
+#   zhipu:glm-4-flash-250414
+#
+# ⚠️ 已知后果：A 类全部下线/耗尽后，TokenHub 这条线会整段归零，
+#    直接落到链尾的智谱。这是**已确认接受**的行为，届时再开新的临期资源。
+#
+# ⚠️ 链序目前是「剩余寿命升序 + 组内质量降序」的**人工初判**，
+#    尚未经 golden eval 验证（见规划 §5.5.0.2）。P1 跑完 eval_judge_compare.py
+#    后按实测结果调整。
+# =====================================================================
 
 scenes:
   default:
-    provider: zhipu
-    model: glm-4-flash-250414
+    chain:
+      - tokenhub:qwen3.5-plus
+      - tokenhub:qwen3.5-flash
+      - tokenhub:glm-5.1
+      - tokenhub:glm-5
+      - tokenhub:glm-5-turbo
+      - tokenhub:deepseek-v4-pro-202606
+      - tokenhub:deepseek-v4-pro-0813
+      - tokenhub:deepseek-v4-flash-202605
+      - tokenhub:deepseek-v4-flash-0731
+      - tokenhub:kimi-k2.5
+      - tokenhub:minimax-m2.7
+      - zhipu:glm-4-flash-250414
     temperature: 0.7
     max_tokens: 1024
 
+  # 出题：1 次/局、创意第一印象 → 创意向的档提前
   turtle_soup_host:
-    provider: zhipu
-    model: glm-4-flash-250414
+    chain:
+      - tokenhub:qwen3.5-plus
+      - tokenhub:qwen3.5-flash
+      - tokenhub:kimi-k2.5
+      - tokenhub:deepseek-v4-pro-0813
+      - tokenhub:glm-5.1
+      - tokenhub:glm-5
+      - tokenhub:glm-5-turbo
+      - tokenhub:deepseek-v4-pro-202606
+      - tokenhub:deepseek-v4-flash-202605
+      - tokenhub:deepseek-v4-flash-0731
+      - tokenhub:minimax-m2.7
+      - zhipu:glm-4-flash-250414
     temperature: 0.9
     max_tokens: 2048
     json_mode_default: true
 
+  # 提问判定：一局 20-50 次且超时只有 30s → 低延迟档必须靠前，
+  # 否则链头一思考就超时，每次调用都要白等一轮。
   turtle_soup_judge:
-    provider: zhipu
-    model: glm-4-flash-250414
+    chain:
+      - tokenhub:qwen3.5-plus
+      - tokenhub:qwen3.5-flash
+      - tokenhub:deepseek-v4-flash-202605
+      - tokenhub:deepseek-v4-flash-0731
+      - tokenhub:glm-5.1
+      - tokenhub:glm-5
+      - tokenhub:glm-5-turbo
+      - tokenhub:deepseek-v4-pro-202606
+      - tokenhub:deepseek-v4-pro-0813
+      - tokenhub:kimi-k2.5
+      - tokenhub:minimax-m2.7
+      - zhipu:glm-4-flash-250414
     temperature: 0.1
     max_tokens: 256
     json_mode_default: true
     timeout_seconds: 30
 
+  # 宣告判定：1-3 次/局但决定胜负 → 判定质量优先
   turtle_soup_claim:
-    provider: zhipu
-    model: glm-4-flash-250414
+    chain:
+      - tokenhub:qwen3.5-plus
+      - tokenhub:qwen3.5-flash
+      - tokenhub:deepseek-v4-pro-202606
+      - tokenhub:deepseek-v4-pro-0813
+      - tokenhub:glm-5.1
+      - tokenhub:glm-5
+      - tokenhub:glm-5-turbo
+      - tokenhub:deepseek-v4-flash-202605
+      - tokenhub:deepseek-v4-flash-0731
+      - tokenhub:kimi-k2.5
+      - tokenhub:minimax-m2.7
+      - zhipu:glm-4-flash-250414
     temperature: 0.2
     max_tokens: 512
     json_mode_default: true
     timeout_seconds: 45
 
   trivia_host:
-    provider: zhipu
-    model: glm-4-flash-250414
+    chain:
+      - tokenhub:qwen3.5-plus
+      - tokenhub:qwen3.5-flash
+      - tokenhub:glm-5.1
+      - tokenhub:kimi-k2.5
+      - tokenhub:glm-5
+      - tokenhub:glm-5-turbo
+      - tokenhub:deepseek-v4-pro-202606
+      - tokenhub:deepseek-v4-pro-0813
+      - tokenhub:deepseek-v4-flash-202605
+      - tokenhub:deepseek-v4-flash-0731
+      - tokenhub:minimax-m2.7
+      - zhipu:glm-4-flash-250414
     temperature: 0.9
     max_tokens: 1024
     json_mode_default: true
     timeout_seconds: 30
 
-  ask_ai:
-    provider: zhipu
-    model: glm-4-flash-250414
-    temperature: 0.7
-    max_tokens: 1536
-    timeout_seconds: 45
-
+  # 长文归纳吃上下文窗口
   web_search:
-    provider: zhipu
-    model: glm-4-flash-250414
+    chain:
+      - tokenhub:qwen3.5-plus
+      - tokenhub:qwen3.5-flash
+      - tokenhub:deepseek-v4-flash-0731
+      - tokenhub:deepseek-v4-flash-202605
+      - tokenhub:glm-5.1
+      - tokenhub:kimi-k2.5
+      - tokenhub:glm-5
+      - tokenhub:glm-5-turbo
+      - tokenhub:deepseek-v4-pro-202606
+      - tokenhub:deepseek-v4-pro-0813
+      - tokenhub:minimax-m2.7
+      - zhipu:glm-4-flash-250414
     temperature: 0.3
     max_tokens: 1536
     timeout_seconds: 45
 
+  ask_ai:
+    chain:
+      - tokenhub:qwen3.5-plus
+      - tokenhub:qwen3.5-flash
+      - tokenhub:glm-5.1
+      - tokenhub:glm-5
+      - tokenhub:glm-5-turbo
+      - tokenhub:deepseek-v4-flash-202605
+      - tokenhub:deepseek-v4-flash-0731
+      - tokenhub:deepseek-v4-pro-202606
+      - tokenhub:deepseek-v4-pro-0813
+      - tokenhub:kimi-k2.5
+      - tokenhub:minimax-m2.7
+      - zhipu:glm-4-flash-250414
+    temperature: 0.7
+    max_tokens: 1536
+    timeout_seconds: 45
+
   finance_report:
-    provider: zhipu
-    model: glm-4-flash-250414
+    chain:
+      - tokenhub:qwen3.5-plus
+      - tokenhub:qwen3.5-flash
+      - tokenhub:glm-5-turbo
+      - tokenhub:glm-5
+      - tokenhub:glm-5.1
+      - tokenhub:minimax-m2.7
+      - tokenhub:deepseek-v4-flash-202605
+      - tokenhub:deepseek-v4-flash-0731
+      - tokenhub:deepseek-v4-pro-202606
+      - tokenhub:deepseek-v4-pro-0813
+      - tokenhub:kimi-k2.5
+      - zhipu:glm-4-flash-250414
     temperature: 0.7
     max_tokens: 512
     timeout_seconds: 30
 
-  # 静夜标记 · AI 玩家决策：温度低、要 JSON、超时短（超时要压过 AI 座位的思考延迟）
+  # AI 玩家决策：高频、要 JSON、超时窗口只有 30s。
+  # `hunyuan-role-latest` / `hy-role` 是角色扮演专用档，放在这里最对口。
   silent_mark_ai:
-    provider: zhipu
-    model: glm-4-flash-250414
+    chain:
+      - tokenhub:qwen3.5-plus
+      - tokenhub:qwen3.5-flash
+      - tokenhub:hunyuan-role-latest
+      - tokenhub:hy-role
+      - tokenhub:deepseek-v4-flash-202605
+      - tokenhub:deepseek-v4-flash-0731
+      - tokenhub:glm-5.1
+      - tokenhub:glm-5
+      - tokenhub:glm-5-turbo
+      - tokenhub:deepseek-v4-pro-202606
+      - tokenhub:deepseek-v4-pro-0813
+      - tokenhub:kimi-k2.5
+      - tokenhub:minimax-m2.7
+      - zhipu:glm-4-flash-250414
     temperature: 0.3
     max_tokens: 1024
     json_mode_default: true
     timeout_seconds: 30
 
-  # 静夜标记 · AI 取名：温度高才有花样，输出极短
+  # AI 取名：输出仅 20 token，用不着强档，短超时
   silent_mark_ai_name:
-    provider: zhipu
-    model: glm-4-flash-250414
+    chain:
+      - tokenhub:qwen3.5-flash
+      - tokenhub:qwen3.5-plus
+      - tokenhub:glm-5
+      - tokenhub:glm-5-turbo
+      - tokenhub:glm-5.1
+      - tokenhub:deepseek-v4-flash-202605
+      - tokenhub:deepseek-v4-flash-0731
+      - tokenhub:kimi-k2.5
+      - tokenhub:minimax-m2.7
+      - zhipu:glm-4-flash-250414
     temperature: 0.9
     max_tokens: 20
     json_mode_default: false

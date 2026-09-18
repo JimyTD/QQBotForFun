@@ -662,7 +662,14 @@ async def _(
 
 
 async def _test_ai() -> str:
-    """`@我 AI 测试`：一次最小调用，确认 AI 链路真的通（而不是默默走兜底）。"""
+    """`@我 AI 测试`：一次最小调用，确认 AI 链路真的通（而不是默默走兜底）。
+
+    ⚠️ 这是全项目唯一**主动消耗额度**的诊断入口 —— 其余诊断走只读的
+    `scripts/llm_status.py`（零额度消耗）。之所以保留它，是因为「链通不通」
+    只有真打一次才知道。
+
+    报的是**实际生效**的那一档：阶梯链降档后能一眼看出落到了哪。
+    """
     try:
         response = await llm.chat(
             [llm.LLMMessage(role="user", content="只回复两个字：可用")],
@@ -673,7 +680,11 @@ async def _test_ai() -> str:
             f"⚠️ AI 不可用：{exc}\n"
             "（对局照样能开：AI 座位会自动走确定性兜底，只是不会「思考」）"
         )
-    return f"🤖 AI 链路正常（{response.model}）：{response.content.strip()[:20]}"
+    slot = f"{response.provider}:{response.model}" if response.provider else response.model
+    degraded = (
+        f"（已从链头降级到第 {response.chain_index + 1} 档）" if response.degraded else ""
+    )
+    return f"🤖 AI 链路正常：{slot}{degraded} → {response.content.strip()[:20]}"
 
 
 _ai = on_command(
