@@ -20,6 +20,7 @@ from core.game_base import GameBase, GameMode, register_game
 from core.errors import InsufficientFundsError
 from core.types import EndReason, GameContext
 
+from src.plugins.aoe3.icons import BLUE_ICON_BACKGROUND, RED_ICON_BACKGROUND, render_icon_png
 from src.plugins.aoe3.repository import UnitRepo
 
 from .broadcaster import (
@@ -487,7 +488,7 @@ class AoE3BattleGame(GameBase):
         for slot in match.red.slots:
             icon_path = _UnitRepo.get().get_icon_path(slot.unit)
             if icon_path:
-                b64 = base64.b64encode(icon_path.read_bytes()).decode()
+                b64 = base64.b64encode(render_icon_png(icon_path, RED_ICON_BACKGROUND)).decode()
                 red_msg.append(MessageSegment.image(f"base64://{b64}"))
         red_msg.append(MessageSegment.text(red_text))
         await session.broadcast_rich(ctx.group_id, red_msg, red_text)
@@ -498,7 +499,7 @@ class AoE3BattleGame(GameBase):
         for slot in match.blue.slots:
             icon_path = _UnitRepo.get().get_icon_path(slot.unit)
             if icon_path:
-                b64 = base64.b64encode(icon_path.read_bytes()).decode()
+                b64 = base64.b64encode(render_icon_png(icon_path, BLUE_ICON_BACKGROUND)).decode()
                 blue_msg.append(MessageSegment.image(f"base64://{b64}"))
         blue_msg.append(MessageSegment.text(blue_text))
         await session.broadcast_rich(ctx.group_id, blue_msg, blue_text)

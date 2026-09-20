@@ -15,6 +15,7 @@ from .formatter import (
     render_compare,
     render_unit_card,
 )
+from .icons import QUERY_ICON_BACKGROUND, render_icon_png
 from .models import Unit
 from .repository import UnitRepo
 
@@ -36,7 +37,7 @@ async def _send_with_icons(
 
     msg = Message()
     for icon_path in icon_paths:
-        b64 = base64.b64encode(icon_path.read_bytes()).decode()
+        b64 = base64.b64encode(render_icon_png(icon_path, QUERY_ICON_BACKGROUND)).decode()
         msg.append(MessageSegment.image(f"base64://{b64}"))
     msg.append(MessageSegment.text(text))
 

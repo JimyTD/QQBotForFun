@@ -139,6 +139,10 @@ uv run python scripts/crawler/aoe3_gamedata_parser.py
 
 查询返回 icon 图片 + 文字属性卡：
 
+查询和对比的 icon 在发送前合成黑色底图；斗蛐蛐普通对战的双方 icon 使用 AoE3:DE 的敌我配色：红方 `RGB(230, 40, 40)` / `#E62828`，蓝方 `RGB(75, 75, 230)` / `#4B4BE6`。输出为不透明 PNG，不受 QQ 气泡颜色影响，原始透明素材保持不变；锦标赛对阵图仍使用自身背景。
+
+颜色来源：[帝国时代官方论坛中的 DE 社区教程](https://forums.ageofempires.com/t/friend-foe-colors-the-tutorial/232827)（2023-06-08）所列的 `playercolors.xml`，取 `friendorfoeenemy` / `friendorfoeself` 的 `color1`，不是小地图的纯红/纯蓝。尚未对照本机最新游戏包复核。
+
 ```
 [icon图片]
 
