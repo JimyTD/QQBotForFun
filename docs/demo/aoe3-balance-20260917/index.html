@@ -1,0 +1,917 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>帝国时代3 单位平衡审查报告</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --ink: #17201d;
+      --muted: #65736e;
+      --paper: #f1efe8;
+      --paper-2: #e8e5db;
+      --panel: #fbfaf6;
+      --line: #d5d1c5;
+      --line-dark: #b9b4a5;
+      --green: #1d7a59;
+      --green-soft: #dcece5;
+      --red: #b24c3d;
+      --red-soft: #f3dfda;
+      --amber: #a66a16;
+      --amber-soft: #f6ead4;
+      --blue: #356a8a;
+      --blue-soft: #dce9ef;
+      --purple: #725d8e;
+      --shadow: 0 12px 28px rgba(34, 42, 38, .07);
+      --radius: 12px;
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      color: var(--ink);
+      background:
+        linear-gradient(rgba(23, 32, 29, .035) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(23, 32, 29, .025) 1px, transparent 1px),
+        var(--paper);
+      background-size: 28px 28px, 28px 28px, auto;
+      font-family: "Noto Sans SC", "Microsoft YaHei", sans-serif;
+      font-size: 15px;
+      line-height: 1.65;
+    }
+
+    a { color: inherit; }
+    button, input, select { font: inherit; }
+    button { cursor: pointer; }
+
+    .shell {
+      width: min(1440px, calc(100% - 32px));
+      margin: 0 auto;
+      padding: 28px 0 64px;
+    }
+
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      display: flex;
+      align-items: center;
+      gap: 18px;
+      padding: 12px 0;
+      background: color-mix(in srgb, var(--paper) 90%, transparent);
+      backdrop-filter: blur(14px);
+      border-bottom: 1px solid rgba(23, 32, 29, .1);
+    }
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      min-width: 220px;
+      font-weight: 800;
+      letter-spacing: .02em;
+    }
+    .brand-mark {
+      width: 34px;
+      height: 34px;
+      display: grid;
+      place-items: center;
+      border: 1px solid var(--ink);
+      background: var(--ink);
+      color: var(--paper);
+      font-size: 12px;
+      transform: rotate(-3deg);
+    }
+    .topnav {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 2px 18px;
+      font-size: 13px;
+    }
+    .topnav a {
+      padding: 6px 0;
+      text-decoration: none;
+      color: var(--muted);
+      border-bottom: 2px solid transparent;
+    }
+    .topnav a:hover { color: var(--ink); border-color: var(--ink); }
+    .top-meta {
+      margin-left: auto;
+      color: var(--muted);
+      font-size: 12px;
+      white-space: nowrap;
+    }
+
+    .hero {
+      display: grid;
+      grid-template-columns: minmax(0, 1.45fr) minmax(340px, .55fr);
+      gap: 20px;
+      padding: 46px 0 28px;
+      align-items: stretch;
+    }
+    .hero-copy {
+      position: relative;
+      padding: 20px 24px 22px 0;
+    }
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 20px;
+      color: var(--red);
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: .16em;
+      text-transform: uppercase;
+    }
+    .eyebrow::before {
+      content: "";
+      width: 24px;
+      height: 2px;
+      background: var(--red);
+    }
+    h1 {
+      max-width: 850px;
+      margin: 0;
+      font-size: clamp(38px, 5.1vw, 76px);
+      line-height: .98;
+      letter-spacing: -.045em;
+      font-weight: 800;
+    }
+    .hero-lede {
+      max-width: 760px;
+      margin: 24px 0 0;
+      color: #495650;
+      font-size: 17px;
+      line-height: 1.8;
+    }
+    .hero-stamp {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      margin-top: 24px;
+      padding: 9px 12px;
+      border: 1px solid var(--line-dark);
+      background: rgba(251, 250, 246, .65);
+      color: var(--muted);
+      font-size: 12px;
+    }
+    .hero-stamp strong { color: var(--ink); }
+
+    .hero-card {
+      position: relative;
+      overflow: hidden;
+      min-height: 324px;
+      padding: 21px 22px;
+      background: var(--ink);
+      color: var(--paper);
+      box-shadow: var(--shadow);
+    }
+    .hero-card::before {
+      content: "BALANCE / 2026.09";
+      position: absolute;
+      right: -64px;
+      top: 74px;
+      transform: rotate(90deg);
+      color: rgba(241, 239, 232, .16);
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: .22em;
+    }
+    .hero-card-kicker {
+      color: #a8bbb3;
+      font-size: 11px;
+      letter-spacing: .2em;
+      text-transform: uppercase;
+    }
+    .hero-card h2 {
+      max-width: 310px;
+      margin: 14px 0 22px;
+      font-size: 26px;
+      line-height: 1.2;
+    }
+    .verdict-list { display: grid; gap: 13px; margin: 0; padding: 0; list-style: none; }
+    .verdict-list li {
+      display: grid;
+      grid-template-columns: 60px 1fr;
+      gap: 12px;
+      padding-top: 12px;
+      border-top: 1px solid rgba(241, 239, 232, .18);
+    }
+    .verdict-list b { color: var(--paper); font-size: 12px; }
+    .verdict-list span { color: #d4ddd8; font-size: 13px; }
+
+    .kpis {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 1px;
+      margin: 20px 0 0;
+      background: var(--line);
+      border: 1px solid var(--line);
+    }
+    .kpi {
+      min-height: 126px;
+      padding: 16px 18px;
+      background: var(--panel);
+    }
+    .kpi-label { color: var(--muted); font-size: 12px; }
+    .kpi-value {
+      margin-top: 10px;
+      font-size: 38px;
+      line-height: 1;
+      font-weight: 800;
+      letter-spacing: -.05em;
+    }
+    .kpi-note { margin-top: 13px; color: var(--muted); font-size: 12px; }
+    .kpi.green .kpi-value { color: var(--green); }
+    .kpi.red .kpi-value { color: var(--red); }
+    .kpi.amber .kpi-value { color: var(--amber); }
+
+    section { scroll-margin-top: 88px; }
+    .section {
+      margin-top: 46px;
+    }
+    .section-head {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      align-items: end;
+      gap: 20px;
+      margin-bottom: 18px;
+      padding-bottom: 12px;
+      border-bottom: 2px solid var(--ink);
+    }
+    .section-kicker {
+      color: var(--red);
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: .16em;
+      text-transform: uppercase;
+    }
+    h2 {
+      margin: 5px 0 0;
+      font-size: clamp(27px, 3.2vw, 44px);
+      line-height: 1.1;
+      letter-spacing: -.035em;
+    }
+    .section-note { max-width: 560px; color: var(--muted); font-size: 13px; text-align: right; }
+
+    .panel {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      box-shadow: var(--shadow);
+    }
+
+    .overview-grid {
+      display: grid;
+      grid-template-columns: minmax(0, .9fr) minmax(0, 1.1fr);
+      gap: 18px;
+    }
+    .overview-copy {
+      padding: 26px;
+      background: var(--panel);
+      border: 1px solid var(--line);
+    }
+    .overview-copy h3 {
+      margin: 0 0 14px;
+      font-size: 21px;
+      line-height: 1.3;
+    }
+    .overview-copy p { margin: 0 0 13px; color: #4c5953; }
+    .overview-copy p:last-child { margin-bottom: 0; }
+    .callout {
+      margin-top: 18px;
+      padding: 14px 16px;
+      border-left: 3px solid var(--amber);
+      background: var(--amber-soft);
+      color: #624617;
+      font-size: 13px;
+    }
+
+    .chart-wrap {
+      position: relative;
+      padding: 22px;
+      background: var(--panel);
+      border: 1px solid var(--line);
+      min-height: 430px;
+    }
+    .chart-title {
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      align-items: baseline;
+      margin-bottom: 12px;
+    }
+    .chart-title h3 { margin: 0; font-size: 18px; }
+    .chart-title span { color: var(--muted); font-size: 12px; }
+    #delta-chart {
+      width: 100%;
+      height: 360px;
+      overflow: visible;
+    }
+    #delta-chart text { fill: var(--ink); font-size: 11px; }
+    #delta-chart .axis-label { fill: var(--muted); font-size: 10px; }
+    #delta-chart .grid { stroke: rgba(23, 32, 29, .12); stroke-width: 1; }
+    #delta-chart .zero { stroke: var(--ink); stroke-width: 1.5; }
+    #delta-chart .bar-buff { fill: var(--green); }
+    #delta-chart .bar-nerf { fill: var(--red); }
+    #delta-chart .bar-neutral { fill: var(--amber); }
+
+    .filterbar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      align-items: end;
+      padding: 14px;
+      margin-bottom: 14px;
+      background: var(--paper-2);
+      border: 1px solid var(--line);
+    }
+    .field { display: grid; gap: 5px; min-width: 160px; }
+    .field label { color: var(--muted); font-size: 11px; font-weight: 700; }
+    .field input, .field select {
+      min-height: 38px;
+      padding: 7px 10px;
+      border: 1px solid var(--line-dark);
+      background: var(--panel);
+      color: var(--ink);
+      outline: none;
+    }
+    .field input:focus, .field select:focus { border-color: var(--ink); box-shadow: 0 0 0 2px rgba(23,32,29,.1); }
+    .field.grow { flex: 1 1 220px; }
+    .filter-count {
+      margin-left: auto;
+      align-self: center;
+      color: var(--muted);
+      font-size: 12px;
+      white-space: nowrap;
+    }
+
+    .change-list { display: grid; gap: 10px; }
+    .change-card {
+      display: grid;
+      grid-template-columns: 62px minmax(0, 1.25fr) minmax(260px, .9fr) 120px;
+      gap: 14px;
+      align-items: start;
+      padding: 15px;
+      background: var(--panel);
+      border: 1px solid var(--line);
+      transition: transform .18s ease, box-shadow .18s ease;
+    }
+    .change-card:hover { transform: translateY(-2px); box-shadow: var(--shadow); }
+    .unit-icon {
+      width: 62px;
+      height: 62px;
+      object-fit: cover;
+      border: 1px solid var(--line-dark);
+      background: var(--paper-2);
+    }
+    .unit-icon.fallback {
+      display: grid;
+      place-items: center;
+      color: var(--muted);
+      font-size: 11px;
+    }
+    .unit-title {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 7px;
+      align-items: baseline;
+      margin-bottom: 6px;
+    }
+    .unit-title h3 { margin: 0; font-size: 18px; }
+    .unit-title code { color: var(--muted); font-size: 11px; }
+    .tags { display: flex; flex-wrap: wrap; gap: 5px; margin: 8px 0; }
+    .tag {
+      display: inline-flex;
+      align-items: center;
+      min-height: 24px;
+      padding: 2px 8px;
+      border: 1px solid var(--line);
+      background: var(--paper-2);
+      color: var(--muted);
+      font-size: 11px;
+    }
+    .tag.buff { color: var(--green); background: var(--green-soft); border-color: #b8d7c9; }
+    .tag.nerf { color: var(--red); background: var(--red-soft); border-color: #e1beb6; }
+    .tag.neutral { color: var(--amber); background: var(--amber-soft); border-color: #e4cfa9; }
+    .summary-text { color: #4a5751; font-size: 13px; }
+    .fields { margin-top: 10px; color: var(--muted); font-size: 11px; }
+    .metrics {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 8px;
+      align-self: stretch;
+    }
+    .metric {
+      padding: 9px 10px;
+      border-left: 2px solid var(--line-dark);
+      background: #f4f2eb;
+    }
+    .metric-label { color: var(--muted); font-size: 10px; }
+    .metric-value { margin-top: 3px; font-size: 17px; font-weight: 800; }
+    .metric-value.buff { color: var(--green); }
+    .metric-value.nerf { color: var(--red); }
+    .metric-value.neutral { color: var(--amber); }
+    .metric-sub { color: var(--muted); font-size: 10px; }
+    .change-side {
+      display: grid;
+      gap: 8px;
+      align-content: start;
+      text-align: right;
+    }
+    .rank-no {
+      color: var(--muted);
+      font-size: 11px;
+      letter-spacing: .08em;
+    }
+    .sim-chip {
+      display: inline-flex;
+      justify-content: center;
+      padding: 7px 9px;
+      border: 1px solid var(--line);
+      background: var(--paper-2);
+      color: var(--muted);
+      font-size: 11px;
+    }
+    .sim-chip strong { color: var(--ink); }
+
+    .two-col {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+      gap: 18px;
+    }
+    .table-panel {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      overflow: hidden;
+    }
+    .table-head {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: baseline;
+      padding: 18px 18px 12px;
+      border-bottom: 1px solid var(--line);
+    }
+    .table-head h3 { margin: 0; font-size: 18px; }
+    .table-head span { color: var(--muted); font-size: 12px; }
+    .table-scroll { overflow-x: auto; }
+    table { width: 100%; border-collapse: collapse; }
+    th, td { padding: 10px 14px; text-align: left; vertical-align: top; border-bottom: 1px solid var(--line); }
+    th { color: var(--muted); background: #f4f2eb; font-size: 11px; font-weight: 700; white-space: nowrap; }
+    td { font-size: 12px; }
+    tr:last-child td { border-bottom: 0; }
+    .num { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+    .name-cell { min-width: 170px; }
+    .name-cell strong { display: block; font-size: 13px; }
+    .name-cell small { color: var(--muted); }
+
+    .notes-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 14px;
+    }
+    .note-card {
+      padding: 20px;
+      background: var(--panel);
+      border-top: 3px solid var(--ink);
+      border-right: 1px solid var(--line);
+      border-bottom: 1px solid var(--line);
+      border-left: 1px solid var(--line);
+    }
+    .note-card h3 { margin: 0 0 9px; font-size: 17px; }
+    .note-card p { margin: 0; color: #4c5953; font-size: 13px; }
+    .note-card.buff { border-top-color: var(--green); }
+    .note-card.nerf { border-top-color: var(--red); }
+    .note-card.mixed { border-top-color: var(--amber); }
+
+    .method {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 1px;
+      background: var(--line);
+      border: 1px solid var(--line);
+    }
+    .method-item { padding: 18px; background: var(--panel); }
+    .method-item b { display: block; margin-bottom: 6px; font-size: 13px; }
+    .method-item p { margin: 0; color: var(--muted); font-size: 12px; }
+
+    footer {
+      margin-top: 52px;
+      padding-top: 18px;
+      border-top: 1px solid var(--line-dark);
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    @media (max-width: 1080px) {
+      .hero { grid-template-columns: 1fr; }
+      .hero-card { min-height: auto; }
+      .overview-grid, .two-col { grid-template-columns: 1fr; }
+      .change-card { grid-template-columns: 58px minmax(0, 1fr) minmax(250px, .9fr); }
+      .change-side { grid-column: 2 / -1; display: flex; justify-content: space-between; text-align: left; }
+      .notes-grid, .method { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+    @media (max-width: 760px) {
+      .shell { width: min(100% - 20px, 700px); padding-top: 12px; }
+      .topbar { position: static; align-items: flex-start; flex-wrap: wrap; gap: 8px 14px; }
+      .brand { min-width: 0; width: 100%; }
+      .top-meta { margin-left: 0; }
+      .hero { padding-top: 24px; }
+      .hero-copy { padding-right: 0; }
+      h1 { font-size: clamp(36px, 12vw, 58px); }
+      .hero-lede { font-size: 15px; }
+      .kpis { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .kpi { min-height: 108px; padding: 13px; }
+      .kpi-value { font-size: 34px; }
+      .section-head { grid-template-columns: 1fr; align-items: start; }
+      .section-note { text-align: left; }
+      .filterbar { align-items: stretch; }
+      .field, .field.grow { min-width: 0; width: 100%; }
+      .filter-count { margin-left: 0; }
+      .change-card { grid-template-columns: 48px minmax(0, 1fr); gap: 10px; padding: 12px; }
+      .unit-title h3 { font-size: 16px; }
+      .summary-text { font-size: 12px; line-height: 1.55; }
+      .tags { margin: 6px 0; }
+      .fields { margin-top: 7px; }
+      .unit-icon { width: 52px; height: 52px; }
+      .metrics { grid-column: 2; grid-template-columns: 1fr 1fr; }
+      .change-side { grid-column: 2; }
+      .notes-grid, .method { grid-template-columns: 1fr; }
+      .chart-wrap { padding: 15px; }
+      #delta-chart { height: 300px; }
+      th, td { padding: 8px 10px; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+      .change-card { transition: none; }
+    }
+  </style>
+</head>
+<body>
+  <main class="shell">
+    <header class="topbar">
+      <div class="brand"><span class="brand-mark">AOE3</span><span>斗蛐蛐 / 平衡审查台</span></div>
+      <nav class="topnav" aria-label="报告导航">
+        <a href="#overview">总览</a>
+        <a href="#changes">全部改动</a>
+        <a href="#added">新增单位</a>
+        <a href="#method">判定口径</a>
+      </nav>
+      <div class="top-meta">旧快照 2026-05-29 · 新快照 2026-09-11</div>
+    </header>
+
+    <section class="hero" id="overview">
+      <div class="hero-copy">
+        <div class="eyebrow">Data refresh / unit balance</div>
+        <h1>帝国3这版，<br>改的不是数量，<br>是战斗条件。</h1>
+        <p class="hero-lede">
+          从 2026-05-29 快照到 2026-09-11 游戏数据，共同单位中有 225 个字段发生变化。
+          真正值得看的不是“改了多少种”，而是 86 个战斗单位里，谁获得了攻击槽、谁换了倍率、
+          谁被时代提前或推后，以及这些变化在斗蛐蛐模拟器里是否真的转化成胜率。
+        </p>
+        <div class="hero-stamp"><strong>结论口径</strong> 面板属性 · 静态战力分 · 镜像模拟，三层交叉</div>
+      </div>
+      <aside class="hero-card">
+        <div class="hero-card-kicker">快速结论</div>
+        <h2>真正拉开差距的，主要是机制变化，不是几个数字。</h2>
+        <ul class="verdict-list">
+          <li><b>大幅增强</b><span>剧情酋长集体升血、升攻，石田大名则是极端增强样本。</span></li>
+          <li><b>条件增强</b><span>骑射手补近战槽；加塞尼亚降低基础攻、提高骑反倍率。</span></li>
+          <li><b>明确削弱</b><span>利普卡鞑靼人降攻涨价；塔斯云坎、弓骑士同时下调核心属性。</span></li>
+          <li><b>重点机制</b><span>阿兹特克鹰勇士、霍尔坎标枪手等改用更短抬手的近战动作。</span></li>
+        </ul>
+      </aside>
+    </section>
+
+    <div class="kpis" aria-label="核心数字">
+      <div class="kpi">
+        <div class="kpi-label">共同单位字段变化</div>
+        <div class="kpi-value">225</div>
+        <div class="kpi-note">其中 120 个只有文本、标签或元数据变化</div>
+      </div>
+      <div class="kpi amber">
+        <div class="kpi-label">战斗或成本侧变化</div>
+        <div class="kpi-value">105</div>
+        <div class="kpi-note">86 个涉及战斗字段，25 个涉及经济字段</div>
+      </div>
+      <div class="kpi green">
+        <div class="kpi-label">静态战力分显著增强</div>
+        <div class="kpi-value">4</div>
+        <div class="kpi-note">分档为 +20% 以上；不等同于实战绝对强度</div>
+      </div>
+      <div class="kpi red">
+        <div class="kpi-label">镜像模拟显著偏离</div>
+        <div class="kpi-value">27 / 10</div>
+        <div class="kpi-note">胜率 ≥65% / ≤35%；20 种子、每项 40 场</div>
+      </div>
+    </div>
+
+    <section class="section">
+      <div class="section-head">
+        <div><div class="section-kicker">01 / Overview</div><h2>先把“改了什么”拆开</h2></div>
+        <div class="section-note">图表和单位清单都可以直接向下展开阅读；所有模拟结论都来自仓库内斗蛐蛐模拟器，而不是游戏客户端的实战天梯数据。</div>
+      </div>
+      <div class="overview-grid">
+        <article class="overview-copy">
+          <h3>这份版本差异的结构很不对称。</h3>
+          <p>
+            225 个变化里，绝大多数是文本、分类字段或结构标签。真正会改变斗蛐蛐表现的，
+            是 86 个战斗字段变化和 25 个经济字段变化；两者有重叠，合计 105 个。
+          </p>
+          <p>
+            页面把“静态战力分”当作一个统一尺子：它只看血量、护甲、攻击、AOE、射速和弹丸数，
+            因此对倍率、射程、抬手、攻击槽、时代和成本并不完全公平。遇到这些盲区，报告会以
+            “机制型”标注，并优先用模拟器结果解释。
+          </p>
+          <div class="callout">
+            <strong>不要直接比较 100% 和 50%。</strong>
+            大型单位的镜像胜率常常因克制链、攻击槽和站位呈现 0/1 极端值；它是交叉验证，
+            不是一张“谁最强”的排行榜。
+          </div>
+        </article>
+        <article class="chart-wrap">
+          <div class="chart-title"><h3>战斗/成本单位的量化变化</h3><span>静态战力分变化率，包含越界样本</span></div>
+          <svg id="delta-chart" role="img" aria-labelledby="delta-title delta-desc" viewBox="0 0 720 360" preserveAspectRatio="xMidYMid meet">
+            <title id="delta-title">单位战力分变化</title>
+            <desc id="delta-desc">展示发生战斗或经济变化的单位，以及每项静态战力分变化率。</desc>
+          </svg>
+        </article>
+      </div>
+    </section>
+
+    <section class="section" id="changes">
+      <div class="section-head">
+        <div><div class="section-kicker">02 / Unit ledger</div><h2>逐单位改动账本</h2></div>
+        <div class="section-note">筛选不会隐藏原始数据。排序默认按静态战力分变化；机制型、经济侧和模拟器极端值都在卡片里单独呈现。</div>
+      </div>
+
+      <div class="filterbar">
+        <div class="field grow">
+          <label for="search">搜索单位</label>
+          <input id="search" type="search" placeholder="输入中文名、英文名或 id">
+        </div>
+        <div class="field">
+          <label for="direction">变化方向</label>
+          <select id="direction">
+            <option value="all">全部方向</option>
+            <option value="buff">增强</option>
+            <option value="nerf">削弱</option>
+            <option value="struct">结构性改动</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="impact">影响类型</label>
+          <select id="impact">
+            <option value="all">全部类型</option>
+            <option value="combat">直接战斗</option>
+            <option value="mechanic">机制型</option>
+            <option value="survival">生存型</option>
+            <option value="economy">经济侧</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="sort">排序</label>
+          <select id="sort">
+            <option value="score-desc">战力分：高到低</option>
+            <option value="score-asc">战力分：低到高</option>
+            <option value="name">名称</option>
+          </select>
+        </div>
+        <div class="filter-count" id="filter-count" aria-live="polite"></div>
+      </div>
+      <div class="change-list" id="change-list"></div>
+    </section>
+
+    <section class="section" id="added">
+      <div class="section-head">
+        <div><div class="section-kicker">03 / New roster</div><h2>新增与消失单位</h2></div>
+        <div class="section-note">新增 65 个数据单位、消失 6 个。新增列表包含战役、召唤、旗帜军和原住民变体；可战斗、可入池的常规单位与特殊单位分开看。</div>
+      </div>
+      <div class="two-col">
+        <article class="table-panel">
+          <div class="table-head"><h3>新增单位</h3><span>按战力分排序，显示前 45 个</span></div>
+          <div class="table-scroll">
+            <table>
+              <thead><tr><th>单位</th><th>时代</th><th class="num">HP</th><th class="num">远 / 近 / 攻</th><th class="num">战力分</th></tr></thead>
+              <tbody id="added-body"></tbody>
+            </table>
+          </div>
+        </article>
+        <article class="table-panel">
+          <div class="table-head"><h3>消失单位</h3><span>旧数据独有，刷新后不再作为同一单位存在</span></div>
+          <div class="table-scroll">
+            <table>
+              <thead><tr><th>单位</th><th>HP</th><th class="num">旧战力分</th></tr></thead>
+              <tbody id="removed-body"></tbody>
+            </table>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="section-head">
+        <div><div class="section-kicker">04 / Reading</div><h2>这版真正改变了什么</h2></div>
+        <div class="section-note">下面是对本轮数据里最值得单独记住的几类变化：大幅增强、明确削弱、条件变化和机制盲区。</div>
+      </div>
+      <div class="notes-grid">
+        <article class="note-card buff">
+          <h3>大幅增强：剧情单位</h3>
+          <p>狼勇士、巨熊和双月三位酋长的血量集体推到 750，近战或远程攻击同时上调；石田大名更是从 1250 血、10 近战、0.6 远甲升到 2500 血、70 近战、0.7 远甲。它们属于普通对战黑名单，但黑名单乱斗的强度格局会被明显改写。</p>
+        </article>
+        <article class="note-card nerf">
+          <h3>明确削弱：利普卡鞑靼人</h3>
+          <p>远程攻击从 12.5 降到 10，造价从 70 肉 / 60 木提到 80 肉 / 70 木，攻防与资源效率同时恶化。对应指标是静态战力约 -10.6%、DPS 约 -20%、模拟器镜像胜率 0%，属于本轮最干净的直接削弱之一。</p>
+        </article>
+        <article class="note-card mixed">
+          <h3>条件增强：骑射手获得近战槽</h3>
+          <p>骑射手新增 6.5 点近战攻击、Hand 伤害类型、1.75 近战射程和对重骑 4.5 倍、对土狼 3.5 倍、对炮 2 倍倍率。静态分保持不变，是因为主战远程槽未变；但被贴身或反骑时的下限被补齐了。</p>
+        </article>
+        <article class="note-card mixed">
+          <h3>攻速置换：加塞尼亚</h3>
+          <p>近战基础攻从 15 降到 12、血量 135 升到 140，看起来接近互抵；但对骑兵倍率从 3.0 提到 4.0、对轻型步兵从 2.25 提到 2.5。反骑职责更强，泛用输出更弱，属于角色收窄而不是简单削弱。</p>
+        </article>
+        <article class="note-card">
+          <h3>机制盲区：鹰勇士与霍尔坎</h3>
+          <p>阿兹特克鹰勇士和霍尔坎标枪手的近战代表动作从 VolleyHandAttack 改成 MeleeHandAttack，近战抬手从 0.47 秒降到 0.37 秒。静态战力分不会读到这类变化，因此页面上标为机制型，模拟器结果比分数更可信。</p>
+        </article>
+        <article class="note-card">
+          <h3>时代与射程：塔斯云坎、弓骑士</h3>
+          <p>塔斯云坎的登场时代从工业提前到堡垒，但近战、攻城和血量全部下调；弓骑士基础远程 20 降到 18、血量小增，但对重骑倍率从 2.25 提到 2.5。前者是可用时间换数值，后者是泛用换克制。</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="section" id="method">
+      <div class="section-head">
+        <div><div class="section-kicker">05 / Method</div><h2>判定口径与边界</h2></div>
+        <div class="section-note">报告优先保证结论可复核，不把模型盲区伪装成确定结论。每项原始差异都能回到 balance_review.json 和刷新报告。</div>
+      </div>
+      <div class="method">
+        <div class="method-item"><b>数据层</b><p>旧数据取 git 提交 b6c8f08^ 的 seeds/aoe3/units.json；新数据取刷新后的快照。比较的是共同 id 的字段差异。</p></div>
+        <div class="method-item"><b>静态战力分</b><p>沿用黑名单乱斗的 power_score：sqrt(有效血量 × 有效 DPS)，只覆盖血量、护甲、攻击、AOE、射速和弹丸。</p></div>
+        <div class="method-item"><b>模拟器镜像战</b><p>新版 10 个 vs 旧版 10 个，红蓝交换，20 个种子，每项 40 场；用胜率交叉验证分数变化。</p></div>
+        <div class="method-item"><b>边界</b><p>倍率、射程、抬手、时代、成本和攻击槽对 power_score 不完整；单位是否能进入普通池还要看黑名单与过滤规则。</p></div>
+      </div>
+    </section>
+
+    <footer>
+      报告生成于本地仓库数据。原始对比：<code>docs/aoe3-data-refresh-20260917.md</code>；量化输入：<code>data/aoe3/balance_review.json</code>。未把游戏客户端实战胜率、文明强度或完整历史补丁累计变化混入本报告。
+    </footer>
+  </main>
+
+  <script>
+    const DATA = {"meta":{"old_rev":"b6c8f08^","old_units":756,"new_units":815,"added":65,"removed":6,"changed":225,"combat_changed":86,"sim_count":10,"sim_seeds":[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19],"sim_battles_each":40},"summary":{"基本持平":80,"纯文本/标签":120,"小幅增强":13,"小幅削弱":5,"无法评分":3,"显著增强":4},"changed":[{"id":"abusgun","name":"奥斯曼枪手","nameOld":"奥斯曼枪手","nameEn":"Abus Gunner","age":"Commerce Age","unitClass":"远程步兵","direction":"削弱","impact":"直接战斗","summary":"削弱：36 → 34（-5.6%）","fields":["attack_ranged","description"],"fieldLabels":["远程攻击","描述"],"scoreOld":40.66,"scoreNew":39.52,"scoreDelta":-2.82,"dpsOld":12.0,"dpsNew":11.33,"dpsDelta":-5.56,"hpOld":130,"hpNew":130,"costDelta":null,"sim":0.5,"vsRef":{"musketeer":{"name":"火枪兵","new":1.0,"old":1.0,"delta":0.0},"hussar":{"name":"轻骑兵","new":0.0,"old":0.0,"delta":0.0},"crossbowman":{"name":"弩手","new":1.0,"old":1.0,"delta":0.0},"falconet":{"name":"鹰炮","new":0.0,"old":0.0,"delta":0.0}},"icon":"icons/abusgun.png","blind":false,"excluded":false},{"id":"cavalryarcher","name":"骑射手","nameOld":"骑射手","nameEn":"Cavalry Archer","age":"Fortress Age","unitClass":"骑兵","direction":"结构性改动","impact":"机制型","summary":"机制增强：新增 6.5 近战攻击与近战攻击槽，对重骑 4.5 倍、对土狼 3.5 倍、对炮 2 倍","fields":["attack_melee","damage_type_melee","multipliers","protoaction_melee","range_melee","rof_melee","windup_melee","windups"],"fieldLabels":["近战攻击","近战伤害类型","克制倍率","近战代表动作","近战射程","近战射速","近战抬手","抬手表"],"scoreOld":50.03,"scoreNew":50.03,"scoreDelta":0.0,"dpsOld":8.67,"dpsNew":8.67,"dpsDelta":0.0,"hpOld":265,"hpNew":265,"costDelta":null,"sim":0.5,"vsRef":{"musketeer":{"name":"火枪兵","new":1.0,"old":1.0,"delta":0.0},"hussar":{"name":"轻骑兵","new":1.0,"old":0.1,"delta":0.9},"crossbowman":{"name":"弩手","new":1.0,"old":1.0,"delta":0.0},"falconet":{"name":"鹰炮","new":0.0,"old":0.0,"delta":0.0}},"icon":"icons/cavalryarcher.png","blind":true,"excluded":false},{"id":"coureur","name":"森林酷民","nameOld":"森林酷民","nameEn":"Coureur des Bois","age":"Exploration Age","unitClass":"特殊","direction":"削弱","impact":"直接战斗","summary":"削弱：0.4 → 0.3（-25.0%）","fields":["armor_ranged"],"fieldLabels":["远程护甲"],"scoreOld":36.66,"scoreNew":36.17,"scoreDelta":-1.35,"dpsOld":6.67,"dpsNew":6.67,"dpsDelta":0.0,"hpOld":180,"hpNew":180,"costDelta":null,"sim":0.5,"vsRef":{"musketeer":{"name":"火枪兵","new":0.0,"old":0.0,"delta":0.0},"hussar":{"name":"轻骑兵","new":0.0,"old":0.0,"delta":0.0},"crossbowman":{"name":"弩手","new":0.9,"old":1.0,"delta":-0.1},"falconet":{"name":"鹰炮","new":0.0,"old":0.0,"delta":0.0}},"icon":"icons/coureur.png","blind":false,"excluded":false},{"id":"crossbowman","name":"弩手","nameOld":"弩手","nameEn":"Crossbowman","age":"Commerce Age","unitClass":"远程步兵","direction":"结构性改动","impact":"机制型","summary":"结构性改动：动作包发生变化，详见原始字段","fields":["windups"],"fieldLabels":["抬手表"],"scoreOld":23.78,"scoreNew":23.78,"scoreDelta":0.0,"dpsOld":5.33,"dpsNew":5.33,"dpsDelta":0.0,"hpOld":100,"hpNew":100,"costDelta":null,"sim":0.5,"vsRef":{"musketeer":{"name":"火枪兵","new":0.0,"old":0.0,"delta":0.0},"hussar":{"name":"轻骑兵","new":0.0,"old":0.0,"delta":0.0},"crossbowman":{"name":"弩手","new":0.5,"old":0.5,"delta":0.0},"falconet":{"name":"鹰炮","new":0.0,"old":0.0,"delta":0.0}},"icon":"icons/crossbowman.png","blind":true,"excluded":false},{"id":"deabun","name":"阿布恩","nameOld":"阿布恩","nameEn":"Abun","age":"Commerce Age","unitClass":"特殊","direction":"结构性改动","impact":"经济侧","summary":"经济调整：30 → 24（-20.0%）","fields":["train_time"],"fieldLabels":["训练时间"],"scoreOld":35.16,"scoreNew":35.16,"scoreDelta":0.0,"dpsOld":3.33,"dpsNew":3.33,"dpsDelta":0.0,"hpOld":360,"hpNew":360,"costDelta":null,"sim":0.5,"vsRef":{"musketeer":{"name":"火枪兵","new":0.0,"old":0.0,"delta":0.0},"hussar":{"name":"轻骑兵","new":0.0,"old":0.0,"delta":0.0},"crossbowman":{"name":"弩手","new":1.0,"old":1.0,"delta":0.0},"falconet":{"name":"鹰炮","new":0.0,"old":0.0,"delta":0.0}},"icon":"icons/deabun.png","blind":false,"excluded":false},{"id":"deafricancatamaran","name":"强盗双体艇","nameOld":"强盗双体艇","nameEn":"Bandit Catamaran","age":"Commerce Age","unitClass":"海军","direction":"结构性改动","impact":"机制型","summary":"结构性改动：动作包发生变化，详见原始字段","fields":["multipliers"],"fieldLabels":["克制倍率"],"scoreOld":47.96,"scoreNew":47.96,"scoreDelta":0.0,"dpsOld":6.67,"dpsNew":6.67,"dpsDelta":0.0,"hpOld":300,"hpNew":300,"costDelta":null,"sim":0.5,"vsRef":{"musketeer":{"name":"火枪兵","new":1.0,"old":1.0,"delta":0.0},"hussar":{"name":"轻骑兵","new":0.0,"old":0.0,"delta":0.0},"crossbowman":{"name":"弩手","new":1.0,"old":1.0,"delta":0.0},"falconet":{"name":"鹰炮","new":0.0,"old":0.0,"delta":0.0}},"icon":"icons/deafricancatamaran.png","blind":true,"excluded":false},{"id":"debolaswarrior","name":"掷石绳战士","nameOld":"掷石绳战士","nameEn":"Bolas Warrior","age":"Fortress Age","unitClass":"步兵","direction":"增强","impact":"直接战斗","summary":"增强：8 → 15（+87.5%）","fields":["attack_melee"],"fieldLabels":["近战攻击"],"scoreOld":34.46,"scoreNew":38.52,"scoreDelta":11.8,"dpsOld":5.33,"dpsNew":10.0,"dpsDelta":87.5,"hpOld":140,"hpNew":140,"costDelta":null,"sim":0.5,"vsRef":{"musketeer":{"name":"火枪兵","new":0.4,"old":0.4,"delta":0.0},"hussar":{"name":"轻骑兵","new":0.0,"old":0.0,"delta":0.0},"crossbowman":{"name":"弩手","new":1.0,"old":1.0,"delta":0.0},"falconet":{"name":"鹰炮","new":0.0,"old":0.0,"delta":0.0}},"icon":"icons/debolaswarrior.png","blind":false,"excluded":false},{"id":"decarolean","name":"卡尔远征军","nameOld":"卡尔远征军","nameEn":"Carolean","age":"Commerce Age","unitClass":"步兵","direction":"结构性改动","impact":"经济侧","summary":"经济调整：food: 65 / gold: 40 → food: 60 / gold: 40","fields":["cost"],"fieldLabels":["造价"],"scoreOld":46.04,"scoreNew":46.04,"scoreDelta":0.0,"dpsOld":13.33,"dpsNew":13.33,"dpsDelta":0.0,"hpOld":150,"hpNew":150,"costDelta":-4.55,"sim":0.5,"vsRef":{"musketeer":{"name":"火枪兵","new":1.0,"old":1.0,"delta":0.0},"hussar":{"name":"轻骑兵","new":0.0,"old":0.0,"delta":0.0},"crossbowman":{"name":"弩手","new":1.0,"old":1.0,"delta":0.0},"falconet":{"name":"鹰炮","new":0.0,"old":0.0,"delta":0.0}},"icon":"icons/decarolean.png","blind":false,"excluded":false},{"id":"dechevauleger","name":"普林茨近卫轻骑兵","nameOld":"普林茨近卫轻骑兵","nameEn":"Prinz Chevauleger","age":"Fortress Age","unitClass":"骑兵","direction":"结构性改动","impact":"机制型","summary":"结构性改动：动作包发生变化，详见原始字段","fields":["multipliers"],"fieldLabels":["克制倍率"],"scoreOld":66.34,"scoreNew":66.34,"scoreDelta":0.0,"dpsOld":17.67,"dpsNew":17.67,"dpsDelta":0.0,"hpOld":235,"hpNew":235,"costDelta":null,"sim":0.5,"vsRef":{"musketeer":{"name":"火枪兵","new":1.0,"old":1.0,"delta":0.0},"hussar":{"name":"轻骑兵","new":0.15,"old":0.15,"delta":0.0},"crossbowman":{"name":"弩手","new":1.0,"old":1.0,"delta":0.0},"falconet":{"name":"鹰炮","new":0.0,"old":0.0,"delta":0.0}},"icon":"icons/dechevauleger.png","blind":true,"excluded":false},{"id":"definnishrider","name":"芬兰轻装骑兵","nameOld":"芬兰轻装骑兵","nameEn":"Hakkapelit","age":"Fortress Age","unitClass":"骑兵","direction":"削弱","impact":"直接战斗","summary":"削弱：0.2 → 0.15（-25.0%）；22 → 20（-9.1%）；210 → 215（+2.4%）","fields":["armor_ranged","attack_melee","hp","los","type"],"fieldLabels":["远程护甲","近战攻击","生命值","视野","类型标签"],"scoreOld":57.14,"scoreNew":54.73,"scoreDelta":-4.21,"dpsOld":14.67,"dpsNew":13.33,"dpsDelta":-9.09,"hpOld":210,"hpNew":215,"costDelta":null,"sim":0.025,"vsRef":{"musketeer":{"name":"火枪兵","new":1.0,"old":1.0,"delta":0.0},"hussar":{"name":"轻骑兵","new":0.0,"old":0.0,"delta":0.0},"crossbowman":{"name":"弩手","new":1.0,"old":1.0,"delta":0.0},"falconet":{"name":"鹰炮","new":0.0,"old":0.0,"delta":0.0}},"icon":"icons/definnishrider.png","blind":true,"excluded":false},{"id":"defulawarrior","name":"富拉尼步弓手","nameOld":"富拉尼步弓手","nameEn":"Fulani Archer","age":"Commerce Age","unitClass":"远程步兵","direction":"结构性改动","impact":"机制型","summary":"机制调整：远程射程 18 → 17，同时动作抬手表发生变化","fields":["range","windups"],"fieldLabels":["远程射程","抬手表"],"scoreOld":27.63,"scoreNew":27.63,"scoreDelta":0.0,"dpsOld":6.0,"dpsNew":6.0,"dpsDelta":0.0,"hpOld":120,"hpNew":120,"costDelta":null,"sim":0.65,"vsRef":{"musketeer":{"name":"火枪兵","new":1.0,"old":1.0,"delta":0.0},"hussar":{"name":"轻骑兵","new":0.0,"old":0.0,"delta":0.0},"crossbowman":{"name":"弩手","new":1.0,"old":1.0,"delta":0.0},"falconet":{"name":"鹰炮","new":0.0,"old":0.0,"delta":0.0}},"icon":"icons/defulawarrior.png","blind":true,"excluded":false},{"id":"degalleass","name":"三桅帆装军舰","nameOld":"三桅帆装军舰","nameEn":"Galleass","age":"Commerce Age","unitClass":"炮兵/攻城","direction":"增强","impact":"直接战斗","summary":"增强：1 → 2（+100.0%）；350 → 400（+14.3%）；35 → 40（+14.3%）","fields":["aoe_radius_ranged","attack_melee","attack_ranged"],"fieldLabels":["远程 AOE","近战攻击","远程攻击"],"scoreOld":652.01,"scoreNew":660.54,"scoreDelta":1.31,"dpsOld":3500.0,"dpsNew":4000.0,"dpsDelta":14.29,"hpOld":1500,"hpNew":1500,"costDelta":null,"sim":1.0,"vsRef":{"musketeer":{"name":"火枪兵","new":1.0,"old":1.0,"delta":0.0},"hussar":{"name":"轻骑兵","new":1.0,"old":1.0,"delta":0.0},"crossbowman":{"name":"弩手","new":1.0,"old":1.0,"delta":0.0},"falconet":{"name":"鹰炮","new":1.0,"old":0.25,"delta":0.75}},"icon":"icons/degalleass.png","blind":false,"excluded":false},{"id":"degascenya","name":"加塞尼亚步兵","nameOld":"加塞尼亚步兵","nameEn":"Gascenya","age":"Commerce Age","unitClass":"步兵","direction":"削弱","impact":"机制型","summary":"结构性调整：近战 15 → 12、HP 135 → 140；对骑兵倍率 3.0 → 4.0，对轻型步兵 2.25 → 2.5","fields":["attack_melee","hp","multipliers"],"fieldLabels":["近战攻击","生命值","克制倍率"],"scoreOld":37.83,"scoreNew":34.46,"scoreDelta":-8.92,"dpsOld":10.0,"dpsNew":8.0,"dpsDelta":-20.0,"hpOld":135,"hpNew":140,"costDelta":null,"sim":0.5,"vsRef":{"musketeer":{"name":"火枪兵","new":0.9,"old":0.0,"delta":0.9},"hussar":{"name":"轻骑兵","new":0.0,"old":0.0,"delta":0.0},"crossbowman":{"name":"弩手","new":1.0,"old":1.0,"delta":0.0},"falconet":{"name":"鹰炮","new":0.0,"old":0.0,"delta":0.0}},"icon":"icons/degascenya.png","blind":true,"excluded":false},{"id":"dehumbaraci","name":"铁帽炮兵","nameOld":"铁帽炮兵","nameEn":"Humbaraci","age":"Commerce Age","unitClass":"炮兵/攻城","direction":"削弱","impact":"机制型","summary":"削弱：0.3 → 0.25（-16.7%）；动作包发生变化，详见原始字段；4.5 → 4.25（-5.6%）；38 → 40（+5.3%）","fields":["armor_ranged","multipliers","speed","train_time"],"fieldLabels":["远程护甲","克制倍率","移速","训练时间"],"scoreOld":67.66,"scoreNew":67.19,"scoreDelta":-0.69,"dpsOld":18.67,"dpsNew":18.67,"dpsDelta":0.0,"hpOld":225,"hpNew":225,"costDelta":null,"sim":0.5,"vsRef":{"musketeer":{"name":"火枪兵","new":1.0,"old":1.0,"delta":0.0},"hussar":{"name":"轻骑兵","new":0.0,"old":0.0,"delta":0.0},"crossbowman":{"name":"弩手","new":1.0,"old":1.0,"delta":0.0},"falconet":{"name":"鹰炮","new":0.0,"old":0.0,"delta":0.0}},"icon":"icons/dehumbaraci.png","blind":true,"excluded":false},{"id":"deincarunner","name":"奇穆游击兵","nameOld":"奇穆游击兵","nameEn":"Chimu Runner","age":"Commerce Age","unitClass":"特殊","direction":"结构性改动","impact":"经济侧","summary":"经济调整：30 → 27（-10.0%）","fields":["train_time"],"fieldLabels":["训练时间"],"scoreOld":42.74,"scoreNew":42.74,"scoreDelta":0.0,"dpsOld":12.67,"dpsNew":12.67,"dpsDelta":0.0,"hpOld":140,"hpNew":140,"costDelta":null,"sim":0.5,"vsRef":{"musketeer":{"name":"火枪兵","new":0.0,"old":0.0,"delta":0.0},"hussar":{"name":"轻骑兵","new":0.0,"old":0.0,"delta":0.0},"crossbowman":{"name":"弩手","new":1.0,"old":1.0,"delta":0.0},"falconet":{"name":"鹰炮","new":0.0,"old":0.0,"delta":0.0}},"icon":"icons/deincarunner.png","blind":false,"excluded":false},{"id":"deincaspearman","name":"羽饰长矛兵","nameOld":"羽饰长矛兵","nameEn":"Plumed Spearman","age":"Commerce Age","unitClass":"步兵","direction":"结构性改动","impact":"经济侧","summary":"经济调整：wood: 25 / food: 100 → wood: 20 / food: 100","fields":["cost"],"fieldLabels":["造价"],"scoreOld":39.52,"scoreNew":39.52,"scoreDelta":0.0,"dpsOld":8.67,"dpsNew":8.67,"dpsDelta":0.0,"hpOld":170,"hpNew":170,"costDelta":-3.85,"sim":0.5,"vsRef":{"musketeer":{"name":"火枪兵","new":0.5,"old":0.5,"delta":0.0},"hussar":{"name":"轻骑兵","new":0.0,"old":0.0,"delta":0.0},"crossbowman":{"name":"弩手","new":1.0,"old":1.0,"delta":0.0},"falconet":{"name":"鹰炮","new":0.0,"old":0.0,"delta":0.0}},"icon":"icons/deincaspearman.png","blind":false,"excluded":false},{"id":"dejunglebowman","name":"丛林弓箭手","nameOld":"丛林弓箭手","nameEn":"Jungle Bowman","age":"Commerce Age","unitClass":"远程步兵","direction":"增强","impact":"生存型","summary":"增强：90 → 95（+5.6%）","fields":["hp"],"fieldLabels":["生命值"],"scoreOld":25.22,"scoreNew":25.91,"scoreDelta":2.74,"dpsOld":6.67,"dpsNew":6.67,"dpsDelta":0.0,"hpOld":90,"hpNew":95,"costDelta":null,"sim":0.5,"vsRef":{"musketeer":{"name":"火枪兵","new":0.9,"old":0.1,"delta":0.8},"hussar":{"name":"轻骑兵","new":0.0,"old":0.0,"delta":0.0},"crossbowman":{"name":"弩手","new":0.05,"old":0.05,"delta":0.0},"falconet":{"name":"鹰炮","new":0.0,"old":0.0,"delta":0.0}},"icon":"icons/dejunglebowman.png","blind":false,"excluded":false},{"id":"delifidi","name":"利菲迪骑士","nameOld":"利菲迪骑士","nameEn":"Lifidi Knight","age":"Fortress Age","unitClass":"骑兵","direction":"增强","impact":"生存型","summary":"增强：375 → 390（+4.0%）","fields":["hp"],"fieldLabels":["生命值"],"scoreOld":81.39,"scoreNew":83.01,"scoreDelta":1.98,"dpsOld":16.67,"dpsNew":16.67,"dpsDelta":0.0,"hpOld":375,"hpNew":390,"costDelta":null,"sim":0.975,"vsRef":{"musketeer":{"name":"火枪兵","new":1.0,"old":1.0,"delta":0.0},"hussar":{"name":"轻骑兵","new":1.0,"old":1.0,"delta":0.0},"crossbowman":{"name":"弩手","new":1.0,"old":1.0,"delta":0.0},"falconet":{"name":"鹰炮","new":0.0,"old":0.0,"delta":0.0}},"icon":"icons/delifidi.png","blind":false,"excluded":false},{"id":"demaceman","name":"槌兵","nameOld":"槌兵","nameEn":"Maceman","age":"Fortress Age","unitClass":"炮兵/攻城","direction":"增强","impact":"直接战斗","summary":"增强：近战射速 2.25 → 2.0 秒（攻击更快 11.1%）","fields":["rof_melee"],"fieldLabels":["近战射速"],"scoreOld":97.87,"scoreNew":101.22,"scoreDelta":3.42,"dpsOld":24.0,"dpsNew":24.0,"dpsDelta":0.0,"hpOld":260,"hpNew":260,"costDelta":null,"sim":0.5,"vsRef":{"musketeer":{"name":"火枪兵","new":1.0,"old":1.0,"delta":0.0},"hussar":{"name":"轻骑兵","new":1.0,"old":1.0,"delta":0.0},"crossbowman":{"name":"弩手","new":1.0,"old":1.0,"delta":0.0},"falconet":{"name":"鹰炮","new":0.0,"old":0.0,"delta":0.0}},"icon":"icons/demaceman.png","blind":false,"excluded":false},{"id":"demercdhow","name":"達烏战船","nameOld":"战争单桅帆船","nameEn":"War Dhow","age":"Fortress Age","unitClass":"海军","direction":"结构性改动","impact":"经济侧","summary":"结构性改动：gold: 700 → gold: 700 / wood: 700","fields":["cost","name"],"fieldLabels":["造价","中文名"],"scoreOld":381.51,"scoreNew":381.51,"scoreDelta":0.0,"dpsOld":52.5,"dpsNew":52.5,"dpsDelta":0.0,"hpOld":2500,"hpNew":2500,"costDelta":100.0,"sim":0.5,"vsRef":{"musketeer":{"name":"火枪兵","new":1.0,"old":1.0,"delta":0.0},"hussar":{"name":"轻骑兵","new":1.0,"old":1.0,"delta":0.0},"crossbowman":{"name":"弩手","new":1.0,"old":1.0,"delta":0.0},"falconet":{"name":"鹰炮","new":1.0,"old":1.0,"delta":0.0}},"icon":"icons/demercdhow.png","blind":false,"excluded":false},{"id":"demercgatlingcamel","name":"加特林骆驼","nameOld":"加特林骆驼","nameEn":"Gatling Camel","age":"Industrial Age","unitClass":"骑兵","direction":"结构性改动","impact":"机制型","summary":"结构性改动：动作包发生变化，详见原始字段","fields":["multipliers"],"fieldLabels":["克制倍率"],"scoreOld":117.31,"scoreNew":117.31,"scoreDelta":0.0,"dpsOld":29.0,"dpsNew":29.0,"dpsDelta":0.0,"hpOld":320,"hpNew":320,"costDelta":null,"sim":1.0,"vsRef":{"musketeer":{"name":"火枪兵","new":1.0,"old":1.0,"delta":0.0},"hussar":{"name":"轻骑兵","new":1.0,"old":0.0,"delta":1.0},"crossbowman":{"name":"弩手","new":1.0,"old":1.0,"delta":0.0},"falconet":{"name":"鹰炮","new":0.0,"old":0.0,"delta":0.0}},"icon":"icons/demercgatlingcamel.png","blind":true,"excluded":false},{"id":"demercgrenadier","name":"巨型掷弹兵","nameOld":"巨型掷弹兵","nameEn":"Giant Grenadier","age":"Fortress Age","unitClass":"步兵","direction":"增强","impact":"生存型","summary":"增强：250 → 260（+4.0%）","fields":["hp"],"fieldLabels":["生命值"],"scoreOld":88.81,"scoreNew":90.57,"scoreDelta":1.98,"dpsOld":24.0,"dpsNew":24.0,"dpsDelta":0.0,"hpOld":250,"hpNew":260,"costDelta":null,"sim":0.95,"vsRef":{"musketeer":{"name":"火枪兵","new":1.0,"old":1.0,"delta":0.0},"hussar":{"name":"轻骑兵","new":1.0,"old":1.0,"delta":0.0},"crossbowman":{"name":"弩手","new":1.0,"old":1.0,"delta":0.0},"falconet":{"name":"鹰炮","new":0.0,"old":0.0,"delta":0.0}},"icon":"icons/demercgrenadier.png","blind":false,"excluded":false},{"id":"demercharquebusier","name":"火绳枪骑兵","nameOld":"火绳枪骑兵","nameEn":"Harquebusier","age":"Fortress Age","unitClass":"骑兵","direction":"削弱","impact":"直接战斗","summary":"削弱：121 → 110（-9.1%）","fields":["attack_melee"],"fieldLabels":["近战攻击"],"scoreOld":128.22,"scoreNew":126.99,"scoreDelta":-0.96,"dpsOld":80.67,"dpsNew":73.33,"dpsDelta":-9.09,"hpOld":295,"hpNew":295,"costDelta":null,"sim":0.5,"vsRef":{"musketeer":{"name":"火枪兵","new":1.0,"old":1.0,"delta":0.0},"hussar":{"name":"轻骑兵","new":1.0,"old":1.0,"delta":0.0},"crossbowman":{"name":"弩手","new":1.0,"old":1.0,"delta":0.0},"falconet":{"name":"鹰炮","new":0.0,"old":0.0,"delta":0.0}},"icon":"icons/demercharquebusier.png","blind":false,"excluded":false},{"id":"demercmountedrifleman","name":"骑马步枪兵","nameOld":"骑马步枪兵","nameEn":"Mounted Rifleman","age":"Industrial Age","unitClass":"骑兵","direction":"结构性改动","impact":"机制型","summary":"结构性改动：15 → 18（+20.0%）","fields":["range","type"],"fieldLabels":["远程射程","类型标签"],"scoreOld":114.95,"scoreNew":114.95,"scoreDelta":0.0,"dpsOld":30.0,"dpsNew":30.0,"dpsDelta":0.0,"hpOld":360,"hpNew":360,"costDelta":null,"sim":0.55,"vsRef":{"musketeer":{"name":"火枪兵","new":1.0,"old":1.0,"delta":0.0},"hussar":{"name":"轻骑兵","new":0.0,"old":0.0,"delta":0.0},"crossbowman":{"name":"弩手","new":1.0,"old":1.0,"delta":0.0},"falconet":{"name":"鹰炮","new":0.0,"old":0.0,"delta":0.0}},"icon":"icons/demercmountedrifleman.png","blind":true,"excluded":false},{"id":"demercnapoleongun","name":"拿破仑炮","nameOld":"拿破仑炮","nameEn":"Napoleon Gun","age":"Fortress Age","unitClass":"炮兵/攻城","direction":"结构性改动","impact":"经济侧","summary":"结构性改动：gold: 450 → gold: 475","fields":["cost"],"fieldLabels":["造价"],"scoreOld":100.39,"scoreNew":100.39,"scoreDelta":0.0,"dpsOld":25.0,"dpsNew":25.0,"dpsDelta":0.0,"hpOld":230,"hpNew":230,"costDelta":5.32,"sim":0.5,"vsRef":{"musketeer":{"name":"火枪兵","new":1.0,"old":1.0,"delta":0.0},"hussar":{"name":"轻骑兵","new":0.05,"old":0.05,"delta":0.0},"crossbowman":{"name":"弩手","new":1.0,"old":1.0,"delta":0.0},"falconet":{"name":"鹰炮","new":0.0,"old":0.0,"delta":0.0}},"icon":"icons/demercnapoleongun.png","blind":false,"excluded":false},{"id":"demercroyalhorseman","name":"皇家骑兵","nameOld":"皇家骑兵","nameEn":"Royal Horseman","age":"Industrial Age","unitClass":"骑兵","direction":"增强","impact":"生存型","summary":"增强：900 → 1200（+33.3%）","fields":["hp"],"fieldLabels":["生命值"],"scoreOld":204.71,"scoreNew":236.38,"scoreDelta":15.47,"dpsOld":20.0,"dpsNew":20.0,"dpsDelta":0.0,"hpOld":900,"hpNew":1200,"costDelta":null,"sim":1.0,"vsRef":{"musketeer":{"name":"火枪兵","new":1.0,"old":1.0,"delta":0.0},"hussar":{"name":"轻骑兵","new":1.0,"old":1.0,"delta":0.0},"crossbowman":{"name":"弩手","new":1.0,"old":1.0,"delta":0.0},"falconet":{"name":"鹰炮","new":1.0,"old":1.0,"delta":0.0}},"icon":"icons/demercroyalhorseman.png","blind":false,"excluded":false},{"id":"demercxebec","name":"谢贝克帆船","nameOld":"三桅帆船","nameEn":"Xebec","age":"Fortress Age","unitClass":"海军","direction":"结构性改动","impact":"经济侧","summary":"结构性改动：gold: 700 → gold: 700 / wood: 700","fields":["cost","name"],"fieldLabels":["造价","中文名"],"scoreOld":344.09,"scoreNew":344.09,"scoreDelta":0.0,"dpsOld":60.0,"dpsNew":60.0,"dpsDelta":0.0,"hpOld":2200,"hpNew":2200,"costDelta":100.0,"sim":0.5,"vsRef":{"musketeer":{"name":"火枪兵","new":1.0,"old":1.0,"delta":0.0},"hussar":{"name":"轻骑兵","new":1.0,"old":1.0,"delta":0.0},"crossbowman":{"name":"弩手","new":1.0,"old":1.0,"delta":0.0},"falconet":{"name":"鹰炮","new":1.0,"old":1.0,"delta":0.0}},"icon":"icons/demercxebec.png","blind":false,"excluded":false},{"id":"denatbolasrider","name":"马普切掷石绳骑兵","nameOld":"马普切掷石绳骑兵","nameEn":"Mapuche Bolas Rider","age":"Commerce Age","unitClass":"骑兵","direction":"增强","impact":"机制型","summary":"增强：1.75 → 3（+71.4%）；3.5 → 3（-14.3%）","fields":["range_melee","rof_ranged"],"fieldLabels":["近战射程","远程射速"],"scoreOld":39.43,"scoreNew":39.79,"scoreDelta":0.9,"dpsOld":7.33,"dpsNew":7.33,"dpsDelta":0.0,"hpOld":200,"hpNew":200,"costDelta":null,"sim":1.0,"vsRef":{"musketeer":{"name":"火枪兵","new":1.0,"old":1.0,"delta":0.0},"hussar":{"name":"轻骑兵","new":0.0,"old":0.0,"delta":0.0},"crossbowman":{"name":"弩手","new":1.0,"old":1.0,"delta":0.0},"falconet":{"name":"鹰炮","new":0.0,"old":0.0,"delta":0.0}},"icon":"icons/denatbolasrider.png","blind":true,"excluded":false},{"id":"denatchevauleger","name":"近卫轻骑兵","nameOld":"近卫轻骑兵","nameEn":"Chevauleger","age":"Fortress Age","unitClass":"骑兵","direction":"结构性改动","impact":"机制型","summary":"结构性改动：动作包发生变化，详见原始字段","fields":["multipliers"],"fieldLabels":["克制倍率"],"scoreOld":66.34,"scoreNew":66.34,"scoreDelta":0.0,"dpsOld":17.67,"dpsNew":17.67,"dpsDelta":0.0,"hpOld":235,"hpNew":235,"costDelta":null,"sim":0.5,"vsRef":{"musketeer":{"name":"火枪兵","new":1.0,"old":1.0,"delta":0.0},"hussar":{"name":"轻骑兵","new":0.15,"old":0.15,"delta":0.0},"crossbowman":{"name":"弩手","new":1.0,"old":1.0,"delta":0.0},"falconet":{"name":"鹰炮","new":0.0,"old":0.0,"delta":0.0}},"icon":"icons/denatchevauleger.png","blind":true,"excluded":false},{"id":"denatholcanjavelineer","name":"霍尔坎标枪手","nameOld":"霍尔坎标枪手","nameEn":"Holcan Javelineer","age":"Commerce Age","unitClass":"步兵","direction":"结构性改动","impact":"机制型","summary":"机制增强：近战代表动作改为 MeleeHandAttack，抬手 0.47 → 0.37 秒","fields":["protoaction_melee","windup_melee","windups"],"fieldLabels":["近战代表动作","近战抬手","抬手表"],"scoreOld":35.64,"scoreNew":35.64,"scoreDelta":0.0,"dpsOld":6.67,"dpsNew":6.67,"dpsDelta":0.0,"hpOld":185,"hpNew":185,"costDelta":null,"sim":0.5,"vsRef":{"musketeer":{"name":"火枪兵","new":1.0,"old":1.0,"delta":0.0},"hussar":{"name":"轻骑兵","new":0.0,"old":0.0,"delta":0.0},"crossbowman":{"name":"弩手","new":1.0,"old":1.0,"delta":0.0},"falconet":{"name":"鹰炮","new":0.0,"old":0.0,"delta":0.0}},"icon":"icons/denatholcanjavelineer.png","blind":true,"excluded":false},{"id":"denatlipkatatar","name":"利普卡鞑靼人","nameOld":"利普卡鞑靼人","nameEn":"Lipka Tatar","age":"Commerce Age","unitClass":"骑兵","direction":"削弱","impact":"直接战斗","summary":"削弱：远程攻击 12.5 → 10（-20.0%）；造价 70 肉 / 60 木 → 80 肉 / 70 木（+23.1% 资源）","fields":["attack_ranged","cost"],"fieldLabels":["远程攻击","造价"],"scoreOld":39.06,"scoreNew":34.94,"scoreDelta":-10.56,"dpsOld":10.0,"dpsNew":8.0,"dpsDelta":-20.0,"hpOld":140,"hpNew":140,"costDelta":15.38,"sim":0.0,"vsRef":{"musketeer":{"name":"火枪兵","new":0.95,"old":1.0,"delta":-0.05},"hussar":{"name":"轻骑兵","new":0.0,"old":0.0,"delta":0.0},"crossbowman":{"name":"弩手","new":0.3,"old":1.0,"delta":-0.7},"falconet":{"name":"鹰炮","new":0.0,"old":0.0,"delta":0.0}},"icon":"icons/denatlipkatatar.png","blind":false,"excluded":false},{"id":"denatmercchevauleger","name":"近卫轻骑兵","nameOld":"近卫轻骑兵","nameEn":"Chevauleger","age":"Fortress Age","unitClass":"骑兵","direction":"结构性改动","impact":"机制型","summary":"结构性改动：动作包发生变化，详见原始字段","fields":["multipliers"],"fieldLabels":["克制倍率"],"scoreOld":66.34,"scoreNew":66.34,"scoreDelta":0.0,"dpsOld":17.67,"dpsNew":17.67,"dpsDelta":0.0,"hpOld":235,"hpNew":235,"costDelta":null,"sim":0.5,"vsRef":{"musketeer":{"name":"火枪兵","new":1.0,"old":1.0,"delta":0.0},"hussar":{"name":"轻骑兵","new":0.15,"old":0.15,"delta":0.0},"crossbowman":{"name":"弩手","new":1.0,"old":1.0,"delta":0.0},"falconet":{"name":"鹰炮","new":0.0,"old":0.0,"delta":0.0}},"icon":"icons/denatmercchevauleger.png","blind":true,"excluded":false},{"id":"denatmercholcanjavelineer","name":"霍尔坎标枪手","nameOld":"霍尔坎标枪手","nameEn":"Holcan Javelineer","age":"Commerce Age","unitClass":"步兵","direction":"结构性改动","impact":"机制型","summary":"机制增强：近战代表动作改为 MeleeHandAttack，抬手 0.47 → 0.37 秒","fields":["protoaction_melee","windup_melee","windups"],"fieldLabels":["近战代表动作","近战抬手","抬手表"],"scoreOld":35.64,"scoreNew":35.64,"scoreDelta":0.0,"dpsOld":6.67,"dpsNew":6.67,"dpsDelta":0.0,"hpOld":185,"hpNew":185,"costDelta":null,"sim":0.5,"vsRef":{"musketeer":{"name":"火枪兵","new":1.0,"old":1.0,"delta":0.0},"hussar":{"name":"轻骑兵","new":0.0,"old":0.0,"delta":0.0},"crossbowman":{"name":"弩手","new":1.0,"old":1.0,"delta":0.0},"falconet":{"name":"鹰炮","new":0.0,"old":0.0,"delta":0.0}},"icon":"icons/denatmercholcanjavelineer.png","blind":true,"excluded":false},{"id":"denatmerclenaperifleman","name":"莱纳佩战士","nameOld":"莱纳佩战士","nameEn":"Lenape Warrior","age":"Commerce Age","unitClass":"远程步兵","direction":"结构性改动","impact":"机制型","summary":"结构性改动：动作包发生变化，详见原始字段","fields":["windups"],"fieldLabels":["抬手表"],"scoreOld":46.04,"scoreNew":46.04,"scoreDelta":0.0,"dpsOld":10.0,"dpsNew":10.0,"dpsDelta":0.0,"hpOld":200,"hpNew":200,"costDelta":null,"sim":0.5,"vsRef":{"musketeer":{"name":"火枪兵","new":1.0,"old":1.0,"delta":0.0},"hussar":{"name":"轻骑兵","new":0.0,"old":0.0,"delta":0.0},"crossbowman":{"name":"弩手","new":1.0,"old":1.0,"delta":0.0},"falconet":{"name":"鹰炮","new":0.0,"old":0.0,"delta":0.0}},"icon":"icons/denatmerclenaperifleman.png","blind":true,"excluded":false},{"id":"denatmerclipkatatar","name":"利普卡鞑靼人","nameOld":"利普卡鞑靼人","nameEn":"Lipka Tatar","age":"Commerce Age","unitClass":"骑兵","direction":"削弱","impact":"直接战斗","summary":"削弱：远程攻击 12.5 → 10（-20.0%）；造价 70 肉 / 60 木 → 80 肉 / 70 木（+23.1% 资源）","fields":["attack_ranged","cost"],"fieldLabels":["远程攻击","造价"],"scoreOld":39.06,"scoreNew":34.94,"scoreDelta":-10.56,"dpsOld":10.0,"dpsNew":8.0,"dpsDelta":-20.0,"hpOld":140,"hpNew":140,"costDelta":15.38,"sim":0.0,"vsRef":{"musketeer":{"name":"火枪兵","new":0.95,"old":1.0,"delta":-0.05},"hussar":{"name":"轻骑兵","new":0.0,"old":0.0,"delta":0.0},"crossbowman":{"name":"弩手","new":0.3,"old":1.0,"delta":-0.7},"falconet":{"name":"鹰炮","new":0.0,"old":0.0,"delta":0.0}},"icon":"icons/denatmerclipkatatar.png","blind":false,"excluded":false},{"id":"denatmercqizilbash","name":"基齐勒巴什兵","nameOld":"基齐勒巴什兵","nameEn":"Qizilbash","age":"Commerce Age","unitClass":"骑兵","direction":"削弱","impact":"机制型","summary":"削弱：从 18 删除；从 Hand 删除；动作包发生变化，详见原始字段；从 MeleeHandAttack 删除","fields":["attack_melee","damage_type_melee","multipliers","protoaction_melee","range_melee","rof_melee"],"fieldLabels":["近战攻击","近战伤害类型","克制倍率","近战代表动作","近战射程","近战射速"],"scoreOld":54.09,"scoreNew":45.07,"scoreDelta":-16.67,"dpsOld":12.0,"dpsNew":8.33,"dpsDelta":-30.56,"hpOld":230,"hpNew":230,"costDelta":null,"sim":0.5,"vsRef":{"musketeer":{"name":"火枪兵","new":1.0,"old":1.0,"delta":0.0},"hussar":{"name":"轻骑兵","new":0.0,"old":0.0,"delta":0.0},"crossbowman":{"name":"弩手","new":1.0,"old":1.0,"delta":0.0},"falconet":{"name":"鹰炮","new":0.0,"old":0.0,"delta":0.0}},"icon":"icons/denatmercqizilbash.png","blind":true,"excluded":false},{"id":"denatmercroyaldragoon","name":"皇家枪骑兵","nameOld":"皇家枪骑兵","nameEn":"Royal Dragoon","age":"Fortress Age","unitClass":"骑兵","direction":"结构性改动","impact":"机制型","summary":"结构性改动：16 → 17（+6.2%）","fields":["range"],"fieldLabels":["远程射程"],"scoreOld":54.35,"scoreNew":54.35,"scoreDelta":0.0,"dpsOld":14.67,"dpsNew":14.67,"dpsDelta":0.0,"hpOld":190,"hpNew":190,"costDelta":null,"sim":0.35,"vsRef":{"musketeer":{"name":"火枪兵","new":1.0,"old":1.0,"delta":0.0},"hussar":{"name":"轻骑兵","new":0.0,"old":0.0,"delta":0.0},"crossbowman":{"name":"弩手","new":1.0,"old":1.0,"delta":0.0},"falconet":{"name":"鹰炮","new":0.0,"old":0.0,"delta":0.0}},"icon":"icons/denatmercroyaldragoon.png","blind":true,"excluded":false},{"id":"denatmercroyalmusketeer","name":"皇家火枪兵","nameOld":"皇家火枪兵","nameEn":"Royal Musketeer","age":"Commerce Age","unitClass":"步兵","direction":"削弱","impact":"直接战斗","summary":"削弱：0.4 → 0.3（-25.0%）；19 → 16（-15.8%）","fields":["armor_melee","attack_siege"],"fieldLabels":["近战护甲","攻城攻击"],"scoreOld":48.88,"scoreNew":48.22,"scoreDelta":-1.35,"dpsOld":13.33,"dpsNew":13.33,"dpsDelta":0.0,"hpOld":160,"hpNew":160,"costDelta":null,"sim":0.5,"vsRef":{"musketeer":{"name":"火枪兵","new":0.95,"old":0.95,"delta":0.0},"hussar":{"name":"轻骑兵","new":0.0,"old":0.0,"delta":0.0},"crossbowman":{"name":"弩手","new":1.0,"old":1.0,"delta":0.0},"falconet":{"name":"鹰炮","new":0.0,"old":0.0,"delta":0.0}},"icon":"icons/denatmercroyalmusketeer.png","blind":false,"excluded":false},{"id":"denatmercsharktoothbowman","name":"塞米诺尔鲨齿弓箭手","nameOld":"塞米诺尔鲨齿弓箭手","nameEn":"Seminole Sharktooth Bowman","age":"Commerce Age","unitClass":"远程步兵","direction":"结构性改动","impact":"机制型","summary":"机制变更：远程 / 近战代表动作改为 RangedAttack / HandAttack，保留 0.98 / 0.27 秒抬手","fields":["protoaction_melee","protoaction_ranged","windups"],"fieldLabels":["近战代表动作","远程代表动作","抬手表"],"scoreOld":36.06,"scoreNew":36.06,"scoreDelta":0.0,"dpsOld":10.67,"dpsNew":10.67,"dpsDelta":0.0,"hpOld":115,"hpNew":115,"costDelta":null,"sim":0.5,"vsRef":{"musketeer":{"name":"火枪兵","new":1.0,"old":1.0,"delta":0.0},"hussar":{"name":"轻骑兵","new":0.0,"old":0.0,"delta":0.0},"crossbowman":{"name":"弩手","new":1.0,"old":1.0,"delta":0.0},"falconet":{"name":"鹰炮","new":0.0,"old":0.0,"delta":0.0}},"icon":"icons/denatmercsharktoothbowman.png","blind":true,"excluded":false},{"id":"denatmercsudanesedervish","name":"苏丹德尔维希","nameOld":"苏丹德尔维希","nameEn":"Sudanese Dervish","age":"Commerce Age","unitClass":"远程步兵","direction":"增强","impact":"直接战斗","summary":"增强：9 → 12（+33.3%）；9 → 12（+33.3%）","fields":["attack_melee","attack_ranged"],"fieldLabels":["近战攻击","远程攻击"],"scoreOld":32.16,"scoreNew":37.14,"scoreDelta":15.47,"dpsOld":9.0,"dpsNew":12.0,"dpsDelta":33.33,"hpOld":110,"hpNew":110,"costDelta":null,"sim":1.0,"vsRef":{"musketeer":{"name":"火枪兵","new":0.05,"old":0.0,"delta":0.05},"hussar":{"name":"轻骑兵","new":0.0,"old":0.0,"delta":0.0},"crossbowman":{"name":"弩手","new":1.0,"old":0.0,"delta":1.0},"falconet":{"name":"鹰炮","new":0.0,"old":0.0,"delta":0.0}},"icon":"icons/denatmercsudanesedervish.png","blind":false,"excluded":false},{"id":"denatmerctatararcher","name":"鞑靼弓手","nameOld":"鞑靼步弓手","nameEn":"Tatar Archer","age":"Commerce Age","unitClass":"骑兵","direction":"增强","impact":"直接战斗","summary":"增强：140 → 155（+10.7%）；1.25 → 1.2（-4.0%）","fields":["hp","name","rof_siege"],"fieldLabels":["生命值","中文名","攻城射速"],"scoreOld":29.42,"scoreNew":30.96,"scoreDelta":5.22,"dpsOld":5.83,"dpsNew":5.83,"dpsDelta":0.0,"hpOld":140,"hpNew":155,"costDelta":null,"sim":0.8462,"vsRef":{"musketeer":{"name":"火枪兵","new":0.0,"old":0.0,"delta":0.0},"hussar":{"name":"轻骑兵","new":0.0,"old":0.0,"delta":0.0},"crossbowman":{"name":"弩手","new":0.0,"old":0.0,"delta":0.0},"falconet":{"name":"鹰炮","new":0.0,"old":0.0,"delta":0.0}},"icon":"icons/denatmerctatararcher.png","blind":false,"excluded":false},{"id":"denatqizilbash","name":"基齐勒巴什兵","nameOld":"基齐勒巴什兵","nameEn":"Qizilbash","age":"Commerce Age","unitClass":"骑兵","direction":"削弱","impact":"机制型","summary":"削弱：从 18 删除；从 Hand 删除；动作包发生变化，详见原始字段；从 MeleeHandAttack 删除","fields":["attack_melee","damage_type_melee","multipliers","protoaction_melee","range_melee","rof_melee"],"fieldLabels":["近战攻击","近战伤害类型","克制倍率","近战代表动作","近战射程","近战射速"],"scoreOld":54.09,"scoreNew":45.07,"scoreDelta":-16.67,"dpsOld":12.0,"dpsNew":8.33,"dpsDelta":-30.56,"hpOld":230,"hpNew":230,"costDelta":null,"sim":0.5,"vsRef":{"musketeer":{"name":"火枪兵","new":1.0,"old":1.0,"delta":0.0},"hussar":{"name":"轻骑兵","new":0.0,"old":0.0,"delta":0.0},"crossbowman":{"name":"弩手","new":1.0,"old":1.0,"delta":0.0},"falconet":{"name":"鹰炮","new":0.0,"old":0.0,"delta":0.0}},"icon":"icons/denatqizilbash.png","blind":true,"excluded":false},{"id":"denatroyaldragoon","name":"皇家枪骑兵","nameOld":"皇家枪骑兵","nameEn":"Royal Dragoon","age":"Fortress Age","unitClass":"骑兵","direction":"结构性改动","impact":"机制型","summary":"结构性改动：16 → 17（+6.2%）","fields":["range"],"fieldLabels":["远程射程"],"scoreOld":54.35,"scoreNew":54.35,"scoreDelta":0.0,"dpsOld":14.67,"dpsNew":14.67,"dpsDelta":0.0,"hpOld":190,"hpNew":190,"costDelta":null,"sim":0.35,"vsRef":{"musketeer":{"name":"火枪兵","new":1.0,"old":1.0,"delta":0.0},"hussar":{"name":"轻骑兵","new":0.0,"old":0.0,"delta":0.0},"crossbowman":{"name":"弩手","new":1.0,"old":1.0,"delta":0.0},"falconet":{"name":"鹰炮","new":0.0,"old":0.0,"delta":0.0}},"icon":"icons/denatroyaldragoon.png","blind":true,"excluded":false},{"id":"denatroyalmusketeer","name":"皇家火枪兵","nameOld":"皇家火枪兵","nameEn":"Royal Musketeer","age":"Commerce Age","unitClass":"步兵","direction":"削弱","impact":"直接战斗","summary":"削弱：0.4 → 0.3（-25.0%）；19 → 16（-15.8%）","fields":["armor_melee","attack_siege"],"fieldLabels":["近战护甲","攻城攻击"],"scoreOld":48.88,"scoreNew":48.22,"scoreDelta":-1.35,"dpsOld":13.33,"dpsNew":13.33,"dpsDelta":0.0,"hpOld":160,"hpNew":160,"costDelta":null,"sim":0.5,"vsRef":{"musketeer":{"name":"火枪兵","new":0.95,"old":0.95,"delta":0.0},"hussar":{"name":"轻骑兵","new":0.0,"old":0.0,"delta":0.0},"crossbowman":{"name":"弩手","new":1.0,"old":1.0,"delta":0.0},"falconet":{"name":"鹰炮","new":0.0,"old":0.0,"delta":0.0}},"icon":"icons/denatroyalmusketeer.png","blind":false,"excluded":false},{"id":"denatspclenaperifleman","name":"莱纳佩战士","nameOld":"莱纳佩战士","nameEn":"Lenape Warrior","age":"Commerce Age","unitClass":"远程步兵","direction":"结构性改动","impact":"机制型","summary":"结构性改动：动作包发生变化，详见原始字段","fields":["windups"],"fieldLabels":["抬手表"],"scoreOld":46.04,"scoreNew":46.04,"scoreDelta":0.0,"dpsOld":10.0,"dpsNew":10.0,"dpsDelta":0.0,"hpOld":200,"hpNew":200,"costDelta":null,"sim":0.5,"vsRef":{"musketeer":{"name":"火枪兵","new":1.0,"old":1.0,"delta":0.0},"hussar":{"name":"轻骑兵","new":0.0,"old":0.0,"delta":0.0},"crossbowman":{"name":"弩手","new":1.0,"old":1.0,"delta":0.0},"falconet":{"name":"鹰炮","new":0.0,"old":0.0,"delta":0.0}},"icon":"icons/denatspclenaperifleman.png","blind":true,"excluded":false},{"id":"denatsudanesedervish","name":"苏丹德尔维希","nameOld":"苏丹德尔维希","nameEn":"Sudanese Dervish","age":"Commerce Age","unitClass":"远程步兵","direction":"增强","impact":"直接战斗","summary":"增强：9 → 12（+33.3%）；9 → 12（+33.3%）","fields":["attack_melee","attack_ranged"],"fieldLabels":["近战攻击","远程攻击"],"scoreOld":32.16,"scoreNew":37.14,"scoreDelta":15.47,"dpsOld":9.0,"dpsNew":12.0,"dpsDelta":33.33,"hpOld":110,"hpNew":110,"costDelta":null,"sim":1.0,"vsRef":{"musketeer":{"name":"火枪兵","new":0.05,"old":0.0,"delta":0.05},"hussar":{"name":"轻骑兵","new":0.0,"old":0.0,"delta":0.0},"crossbowman":{"name":"弩手","new":1.0,"old":0.0,"delta":1.0},"falconet":{"name":"鹰炮","new":0.0,"old":0.0,"delta":0.0}},"icon":"icons/denatsudanesedervish.png","blind":false,"excluded":false},{"id":"denattatararcher","name":"鞑靼弓手","nameOld":"鞑靼步弓手","nameEn":"Tatar Archer","age":"Commerce Age","unitClass":"骑兵","direction":"增强","impact":"直接战斗","summary":"增强：140 → 155（+10.7%）；1.25 → 1.2（-4.0%）","fields":["hp","name","rof_siege"],"fieldLabels":["生命值","中文名","攻城射速"],"scoreOld":29.42,"scoreNew":30.96,"scoreDelta":5.22,"dpsOld":5.83,"dpsNew":5.83,"dpsDelta":0.0,"hpOld":140,"hpNew":155,"costDelta":null,"sim":0.8462,"vsRef":{"musketeer":{"name":"火枪兵","new":0.0,"old":0.0,"delta":0.0},"hussar":{"name":"轻骑兵","new":0.0,"old":0.0,"delta":0.0},"crossbowman":{"name":"弩手","new":0.0,"old":0.0,"delta":0.0},"falconet":{"name":"鹰炮","new":0.0,"old":0.0,"delta":0.0}},"icon":"icons/denattatararcher.png","blind":false,"excluded":false},{"id":"deneftenya","name":"内夫特尼亚步枪兵","nameOld":"内夫特尼亚步枪兵","nameEn":"Neftenya","age":"Fortress Age","unitClass":"远程步兵","direction":"结构性改动","impact":"经济侧","summary":"经济调整：food: 65 / gold: 70 → food: 65 / gold: 65","fields":["cost"],"fieldLabels":["造价"],"scoreOld":28.53,"scoreNew":28.53,"scoreDelta":0.0,"dpsOld":5.33,"dpsNew":5.33,"dpsDelta":0.0,"hpOld":140,"hpNew":140,"costDelta":-3.57,"sim":0.5,"vsRef":{"musketeer":{"name":"火枪兵","new":1.0,"old":1.0,"delta":0.0},"hussar":{"name":"轻骑兵","new":0.0,"old":0.0,"delta":0.0},"crossbowman":{"name":"弩手","new":1.0,"old":1.0,"delta":0.0},"falconet":{"name":"鹰炮","new":0.0,"old":0.0,"delta":0.0}},"icon":"icons/deneftenya.png","blind":false,"excluded":false},{"id":"deordenanca","name":"法令步枪兵","nameOld":"法令斯步枪兵","nameEn":"Ordinance Rifleman","age":"Commerce Age","unitClass":"远程步兵","direction":"结构性改动","impact":"经济侧","summary":"结构性改动：food: 35 / wood: 35 → food: 40 / wood: 40","fields":["cost","name"],"fieldLabels":["造价","中文名"],"scoreOld":23.78,"scoreNew":23.78,"scoreDelta":0.0,"dpsOld":5.33,"dpsNew":5.33,"dpsDelta":0.0,"hpOld":100,"hpNew":100,"costDelta":13.33,"sim":0.5,"vsRef":{"musketeer":{"name":"火枪兵","new":1.0,"old":1.0,"delta":0.0},"hussar":{"name":"轻骑兵","new":0.0,"old":0.0,"delta":0.0},"crossbowman":{"name":"弩手","new":0.5,"old":0.5,"delta":0.0},"falconet":{"name":"鹰炮","new":0.0,"old":0.0,"delta":0.0}},"icon":"icons/deordenanca.png","blind":false,"excluded":false},{"id":"deoromowarrior","name":"奥罗莫战士","nameOld":"奥罗莫战士","nameEn":"Oromo Warrior","age":"Fortress Age","unitClass":"骑兵","direction":"结构性改动","impact":"经济侧","summary":"经济调整：50 → 45（-10.0%）","fields":["train_time"],"fieldLabels":["训练时间"],"scoreOld":103.63,"scoreNew":103.63,"scoreDelta":0.0,"dpsOld":24.0,"dpsNew":24.0,"dpsDelta":0.0,"hpOld":350,"hpNew":350,"costDelta":null,"sim":0.5,"vsRef":{"musketeer":{"name":"火枪兵","new":1.0,"old":1.0,"delta":0.0},"hussar":{"name":"轻骑兵","new":1.0,"old":1.0,"delta":0.0},"crossbowman":{"name":"弩手","new":1.0,"old":1.0,"delta":0.0},"falconet":{"name":"鹰炮","new":0.0,"old":0.0,"delta":0.0}},"icon":"icons/deoromowarrior.png","blind":false,"excluded":false},{"id":"depapalguard","name":"教宗护卫","nameOld":"教宗护卫","nameEn":"Papal Guard","age":"Commerce Age","unitClass":"步兵","direction":"增强","impact":"生存型","summary":"增强：200 → 220（+10.0%）","fields":["hp"],"fieldLabels":["生命值"],"scoreOld":42.86,"scoreNew":44.96,"scoreDelta":4.88,"dpsOld":8.67,"dpsNew":8.67,"dpsDelta":0.0,"hpOld":200,"hpNew":220,"costDelta":null,"sim":0.875,"vsRef":{"musketeer":{"name":"火枪兵","new":1.0,"old":1.0,"delta":0.0},"hussar":{"name":"轻骑兵","new":0.55,"old":0.0,"delta":0.55},"crossbowman":{"name":"弩手","new":1.0,"old":1.0,"delta":0.0},"falconet":{"name":"鹰炮","new":0.0,"old":0.0,"delta":0.0}},"icon":"icons/depapalguard.png","blind":false,"excluded":false},{"id":"depavisier","name":"墙盾手","nameOld":"墙盾手","nameEn":"Pavisier","age":"Commerce Age","unitClass":"远程步兵","direction":"结构性改动","impact":"经济侧","summary":"经济调整：food: 35 / wood: 50 → food: 45 / wood: 40","fields":["cost"],"fieldLabels":["造价"],"scoreOld":25.5,"scoreNew":25.5,"scoreDelta":0.0,"dpsOld":5.33,"dpsNew":5.33,"dpsDelta":0.0,"hpOld":115,"hpNew":115,"costDelta":0.0,"sim":0.5,"vsRef":{"musketeer":{"name":"火枪兵","new":0.0,"old":0.0,"delta":0.0},"hussar":{"name":"轻骑兵","new":0.0,"old":0.0,"delta":0.0},"crossbowman":{"name":"弩手","new":1.0,"old":1.0,"delta":0.0},"falconet":{"name":"鹰炮","new":0.0,"old":0.0,"delta":0.0}},"icon":"icons/depavisier.png","blind":false,"excluded":false},{"id":"derevbarbarywarrior","name":"巴巴里战士","nameOld":"巴巴里战士","nameEn":"Barbary Warrior","age":"Industrial Age","unitClass":"步兵","direction":"结构性改动","impact":"直接战斗","summary":"经济调整：13 → 16（+23.1%）；food: 100 → food: 90","fields":["attack_siege","cost"],"fieldLabels":["攻城攻击","造价"],"scoreOld":48.88,"scoreNew":48.88,"scoreDelta":0.0,"dpsOld":10.67,"dpsNew":10.67,"dpsDelta":0.0,"hpOld":200,"hpNew":200,"costDelta":-9.52,"sim":0.5,"vsRef":{"musketeer":{"name":"火枪兵","new":1.0,"old":1.0,"delta":0.0},"hussar":{"name":"轻骑兵","new":1.0,"old":1.0,"delta":0.0},"crossbowman":{"name":"弩手","new":1.0,"old":1.0,"delta":0.0},"falconet":{"name":"鹰炮","new":0.0,"old":0.0,"delta":0.0}},"icon":"icons/derevbarbarywarrior.png","blind":false,"excluded":false},{"id":"derevcruzobinfantry","name":"克鲁佐布步兵","nameOld":"克鲁佐布步兵","nameEn":"Cruzob Infantry","age":"Imperial Age","unitClass":"步兵","direction":"结构性改动","impact":"经济侧","summary":"经济调整：food: 80 / gold: 35 → food: 80 / gold: 30","fields":["cost"],"fieldLabels":["造价"],"scoreOld":69.88,"scoreNew":69.88,"scoreDelta":0.0,"dpsOld":18.67,"dpsNew":18.67,"dpsDelta":0.0,"hpOld":240,"hpNew":240,"costDelta":-4.17,"sim":0.5,"vsRef":{"musketeer":{"name":"火枪兵","new":1.0,"old":1.0,"delta":0.0},"hussar":{"name":"轻骑兵","new":1.0,"old":1.0,"delta":0.0},"crossbowman":{"name":"弩手","new":1.0,"old":1.0,"delta":0.0},"falconet":{"name":"鹰炮","new":0.0,"old":0.0,"delta":0.0}},"icon":"icons/derevcruzobinfantry.png","blind":false,"excluded":false},{"id":"derevfilibuster","name":"军事冒险家","nameOld":"军事冒险家","nameEn":"Filibuster","age":"Commerce Age","unitClass":"炮兵/攻城","direction":"结构性改动","impact":"直接战斗","summary":"结构性改动：24 → 25（+4.2%）","fields":["attack_siege"],"fieldLabels":["攻城攻击"],"scoreOld":36.83,"scoreNew":36.83,"scoreDelta":0.0,"dpsOld":8.0,"dpsNew":8.0,"dpsDelta":0.0,"hpOld":160,"hpNew":160,"costDelta":null,"sim":0.5,"vsRef":{"musketeer":{"name":"火枪兵","new":0.5,"old":0.5,"delta":0.0},"hussar":{"name":"轻骑兵","new":0.0,"old":0.0,"delta":0.0},"crossbowman":{"name":"弩手","new":1.0,"old":1.0,"delta":0.0},"falconet":{"name":"鹰炮","new":0.0,"old":0.0,"delta":0.0}},"icon":"icons/derevfilibuster.png","blind":false,"excluded":false},{"id":"derevgranadero","name":"骑马近卫掷弹兵","nameOld":"骑马近卫掷弹兵","nameEn":"Mounted Granadero","age":"Commerce Age","unitClass":"骑兵","direction":"削弱","impact":"机制型","summary":"削弱：0.3 → 0.2（-33.3%）；food: 150 → food: 120 / gold: 50；动作包发生变化，详见原始字段","fields":["armor_ranged","cost","multipliers"],"fieldLabels":["远程护甲","造价","克制倍率"],"scoreOld":48.22,"scoreNew":47.55,"scoreDelta":-1.39,"dpsOld":6.0,"dpsNew":6.0,"dpsDelta":0.0,"hpOld":250,"hpNew":250,"costDelta":12.5,"sim":0.0,"vsRef":{"musketeer":{"name":"火枪兵","new":1.0,"old":1.0,"delta":0.0},"hussar":{"name":"轻骑兵","new":0.0,"old":0.0,"delta":0.0},"crossbowman":{"name":"弩手","new":1.0,"old":1.0,"delta":0.0},"falconet":{"name":"鹰炮","new":0.0,"old":0.0,"delta":0.0}},"icon":"icons/derevgranadero.png","blind":true,"excluded":false},{"id":"derevolutionaryscout","name":"埃克莱尔","nameOld":"埃克莱尔","nameEn":"Eclaireur","age":"Fortress Age","unitClass":"骑兵","direction":"结构性改动","impact":"机制型","summary":"结构性改动：0.57 → 0.64（+12.3%）；动作包发生变化，详见原始字段","fields":["windup_melee","windups"],"fieldLabels":["近战抬手","抬手表"],"scoreOld":36.12,"scoreNew":36.12,"scoreDelta":0.0,"dpsOld":6.67,"dpsNew":6.67,"dpsDelta":0.0,"hpOld":190,"hpNew":190,"costDelta":null,"sim":0.225,"vsRef":{"musketeer":{"name":"火枪兵","new":0.0,"old":0.0,"delta":0.0},"hussar":{"name":"轻骑兵","new":0.0,"old":0.0,"delta":0.0},"crossbowman":{"name":"弩手","new":1.0,"old":1.0,"delta":0.0},"falconet":{"name":"鹰炮","new":0.0,"old":0.0,"delta":0.0}},"icon":"icons/derevolutionaryscout.png","blind":true,"excluded":false},{"id":"derussianhalberdier","name":"尉官","nameOld":"尉官","nameEn":"Poruchik","age":"Commerce Age","unitClass":"步兵","direction":"结构性改动","impact":"经济侧","summary":"经济调整：food: 50 / gold: 70 → food: 70 / gold: 50","fields":["cost"],"fieldLabels":["造价"],"scoreOld":50.19,"scoreNew":50.19,"scoreDelta":0.0,"dpsOld":14.67,"dpsNew":14.67,"dpsDelta":0.0,"hpOld":162,"hpNew":162,"costDelta":0.0,"sim":0.5,"vsRef":{"musketeer":{"name":"火枪兵","new":1.0,"old":1.0,"delta":0.0},"hussar":{"name":"轻骑兵","new":0.0,"old":0.0,"delta":0.0},"crossbowman":{"name":"弩手","new":1.0,"old":1.0,"delta":0.0},"falconet":{"name":"鹰炮","new":0.0,"old":0.0,"delta":0.0}},"icon":"icons/derussianhalberdier.png","blind":false,"excluded":false},{"id":"desalooninquisitor","name":"审判官","nameOld":"审判官","nameEn":"Inquisitor","age":"Commerce Age","unitClass":"炮兵/攻城","direction":"增强","impact":"直接战斗","summary":"增强：15 → 18（+20.0%）；gold: 100 → gold: 110；4.25 → 4.75（+11.8%）；35 → 45（+28.6%）","fields":["attack_melee","cost","speed","train_time"],"fieldLabels":["近战攻击","造价","移速","训练时间"],"scoreOld":39.87,"scoreNew":43.68,"scoreDelta":9.54,"dpsOld":10.0,"dpsNew":12.0,"dpsDelta":20.0,"hpOld":150,"hpNew":150,"costDelta":8.33,"sim":1.0,"vsRef":{"musketeer":{"name":"火枪兵","new":1.0,"old":1.0,"delta":0.0},"hussar":{"name":"轻骑兵","new":0.0,"old":0.0,"delta":0.0},"crossbowman":{"name":"弩手","new":1.0,"old":1.0,"delta":0.0},"falconet":{"name":"鹰炮","new":0.0,"old":0.0,"delta":0.0}},"icon":"icons/desalooninquisitor.png","blind":false,"excluded":false},{"id":"desaloonoutlawarsonist","name":"马拉塔火兵","nameOld":"马拉塔火兵","nameEn":"Marathan Arsonist","age":"Commerce Age","unitClass":"炮兵/攻城","direction":"增强","impact":"机制型","summary":"增强：8 → 12（+50.0%）；20 → 25（+25.0%）；动作包发生变化，详见原始字段","fields":["attack_melee","attack_ranged","multipliers"],"fieldLabels":["近战攻击","远程攻击","克制倍率"],"scoreOld":51.82,"scoreNew":57.94,"scoreDelta":11.8,"dpsOld":6.67,"dpsNew":8.33,"dpsDelta":25.0,"hpOld":200,"hpNew":200,"costDelta":null,"sim":0.6,"vsRef":{"musketeer":{"name":"火枪兵","new":1.0,"old":1.0,"delta":0.0},"hussar":{"name":"轻骑兵","new":0.0,"old":0.0,"delta":0.0},"crossbowman":{"name":"弩手","new":1.0,"old":1.0,"delta":0.0},"falconet":{"name":"鹰炮","new":0.0,"old":0.0,"delta":0.0}},"icon":"icons/desaloonoutlawarsonist.png","blind":true,"excluded":false},{"id":"deslinger","name":"投石索兵","nameOld":"投石索兵","nameEn":"Huaraca","age":"Fortress Age","unitClass":"炮兵/攻城","direction":"削弱","impact":"直接战斗","summary":"削弱：0.3 → 0.2（-33.3%）；新增为 0.2；37 → 40（+8.1%）","fields":["armor_ranged","armor_siege","attack_siege"],"fieldLabels":["远程护甲","攻城护甲","攻城攻击"],"scoreOld":26.41,"scoreNew":26.05,"scoreDelta":-1.39,"dpsOld":5.33,"dpsNew":5.33,"dpsDelta":0.0,"hpOld":120,"hpNew":120,"costDelta":null,"sim":1.0,"vsRef":{"musketeer":{"name":"火枪兵","new":0.0,"old":0.8,"delta":-0.8},"hussar":{"name":"轻骑兵","new":0.0,"old":0.0,"delta":0.0},"crossbowman":{"name":"弩手","new":1.0,"old":1.0,"delta":0.0},"falconet":{"name":"鹰炮","new":0.0,"old":0.0,"delta":0.0}},"icon":"icons/deslinger.png","blind":true,"excluded":false},{"id":"despcoutlawlandsknecht","name":"流浪的国土佣仆","nameOld":"亡命之徒德国步兵","nameEn":"Vagrant Landsknecht","age":"Fortress Age","unitClass":"步兵","direction":"结构性改动","impact":"机制型","summary":"结构性改动：从 0.51 删除；动作包发生变化，详见原始字段","fields":["name","name_en","windup_melee","windups"],"fieldLabels":["中文名","英文名","近战抬手","抬手表"],"scoreOld":139.19,"scoreNew":139.19,"scoreDelta":0.0,"dpsOld":36.0,"dpsNew":36.0,"dpsDelta":0.0,"hpOld":430,"hpNew":430,"costDelta":null,"sim":0.75,"vsRef":{"musketeer":{"name":"火枪兵","new":1.0,"old":1.0,"delta":0.0},"hussar":{"name":"轻骑兵","new":1.0,"old":1.0,"delta":0.0},"crossbowman":{"name":"弩手","new":1.0,"old":1.0,"delta":0.0},"falconet":{"name":"鹰炮","new":0.0,"old":0.0,"delta":0.0}},"icon":"icons/despcoutlawlandsknecht.png","blind":true,"excluded":false},{"id":"detank","name":"莱昂纳多的战车","nameOld":"莱昂纳多的战车","nameEn":"Leonardo's Tank","age":"Commerce Age","unitClass":"炮兵/攻城","direction":"增强","impact":"直接战斗","summary":"增强：3 → 4（+33.3%）；3 → 4（+33.3%）；100 → 300（+200.0%）","fields":["aoe_radius","aoe_radius_ranged","attack_ranged"],"fieldLabels":["AOE 半径","远程 AOE","远程攻击"],"scoreOld":451.31,"scoreNew":503.44,"scoreDelta":11.55,"dpsOld":50.0,"dpsNew":150.0,"dpsDelta":200.0,"hpOld":3500,"hpNew":3500,"costDelta":null,"sim":1.0,"vsRef":{"musketeer":{"name":"火枪兵","new":1.0,"old":1.0,"delta":0.0},"hussar":{"name":"轻骑兵","new":1.0,"old":1.0,"delta":0.0},"crossbowman":{"name":"弩手","new":1.0,"old":1.0,"delta":0.0},"falconet":{"name":"鹰炮","new":1.0,"old":1.0,"delta":0.0}},"icon":"icons/detank.png","blind":false,"excluded":false},{"id":"deunknownnateaglewarrior","name":"阿兹特克鹰勇士","nameOld":"阿兹特克鹰勇士","nameEn":"Aztec Eagle Warrior","age":"Commerce Age","unitClass":"远程步兵","direction":"结构性改动","impact":"机制型","summary":"结构性改动：VolleyHandAttack → MeleeHandAttack；0.47 → 0.37（-21.3%）；动作包发生变化，详见原始字段","fields":["description","description_en","protoaction_melee","windup_melee","windups"],"fieldLabels":["描述","英文描述","近战代表动作","近战抬手","抬手表"],"scoreOld":29.65,"scoreNew":29.65,"scoreDelta":0.0,"dpsOld":7.33,"dpsNew":7.33,"dpsDelta":0.0,"hpOld":110,"hpNew":110,"costDelta":null,"sim":0.5,"vsRef":{"musketeer":{"name":"火枪兵","new":1.0,"old":1.0,"delta":0.0},"hussar":{"name":"轻骑兵","new":0.0,"old":0.0,"delta":0.0},"crossbowman":{"name":"弩手","new":1.0,"old":1.0,"delta":0.0},"falconet":{"name":"鹰炮","new":0.0,"old":0.0,"delta":0.0}},"icon":"icons/deunknownnateaglewarrior.png","blind":true,"excluded":false},{"id":"greatbombard","name":"重型火炮","nameOld":"重型火炮","nameEn":"Great Bombard","age":"Industrial Age","unitClass":"炮兵/攻城","direction":"结构性改动","impact":"经济侧","summary":"经济调整：100 → 115（+15.0%）","fields":["train_time"],"fieldLabels":["训练时间"],"scoreOld":149.42,"scoreNew":149.42,"scoreDelta":0.0,"dpsOld":62.5,"dpsNew":62.5,"dpsDelta":0.0,"hpOld":475,"hpNew":475,"costDelta":null,"sim":0.5,"vsRef":{"musketeer":{"name":"火枪兵","new":1.0,"old":1.0,"delta":0.0},"hussar":{"name":"轻骑兵","new":1.0,"old":1.0,"delta":0.0},"crossbowman":{"name":"弩手","new":1.0,"old":1.0,"delta":0.0},"falconet":{"name":"鹰炮","new":1.0,"old":1.0,"delta":0.0}},"icon":"icons/greatbombard.png","blind":false,"excluded":false},{"id":"janissary","name":"奥斯曼火枪兵","nameOld":"奥斯曼火枪兵","nameEn":"Janissary","age":"Commerce Age","unitClass":"步兵","direction":"削弱","impact":"生存型","summary":"削弱：215 → 210（-2.3%）","fields":["hp"],"fieldLabels":["生命值"],"scoreOld":47.74,"scoreNew":47.18,"scoreDelta":-1.17,"dpsOld":10.0,"dpsNew":10.0,"dpsDelta":0.0,"hpOld":215,"hpNew":210,"costDelta":null,"sim":0.5,"vsRef":{"musketeer":{"name":"火枪兵","new":1.0,"old":1.0,"delta":0.0},"hussar":{"name":"轻骑兵","new":0.0,"old":0.0,"delta":0.0},"crossbowman":{"name":"弩手","new":1.0,"old":1.0,"delta":0.0},"falconet":{"name":"鹰炮","new":0.0,"old":0.0,"delta":0.0}},"icon":"icons/janissary.png","blind":false,"excluded":false},{"id":"legacygatlingcamel","name":"加特林骆驼","nameOld":"加特林骆驼","nameEn":"Gatling Camel","age":"Industrial Age","unitClass":"骑兵","direction":"结构性改动","impact":"机制型","summary":"结构性改动：动作包发生变化，详见原始字段","fields":["multipliers"],"fieldLabels":["克制倍率"],"scoreOld":975.4,"scoreNew":975.4,"scoreDelta":0.0,"dpsOld":600.0,"dpsNew":600.0,"dpsDelta":0.0,"hpOld":9001,"hpNew":9001,"costDelta":null,"sim":0.5,"vsRef":{"musketeer":{"name":"火枪兵","new":1.0,"old":1.0,"delta":0.0},"hussar":{"name":"轻骑兵","new":1.0,"old":1.0,"delta":0.0},"crossbowman":{"name":"弩手","new":1.0,"old":1.0,"delta":0.0},"falconet":{"name":"鹰炮","new":1.0,"old":1.0,"delta":0.0}},"icon":"icons/legacygatlingcamel.png","blind":true,"excluded":true},{"id":"mercgreatcannon","name":"里尔火炮雇佣兵","nameOld":"里尔火炮雇佣兵","nameEn":"Li'l Bombard","age":"Industrial Age","unitClass":"炮兵/攻城","direction":"结构性改动","impact":"直接战斗","summary":"结构性改动：新增为 0.25","fields":["armor_siege"],"fieldLabels":["攻城护甲"],"scoreOld":190.69,"scoreNew":190.69,"scoreDelta":0.0,"dpsOld":100.0,"dpsNew":100.0,"dpsDelta":0.0,"hpOld":600,"hpNew":600,"costDelta":null,"sim":0.9744,"vsRef":{"musketeer":{"name":"火枪兵","new":1.0,"old":1.0,"delta":0.0},"hussar":{"name":"轻骑兵","new":1.0,"old":1.0,"delta":0.0},"crossbowman":{"name":"弩手","new":1.0,"old":1.0,"delta":0.0},"falconet":{"name":"鹰炮","new":1.0,"old":1.0,"delta":0.0}},"icon":"icons/mercgreatcannon.png","blind":true,"excluded":false},{"id":"monstertrucka","name":"大安迪","nameOld":"大安迪","nameEn":"BigAndy","age":"Commerce Age","unitClass":"骑兵","direction":"结构性改动","impact":"机制型","summary":"结构性改动：新增为 8；新增为 8；新增为 1000；新增为 2000","fields":["aoe_radius","aoe_radius_melee","attack_melee","damage_cap_melee","damage_type_melee","protoaction_melee","range_melee","rof_melee"],"fieldLabels":["AOE 半径","近战 AOE","近战攻击","近战溅射池","近战伤害类型","近战代表动作","近战射程","近战射速"],"scoreOld":0.0,"scoreNew":2541.26,"scoreDelta":null,"dpsOld":0.0,"dpsNew":500.0,"dpsDelta":null,"hpOld":60000,"hpNew":60000,"costDelta":null,"sim":null,"vsRef":{"musketeer":{"name":"火枪兵","new":1.0,"old":1.0,"delta":0.0},"hussar":{"name":"轻骑兵","new":1.0,"old":0.0,"delta":1.0},"crossbowman":{"name":"弩手","new":1.0,"old":1.0,"delta":0.0},"falconet":{"name":"鹰炮","new":1.0,"old":0.0,"delta":1.0}},"icon":"icons/monstertrucka.png","blind":true,"excluded":true},{"id":"monstertruckt","name":"汤米卡车","nameOld":"汤米卡车","nameEn":"The Tommynator","age":"Commerce Age","unitClass":"骑兵","direction":"结构性改动","impact":"机制型","summary":"结构性改动：新增为 6；新增为 6；新增为 1200；新增为 3000","fields":["aoe_radius","aoe_radius_melee","attack_melee","damage_cap_melee","damage_type_melee","protoaction_melee","range_melee","rof_melee"],"fieldLabels":["AOE 半径","近战 AOE","近战攻击","近战溅射池","近战伤害类型","近战代表动作","近战射程","近战射速"],"scoreOld":0.0,"scoreNew":2538.42,"scoreDelta":null,"dpsOld":0.0,"dpsNew":600.0,"dpsDelta":null,"hpOld":60000,"hpNew":60000,"costDelta":null,"sim":null,"vsRef":{"musketeer":{"name":"火枪兵","new":1.0,"old":1.0,"delta":0.0},"hussar":{"name":"轻骑兵","new":1.0,"old":0.0,"delta":1.0},"crossbowman":{"name":"弩手","new":1.0,"old":1.0,"delta":0.0},"falconet":{"name":"鹰炮","new":1.0,"old":0.0,"delta":1.0}},"icon":"icons/monstertruckt.png","blind":true,"excluded":true},{"id":"nateaglewarrior","name":"阿兹特克鹰勇士","nameOld":"阿兹特克鹰勇士","nameEn":"Aztec Eagle Warrior","age":"Commerce Age","unitClass":"远程步兵","direction":"结构性改动","impact":"机制型","summary":"结构性改动：VolleyHandAttack → MeleeHandAttack；0.47 → 0.37（-21.3%）；动作包发生变化，详见原始字段","fields":["description","description_en","protoaction_melee","windup_melee","windups"],"fieldLabels":["描述","英文描述","近战代表动作","近战抬手","抬手表"],"scoreOld":44.29,"scoreNew":44.29,"scoreDelta":0.0,"dpsOld":10.0,"dpsNew":10.0,"dpsDelta":0.0,"hpOld":180,"hpNew":180,"costDelta":null,"sim":0.5,"vsRef":{"musketeer":{"name":"火枪兵","new":1.0,"old":1.0,"delta":0.0},"hussar":{"name":"轻骑兵","new":0.0,"old":0.0,"delta":0.0},"crossbowman":{"name":"弩手","new":1.0,"old":1.0,"delta":0.0},"falconet":{"name":"鹰炮","new":0.0,"old":0.0,"delta":0.0}},"icon":"icons/nateaglewarrior.png","blind":true,"excluded":false},{"id":"nathorsearcher","name":"卡曼契骑马弓兵","nameOld":"卡曼契骑马弓兵","nameEn":"Comanche Horse Archer","age":"Commerce Age","unitClass":"骑兵","direction":"增强","impact":"直接战斗","summary":"增强：13 → 15（+15.4%）","fields":["attack_ranged"],"fieldLabels":["远程攻击"],"scoreOld":42.25,"scoreNew":45.39,"scoreDelta":7.42,"dpsOld":8.67,"dpsNew":10.0,"dpsDelta":15.38,"hpOld":200,"hpNew":200,"costDelta":null,"sim":1.0,"vsRef":{"musketeer":{"name":"火枪兵","new":1.0,"old":1.0,"delta":0.0},"hussar":{"name":"轻骑兵","new":0.0,"old":0.0,"delta":0.0},"crossbowman":{"name":"弩手","new":1.0,"old":1.0,"delta":0.0},"falconet":{"name":"鹰炮","new":0.0,"old":0.0,"delta":0.0}},"icon":"icons/nathorsearcher.png","blind":false,"excluded":false},{"id":"natklamathrifleman","name":"克拉马斯步枪兵","nameOld":"克拉马斯步枪兵","nameEn":"Klamath Rifleman","age":"Commerce Age","unitClass":"远程步兵","direction":"增强","impact":"直接战斗","summary":"增强：0.25 → 0.3（+20.0%）；135 → 160（+18.5%）","fields":["armor_ranged","hp"],"fieldLabels":["远程护甲","生命值"],"scoreOld":24.09,"scoreNew":26.41,"scoreDelta":9.62,"dpsOld":4.0,"dpsNew":4.0,"dpsDelta":0.0,"hpOld":135,"hpNew":160,"costDelta":null,"sim":1.0,"vsRef":{"musketeer":{"name":"火枪兵","new":1.0,"old":0.8,"delta":0.2},"hussar":{"name":"轻骑兵","new":0.0,"old":0.0,"delta":0.0},"crossbowman":{"name":"弩手","new":1.0,"old":0.0,"delta":1.0},"falconet":{"name":"鹰炮","new":0.0,"old":0.0,"delta":0.0}},"icon":"icons/natklamathrifleman.png","blind":false,"excluded":false},{"id":"natmerchorsearcher","name":"卡曼契骑马弓兵","nameOld":"卡曼契骑马弓兵","nameEn":"Comanche Horse Archer","age":"Commerce Age","unitClass":"骑兵","direction":"增强","impact":"直接战斗","summary":"增强：13 → 15（+15.4%）","fields":["attack_ranged"],"fieldLabels":["远程攻击"],"scoreOld":42.25,"scoreNew":45.39,"scoreDelta":7.42,"dpsOld":8.67,"dpsNew":10.0,"dpsDelta":15.38,"hpOld":200,"hpNew":200,"costDelta":null,"sim":1.0,"vsRef":{"musketeer":{"name":"火枪兵","new":1.0,"old":1.0,"delta":0.0},"hussar":{"name":"轻骑兵","new":0.0,"old":0.0,"delta":0.0},"crossbowman":{"name":"弩手","new":1.0,"old":1.0,"delta":0.0},"falconet":{"name":"鹰炮","new":0.0,"old":0.0,"delta":0.0}},"icon":"icons/natmerchorsearcher.png","blind":false,"excluded":false},{"id":"natsharktoothbowman","name":"塞米诺尔鲨齿弓箭手","nameOld":"塞米诺尔鲨齿弓箭手","nameEn":"Seminole Sharktooth Bowman","age":"Commerce Age","unitClass":"远程步兵","direction":"结构性改动","impact":"机制型","summary":"机制变更：远程 / 近战代表动作改为 RangedAttack / HandAttack，保留 0.98 / 0.27 秒抬手","fields":["protoaction_melee","protoaction_ranged","windups"],"fieldLabels":["近战代表动作","远程代表动作","抬手表"],"scoreOld":36.06,"scoreNew":36.06,"scoreDelta":0.0,"dpsOld":10.67,"dpsNew":10.67,"dpsDelta":0.0,"hpOld":115,"hpNew":115,"costDelta":null,"sim":0.5,"vsRef":{"musketeer":{"name":"火枪兵","new":1.0,"old":1.0,"delta":0.0},"hussar":{"name":"轻骑兵","new":0.0,"old":0.0,"delta":0.0},"crossbowman":{"name":"弩手","new":1.0,"old":1.0,"delta":0.0},"falconet":{"name":"鹰炮","new":0.0,"old":0.0,"delta":0.0}},"icon":"icons/natsharktoothbowman.png","blind":true,"excluded":false},{"id":"spahi","name":"西帕希","nameOld":"突厥骑射","nameEn":"Sipahi","age":"Fortress Age","unitClass":"骑兵","direction":"结构性改动","impact":"经济侧","summary":"结构性改动：food: 400 → food: 200 / gold: 200","fields":["cost","name"],"fieldLabels":["造价","中文名"],"scoreOld":190.17,"scoreNew":190.17,"scoreDelta":0.0,"dpsOld":23.33,"dpsNew":23.33,"dpsDelta":0.0,"hpOld":750,"hpNew":750,"costDelta":0.0,"sim":0.5,"vsRef":{"musketeer":{"name":"火枪兵","new":1.0,"old":1.0,"delta":0.0},"hussar":{"name":"轻骑兵","new":1.0,"old":1.0,"delta":0.0},"crossbowman":{"name":"弩手","new":1.0,"old":1.0,"delta":0.0},"falconet":{"name":"鹰炮","new":1.0,"old":1.0,"delta":0.0}},"icon":"icons/spahi.png","blind":false,"excluded":false},{"id":"spcxpchiefbravewolf","name":"狼勇士酋长","nameOld":"狼勇士酋长","nameEn":"Chief Brave Wolf","age":"Exploration Age","unitClass":"骑兵","direction":"增强","impact":"机制型","summary":"增强：6 → 30（+400.0%）；15 → 30（+100.0%）；500 → 750（+50.0%）；动作包发生变化，详见原始字段","fields":["attack_melee","attack_siege","hp","multipliers","windups"],"fieldLabels":["近战攻击","攻城攻击","生命值","克制倍率","抬手表"],"scoreOld":51.75,"scoreNew":154.64,"scoreDelta":198.82,"dpsOld":4.0,"dpsNew":20.0,"dpsDelta":400.0,"hpOld":500,"hpNew":750,"costDelta":null,"sim":1.0,"vsRef":{"musketeer":{"name":"火枪兵","new":1.0,"old":0.2,"delta":0.8},"hussar":{"name":"轻骑兵","new":1.0,"old":0.0,"delta":1.0},"crossbowman":{"name":"弩手","new":1.0,"old":1.0,"delta":0.0},"falconet":{"name":"鹰炮","new":0.95,"old":0.0,"delta":0.95}},"icon":"icons/spcxpchiefbravewolf.png","blind":true,"excluded":true},{"id":"spcxpchiefbullbear","name":"巨熊酋长","nameOld":"巨熊酋长","nameEn":"Chief Bull Bear","age":"Commerce Age","unitClass":"骑兵","direction":"增强","impact":"机制型","summary":"增强：新增为 1；新增为 1；28 → 30（+7.1%）；新增为 50","fields":["aoe_radius","aoe_radius_melee","attack_melee","damage_cap_melee","hp","multipliers","windups"],"fieldLabels":["AOE 半径","近战 AOE","近战攻击","近战溅射池","生命值","克制倍率","抬手表"],"scoreOld":96.95,"scoreNew":156.87,"scoreDelta":61.81,"dpsOld":18.67,"dpsNew":20.0,"dpsDelta":7.14,"hpOld":475,"hpNew":750,"costDelta":null,"sim":1.0,"vsRef":{"musketeer":{"name":"火枪兵","new":1.0,"old":1.0,"delta":0.0},"hussar":{"name":"轻骑兵","new":1.0,"old":1.0,"delta":0.0},"crossbowman":{"name":"弩手","new":1.0,"old":1.0,"delta":0.0},"falconet":{"name":"鹰炮","new":0.85,"old":0.0,"delta":0.85}},"icon":"icons/spcxpchiefbullbear.png","blind":true,"excluded":true},{"id":"spcxpchieftwomoon","name":"双月酋长","nameOld":"双月酋长","nameEn":"Chief Two Moon","age":"Exploration Age","unitClass":"步兵","direction":"增强","impact":"机制型","summary":"增强：6 → 15（+150.0%）；12 → 24（+100.0%）；500 → 750（+50.0%）；动作包发生变化，详见原始字段","fields":["attack_melee","attack_ranged","hp","multipliers","windups"],"fieldLabels":["近战攻击","远程攻击","生命值","克制倍率","抬手表"],"scoreOld":45.39,"scoreNew":87.89,"scoreDelta":93.65,"dpsOld":4.0,"dpsNew":10.0,"dpsDelta":150.0,"hpOld":500,"hpNew":750,"costDelta":null,"sim":1.0,"vsRef":{"musketeer":{"name":"火枪兵","new":1.0,"old":1.0,"delta":0.0},"hussar":{"name":"轻骑兵","new":0.7,"old":0.0,"delta":0.7},"crossbowman":{"name":"弩手","new":1.0,"old":1.0,"delta":0.0},"falconet":{"name":"鹰炮","new":0.0,"old":0.0,"delta":0.0}},"icon":"icons/spcxpchieftwomoon.png","blind":true,"excluded":true},{"id":"uhlan","name":"德国骑兵","nameOld":"德国骑兵","nameEn":"Uhlan","age":"Commerce Age","unitClass":"骑兵","direction":"削弱","impact":"直接战斗","summary":"削弱：37 → 35（-5.4%）；20 → 19（-5.0%）","fields":["attack_melee","attack_siege"],"fieldLabels":["近战攻击","攻城攻击"],"scoreOld":78.38,"scoreNew":76.37,"scoreDelta":-2.55,"dpsOld":24.67,"dpsNew":23.33,"dpsDelta":-5.41,"hpOld":190,"hpNew":190,"costDelta":null,"sim":0.5,"vsRef":{"musketeer":{"name":"火枪兵","new":1.0,"old":1.0,"delta":0.0},"hussar":{"name":"轻骑兵","new":0.0,"old":0.0,"delta":0.0},"crossbowman":{"name":"弩手","new":1.0,"old":1.0,"delta":0.0},"falconet":{"name":"鹰炮","new":0.0,"old":0.0,"delta":0.0}},"icon":"icons/uhlan.png","blind":false,"excluded":false},{"id":"warwagon","name":"老练马战车","nameOld":"老练马战车","nameEn":"Veteran War Wagon","age":"Fortress Age","unitClass":"骑兵","direction":"结构性改动","impact":"机制型","summary":"结构性改动：0 → 2；从 0.33 删除；从 0.33 删除；动作包发生变化，详见原始字段","fields":["description","description_en","range_min","windup_melee","windup_ranged","windups"],"fieldLabels":["描述","英文描述","远程最小射程","近战抬手","远程抬手","抬手表"],"scoreOld":86.14,"scoreNew":86.14,"scoreDelta":0.0,"dpsOld":14.0,"dpsNew":14.0,"dpsDelta":0.0,"hpOld":500,"hpNew":500,"costDelta":null,"sim":0.825,"vsRef":{"musketeer":{"name":"火枪兵","new":1.0,"old":1.0,"delta":0.0},"hussar":{"name":"轻骑兵","new":1.0,"old":1.0,"delta":0.0},"crossbowman":{"name":"弩手","new":1.0,"old":1.0,"delta":0.0},"falconet":{"name":"鹰炮","new":0.0,"old":0.0,"delta":0.0}},"icon":"icons/warwagon.png","blind":true,"excluded":false},{"id":"xpbowrider","name":"弓骑士","nameOld":"弓骑士","nameEn":"Bow Rider","age":"Commerce Age","unitClass":"骑兵","direction":"削弱","impact":"机制型","summary":"削弱：20 → 18（-10.0%）；225 → 230（+2.2%）；动作包发生变化，详见原始字段","fields":["attack_ranged","hp","multipliers"],"fieldLabels":["远程攻击","生命值","克制倍率"],"scoreOld":57.18,"scoreNew":54.85,"scoreDelta":-4.08,"dpsOld":13.33,"dpsNew":12.0,"dpsDelta":-10.0,"hpOld":225,"hpNew":230,"costDelta":null,"sim":0.025,"vsRef":{"musketeer":{"name":"火枪兵","new":1.0,"old":1.0,"delta":0.0},"hussar":{"name":"轻骑兵","new":1.0,"old":1.0,"delta":0.0},"crossbowman":{"name":"弩手","new":1.0,"old":1.0,"delta":0.0},"falconet":{"name":"鹰炮","new":0.0,"old":0.0,"delta":0.0}},"icon":"icons/xpbowrider.png","blind":true,"excluded":false},{"id":"xpcouprider","name":"塔斯云坎游荡者","nameOld":"塔斯云坎游荡者","nameEn":"Tashunke Prowler","age":"Fortress Age","unitClass":"骑兵","direction":"削弱","impact":"直接战斗","summary":"削弱：15 → 14（-6.7%）；15 → 14（-6.7%）；220 → 215（-2.3%）","fields":["age","attack_melee","attack_siege","hp"],"fieldLabels":["时代","近战攻击","攻城攻击","生命值"],"scoreOld":60.21,"scoreNew":57.51,"scoreDelta":-4.49,"dpsOld":10.0,"dpsNew":9.33,"dpsDelta":-6.67,"hpOld":220,"hpNew":215,"costDelta":null,"sim":0.175,"vsRef":{"musketeer":{"name":"火枪兵","new":1.0,"old":1.0,"delta":0.0},"hussar":{"name":"轻骑兵","new":0.0,"old":0.0,"delta":0.0},"crossbowman":{"name":"弩手","new":1.0,"old":1.0,"delta":0.0},"falconet":{"name":"鹰炮","new":0.0,"old":0.0,"delta":0.0}},"icon":"icons/xpcouprider.png","blind":false,"excluded":false},{"id":"xpeagleknight","name":"鹰游击武士","nameOld":"鹰游击武士","nameEn":"Eagle Runner Knight","age":"Fortress Age","unitClass":"远程步兵","direction":"结构性改动","impact":"机制型","summary":"结构性改动：VolleyHandAttack → MeleeHandAttack；0.47 → 0.37（-21.3%）；动作包发生变化，详见原始字段","fields":["description","description_en","protoaction_melee","windup_melee","windups"],"fieldLabels":["描述","英文描述","近战代表动作","近战抬手","抬手表"],"scoreOld":43.68,"scoreNew":43.68,"scoreDelta":0.0,"dpsOld":10.0,"dpsNew":10.0,"dpsDelta":0.0,"hpOld":180,"hpNew":180,"costDelta":null,"sim":0.5,"vsRef":{"musketeer":{"name":"火枪兵","new":1.0,"old":1.0,"delta":0.0},"hussar":{"name":"轻骑兵","new":0.0,"old":0.0,"delta":0.0},"crossbowman":{"name":"弩手","new":1.0,"old":1.0,"delta":0.0},"falconet":{"name":"鹰炮","new":0.0,"old":0.0,"delta":0.0}},"icon":"icons/xpeagleknight.png","blind":true,"excluded":false},{"id":"xpiroquoiswarchief","name":"战酋","nameOld":"战酋","nameEn":"War Chief","age":"Exploration Age","unitClass":"步兵","direction":"结构性改动","impact":"机制型","summary":"结构性改动：动作包发生变化，详见原始字段","fields":["windups"],"fieldLabels":["抬手表"],"scoreOld":45.39,"scoreNew":45.39,"scoreDelta":0.0,"dpsOld":4.0,"dpsNew":4.0,"dpsDelta":0.0,"hpOld":500,"hpNew":500,"costDelta":null,"sim":0.5,"vsRef":{"musketeer":{"name":"火枪兵","new":1.0,"old":1.0,"delta":0.0},"hussar":{"name":"轻骑兵","new":0.0,"old":0.0,"delta":0.0},"crossbowman":{"name":"弩手","new":1.0,"old":1.0,"delta":0.0},"falconet":{"name":"鹰炮","new":0.0,"old":0.0,"delta":0.0}},"icon":"icons/xpiroquoiswarchief.png","blind":true,"excluded":false},{"id":"xpmacehualtin","name":"奥托米掷石绳兵","nameOld":"奥托米掷石绳兵","nameEn":"Otontin Slinger","age":"Commerce Age","unitClass":"远程步兵","direction":"结构性改动","impact":"经济侧","summary":"结构性改动：food: 40 / wood: 30 → food: 40 / wood: 35；23 → 25（+8.7%）","fields":["cost","train_time"],"fieldLabels":["造价","训练时间"],"scoreOld":21.57,"scoreNew":21.57,"scoreDelta":0.0,"dpsOld":5.33,"dpsNew":5.33,"dpsDelta":0.0,"hpOld":80,"hpNew":80,"costDelta":6.67,"sim":0.5,"vsRef":{"musketeer":{"name":"火枪兵","new":0.3,"old":0.3,"delta":0.0},"hussar":{"name":"轻骑兵","new":0.0,"old":0.0,"delta":0.0},"crossbowman":{"name":"弩手","new":0.05,"old":0.05,"delta":0.0},"falconet":{"name":"鹰炮","new":0.0,"old":0.0,"delta":0.0}},"icon":"icons/xpmacehualtin.png","blind":false,"excluded":false},{"id":"xpmedicinemanaztec","name":"战斗祭司","nameOld":"战斗祭司","nameEn":"Warrior Priest","age":"Commerce Age","unitClass":"步兵","direction":"结构性改动","impact":"经济侧","summary":"经济调整：45 → 50（+11.1%）","fields":["train_time"],"fieldLabels":["训练时间"],"scoreOld":35.16,"scoreNew":35.16,"scoreDelta":0.0,"dpsOld":3.33,"dpsNew":3.33,"dpsDelta":0.0,"hpOld":360,"hpNew":360,"costDelta":null,"sim":0.5,"vsRef":{"musketeer":{"name":"火枪兵","new":0.0,"old":0.0,"delta":0.0},"hussar":{"name":"轻骑兵","new":0.0,"old":0.0,"delta":0.0},"crossbowman":{"name":"弩手","new":1.0,"old":1.0,"delta":0.0},"falconet":{"name":"鹰炮","new":0.0,"old":0.0,"delta":0.0}},"icon":"icons/xpmedicinemanaztec.png","blind":false,"excluded":false},{"id":"xpram","name":"精锐攻城槌","nameOld":"精锐攻城槌","nameEn":"Elite Ram","age":"Fortress Age","unitClass":"炮兵/攻城","direction":"结构性改动","impact":"机制型","summary":"结构性改动：动作包发生变化，详见原始字段","fields":["windups"],"fieldLabels":["抬手表"],"scoreOld":43.78,"scoreNew":43.78,"scoreDelta":0.0,"dpsOld":6.67,"dpsNew":6.67,"dpsDelta":0.0,"hpOld":250,"hpNew":250,"costDelta":null,"sim":0.5,"vsRef":{"musketeer":{"name":"火枪兵","new":1.0,"old":1.0,"delta":0.0},"hussar":{"name":"轻骑兵","new":0.0,"old":0.0,"delta":0.0},"crossbowman":{"name":"弩手","new":1.0,"old":1.0,"delta":0.0},"falconet":{"name":"鹰炮","new":0.0,"old":0.0,"delta":0.0}},"icon":"icons/xpram.png","blind":true,"excluded":false},{"id":"xptomahawk","name":"战斧兵","nameOld":"战斧兵","nameEn":"Tomahawk","age":"Commerce Age","unitClass":"步兵","direction":"增强","impact":"直接战斗","summary":"增强：145 → 150（+3.4%）","fields":["hp","type"],"fieldLabels":["生命值","类型标签"],"scoreOld":37.88,"scoreNew":38.52,"scoreDelta":1.71,"dpsOld":9.33,"dpsNew":9.33,"dpsDelta":0.0,"hpOld":145,"hpNew":150,"costDelta":null,"sim":0.5,"vsRef":{"musketeer":{"name":"火枪兵","new":0.1,"old":0.1,"delta":0.0},"hussar":{"name":"轻骑兵","new":0.0,"old":0.0,"delta":0.0},"crossbowman":{"name":"弩手","new":1.0,"old":1.0,"delta":0.0},"falconet":{"name":"鹰炮","new":0.0,"old":0.0,"delta":0.0}},"icon":"icons/xptomahawk.png","blind":true,"excluded":false},{"id":"xpwarbow","name":"鹰神弓箭手","nameOld":"鹰神弓箭手","nameEn":"Cetan Bowman","age":"Commerce Age","unitClass":"远程步兵","direction":"结构性改动","impact":"机制型","summary":"结构性改动：动作包发生变化，详见原始字段","fields":["multipliers"],"fieldLabels":["克制倍率"],"scoreOld":33.02,"scoreNew":33.02,"scoreDelta":0.0,"dpsOld":10.0,"dpsNew":10.0,"dpsDelta":0.0,"hpOld":100,"hpNew":100,"costDelta":null,"sim":0.5,"vsRef":{"musketeer":{"name":"火枪兵","new":1.0,"old":1.0,"delta":0.0},"hussar":{"name":"轻骑兵","new":0.0,"old":0.0,"delta":0.0},"crossbowman":{"name":"弩手","new":1.0,"old":1.0,"delta":0.0},"falconet":{"name":"鹰炮","new":0.0,"old":0.0,"delta":0.0}},"icon":"icons/xpwarbow.png","blind":true,"excluded":false},{"id":"ypconsulatejinete","name":"军团枪骑兵","nameOld":"军团枪骑兵","nameEn":"Legion Dragoon","age":"Fortress Age","unitClass":"骑兵","direction":"结构性改动","impact":"机制型","summary":"结构性改动：动作包发生变化，详见原始字段","fields":["windups"],"fieldLabels":["抬手表"],"scoreOld":39.43,"scoreNew":39.43,"scoreDelta":0.0,"dpsOld":7.33,"dpsNew":7.33,"dpsDelta":0.0,"hpOld":200,"hpNew":200,"costDelta":null,"sim":0.5,"vsRef":{"musketeer":{"name":"火枪兵","new":1.0,"old":1.0,"delta":0.0},"hussar":{"name":"轻骑兵","new":0.0,"old":0.0,"delta":0.0},"crossbowman":{"name":"弩手","new":1.0,"old":1.0,"delta":0.0},"falconet":{"name":"鹰炮","new":0.0,"old":0.0,"delta":0.0}},"icon":"icons/ypconsulatejinete.png","blind":true,"excluded":false},{"id":"ypconsulateninja","name":"隐身忍者","nameOld":"隐身忍者","nameEn":"Ninjutsu-Zukai","age":"Fortress Age","unitClass":"步兵","direction":"结构性改动","impact":"机制型","summary":"结构性改动：动作包发生变化，详见原始字段","fields":["multipliers"],"fieldLabels":["克制倍率"],"scoreOld":76.25,"scoreNew":76.25,"scoreDelta":0.0,"dpsOld":13.33,"dpsNew":13.33,"dpsDelta":0.0,"hpOld":400,"hpNew":400,"costDelta":null,"sim":0.5,"vsRef":{"musketeer":{"name":"火枪兵","new":1.0,"old":1.0,"delta":0.0},"hussar":{"name":"轻骑兵","new":1.0,"old":1.0,"delta":0.0},"crossbowman":{"name":"弩手","new":1.0,"old":1.0,"delta":0.0},"falconet":{"name":"鹰炮","new":0.0,"old":0.0,"delta":0.0}},"icon":"icons/ypconsulateninja.png","blind":true,"excluded":false},{"id":"ypconsulatetufancicorps","name":"巴格达奥斯曼火枪兵","nameOld":"巴格达奥斯曼火枪兵","nameEn":"Baghdad Janissary","age":"Commerce Age","unitClass":"步兵","direction":"结构性改动","impact":"经济侧","summary":"经济调整：34 → 40（+17.6%）","fields":["train_time"],"fieldLabels":["训练时间"],"scoreOld":47.74,"scoreNew":47.74,"scoreDelta":0.0,"dpsOld":10.0,"dpsNew":10.0,"dpsDelta":0.0,"hpOld":215,"hpNew":215,"costDelta":null,"sim":0.5,"vsRef":{"musketeer":{"name":"火枪兵","new":1.0,"old":1.0,"delta":0.0},"hussar":{"name":"轻骑兵","new":0.0,"old":0.0,"delta":0.0},"crossbowman":{"name":"弩手","new":1.0,"old":1.0,"delta":0.0},"falconet":{"name":"鹰炮","new":0.0,"old":0.0,"delta":0.0}},"icon":"icons/ypconsulatetufancicorps.png","blind":false,"excluded":false},{"id":"ypeggicecreamtruck","name":"冰淇淋大脚车","nameOld":"冰淇淋大脚车","nameEn":"Monster Ice Cream Truck","age":"Commerce Age","unitClass":"骑兵","direction":"结构性改动","impact":"机制型","summary":"结构性改动：新增为 8；新增为 8；新增为 1000；新增为 2000","fields":["aoe_radius","aoe_radius_melee","attack_melee","damage_cap_melee","damage_type_melee","protoaction_melee","range_melee","rof_melee"],"fieldLabels":["AOE 半径","近战 AOE","近战攻击","近战溅射池","近战伤害类型","近战代表动作","近战射程","近战射速"],"scoreOld":0.0,"scoreNew":2541.26,"scoreDelta":null,"dpsOld":0.0,"dpsNew":500.0,"dpsDelta":null,"hpOld":60000,"hpNew":60000,"costDelta":null,"sim":null,"vsRef":{"musketeer":{"name":"火枪兵","new":1.0,"old":1.0,"delta":0.0},"hussar":{"name":"轻骑兵","new":1.0,"old":0.0,"delta":1.0},"crossbowman":{"name":"弩手","new":1.0,"old":1.0,"delta":0.0},"falconet":{"name":"鹰炮","new":1.0,"old":0.0,"delta":1.0}},"icon":"icons/ypeggicecreamtruck.png","blind":true,"excluded":true},{"id":"yphandmortar","name":"轻型迫击炮","nameOld":"轻型迫击炮","nameEn":"Hand Mortar","age":"Fortress Age","unitClass":"炮兵/攻城","direction":"结构性改动","impact":"机制型","summary":"结构性改动：动作包发生变化，详见原始字段","fields":["multipliers"],"fieldLabels":["克制倍率"],"scoreOld":13.67,"scoreNew":13.67,"scoreDelta":0.0,"dpsOld":1.25,"dpsNew":1.25,"dpsDelta":0.0,"hpOld":100,"hpNew":100,"costDelta":null,"sim":0.5,"vsRef":{"musketeer":{"name":"火枪兵","new":0.0,"old":0.0,"delta":0.0},"hussar":{"name":"轻骑兵","new":0.0,"old":0.0,"delta":0.0},"crossbowman":{"name":"弩手","new":0.0,"old":0.0,"delta":0.0},"falconet":{"name":"鹰炮","new":0.0,"old":0.0,"delta":0.0}},"icon":"icons/yphandmortar.png","blind":true,"excluded":false},{"id":"ypkensei","name":"日本武士","nameOld":"日本武士","nameEn":"Samurai","age":"Commerce Age","unitClass":"步兵","direction":"结构性改动","impact":"直接战斗","summary":"结构性改动：67 → 60（-10.4%）","fields":["attack_siege"],"fieldLabels":["攻城攻击"],"scoreOld":85.61,"scoreNew":85.61,"scoreDelta":0.0,"dpsOld":18.67,"dpsNew":18.67,"dpsDelta":0.0,"hpOld":230,"hpNew":230,"costDelta":null,"sim":0.5,"vsRef":{"musketeer":{"name":"火枪兵","new":1.0,"old":1.0,"delta":0.0},"hussar":{"name":"轻骑兵","new":1.0,"old":1.0,"delta":0.0},"crossbowman":{"name":"弩手","new":1.0,"old":1.0,"delta":0.0},"falconet":{"name":"鹰炮","new":0.0,"old":0.0,"delta":0.0}},"icon":"icons/ypkensei.png","blind":false,"excluded":false},{"id":"ypmercarsonist","name":"火兵","nameOld":"火兵","nameEn":"Arsonist","age":"Fortress Age","unitClass":"炮兵/攻城","direction":"增强","impact":"直接战斗","summary":"增强：15 → 22（+46.7%）；28 → 42（+50.0%）","fields":["attack_melee","attack_ranged"],"fieldLabels":["近战攻击","远程攻击"],"scoreOld":83.42,"scoreNew":98.59,"scoreDelta":18.19,"dpsOld":10.0,"dpsNew":14.67,"dpsDelta":46.67,"hpOld":250,"hpNew":250,"costDelta":null,"sim":1.0,"vsRef":{"musketeer":{"name":"火枪兵","new":1.0,"old":1.0,"delta":0.0},"hussar":{"name":"轻骑兵","new":0.0,"old":0.0,"delta":0.0},"crossbowman":{"name":"弩手","new":1.0,"old":1.0,"delta":0.0},"falconet":{"name":"鹰炮","new":0.0,"old":0.0,"delta":0.0}},"icon":"icons/ypmercarsonist.png","blind":false,"excluded":false},{"id":"ypmonkdisciple","name":"弟子","nameOld":"弟子","nameEn":"Disciple","age":"Exploration Age","unitClass":"特殊","direction":"结构性改动","impact":"经济侧","summary":"经济调整：7 → 14（+100.0%）","fields":["train_time"],"fieldLabels":["训练时间"],"scoreOld":23.44,"scoreNew":23.44,"scoreDelta":0.0,"dpsOld":6.67,"dpsNew":6.67,"dpsDelta":0.0,"hpOld":80,"hpNew":80,"costDelta":null,"sim":0.5,"vsRef":{"musketeer":{"name":"火枪兵","new":0.0,"old":0.0,"delta":0.0},"hussar":{"name":"轻骑兵","new":0.0,"old":0.0,"delta":0.0},"crossbowman":{"name":"弩手","new":1.0,"old":1.0,"delta":0.0},"falconet":{"name":"鹰炮","new":0.0,"old":0.0,"delta":0.0}},"icon":"icons/ypmonkdisciple.png","blind":false,"excluded":false},{"id":"ypsiegeelephant","name":"攻城大象","nameOld":"攻城大象","nameEn":"Siege Elephant","age":"Fortress Age","unitClass":"炮兵/攻城","direction":"增强","impact":"直接战斗","summary":"增强：0.3 → 0.35（+16.7%）","fields":["armor_ranged"],"fieldLabels":["远程护甲"],"scoreOld":87.35,"scoreNew":87.95,"scoreDelta":0.69,"dpsOld":6.67,"dpsNew":6.67,"dpsDelta":0.0,"hpOld":700,"hpNew":700,"costDelta":null,"sim":0.5,"vsRef":{"musketeer":{"name":"火枪兵","new":1.0,"old":1.0,"delta":0.0},"hussar":{"name":"轻骑兵","new":0.0,"old":0.0,"delta":0.0},"crossbowman":{"name":"弩手","new":1.0,"old":1.0,"delta":0.0},"falconet":{"name":"鹰炮","new":1.0,"old":1.0,"delta":0.0}},"icon":"icons/ypsiegeelephant.png","blind":false,"excluded":false},{"id":"ypsiegeelephantmansabdar","name":"曼萨卜达尔攻城大象","nameOld":"曼萨卜达尔攻城大象","nameEn":"Mansabdar Siege Elephant","age":"Fortress Age","unitClass":"炮兵/攻城","direction":"增强","impact":"直接战斗","summary":"增强：0.3 → 0.35（+16.7%）","fields":["armor_ranged"],"fieldLabels":["远程护甲"],"scoreOld":123.53,"scoreNew":124.38,"scoreDelta":0.69,"dpsOld":6.67,"dpsNew":6.67,"dpsDelta":0.0,"hpOld":1400,"hpNew":1400,"costDelta":null,"sim":0.5,"vsRef":{"musketeer":{"name":"火枪兵","new":1.0,"old":1.0,"delta":0.0},"hussar":{"name":"轻骑兵","new":1.0,"old":1.0,"delta":0.0},"crossbowman":{"name":"弩手","new":1.0,"old":1.0,"delta":0.0},"falconet":{"name":"鹰炮","new":1.0,"old":1.0,"delta":0.0}},"icon":"icons/ypsiegeelephantmansabdar.png","blind":false,"excluded":false},{"id":"ypspcishida","name":"石田大名","nameOld":"石田大名","nameEn":"Daimyo Ishida","age":"Fortress Age","unitClass":"骑兵","direction":"增强","impact":"直接战斗","summary":"增强：0.6 → 0.7（+16.7%）；10 → 70（+600.0%）；5 → 25（+400.0%）；1250 → 2500（+100.0%）","fields":["armor_ranged","attack_melee","attack_siege","hp"],"fieldLabels":["远程护甲","近战攻击","攻城攻击","生命值"],"scoreOld":99.16,"scoreNew":373.98,"scoreDelta":277.14,"dpsOld":6.67,"dpsNew":46.67,"dpsDelta":600.0,"hpOld":1250,"hpNew":2500,"costDelta":null,"sim":1.0,"vsRef":{"musketeer":{"name":"火枪兵","new":1.0,"old":1.0,"delta":0.0},"hussar":{"name":"轻骑兵","new":1.0,"old":1.0,"delta":0.0},"crossbowman":{"name":"弩手","new":1.0,"old":1.0,"delta":0.0},"falconet":{"name":"鹰炮","new":1.0,"old":0.0,"delta":1.0}},"icon":"icons/ypspcishida.png","blind":false,"excluded":true},{"id":"ypurumi","name":"软剑兵","nameOld":"软剑兵","nameEn":"Urumi Swordsman","age":"Commerce Age","unitClass":"步兵","direction":"结构性改动","impact":"机制型","summary":"结构性改动：动作包发生变化，详见原始字段","fields":["multipliers"],"fieldLabels":["克制倍率"],"scoreOld":86.63,"scoreNew":86.63,"scoreDelta":0.0,"dpsOld":17.0,"dpsNew":17.0,"dpsDelta":0.0,"hpOld":260,"hpNew":260,"costDelta":null,"sim":0.5,"vsRef":{"musketeer":{"name":"火枪兵","new":1.0,"old":1.0,"delta":0.0},"hussar":{"name":"轻骑兵","new":0.0,"old":0.0,"delta":0.0},"crossbowman":{"name":"弩手","new":1.0,"old":1.0,"delta":0.0},"falconet":{"name":"鹰炮","new":0.0,"old":0.0,"delta":0.0}},"icon":"icons/ypurumi.png","blind":true,"excluded":false},{"id":"ypurumimansabdar","name":"曼萨卜达尔软剑兵","nameOld":"曼萨卜达尔软剑兵","nameEn":"Mansabdar Urumi","age":"Commerce Age","unitClass":"步兵","direction":"结构性改动","impact":"机制型","summary":"结构性改动：动作包发生变化，详见原始字段","fields":["multipliers"],"fieldLabels":["克制倍率"],"scoreOld":122.51,"scoreNew":122.51,"scoreDelta":0.0,"dpsOld":17.0,"dpsNew":17.0,"dpsDelta":0.0,"hpOld":520,"hpNew":520,"costDelta":null,"sim":0.5,"vsRef":{"musketeer":{"name":"火枪兵","new":1.0,"old":1.0,"delta":0.0},"hussar":{"name":"轻骑兵","new":0.95,"old":1.0,"delta":-0.05},"crossbowman":{"name":"弩手","new":1.0,"old":1.0,"delta":0.0},"falconet":{"name":"鹰炮","new":0.0,"old":0.0,"delta":0.0}},"icon":"icons/ypurumimansabdar.png","blind":true,"excluded":false},{"id":"ypwokoupirate","name":"倭寇海盗","nameOld":"倭寇海盗","nameEn":"Wokou Pirate","age":"Commerce Age","unitClass":"特殊","direction":"结构性改动","impact":"机制型","summary":"结构性改动：HandAttack → MeleeHandAttack；0 → 1.75；新增为 0.5；动作包发生变化，详见原始字段","fields":["protoaction_melee","range_melee","windup_melee","windups"],"fieldLabels":["近战代表动作","近战射程","近战抬手","抬手表"],"scoreOld":45.27,"scoreNew":45.27,"scoreDelta":0.0,"dpsOld":13.33,"dpsNew":13.33,"dpsDelta":0.0,"hpOld":145,"hpNew":145,"costDelta":null,"sim":0.05,"vsRef":{"musketeer":{"name":"火枪兵","new":0.0,"old":0.0,"delta":0.0},"hussar":{"name":"轻骑兵","new":0.0,"old":0.0,"delta":0.0},"crossbowman":{"name":"弩手","new":1.0,"old":1.0,"delta":0.0},"falconet":{"name":"鹰炮","new":0.0,"old":0.0,"delta":0.0}},"icon":"icons/ypwokoupirate.png","blind":true,"excluded":false},{"id":"ypzamburak","name":"骆驼骑兵","nameOld":"骆驼骑兵","nameEn":"Zamburak","age":"Commerce Age","unitClass":"骑兵","direction":"增强","impact":"生存型","summary":"增强：120 → 130（+8.3%）","fields":["hp"],"fieldLabels":["生命值"],"scoreOld":25.22,"scoreNew":26.25,"scoreDelta":4.08,"dpsOld":5.0,"dpsNew":5.0,"dpsDelta":0.0,"hpOld":120,"hpNew":130,"costDelta":null,"sim":0.975,"vsRef":{"musketeer":{"name":"火枪兵","new":0.0,"old":0.0,"delta":0.0},"hussar":{"name":"轻骑兵","new":0.0,"old":0.0,"delta":0.0},"crossbowman":{"name":"弩手","new":0.0,"old":0.0,"delta":0.0},"falconet":{"name":"鹰炮","new":0.0,"old":0.0,"delta":0.0}},"icon":"icons/ypzamburak.png","blind":false,"excluded":false}],"added":[{"id":"deconsulateindependencedragoon","name":"军团枪骑兵","nameEn":"Legion Dragoon","age":"Fortress Age","unitClass":"骑兵","score":39.43,"hp":200,"atkR":22.0,"atkM":11.0,"atkS":9.0,"excluded":false,"icon":"icons/deconsulateindependencedragoon.png"},{"id":"deconsulatejanissary","name":"皇家奥斯曼火枪兵","nameEn":"Crown Janissary","age":"Commerce Age","unitClass":"步兵","score":47.74,"hp":215,"atkR":20.0,"atkM":15.0,"atkS":25.0,"excluded":false,"icon":"icons/deconsulatejanissary.png"},{"id":"deeggarctictruck","name":"极地掠夺者","nameEn":"Arctic PredatoR","age":"Commerce Age","unitClass":"骑兵","score":2541.26,"hp":60000,"atkR":0.0,"atkM":1000.0,"atkS":0.0,"excluded":false,"icon":"icons/deeggarctictruck.png"},{"id":"deespingol","name":"雷筒","nameEn":"Espingol","age":"Fortress Age","unitClass":"炮兵/攻城","score":92.46,"hp":150,"atkR":66.0,"atkM":0.0,"atkS":0.0,"excluded":false,"icon":"icons/deespingol.png"},{"id":"defriskytterider","name":"骑马自由枪手","nameEn":"Mounted Friskytte","age":"Commerce Age","unitClass":"骑兵","score":37.97,"hp":170,"atkR":12.0,"atkM":12.0,"atkS":14.0,"excluded":false,"icon":"icons/defriskytterider.png"},{"id":"degunboat","name":"炮舰","nameEn":"Gunboat","age":"Commerce Age","unitClass":"炮兵/攻城","score":107.55,"hp":250,"atkR":80.0,"atkM":0.0,"atkS":0.0,"excluded":false,"icon":"icons/degunboat.png"},{"id":"dehetman","name":"大元帅","nameEn":"Hetman","age":"Commerce Age","unitClass":"骑兵","score":57.41,"hp":500,"atkR":0.0,"atkM":6.0,"atkS":15.0,"excluded":false,"icon":"icons/dehetman.png"},{"id":"deindependencebisonbatch","name":"拉科塔狩猎场","nameEn":"Lakota Hunting Grounds","age":"Industrial Age","unitClass":"特殊","score":37.06,"hp":200,"atkR":20.0,"atkM":0.0,"atkS":0.0,"excluded":true,"icon":"icons/deindependencebisonbatch.png"},{"id":"deindependencepolishlancer","name":"维斯瓦马刀骑兵","nameEn":"Vistula Uhlan","age":"Industrial Age","unitClass":"骑兵","score":61.31,"hp":190,"atkR":0.0,"atkM":28.0,"atkS":10.0,"excluded":false,"icon":"icons/deindependencepolishlancer.png"},{"id":"deindependenceserdyuk","name":"谢尔久克","nameEn":"Serdyuk","age":"Fortress Age","unitClass":"步兵","score":74.24,"hp":300,"atkR":26.0,"atkM":26.0,"atkS":18.0,"excluded":false,"icon":"icons/deindependenceserdyuk.png"},{"id":"delithuanianrider","name":"扈从骑兵","nameEn":"Retainer","age":"Commerce Age","unitClass":"骑兵","score":57.54,"hp":210,"atkR":0.0,"atkM":22.0,"atkS":16.0,"excluded":false,"icon":"icons/delithuanianrider.png"},{"id":"demaltesegun","name":"固定炮","nameEn":"Fixed Gun","age":"Fortress Age","unitClass":"炮兵/攻城","score":277.35,"hp":2250,"atkR":300.0,"atkM":0.0,"atkS":0.0,"excluded":false,"icon":"icons/demaltesegun.png"},{"id":"demerccranequinier","name":"绞弦弩骑兵","nameEn":"Cranequinier","age":"Commerce Age","unitClass":"骑兵","score":64.61,"hp":360,"atkR":25.0,"atkM":0.0,"atkS":18.0,"excluded":false,"icon":"icons/demerccranequinier.png"},{"id":"demercgallowglass","name":"加洛格拉什","nameEn":"Gallowglass","age":"Commerce Age","unitClass":"步兵","score":93.94,"hp":222,"atkR":0.0,"atkM":30.0,"atkS":30.0,"excluded":false,"icon":"icons/demercgallowglass.png"},{"id":"demercwagon","name":"强化马车","nameEn":"Fortified Wagon","age":"Commerce Age","unitClass":"炮兵/攻城","score":92.06,"hp":250,"atkR":60.0,"atkM":0.0,"atkS":0.0,"excluded":false,"icon":"icons/demercwagon.png"},{"id":"denatbagpiper","name":"风笛手","nameEn":"Bagpiper","age":"Commerce Age","unitClass":"步兵","score":41.43,"hp":250,"atkR":20.0,"atkM":10.0,"atkS":10.0,"excluded":false,"icon":"icons/denatbagpiper.png"},{"id":"denatclansman","name":"氏族战士","nameEn":"Clansman","age":"Commerce Age","unitClass":"特殊","score":41.9,"hp":140,"atkR":0.0,"atkM":18.0,"atkS":11.0,"excluded":false,"icon":"icons/denatclansman.png"},{"id":"denatcompanion","name":"伙伴骑兵","nameEn":"Companion","age":"Commerce Age","unitClass":"骑兵","score":63.44,"hp":335,"atkR":0.0,"atkM":17.0,"atkS":18.0,"excluded":false,"icon":"icons/denatcompanion.png"},{"id":"denathusky","name":"哈士奇","nameEn":"Husky","age":"Commerce Age","unitClass":"特殊","score":36.45,"hp":215,"atkR":0.0,"atkM":9.0,"atkS":0.0,"excluded":false,"icon":"icons/denathusky.png"},{"id":"denatinuithunter","name":"因纽特猎人","nameEn":"Inuit Hunter","age":"Commerce Age","unitClass":"远程步兵","score":34.56,"hp":130,"atkR":13.0,"atkM":10.0,"atkS":10.0,"excluded":false,"icon":"icons/denatinuithunter.png"},{"id":"denatinuitqamutik","name":"因纽特人雪橇","nameEn":"Inuit Qamutik","age":"Fortress Age","unitClass":"骑兵","score":67.66,"hp":420,"atkR":15.0,"atkM":0.0,"atkS":15.0,"excluded":false,"icon":"icons/denatinuitqamutik.png"},{"id":"denatlowlanderinfantry","name":"低地人","nameEn":"Lowlander","age":"Commerce Age","unitClass":"步兵","score":38.36,"hp":135,"atkR":19.0,"atkM":15.0,"atkS":19.0,"excluded":false,"icon":"icons/denatlowlanderinfantry.png"},{"id":"denatlowlanderrider","name":"低地枪骑兵","nameEn":"Lowland Dragoon","age":"Commerce Age","unitClass":"骑兵","score":33.96,"hp":140,"atkR":12.0,"atkM":12.0,"atkS":14.0,"excluded":false,"icon":"icons/denatlowlanderrider.png"},{"id":"denatmercbagpiper","name":"风笛手","nameEn":"Bagpiper","age":"Commerce Age","unitClass":"步兵","score":41.43,"hp":250,"atkR":20.0,"atkM":10.0,"atkS":10.0,"excluded":false,"icon":"icons/denatmercbagpiper.png"},{"id":"denatmercclansman","name":"氏族战士","nameEn":"Clansman","age":"Commerce Age","unitClass":"特殊","score":41.9,"hp":140,"atkR":0.0,"atkM":18.0,"atkS":11.0,"excluded":false,"icon":"icons/denatmercclansman.png"},{"id":"denatmerccompanion","name":"伙伴骑兵","nameEn":"Companion","age":"Commerce Age","unitClass":"骑兵","score":63.44,"hp":335,"atkR":0.0,"atkM":17.0,"atkS":18.0,"excluded":false,"icon":"icons/denatmerccompanion.png"},{"id":"denatmerchusky","name":"哈士奇","nameEn":"Husky","age":"Commerce Age","unitClass":"特殊","score":36.45,"hp":215,"atkR":0.0,"atkM":9.0,"atkS":0.0,"excluded":false,"icon":"icons/denatmerchusky.png"},{"id":"denatmercinuithunter","name":"因纽特猎人","nameEn":"Inuit Hunter","age":"Commerce Age","unitClass":"远程步兵","score":34.56,"hp":130,"atkR":13.0,"atkM":10.0,"atkS":10.0,"excluded":false,"icon":"icons/denatmercinuithunter.png"},{"id":"denatmercinuitqamutik","name":"因纽特人雪橇","nameEn":"Inuit Qamutik","age":"Fortress Age","unitClass":"骑兵","score":67.66,"hp":420,"atkR":15.0,"atkM":0.0,"atkS":15.0,"excluded":false,"icon":"icons/denatmercinuitqamutik.png"},{"id":"denatmerclowlanderinfantry","name":"低地人","nameEn":"Lowlander","age":"Commerce Age","unitClass":"步兵","score":38.36,"hp":135,"atkR":19.0,"atkM":15.0,"atkS":19.0,"excluded":false,"icon":"icons/denatmerclowlanderinfantry.png"},{"id":"denatmerclowlanderrider","name":"低地枪骑兵","nameEn":"Lowland Dragoon","age":"Commerce Age","unitClass":"骑兵","score":33.96,"hp":140,"atkR":12.0,"atkM":12.0,"atkS":14.0,"excluded":false,"icon":"icons/denatmerclowlanderrider.png"},{"id":"denatmercnoaidi","name":"萨米巫师","nameEn":"Sámi Noaidi","age":"Exploration Age","unitClass":"特殊","score":29.53,"hp":240,"atkR":3.0,"atkM":10.0,"atkS":10.0,"excluded":false,"icon":"icons/denatmercnoaidi.png"},{"id":"denatmercroyalhuntsman","name":"皇家猎人","nameEn":"Royal Huntsman","age":"Commerce Age","unitClass":"远程步兵","score":33.02,"hp":150,"atkR":10.0,"atkM":10.0,"atkS":5.0,"excluded":false,"icon":"icons/denatmercroyalhuntsman.png"},{"id":"denatnoaidi","name":"萨米巫师","nameEn":"Sámi Noaidi","age":"Exploration Age","unitClass":"特殊","score":29.53,"hp":240,"atkR":5.0,"atkM":10.0,"atkS":10.0,"excluded":false,"icon":"icons/denatnoaidi.png"},{"id":"deoutlawwhalingship","name":"捕鲸船","nameEn":"Whaling Ship","age":"Commerce Age","unitClass":"炮兵/攻城","score":227.49,"hp":1500,"atkR":50.0,"atkM":0.0,"atkS":0.0,"excluded":false,"icon":"icons/deoutlawwhalingship.png"},{"id":"depiechur","name":"波兰步兵","nameEn":"Piechur","age":"Commerce Age","unitClass":"远程步兵","score":29.53,"hp":120,"atkR":16.0,"atkM":10.0,"atkS":14.0,"excluded":false,"icon":"icons/depiechur.png"},{"id":"deregent","name":"摄政王","nameEn":"Regent","age":"Commerce Age","unitClass":"特殊","score":140.24,"hp":2500,"atkR":0.0,"atkM":10.0,"atkS":5.0,"excluded":false,"icon":"icons/deregent.png"},{"id":"deregenthorse","name":"摄政王","nameEn":"Regent","age":"Commerce Age","unitClass":"骑兵","score":125.43,"hp":2000,"atkR":0.0,"atkM":10.0,"atkS":5.0,"excluded":false,"icon":"icons/deregenthorse.png"},{"id":"derevchern","name":"哥萨克农夫","nameEn":"Khutorian","age":"Exploration Age","unitClass":"步兵","score":27.82,"hp":135,"atkR":0.0,"atkM":8.0,"atkS":36.0,"excluded":false,"icon":"icons/derevchern.png"},{"id":"derevcossacktabor","name":"哥萨克战车","nameEn":"Tabor","age":"Fortress Age","unitClass":"骑兵","score":89.38,"hp":535,"atkR":20.0,"atkM":20.0,"atkS":8.0,"excluded":false,"icon":"icons/derevcossacktabor.png"},{"id":"derevhaidamaka","name":"海达马卡步枪兵","nameEn":"Haidamaka Rifleman","age":"Commerce Age","unitClass":"炮兵/攻城","score":25.36,"hp":130,"atkR":14.0,"atkM":7.0,"atkS":20.0,"excluded":false,"icon":"icons/derevhaidamaka.png"},{"id":"derevhaidamakarider","name":"海达马卡人","nameEn":"Haidamaka","age":"Commerce Age","unitClass":"骑兵","score":29.84,"hp":140,"atkR":14.0,"atkM":9.0,"atkS":14.0,"excluded":false,"icon":"icons/derevhaidamakarider.png"},{"id":"derevhighmaster","name":"大团长","nameEn":"High Master","age":"Exploration Age","unitClass":"骑兵","score":185.51,"hp":900,"atkR":0.0,"atkM":45.0,"atkS":14.0,"excluded":false,"icon":"icons/derevhighmaster.png"},{"id":"derevknightbrother","name":"骑士兄弟团","nameEn":"Knight Brother","age":"Fortress Age","unitClass":"骑兵","score":90.23,"hp":480,"atkR":0.0,"atkM":24.0,"atkS":24.0,"excluded":false,"icon":"icons/derevknightbrother.png"},{"id":"derevordermusketeer","name":"火枪骑士团骑士","nameEn":"Order Musketeer","age":"Commerce Age","unitClass":"步兵","score":45.75,"hp":160,"atkR":25.0,"atkM":18.0,"atkS":18.0,"excluded":false,"icon":"icons/derevordermusketeer.png"},{"id":"derevorderpavisier","name":"弩手骑士团骑士","nameEn":"Order Crossbowman","age":"Commerce Age","unitClass":"远程步兵","score":28.57,"hp":110,"atkR":21.0,"atkM":10.0,"atkS":10.0,"excluded":false,"icon":"icons/derevorderpavisier.png"},{"id":"derevpolishlancer","name":"维斯瓦马刀骑兵","nameEn":"Vistula Uhlan","age":"Commerce Age","unitClass":"骑兵","score":61.31,"hp":190,"atkR":0.0,"atkM":28.0,"atkS":10.0,"excluded":false,"icon":"icons/derevpolishlancer.png"},{"id":"derevscytheman","name":"镰刀手","nameEn":"Scytheman","age":"Industrial Age","unitClass":"步兵","score":48.46,"hp":190,"atkR":0.0,"atkM":15.0,"atkS":24.0,"excluded":false,"icon":"icons/derevscytheman.png"},{"id":"derevserdyuk","name":"谢尔久克","nameEn":"Serdyuk","age":"Fortress Age","unitClass":"步兵","score":74.24,"hp":300,"atkR":26.0,"atkM":26.0,"atkS":18.0,"excluded":false,"icon":"icons/derevserdyuk.png"},{"id":"derevstarshyna","name":"哥萨克军官","nameEn":"Starshyna","age":"Fortress Age","unitClass":"骑兵","score":144.89,"hp":450,"atkR":0.0,"atkM":32.0,"atkS":30.0,"excluded":false,"icon":"icons/derevstarshyna.png"},{"id":"derevteutonicknight","name":"条顿骑士","nameEn":"Teutonic Knight","age":"Commerce Age","unitClass":"步兵","score":121.48,"hp":320,"atkR":0.0,"atkM":35.0,"atkS":50.0,"excluded":false,"icon":"icons/derevteutonicknight.png"},{"id":"desaloonharpooner","name":"鱼叉手","nameEn":"Harpooner","age":"Commerce Age","unitClass":"步兵","score":39.47,"hp":210,"atkR":20.0,"atkM":14.0,"atkS":14.0,"excluded":false,"icon":"icons/desaloonharpooner.png"},{"id":"desaloonqivittoq","name":"基维图克","nameEn":"Qivittoq","age":"Commerce Age","unitClass":"远程步兵","score":34.3,"hp":111,"atkR":15.0,"atkM":15.0,"atkS":15.0,"excluded":false,"icon":"icons/desaloonqivittoq.png"},{"id":"desaloonsailor","name":"水手","nameEn":"Sailor","age":"Commerce Age","unitClass":"远程步兵","score":37.16,"hp":190,"atkR":15.0,"atkM":10.0,"atkS":22.0,"excluded":false,"icon":"icons/desaloonsailor.png"},{"id":"despchmbonaght","name":"博纳赫特佣兵","nameEn":"Bonaght Soldier","age":"Commerce Age","unitClass":"步兵","score":39.16,"hp":155,"atkR":19.0,"atkM":14.0,"atkS":22.0,"excluded":false,"icon":"icons/despchmbonaght.png"},{"id":"despchmcavalier","name":"重装骑士","nameEn":"Cavalier","age":"Commerce Age","unitClass":"骑兵","score":61.77,"hp":200,"atkR":22.0,"atkM":18.0,"atkS":15.0,"excluded":false,"icon":"icons/despchmcavalier.png"},{"id":"despchmcovenanter","name":"誓约党","nameEn":"Covenanter","age":"Commerce Age","unitClass":"骑兵","score":37.97,"hp":170,"atkR":12.0,"atkM":12.0,"atkS":14.0,"excluded":false,"icon":"icons/despchmcovenanter.png"},{"id":"despchmcovenanterinfantry","name":"誓约党步兵","nameEn":"Covenanter Infantry","age":"Commerce Age","unitClass":"步兵","score":39.87,"hp":150,"atkR":16.0,"atkM":15.0,"atkS":16.0,"excluded":false,"icon":"icons/despchmcovenanterinfantry.png"},{"id":"despchmirishhorseman","name":"爱尔兰骑兵","nameEn":"Irish Horseman","age":"Commerce Age","unitClass":"骑兵","score":47.21,"hp":275,"atkR":11.0,"atkM":0.0,"atkS":12.0,"excluded":false,"icon":"icons/despchmirishhorseman.png"},{"id":"despchmironside","name":"重装骑兵","nameEn":"Ironside","age":"Commerce Age","unitClass":"骑兵","score":70.43,"hp":260,"atkR":18.0,"atkM":27.0,"atkS":10.0,"excluded":false,"icon":"icons/despchmironside.png"},{"id":"despchmlord","name":"领主","nameEn":"Lord","age":"Commerce Age","unitClass":"骑兵","score":124.63,"hp":2026,"atkR":0.0,"atkM":10.0,"atkS":5.0,"excluded":false,"icon":"icons/despchmlord.png"},{"id":"despchmredcoat","name":"红衫军","nameEn":"Redcoat","age":"Commerce Age","unitClass":"步兵","score":38.34,"hp":160,"atkR":25.0,"atkM":13.0,"atkS":19.0,"excluded":false,"icon":"icons/despchmredcoat.png"},{"id":"despchmwhitecoat","name":"白衫军","nameEn":"Whitecoat","age":"Commerce Age","unitClass":"步兵","score":32.8,"hp":145,"atkR":21.0,"atkM":9.0,"atkS":20.0,"excluded":false,"icon":"icons/despchmwhitecoat.png"},{"id":"despcwingedhussar","name":"翼骑兵","nameEn":"Winged Hussar","age":"Fortress Age","unitClass":"骑兵","score":109.73,"hp":395,"atkR":0.0,"atkM":27.5,"atkS":25.0,"excluded":false,"icon":"icons/despcwingedhussar.png"},{"id":"dewingedhussar","name":"翼骑兵","nameEn":"Winged Hussar","age":"Commerce Age","unitClass":"骑兵","score":87.36,"hp":360,"atkR":0.0,"atkM":30.0,"atkS":20.0,"excluded":false,"icon":"icons/dewingedhussar.png"}],"removed":[{"id":"denatmercwingedhussar","name":"翼骑兵","nameEn":"Winged Hussar","hp":395,"score":109.73,"icon":"icons/denatmercwingedhussar.png"},{"id":"denatwingedhussar","name":"翼骑兵","nameEn":"Winged Hussar","hp":395,"score":109.73,"icon":"icons/denatwingedhussar.png"},{"id":"derevmxminutemanbatch","name":"民兵","nameEn":"Militiaman","hp":200,"score":37.06,"icon":"icons/derevmxminutemanbatch.png"},{"id":"derevnatvillagerbatch","name":"原住民村民","nameEn":"Native Villager","hp":200,"score":37.06,"icon":"icons/derevnatvillagerbatch.png"},{"id":"despawnbajacaliforniaterritorybatch","name":"拓荒者","nameEn":"Settler","hp":200,"score":37.06,"icon":"icons/despawnbajacaliforniaterritorybatch.png"},{"id":"ypoldhanarmy","name":"旧汉军","nameEn":"Old Han Army","hp":200,"score":37.06,"icon":"icons/ypoldhanarmy.png"}]};
+    const changed = DATA.changed;
+    const added = DATA.added;
+    const removed = DATA.removed;
+
+    const $ = (id) => document.getElementById(id);
+    const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (ch) => ({
+      "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"
+    }[ch]));
+    const fmt = (n, digits = 2) => n === null || n === undefined || Number.isNaN(n) ? "—" : Number(n).toFixed(digits).replace(/\.?0+$/, "");
+    const pct = (n, digits = 1) => n === null || n === undefined || Number.isNaN(n) ? "—" : `${n > 0 ? "+" : ""}${Number(n).toFixed(digits)}%`;
+    const dirClass = (d) => d === "增强" ? "buff" : d === "削弱" ? "nerf" : "neutral";
+    const scoreClass = (n) => n === null || n === undefined ? "neutral" : n > 0 ? "buff" : n < 0 ? "nerf" : "neutral";
+
+    function unitIcon(unit, alt) {
+      if (!unit.icon) return `<div class="unit-icon fallback" aria-label="无图标">${esc((unit.name || unit.id || "?").slice(0, 2))}</div>`;
+      return `<img class="unit-icon" src="${esc(unit.icon)}" alt="${esc(alt || unit.name)}">`;
+    }
+
+    function simLabel(sim) {
+      if (sim === null || sim === undefined) return `<span class="sim-chip">模拟 <strong>—</strong></span>`;
+      return `<span class="sim-chip">镜像胜率 <strong>${Math.round(sim * 100)}%</strong></span>`;
+    }
+
+    function drawChart() {
+      const svg = $("delta-chart");
+      const width = 720, height = 360;
+      const margin = { top: 18, right: 24, bottom: 44, left: 56 };
+      const plotW = width - margin.left - margin.right;
+      const plotH = height - margin.top - margin.bottom;
+      const chartRows = changed
+        .filter(r => r.scoreDelta !== null && r.scoreDelta !== undefined)
+        .sort((a, b) => b.scoreDelta - a.scoreDelta)
+        .slice(0, 28);
+      const values = chartRows.map(r => r.scoreDelta);
+      const rawMax = Math.max(12, ...values.map(Math.abs));
+      const cap = Math.min(rawMax, 30);
+      const xMax = 32;
+      const x = (v) => margin.left + ((v + xMax) / (xMax * 2)) * plotW;
+      const y = (i) => margin.top + i * (plotH / chartRows.length) + 3;
+      const barH = Math.max(5, plotH / chartRows.length - 4);
+      const ticks = [-30, -20, -10, 0, 10, 20, 30];
+      const parts = [];
+      parts.push(`<g class="grid">${ticks.map(t => `<line x1="${x(t)}" x2="${x(t)}" y1="${margin.top}" y2="${margin.top + plotH}"></line>`).join("")}</g>`);
+      parts.push(`<line class="zero" x1="${x(0)}" x2="${x(0)}" y1="${margin.top}" y2="${margin.top + plotH}"></line>`);
+      parts.push(`<text class="axis-label" x="${margin.left}" y="${height - 13}">← 削弱</text><text class="axis-label" x="${x(0)}" y="${height - 13}" text-anchor="middle">0%</text><text class="axis-label" x="${margin.left + plotW}" y="${height - 13}" text-anchor="end">增强 →</text>`);
+      chartRows.forEach((r, i) => {
+        const clipped = Math.max(-cap, Math.min(cap, r.scoreDelta));
+        const x0 = x(0), x1 = x(clipped);
+        const left = Math.min(x0, x1), w = Math.abs(x1 - x0);
+        const cls = r.scoreDelta > 0 ? "bar-buff" : r.scoreDelta < 0 ? "bar-nerf" : "bar-neutral";
+        const labelX = r.scoreDelta >= 0 ? Math.min(width - 4, x1 + 5) : Math.max(4, x1 - 5);
+        const anchor = r.scoreDelta >= 0 ? "start" : "end";
+        parts.push(`<g><title>${esc(r.name)}：${pct(r.scoreDelta)}</title><rect class="${cls}" x="${left}" y="${y(i)}" width="${w}" height="${barH}" rx="1"></rect><text x="${labelX}" y="${y(i) + barH - 1}" text-anchor="${anchor}">${esc(r.name).slice(0, 8)} ${cap !== rawMax && Math.abs(r.scoreDelta) > cap ? "≥" : ""}${pct(clipped, 0)}</text></g>`);
+      });
+      svg.innerHTML = parts.join("");
+    }
+
+    function directionMatches(r, filter) {
+      if (filter === "all") return true;
+      return filter === "struct" ? r.direction === "结构性改动" : r.direction === (filter === "buff" ? "增强" : "削弱");
+    }
+
+    function impactMatches(r, filter) {
+      if (filter === "all") return true;
+      if (filter === "combat") return r.impact === "直接战斗";
+      if (filter === "mechanic") return r.impact === "机制型";
+      if (filter === "survival") return r.impact === "生存型";
+      if (filter === "economy") return r.impact === "经济侧";
+      return true;
+    }
+
+    function cardHtml(r, index) {
+      const directionClass = dirClass(r.direction);
+      const scoreDeltaClass = scoreClass(r.scoreDelta);
+      const simText = r.sim === null || r.sim === undefined ? "—" : Math.round(r.sim * 100) + "%";
+      const metricClass = (v) => scoreClass(v);
+      const age = r.age ? `<span class="tag">${esc(r.age)}</span>` : "";
+      const unitClass = r.unitClass ? `<span class="tag">${esc(r.unitClass)}</span>` : "";
+      const excluded = r.excluded ? `<span class="tag neutral">普通池外 / 特殊</span>` : "";
+      const blind = r.blind ? `<span class="tag neutral">机制型</span>` : "";
+      const fields = r.fieldLabels.slice(0, 8).map(f => `<span class="tag">${esc(f)}</span>`).join("");
+      return `
+        <article class="change-card" data-direction="${esc(r.direction)}" data-impact="${esc(r.impact)}" data-id="${esc(r.id)}">
+          ${unitIcon(r, r.name)}
+          <div>
+            <div class="unit-title"><h3>${esc(r.name)}</h3><code>${esc(r.id)}</code></div>
+            <div class="tags">
+              <span class="tag ${directionClass}">${esc(r.direction)}</span>
+              <span class="tag ${r.impact === "机制型" ? "neutral" : ""}">${esc(r.impact)}</span>
+              ${age}${unitClass}${excluded}${blind}
+            </div>
+            <div class="summary-text">${esc(r.summary)}</div>
+            <div class="fields">${fields}</div>
+          </div>
+          <div class="metrics">
+            <div class="metric"><div class="metric-label">静态战力</div><div class="metric-value ${scoreDeltaClass}">${pct(r.scoreDelta, 1)}</div><div class="metric-sub">${fmt(r.scoreOld)} → ${fmt(r.scoreNew)}</div></div>
+            <div class="metric"><div class="metric-label">主战 DPS</div><div class="metric-value ${metricClass(r.dpsDelta)}">${pct(r.dpsDelta, 1)}</div><div class="metric-sub">${fmt(r.dpsOld)} → ${fmt(r.dpsNew)}</div></div>
+            <div class="metric"><div class="metric-label">模拟胜率</div><div class="metric-value ${r.sim != null ? (r.sim >= .65 ? "buff" : r.sim <= .35 ? "nerf" : "neutral") : "neutral"}">${simText}</div><div class="metric-sub">新版 vs 旧版</div></div>
+          </div>
+          <div class="change-side">
+            <div class="rank-no">#${String(index + 1).padStart(2, "0")}</div>
+            ${simLabel(r.sim)}
+          </div>
+        </article>`;
+    }
+
+    function renderChanges() {
+      const q = $("search").value.trim().toLowerCase();
+      const direction = $("direction").value;
+      const impact = $("impact").value;
+      const sort = $("sort").value;
+      let rows = changed.filter(r => {
+        const hay = `${r.name} ${r.nameOld} ${r.nameEn} ${r.id}`.toLowerCase();
+        return (!q || hay.includes(q)) && directionMatches(r, direction) && impactMatches(r, impact);
+      });
+      rows = rows.slice().sort((a, b) => {
+        if (sort === "name") return a.name.localeCompare(b.name, "zh-CN");
+        const av = a.scoreDelta ?? 0, bv = b.scoreDelta ?? 0;
+        return sort === "score-asc" ? av - bv : bv - av;
+      });
+      $("change-list").innerHTML = rows.map(cardHtml).join("") || `<div class="panel" style="padding:28px"><strong>没有匹配项。</strong><p style="margin:8px 0 0;color:var(--muted)">换一个方向或影响类型再试。</p></div>`;
+      $("filter-count").textContent = `显示 ${rows.length} / ${changed.length} 个单位`;
+    }
+
+    function renderTables() {
+      const topAdded = added.filter(x => !x.excluded).sort((a, b) => (b.score ?? 0) - (a.score ?? 0)).slice(0, 45);
+      $("added-body").innerHTML = topAdded.map(x => `
+        <tr>
+          <td class="name-cell"><strong>${esc(x.name)}</strong><small>${esc(x.nameEn || x.id)}</small></td>
+          <td>${esc(x.age || "—")}</td>
+          <td class="num">${esc(x.hp ?? "—")}</td>
+          <td class="num">${fmt(x.atkR, 0)} / ${fmt(x.atkM, 0)} / ${fmt(x.atkS, 0)}</td>
+          <td class="num">${fmt(x.score, 1)}</td>
+        </tr>`).join("");
+      $("removed-body").innerHTML = removed.map(x => `
+        <tr>
+          <td class="name-cell"><strong>${esc(x.name)}</strong><small>${esc(x.id)}</small></td>
+          <td>${esc(x.hp ?? "—")}</td>
+          <td class="num">${fmt(x.score, 1)}</td>
+        </tr>`).join("");
+    }
+
+    ["search", "direction", "impact", "sort"].forEach(id => $(id).addEventListener("input", renderChanges));
+    drawChart();
+    renderChanges();
+    renderTables();
+  </script>
+</body>
+</html>
