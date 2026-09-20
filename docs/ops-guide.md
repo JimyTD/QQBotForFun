@@ -85,6 +85,8 @@ GitHub:       https://github.com/JimyTD/QQBotForFun
 
 > 唯一已知能力缺口：**Lighthouse 防火墙规则的读写**没有对应 MCP 工具。走腾讯云控制台，或用 `d:/Fun/tencent-lighthouse-mcp/src/tencent-api.js` 的 `tcRequest` 直接调 `lighthouse:DescribeFirewallRules` / `ModifyFirewallRules`。
 
+> **其他项目想照做**：见 **`docs/migration-off-lighthouse.md`**（项目无关的迁移指南，含参数化清单、跨 agent 配置对照表、坑日志、验收清单）。
+
 改用两个 MCP 通道：
 
 | 通道 | 定位 | 调用方式 |
@@ -445,6 +447,7 @@ DB 大小                   9687 kB
 
 | 日期 | 变更 |
 |---|---|
+| 2026-09-20 | 新增 **`docs/migration-off-lighthouse.md`（项目无关的「去 Lighthouse 化」迁移指南）**，供其他项目及其 agent 直接参照：§1 判据与自查、§2 目标架构（三层兼容）、§3 七步 SOP、§4 参数化清单、§5 跨 agent 配置对照表、§6 九条坑日志、§7 验收清单、§8 成本收益。 |
 | 2026-09-20 | **接入方案改为 agent 中立**。共享产物从 `~/.codebuddy/` 迁到 `~/.ssh-mcp/`（连接配置 `config.json`、server `server/`），私钥仍是通用的 `~/.ssh/qqbot_deploy`。`setup_dev_machine.ps1` 新增 `-Target`（codebuddy / cursor / windsurf / claudecode / vscode / zed / opencode / codex / all / none）与 `-ListTargets`；`mcp_call.mjs` 支持 `--settings` / `MCP_SETTINGS` 并在多客户端配置文件间自动探测。**重要修正：CodeBuddy 真正生效的 MCP 配置文件是 `~/.codebuddy/mcp.json`；其文档所指的 globalStorage 路径本版本不读 —— 写进去静默无效，此前误判为「会话快照」。** |
 | 2026-09-20 | **CodeBuddy 内置 Lighthouse 集成正式禁用**（从"已废弃"升级为"禁止使用"）。全仓排查确认 `src/`、`scripts/`、`README.md` 零引用；文档侧只涉及 `ops-guide.md` 与 `dev-machine-setup.md`，规则侧只涉及 `server-ops.mdc`。同步删除本工作区的集成锚点文件 `.codebuddy/integration/lighthouse.json`（untracked 本地文件）以实现工作区级禁用。记录唯一能力缺口：Lighthouse 防火墙规则读写无 MCP 工具，走控制台或 `tcRequest` 直调 API。 |
 | 2026-09-20 | **SSH 硬化：仅允许密钥登录**。新增 `/etc/ssh/sshd_config.d/10-hardening.conf`（`PasswordAuthentication no` + `PermitRootLogin prohibit-password`），`10-` 前缀用于压过 `50-cloud-init.conf` 并扛住 cloud-init 重写。实测：改前报错是 `Permission denied (publickey,password)`，改后只剩 `(publickey)`。新增「服务器安全基线」章节，并把 OrcaTerm 确认为**完全绕开 sshd** 的最终兜底通道。 |

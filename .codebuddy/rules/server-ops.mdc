@@ -65,6 +65,8 @@ provider:
 
 > 唯一已知能力缺口：**Lighthouse 防火墙规则的读写**没有对应 MCP 工具。走腾讯云控制台，或用 `d:/Fun/tencent-lighthouse-mcp/src/tencent-api.js` 的 `tcRequest` 直接调 `lighthouse:DescribeFirewallRules` / `ModifyFirewallRules`。
 
+> **其他项目想照做**：见 `docs/migration-off-lighthouse.md`（项目无关的迁移指南）。
+
 以下是替代它的两个 MCP 通道：
 
 | 通道 | 定位 | 调用方式 |
