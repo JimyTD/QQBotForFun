@@ -51,7 +51,10 @@ data/ra2/*
 !data/ra2/*.json
 !data/aoe3/
 data/aoe3/*
-!data/aoe3/*.json
+!data/aoe3/units.json
+!data/aoe3/unit_upgrades.json
+!data/aoe3/generic_techs.json
+!data/aoe3/i18n_zh.json
 !data/aoe3/raw/
 !data/aoe3/raw/**
 logs/

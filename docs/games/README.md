@@ -19,6 +19,7 @@
 | [aoe3-battle-state-machine.md](aoe3-battle-state-machine.md) | aoe3_battle | 状态机参考 |
 | [aoe3.md](aoe3.md) | aoe3_battle | 帝国3 数据解析相关 |
 | [aoe3-data-refresh.md](aoe3-data-refresh.md) | aoe3_battle | 帝国3 数据刷新 SOP（游戏更新后重建兵种数据） |
+| [aoe3-balance-review.md](aoe3-balance-review.md) | aoe3_battle | 帝国3 单位平衡变更审查工具与口径边界 |
 
 ## 设计中（Shelved）
 
