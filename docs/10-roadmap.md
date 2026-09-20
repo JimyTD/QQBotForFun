@@ -12,7 +12,7 @@
 项目已完成 MVP 框架搭建，进入**稳定运行 + 增量迭代**阶段：
 
 - ✅ 完整的分层架构（Core / Games / Tools / Plugins）
-- ✅ 4 款游戏上线（海龟汤 / 趣味问答 / 帝国3斗蛐蛐 / 红警2斗蛐蛐）
+- ✅ 3 款游戏上线（海龟汤 / 趣味问答 / 帝国3斗蛐蛐）
 - ✅ 5 款工具上线（签到 / 今天吃什么 / 上班提醒 / 联网搜索 / 游戏王查卡）
 - ✅ CLI 测试器与 QQ Bot 1:1 对齐
 - ✅ Docker 生产部署稳定运行
@@ -38,7 +38,7 @@
 | D14 | `docs/13-cli-bot-parity.md` | ✅ |
 | D15 | `docs/ops-guide.md` | ✅ |
 | D16 | `docs/commands.md` | ✅ |
-| D17 | `docs/games/*.md` | ✅ 海龟汤 / 趣味问答 / 帝国3 / 红警2 / 群峦求生(设计中) |
+| D17 | `docs/games/*.md` | ✅ 海龟汤 / 趣味问答 / 帝国3 / 群峦求生(设计中) |
 | D18 | `docs/tools/*.md` | ✅ 签到 / 今天吃什么 / 上班提醒 / 联网搜索 / 游戏王查卡 |
 | D19 | `docs/adr/0001~0003` | ✅ |
 
@@ -74,7 +74,7 @@ QQBotForFun/
 │  ├─ cli_adapters/                     (各游戏/工具 CLI 适配器)
 │  ├─ crawler/                          (数据爬取/解析脚本)
 │  ├─ seed_*.py / generate_*.py         (种子数据 & 生成脚本)
-│  ├─ aoe3_battle_sim.py / ra2_battle_sim.py  (模拟器独立运行)
+│  ├─ aoe3_battle_sim.py                (模拟器独立运行)
 │  └─ test_*_variety.py                 (LLM 产出验收脚本)
 ├─ seeds/
 │  ├─ aoe3/                             (帝国3单位数据 + i18n)
@@ -84,12 +84,9 @@ QQBotForFun/
 │  └─ foods.json                        (今天吃什么菜品库)
 ├─ resources/
 │  ├─ aoe3/                             (帝国3图标)
-│  ├─ ra2/                              (红警2图标)
 │  ├─ checkin/                          (签到素材)
 │  ├─ foods/                            (菜品图片)
 │  └─ reminders/                        (提醒素材)
-├─ vendor/
-│  └─ (OpenRA RA2 数据)
 ├─ src/
 │  ├─ bot.py                            (入口)
 │  ├─ settings.py
@@ -108,8 +105,7 @@ QQBotForFun/
 │  │  ├─ games/
 │  │  │  ├─ turtle_soup/
 │  │  │  ├─ trivia/
-│  │  │  ├─ aoe3_battle/
-│  │  │  └─ ra2_battle/
+│  │  │  └─ aoe3_battle/
 │  │  └─ tools/
 │  │     ├─ ask_ai/
 │  │     ├─ checkin/
@@ -165,7 +161,6 @@ QQBotForFun/
 | v1.4 | 2026-05-09 | 工具层上线：签到 / 今天吃什么 / 上班提醒 |
 | v1.5 | 2026-05-11 | 游戏王查卡工具上线 |
 | v1.6 | 2026-05-15 | 帝国3斗蛐蛐上线（一维自研模拟器） |
-| v1.7 | 2026-05-18 | 红警2斗蛐蛐上线（二维 OpenRA 数据） |
 | v1.8 | 2026-05-26 | 联网搜索工具上线；文档体系清理与更新 |
 
 ## 6. 未来方向（非承诺）

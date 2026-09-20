@@ -205,15 +205,15 @@ async def _(matcher: Matcher, event: GroupMessageEvent, args: Message = CommandA
     # 获取指令后的参数文本
     arg_text = args.extract_plain_text().strip()
 
-    # ---- 播报模式切换（不开局，与红警斗蛐蛐共用）----
+    # ---- 播报模式切换（不开局）----
     if arg_text in ("详细", "detailed"):
         from core.group_config import set_group_config
         await set_group_config(int(event.group_id), "aoe3_battle.broadcast_mode", "detailed")
-        await matcher.finish("✅ 已切换为【详细播报】模式（战斗过程会分段播报，帝国/红警通用）")
+        await matcher.finish("✅ 已切换为【详细播报】模式（战斗过程会分段播报）")
     if arg_text in ("极简", "简洁", "brief"):
         from core.group_config import set_group_config
         await set_group_config(int(event.group_id), "aoe3_battle.broadcast_mode", "brief")
-        await matcher.finish("✅ 已切换为【极简播报】模式（只显示开战和战报，帝国/红警通用）")
+        await matcher.finish("✅ 已切换为【极简播报】模式（只显示开战和战报）")
 
     # ---- 通用科技开关："斗蛐蛐 科技开" / "斗蛐蛐 科技关" ----
     if arg_text in ("科技开", "科技on"):
@@ -439,53 +439,6 @@ async def _handle_rival_battle(
     )
     if err:
         await matcher.finish(err)
-
-
-# -------------------- 快捷开局：红警2斗蛐蛐（独立于帝国斗蛐蛐）--------------------
-_quick_ra2_battle = on_command(
-    "红警斗蛐蛐",
-    aliases={"ra2_battle", "红警2斗蛐蛐", "ra2斗蛐蛐"},
-    rule=to_me(),
-    priority=3,
-    block=True,
-)
-
-@_quick_ra2_battle.handle()
-async def _ra2_battle_launch(
-    matcher: Matcher, event: GroupMessageEvent, args: Message = CommandArg()
-) -> None:
-    arg_text = args.extract_plain_text().strip()
-
-    if arg_text in ("详细", "detailed"):
-        from core.group_config import set_group_config
-        await set_group_config(int(event.group_id), "aoe3_battle.broadcast_mode", "detailed")
-        await matcher.finish("✅ 已切换为【详细播报】模式（战斗过程会分段播报，帝国/红警通用）")
-    if arg_text in ("极简", "简洁", "brief"):
-        from core.group_config import set_group_config
-        await set_group_config(int(event.group_id), "aoe3_battle.broadcast_mode", "brief")
-        await matcher.finish("✅ 已切换为【极简播报】模式（只显示开战和战报，帝国/红警通用）")
-
-    mode_id = "bet"
-    budget = None
-
-    for part in arg_text.split():
-        if part in ("单挑", "1v1", "duel", "红警单挑"):
-            mode_id = "duel"
-        elif part.isdigit():
-            budget = int(part)
-
-    config: dict = {"mode": mode_id}
-    if budget is not None:
-        config["budget"] = budget
-
-    await _launch_game(
-        matcher,
-        group_id=int(event.group_id),
-        initiator_id=int(event.user_id),
-        game_id="ra2_battle",
-        mode_id=mode_id,
-        extra_config=config,
-    )
 
 
 # -------------------- /结束 --------------------

@@ -44,11 +44,8 @@ Thumbs.db
 htmlcov/
 
 # Data / Logs
-# data/ 默认忽略；ra2 / aoe3 提取的精炼 JSON 需要入库
+# data/ 默认忽略；aoe3 提取的精炼 JSON 需要入库
 data/*
-!data/ra2/
-data/ra2/*
-!data/ra2/*.json
 !data/aoe3/
 data/aoe3/*
 !data/aoe3/units.json
@@ -65,10 +62,6 @@ logs/
 
 # NapCat volumes (dev)
 napcat/data/
-
-# OpenRA 参考源码（scripts/setup_openra_vendor 可重新克隆）
-vendor/openra/
-vendor/openra-ra2/
 
 # Misc
 *.bak

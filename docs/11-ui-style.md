@@ -59,7 +59,6 @@
 | `turtle_soup` | 🐢 | 海龟汤 |
 | `trivia` | ❓ | 趣味问答 |
 | `aoe3_battle` | ⚔️ | 帝国3斗蛐蛐 |
-| `ra2_battle` | ⚔️ | 红警2斗蛐蛐（与帝国共用） |
 
 ### 3.3 工具专属 emoji
 

@@ -104,7 +104,7 @@ uv run python scripts/compress_aoe3_icons.py
 ### 2.7 验证
 
 ```bash
-uv run pytest tests/ -q                     # 默认跳过 ra2 标记；改 ra2 时手动 -m ra2
+uv run pytest tests/ -q
 uv run python scripts/aoe3_named_attack_audit.py
 uv run python scripts/aoe3_damagecap_audit.py
 uv run python scripts/aoe3_attack_slot_audit.py
@@ -145,7 +145,6 @@ uv run python scripts/aoe3_battle_sim.py --random --seed 42      # 其余模式�
 - **路径**：脚本默认路径可能写死了某台机器的盘符，用参数/环境变量覆盖，不要改源码。
 - **生成物/manifest 曾被手工编辑**：历史上出现过手写的 `source` 值（代码里并不存在该取值）→ 一切以代码为准，手改物会被下次刷新覆盖。
 - **文档与代码漂移**：文档描述的机制可能已被重构掉（曾出现文档记录的上限机制在代码中已不存在）→ 以代码为准，发现漂移顺手修文档。
-- **pytest 默认跳过 ra2 标记**（约占全套测试 70% 时间）。
 
 ---
 

@@ -86,7 +86,6 @@ def _load_plugins() -> None:
     nonebot.load_plugin("src.plugins.games.trivia")
     nonebot.load_plugin("src.plugins.aoe3")  # 须在 aoe3_battle 之前
     nonebot.load_plugin("src.plugins.games.aoe3_battle")
-    nonebot.load_plugin("src.plugins.games.ra2_battle")
     nonebot.load_plugin("src.plugins.games.deep_sea_mission")
     nonebot.load_plugin("src.plugins.games.silent_mark")
     # 小工具（tools/）—— 独立拔插式小功能

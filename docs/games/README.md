@@ -7,7 +7,6 @@
 | [turtle-soup.md](turtle-soup.md) | `turtle_soup` | 海龟汤 · LLM 汤主模式 |
 | [trivia.md](trivia.md) | `trivia` | 趣味问答 · 听线索猜答案 |
 | [aoe3-battle.md](aoe3-battle.md) | `aoe3_battle` | 帝国3斗蛐蛐 · 一维自研模拟 |
-| [ra2-battle.md](ra2-battle.md) | `ra2_battle` | 红警2斗蛐蛐 · 二维 OpenRA 数据 |
 | [deep-sea-mission.md](deep-sea-mission.md) | `deep_sea_mission` | 深海任务 · 合作吃墩框架 |
 
 ## 子系统 / 参考文档
@@ -29,7 +28,3 @@
 | [terra-survival-tfc-gt-research.md](terra-survival-tfc-gt-research.md) | — | TFC/GT 调研参考库（已归档） |
 | [terra-survival-archive-v5.md](terra-survival-archive-v5.md) | — | v5 详细草案（已 superseded） |
 | [yellow-yangtze.md](yellow-yangtze.md) | `yellow_yangtze` | 长江黄河（调研完成 · 暂不实现 · agent 陪玩方案） |
-
----
-
-红警2 运维：见仓库根目录 [vendor/README.md](../../vendor/README.md)。
