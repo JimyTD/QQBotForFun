@@ -94,7 +94,8 @@ GitHub:       https://github.com/JimyTD/QQBotForFun
 
 - `directory` 参数即工作目录，不必用 `cd X && ...` 拼接。
 - `qqbot-ssh` 启用命令黑名单，命中即拒绝：`git clean -f*`、`git pull`、`docker compose down`、`docker compose (rm|stop|kill) … napcat`、`docker volume rm`、`docker system prune -a`、`rm -rf /…`、`mkfs`、`dd of=/dev/*`、`reboot` 等。**`git reset --hard` 刻意未列入**——部署流程需要它。
-- 凭据位置（**全部在仓库外，永不入 git**）：连接配置 `~/.codebuddy/ssh-mcp-config.json`；私钥 `~/.ssh/qqbot_deploy`；MCP 注册在 CodeBuddy 全局设置 `codebuddy_mcp_settings.json`。
+- 产物位置（**全部在仓库外且 agent 中立，永不入 git**）：连接配置 `~/.ssh-mcp/config.json`；MCP server `~/.ssh-mcp/server/`；私钥 `~/.ssh/qqbot_deploy`；MCP 注册在 `~/.codebuddy/mcp.json`。
+- ⚠️ **CodeBuddy 的 MCP 注册只认 `~/.codebuddy/mcp.json`** —— **不是** `%APPDATA%\CodeBuddy CN\...\globalStorage\tencent.planning-genie\settings\codebuddy_mcp_settings.json`。后者本版本不读，写进去**静默无效**（2026-09-20 实测踩过）。
 - **引导通道**：安装/修复 SSH 公钥必须走非 SSH 通道（不能靠 SSH 装 SSH）。**首选腾讯云控制台的 OrcaTerm 网页终端** —— 它完全绕开 sshd（实测：`last` 里有 orcaterm 会话，但同期 auth.log 里 0 条 sshd `Accepted`），不需要 22 端口、不需要你的 IP 白名单、不需要 AK/SK。需要脚本化时才用 `tencent-lighthouse` 的 `run_command`。
 - exec 模式下每次调用是**独立会话**，不要依赖 `cd` 跨调用保持；用 `directory` 参数或绝对路径。
 - **新开发机接入**（新机器 / 新 agent 怎么拿到这条通道）→ 见 **`docs/dev-machine-setup.md`**，一键脚本 `scripts/setup_dev_machine.ps1`。
@@ -444,6 +445,7 @@ DB 大小                   9687 kB
 
 | 日期 | 变更 |
 |---|---|
+| 2026-09-20 | **接入方案改为 agent 中立**。共享产物从 `~/.codebuddy/` 迁到 `~/.ssh-mcp/`（连接配置 `config.json`、server `server/`），私钥仍是通用的 `~/.ssh/qqbot_deploy`。`setup_dev_machine.ps1` 新增 `-Target`（codebuddy / cursor / windsurf / claudecode / vscode / zed / opencode / codex / all / none）与 `-ListTargets`；`mcp_call.mjs` 支持 `--settings` / `MCP_SETTINGS` 并在多客户端配置文件间自动探测。**重要修正：CodeBuddy 真正生效的 MCP 配置文件是 `~/.codebuddy/mcp.json`；其文档所指的 globalStorage 路径本版本不读 —— 写进去静默无效，此前误判为「会话快照」。** |
 | 2026-09-20 | **CodeBuddy 内置 Lighthouse 集成正式禁用**（从"已废弃"升级为"禁止使用"）。全仓排查确认 `src/`、`scripts/`、`README.md` 零引用；文档侧只涉及 `ops-guide.md` 与 `dev-machine-setup.md`，规则侧只涉及 `server-ops.mdc`。同步删除本工作区的集成锚点文件 `.codebuddy/integration/lighthouse.json`（untracked 本地文件）以实现工作区级禁用。记录唯一能力缺口：Lighthouse 防火墙规则读写无 MCP 工具，走控制台或 `tcRequest` 直调 API。 |
 | 2026-09-20 | **SSH 硬化：仅允许密钥登录**。新增 `/etc/ssh/sshd_config.d/10-hardening.conf`（`PasswordAuthentication no` + `PermitRootLogin prohibit-password`），`10-` 前缀用于压过 `50-cloud-init.conf` 并扛住 cloud-init 重写。实测：改前报错是 `Permission denied (publickey,password)`，改后只剩 `(publickey)`。新增「服务器安全基线」章节，并把 OrcaTerm 确认为**完全绕开 sshd** 的最终兜底通道。 |
 | 2026-09-20 | **执行通道改为两个 MCP**：主力 `qqbot-ssh`（SSH 私钥认证，`~/.ssh/qqbot_deploy`），后备/引导 `tencent-lighthouse`（自建 TAT MCP）。废弃 CodeBuddy 内置 Lighthouse 集成（`execute_command`）——其 OAuth 授权会失效、锚点跨工作区共享，实测 100% 不可用。新增 `qqbot-ssh` 命令黑名单（落实本项目铁律：`git clean -f*`、`git pull`、`docker compose down`、`docker compose (rm|stop|kill) … napcat` 等）。新增「执行通道」章节，部署/验证命令改由该通道执行。另新增 `docs/dev-machine-setup.md`（新开发机接入手册）+ `scripts/setup_dev_machine.ps1`（一键接入，幂等）+ `scripts/mcp_call.mjs`（CLI 桥，绕开会话快照限制）。 |

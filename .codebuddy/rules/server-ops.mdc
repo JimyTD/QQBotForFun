@@ -74,10 +74,12 @@ provider:
 
 - `directory` 参数即工作目录，不必用 `cd X && ...` 拼接（拼了也能跑）。
 - `qqbot-ssh` 启用命令黑名单，命中**直接拒绝**：`git clean -f*`、`git pull`、`docker compose down`、`docker compose (rm|stop|kill) … napcat`、`docker volume rm`、`docker system prune -a`、`rm -rf /…`、`mkfs`、`dd of=/dev/*`、`reboot` 等。**`git reset --hard` 刻意未列入**——部署流程需要它。
-- 凭据位置（**全部在仓库外，永不入 git**）：连接配置 `~/.codebuddy/ssh-mcp-config.json`；私钥 `~/.ssh/qqbot_deploy`；MCP 注册在 CodeBuddy 全局设置 `codebuddy_mcp_settings.json`。
+- 产物位置（**全部在仓库外且 agent 中立，永不入 git**）：连接配置 `~/.ssh-mcp/config.json`；MCP server `~/.ssh-mcp/server/`；私钥 `~/.ssh/qqbot_deploy`；MCP 注册在 `~/.codebuddy/mcp.json`。
+- ⚠️ **CodeBuddy 的 MCP 注册只认 `~/.codebuddy/mcp.json`** —— **不是** `%APPDATA%\CodeBuddy CN\...\globalStorage\tencent.planning-genie\settings\codebuddy_mcp_settings.json`。后者本版本不读，写进去**静默无效**（2026-09-20 实测踩过：注册后工具依然 `not found or not connected`）。
 - **引导通道**：安装/修复 SSH 公钥必须走非 SSH 通道（不能靠 SSH 装 SSH）。**首选腾讯云控制台的 OrcaTerm 网页终端** —— 它完全绕开 sshd（实测：`last` 里有 orcaterm 会话但同期 auth.log 里 0 条 sshd `Accepted`），不需要 22 端口、不需要 IP 白名单、不需要 AK/SK。需要脚本化时才用 `tencent-lighthouse` 的 `run_command`。
 - exec 模式下每次调用是**独立会话**，不要依赖 `cd` 跨调用保持；用 `directory` 参数或绝对路径。
-- **新开发机接入** → 见 `docs/dev-machine-setup.md`，一键脚本 `scripts/setup_dev_machine.ps1`（幂等，含命令黑名单的仓库内单一来源）。
+- **新开发机接入** → 见 `docs/dev-machine-setup.md`。一键脚本 `scripts/setup_dev_machine.ps1 -Target <agent>`（幂等，含命令黑名单的仓库内单一来源）。`-ListTargets` 列出支持的 agent（codebuddy / cursor / windsurf / claudecode / vscode / zed / opencode / codex），`-Target all` 全量注册。
+- **通道是 agent 中立的**：MCP server 是标准 stdio server，私钥是普通 OpenSSH key —— 任何 MCP 客户端都能接，任何能跑 shell 的 agent 也能直接 `ssh -i` 用。换 agent 只需把它自己的配置文件加一条，**不需要重建这套东西**。
 - ⚠️ 当前会话看不到刚注册的 MCP 是**正常现象**（工具清单是会话启动快照），开新会话即可；应急可用仓库里的 CLI 桥 `node scripts/mcp_call.mjs <server> <tool> <argsJson>`（`--list-servers` 可列出已注册的 server）。
 
 ## 服务器安全基线（2026-09-20 起）

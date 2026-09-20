@@ -1,56 +1,98 @@
 #!/usr/bin/env node
 /**
- * CLI bridge: call any MCP server registered in CodeBuddy's settings, without the IDE.
+ * CLI bridge: call any MCP server registered with a local MCP client, without the client.
  *
- * Why this exists: an agent session snapshots its MCP tool list at startup, so a server
+ * Why this exists: agent sessions snapshot their MCP tool list at startup, so a server
  * registered mid-session shows up as "not found or not connected" even though the config
  * is perfectly valid. This bridge talks MCP over stdio directly, so onboarding and
- * bootstrapping do not have to wait for an IDE restart.
+ * bootstrapping do not have to wait for an agent restart.
  *
- * Credentials are read from the CodeBuddy settings file, so nothing is duplicated.
+ * Credentials are read from the client's own settings file, so nothing is duplicated.
  *
  * Usage:
  *   node scripts/mcp_call.mjs <serverName> <toolName> [argsFileOrInlineJson]
  *   node scripts/mcp_call.mjs --list-servers
  *
- * Settings file discovery:
- *   $CODEBUDDY_MCP_SETTINGS, else the platform default for CodeBuddy CN.
+ *   --settings <path>   which MCP client settings file to read (see below)
+ *
+ * Settings file resolution order:
+ *   1. --settings <path>
+ *   2. $MCP_SETTINGS
+ *   3. $CODEBUDDY_MCP_SETTINGS   (deprecated alias, still honoured)
+ *   4. auto-detect: CodeBuddy CN -> Cursor -> Windsurf -> <repo>/.mcp.json
  */
 import { spawn } from "node:child_process";
 import { readFileSync, existsSync } from "node:fs";
 import os from "node:os";
 import path from "node:path";
 
-function defaultSettingsPath() {
-  if (process.env.CODEBUDDY_MCP_SETTINGS) return process.env.CODEBUDDY_MCP_SETTINGS;
-  const rel = path.join(
-    "User",
-    "globalStorage",
-    "tencent.planning-genie",
-    "settings",
-    "codebuddy_mcp_settings.json",
-  );
+const REL = ["User", "globalStorage", "tencent.planning-genie", "settings", "codebuddy_mcp_settings.json"];
+
+function candidateSettings() {
+  const home = os.homedir();
+  const list = [];
+
+  // VERIFIED 2026-09-20: CodeBuddy loads ~/.codebuddy/mcp.json. The globalStorage path
+  // that its docs mention is NOT read by this build (registering there does nothing).
+  list.push(path.join(home, ".codebuddy", "mcp.json"));
+
   if (process.platform === "win32") {
-    const base = process.env.APPDATA || path.join(os.homedir(), "AppData", "Roaming");
-    return path.join(base, "CodeBuddy CN", rel);
+    const roaming = process.env.APPDATA || path.join(home, "AppData", "Roaming");
+    list.push(path.join(roaming, "CodeBuddy CN", ...REL));
+  } else if (process.platform === "darwin") {
+    list.push(path.join(home, "Library", "Application Support", "CodeBuddy CN", ...REL));
+  } else {
+    list.push(path.join(home, ".config", "CodeBuddy CN", ...REL));
   }
-  if (process.platform === "darwin") {
-    return path.join(os.homedir(), "Library", "Application Support", "CodeBuddy CN", rel);
-  }
-  return path.join(os.homedir(), ".config", "CodeBuddy CN", rel);
+
+  list.push(path.join(home, ".cursor", "mcp.json"));
+  list.push(path.join(home, ".codeium", "windsurf", "mcp_config.json"));
+  list.push(path.join(process.cwd(), ".mcp.json"));
+  return list;
 }
 
-const SETTINGS_PATH = defaultSettingsPath();
+function resolveSettings(argv) {
+  const i = argv.indexOf("--settings");
+  if (i >= 0 && argv[i + 1]) return argv[i + 1];
+  if (process.env.MCP_SETTINGS) return process.env.MCP_SETTINGS;
+  if (process.env.CODEBUDDY_MCP_SETTINGS) return process.env.CODEBUDDY_MCP_SETTINGS;
+  for (const c of candidateSettings()) {
+    if (existsSync(c)) return c;
+  }
+  return candidateSettings()[0];
+}
+
+// Strip --settings <path> out of the positional arguments.
+function positionals(argv) {
+  const out = [];
+  for (let i = 0; i < argv.length; i++) {
+    if (argv[i] === "--settings") {
+      i++;
+      continue;
+    }
+    out.push(argv[i]);
+  }
+  return out;
+}
+
+const SETTINGS_PATH = resolveSettings(process.argv);
+const [serverName, toolName, argsArg] = positionals(process.argv.slice(2));
 
 if (!existsSync(SETTINGS_PATH)) {
-  console.error("CodeBuddy MCP settings not found: " + SETTINGS_PATH);
-  console.error("Set CODEBUDDY_MCP_SETTINGS to point at it explicitly.");
+  console.error("MCP settings file not found: " + SETTINGS_PATH);
+  console.error("Pass --settings <path>, set MCP_SETTINGS, or check the auto-detect list:");
+  for (const c of candidateSettings()) console.error("  " + c + (existsSync(c) ? "   <- exists" : ""));
   process.exit(2);
 }
 
-const servers = JSON.parse(readFileSync(SETTINGS_PATH, "utf8")).mcpServers ?? {};
-
-const [serverName, toolName, argsArg] = process.argv.slice(2);
+let servers;
+try {
+  servers = JSON.parse(readFileSync(SETTINGS_PATH, "utf8")).mcpServers ?? {};
+} catch (e) {
+  console.error("Could not parse " + SETTINGS_PATH + ": " + e.message);
+  console.error("Hint: if a BOM sneaked in, rewrite the file as UTF-8 without BOM.");
+  process.exit(2);
+}
 
 if (serverName === "--list-servers" || !serverName) {
   console.log("Settings: " + SETTINGS_PATH);
