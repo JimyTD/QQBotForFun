@@ -65,9 +65,17 @@ class LLMResponse:
     truncated: bool = False
 
     def json(self) -> Any:
-        """解析内容为 JSON；失败抛 LLMJSONParseError。"""
+        """解析内容为 JSON；失败抛 LLMJSONParseError。
+
+        容忍模型在 JSON 前后夹带解释文字 —— 见 `_extract_json_block`。
+        TokenHub 的档经常这样（实测 judge 输出 112–256 token，而 JSON 只需 ~50），
+        直接 `json.loads` 会失败并触发无谓的重试与降档。
+        """
+        block = _extract_json_block(self.content)
+        if block is None:
+            raise LLMJSONParseError(f"not valid json: {self.content[:200]}")
         try:
-            return json.loads(_strip_code_fence(self.content))
+            return json.loads(block)
         except json.JSONDecodeError as e:
             raise LLMJSONParseError(f"not valid json: {self.content[:200]}") from e
 
@@ -948,8 +956,12 @@ def _wrap_error(kind: str, exc: Exception) -> LLMError:
 
 
 def _is_valid_json(text: str) -> bool:
+    """能否从这段回复里抠出合法 JSON（容忍前后夹带解释文字）。"""
+    block = _extract_json_block(text)
+    if block is None:
+        return False
     try:
-        json.loads(_strip_code_fence(text))
+        json.loads(block)
     except json.JSONDecodeError:
         return False
     return True
@@ -963,6 +975,47 @@ def _strip_code_fence(text: str) -> str:
     if s.startswith("```"):
         s = _CODE_FENCE_RE.sub("", s).strip()
     return s
+
+
+def _extract_json_block(text: str) -> str | None:
+    """从可能夹带解释文字的回复里，抠出**第一个完整的 JSON 对象**。
+
+    为什么需要：即使 prompt 写明「严格输出 JSON，无多余文字」，
+    TokenHub 的档（实测 qwen3.5-plus 等）仍会先来一段「好的，我来分析……」。
+    旧实现只处理「整段被 ``` 包裹」，前后有文字就 `json.loads` 失败 ——
+    而失败会触发档内重试 + 跨档降级，把一次 4s 的调用放大成几十秒。
+    实测 judge 有 29% 的调用要重试 3 次才成功，根因就在这里。
+
+    用**括号配对扫描**而不是正则：正则处理不了字符串内的花括号与转义，
+    例如 ``{"hint": "他说{这样}"}`` 用正则会被括号数骗到。
+    """
+    s = _strip_code_fence(text)
+    start = s.find("{")
+    if start < 0:
+        return None
+
+    depth = 0
+    in_string = False
+    escaped = False
+    for i in range(start, len(s)):
+        ch = s[i]
+        if in_string:
+            if escaped:
+                escaped = False
+            elif ch == "\\":
+                escaped = True
+            elif ch == '"':
+                in_string = False
+            continue
+        if ch == '"':
+            in_string = True
+        elif ch == "{":
+            depth += 1
+        elif ch == "}":
+            depth -= 1
+            if depth == 0:
+                return s[start : i + 1]
+    return None
 
 
 def _ensure_json_hint(messages: list[dict[str, str]]) -> None:

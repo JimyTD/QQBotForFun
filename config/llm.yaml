@@ -100,6 +100,10 @@ scenes:
     temperature: 0.9
     max_tokens: 2048
     json_mode_default: true
+    # 1 次/局：玩家在等开局，可以多给点时间，但仍要封顶。
+    timeout_seconds: 30
+    retries: 1
+    total_timeout_seconds: 60
 
   # 提问判定：一局 20-50 次且超时只有 30s → 低延迟档必须靠前，
   # 否则链头一思考就超时，每次调用都要白等一轮。
@@ -118,9 +122,18 @@ scenes:
       - tokenhub:minimax-m2.7
       - zhipu:glm-4-flash-250414
     temperature: 0.1
-    max_tokens: 256
+    # 256 → 512：TokenHub 的档常先吐一段解释再给 JSON（实测输出 112–256 token），
+    # 256 会把 JSON 截掉一半，反而触发重试。留出余量比省这点 token 划算。
+    max_tokens: 512
     json_mode_default: true
-    timeout_seconds: 30
+    # 高频（20–50 次/局）：单次 20s 封顶，且**不在同一档反复重试** ——
+    # 「不输出 JSON」是这一档的特性而非临时故障，重试同档意义不大，留给降档更划算。
+    # 实测单次成功 3.6–4.4s，20s 有 4 倍余量。
+    timeout_seconds: 20
+    retries: 1
+    # 硬闸：含全部降档尝试在内，30s 仍无结果就交回调用方（提示"汤主走神了"）。
+    # 不设的话 12 档 × 20s 累积起来最坏十几分钟（09-20 实测单次已到 92s）。
+    total_timeout_seconds: 30
 
   # 宣告判定：1-3 次/局但决定胜负 → 判定质量优先
   turtle_soup_claim:
@@ -140,7 +153,11 @@ scenes:
     temperature: 0.2
     max_tokens: 512
     json_mode_default: true
-    timeout_seconds: 45
+    # 1–3 次/局但决定胜负 → 比 judge 宽松些，仍设硬闸。
+    # 09-20 实测最坏一次 92s（连降 4 档 × 每档重试 3 次），45s 单次 × 3 次是主因。
+    timeout_seconds: 25
+    retries: 1
+    total_timeout_seconds: 50
 
   trivia_host:
     chain:
@@ -159,7 +176,9 @@ scenes:
     temperature: 0.9
     max_tokens: 1024
     json_mode_default: true
-    timeout_seconds: 30
+    timeout_seconds: 25
+    retries: 1
+    total_timeout_seconds: 45
 
   # 长文归纳吃上下文窗口
   web_search:
@@ -247,7 +266,10 @@ scenes:
     temperature: 0.3
     max_tokens: 1024
     json_mode_default: true
-    timeout_seconds: 30
+    # 高频 AI 决策：玩家在等回合，硬闸压紧。
+    timeout_seconds: 20
+    retries: 1
+    total_timeout_seconds: 30
 
   # AI 取名：输出仅 20 token，用不着强档，短超时
   silent_mark_ai_name:
@@ -265,4 +287,6 @@ scenes:
     temperature: 0.9
     max_tokens: 20
     json_mode_default: false
-    timeout_seconds: 20
+    timeout_seconds: 15
+    retries: 1
+    total_timeout_seconds: 20

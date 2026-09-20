@@ -14,7 +14,7 @@ from unittest.mock import patch
 import pytest
 
 from core import llm
-from core.errors import LLMConfigError, LLMError
+from core.errors import LLMConfigError, LLMError, LLMJSONParseError
 
 
 # ---------------------------------------------------------------------
@@ -657,3 +657,74 @@ def test_health_snapshot_is_read_only_and_lists_slots() -> None:
         snap = llm.health_snapshot()
     assert [s["slot"] for s in snap] == ["tokenhub:m1", "zhipu:m2"]
     assert all(s["status"] == "ok" for s in snap)
+
+
+# ---------------------------------------------------------------------
+# JSON 提取：容忍模型在 JSON 前后夹带解释文字
+# ---------------------------------------------------------------------
+# 背景（2026-09-20 生产日志）：TokenHub 的档常先来一段「好的，我来分析……」，
+# 而旧实现只处理「整段被 ``` 包裹」，于是 json.loads 失败 →
+# 档内重试 3 次 → 跨档降级。实测 judge 有 29% 的调用要重试 3 次才成功，
+# 最长一次拖到 92 秒。下面这些用例锁住「夹带文字也能解析出来」。
+def test_extract_json_block_plain() -> None:
+    assert llm._extract_json_block('{"a": 1}') == '{"a": 1}'
+
+
+def test_extract_json_block_with_leading_prose() -> None:
+    text = '好的，我来分析一下这个问题。\n{"type": "yes", "hint": ""}'
+    assert llm._extract_json_block(text) == '{"type": "yes", "hint": ""}'
+
+
+def test_extract_json_block_with_trailing_prose() -> None:
+    text = '{"type": "no"}\n以上就是我的判定，希望有帮助。'
+    assert llm._extract_json_block(text) == '{"type": "no"}'
+
+
+def test_extract_json_block_with_fence_and_prose() -> None:
+    text = '分析：\n```json\n{"a": {"b": 1}}\n```\n完毕。'
+    assert llm._extract_json_block(text) == '{"a": {"b": 1}}'
+
+
+def test_extract_json_block_ignores_braces_inside_string() -> None:
+    """字符串里的花括号不能骗过配对扫描 —— 用正则做这件事会翻车。"""
+    text = '前言 {"hint": "他说{这样}就好了", "type": "key"} 后记'
+    assert llm._extract_json_block(text) == '{"hint": "他说{这样}就好了", "type": "key"}'
+
+
+def test_extract_json_block_handles_escaped_quote() -> None:
+    raw = r'{"hint": "他说\"你好\"", "n": 1}'
+    assert llm._extract_json_block(f"前言 {raw} 后记") == raw
+
+
+def test_extract_json_block_nested_objects() -> None:
+    assert llm._extract_json_block('x {"a": {"b": {"c": 1}}} y') == '{"a": {"b": {"c": 1}}}'
+
+
+def test_extract_json_block_returns_none_without_json() -> None:
+    assert llm._extract_json_block("抱歉，我无法回答这个问题。") is None
+
+
+def test_extract_json_block_returns_none_on_unterminated_object() -> None:
+    """括号没配平 → 不返回片段，交给调用方按「解析失败」处理。"""
+    assert llm._extract_json_block('{"a": 1') is None
+
+
+def test_llmresponse_json_tolerates_surrounding_prose() -> None:
+    """回归：夹带文字的回复以前会被判 JSON 失败，触发重试与降档。"""
+    r = llm.LLMResponse(
+        content='好的，判定如下：\n{"type": "irrelevant", "hint": ""}\n以上。',
+        model="test",
+    )
+    assert r.json() == {"type": "irrelevant", "hint": ""}
+
+
+def test_is_valid_json_uses_same_tolerance_as_parser() -> None:
+    """预校验与解析必须同一套标准，否则会出现「校验通过、解析却失败」。"""
+    assert llm._is_valid_json('前言 {"ok": true} 后记')
+    assert not llm._is_valid_json("没有任何 JSON")
+
+
+def test_llmresponse_json_still_raises_on_garbage() -> None:
+    r = llm.LLMResponse(content="完全不是 JSON", model="test")
+    with pytest.raises(LLMJSONParseError):
+        r.json()
