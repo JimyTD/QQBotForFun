@@ -27,6 +27,7 @@ from .broadcaster import (
     BroadcastSegment,
     _hp_bar,
     _hp_summary,
+    battle_resource_loss,
     format_battle_report,
     MODE_BRIEF,
 )
@@ -1066,6 +1067,7 @@ class AoE3BattleGame(GameBase):
                 red_cur_hp = sum(s.hp for s in result.red_alive)
                 blue_max_hp = sum(s.max_hp for s in blue_all)
                 blue_cur_hp = sum(s.hp for s in result.blue_alive)
+                red_loss, blue_loss = battle_resource_loss(result)
 
                 # 每方统计
                 red_same = [s for s in red_all if s.unit.id == tu_a.unit.id]
@@ -1096,6 +1098,7 @@ class AoE3BattleGame(GameBase):
                     f"━━━ {match_obj.label} {tu_a.display_name} vs {tu_b.display_name} ⏱{result.duration:.1f}s ━━━",
                     f"🔴 {_hp_bar(red_cur_hp, red_max_hp, '🟥')}  {_hp_summary(red_cur_hp, red_max_hp)}",
                     f"🔵 {_hp_bar(blue_cur_hp, blue_max_hp, '🟥')}  {_hp_summary(blue_cur_hp, blue_max_hp)}",
+                    f"💸 战损资源：红方 {red_loss} ｜ 蓝方 {blue_loss}",
                     f"🔴 {tu_a.display_name} ×{count_a} → {red_status}/击杀{red_kills}/伤害{red_dmg:.0f}",
                     f"🔵 {tu_b.display_name} ×{count_b} → {blue_status}/击杀{blue_kills}/伤害{blue_dmg:.0f}",
                     f"✅ {winner_tu.display_name} 胜{promo}",

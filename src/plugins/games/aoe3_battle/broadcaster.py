@@ -359,6 +359,13 @@ def _hp_summary(current: float, maximum: float) -> str:
 # =====================================================================
 # 最终战报生成
 # =====================================================================
+def battle_resource_loss(result: BattleResult) -> tuple[int, int]:
+    """返回双方阵亡单位的训练资源损失（不含人口折算）。"""
+    red_loss = sum(sum(s.unit.cost.values()) for s in result.red_dead)
+    blue_loss = sum(sum(s.unit.cost.values()) for s in result.blue_dead)
+    return red_loss, blue_loss
+
+
 def format_battle_report(result: BattleResult) -> str:
     """生成最终战报文本。"""
     lines = []
@@ -390,6 +397,8 @@ def format_battle_report(result: BattleResult) -> str:
 
     lines.append(f"🔴 {_hp_bar(red_cur_hp, red_max_hp, '🟥')}  {_hp_summary(red_cur_hp, red_max_hp)}")
     lines.append(f"🔵 {_hp_bar(blue_cur_hp, blue_max_hp, '🟦')}  {_hp_summary(blue_cur_hp, blue_max_hp)}")
+    red_loss, blue_loss = battle_resource_loss(result)
+    lines.append(f"💸 战损资源：红方 {red_loss} ｜ 蓝方 {blue_loss}")
     lines.append("")
 
     # 红方
