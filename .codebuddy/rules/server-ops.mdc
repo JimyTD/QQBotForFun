@@ -70,12 +70,12 @@ provider:
 | 通道 | 定位 | 调用方式 |
 |---|---|---|
 | `qqbot-ssh` | **主力**：日常运维与部署 | 工具 `execute-command`：`connectionName="qqbot"`、`directory="/root/qqbot"`、`timeout`（毫秒，缺省走配置 600000） |
-| `tencent-lighthouse` | 后备/引导：TAT agent 诊断、腾讯云 API 层操作（防火墙/实例/监控）、SSH 不可用时的引导通道 | 工具 `run_command`：`region="ap-guangzhou"`、`instanceIds=["lhins-hwnz7rcz"]` |
+| `tencent-lighthouse` | 后备：TAT agent 诊断、腾讯云 API 层操作（实例/监控）；OrcaTerm 不可用时的备用引导通道 | 工具 `run_command`：`region="ap-guangzhou"`、`instanceIds=["lhins-hwnz7rcz"]` |
 
 - `directory` 参数即工作目录，不必用 `cd X && ...` 拼接（拼了也能跑）。
 - `qqbot-ssh` 启用命令黑名单，命中**直接拒绝**：`git clean -f*`、`git pull`、`docker compose down`、`docker compose (rm|stop|kill) … napcat`、`docker volume rm`、`docker system prune -a`、`rm -rf /…`、`mkfs`、`dd of=/dev/*`、`reboot` 等。**`git reset --hard` 刻意未列入**——部署流程需要它。
 - 凭据位置（**全部在仓库外，永不入 git**）：连接配置 `~/.codebuddy/ssh-mcp-config.json`；私钥 `~/.ssh/qqbot_deploy`；MCP 注册在 CodeBuddy 全局设置 `codebuddy_mcp_settings.json`。
-- **引导通道**：安装/修复 SSH 公钥必须走非 SSH 通道。首选 `tencent-lighthouse` 的 `run_command`，兜底是腾讯云控制台 OrcaTerm。
+- **引导通道**：安装/修复 SSH 公钥必须走非 SSH 通道（不能靠 SSH 装 SSH）。**首选腾讯云控制台的 OrcaTerm 网页终端** —— 它完全绕开 sshd（实测：`last` 里有 orcaterm 会话但同期 auth.log 里 0 条 sshd `Accepted`），不需要 22 端口、不需要 IP 白名单、不需要 AK/SK。需要脚本化时才用 `tencent-lighthouse` 的 `run_command`。
 - exec 模式下每次调用是**独立会话**，不要依赖 `cd` 跨调用保持；用 `directory` 参数或绝对路径。
 - **新开发机接入** → 见 `docs/dev-machine-setup.md`，一键脚本 `scripts/setup_dev_machine.ps1`（幂等，含命令黑名单的仓库内单一来源）。
 - ⚠️ 当前会话看不到刚注册的 MCP 是**正常现象**（工具清单是会话启动快照），开新会话即可；应急可用仓库里的 CLI 桥 `node scripts/mcp_call.mjs <server> <tool> <argsJson>`（`--list-servers` 可列出已注册的 server）。

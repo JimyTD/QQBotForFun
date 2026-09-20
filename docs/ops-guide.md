@@ -90,7 +90,7 @@ GitHub:       https://github.com/JimyTD/QQBotForFun
 | 通道 | 定位 | 调用方式 |
 |---|---|---|
 | `qqbot-ssh` | **主力**：日常运维与部署 | 工具 `execute-command`：`connectionName="qqbot"`、`directory="/root/qqbot"`、`timeout`（毫秒，缺省走配置 600000） |
-| `tencent-lighthouse` | 后备/引导：TAT agent 诊断、腾讯云 API 层操作（防火墙/实例/监控）、SSH 不可用时的引导通道 | 工具 `run_command`：`region="ap-guangzhou"`、`instanceIds=["lhins-hwnz7rcz"]` |
+| `tencent-lighthouse` | 后备：TAT agent 诊断、腾讯云 API 层操作（实例/监控）；OrcaTerm 不可用时的备用引导通道 | 工具 `run_command`：`region="ap-guangzhou"`、`instanceIds=["lhins-hwnz7rcz"]` |
 
 - `directory` 参数即工作目录，不必用 `cd X && ...` 拼接。
 - `qqbot-ssh` 启用命令黑名单，命中即拒绝：`git clean -f*`、`git pull`、`docker compose down`、`docker compose (rm|stop|kill) … napcat`、`docker volume rm`、`docker system prune -a`、`rm -rf /…`、`mkfs`、`dd of=/dev/*`、`reboot` 等。**`git reset --hard` 刻意未列入**——部署流程需要它。
