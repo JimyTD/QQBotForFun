@@ -50,7 +50,20 @@ provider:
 - NapCat WebUI: `http://106.55.228.236:6099`
 - GitHub: `https://github.com/JimyTD/QQBotForFun`
 
-用 lighthouse `execute_command` 工具执行命令，参数固定为上述 Region + InstanceId。
+## 执行通道（自 2026-09-20 起）
+
+⚠️ **不再使用 CodeBuddy 内置的 Lighthouse 集成**（`execute_command`）。它的 OAuth 授权会失效、且锚点跨工作区共享，已实测 100% 不可用。改用两个 MCP 通道：
+
+| 通道 | 定位 | 调用方式 |
+|---|---|---|
+| `qqbot-ssh` | **主力**：日常运维与部署 | 工具 `execute-command`：`connectionName="qqbot"`、`directory="/root/qqbot"`、`timeout`（毫秒，缺省走配置 600000） |
+| `tencent-lighthouse` | 后备/引导：TAT agent 诊断、腾讯云 API 层操作（防火墙/实例/监控）、SSH 不可用时的引导通道 | 工具 `run_command`：`region="ap-guangzhou"`、`instanceIds=["lhins-hwnz7rcz"]` |
+
+- `directory` 参数即工作目录，不必用 `cd X && ...` 拼接（拼了也能跑）。
+- `qqbot-ssh` 启用命令黑名单，命中**直接拒绝**：`git clean -f*`、`git pull`、`docker compose down`、`docker compose (rm|stop|kill) … napcat`、`docker volume rm`、`docker system prune -a`、`rm -rf /…`、`mkfs`、`dd of=/dev/*`、`reboot` 等。**`git reset --hard` 刻意未列入**——部署流程需要它。
+- 凭据位置（**全部在仓库外，永不入 git**）：连接配置 `~/.codebuddy/ssh-mcp-config.json`；私钥 `~/.ssh/qqbot_deploy`；MCP 注册在 CodeBuddy 全局设置 `codebuddy_mcp_settings.json`。
+- **引导通道**：安装/修复 SSH 公钥必须走非 SSH 通道。首选 `tencent-lighthouse` 的 `run_command`，兜底是腾讯云控制台 OrcaTerm。
+- exec 模式下每次调用是**独立会话**，不要依赖 `cd` 跨调用保持；用 `directory` 参数或绝对路径。
 
 **Git remote：**
 
@@ -82,14 +95,14 @@ git rev-parse HEAD          # 记下 hash
 git ls-remote origin HEAD   # 应与上面一致
 ```
 
-**部署：**
+**部署（经 `qqbot-ssh` 执行：`connectionName="qqbot"`、`directory="/root/qqbot"`、`timeout=900000`）：**
 ```
-cd /root/qqbot && git fetch mirror main && docker compose stop bot && docker compose rm -f bot && git reset --hard mirror/main && docker compose up -d --build bot
+git fetch mirror main && docker compose stop bot && docker compose rm -f bot && git reset --hard mirror/main && docker compose up -d --build bot
 ```
 
-**验证：**
+**验证（同上通道）：**
 ```
-cd /root/qqbot && git rev-parse --short HEAD && git status --short && docker compose logs bot --tail=15
+git rev-parse --short HEAD && git status --short && docker compose logs bot --tail=15
 ```
 应看到 `[bot] ready.` 和 `Bot 3959381140 connected`；`git status` 应为空。
 

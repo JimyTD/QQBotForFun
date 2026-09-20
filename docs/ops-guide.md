@@ -72,6 +72,23 @@ GitHub:       https://github.com/JimyTD/QQBotForFun
 
 ---
 
+## 执行通道（自 2026-09-20 起）
+
+⚠️ **不再使用 CodeBuddy 内置的 Lighthouse 集成**（`execute_command`）：其 OAuth 授权会失效、且锚点跨工作区共享（QQBot 与 SilentWereWolf 会互相覆盖绑定），已实测 100% 不可用。改用两个 MCP 通道：
+
+| 通道 | 定位 | 调用方式 |
+|---|---|---|
+| `qqbot-ssh` | **主力**：日常运维与部署 | 工具 `execute-command`：`connectionName="qqbot"`、`directory="/root/qqbot"`、`timeout`（毫秒，缺省走配置 600000） |
+| `tencent-lighthouse` | 后备/引导：TAT agent 诊断、腾讯云 API 层操作（防火墙/实例/监控）、SSH 不可用时的引导通道 | 工具 `run_command`：`region="ap-guangzhou"`、`instanceIds=["lhins-hwnz7rcz"]` |
+
+- `directory` 参数即工作目录，不必用 `cd X && ...` 拼接。
+- `qqbot-ssh` 启用命令黑名单，命中即拒绝：`git clean -f*`、`git pull`、`docker compose down`、`docker compose (rm|stop|kill) … napcat`、`docker volume rm`、`docker system prune -a`、`rm -rf /…`、`mkfs`、`dd of=/dev/*`、`reboot` 等。**`git reset --hard` 刻意未列入**——部署流程需要它。
+- 凭据位置（**全部在仓库外，永不入 git**）：连接配置 `~/.codebuddy/ssh-mcp-config.json`；私钥 `~/.ssh/qqbot_deploy`；MCP 注册在 CodeBuddy 全局设置 `codebuddy_mcp_settings.json`。
+- **引导通道**：安装/修复 SSH 公钥必须走非 SSH 通道。首选 `tencent-lighthouse` 的 `run_command`，兜底是腾讯云控制台 OrcaTerm。
+- exec 模式下每次调用是**独立会话**，不要依赖 `cd` 跨调用保持；用 `directory` 参数或绝对路径。
+
+---
+
 ## 权威副本规定
 
 | 内容 | 唯一权威来源 |
@@ -113,8 +130,9 @@ git ls-remote origin HEAD   # 应与上面一致
 
 ### 部署
 
+> 经 `qqbot-ssh` 通道执行：`connectionName="qqbot"`、`directory="/root/qqbot"`、`timeout=900000`（首次构建装新依赖可能超 10 分钟）。
+
 ```bash
-cd /root/qqbot
 git fetch mirror main
 git log --oneline HEAD..mirror/main        # 可选：看这次要上哪些 commit
 docker compose stop bot && docker compose rm -f bot
@@ -124,8 +142,9 @@ docker compose up -d --build bot
 
 ### 验证
 
+> 同上通道执行。
+
 ```bash
-cd /root/qqbot
 git rev-parse --short HEAD                # 应与本地一致
 git status --short                        # 应为空（无漂移）
 docker compose logs bot --tail=15         # 应看到 [bot] ready. + Bot 3959381140 connected
@@ -389,5 +408,6 @@ DB 大小                   9687 kB
 
 | 日期 | 变更 |
 |---|---|
+| 2026-09-20 | **执行通道改为两个 MCP**：主力 `qqbot-ssh`（SSH 私钥认证，`~/.ssh/qqbot_deploy`），后备/引导 `tencent-lighthouse`（自建 TAT MCP）。废弃 CodeBuddy 内置 Lighthouse 集成（`execute_command`）——其 OAuth 授权会失效、锚点跨工作区共享，实测 100% 不可用。新增 `qqbot-ssh` 命令黑名单（落实本项目铁律：`git clean -f*`、`git pull`、`docker compose down`、`docker compose (rm|stop|kill) … napcat` 等）。新增「执行通道」章节，部署/验证命令改由该通道执行。 |
 | 2026-08-28 | **同步方式改为 Git**。`/root/qqbot` 转为 git 工作区（`git init` + `origin`/`mirror` 双 remote + `fetch`/`reset --hard`）。废弃 `deploy_project_preparation` 上传 + `cp` 清单 + `.deploy_staging` 中转目录的旧流程。合并「日常部署」与「根级文件部署」为单一流程。新增 §4 版本管理、§5 密钥维护、§7 数据备份。 |
 | 2026-09-20 | `Dockerfile` 的 base 改为**固定 digest**：此前用浮动 tag `python:3.11-slim`，上游一发新版就让 apt / uv 依赖所有层缓存失效，一次「只改了 3 行 Python」的部署耗时约 10 分钟（其中 `pip install uv` 单独跑了 7 分钟）。§1 补充告警：`docker image prune -f` 会删掉失去 tag 的基础镜像，从而把下一次部署再次推入全量重建，清理前先 `docker images -f dangling=true` 确认。 |
