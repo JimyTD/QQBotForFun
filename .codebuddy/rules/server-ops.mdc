@@ -54,7 +54,18 @@ provider:
 
 ## 执行通道（自 2026-09-20 起）
 
-⚠️ **不再使用 CodeBuddy 内置的 Lighthouse 集成**（`execute_command`）。它的 OAuth 授权会失效、且锚点跨工作区共享，已实测 100% 不可用。改用两个 MCP 通道：
+## ⛔ 已禁用：CodeBuddy 内置的 Lighthouse 集成
+
+**永久不使用它的任何工具** —— `execute_command`、`deploy_project_preparation`、`describe_*_firewall_rules`、`analyze_lighthouse_instances` 等，一个都不用。两个**互相独立**的原因，任一都足以判死：
+
+1. **OAuth 授权会失效** —— 失效后所有调用返回 `Token verification failed. Please check your Token is correct.`，必须人工重新登录授权（2026-09-20 实测连续 3 次调用 3 次失败）。
+2. **锚点跨工作区共享** —— 它的绑定是**云端账号级单锚点**，工作区里的 `.codebuddy/integration/lighthouse.json` 只是"当时锚在哪"的镜像，不是 per-workspace 绑定。在 QQBot 工作区操作会把 SilentWereWolf 工作区的绑定一起改掉（历史上确实发生过）。
+
+替代品齐全，**没有任何场景需要它**：命令执行 → `qqbot-ssh`；新机器引导 → 腾讯云控制台 OrcaTerm；腾讯云 API → `tencent-lighthouse`。
+
+> 唯一已知能力缺口：**Lighthouse 防火墙规则的读写**没有对应 MCP 工具。走腾讯云控制台，或用 `d:/Fun/tencent-lighthouse-mcp/src/tencent-api.js` 的 `tcRequest` 直接调 `lighthouse:DescribeFirewallRules` / `ModifyFirewallRules`。
+
+以下是替代它的两个 MCP 通道：
 
 | 通道 | 定位 | 调用方式 |
 |---|---|---|

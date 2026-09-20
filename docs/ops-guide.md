@@ -74,7 +74,18 @@ GitHub:       https://github.com/JimyTD/QQBotForFun
 
 ## 执行通道（自 2026-09-20 起）
 
-⚠️ **不再使用 CodeBuddy 内置的 Lighthouse 集成**（`execute_command`）：其 OAuth 授权会失效、且锚点跨工作区共享（QQBot 与 SilentWereWolf 会互相覆盖绑定），已实测 100% 不可用。改用两个 MCP 通道：
+### ⛔ 已禁用：CodeBuddy 内置的 Lighthouse 集成
+
+**永久不使用它的任何工具** —— `execute_command`、`deploy_project_preparation`、`describe_*_firewall_rules`、`analyze_lighthouse_instances` 等，一个都不用。两个**互相独立**的原因，任一都足以判死：
+
+1. **OAuth 授权会失效** —— 失效后所有调用返回 `Token verification failed. Please check your Token is correct.`，必须人工重新登录授权（2026-09-20 实测连续 3 次调用 3 次失败）。
+2. **锚点跨工作区共享** —— 它的绑定是**云端账号级单锚点**，工作区里的 `.codebuddy/integration/lighthouse.json` 只是"当时锚在哪"的镜像，**不是 per-workspace 绑定**。在 QQBot 工作区操作会把 SilentWereWolf 工作区的绑定一起改掉（历史上确实发生过：SilentWereWolf 原本指向 `lhins-5xyrg0ei`／`62.234.18.113`，被改成了本机的 `lhins-hwnz7rcz`）。
+
+替代品齐全，**没有任何场景需要它**：命令执行 → `qqbot-ssh`；新机器引导 → 腾讯云控制台 OrcaTerm；腾讯云 API → `tencent-lighthouse`。
+
+> 唯一已知能力缺口：**Lighthouse 防火墙规则的读写**没有对应 MCP 工具。走腾讯云控制台，或用 `d:/Fun/tencent-lighthouse-mcp/src/tencent-api.js` 的 `tcRequest` 直接调 `lighthouse:DescribeFirewallRules` / `ModifyFirewallRules`。
+
+改用两个 MCP 通道：
 
 | 通道 | 定位 | 调用方式 |
 |---|---|---|
@@ -433,6 +444,7 @@ DB 大小                   9687 kB
 
 | 日期 | 变更 |
 |---|---|
+| 2026-09-20 | **CodeBuddy 内置 Lighthouse 集成正式禁用**（从"已废弃"升级为"禁止使用"）。全仓排查确认 `src/`、`scripts/`、`README.md` 零引用；文档侧只涉及 `ops-guide.md` 与 `dev-machine-setup.md`，规则侧只涉及 `server-ops.mdc`。同步删除本工作区的集成锚点文件 `.codebuddy/integration/lighthouse.json`（untracked 本地文件）以实现工作区级禁用。记录唯一能力缺口：Lighthouse 防火墙规则读写无 MCP 工具，走控制台或 `tcRequest` 直调 API。 |
 | 2026-09-20 | **SSH 硬化：仅允许密钥登录**。新增 `/etc/ssh/sshd_config.d/10-hardening.conf`（`PasswordAuthentication no` + `PermitRootLogin prohibit-password`），`10-` 前缀用于压过 `50-cloud-init.conf` 并扛住 cloud-init 重写。实测：改前报错是 `Permission denied (publickey,password)`，改后只剩 `(publickey)`。新增「服务器安全基线」章节，并把 OrcaTerm 确认为**完全绕开 sshd** 的最终兜底通道。 |
 | 2026-09-20 | **执行通道改为两个 MCP**：主力 `qqbot-ssh`（SSH 私钥认证，`~/.ssh/qqbot_deploy`），后备/引导 `tencent-lighthouse`（自建 TAT MCP）。废弃 CodeBuddy 内置 Lighthouse 集成（`execute_command`）——其 OAuth 授权会失效、锚点跨工作区共享，实测 100% 不可用。新增 `qqbot-ssh` 命令黑名单（落实本项目铁律：`git clean -f*`、`git pull`、`docker compose down`、`docker compose (rm|stop|kill) … napcat` 等）。新增「执行通道」章节，部署/验证命令改由该通道执行。另新增 `docs/dev-machine-setup.md`（新开发机接入手册）+ `scripts/setup_dev_machine.ps1`（一键接入，幂等）+ `scripts/mcp_call.mjs`（CLI 桥，绕开会话快照限制）。 |
 | 2026-08-28 | **同步方式改为 Git**。`/root/qqbot` 转为 git 工作区（`git init` + `origin`/`mirror` 双 remote + `fetch`/`reset --hard`）。废弃 `deploy_project_preparation` 上传 + `cp` 清单 + `.deploy_staging` 中转目录的旧流程。合并「日常部署」与「根级文件部署」为单一流程。新增 §4 版本管理、§5 密钥维护、§7 数据备份。 |
