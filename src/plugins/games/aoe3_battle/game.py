@@ -341,8 +341,14 @@ class AoE3BattleGame(GameBase):
             match = generate_blacklist_lineup(repo, rng=rng)
         elif mode_id == "custom":
             unit_names = (ctx.config or {}).get("unit_names", [])
+            unit_counts = (ctx.config or {}).get("unit_counts")
             result = generate_custom_lineup(
-                repo, unit_names, budget=budget, age=age, rng=rng
+                repo,
+                unit_names,
+                budget=budget,
+                unit_counts=unit_counts,
+                age=age,
+                rng=rng,
             )
             if isinstance(result, str):
                 # 生成失败，广播错误信息并抛异常让框架结束对局
@@ -418,8 +424,13 @@ class AoE3BattleGame(GameBase):
                 for i, slot in enumerate(match.blue.slots):
                     match.blue.slots[i] = UnitSlot(new_blue[i], slot.count)
                 match.generic_tech_lines = format_tech_lines(red_techs, blue_techs)
-            # 科技应用完毕（cost 可能已变）→ 按最终 cost 分配数量（唯一一次）
-            if mode_id != "duel":
+            # 科技应用完毕（cost 可能已变）→ 按最终 cost 分配数量（唯一一次）。
+            # 固定数量是玩家明确约束，任何加成都不能覆盖它。
+            fixed_custom_counts = (
+                mode_id == "custom"
+                and (ctx.config or {}).get("unit_counts") is not None
+            )
+            if mode_id != "duel" and not fixed_custom_counts:
                 allocate_lineup_counts(match.red, budget)
                 allocate_lineup_counts(match.blue, budget)
                 _apply_lcm_balance(match.red, match.blue, budget)

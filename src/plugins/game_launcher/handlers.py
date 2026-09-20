@@ -9,7 +9,6 @@
 from __future__ import annotations
 
 import random
-import re
 from datetime import datetime, timedelta, timezone
 
 from nonebot import on_command
@@ -20,6 +19,7 @@ from nonebot.rule import to_me
 
 from core import game_base
 from core.errors import GameAlreadyRunningError
+from plugins.aoe3_battle_args import extract_age, parse_custom_battle_args
 
 from nonebot import logger
 
@@ -149,22 +149,9 @@ async def _(matcher: Matcher, event: GroupMessageEvent) -> None:
 
 
 # 时代参数：「3时代」/「时代3」/「age3」（N=2~5），见 aoe3-battle §3.10.6
-_AGE_TOKEN_RE = re.compile(r"^(?:(\d)\s*时代|时代\s*(\d)|age\s*(\d))$", re.IGNORECASE)
-
-
 def _extract_age(parts: list[str]) -> tuple[int | None, list[str]]:
     """从分词里抽出时代参数，返回 (age, 去掉时代词后的分词)。"""
-    age: int | None = None
-    rest: list[str] = []
-    for p in parts:
-        m = _AGE_TOKEN_RE.match(p)
-        if m:
-            n = int(next(g for g in m.groups() if g))
-            if 2 <= n <= 5:
-                age = n
-                continue
-        rest.append(p)
-    return age, rest
+    return extract_age(parts)
 
 
 _AGE_CONFIG_KEY = "aoe3_battle.default_age"
@@ -335,10 +322,10 @@ async def _handle_custom_battle(
     if not arg_text:
         await matcher.finish(
             "🎯 斗蛐蛐自选用法：\n"
-            "  @我 斗蛐蛐自选 兵种名\n"
-            "  @我 斗蛐蛐自选 兵种A 兵种B\n"
-            "  @我 斗蛐蛐自选 兵种A 兵种B 15000\n"
-            "（末尾数字为自定义预算，默认 10000；可加「N时代」N=2~5）"
+            "  @我 斗蛐蛐 兵种A 兵种B\n"
+            "  @我 斗蛐蛐 兵种A 兵种B 15000（预算模式）\n"
+            "  @我 斗蛐蛐 兵种A 100 兵种B 50（固定数量，1~1000）\n"
+            "（可加「N时代」N=2~5）"
         )
         return
 
@@ -346,21 +333,9 @@ async def _handle_custom_battle(
     age_inline, parts = _extract_age(arg_text.split())
     if age is None:
         age = age_inline
-    unit_names: list[str] = []
-    budget = None
-
-    for part in parts:
-        if part.isdigit():
-            budget = int(part)
-        else:
-            unit_names.append(part)
-
-    if not unit_names:
-        await matcher.finish("⚠️ 请至少指定一个兵种名")
-        return
-
-    if len(unit_names) > 2:
-        await matcher.finish("⚠️ 最多选 2 个兵种")
+    unit_names, unit_counts, budget, error = parse_custom_battle_args(parts)
+    if error:
+        await matcher.finish(error)
         return
 
     # 预验证兵种名（避免无效请求进入 game 流程）
@@ -375,6 +350,8 @@ async def _handle_custom_battle(
 
     generic_techs_on = await _get_generic_techs_enabled(int(event.group_id))
     config: dict = {"mode": "custom", "unit_names": unit_names}
+    if unit_counts is not None:
+        config["unit_counts"] = unit_counts
     if budget is not None:
         config["budget"] = budget
     if age is not None:

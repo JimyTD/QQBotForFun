@@ -1367,6 +1367,7 @@ def generate_custom_lineup(
     unit_names: list[str],
     *,
     budget: int = BUDGET,
+    unit_counts: list[int] | None = None,
     age: int | None = None,
     rng: random.Random | None = None,
 ) -> MatchLineup | str:
@@ -1375,6 +1376,7 @@ def generate_custom_lineup(
     参数：
       unit_names: 玩家输入的 1~2 个兵种名
       budget: 资源预算（双方共用）
+      unit_counts: 可选的双方固定数量；指定时不执行 LCM 资源平衡
       rng: 随机数生成器
 
     返回：
@@ -1384,8 +1386,8 @@ def generate_custom_lineup(
     规则：
       - 选 1 种：玩家选的 = 红方，系统从正常池随机 1 种 = 蓝方
       - 选 2 种：第一个 = 红方，第二个 = 蓝方
-      - 双方使用相同预算，数量 = budget ÷ cost（向下取整）
-      - 双方都是单兵种时使用 LCM 算法平衡资源
+      - 未指定 unit_counts：双方使用相同预算，LCM 平衡数量
+      - 指定 unit_counts：严格使用玩家数量，跳过 LCM
       - 玩家可选黑名单兵种；系统随机时排除黑名单
     """
     if rng is None:
@@ -1393,6 +1395,13 @@ def generate_custom_lineup(
 
     if not unit_names or len(unit_names) > 2:
         return "⚠️ 请指定 1~2 个兵种名"
+    if unit_counts is not None:
+        if len(unit_counts) != len(unit_names):
+            return "⚠️ 固定数量必须与兵种一一对应"
+        if len(unit_names) != 2:
+            return "⚠️ 固定数量模式需指定两个兵种"
+        if any(count < 1 or count > 1000 for count in unit_counts):
+            return "⚠️ 数量必须是 1~1000 的整数"
 
     # 解析玩家选的兵种
     resolved_units: list[Unit] = []
@@ -1420,30 +1429,40 @@ def generate_custom_lineup(
             return "⚠️ 兵种池为空，无法生成对手"
         blue_unit = rng.choice(pool)
 
-    # 计算数量：使用 LCM 算法平衡资源（双方都是单兵种）
-    cost_a = _unit_cost(red_unit)
-    cost_b = _unit_cost(blue_unit)
+    if unit_counts is not None:
+        red_count, blue_count = unit_counts
+    else:
+        # 未指定数量：使用 LCM 算法平衡资源（双方都是单兵种）
+        cost_a = _unit_cost(red_unit)
+        cost_b = _unit_cost(blue_unit)
 
-    if cost_a <= 0:
-        return f"⚠️ 兵种「{red_unit.name}」没有资源消耗数据，无法参战"
-    if cost_b <= 0:
-        return f"⚠️ 兵种「{blue_unit.name}」没有资源消耗数据，无法参战"
+        if cost_a <= 0:
+            return f"⚠️ 兵种「{red_unit.name}」没有资源消耗数据，无法参战"
+        if cost_b <= 0:
+            return f"⚠️ 兵种「{blue_unit.name}」没有资源消耗数据，无法参战"
 
-    lcm_budget = approx_lcm_budget(cost_a, cost_b, budget)
+        lcm_budget = approx_lcm_budget(cost_a, cost_b, budget)
 
-    red_count = max(1, lcm_budget // cost_a)
-    blue_count = max(1, lcm_budget // cost_b)
+        red_count = max(1, lcm_budget // cost_a)
+        blue_count = max(1, lcm_budget // cost_b)
 
     red = Lineup(slots=[UnitSlot(unit=red_unit, count=red_count)])
     blue = Lineup(slots=[UnitSlot(unit=blue_unit, count=blue_count)])
 
-    logger.info(
-        "自选阵容：LCM预算 %d → %d，🔴 %s ×%d (%d) vs 🔵 %s ×%d (%d) 差=%d",
-        budget, lcm_budget,
-        red_unit.name, red_count, red.total_cost,
-        blue_unit.name, blue_count, blue.total_cost,
-        abs(red.total_cost - blue.total_cost),
-    )
+    if unit_counts is not None:
+        logger.info(
+            "自选阵容：固定数量 🔴 %s ×%d (%d) vs 🔵 %s ×%d (%d)",
+            red_unit.name, red_count, red.total_cost,
+            blue_unit.name, blue_count, blue.total_cost,
+        )
+    else:
+        logger.info(
+            "自选阵容：LCM预算 %d → %d，🔴 %s ×%d (%d) vs 🔵 %s ×%d (%d) 差=%d",
+            budget, lcm_budget,
+            red_unit.name, red_count, red.total_cost,
+            blue_unit.name, blue_count, blue.total_cost,
+            abs(red.total_cost - blue.total_cost),
+        )
 
     _apply_age_to_lineup(red, age)
     _apply_age_to_lineup(blue, age)
