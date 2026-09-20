@@ -135,8 +135,26 @@ docker compose ps                         # 4 个容器 Up，postgres healthy
 ### 清理
 
 ```bash
-docker image prune -f     # 清理悬挂镜像层
+docker image prune -f     # 清理悬挂（dangling）镜像层
 ```
+
+⚠️ **跑这条之前先看一眼有没有"没名字的基础镜像"**：
+
+```bash
+docker images -f dangling=true
+```
+
+`python:3.11-slim` 一旦被上游更新替代，旧的那块就会失去 tag、变成 dangling，
+正好被 `prune -f` 当垃圾删掉。删掉的后果不是"少占点磁盘"，而是
+**下一次部署又要从头重建一遍**（base 重新下载 → digest 变化 → apt / uv 依赖全层失效，
+十几分钟，见 2026-09-20 那次部署）。所以：
+
+- 列出来是空的 → 随便跑 `prune -f`，什么也不会删；
+- 列表里出现 `python:3.11-slim`（或其它基础镜像）→ **先别删**，直接跳过清理。
+  磁盘不紧张（40G 盘日常剩 10G 以上）时，不清理完全没问题。
+
+> 根因修在 `Dockerfile`：base 已固定 digest。这里仍是保险丝——
+> 万一哪天有人把 digest 改回浮动 tag，这条注解能提醒他别顺手删掉缓存。
 
 **不需要**清理任何中转目录——git 流程不产生中转目录。
 
@@ -372,3 +390,4 @@ DB 大小                   9687 kB
 | 日期 | 变更 |
 |---|---|
 | 2026-08-28 | **同步方式改为 Git**。`/root/qqbot` 转为 git 工作区（`git init` + `origin`/`mirror` 双 remote + `fetch`/`reset --hard`）。废弃 `deploy_project_preparation` 上传 + `cp` 清单 + `.deploy_staging` 中转目录的旧流程。合并「日常部署」与「根级文件部署」为单一流程。新增 §4 版本管理、§5 密钥维护、§7 数据备份。 |
+| 2026-09-20 | `Dockerfile` 的 base 改为**固定 digest**：此前用浮动 tag `python:3.11-slim`，上游一发新版就让 apt / uv 依赖所有层缓存失效，一次「只改了 3 行 Python」的部署耗时约 10 分钟（其中 `pip install uv` 单独跑了 7 分钟）。§1 补充告警：`docker image prune -f` 会删掉失去 tag 的基础镜像，从而把下一次部署再次推入全量重建，清理前先 `docker images -f dangling=true` 确认。 |
