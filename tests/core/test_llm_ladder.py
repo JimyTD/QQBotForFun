@@ -6,6 +6,7 @@
 
 from __future__ import annotations
 
+import asyncio
 import time
 from typing import Any
 from unittest.mock import patch
@@ -199,6 +200,35 @@ def test_classify_503_is_transient() -> None:
 
 def test_classify_timeout_is_transient() -> None:
     assert llm._classify_exception(TimeoutError()) == llm.KIND_TRANSIENT
+
+
+def test_classify_api_timeout_error_is_transient() -> None:
+    """回归：openai SDK 的 `APITimeoutError` 不是 `asyncio.TimeoutError`。
+
+    2026-09-18 生产事故（06:21:55 那次「锁刃龙」）：超时落到兜底 `KIND_FATAL`，
+    于是 ① 被当成不可重试 → 直接降档；② `qwen3.5-plus` 被冷却 **600 秒**，
+    一次超时废掉最优档十分钟。必须按类名识别。
+    """
+
+    class APITimeoutError(Exception):  # 模拟 SDK 的包装类（真实类名一致）
+        pass
+
+    exc = APITimeoutError("Request timed out.")
+    assert llm._is_timeout_error(exc)
+    assert llm._classify_exception(exc) == llm.KIND_TRANSIENT
+
+
+def test_classify_httpx_timeout_family_is_transient() -> None:
+    assert llm._is_timeout_error(llm.httpx.ReadTimeout("read timeout"))
+    assert llm._is_timeout_error(llm.httpx.ConnectTimeout("connect timeout"))
+    assert llm._classify_exception(llm.httpx.ReadTimeout("read timeout")) == llm.KIND_TRANSIENT
+
+
+def test_classify_400_with_timeout_word_stays_fatal() -> None:
+    """别误伤：参数错误里带 "timeout" 字样仍是 fatal，不能当成超时。"""
+    exc = _FakeAPIError(400, "invalid timeout parameter")
+    assert not llm._is_timeout_error(exc)
+    assert llm._classify_exception(exc) == llm.KIND_FATAL
 
 
 def test_classify_falls_back_to_status_in_message() -> None:
@@ -471,6 +501,130 @@ def test_parse_chain_accepts_inline_list() -> None:
         "s", {"chain": ["zhipu:a", "zhipu:b"]}, _providers("zhipu")
     )
     assert [s.model for s in slots] == ["a", "b"]
+
+
+# ---------------------------------------------------------------------
+# 场景级 retries / 总预算 / 截断标记（2026-09-18 群聊等待过久事故的护栏）
+# ---------------------------------------------------------------------
+class _ScriptedCompletions:
+    """比 `_FakeCompletions` 更自由的替身：可注入延迟与 finish_reason。"""
+
+    def __init__(
+        self,
+        *,
+        calls: list[str],
+        delay: float = 0.0,
+        error: Exception | None = None,
+        content: str = "ok",
+        finish_reason: str | None = None,
+        max_tokens: int = 2048,
+    ) -> None:
+        self._calls = calls
+        self._delay = delay
+        self._error = error
+        self._content = content
+        self._finish_reason = finish_reason
+        self._max_tokens = max_tokens
+
+    async def create(self, **kwargs: Any) -> Any:
+        self._calls.append(kwargs["model"])
+        if self._delay:
+            await asyncio.sleep(self._delay)
+        if self._error is not None:
+            raise self._error
+        choice = type(
+            "C",
+            (),
+            {
+                "message": type("M", (), {"content": self._content})(),
+                "finish_reason": self._finish_reason,
+            },
+        )()
+        usage = type(
+            "U",
+            (),
+            {
+                "prompt_tokens": 10,
+                "completion_tokens": self._max_tokens,
+                "total_tokens": 10 + self._max_tokens,
+            },
+        )()
+        return type("R", (), {"choices": [choice], "usage": usage})()
+
+
+def _client_with(completions: Any) -> Any:
+    return type("C", (), {"chat": type("Ch", (), {"completions": completions})()})()
+
+
+@pytest.mark.asyncio
+async def test_scene_retries_overrides_global_defaults() -> None:
+    """场景级 retries=1 覆盖全局 3：群聊场景不再重复烧用户的时间。"""
+    conf = _make_config([("tokenhub", "m1")], retries=3)
+    conf.scenes["default"].retries = 1
+
+    calls: list[str] = []
+    clients = {"tokenhub": _FakeClient([429, "ok"], calls)}
+    p_conf, p_client = _patch_llm(conf, clients)
+    with p_conf, p_client, pytest.raises(LLMError):
+        await _chat()
+
+    assert calls == ["m1"]
+
+
+@pytest.mark.asyncio
+async def test_chat_gives_up_once_total_budget_is_spent() -> None:
+    """总预算耗尽后不再尝试后续档。
+
+    只压单次超时挡不住累积：链上 12 档 × 15s 仍是 3 分钟。
+    """
+    conf = _make_config([("tokenhub", "m1"), ("zhipu", "m2")])
+    scene = conf.scenes["default"]
+    scene.timeout_seconds = 0.05
+    scene.total_timeout_seconds = 0.1
+
+    calls: list[str] = []
+    slow = _ScriptedCompletions(
+        calls=calls, delay=0.25, error=TimeoutError("Request timed out.")
+    )
+    clients = {"tokenhub": _client_with(slow), "zhipu": _client_with(slow)}
+
+    p_conf, p_client = _patch_llm(conf, clients)
+    with p_conf, p_client, pytest.raises(LLMError):
+        await _chat()
+
+    # 第一档超时耗时已超预算 → 第二档不该再被打一次
+    assert calls == ["m1"]
+
+
+@pytest.mark.asyncio
+async def test_chat_flags_truncated_output() -> None:
+    """`finish_reason == length` 必须被标记 —— 别再静默给用户半句话。"""
+    conf = _make_config([("tokenhub", "m1")])
+    calls: list[str] = []
+    truncated = _ScriptedCompletions(
+        calls=calls, content="半句话", finish_reason="length"
+    )
+    clients = {"tokenhub": _client_with(truncated)}
+
+    p_conf, p_client = _patch_llm(conf, clients)
+    with p_conf, p_client:
+        resp = await _chat()
+
+    assert resp.truncated is True
+
+
+@pytest.mark.asyncio
+async def test_chat_marks_normal_output_not_truncated() -> None:
+    conf = _make_config([("tokenhub", "m1")])
+    calls: list[str] = []
+    normal = _ScriptedCompletions(calls=calls, content="完整回答", finish_reason="stop")
+    clients = {"tokenhub": _client_with(normal)}
+
+    p_conf, p_client = _patch_llm(conf, clients)
+    with p_conf, p_client:
+        resp = await _chat()
+
+    assert resp.truncated is False
 
 
 # ---------------------------------------------------------------------

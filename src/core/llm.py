@@ -60,6 +60,9 @@ class LLMResponse:
     chain_index: int = 0
     #: `chain_index > 0` 的便捷标记。
     degraded: bool = False
+    #: 输出撞上 `max_tokens` 被硬截断（`finish_reason == "length"`）。
+    #: 调用方可据此提醒用户，而不是让用户看半句话。
+    truncated: bool = False
 
     def json(self) -> Any:
         """解析内容为 JSON；失败抛 LLMJSONParseError。"""
@@ -102,6 +105,14 @@ class _SceneConf:
     max_tokens: int = 1024
     json_mode_default: bool = False
     timeout_seconds: float | None = None
+    #: 覆盖全局 `defaults.retries`。None = 用全局值。
+    #: 群聊场景设成 1：单次超时最坏等待 = timeout_seconds，
+    #: 而不是 timeout_seconds × retries（45×3 会让用户干等两分多钟）。
+    retries: int | None = None
+    #: 整次调用的**总预算**（含全部降档尝试）。None = 不限。
+    #: 链上有 12 档，只压单次超时挡不住累积：12 × 15s 仍是 3 分钟。
+    #: 超预算立即停手并抛错，让调用方走降级路径（如返回搜索摘要）。
+    total_timeout_seconds: float | None = None
 
     @property
     def provider(self) -> str:
@@ -268,6 +279,12 @@ def _load_config() -> _Config:
             timeout_seconds=(
                 float(block["timeout_seconds"]) if "timeout_seconds" in block else None
             ),
+            retries=int(block["retries"]) if "retries" in block else None,
+            total_timeout_seconds=(
+                float(block["total_timeout_seconds"])
+                if "total_timeout_seconds" in block
+                else None
+            ),
         )
 
     if "default" not in conf.scenes:
@@ -301,6 +318,31 @@ _BASE_COOL_SECONDS: dict[str, float] = {
     KIND_FATAL: 10 * 60.0,
     KIND_UNAVAILABLE: 24 * 3600.0,
 }
+
+#: 超时异常的类名。SDK / httpx 各自包装，不能只判断 `asyncio.TimeoutError`。
+_TIMEOUT_CLASS_NAMES = frozenset(
+    {"APITimeoutError", "TimeoutException", "ReadTimeout", "ConnectTimeout"}
+)
+
+
+def _is_timeout_error(exc: Exception) -> bool:
+    """识别超时，作为**可重试的瞬态**处理。
+
+    ⚠️ 只判断 ``asyncio.TimeoutError`` 是不够的：openai SDK 把超时包装成
+    ``APITimeoutError``（继承 ``APIConnectionError``，**不是** ``asyncio.TimeoutError``），
+    httpx 抛的则是 ``ReadTimeout`` 等。
+
+    漏判的后果（2026-09-18 生产日志实锤）：超时落到函数末尾的兜底 ``KIND_FATAL``，
+    于是 ①被当成不可重试 → 直接降档；②该档被冷却 **600 秒**，一次超时废掉最优模型
+    十分钟。配合场景级 ``retries`` 控制重试次数，超时应当是"换个档再试"而非"封档"。
+    """
+    if isinstance(exc, (asyncio.TimeoutError, httpx.TimeoutException)):
+        return True
+    if any(cls.__name__ in _TIMEOUT_CLASS_NAMES for cls in type(exc).__mro__):
+        return True
+    # 最后兜底：SDK 的超时文案是固定的 "Request timed out."（实测），不与其他错误歧义。
+    return "timed out" in str(exc).lower()
+
 
 #: 额度耗尽的起步冷却与封顶（指数递增：6h → 12h → 24h）。
 #: 封顶而非永久封禁，是为了留一条自愈路径——万一是临时 402 或额度被补发。
@@ -376,7 +418,7 @@ def _classify_exception(exc: Exception) -> str:
 
     if "401006" in msg or "endpoint is inactive" in low:
         return KIND_TRANSIENT
-    if isinstance(exc, asyncio.TimeoutError):
+    if _is_timeout_error(exc):
         return KIND_TRANSIENT
 
     status = getattr(exc, "status_code", None)
@@ -674,8 +716,23 @@ async def chat(
 
     last_err: Exception | None = None
     skipped: list[str] = []
+    # 总预算：跨全部降档尝试计时。链上有 12 档，只压单次超时挡不住累积。
+    deadline = (
+        time.monotonic() + sc.total_timeout_seconds
+        if sc.total_timeout_seconds
+        else None
+    )
 
     for slot_index, slot in enumerate(sc.chain):
+        if deadline is not None and time.monotonic() >= deadline:
+            logger.warning(
+                f"[llm] scene={scene} 已达总预算 {sc.total_timeout_seconds:.0f}s，"
+                f"停止降档（已试 {slot_index} 档）"
+            )
+            last_err = LLMTimeoutError(
+                f"scene '{scene}' 超出总预算 {sc.total_timeout_seconds:.0f}s"
+            )
+            break
         if not _slot_available(slot):
             skipped.append(slot.key)
             continue
@@ -691,6 +748,7 @@ async def chat(
                 json_mode=eff_json,
                 timeout=timeout,
                 defaults=conf.defaults,
+                deadline=deadline,
             )
         except LLMJSONParseError as e:
             # 输出不合法不是 provider 的故障 —— 不打冷却，仅降档再试。
@@ -725,6 +783,7 @@ async def _call_slot(
     json_mode: bool,
     timeout: float | None,
     defaults: _Defaults,
+    deadline: float | None = None,
 ) -> LLMResponse:
     """在**单档内**完成调用（含退避重试与 JSON 校验）。
 
@@ -734,10 +793,14 @@ async def _call_slot(
     provider_conf = conf.providers[slot.provider]
     client = _get_client(slot.provider)
     eff_to = timeout or scene.timeout_seconds or provider_conf.timeout_seconds
+    if deadline is not None:
+        # 单次调用不得突破总预算：剩下的余量留给后面的降档档位。
+        eff_to = min(eff_to, max(1.0, deadline - time.monotonic()))
     quirks = _MODEL_QUIRKS.get(slot.model, {})
     call_temp = float(quirks.get("temperature", temperature))
     extra_body = _extra_body_for(slot.model)
-    attempts = max(1, defaults.retries)
+    # 场景级 retries 优先：交互式场景（群聊）靠它把最坏等待压到 timeout × 1。
+    attempts = max(1, scene.retries if scene.retries is not None else defaults.retries)
     last_err: Exception | None = None
 
     for attempt in range(1, attempts + 1):
@@ -778,6 +841,14 @@ async def _call_slot(
         latency = int((time.monotonic() - start) * 1000)
         choice = completion.choices[0]
         content = (choice.message.content or "").strip()
+        # finish_reason 以前从未被读取：输出撞上 max_tokens 时会静默截断，
+        # 用户拿到半句话而日志里看不出任何异常。这里补上留痕 + 标记。
+        truncated = getattr(choice, "finish_reason", None) == "length"
+        if truncated:
+            logger.warning(
+                f"[llm] scene={scene_name} slot={slot.key} "
+                f"输出撞 max_tokens={max_tokens} 被截断"
+            )
 
         if json_mode and not _is_valid_json(content):
             if attempt >= attempts:
@@ -807,6 +878,7 @@ async def _call_slot(
             provider=slot.provider,
             chain_index=slot_index,
             degraded=slot_index > 0,
+            truncated=truncated,
         )
 
     # 走到这里说明档内重试耗尽（只可能是可重试类错误）

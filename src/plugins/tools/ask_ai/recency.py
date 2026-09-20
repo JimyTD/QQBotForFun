@@ -13,6 +13,17 @@ _RECENCY = re.compile(
     r"(最近|近日|近期|现在|目前|正在|最新|今天|今日|刚出|新开)"
 )
 
+#: 话题本身「时效敏感」的信号词：字面没有「最近/今天」，但答案随时间变。
+#: 例：「原神7.1版本卡池信息」——不加时间锚点会搜到几年前的攻略，
+#: 而 prompt 里「旧年版本直接忽略」的规则在材料不带年份时无从生效。
+_TIMELY_TOPIC = re.compile(
+    r"(卡池|池子|抽卡|活动|版本|更新|上线|开服|内测|公测|测试服|"
+    r"发售|上市|开卖|开售|预售|"
+    r"赛季|赛事|赛程|比赛|排行|榜单|排行榜|"
+    r"优惠|折扣|特惠|历史最低|价格|售价|票价|"
+    r"票房|销量|流水|阵容|爆料|前瞻|公告|预告|返场|复刻)"
+)
+
 _NEWS_DAY = re.compile(r"(今天|今日|最新).{0,6}(新闻|头条|资讯)")
 
 _FILLER = re.compile(
@@ -36,11 +47,24 @@ def today_cn(today: date | None = None) -> date:
 
 
 def is_recency_question(question: str) -> bool:
-    return bool(_RECENCY.search(question.strip()))
+    """问句是否「时效相关」。
+
+    两类都算：① 带「最近 / 今天 / 最新」等时效词；
+    ② 话题本身时效敏感（卡池 / 版本 / 优惠 / 赛程…）。
+
+    第②类以前被漏掉，导致「原神7.1版本卡池信息」原样去搜、
+    也跳过了过期材料过滤 —— 这是搜到旧攻略的直接原因。
+    """
+    q = question.strip()
+    return bool(_RECENCY.search(q)) or bool(_TIMELY_TOPIC.search(q))
 
 
 def rewrite_search_query(question: str, today: date | None = None) -> str:
-    """把「最近/今天」换成带日期的搜索词。非时效题原样返回。"""
+    """给时效相关问句补上时间锚点，非时效题原样返回。
+
+    - 带「今天/最新」+ 新闻类 → 锚到「YYYY年M月D日」
+    - 其余（含时效敏感话题）→ 锚到「YYYY年M月」
+    """
     q = question.strip()
     if not is_recency_question(q):
         return q

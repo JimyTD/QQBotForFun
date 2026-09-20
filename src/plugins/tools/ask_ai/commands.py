@@ -59,6 +59,8 @@ async def _(matcher: Matcher, _event: GroupMessageEvent, args: Message = Command
     footer = [f"Q: {question[:30]}{'…' if len(question) > 30 else ''}"]
     if not result.used_search:
         footer.append("未联网，仅凭已有知识")
+    if result.truncated:
+        footer.append("⚠️ 篇幅到了上限被截断，可追问细节")
 
     await matcher.finish(
         render.text_card("AI", body, emoji="🔍", footer=footer)

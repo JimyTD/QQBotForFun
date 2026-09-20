@@ -47,4 +47,6 @@ class WebSearchCLIAdapter:
             body += "\n\n📎 来源：\n" + "\n".join(result.sources)
         if not result.used_search:
             body += "\n\n（未联网，仅凭已有知识）"
+        if result.truncated:
+            body += "\n\n（篇幅到了上限被截断，可追问细节）"
         box("🔍 AI", body, color=C.CYAN)

@@ -177,8 +177,15 @@ scenes:
       - tokenhub:minimax-m2.7
       - zhipu:glm-4-flash-250414
     temperature: 0.3
-    max_tokens: 1536
-    timeout_seconds: 45
+    # 2048 才装得下 prompt 要求的 200–700 字（原文 1536 常被打满后硬截断）
+    max_tokens: 2048
+    # 群聊交互：单次 15s + 不重试 → 单档最坏 15s 就降档。
+    # 原 45s × retries 3 = 135s，实测让用户干等 153 秒（2026-09-18 日志）。
+    timeout_seconds: 15
+    retries: 1
+    # 硬闸：含全部降档尝试在内，25s 仍无结果就交回调用方走摘要降级。
+    # 不设的话链上 12 档 × 15s 仍可能累积到 3 分钟。
+    total_timeout_seconds: 25
 
   ask_ai:
     chain:
@@ -195,8 +202,11 @@ scenes:
       - tokenhub:minimax-m2.7
       - zhipu:glm-4-flash-250414
     temperature: 0.7
-    max_tokens: 1536
-    timeout_seconds: 45
+    # 与 web_search 一致：装得下 200–700 字，且不拖长用户等待
+    max_tokens: 2048
+    timeout_seconds: 15
+    retries: 1
+    total_timeout_seconds: 25
 
   finance_report:
     chain:

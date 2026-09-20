@@ -30,8 +30,29 @@ class TestRewrite:
     def test_encyclopedia_unchanged(self) -> None:
         assert rewrite_search_query("量子力学是什么", today=_TODAY) == "量子力学是什么"
 
+    def test_timely_topic_gets_anchor_without_recency_word(self) -> None:
+        """回归：字面没有「最近」，但话题随时间变（版本 / 卡池）也要锚定当下。
+
+        生产日志里「原神7.1版本卡池信息」原样去搜 → 命中几年前的旧攻略，
+        而 prompt 的「旧年版本直接忽略」在材料不带年份时无从生效。
+        """
+        q = rewrite_search_query("原神7.1版本卡池信息", today=_TODAY)
+        assert "2026年8月" in q
+        assert "原神7.1版本卡池信息" in q
+
+        q2 = rewrite_search_query("gta6各平台发售时间", today=_TODAY)
+        assert "2026年8月" in q2
+
     def test_recency_flag(self) -> None:
         assert is_recency_question("鸣潮最近开了什么活动")
+        assert not is_recency_question("量子力学是什么")
+
+    def test_timely_topic_flag(self) -> None:
+        assert is_recency_question("原神7.1版本卡池信息")
+        assert is_recency_question("gta6各平台发售时间")
+        assert is_recency_question("steam 秋季特惠")
+        # 无关话题不能误伤
+        assert not is_recency_question("Python怎么读文件")
         assert not is_recency_question("量子力学是什么")
 
     def test_rewritten_skips_baike(self) -> None:
