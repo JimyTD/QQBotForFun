@@ -10,6 +10,7 @@ from __future__ import annotations
 
 import random
 import re
+from datetime import datetime, timedelta, timezone
 
 from nonebot import on_command
 from nonebot.adapters.onebot.v11 import GroupMessageEvent, Message
@@ -23,6 +24,37 @@ from core.errors import GameAlreadyRunningError
 from nonebot import logger
 
 
+# 北京时间（服务器容器是 UTC，展示给群里的时刻要换算）
+_CST = timezone(timedelta(hours=8))
+
+
+def _game_label(game_id: str) -> str:
+    """game_id → 中文名（找不到就退回 id），让提示里出现「海龟汤」而不是 turtle_soup。"""
+    try:
+        return game_base.get_game_class(game_id).name
+    except Exception:  # noqa: BLE001
+        return game_id
+
+
+def _fmt_started(started: datetime) -> str:
+    """UTC 的 started_at → 北京时间的 MM-DD HH:MM。"""
+    return started.replace(tzinfo=timezone.utc).astimezone(_CST).strftime("%m-%d %H:%M")
+
+
+def _fmt_elapsed(started: datetime) -> str:
+    """已经跑了多久（人话）。"""
+    secs = int((datetime.utcnow() - started).total_seconds())
+    if secs < 60:
+        return "不到 1 分钟"
+    mins = secs // 60
+    if mins < 60:
+        return f"{mins} 分钟"
+    hours = mins // 60
+    if hours < 24:
+        return f"{hours} 小时 {mins % 60} 分钟"
+    return f"{hours // 24} 天 {hours % 24} 小时"
+
+
 async def _launch_game(
     matcher: Matcher,
     group_id: int,
@@ -34,8 +66,21 @@ async def _launch_game(
     """通用开局辅助：检查冲突 → 调 create_and_start。"""
     runner = game_base.get_runner_by_group(group_id)
     if runner is not None:
+        ctx = runner.ctx
+        # 这条提示以前**一行日志都没有**：线上报"本群已有进行中的 xxx"时，
+        # 事后完全看不出那是哪一局、什么时候开的、是不是已经结束却没清干净的死局
+        # （`ended=True` = 已经走过 end()，正常不该还挂在注册表里）。
+        # 有了这两个字段，看日志一眼就能判定是"真在玩"还是"僵尸占群"。
+        logger.warning(
+            f"[launcher] 拒绝开局 game={game_id} group={group_id} "
+            f"initiator={initiator_id}：本群被占用 "
+            f"occupied_game={ctx.game_id} sid={ctx.session_id} "
+            f"started={ctx.started_at.isoformat()} ended={runner._ended}"
+        )
         await matcher.finish(
-            f"⚠️ 本群已有进行中的「{runner.ctx.game_id}」。"
+            f"⚠️ 本群已有进行中的「{_game_label(ctx.game_id)}」。\n"
+            f"   局号 {ctx.session_id} · 开始于 {_fmt_started(ctx.started_at)}"
+            f"（已 {_fmt_elapsed(ctx.started_at)}）\n"
             "先 @我 结束 终止当前游戏。"
         )
         return
@@ -53,6 +98,7 @@ async def _launch_game(
             config=config,
         )
     except GameAlreadyRunningError as e:
+        logger.warning(f"[launcher] create_and_start 拒绝 game={game_id} group={group_id}: {e}")
         await matcher.finish(f"⚠️ {e}")
     except Exception as e:  # noqa: BLE001
         logger.exception(f"[launcher] launch failed game={game_id}: {e}")
@@ -493,6 +539,11 @@ async def _(matcher: Matcher, event: GroupMessageEvent) -> None:
         return
 
     ok = await game_base.abort_by_group(group_id)
+    # 「我明明结束过，怎么还被占着」这类问题，以前日志里查不到任何痕迹
+    logger.info(
+        f"[launcher] 结束 group={group_id} by={event.user_id} -> "
+        f"{'已终止' if ok else '本群无对局'}"
+    )
     if ok:
         await matcher.finish("🏳 本局游戏已终止。")
     else:

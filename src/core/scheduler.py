@@ -138,6 +138,22 @@ async def start_turn_timer(
     async def _run() -> None:
         try:
             await asyncio.sleep(seconds)
+            # 超时已到：**先把自己从登记表摘掉**，再回调。
+            #
+            # 不摘会出线上事故（真实案例：海龟汤 session EF8WHU，09-18 07:53
+            # 开局，09-19 07:53 超时）：超时回调最终会走到 `GameRunner.end()`，
+            # 而 end() 的第一步清理就是 `cancel_session_timers(session_id)`
+            # —— 登记表里恰好有**正在执行回调的这个 task 自己**，等于自己
+            # cancel 自己。之后的第一个真挂起点（写 DB）就会抛 CancelledError：
+            #   * `game_session` 停在 status='active'，永远不落 ended；
+            #   * `_runner_by_group` 没摘 → 该群被永久占死：开任何游戏都提示
+            #     "本群已有进行中的 xxx"，而 `@我 提示` 之类仍能正常反应，
+            #     因为 session 侧的路由已经先注销了（两个注册表状态不一致）；
+            #   * CancelledError 被下面的 except 静默吞掉，**日志里一行都没有**。
+            # 只能重启 bot 才能恢复。
+            me = asyncio.current_task()
+            if me is not None:
+                _turn_timers.get(session_id, set()).discard(me)
             await on_timeout()
         except asyncio.CancelledError:
             pass

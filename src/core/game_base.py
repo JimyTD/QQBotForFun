@@ -299,20 +299,45 @@ class GameRunner:
         await self.end(EndReason.TIMEOUT)
 
     async def end(self, reason: EndReason) -> None:
-        if self._ended:
-            return
-        self._ended = True
+        """结束本局（幂等）。
+
+        两条不变量，缺一个就会出线上事故：
+
+        1. **注册表必须在任何 await 之前摘掉**。以前四步收尾串在 finally 里、
+           `_runner_by_group.pop` 放最后，而 `_ended` 在开头就置了 True：
+           只要中途一步抛异常（DB 抖动、任务被取消），这一局就会**永久占住这个群**
+           ——之后开任何游戏都提示「本群已有进行中的 xxx」，而 `@我 结束` 走进
+           `end()` 见 `_ended` 已 True 直接 return，却仍然回「本局已终止」，
+           用户以为收掉了，实际永远开不了新局，只能重启 bot。
+        2. **on_end 只跑一次**：重复触发（玩家手动结束 + 超时定时器同时到达）
+           不能重复播报结算卡片和汤底。
+        """
         ctx = self.ctx
-        try:
-            await self.game.on_end(ctx, reason)
-        except Exception as e:  # noqa: BLE001
-            logger.exception(f"[game] on_end error sid={ctx.session_id}: {e}")
-        finally:
-            await scheduler.cancel_session_timers(ctx.session_id)
-            await session.unregister_game_session(ctx.session_id)
-            await _persist_session(ctx, status="ended", reason=reason)
-            _runners.pop(ctx.session_id, None)
-            _runner_by_group.pop(ctx.group_id, None)
+        first_end = not self._ended
+        self._ended = True
+
+        # 1. 先摘注册表：这一步本身不会失败，群立刻被释放
+        _runners.pop(ctx.session_id, None)
+        _runner_by_group.pop(ctx.group_id, None)
+
+        # 2. 生命周期钩子只跑一次
+        if first_end:
+            try:
+                await self.game.on_end(ctx, reason)
+            except Exception as e:  # noqa: BLE001
+                logger.exception(f"[game] on_end error sid={ctx.session_id}: {e}")
+
+        # 3. 收尾：三步各自兜底，互不连坐（用工厂延迟建协程，中途被打断也不留
+        #    "coroutine was never awaited" 告警）
+        for label, factory in (
+            ("cancel timers", lambda: scheduler.cancel_session_timers(ctx.session_id)),
+            ("unregister session", lambda: session.unregister_game_session(ctx.session_id)),
+            ("persist ended", lambda: _persist_session(ctx, status="ended", reason=reason)),
+        ):
+            try:
+                await factory()
+            except Exception as e:  # noqa: BLE001
+                logger.exception(f"[game] {label} failed sid={ctx.session_id}: {e}")
 
     async def persist(self) -> None:
         """游戏在关键节点手动调用以保存状态。"""
@@ -330,7 +355,24 @@ def get_runner(session_id: str) -> GameRunner | None:
 
 
 def get_runner_by_group(group_id: int) -> GameRunner | None:
-    return _runner_by_group.get(group_id)
+    """取本群活跃对局；顺手做一次**僵尸自愈**。
+
+    `_ended=True` 说明这局已经走过 `end()`，而 `end()` 第一步就是摘注册表，
+    所以正常绝不会还留在这里。能碰到说明清理链出过岔子（或历史残留）——
+    与其让这个群被永久占死、只能重启 bot，不如就地释放并留一条告警。
+    """
+    r = _runner_by_group.get(group_id)
+    if r is None:
+        return None
+    if r._ended:
+        logger.warning(
+            f"[game] 僵尸对局自愈: group={group_id} game={r.ctx.game_id} "
+            f"sid={r.ctx.session_id}（已结束却仍在注册表，就地释放）"
+        )
+        _runner_by_group.pop(group_id, None)
+        _runners.pop(r.ctx.session_id, None)
+        return None
+    return r
 
 
 def list_runners() -> list[GameRunner]:
@@ -397,6 +439,10 @@ async def abort_by_group(group_id: int) -> bool:
     if r is None:
         return False
     await r.end(EndReason.ABORTED)
+    # 双保险：`end()` 内部已经摘过，这里再摘一次。
+    # 否则一旦有历史残留（修复前产生的僵尸 runner），`@我 结束` 会回一句
+    # "本局游戏已终止"却清不掉，用户永远开不了新局。
+    _runner_by_group.pop(group_id, None)
     return True
 
 
