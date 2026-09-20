@@ -66,6 +66,8 @@ provider:
 - 凭据位置（**全部在仓库外，永不入 git**）：连接配置 `~/.codebuddy/ssh-mcp-config.json`；私钥 `~/.ssh/qqbot_deploy`；MCP 注册在 CodeBuddy 全局设置 `codebuddy_mcp_settings.json`。
 - **引导通道**：安装/修复 SSH 公钥必须走非 SSH 通道。首选 `tencent-lighthouse` 的 `run_command`，兜底是腾讯云控制台 OrcaTerm。
 - exec 模式下每次调用是**独立会话**，不要依赖 `cd` 跨调用保持；用 `directory` 参数或绝对路径。
+- **新开发机接入** → 见 `docs/dev-machine-setup.md`，一键脚本 `scripts/setup_dev_machine.ps1`（幂等，含命令黑名单的仓库内单一来源）。
+- ⚠️ 当前会话看不到刚注册的 MCP 是**正常现象**（工具清单是会话启动快照），开新会话即可；应急可用仓库里的 CLI 桥 `node scripts/mcp_call.mjs <server> <tool> <argsJson>`（`--list-servers` 可列出已注册的 server）。
 
 **Git remote：**
 
