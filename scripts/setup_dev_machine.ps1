@@ -112,6 +112,14 @@ ssh-keygen -t ed25519 -f "$KeyPath" -C "$comment" -N "" < nul
     Info "generated key: $KeyPath"
 }
 
+# If only the private key was copied over from another machine (no .pub sibling),
+# derive the public key from it so a single-file copy is enough.
+if (-not (Test-Path "$KeyPath.pub")) {
+    Info 'no .pub file next to the private key - deriving it'
+    & ssh-keygen -y -f $KeyPath | Set-Content -Path "$KeyPath.pub" -Encoding ASCII
+    if (-not (Test-Path "$KeyPath.pub")) { Fail "could not derive the public key from $KeyPath" }
+}
+
 $pubKey = (Get-Content "$KeyPath.pub" -Raw).Trim()
 try { $keyFingerprint = (& ssh-keygen -l -f "$KeyPath.pub" 2>&1) -join ' ' } catch { $keyFingerprint = '(unknown)' }
 Info "public key fingerprint: $keyFingerprint"
