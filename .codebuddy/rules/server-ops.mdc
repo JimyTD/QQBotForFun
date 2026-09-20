@@ -38,7 +38,9 @@ provider:
 - `/root/qqbot` 是**真实目录 + git 工作区**，生产唯一真身，**永久存在，永不删除、永不重命名、永不做 `ln -sfn`**。
 - 部署**不再需要任何中转目录**。git 直接在真身目录 fetch/reset。
 - 如果在 `/root/` 发现 `QQBotForFun_*` 或 `.deploy_staging` → 旧流程遗留或异常，**先报告用户询问，禁止直接删除**。
-- **任何 `rm -rf` 目标位于 `/root/` 下、看起来像项目目录 → 先 `ls -la` 确认、向用户报告，禁止自行删除**。`/root/` 下存在其他项目（SilentWereWolf），其中 `SilentWereWolf_20260827145231` 是**正在运行的生产目录**，`silentwerewolf-secrets` 是其密钥目录，均不可动。
+- **本机是共用服务器**：`docker compose ls` 显示两个项目并存 —— `qqbot`（bot :8080 / napcat :6099 / postgres / redis）与 `silentwerewolf`（nginx :8081 / app）。**任何全局性 docker 操作都会波及另一个项目**（`docker system prune`、`docker compose down`、重启 docker daemon），只操作 `qqbot` 自己的容器。
+- **任何 `rm -rf` 目标位于 `/root/` 下、看起来像项目目录 → 先 `ls -la` 确认、向用户报告，禁止自行删除**。SilentWereWolf 的目录名形如 `/root/SilentWereWolf_<hash|时间戳>`（2026-09-20 实测 8 个，旧上传流程遗留），`silentwerewolf-secrets` 是其密钥目录 —— **全部不可动**。
+- ⚠️ **哪个 SilentWereWolf 目录"正在运行"一律以实测为准，禁止按目录名/时间戳猜**：`docker compose ls` 会直接给出 CONFIG FILES 路径（2026-09-20 实测 `/root/SilentWereWolf_0e801fa/docker-compose.yml`）。本条规则曾误记为 `SilentWereWolf_20260827145231` —— 该目录**仍然存在但不在运行**，"名字对不上就以为不是生产目录"是危险推理。
 
 ## 固定参数（直接使用，不需要查询）
 
