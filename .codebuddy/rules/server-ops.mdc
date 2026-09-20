@@ -69,6 +69,28 @@ provider:
 - **新开发机接入** → 见 `docs/dev-machine-setup.md`，一键脚本 `scripts/setup_dev_machine.ps1`（幂等，含命令黑名单的仓库内单一来源）。
 - ⚠️ 当前会话看不到刚注册的 MCP 是**正常现象**（工具清单是会话启动快照），开新会话即可；应急可用仓库里的 CLI 桥 `node scripts/mcp_call.mjs <server> <tool> <argsJson>`（`--list-servers` 可列出已注册的 server）。
 
+## 服务器安全基线（2026-09-20 起）
+
+**SSH 仅允许密钥登录。** 配置在 `/etc/ssh/sshd_config.d/10-hardening.conf`：
+
+```
+PasswordAuthentication no
+PermitRootLogin prohibit-password
+PubkeyAuthentication yes
+```
+
+- `10-` 前缀不是随便起的：`Include /etc/ssh/sshd_config.d/*.conf` 位于主文件**第 12 行**（早于主文件自己的指令），而 OpenSSH 对同一关键字取**首个**值 —— 所以 drop-in 先于主文件生效，`10-` 又先于 `50-cloud-init.conf`。这样命名**同时扛住 cloud-init 重写**。
+- **改 sshd 的通则**：先 `sshd -t` 校验，再 `systemctl reload ssh`（**不要用 restart** —— reload 失败时旧配置继续生效，restart 会把你锁在门外）。
+- **回滚**（自己进不去时）：`rm /etc/ssh/sshd_config.d/10-hardening.conf && systemctl reload ssh`。
+- **OrcaTerm 是最终兜底通道**：它**完全绕开 sshd**（实测：`last` 里有 orcaterm 会话，但同期 auth.log 里 0 条 sshd `Accepted`），因此不受任何 sshd 配置、端口、防火墙影响。**SSH 配坏了也能靠它进去救**。这也是新开发机装公钥的首选通道。
+- 2026-09-20 实测：`PasswordAuthentication no` 后强制密码登录返回 `Permission denied (publickey)`（报错里已不再列出 `password`）。
+
+**按约定（防君子与外行，非高密级）刻意未做的事**，后来者不必再提：
+
+- CAM 策略资源级收窄（该子账号的 TAT 权限覆盖账号下所有 Lighthouse 实例，可接受）
+- AK/SK 不常驻（`BioTrace/.cursor/mcp.json` + CodeBuddy 全局设置各一份副本，可接受）
+- NapCat WebUI（6099）收窄到固定 IP（用户 IP 不固定，代价大于收益）
+
 **Git remote：**
 
 | remote | URL | 用途 |

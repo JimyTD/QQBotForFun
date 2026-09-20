@@ -84,9 +84,33 @@ GitHub:       https://github.com/JimyTD/QQBotForFun
 - `directory` 参数即工作目录，不必用 `cd X && ...` 拼接。
 - `qqbot-ssh` 启用命令黑名单，命中即拒绝：`git clean -f*`、`git pull`、`docker compose down`、`docker compose (rm|stop|kill) … napcat`、`docker volume rm`、`docker system prune -a`、`rm -rf /…`、`mkfs`、`dd of=/dev/*`、`reboot` 等。**`git reset --hard` 刻意未列入**——部署流程需要它。
 - 凭据位置（**全部在仓库外，永不入 git**）：连接配置 `~/.codebuddy/ssh-mcp-config.json`；私钥 `~/.ssh/qqbot_deploy`；MCP 注册在 CodeBuddy 全局设置 `codebuddy_mcp_settings.json`。
-- **引导通道**：安装/修复 SSH 公钥必须走非 SSH 通道。首选 `tencent-lighthouse` 的 `run_command`，兜底是腾讯云控制台 OrcaTerm。
+- **引导通道**：安装/修复 SSH 公钥必须走非 SSH 通道（不能靠 SSH 装 SSH）。**首选腾讯云控制台的 OrcaTerm 网页终端** —— 它完全绕开 sshd（实测：`last` 里有 orcaterm 会话，但同期 auth.log 里 0 条 sshd `Accepted`），不需要 22 端口、不需要你的 IP 白名单、不需要 AK/SK。需要脚本化时才用 `tencent-lighthouse` 的 `run_command`。
 - exec 模式下每次调用是**独立会话**，不要依赖 `cd` 跨调用保持；用 `directory` 参数或绝对路径。
 - **新开发机接入**（新机器 / 新 agent 怎么拿到这条通道）→ 见 **`docs/dev-machine-setup.md`**，一键脚本 `scripts/setup_dev_machine.ps1`。
+
+---
+
+## 服务器安全基线（2026-09-20 起）
+
+**SSH 仅允许密钥登录**，配置在 `/etc/ssh/sshd_config.d/10-hardening.conf`：
+
+```
+PasswordAuthentication no
+PermitRootLogin prohibit-password
+PubkeyAuthentication yes
+```
+
+- `10-` 前缀是必要的，不是随手起的：`Include /etc/ssh/sshd_config.d/*.conf` 在主文件**第 12 行**（早于主文件自己的指令），而 OpenSSH 对同一关键字取**首个**值 —— 所以 drop-in 先于主文件、`10-` 又先于 `50-cloud-init.conf`，**同时扛住 cloud-init 重写**。
+- 改 sshd 的通则：先 `sshd -t` 校验，再 `systemctl reload ssh`（**不要用 restart** —— reload 失败时旧配置继续生效，restart 会把你锁在门外）。
+- 回滚（自己进不去时）：`rm /etc/ssh/sshd_config.d/10-hardening.conf && systemctl reload ssh`。
+- OrcaTerm 是最终兜底：**完全绕开 sshd**，SSH 配坏了也能靠它进去救。
+- 实测证据（2026-09-20）：改前 `Permission denied (publickey,password)`，改后 `Permission denied (publickey)` —— 密码选项已从报错里消失。
+
+**按已约定口径（"防君子与外行"，非高密级）刻意不做的事** —— 后来者不必再提：
+
+- CAM 策略资源级收窄（该子账号的 TAT 权限覆盖账号下所有 Lighthouse 实例）
+- AK/SK 不常驻（`BioTrace/.cursor/mcp.json` 与 CodeBuddy 全局设置各一份副本）
+- NapCat WebUI（6099）收窄到固定 IP（用户 IP 不固定，代价大于收益）
 
 ---
 
@@ -409,6 +433,7 @@ DB 大小                   9687 kB
 
 | 日期 | 变更 |
 |---|---|
+| 2026-09-20 | **SSH 硬化：仅允许密钥登录**。新增 `/etc/ssh/sshd_config.d/10-hardening.conf`（`PasswordAuthentication no` + `PermitRootLogin prohibit-password`），`10-` 前缀用于压过 `50-cloud-init.conf` 并扛住 cloud-init 重写。实测：改前报错是 `Permission denied (publickey,password)`，改后只剩 `(publickey)`。新增「服务器安全基线」章节，并把 OrcaTerm 确认为**完全绕开 sshd** 的最终兜底通道。 |
 | 2026-09-20 | **执行通道改为两个 MCP**：主力 `qqbot-ssh`（SSH 私钥认证，`~/.ssh/qqbot_deploy`），后备/引导 `tencent-lighthouse`（自建 TAT MCP）。废弃 CodeBuddy 内置 Lighthouse 集成（`execute_command`）——其 OAuth 授权会失效、锚点跨工作区共享，实测 100% 不可用。新增 `qqbot-ssh` 命令黑名单（落实本项目铁律：`git clean -f*`、`git pull`、`docker compose down`、`docker compose (rm|stop|kill) … napcat` 等）。新增「执行通道」章节，部署/验证命令改由该通道执行。另新增 `docs/dev-machine-setup.md`（新开发机接入手册）+ `scripts/setup_dev_machine.ps1`（一键接入，幂等）+ `scripts/mcp_call.mjs`（CLI 桥，绕开会话快照限制）。 |
 | 2026-08-28 | **同步方式改为 Git**。`/root/qqbot` 转为 git 工作区（`git init` + `origin`/`mirror` 双 remote + `fetch`/`reset --hard`）。废弃 `deploy_project_preparation` 上传 + `cp` 清单 + `.deploy_staging` 中转目录的旧流程。合并「日常部署」与「根级文件部署」为单一流程。新增 §4 版本管理、§5 密钥维护、§7 数据备份。 |
 | 2026-09-20 | `Dockerfile` 的 base 改为**固定 digest**：此前用浮动 tag `python:3.11-slim`，上游一发新版就让 apt / uv 依赖所有层缓存失效，一次「只改了 3 行 Python」的部署耗时约 10 分钟（其中 `pip install uv` 单独跑了 7 分钟）。§1 补充告警：`docker image prune -f` 会删掉失去 tag 的基础镜像，从而把下一次部署再次推入全量重建，清理前先 `docker images -f dangling=true` 确认。 |
