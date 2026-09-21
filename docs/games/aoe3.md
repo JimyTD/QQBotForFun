@@ -139,9 +139,24 @@ uv run python scripts/crawler/aoe3_gamedata_parser.py
 
 查询返回 icon 图片 + 文字属性卡：
 
-查询和对比的 icon 在发送前合成黑色底图；斗蛐蛐普通对战的双方 icon 使用 AoE3:DE 的敌我配色：红方 `RGB(230, 40, 40)` / `#E62828`，蓝方 `RGB(75, 75, 230)` / `#4B4BE6`。输出为不透明 PNG，不受 QQ 气泡颜色影响，原始透明素材保持不变；锦标赛对阵图仍使用自身背景。
+查询和对比的 icon 在发送前合成黑色底图；斗蛐蛐普通对战的双方 icon 使用 AoE3:DE 的敌我配色：红方 `RGB(230, 40, 40)` / `#E62828`，蓝方 `RGB(75, 75, 230)` / `#4B4BE6`。输出为不透明 PNG，不受 QQ 气泡颜色影响，原始透明素材保持不变。
 
 颜色来源：[帝国时代官方论坛中的 DE 社区教程](https://forums.ageofempires.com/t/friend-foe-colors-the-tutorial/232827)（2023-06-08）所列的 `playercolors.xml`，取 `friendorfoeenemy` / `friendorfoeself` 的 `color1`，不是小地图的纯红/纯蓝。尚未对照本机最新游戏包复核。
+
+锦标赛使用独立的 **1–8 号玩家色**，不是上面的敌我识别色。抽签后按参赛编号固定分配，对阵图各轮、冠军大图标和最终排名图都按原编号取色；淘汰只变暗、加叉，不因晋级位置或名次换色。图表背景及金银铜排名样式不变。
+
+| 参赛编号 | 玩家色 | RGB | HEX |
+|---|---|---|---|
+| 1 | 蓝 | 45, 45, 245 | `#2D2DF5` |
+| 2 | 红 | 210, 40, 40 | `#D22828` |
+| 3 | 黄 | 224, 224, 30 | `#E0E01E` |
+| 4 | 紫 | 145, 15, 243 | `#910FF3` |
+| 5 | 绿 | 42, 212, 58 | `#2AD43A` |
+| 6 | 橙 | 234, 135, 0 | `#EA8700` |
+| 7 | 青 | 28, 194, 219 | `#1CC2DB` |
+| 8 | 粉 | 235, 97, 235 | `#EB61EB` |
+
+2026-09-21 核验：对照两份公开的 DE `playercolors.xml` 副本，`player num="1"` 至 `num="8"` 的 `color1` / `color2` / `color3` / `minimap` 全部一致。主来源为 [AoE3DEDatabase 固定版本](https://github.com/rainsillwood/AoE3DEDatabase/blob/c392242f459b919ff7c34aadef3c29a6bdb08d3e/Data/playercolors.xml)，交叉来源为 [AOE3DE-Mods 中的数据副本](https://github.com/ismailyaseen6/AOE3DE-Mods/blob/061680b6e1881a3c60a99bafa76e3b1235e077ff/Population%20and%20Tree%20Wood%20Increase/Data%20-%20BAR/playercolors.xml)。前者该文件最后提交于 2024-01-16；这是公开数据副本间的核验，尚未对照 2026 年最新游戏包。
 
 ```
 [icon图片]

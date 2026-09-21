@@ -13,6 +13,8 @@ from pathlib import Path
 
 from PIL import Image, ImageDraw, ImageEnhance, ImageFont
 
+from src.plugins.aoe3.icons import PLAYER_ICON_BACKGROUNDS, composite_icon
+
 # ────────────────── 数据类 ──────────────────
 
 _STAGE_PRE = "pre"
@@ -143,13 +145,13 @@ def _get_font(size: int) -> ImageFont.FreeTypeFont | ImageFont.ImageFont:
 # ────────────────── 图标工具 ──────────────────
 
 
-def _load_icon(path: Path | None, size: int) -> Image.Image:
+def _load_icon(path: Path | None, size: int, background: tuple[int, int, int]) -> Image.Image:
     """加载图标，缺失则生成灰色占位方块。"""
     if path and path.exists():
-        img = Image.open(path).convert("RGBA")
-        return img.resize((size, size), Image.LANCZOS)
+        img = composite_icon(path, background)
+        return img.resize((size, size), Image.Resampling.LANCZOS).convert("RGBA")
     # 占位
-    img = Image.new("RGBA", (size, size), (60, 60, 65, 200))
+    img = Image.new("RGBA", (size, size), (60, 60, 65, 255))
     return img
 
 
@@ -230,12 +232,14 @@ def render_bracket(data: BracketData) -> bytes:
 
     stage = data.stage
 
-    # 加载图标
+    # 固定绑定抽签后的参赛编号，晋级时不随比赛位置换色。
     icons = {
-        i: _load_icon(data.icon_paths[i], ICON_SIZE) for i in range(len(data.units))
+        i: _load_icon(data.icon_paths[i], ICON_SIZE, PLAYER_ICON_BACKGROUNDS[i])
+        for i in range(len(data.units))
     }
     icons_sm = {
-        i: _load_icon(data.icon_paths[i], SMALL_ICON) for i in range(len(data.units))
+        i: _load_icon(data.icon_paths[i], SMALL_ICON, PLAYER_ICON_BACKGROUNDS[i])
+        for i in range(len(data.units))
     }
 
     # 列位置
@@ -243,7 +247,7 @@ def render_bracket(data: BracketData) -> bytes:
     col2_x = 250
     col3_x = 460
     col4_x = 670
-    start_y = 75
+    start_y = 95
     pair_gap = 140
 
     # ── 标题 ──
@@ -482,7 +486,8 @@ def render_bracket(data: BracketData) -> bytes:
     junc_x = col4_x - 15
 
     if is_final and data.champion_idx is not None and data.runner_up_idx is not None:
-        for yy, u_idx in [(fin_ys[0], data.champion_idx), (fin_ys[1], data.runner_up_idx)]:
+        for sf_idx, yy in enumerate(fin_ys):
+            u_idx = data.sf_results[sf_idx]
             wins = u_idx == data.champion_idx
             c = COLORS["gold"] if wins else COLORS["silver"]
             line_sx = (
@@ -510,7 +515,10 @@ def render_bracket(data: BracketData) -> bytes:
         )
 
         # 冠军大图标
-        champ_icon = _load_icon(data.icon_paths[data.champion_idx], CHAMP_ICON)
+        champ_icon = _load_icon(
+            data.icon_paths[data.champion_idx], CHAMP_ICON,
+            PLAYER_ICON_BACKGROUNDS[data.champion_idx],
+        )
         icon_x = col4_x + 5
         icon_y = champ_y - CHAMP_ICON // 2
         glow_pad = 5
@@ -636,7 +644,7 @@ def render_ranking(data: RankingData) -> bytes:
 
     for rank, (idx, name) in enumerate(data.ranks):
         ry = y_start + rank * row_h
-        icon = _load_icon(data.icon_paths[idx], icon_size)
+        icon = _load_icon(data.icon_paths[idx], icon_size, PLAYER_ICON_BACKGROUNDS[idx])
 
         # 前三名有背景色
         if rank < 3:

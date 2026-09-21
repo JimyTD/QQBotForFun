@@ -14,6 +14,7 @@ from PIL import Image
 
 from src.plugins.aoe3.icons import (
     BLUE_ICON_BACKGROUND,
+    PLAYER_ICON_BACKGROUNDS,
     QUERY_ICON_BACKGROUND,
     RED_ICON_BACKGROUND,
     render_icon_png,
@@ -36,7 +37,8 @@ def icon_path(tmp_path: Path) -> Path:
 
 
 @pytest.mark.parametrize(
-    "background", [QUERY_ICON_BACKGROUND, RED_ICON_BACKGROUND, BLUE_ICON_BACKGROUND]
+    "background",
+    [QUERY_ICON_BACKGROUND, RED_ICON_BACKGROUND, BLUE_ICON_BACKGROUND, *PLAYER_ICON_BACKGROUNDS],
 )
 def test_composite_preserves_opaque_pixels_and_source(icon_path, background):
     original = icon_path.read_bytes()
