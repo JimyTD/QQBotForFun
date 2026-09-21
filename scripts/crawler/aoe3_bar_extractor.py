@@ -6,6 +6,11 @@
   - civs.xml           (文明数据)
   - stringtabley_en.xml (英文字符串表)
   - stringtabley_zh.xml (简体中文字符串表)
+  - homecity/*.xml     (主城卡片：各可玩文明的卡片组 + 道具/原型/革命定义)
+  - tactics/*.tactics  (全部动作定义)
+
+后两类是一次性全量解出，目的是让**没有安装游戏的机器**也能开发卡片/动作相关功能；
+游戏更新后重新灌库仍需本机游戏（见 docs/games/aoe3-data-refresh.md）。
 
 用法:
   python scripts/crawler/aoe3_bar_extractor.py [--bar-path PATH]
@@ -224,6 +229,39 @@ def extract_tactics(bar_path: str, output_dir: str, entries: list[dict]) -> int:
     return count
 
 
+# 主城卡片：`homecity*.xml`（每个可玩文明一套卡片定义）+ 两处非 homecity 前缀的同类文件。
+# 全量解出 → 无游戏机器也能开发「卡片 / 特色兵」相关功能。
+# 注意 `uihomecity*.xml` 是界面定义，被 startswith('homecity') 自然排除。
+HOMECITY_EXTRA = {'asianhomecityprops.xml.XMB', 'nativehomecityprops.xml.XMB'}
+
+
+def extract_homecity(bar_path: str, output_dir: str, entries: list[dict]) -> int:
+    """Extract homecity*.xml.XMB（主城卡片）into ``<output_dir>/homecity/``。
+
+    Returns number of files extracted.
+    """
+    hc_dir = os.path.join(output_dir, "homecity")
+    os.makedirs(hc_dir, exist_ok=True)
+
+    targets = [
+        e for e in entries
+        if e['name'].lower().endswith('.xml.xmb')
+        and (e['name'].lower().startswith('homecity') or e['name'] in HOMECITY_EXTRA)
+    ]
+    count = 0
+    for entry in targets:
+        try:
+            xmb_data = extract_file_data(bar_path, entry)
+            xml_text = decode_xmb_to_xml(xmb_data)
+            out_name = entry['name'].split('\\')[-1].replace('.XMB', '')
+            with open(os.path.join(hc_dir, out_name), 'w', encoding='utf-8') as f:
+                f.write(xml_text)
+            count += 1
+        except Exception as ex:
+            print(f"    WARNING: failed to extract {entry['name']}: {ex}")
+    return count
+
+
 def main():
     parser = argparse.ArgumentParser(description="Extract game data from AoE3 DE Data.bar")
     parser.add_argument("--bar-path", default=DEFAULT_BAR, help="Path to Data.bar")
@@ -255,6 +293,11 @@ def main():
     print(f"\n  Extracting tactics files...")
     tactics_count = extract_tactics(args.bar_path, args.output_dir, entries)
     print(f"    -> {tactics_count} tactics files extracted to {args.output_dir}/tactics/")
+
+    # Extract homecity (deck/cards) files
+    print(f"\n  Extracting homecity (deck/cards) files...")
+    homecity_count = extract_homecity(args.bar_path, args.output_dir, entries)
+    print(f"    -> {homecity_count} homecity files extracted to {args.output_dir}/homecity/")
 
     print("\nDone!")
 

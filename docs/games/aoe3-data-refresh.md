@@ -12,13 +12,13 @@
 ## 1. 管线
 
 ```
-Data.bar ──aoe3_bar_extractor──> raw/{protoy,techtreey,civs,stringtabley_*}.xml + raw/tactics/
+Data.bar ──aoe3_bar_extractor──> raw/{protoy,techtreey,civs,stringtabley_*}.xml + raw/tactics/ + raw/homecity/
 ArtUnits.bar ──aoe3_anim_extractor──> raw/anims/                  (windup 数据源)
                                         │
-      ┌─────────────────────────────────┼──────────────────────────────┐
-      ▼                                 ▼                              ▼
-aoe3_gamedata_parser          aoe3_upgrades_parser          aoe3_generic_techs_parser
-  seeds/units.json              seeds/unit_upgrades.json      seeds/generic_techs.json
+      ┌──────────────┬──────────────────┼──────────────────────────────┐
+      ▼              ▼                  ▼                              ▼
+aoe3_gamedata_parser  aoe3_civs_parser  aoe3_upgrades_parser  aoe3_generic_techs_parser
+  seeds/units.json      seeds/civs.json   seeds/unit_upgrades.json  seeds/generic_techs.json
   seeds/i18n_zh.json
   data/aoe3/manifest.json
 
@@ -59,6 +59,7 @@ uv run python scripts/crawler/aoe3_anim_extractor.py --art-bar <ArtUnits.bar>
 
 ```bash
 uv run python scripts/crawler/aoe3_gamedata_parser.py
+uv run python scripts/crawler/aoe3_civs_parser.py
 uv run python scripts/crawler/aoe3_upgrades_parser.py
 uv run python scripts/crawler/aoe3_generic_techs_parser.py
 ```

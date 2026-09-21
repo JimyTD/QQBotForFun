@@ -22,9 +22,11 @@
 
 | 文件 | 内容 | 来源 |
 |------|------|------|
-| `data/aoe3/raw/` | 权威解包源（protoy、tactics、anims、stringtable） | 游戏 BAR，**入库 git**（≈38 MB） |
+| `data/aoe3/raw/` | 权威解包源（protoy、techtreey、civs、stringtable、tactics、anims） | 游戏 BAR，**入库 git**（≈41 MB） |
+| `data/aoe3/raw/homecity/` | 主城卡片定义：39 个文件 / **6721 张卡**（`name`/次数/主城等级/前置卡/时代） | 游戏 `Data.bar`，随灌库一起解出；卡片的**效果**在同名 tech（见 `techtreey.xml`） |
 | `data/aoe3/manifest.json` | 灌库/生成元数据 | parser 自动生成 |
 | `seeds/aoe3/units.json` | 单位属性（斗蛐蛐/卡片用派生视图） | parser 从 raw 生成 |
+| `seeds/aoe3/civs.json` | 文明归属：文明→兵种/科技、单位→文明反查（137 条目：**24 可玩主文明 + 30 革命 + 37 原住民/结盟部落**） | `aoe3_civs_parser.py`：主文明走 `civs.xml` 的 agetech；**革命走 `techtreey.xml` 的 `<revolutionciv>`**；部落走 `NativeXxx` |
 | `seeds/aoe3/i18n_zh.json` | `AbstractXxx` → 中文显示名映射（仅展示层用） | parser 生成 + 手工维护 tags |
 | `resources/aoe3/icons/{id}.png` | 单位头像 (128×128) | 游戏 BAR 包提取 + Wiki 补充 |
 
@@ -40,6 +42,11 @@
 
 > 刷新流程、人工干预清单复核结论与逐单位改动名单见 `docs/aoe3-data-refresh-20260917.md`；
 > 对比工具 `scripts/aoe3_seed_diff.py`（`--prev <旧快照>` 生成前后差异报告）。
+
+**离线开发（无需安装游戏）**：`data/aoe3/raw/`（原始解包数据）、`seeds/aoe3/`（派生数据）、
+`resources/aoe3/icons/`（2218 张图标）**全部入库 git**，克隆后即可开发数据解析 / 玩法 / 卡片等功能。
+只有「游戏更新后重新灌库」这一步需要本机游戏（见 `aoe3-data-refresh.md`）。
+BAR 中其余未解包内容（界面定义、多语言 stringtable）与本项目无关，不纳入。
 
 **灌库（仅初次或自愿刷新快照，需本机游戏）**：
 
