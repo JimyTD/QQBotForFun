@@ -1,0 +1,7883 @@
+{
+  "_meta": {
+    "generated_at": "2026-09-21T05:08:56.802666+00:00",
+    "source": [
+      "data/aoe3/raw/civs.xml",
+      "data/aoe3/raw/techtreey.xml"
+    ],
+    "units_source": "seeds/aoe3/units.json",
+    "doc": "docs/games/aoe3-data-refresh.md",
+    "counts": {
+      "civs": 137,
+      "curated_civs": 24,
+      "revolution_civs_with_units": 29,
+      "units_with_civ": 250,
+      "units_with_rev_civ": 96
+    },
+    "curated_civs": [
+      "British",
+      "Chinese",
+      "DEAmericans",
+      "DEDanish",
+      "DEEthiopians",
+      "DEHausa",
+      "DEInca",
+      "DEItalians",
+      "DEMaltese",
+      "DEMexicans",
+      "DEPolish",
+      "DESwedish",
+      "Dutch",
+      "French",
+      "Germans",
+      "Indians",
+      "Japanese",
+      "Ottomans",
+      "Portuguese",
+      "Russians",
+      "Spanish",
+      "XPAztec",
+      "XPIroquois",
+      "XPSioux"
+    ],
+    "notes": [
+      "单位可用性不随时代变化（agetech 只 enable 科技），登场时代看 units.json 的 age 字段",
+      "革命文明没有 agetech，单位来自 techtreey 中 <revolutionciv> 指向它们的革命 tech",
+      "收集口径：Enable ProtoUnit / AddTrain unittype / FreeHomeCityUnit unittype（革命白送）",
+      "个别革命（如加拿大）通过「改造现有单位」实现（给村民加攻击），不产生新单位条目，故 units 为空属如实",
+      "原住民部落（NativeXxx）的 units 是部落特色兵（结盟后可用）",
+      "unique_units / unique_techs 只在 curated_civs 之间比较",
+      "unit_civs 只列可玩主文明；革命文明见 unit_rev_civs；其余 137 条目明细都在 civs 中"
+    ]
+  },
+  "civs": {
+    "Spanish": {
+      "name": "西班牙人",
+      "name_en": "Spanish",
+      "culture": "Mediterranean",
+      "statsid": "SP",
+      "is_main": true,
+      "is_revolution": false,
+      "homecity": "homecityspanish.xml",
+      "age_techs": [
+        "Age0Spanish",
+        "ColonializeSpanish",
+        "FortressizeSpanish",
+        "IndustrializeSpanish",
+        "ImperializeSpanish"
+      ],
+      "revolution_techs": [],
+      "starting_units": [
+        "explorer",
+        "wardog"
+      ],
+      "units": [
+        "caravel",
+        "crossbowman",
+        "culverin",
+        "depetelephant",
+        "depethippo",
+        "depetleopard",
+        "depetwarthog",
+        "dragoon",
+        "explorer",
+        "falconet",
+        "fishingboat",
+        "frigate",
+        "galleon",
+        "hussar",
+        "lancer",
+        "missionary",
+        "monitor",
+        "mortar",
+        "musketeer",
+        "pikeman",
+        "rodelero",
+        "settler",
+        "skirmisher",
+        "surgeon",
+        "wardog",
+        "xphorseartillery",
+        "xppetard",
+        "xpspy",
+        "yppetorangutan"
+      ],
+      "tech_counts": {
+        "active": 22,
+        "obtainable": 124
+      },
+      "unique_units": [
+        "lancer",
+        "rodelero",
+        "wardog"
+      ],
+      "unique_techs": [
+        "Age0Spanish",
+        "ChurchCorsolet",
+        "ChurchQuatrefage",
+        "ChurchWalloonGuards",
+        "ChurchWildGeeseSpanish",
+        "ColonializeSpanish",
+        "DEPoliticianLogisticianSpanish",
+        "DEPoliticianPapalGuardSpanish",
+        "DERevolutionChile",
+        "DERevolutionColombia",
+        "DERevolutionMexico",
+        "FortressizeSpanish",
+        "ImperialEspada",
+        "ImperialGarrochistas",
+        "ImperialTercio",
+        "ImperializeSpanish",
+        "IndustrializeSpanish",
+        "PoliticianCavalierSpanish",
+        "PoliticianMusketeerSpanish",
+        "PoliticianScout",
+        "PoliticianSergeantSpanish",
+        "PoliticianWarMinisterSpanish",
+        "RGEspadachins",
+        "RGGarrochista",
+        "RGTercio",
+        "VeteranRodeleros"
+      ],
+      "is_playable": true
+    },
+    "British": {
+      "name": "英国人",
+      "name_en": "British",
+      "culture": "WesternEurope",
+      "statsid": "BR",
+      "is_main": true,
+      "is_revolution": false,
+      "homecity": "homecitybritish.xml",
+      "age_techs": [
+        "Age0British",
+        "ColonializeBritish",
+        "FortressizeBritish",
+        "IndustrializeBritish",
+        "ImperializeBritish"
+      ],
+      "revolution_techs": [],
+      "starting_units": [
+        "explorer"
+      ],
+      "units": [
+        "caravel",
+        "culverin",
+        "depetelephant",
+        "depethippo",
+        "depetleopard",
+        "depetwarthog",
+        "dragoon",
+        "explorer",
+        "falconet",
+        "fishingboat",
+        "frigate",
+        "galleon",
+        "grenadier",
+        "hussar",
+        "longbowman",
+        "monitor",
+        "mortar",
+        "musketeer",
+        "pikeman",
+        "priest",
+        "settler",
+        "surgeon",
+        "xphorseartillery",
+        "xppetard",
+        "xpspy",
+        "yppetorangutan"
+      ],
+      "tech_counts": {
+        "active": 23,
+        "obtainable": 124
+      },
+      "unique_units": [
+        "longbowman"
+      ],
+      "unique_techs": [
+        "Age0British",
+        "ChurchBlackWatch",
+        "ChurchRogersRangers",
+        "ChurchThinRedLine",
+        "ColonializeBritish",
+        "DEChurchRogersRangers",
+        "DEGuardRangersShadow",
+        "DEImperialRangersShadow",
+        "DEPoliticianBlackDukeBritish",
+        "DEPoliticianLogisticianColonialBritish",
+        "DEPoliticianMercContractorFortressBritish",
+        "DEREVSouthAfricaBritishBankShadow",
+        "DERevolutionCanadaBritish",
+        "DEVeteranRangersShadow",
+        "FortressizeBritish",
+        "GuardLongbowmen",
+        "ImperialLifeGuard",
+        "ImperialLongbowmen",
+        "ImperialRedcoat",
+        "ImperialRocket",
+        "ImperializeBritish",
+        "IndustrializeBritish",
+        "PoliticianAdventurerBritish",
+        "PoliticianGeneralBritish",
+        "PoliticianMohawk",
+        "PoliticianMusketeerBritish",
+        "PoliticianViceroyBritish",
+        "RGLifeGuardHussars",
+        "RGRedcoats",
+        "VeteranLongbowmen"
+      ],
+      "is_playable": true
+    },
+    "French": {
+      "name": "法国人",
+      "name_en": "French",
+      "culture": "WesternEurope",
+      "statsid": "FR",
+      "is_main": true,
+      "is_revolution": false,
+      "homecity": "homecityfrench.xml",
+      "age_techs": [
+        "Age0French",
+        "ColonializeFrench",
+        "FortressizeFrench",
+        "IndustrializeFrench",
+        "ImperializeFrench"
+      ],
+      "revolution_techs": [],
+      "starting_units": [
+        "explorer",
+        "nativescout"
+      ],
+      "units": [
+        "caravel",
+        "coureur",
+        "crossbowman",
+        "cuirassier",
+        "culverin",
+        "depetelephant",
+        "depethippo",
+        "depetleopard",
+        "depetwarthog",
+        "dragoon",
+        "explorer",
+        "falconet",
+        "fishingboat",
+        "frigate",
+        "galleon",
+        "halberdier",
+        "hussar",
+        "monitor",
+        "mortar",
+        "musketeer",
+        "nativescout",
+        "pikeman",
+        "priest",
+        "skirmisher",
+        "surgeon",
+        "xphorseartillery",
+        "xppetard",
+        "xpspy",
+        "yppetorangutan"
+      ],
+      "tech_counts": {
+        "active": 22,
+        "obtainable": 120
+      },
+      "unique_units": [
+        "coureur",
+        "cuirassier"
+      ],
+      "unique_techs": [
+        "Age0French",
+        "ChurchCodeNapoleon",
+        "ChurchGardeImperial1",
+        "ChurchGardeImperial2",
+        "ChurchGardeImperial3",
+        "ColonializeFrench",
+        "DEPoliticianLogisticianFrench",
+        "DERevolutionCanadaFrench",
+        "DERevolutionFrance",
+        "FortressizeFrench",
+        "ImperialGendarme",
+        "ImperialVoltigeur",
+        "ImperializeFrench",
+        "IndustrializeFrench",
+        "PoliticianCavalierFrench",
+        "PoliticianMusketeerFrench",
+        "RGGendarmes",
+        "RGVoltigeur"
+      ],
+      "is_playable": true
+    },
+    "Portuguese": {
+      "name": "葡萄牙人",
+      "name_en": "Portuguese",
+      "culture": "Mediterranean",
+      "statsid": "PT",
+      "is_main": true,
+      "is_revolution": false,
+      "homecity": "homecityportuguese.xml",
+      "age_techs": [
+        "Age0Portuguese",
+        "ColonializePortuguese",
+        "FortressizePortuguese",
+        "IndustrializePortuguese",
+        "ImperializePortuguese"
+      ],
+      "revolution_techs": [],
+      "starting_units": [
+        "explorer"
+      ],
+      "units": [
+        "cacadore",
+        "caravel",
+        "crossbowman",
+        "culverin",
+        "depetelephant",
+        "depethippo",
+        "depetleopard",
+        "depetwarthog",
+        "dragoon",
+        "explorer",
+        "fishingboat",
+        "frigate",
+        "galleon",
+        "halberdier",
+        "hussar",
+        "monitor",
+        "mortar",
+        "musketeer",
+        "organgun",
+        "pikeman",
+        "priest",
+        "settler",
+        "surgeon",
+        "xphorseartillery",
+        "xppetard",
+        "xpspy",
+        "yppetorangutan"
+      ],
+      "tech_counts": {
+        "active": 23,
+        "obtainable": 121
+      },
+      "unique_units": [
+        "cacadore",
+        "organgun"
+      ],
+      "unique_techs": [
+        "Age0Portuguese",
+        "ChurchBestieros",
+        "ChurchEconmediaManor",
+        "ChurchTowerAndSword",
+        "ColonializePortuguese",
+        "DEPoliticianEthiopianQueen",
+        "DEPoliticianLogisticianPortuguese",
+        "DEPoliticianMercContractorFortressPortuguese",
+        "DEPoliticianPapalGuardPortuguese",
+        "DERevolutionColombiaPortuguese",
+        "DESpyglassEnableShadow",
+        "FortressizePortuguese",
+        "GuardCacadores",
+        "ImperialCacadores",
+        "ImperialGuerreiros",
+        "ImperialJinetes",
+        "ImperialOrdinanceBesteiro",
+        "ImperialOrdinancePikemen",
+        "ImperialRabaulds",
+        "ImperializePortuguese",
+        "IndustrializePortuguese",
+        "PoliticianEngineerPortuguese",
+        "PoliticianMarksmanPortuguese",
+        "PoliticianMusketeerPortuguese",
+        "PoliticianViceroyPortuguese",
+        "RGGuerreiros",
+        "RGJinetes",
+        "RGOrdinanceBesteiro",
+        "RGOrdinancePikemen",
+        "Rabauld"
+      ],
+      "is_playable": true
+    },
+    "Dutch": {
+      "name": "荷兰人",
+      "name_en": "Dutch",
+      "culture": "WesternEurope",
+      "statsid": "DU",
+      "is_main": true,
+      "is_revolution": false,
+      "homecity": "homecitydutch.xml",
+      "age_techs": [
+        "Age0Dutch",
+        "ColonializeDutch",
+        "FortressizeDutch",
+        "IndustrializeDutch",
+        "ImperializeDutch"
+      ],
+      "revolution_techs": [],
+      "starting_units": [
+        "envoy",
+        "explorer"
+      ],
+      "units": [
+        "caravel",
+        "culverin",
+        "depetelephant",
+        "depethippo",
+        "depetleopard",
+        "depetwarthog",
+        "envoy",
+        "explorer",
+        "falconet",
+        "fishingboat",
+        "fluyt",
+        "frigate",
+        "grenadier",
+        "halberdier",
+        "hussar",
+        "monitor",
+        "mortar",
+        "pikeman",
+        "priest",
+        "ruyter",
+        "settler",
+        "skirmisher",
+        "surgeon",
+        "xphorseartillery",
+        "xppetard",
+        "xpspy",
+        "yppetorangutan"
+      ],
+      "tech_counts": {
+        "active": 26,
+        "obtainable": 119
+      },
+      "unique_units": [
+        "envoy",
+        "fluyt",
+        "ruyter"
+      ],
+      "unique_techs": [
+        "Age0Dutch",
+        "ChurchCoffeeTrade",
+        "ChurchStadholders",
+        "ChurchWaardgelders",
+        "ColonializeDutch",
+        "DEPoliticianLogisticianColonialDutch",
+        "DEPoliticianMercContractorFortressDutch",
+        "DEPoliticianRoyalistDutch",
+        "DEREVIndonesiaMerchantShadow",
+        "FortressizeDutch",
+        "ImperialCarabineer",
+        "ImperialNassauers",
+        "ImperializeDutch",
+        "IndustrializeDutch",
+        "PoliticianCavalierDutch",
+        "PoliticianMusketeerDutch",
+        "PoliticianSergeantDutch",
+        "PoliticianViceroyDutch",
+        "RGCarabineer",
+        "RGNassausLinearTactics",
+        "VeteranRuytersShadow",
+        "deChurchWaardgeldersIndependence"
+      ],
+      "is_playable": true
+    },
+    "Russians": {
+      "name": "俄罗斯人",
+      "name_en": "Russians",
+      "culture": "EasternEurope",
+      "statsid": "RU",
+      "is_main": true,
+      "is_revolution": false,
+      "homecity": "homecityrussians.xml",
+      "age_techs": [
+        "Age0Russian",
+        "ColonializeRussian",
+        "FortressizeRussian",
+        "IndustrializeRussian",
+        "ImperializeRussian"
+      ],
+      "revolution_techs": [],
+      "starting_units": [
+        "explorer"
+      ],
+      "units": [
+        "caravel",
+        "cavalryarcher",
+        "cossack",
+        "culverin",
+        "depetelephant",
+        "depethippo",
+        "depetleopard",
+        "depetwarthog",
+        "derussianhalberdier",
+        "derussianmusketeer",
+        "explorer",
+        "falconet",
+        "fishingboat",
+        "frigate",
+        "galleon",
+        "grenadier",
+        "monitor",
+        "mortar",
+        "oprichnik",
+        "priest",
+        "settler",
+        "strelet",
+        "surgeon",
+        "xphorseartillery",
+        "xppetard",
+        "xpspy",
+        "yppetorangutan"
+      ],
+      "tech_counts": {
+        "active": 23,
+        "obtainable": 128
+      },
+      "unique_units": [
+        "cossack",
+        "derussianhalberdier",
+        "derussianmusketeer",
+        "oprichnik",
+        "strelet"
+      ],
+      "unique_techs": [
+        "Age0Russian",
+        "ChurchBashkirPonies",
+        "ChurchKalmucks",
+        "ChurchPetrineReforms",
+        "ChurchWesternization",
+        "ColonializeRussian",
+        "DEGuardRussianHalberdiers",
+        "DEGuardRussianMusketeers",
+        "DEImperialRussianHalberdiers",
+        "DEImperialRussianMusketeers",
+        "DEPoliticianLogisticianColonialRussian",
+        "DEPoliticianLogisticianRussian",
+        "DEPoliticianRoyalistRussian",
+        "DEShipCavArcherShadow",
+        "DEVeteranRussianHalberdiers",
+        "DEVeteranRussianMusketeers",
+        "FortifiedBlockhouse",
+        "FortressizeRussian",
+        "FrontierBlockhouse",
+        "GuardCossacks",
+        "GuardOprichniks",
+        "GuardStrelets",
+        "ImperialCossack",
+        "ImperialOprichniks",
+        "ImperialPavlovs",
+        "ImperialStrelets",
+        "ImperialTartarLoyalist",
+        "ImperializeRussian",
+        "IndustrializeRussian",
+        "PoliticianAdventurerRussian",
+        "PoliticianCavalierRussian",
+        "PoliticianMusketeerRussian",
+        "PoliticianScoutRussian",
+        "PoliticianWarMinisterRussian",
+        "RGPavlovGrenadiers",
+        "RGTartarLoyalists",
+        "VeteranCossacks",
+        "VeteranStrelets"
+      ],
+      "is_playable": true
+    },
+    "Germans": {
+      "name": "德国人",
+      "name_en": "Germans",
+      "culture": "EasternEurope",
+      "statsid": "DE",
+      "is_main": true,
+      "is_revolution": false,
+      "homecity": "homecitygerman.xml",
+      "age_techs": [
+        "Age0German",
+        "ColonializeGerman",
+        "FortressizeGerman",
+        "IndustrializeGerman",
+        "ImperializeGerman"
+      ],
+      "revolution_techs": [],
+      "starting_units": [
+        "explorer"
+      ],
+      "units": [
+        "caravel",
+        "crossbowman",
+        "culverin",
+        "depetelephant",
+        "depethippo",
+        "depetleopard",
+        "depetwarthog",
+        "dopplesoldner",
+        "explorer",
+        "falconet",
+        "fishingboat",
+        "frigate",
+        "galleon",
+        "monitor",
+        "mortar",
+        "pikeman",
+        "priest",
+        "settler",
+        "settlerwagon",
+        "skirmisher",
+        "surgeon",
+        "uhlan",
+        "warwagon",
+        "xphorseartillery",
+        "xppetard",
+        "xpspy",
+        "yppetorangutan"
+      ],
+      "tech_counts": {
+        "active": 25,
+        "obtainable": 118
+      },
+      "unique_units": [
+        "dopplesoldner",
+        "settlerwagon",
+        "uhlan",
+        "warwagon"
+      ],
+      "unique_techs": [
+        "Age0German",
+        "ChurchTillysDiscipline",
+        "ChurchWallensteinsContracts",
+        "ChurchZweihander",
+        "ColonializeGerman",
+        "DEGuardLandwehrsShadow",
+        "DEHCShipWarWagonShadow",
+        "DEImperialLandwehrsShadow",
+        "DEPoliticianBlackDukeGerman",
+        "DEPoliticianLogisticianGerman",
+        "DERevolutionHungaryGerman",
+        "DERevolutionPrussia",
+        "DETotenkopfGrdShadow",
+        "DEVeteranLandwehrsShadow",
+        "FortressizeGerman",
+        "GuardDopplesoldners",
+        "GuardWarWagons",
+        "ImperialCzapkaUhlans",
+        "ImperialDopplesoldner",
+        "ImperialNeedleGun",
+        "ImperialWarWagons",
+        "ImperializeGerman",
+        "IndustrializeGerman",
+        "PoliticianCavalierGerman",
+        "PoliticianNaturalistGerman",
+        "PoliticianSergeantGerman",
+        "PoliticianViceroyGerman",
+        "RGCzapkaUhlans",
+        "RGPrussianNeedleGun",
+        "VeteranDopplesoldners",
+        "VeteranUhlans"
+      ],
+      "is_playable": true
+    },
+    "Ottomans": {
+      "name": "奥斯曼人",
+      "name_en": "Ottomans",
+      "culture": "Mediterranean",
+      "statsid": "OT",
+      "is_main": true,
+      "is_revolution": false,
+      "homecity": "homecityottomans.xml",
+      "age_techs": [
+        "Age0Ottoman",
+        "ColonializeOttoman",
+        "FortressizeOttoman",
+        "IndustrializeOttoman",
+        "ImperializeOttoman"
+      ],
+      "revolution_techs": [],
+      "starting_units": [
+        "explorer"
+      ],
+      "units": [
+        "abusgun",
+        "cavalryarcher",
+        "culverin",
+        "deazap",
+        "dedeli",
+        "dehumbaraci",
+        "depetelephant",
+        "depethippo",
+        "depetleopard",
+        "depetwarthog",
+        "despyottoman",
+        "explorer",
+        "falconet",
+        "fishingboat",
+        "frigate",
+        "galleon",
+        "galley",
+        "imam",
+        "janissary",
+        "monitor",
+        "mortar",
+        "spahi",
+        "surgeon",
+        "xphorseartillery",
+        "xppetard",
+        "yppetorangutan"
+      ],
+      "tech_counts": {
+        "active": 26,
+        "obtainable": 127
+      },
+      "unique_units": [
+        "abusgun",
+        "deazap",
+        "dedeli",
+        "dehumbaraci",
+        "despyottoman",
+        "galley",
+        "imam",
+        "janissary",
+        "spahi"
+      ],
+      "unique_techs": [
+        "Age0Ottoman",
+        "ChurchAbbassidMarket",
+        "ChurchGalataTowerDistrict",
+        "ChurchKapikuluCorps",
+        "ChurchKopruluViziers",
+        "ChurchMilletSystem",
+        "ChurchTanzimat",
+        "ChurchTopcuCorps",
+        "ChurchTopkapi",
+        "ChurchTufanciCorps",
+        "ColonializeOttoman",
+        "DECivHasMosque",
+        "DEGuardAzaps",
+        "DEImperialAzaps",
+        "DEOttomanLevy",
+        "DEPoliticianImam",
+        "DEPoliticianLogisticianOttoman",
+        "DEPoliticianMercContractorFortressOttoman",
+        "DERevolutionEgypt",
+        "DERevolutionHungaryOttoman",
+        "DERevolutionOttomanSettlerTrainPointsAndBuildLimitShadow",
+        "DESailsOttoman",
+        "DEVeteranAzaps",
+        "FortressizeOttoman",
+        "GuardAbusGuns",
+        "GuardCavalryArchers",
+        "GuardJanissaries",
+        "ImperialAbusGun",
+        "ImperialBaratcu",
+        "ImperialBombard",
+        "ImperialCavalryArchers",
+        "ImperialJanissaries",
+        "ImperialRumeliots",
+        "ImperializeOttoman",
+        "IndustrializeOttoman",
+        "PoliticianAdmiralOttoman",
+        "PoliticianCavalierOttoman",
+        "PoliticianGeneralOttoman",
+        "PoliticianGrandVizier",
+        "PoliticianMarksmanOttoman",
+        "PoliticianScoutOttoman",
+        "RGBaratcuCorps",
+        "Rumeliots",
+        "VeteranAbusGuns",
+        "VeteranDelis",
+        "VeteranHumbaracis",
+        "VeteranJanissaries",
+        "ypOttomanMosqueFaith"
+      ],
+      "is_playable": true
+    },
+    "SPCAct1": {
+      "name": "圣约翰骑士团",
+      "name_en": "SPCAct1",
+      "culture": "Mediterranean",
+      "statsid": "",
+      "is_main": true,
+      "is_revolution": false,
+      "homecity": "homecitySPCAct1.xml",
+      "age_techs": [
+        "Age0SPCAct1",
+        "ColonializeSPCAct1",
+        "FortressizeSPCAct1",
+        "IndustrializeSPCAct1",
+        "ImperializeSPCAct1"
+      ],
+      "revolution_techs": [],
+      "starting_units": [],
+      "units": [
+        "caravel",
+        "crossbowman",
+        "depetelephant",
+        "depethippo",
+        "depetleopard",
+        "depetwarthog",
+        "explorer",
+        "fishingboat",
+        "galleon",
+        "hussar",
+        "lancer",
+        "mortar",
+        "pikeman",
+        "priest",
+        "rodelero",
+        "settler",
+        "spcbuccaneer",
+        "spchoopthrowers",
+        "surgeon",
+        "yppetorangutan"
+      ],
+      "tech_counts": {
+        "active": 21,
+        "obtainable": 77
+      },
+      "unique_units": [],
+      "unique_techs": [],
+      "is_playable": false
+    },
+    "SPCAct2": {
+      "name": "布莱克的雇佣兵",
+      "name_en": "SPCAct2",
+      "culture": "WesternEurope",
+      "statsid": "",
+      "is_main": true,
+      "is_revolution": false,
+      "homecity": "homecitySPCAct2.xml",
+      "age_techs": [
+        "Age0SPCAct2",
+        "ColonializeSPCAct2",
+        "FortressizeSPCAct2",
+        "IndustrializeSPCAct2",
+        "ImperializeSPCAct2"
+      ],
+      "revolution_techs": [],
+      "starting_units": [],
+      "units": [
+        "caravel",
+        "crossbowman",
+        "culverin",
+        "depetelephant",
+        "depethippo",
+        "depetleopard",
+        "depetwarthog",
+        "explorer",
+        "falconet",
+        "fishingboat",
+        "frigate",
+        "galleon",
+        "grenadier",
+        "halberdier",
+        "mortar",
+        "musketeer",
+        "petwolf",
+        "pikeman",
+        "priest",
+        "settler",
+        "skirmisher",
+        "surgeon",
+        "uhlan",
+        "warwagon",
+        "yppetorangutan"
+      ],
+      "tech_counts": {
+        "active": 22,
+        "obtainable": 90
+      },
+      "unique_units": [],
+      "unique_techs": [],
+      "is_playable": false
+    },
+    "SPCAct3": {
+      "name": "美国",
+      "name_en": "SPCAct3",
+      "culture": "WesternEurope",
+      "statsid": "",
+      "is_main": true,
+      "is_revolution": false,
+      "homecity": "homecitySPCAct3.xml",
+      "age_techs": [
+        "Age0SPCAct3",
+        "ColonializeSPCAct3",
+        "FortressizeSPCAct3",
+        "IndustrializeSPCAct3",
+        "ImperializeSPCAct3"
+      ],
+      "revolution_techs": [],
+      "starting_units": [],
+      "units": [
+        "caravel",
+        "culverin",
+        "depetelephant",
+        "depethippo",
+        "depetleopard",
+        "depetwarthog",
+        "dragoon",
+        "explorer",
+        "falconet",
+        "fishingboat",
+        "frigate",
+        "galleon",
+        "grenadier",
+        "hussar",
+        "monitor",
+        "mortar",
+        "musketeer",
+        "pikeman",
+        "priest",
+        "rocket",
+        "settler",
+        "skirmisher",
+        "surgeon",
+        "yppetorangutan"
+      ],
+      "tech_counts": {
+        "active": 22,
+        "obtainable": 97
+      },
+      "unique_units": [],
+      "unique_techs": [],
+      "is_playable": false
+    },
+    "Pirate": {
+      "name": "海盗",
+      "name_en": "Pirate",
+      "culture": "WesternEurope",
+      "statsid": "",
+      "is_main": true,
+      "is_revolution": false,
+      "homecity": "homecitybritish.xml",
+      "age_techs": [
+        "DEAge0Pirate",
+        "ColonializeBritish",
+        "FortressizeBritish",
+        "IndustrializeBritish",
+        "ImperializeBritish"
+      ],
+      "revolution_techs": [],
+      "starting_units": [
+        "explorer"
+      ],
+      "units": [
+        "caravel",
+        "culverin",
+        "depetelephant",
+        "depethippo",
+        "depetleopard",
+        "depetwarthog",
+        "dragoon",
+        "explorer",
+        "falconet",
+        "fishingboat",
+        "frigate",
+        "galleon",
+        "grenadier",
+        "hussar",
+        "longbowman",
+        "monitor",
+        "mortar",
+        "musketeer",
+        "pikeman",
+        "priest",
+        "saloonpirate",
+        "settler",
+        "surgeon",
+        "xphorseartillery",
+        "xppetard",
+        "xpspy",
+        "yppetorangutan"
+      ],
+      "tech_counts": {
+        "active": 23,
+        "obtainable": 121
+      },
+      "unique_units": [],
+      "unique_techs": [],
+      "is_playable": false
+    },
+    "TheCircle": {
+      "name": "藏骨集团",
+      "name_en": "TheCircle",
+      "culture": "EasternEurope",
+      "statsid": "",
+      "is_main": true,
+      "is_revolution": false,
+      "homecity": "homecitybritish.xml",
+      "age_techs": [
+        "Age0British",
+        "ColonializeBritish",
+        "FortressizeBritish",
+        "IndustrializeBritish",
+        "ImperializeBritish"
+      ],
+      "revolution_techs": [],
+      "starting_units": [
+        "explorer"
+      ],
+      "units": [
+        "caravel",
+        "culverin",
+        "depetelephant",
+        "depethippo",
+        "depetleopard",
+        "depetwarthog",
+        "dragoon",
+        "explorer",
+        "falconet",
+        "fishingboat",
+        "frigate",
+        "galleon",
+        "grenadier",
+        "hussar",
+        "longbowman",
+        "monitor",
+        "mortar",
+        "musketeer",
+        "pikeman",
+        "priest",
+        "settler",
+        "surgeon",
+        "xphorseartillery",
+        "xppetard",
+        "xpspy",
+        "yppetorangutan"
+      ],
+      "tech_counts": {
+        "active": 23,
+        "obtainable": 124
+      },
+      "unique_units": [],
+      "unique_techs": [],
+      "is_playable": false
+    },
+    "NativeAmerican": {
+      "name": "美洲原住民",
+      "name_en": "NativeAmerican",
+      "culture": "EasternEurope",
+      "statsid": "",
+      "is_main": true,
+      "is_revolution": false,
+      "homecity": "homecitybritish.xml",
+      "age_techs": [
+        "Age0British",
+        "ColonializeBritish",
+        "FortressizeBritish",
+        "IndustrializeBritish",
+        "ImperializeBritish"
+      ],
+      "revolution_techs": [],
+      "starting_units": [
+        "explorer"
+      ],
+      "units": [
+        "caravel",
+        "culverin",
+        "depetelephant",
+        "depethippo",
+        "depetleopard",
+        "depetwarthog",
+        "dragoon",
+        "explorer",
+        "falconet",
+        "fishingboat",
+        "frigate",
+        "galleon",
+        "grenadier",
+        "hussar",
+        "longbowman",
+        "monitor",
+        "mortar",
+        "musketeer",
+        "pikeman",
+        "priest",
+        "settler",
+        "surgeon",
+        "xphorseartillery",
+        "xppetard",
+        "xpspy",
+        "yppetorangutan"
+      ],
+      "tech_counts": {
+        "active": 23,
+        "obtainable": 124
+      },
+      "unique_units": [],
+      "unique_techs": [],
+      "is_playable": false
+    },
+    "XPIroquois": {
+      "name": "豪德诺索尼人",
+      "name_en": "XPIroquois",
+      "culture": "Iroquois",
+      "statsid": "IR",
+      "is_main": true,
+      "is_revolution": false,
+      "homecity": "homecityxpiroquois.xml",
+      "age_techs": [
+        "Age0XPIroquois",
+        "ColonializeXPIroquois",
+        "FortressizeXPIroquois",
+        "IndustrializeXPIroquois",
+        "ImperializeXPIroquois"
+      ],
+      "revolution_techs": [],
+      "starting_units": [
+        "xpiroquoiswarchief"
+      ],
+      "units": [
+        "canoe",
+        "depetelephant",
+        "depethippo",
+        "depetwarthog",
+        "fishingboat",
+        "nativescout",
+        "settlernative",
+        "surgeon",
+        "xpaenna",
+        "xphorseman",
+        "xpiroquoiswarchief",
+        "xplightcannon",
+        "xpmantlet",
+        "xpmedicineman",
+        "xpmusketrider",
+        "xpmusketwarrior",
+        "xpram",
+        "xptomahawk",
+        "xpwarcanoe",
+        "xpwarrior",
+        "yppetorangutan"
+      ],
+      "tech_counts": {
+        "active": 20,
+        "obtainable": 90
+      },
+      "unique_units": [
+        "xpaenna",
+        "xphorseman",
+        "xpiroquoiswarchief",
+        "xplightcannon",
+        "xpmantlet",
+        "xpmusketrider",
+        "xpmusketwarrior",
+        "xpram",
+        "xptomahawk"
+      ],
+      "unique_techs": [
+        "Age0XPIroquois",
+        "BigCorralHorseSecrets",
+        "BigDockRawhideCovers",
+        "BigFarmStrawberry",
+        "BigFirepitSecretSociety",
+        "BigIroquoisRaidingParty",
+        "BigIroquoisScoutingParty",
+        "BigIroquoisWarParty",
+        "BigLonghouseWoodlandDwellers",
+        "BigPlantationMapleFestival",
+        "BigSiegeshopSiegeDrill",
+        "BigWarHutLacrosse",
+        "ChampionAennas",
+        "ChampionHorsemen",
+        "ChampionMantlets",
+        "ChampionMusketRiders",
+        "ChampionMusketWarriors",
+        "ChampionRams",
+        "ChampionTomahawk",
+        "ColonializeXPIroquois",
+        "DEBigTribalMarketplaceCoopHaudenosaunee",
+        "EliteAennas",
+        "EliteHorsemen",
+        "EliteMusketRiderShadow",
+        "EliteMusketWarriorShadow",
+        "EliteTomahawks",
+        "FieldCannon",
+        "FortressizeXPIroquois",
+        "ImpLegendaryAennas",
+        "ImpLegendaryHorsemen",
+        "ImpLegendaryLightCannon",
+        "ImpLegendaryMantlets",
+        "ImpLegendaryMusketRiders",
+        "ImpLegendaryMusketWarriors",
+        "ImpLegendaryRams",
+        "ImpLegendaryTomahawks",
+        "ImperializeXPIroquois",
+        "IndustrializeXPIroquois",
+        "TribalIroquoisChief2",
+        "TribalIroquoisChief3",
+        "TribalIroquoisChief4",
+        "TribalIroquoisChief5",
+        "TribalIroquoisShaman2",
+        "TribalIroquoisShaman3",
+        "TribalIroquoisShaman4",
+        "TribalIroquoisShaman5",
+        "TribalIroquoisWarrior2",
+        "TribalIroquoisWarrior3",
+        "TribalIroquoisWarrior4",
+        "TribalIroquoisWarrior5",
+        "TribalIroquoisWisewoman2",
+        "TribalIroquoisWisewoman3",
+        "TribalIroquoisWisewoman4",
+        "TribalIroquoisWisewoman5",
+        "TribalIroquoisYouth2",
+        "TribalIroquoisYouth3",
+        "TribalIroquoisYouth4",
+        "TribalIroquoisYouth5"
+      ],
+      "is_playable": true
+    },
+    "XPSioux": {
+      "name": "拉科塔人",
+      "name_en": "XPSioux",
+      "culture": "Sioux",
+      "statsid": "SI",
+      "is_main": true,
+      "is_revolution": false,
+      "homecity": "homecityxpsioux.xml",
+      "age_techs": [
+        "Age0XPSioux",
+        "ColonializeXPSioux",
+        "FortressizeXPSioux",
+        "IndustrializeXPSioux",
+        "ImperializeXPSioux"
+      ],
+      "revolution_techs": [],
+      "starting_units": [
+        "xplakotawarchief"
+      ],
+      "units": [
+        "canoe",
+        "depetelephant",
+        "depethippo",
+        "depetwarthog",
+        "fishingboat",
+        "nativescout",
+        "settlernative",
+        "surgeon",
+        "xpaxerider",
+        "xpbowrider",
+        "xpcouprider",
+        "xpdogsoldier",
+        "xplakotawarchief",
+        "xpmedicineman",
+        "xpriflerider",
+        "xpwarbow",
+        "xpwarcanoe",
+        "xpwarclub",
+        "xpwarrifle",
+        "xpwarrior",
+        "yppetorangutan"
+      ],
+      "tech_counts": {
+        "active": 20,
+        "obtainable": 86
+      },
+      "unique_units": [
+        "xpaxerider",
+        "xpbowrider",
+        "xpcouprider",
+        "xpdogsoldier",
+        "xplakotawarchief",
+        "xpriflerider",
+        "xpwarbow",
+        "xpwarclub",
+        "xpwarrifle"
+      ],
+      "unique_techs": [
+        "Age0XPSioux",
+        "BigCorralBonepipeArmor",
+        "BigDockFlamingArrows",
+        "BigFarmHorsemanship",
+        "BigFirepitBattleAnger",
+        "BigPlantationGunTrade",
+        "BigSiouxDogSoldiers",
+        "BigWarHutWarDrums",
+        "ChampionAxeRiders",
+        "ChampionBowRider",
+        "ChampionRifleRiders",
+        "ChampionWarBows",
+        "ChampionWarClubs",
+        "ChampionWarRifles",
+        "ColonializeXPSioux",
+        "DEBigTribalMarketplaceCoopLakota",
+        "EliteAxeRiders",
+        "EliteBowRider",
+        "EliteRifleRiderShadow",
+        "EliteWarBows",
+        "EliteWarClubs",
+        "EliteWarRifleShadow",
+        "FortressizeXPSioux",
+        "ImpLegendaryAxeRiders",
+        "ImpLegendaryBowRider",
+        "ImpLegendaryRifleRiders",
+        "ImpLegendaryWarBows",
+        "ImpLegendaryWarClubs",
+        "ImpLegendaryWarRifles",
+        "ImperializeXPSioux",
+        "IndustrializeXPSioux",
+        "TribalSiouxChief2",
+        "TribalSiouxChief3",
+        "TribalSiouxChief4",
+        "TribalSiouxChief5",
+        "TribalSiouxShaman2",
+        "TribalSiouxShaman3",
+        "TribalSiouxShaman4",
+        "TribalSiouxShaman5",
+        "TribalSiouxWarrior2",
+        "TribalSiouxWarrior3",
+        "TribalSiouxWarrior4",
+        "TribalSiouxWarrior5",
+        "TribalSiouxWisewoman2",
+        "TribalSiouxWisewoman3",
+        "TribalSiouxWisewoman4",
+        "TribalSiouxWisewoman5",
+        "TribalSiouxYouth2",
+        "TribalSiouxYouth3",
+        "TribalSiouxYouth4",
+        "TribalSiouxYouth5",
+        "deBigTeepeeLakotaLands"
+      ],
+      "is_playable": true
+    },
+    "XPAztec": {
+      "name": "阿兹特克人",
+      "name_en": "XPAztec",
+      "culture": "Aztec",
+      "statsid": "AZ",
+      "is_main": true,
+      "is_revolution": false,
+      "homecity": "homecityxpaztec.xml",
+      "age_techs": [
+        "Age0XPAztec",
+        "ColonializeXPAztec",
+        "FortressizeXPAztec",
+        "IndustrializeXPAztec",
+        "ImperializeXPAztec"
+      ],
+      "revolution_techs": [],
+      "starting_units": [
+        "deeaglescout",
+        "xpaztecwarchief",
+        "xpmedicinemanaztec"
+      ],
+      "units": [
+        "canoe",
+        "deeaglescout",
+        "depetelephant",
+        "depethippo",
+        "depetwarthog",
+        "fishingboat",
+        "nativescout",
+        "settlernative",
+        "surgeon",
+        "xparrowknight",
+        "xpaztecwarchief",
+        "xpcoyoteman",
+        "xpeagleknight",
+        "xpjaguarknight",
+        "xpmacehualtin",
+        "xpmedicinemanaztec",
+        "xppumaman",
+        "xpskullknight",
+        "xptlaloccanoe",
+        "xpwarcanoe",
+        "xpwarrior",
+        "yppetorangutan"
+      ],
+      "tech_counts": {
+        "active": 21,
+        "obtainable": 88
+      },
+      "unique_units": [
+        "deeaglescout",
+        "xparrowknight",
+        "xpaztecwarchief",
+        "xpcoyoteman",
+        "xpeagleknight",
+        "xpjaguarknight",
+        "xpmacehualtin",
+        "xpmedicinemanaztec",
+        "xppumaman",
+        "xpskullknight",
+        "xptlaloccanoe"
+      ],
+      "unique_techs": [
+        "Age0XPAztec",
+        "BigAztecRaidingParty",
+        "BigAztecScoutingParty",
+        "BigAztecWarParty",
+        "BigDockCipactli",
+        "BigFarmCinteotl",
+        "BigFirepitFounder",
+        "BigHouseCoatlicue",
+        "BigNoblesHutWarSong",
+        "BigPlantationTezcatlipoca",
+        "BigWarHutBarometz",
+        "ChampionArrowKnight",
+        "ChampionCoyotemen",
+        "ChampionEagleKnight",
+        "ChampionJaguarKnight",
+        "ChampionMacehualtins",
+        "ChampionPumaMen",
+        "ChampionSkullKnightShadow",
+        "ColonializeXPAztec",
+        "DEAztecWarchiefPassiveShadow",
+        "DEBigFirepitFounderIndependence",
+        "EliteCoyotemen",
+        "EliteMacehualtins",
+        "ElitePumaMen",
+        "EliteSkullKnightShadow",
+        "FortressizeXPAztec",
+        "ImpLegendaryArrowKnights",
+        "ImpLegendaryCoyoteMen",
+        "ImpLegendaryEagleKnights",
+        "ImpLegendaryJaguarKnights",
+        "ImpLegendaryMacehualtins",
+        "ImpLegendaryPumaMen",
+        "ImperializeXPAztec",
+        "IndustrializeXPAztec",
+        "LegendarySkullKnightShadow",
+        "MightyNoblesHut",
+        "StrongNoblesHut",
+        "TribalAztecChief2",
+        "TribalAztecChief3",
+        "TribalAztecChief4",
+        "TribalAztecChief5",
+        "TribalAztecShaman2",
+        "TribalAztecShaman3",
+        "TribalAztecShaman4",
+        "TribalAztecShaman5",
+        "TribalAztecWarrior2",
+        "TribalAztecWarrior3",
+        "TribalAztecWarrior4",
+        "TribalAztecWarrior5",
+        "TribalAztecWisewoman2",
+        "TribalAztecWisewoman3",
+        "TribalAztecWisewoman4",
+        "TribalAztecWisewoman5",
+        "TribalAztecYouth2",
+        "TribalAztecYouth3",
+        "TribalAztecYouth4",
+        "TribalAztecYouth5",
+        "XPAztecSwashbucklerShadow"
+      ],
+      "is_playable": true
+    },
+    "XPSPC": {
+      "name": "布莱克家族农庄",
+      "name_en": "XPSPC",
+      "culture": "Iroquois",
+      "statsid": "",
+      "is_main": true,
+      "is_revolution": false,
+      "homecity": "homecityXPSPC.xml",
+      "age_techs": [
+        "Age0XPSPC",
+        "ColonializeXPSPC",
+        "FortressizeXPSPC",
+        "IndustrializeXPSPC",
+        "ImperializeXPSPC"
+      ],
+      "revolution_techs": [],
+      "starting_units": [],
+      "units": [
+        "fishingboat",
+        "settlernative",
+        "xpiroquoiswarchief",
+        "xpwarcanoe"
+      ],
+      "tech_counts": {
+        "active": 15,
+        "obtainable": 20
+      },
+      "unique_units": [],
+      "unique_techs": [],
+      "is_playable": false
+    },
+    "Japanese": {
+      "name": "日本人",
+      "name_en": "Japanese",
+      "culture": "Japanese",
+      "statsid": "JP",
+      "is_main": true,
+      "is_revolution": false,
+      "homecity": "homecityjapanese.xml",
+      "age_techs": [
+        "YPAge0Japanese",
+        "YPColonializeJapanese",
+        "YPFortressizeJapanese",
+        "YPIndustrializeJapanese",
+        "YPImperializeJapanese"
+      ],
+      "revolution_techs": [],
+      "starting_units": [
+        "ypberrywagon1",
+        "ypmonkjapanese",
+        "ypmonkjapanese2"
+      ],
+      "units": [
+        "depetelephant",
+        "depethippo",
+        "depetleopard",
+        "depetwarthog",
+        "monitor",
+        "priest",
+        "surgeon",
+        "xpspy",
+        "ypashigaru",
+        "ypatakabune",
+        "ypconsulatebestieros",
+        "ypconsulatecannon",
+        "ypconsulatecarabineer",
+        "ypconsulateculverin",
+        "ypconsulateespadachins",
+        "ypconsulatefalconet",
+        "ypconsulategendarmes",
+        "ypconsulategreatbombard",
+        "ypconsulateguerreiros",
+        "ypconsulatehorseartillery",
+        "ypconsulatejinete",
+        "ypconsulatelifeguard",
+        "ypconsulatemortar",
+        "ypconsulateredcoat",
+        "ypconsulaterogersranger",
+        "ypconsulatesiberiancossack",
+        "ypconsulatestadhouders",
+        "ypconsulatetercio",
+        "ypconsulatetufancicorps",
+        "ypconsulatevoltigeur",
+        "ypconsulateyounggarde",
+        "ypconsulatezweihander",
+        "ypfishingboatasian",
+        "ypflamingarrow",
+        "ypfune",
+        "ypkensei",
+        "ypmonkjapanese",
+        "ypmonkjapanese2",
+        "ypmorutaru",
+        "ypnaginatarider",
+        "yppetorangutan",
+        "ypsettlerjapanese",
+        "ypshinobihorse",
+        "yptekkousen",
+        "ypyabusame",
+        "ypyamabushi",
+        "ypyumi"
+      ],
+      "tech_counts": {
+        "active": 25,
+        "obtainable": 129
+      },
+      "unique_units": [
+        "ypashigaru",
+        "ypatakabune",
+        "ypflamingarrow",
+        "ypfune",
+        "ypkensei",
+        "ypmonkjapanese",
+        "ypmonkjapanese2",
+        "ypmorutaru",
+        "ypnaginatarider",
+        "ypsettlerjapanese",
+        "ypshinobihorse",
+        "yptekkousen",
+        "ypyabusame",
+        "ypyamabushi",
+        "ypyumi"
+      ],
+      "unique_techs": [
+        "DEToriiGatesPowerShadow",
+        "YPAge0Japanese",
+        "YPAge0JapaneseBuildings",
+        "YPAge0JapaneseConsulate",
+        "YPAge0JapaneseMonks",
+        "YPAge0JapaneseSpecialTechs",
+        "YPAge0JapaneseTechs",
+        "YPAge0JapaneseUnits",
+        "YPAge0JapaneseWonders",
+        "YPColonializeJapanese",
+        "YPDisciplinedAshigaru",
+        "YPDisciplinedNaginataRider",
+        "YPDisciplinedSamurai",
+        "YPDisciplinedShinobiShadow",
+        "YPDisciplinedYamabushiShadow",
+        "YPDisciplinedYumi",
+        "YPExaltedAshigaru",
+        "YPExaltedFlamingArrow",
+        "YPExaltedMorutaru",
+        "YPExaltedNaginataRider",
+        "YPExaltedSamurai",
+        "YPExaltedTekkousen",
+        "YPExaltedYabusame",
+        "YPExaltedYamabushiShadow",
+        "YPExaltedYumi",
+        "YPFortressizeJapanese",
+        "YPHonoredAshigaru",
+        "YPHonoredFlamingArrow",
+        "YPHonoredMorutaru",
+        "YPHonoredNaginataRider",
+        "YPHonoredSamurai",
+        "YPHonoredShinobiShadow",
+        "YPHonoredYabusame",
+        "YPHonoredYamabushiShadow",
+        "YPHonoredYumi",
+        "YPImperializeJapanese",
+        "YPIndustrializeJapanese",
+        "YPWonderJapaneseGiantBuddha2",
+        "YPWonderJapaneseGiantBuddha3",
+        "YPWonderJapaneseGiantBuddha4",
+        "YPWonderJapaneseGiantBuddha5",
+        "YPWonderJapaneseGoldenPavillion2",
+        "YPWonderJapaneseGoldenPavillion3",
+        "YPWonderJapaneseGoldenPavillion4",
+        "YPWonderJapaneseGoldenPavillion5",
+        "YPWonderJapaneseShogunate2",
+        "YPWonderJapaneseShogunate3",
+        "YPWonderJapaneseShogunate4",
+        "YPWonderJapaneseShogunate5",
+        "YPWonderJapaneseToriiGates2",
+        "YPWonderJapaneseToriiGates3",
+        "YPWonderJapaneseToriiGates4",
+        "YPWonderJapaneseToriiGates5",
+        "YPWonderJapaneseToshoguShrine2",
+        "YPWonderJapaneseToshoguShrine3",
+        "YPWonderJapaneseToshoguShrine4",
+        "YPWonderJapaneseToshoguShrine5",
+        "deJapaneseInterventionBase",
+        "ypBigConsulateDutch",
+        "ypBigConsulateJapanese",
+        "ypBigConsulateSpanish",
+        "ypDisciplinedDaimyoShadow",
+        "ypDisciplinedYabusameShadow",
+        "ypDojoUpgrade1",
+        "ypExaltedDaimyoShadow",
+        "ypExaltedShinobiShadow",
+        "ypHonoredDaimyoShadow",
+        "ypMarketBerryDogs",
+        "ypMarketBerryTraps",
+        "ypMonasteryJapaneseCombat",
+        "ypMonasteryJapaneseHealing",
+        "ypMonasteryKillingBlowUpgrade",
+        "ypMonasteryRangedSplash",
+        "ypShrineFortressUpgrade"
+      ],
+      "is_playable": true
+    },
+    "Chinese": {
+      "name": "中国人",
+      "name_en": "Chinese",
+      "culture": "Chinese",
+      "statsid": "CH",
+      "is_main": true,
+      "is_revolution": false,
+      "homecity": "homecitychinese.xml",
+      "age_techs": [
+        "YPAge0Chinese",
+        "YPColonializeChinese",
+        "YPFortressizeChinese",
+        "YPIndustrializeChinese",
+        "YPImperializeChinese"
+      ],
+      "revolution_techs": [],
+      "starting_units": [
+        "ypmonkchinese",
+        "ypmonkdisciple"
+      ],
+      "units": [
+        "depetelephant",
+        "depethippo",
+        "depetleopard",
+        "depetwarthog",
+        "monitor",
+        "surgeon",
+        "yparquebusier",
+        "ypblackflagarmy",
+        "ypchangdao",
+        "ypchukonu",
+        "ypconsulatebestieros",
+        "ypconsulatecannon",
+        "ypconsulatecarabineer",
+        "ypconsulateculverin",
+        "ypconsulateespadachins",
+        "ypconsulatefalconet",
+        "ypconsulategendarmes",
+        "ypconsulategreatbombard",
+        "ypconsulateguerreiros",
+        "ypconsulatehorseartillery",
+        "ypconsulatejinete",
+        "ypconsulatelifeguard",
+        "ypconsulatemortar",
+        "ypconsulateredcoat",
+        "ypconsulaterogersranger",
+        "ypconsulatesiberiancossack",
+        "ypconsulatestadhouders",
+        "ypconsulatetercio",
+        "ypconsulatetufancicorps",
+        "ypconsulatevoltigeur",
+        "ypconsulateyounggarde",
+        "ypconsulatezweihander",
+        "ypfireship",
+        "ypfishingboatasian",
+        "ypflamethrower",
+        "ypforbiddenarmy",
+        "ypfuchuan",
+        "yphandmortar",
+        "ypimperialarmy",
+        "ypironflail",
+        "ypkeshik",
+        "ypmeteorhammer",
+        "ypmingarmy",
+        "ypmongolianarmy",
+        "ypmonkchinese",
+        "ypmonkdisciple",
+        "yppetorangutan",
+        "ypqiangpikeman",
+        "ypsettlerasian",
+        "ypstandardarmy",
+        "ypstepperider",
+        "ypterritorialarmy",
+        "ypwarjunk"
+      ],
+      "tech_counts": {
+        "active": 24,
+        "obtainable": 123
+      },
+      "unique_units": [
+        "yparquebusier",
+        "ypblackflagarmy",
+        "ypchangdao",
+        "ypchukonu",
+        "ypfireship",
+        "ypflamethrower",
+        "ypforbiddenarmy",
+        "ypfuchuan",
+        "yphandmortar",
+        "ypimperialarmy",
+        "ypironflail",
+        "ypkeshik",
+        "ypmeteorhammer",
+        "ypmingarmy",
+        "ypmongolianarmy",
+        "ypmonkchinese",
+        "ypmonkdisciple",
+        "ypqiangpikeman",
+        "ypsettlerasian",
+        "ypstandardarmy",
+        "ypstepperider",
+        "ypterritorialarmy",
+        "ypwarjunk"
+      ],
+      "unique_techs": [
+        "YPAge0Chinese",
+        "YPAge0ChineseBuildings",
+        "YPAge0ChineseConsulate",
+        "YPAge0ChineseMonks",
+        "YPAge0ChineseSpecialTechs",
+        "YPAge0ChineseTechs",
+        "YPAge0ChineseUnits",
+        "YPAge0ChineseWonders",
+        "YPColonializeChinese",
+        "YPDisciplinedChuKoNu",
+        "YPDisciplinedFlameThrower",
+        "YPDisciplinedKeshik",
+        "YPDisciplinedQiangPikeman",
+        "YPDisciplinedSteppeRider",
+        "YPExaltedArquebusier",
+        "YPExaltedChangdao",
+        "YPExaltedChuKoNu",
+        "YPExaltedFlameThrower",
+        "YPExaltedFlyingCrow",
+        "YPExaltedFuchuan",
+        "YPExaltedHandMortar",
+        "YPExaltedIronFlail",
+        "YPExaltedKeshik",
+        "YPExaltedMeteorHammer",
+        "YPExaltedQiangPikeman",
+        "YPExaltedSteppeRider",
+        "YPFortressizeChinese",
+        "YPHonoredArquebusier",
+        "YPHonoredChangdao",
+        "YPHonoredChuKoNu",
+        "YPHonoredFlameThrower",
+        "YPHonoredHandMortar",
+        "YPHonoredIronFlail",
+        "YPHonoredKeshik",
+        "YPHonoredMeteorHammer",
+        "YPHonoredQiangPikeman",
+        "YPHonoredSteppeRider",
+        "YPImperializeChinese",
+        "YPIndustrializeChinese",
+        "YPWonderChineseConfucianAcademy2",
+        "YPWonderChineseConfucianAcademy3",
+        "YPWonderChineseConfucianAcademy4",
+        "YPWonderChineseConfucianAcademy5",
+        "YPWonderChinesePorcelainTower2",
+        "YPWonderChinesePorcelainTower3",
+        "YPWonderChinesePorcelainTower4",
+        "YPWonderChinesePorcelainTower5",
+        "YPWonderChineseSummerPalace2",
+        "YPWonderChineseSummerPalace3",
+        "YPWonderChineseSummerPalace4",
+        "YPWonderChineseSummerPalace5",
+        "YPWonderChineseTempleOfHeaven2",
+        "YPWonderChineseTempleOfHeaven3",
+        "YPWonderChineseTempleOfHeaven4",
+        "YPWonderChineseTempleOfHeaven5",
+        "YPWonderChineseWhitePagoda2",
+        "YPWonderChineseWhitePagoda3",
+        "YPWonderChineseWhitePagoda4",
+        "YPWonderChineseWhitePagoda5",
+        "ypBigConsulateGermans",
+        "ypBigConsulateRussians",
+        "ypDisciplinedArquebusierShadow",
+        "ypDisciplinedChangdaoShadow",
+        "ypDisciplinedIronFlailShadow",
+        "ypDisciplinedMeteorHammerShadow",
+        "ypMonasteryAttackSpeed",
+        "ypMonasteryCriticalUpgrade",
+        "ypMonasteryDiscipleAura",
+        "ypMonasteryShaolinWarrior",
+        "ypMonkMakeDisciple",
+        "ypVillagePopCapIncrease",
+        "ypVillagePopCapIncrease2",
+        "ypVillagePopCapIncrease3",
+        "ypVillagePopCapIncrease4"
+      ],
+      "is_playable": true
+    },
+    "Indians": {
+      "name": "印度人",
+      "name_en": "Indians",
+      "culture": "Indian",
+      "statsid": "IN",
+      "is_main": true,
+      "is_revolution": false,
+      "homecity": "homecityindians.xml",
+      "age_techs": [
+        "YPAge0Indians",
+        "YPColonializeIndians",
+        "YPFortressizeIndians",
+        "YPIndustrializeIndians",
+        "YPImperializeIndians"
+      ],
+      "revolution_techs": [],
+      "starting_units": [
+        "ypmonkindian",
+        "ypmonkindian2"
+      ],
+      "units": [
+        "caravel",
+        "depetelephant",
+        "depethippo",
+        "depetleopard",
+        "depetwarthog",
+        "frigate",
+        "galleon",
+        "monitor",
+        "surgeon",
+        "ypconsulatebestieros",
+        "ypconsulatecannon",
+        "ypconsulatecarabineer",
+        "ypconsulateculverin",
+        "ypconsulateespadachins",
+        "ypconsulatefalconet",
+        "ypconsulategendarmes",
+        "ypconsulategreatbombard",
+        "ypconsulateguerreiros",
+        "ypconsulatehorseartillery",
+        "ypconsulatejinete",
+        "ypconsulatelifeguard",
+        "ypconsulatemortar",
+        "ypconsulateredcoat",
+        "ypconsulaterogersranger",
+        "ypconsulatesiberiancossack",
+        "ypconsulatestadhouders",
+        "ypconsulatetercio",
+        "ypconsulatetufancicorps",
+        "ypconsulatevoltigeur",
+        "ypconsulateyounggarde",
+        "ypconsulatezweihander",
+        "ypfishingboatasian",
+        "yphowdah",
+        "yphowdahmansabdar",
+        "ypmahout",
+        "ypmahoutmansabdar",
+        "ypmercflailiphant",
+        "ypmercflailiphantmansabdar",
+        "ypmonkindian",
+        "ypmonkindian2",
+        "ypnatmercgurkha",
+        "ypnatmercgurkhajemadar",
+        "yppetorangutan",
+        "yprajput",
+        "yprajputmansabdar",
+        "ypsepoy",
+        "ypsepoymansabdar",
+        "ypsettlerindian",
+        "ypsiegeelephant",
+        "ypsiegeelephantmansabdar",
+        "ypsowar",
+        "ypsowarmansabdar",
+        "ypzamburak",
+        "ypzamburakmansabdar"
+      ],
+      "tech_counts": {
+        "active": 29,
+        "obtainable": 118
+      },
+      "unique_units": [
+        "yphowdah",
+        "yphowdahmansabdar",
+        "ypmahout",
+        "ypmahoutmansabdar",
+        "ypmercflailiphant",
+        "ypmercflailiphantmansabdar",
+        "ypmonkindian",
+        "ypmonkindian2",
+        "ypnatmercgurkha",
+        "ypnatmercgurkhajemadar",
+        "yprajput",
+        "yprajputmansabdar",
+        "ypsepoy",
+        "ypsepoymansabdar",
+        "ypsettlerindian",
+        "ypsiegeelephant",
+        "ypsiegeelephantmansabdar",
+        "ypsowar",
+        "ypsowarmansabdar",
+        "ypzamburak",
+        "ypzamburakmansabdar"
+      ],
+      "unique_techs": [
+        "DESailsIndian",
+        "YPAge0Indians",
+        "YPColonializeIndians",
+        "YPDisciplinedCamel",
+        "YPDisciplinedCamelGun",
+        "YPDisciplinedFlailElephant",
+        "YPDisciplinedGurkha",
+        "YPDisciplinedRajput",
+        "YPDisciplinedSepoy",
+        "YPDisciplinedUrumi",
+        "YPExaltedCamel",
+        "YPExaltedCamelGun",
+        "YPExaltedFlailElephant",
+        "YPExaltedGurkha",
+        "YPExaltedHowdah",
+        "YPExaltedMahout",
+        "YPExaltedRajput",
+        "YPExaltedSepoy",
+        "YPExaltedSiegeElephant",
+        "YPExaltedUrumi",
+        "YPFortressizeIndians",
+        "YPHonoredCamel",
+        "YPHonoredCamelGun",
+        "YPHonoredFlailElephant",
+        "YPHonoredGurkha",
+        "YPHonoredHowdah",
+        "YPHonoredMahout",
+        "YPHonoredRajput",
+        "YPHonoredSepoy",
+        "YPHonoredSiegeElephant",
+        "YPHonoredUrumi",
+        "YPImperializeIndians",
+        "YPIndustrializeIndians",
+        "YPWonderIndianAgra2",
+        "YPWonderIndianAgra3",
+        "YPWonderIndianAgra4",
+        "YPWonderIndianAgra5",
+        "YPWonderIndianCharminar2",
+        "YPWonderIndianCharminar3",
+        "YPWonderIndianCharminar4",
+        "YPWonderIndianCharminar5",
+        "YPWonderIndianKarniMata2",
+        "YPWonderIndianKarniMata3",
+        "YPWonderIndianKarniMata4",
+        "YPWonderIndianKarniMata5",
+        "YPWonderIndianTajMahal2",
+        "YPWonderIndianTajMahal3",
+        "YPWonderIndianTajMahal4",
+        "YPWonderIndianTajMahal5",
+        "YPWonderIndianTowerOfVictory2",
+        "YPWonderIndianTowerOfVictory3",
+        "YPWonderIndianTowerOfVictory4",
+        "YPWonderIndianTowerOfVictory5",
+        "ypAge0IndiansBuildings",
+        "ypAge0IndiansConsulate",
+        "ypAge0IndiansMonks",
+        "ypAge0IndiansSpecialTechs",
+        "ypAge0IndiansTechs",
+        "ypAge0IndiansUnits",
+        "ypAge0IndiansWonders",
+        "ypAssembleIndians",
+        "ypBigConsulateOttomans",
+        "ypDisciplinedHowdahShadow",
+        "ypDisciplinedMahoutShadow",
+        "ypFortifiedAgra",
+        "ypFreeIndianVillager",
+        "ypFrontierAgra",
+        "ypImperialManOWar",
+        "ypLivestockHoliness",
+        "ypMonasteryImprovedHealing",
+        "ypMonasteryIndianSpeed",
+        "ypMonasteryPetAura",
+        "ypMonasteryStompUpgrade",
+        "ypMusterIndians"
+      ],
+      "is_playable": true
+    },
+    "SPCJapanese": {
+      "name": "日本人",
+      "name_en": "SPCJapanese",
+      "culture": "Japanese",
+      "statsid": "",
+      "is_main": true,
+      "is_revolution": false,
+      "homecity": "homecitySPC_JC.xml",
+      "age_techs": [
+        "YPAge0JapaneseSPC",
+        "YPColonializeJapanese",
+        "YPFortressizeJapanese",
+        "YPIndustrializeJapanese",
+        "YPImperializeJapanese"
+      ],
+      "revolution_techs": [],
+      "starting_units": [
+        "ypberrywagon1"
+      ],
+      "units": [
+        "depetelephant",
+        "depethippo",
+        "depetleopard",
+        "depetwarthog",
+        "monitor",
+        "priest",
+        "surgeon",
+        "xpspy",
+        "ypashigaru",
+        "ypatakabune",
+        "ypconsulatebestieros",
+        "ypconsulatecannon",
+        "ypconsulatecarabineer",
+        "ypconsulateculverin",
+        "ypconsulateespadachins",
+        "ypconsulatefalconet",
+        "ypconsulategendarmes",
+        "ypconsulategreatbombard",
+        "ypconsulateguerreiros",
+        "ypconsulatehorseartillery",
+        "ypconsulatejinete",
+        "ypconsulatelifeguard",
+        "ypconsulatemortar",
+        "ypconsulateredcoat",
+        "ypconsulaterogersranger",
+        "ypconsulatesiberiancossack",
+        "ypconsulatestadhouders",
+        "ypconsulatetercio",
+        "ypconsulatetufancicorps",
+        "ypconsulatevoltigeur",
+        "ypconsulateyounggarde",
+        "ypconsulatezweihander",
+        "ypfishingboatasian",
+        "ypflamingarrow",
+        "ypfune",
+        "ypkensei",
+        "ypmorutaru",
+        "ypnaginatarider",
+        "yppetorangutan",
+        "ypsettlerjapanese",
+        "ypshinobihorse",
+        "yptekkousen",
+        "ypyabusame",
+        "ypyamabushi",
+        "ypyumi"
+      ],
+      "tech_counts": {
+        "active": 24,
+        "obtainable": 122
+      },
+      "unique_units": [],
+      "unique_techs": [],
+      "is_playable": false
+    },
+    "SPCChinese": {
+      "name": "中国人",
+      "name_en": "SPCChinese",
+      "culture": "Chinese",
+      "statsid": "",
+      "is_main": true,
+      "is_revolution": false,
+      "homecity": "homecitySPC_CC.xml",
+      "age_techs": [
+        "YPAge0ChineseSPC",
+        "YPColonializeChinese",
+        "YPFortressizeChinese",
+        "YPIndustrializeChinese",
+        "YPImperializeChinese"
+      ],
+      "revolution_techs": [],
+      "starting_units": [],
+      "units": [
+        "depetelephant",
+        "depethippo",
+        "depetleopard",
+        "depetwarthog",
+        "monitor",
+        "surgeon",
+        "yparquebusier",
+        "ypblackflagarmy",
+        "ypchangdao",
+        "ypchukonu",
+        "ypconsulatebestieros",
+        "ypconsulatecannon",
+        "ypconsulatecarabineer",
+        "ypconsulateculverin",
+        "ypconsulateespadachins",
+        "ypconsulatefalconet",
+        "ypconsulategendarmes",
+        "ypconsulategreatbombard",
+        "ypconsulateguerreiros",
+        "ypconsulatehorseartillery",
+        "ypconsulatejinete",
+        "ypconsulatelifeguard",
+        "ypconsulatemortar",
+        "ypconsulateredcoat",
+        "ypconsulaterogersranger",
+        "ypconsulatesiberiancossack",
+        "ypconsulatestadhouders",
+        "ypconsulatetercio",
+        "ypconsulatetufancicorps",
+        "ypconsulatevoltigeur",
+        "ypconsulateyounggarde",
+        "ypconsulatezweihander",
+        "ypfireship",
+        "ypfishingboatasian",
+        "ypflamethrower",
+        "ypforbiddenarmy",
+        "ypfuchuan",
+        "yphandmortar",
+        "ypimperialarmy",
+        "ypironflail",
+        "ypkeshik",
+        "ypmeteorhammer",
+        "ypmingarmy",
+        "ypmongolianarmy",
+        "yppetorangutan",
+        "ypqiangpikeman",
+        "ypsettlerasian",
+        "ypstandardarmy",
+        "ypstepperider",
+        "ypterritorialarmy",
+        "ypwarjunk"
+      ],
+      "tech_counts": {
+        "active": 23,
+        "obtainable": 117
+      },
+      "unique_units": [],
+      "unique_techs": [],
+      "is_playable": false
+    },
+    "SPCIndians": {
+      "name": "印度人",
+      "name_en": "SPCIndians",
+      "culture": "Indian",
+      "statsid": "",
+      "is_main": true,
+      "is_revolution": false,
+      "homecity": "homecitySPC_IC.xml",
+      "age_techs": [
+        "YPAge0IndiansSPC",
+        "YPColonializeIndians",
+        "YPFortressizeIndians",
+        "YPIndustrializeIndians",
+        "YPImperializeIndians"
+      ],
+      "revolution_techs": [],
+      "starting_units": [],
+      "units": [
+        "caravel",
+        "depetelephant",
+        "depethippo",
+        "depetleopard",
+        "depetwarthog",
+        "frigate",
+        "galleon",
+        "monitor",
+        "surgeon",
+        "ypconsulatebestieros",
+        "ypconsulatecannon",
+        "ypconsulatecarabineer",
+        "ypconsulateculverin",
+        "ypconsulateespadachins",
+        "ypconsulatefalconet",
+        "ypconsulategendarmes",
+        "ypconsulategreatbombard",
+        "ypconsulateguerreiros",
+        "ypconsulatehorseartillery",
+        "ypconsulatejinete",
+        "ypconsulatelifeguard",
+        "ypconsulatemortar",
+        "ypconsulateredcoat",
+        "ypconsulaterogersranger",
+        "ypconsulatesiberiancossack",
+        "ypconsulatestadhouders",
+        "ypconsulatetercio",
+        "ypconsulatetufancicorps",
+        "ypconsulatevoltigeur",
+        "ypconsulateyounggarde",
+        "ypconsulatezweihander",
+        "ypfishingboatasian",
+        "yphowdah",
+        "yphowdahmansabdar",
+        "ypmahout",
+        "ypmahoutmansabdar",
+        "ypmercflailiphant",
+        "ypmercflailiphantmansabdar",
+        "ypnatmercgurkha",
+        "ypnatmercgurkhajemadar",
+        "yppetorangutan",
+        "yprajput",
+        "yprajputmansabdar",
+        "ypsepoy",
+        "ypsepoymansabdar",
+        "ypsettlerindian",
+        "ypsiegeelephant",
+        "ypsiegeelephantmansabdar",
+        "ypsowar",
+        "ypsowarmansabdar",
+        "ypspcbrahminhealer",
+        "ypzamburak",
+        "ypzamburakmansabdar"
+      ],
+      "tech_counts": {
+        "active": 29,
+        "obtainable": 114
+      },
+      "unique_units": [],
+      "unique_techs": [],
+      "is_playable": false
+    },
+    "SPCCompany": {
+      "name": "英国人",
+      "name_en": "SPCCompany",
+      "culture": "WesternEurope",
+      "statsid": "BR",
+      "is_main": true,
+      "is_revolution": false,
+      "homecity": "homecitybritish.xml",
+      "age_techs": [
+        "Age0British",
+        "ColonializeBritish",
+        "FortressizeBritish",
+        "IndustrializeBritish",
+        "ImperializeBritish"
+      ],
+      "revolution_techs": [],
+      "starting_units": [
+        "explorer"
+      ],
+      "units": [
+        "caravel",
+        "culverin",
+        "depetelephant",
+        "depethippo",
+        "depetleopard",
+        "depetwarthog",
+        "dragoon",
+        "explorer",
+        "falconet",
+        "fishingboat",
+        "frigate",
+        "galleon",
+        "grenadier",
+        "hussar",
+        "longbowman",
+        "monitor",
+        "mortar",
+        "musketeer",
+        "pikeman",
+        "priest",
+        "settler",
+        "surgeon",
+        "xphorseartillery",
+        "xppetard",
+        "xpspy",
+        "yppetorangutan"
+      ],
+      "tech_counts": {
+        "active": 23,
+        "obtainable": 124
+      },
+      "unique_units": [],
+      "unique_techs": [],
+      "is_playable": false
+    },
+    "SPCJapaneseEnemy": {
+      "name": "日本人",
+      "name_en": "SPCJapaneseEnemy",
+      "culture": "Japanese",
+      "statsid": "",
+      "is_main": true,
+      "is_revolution": false,
+      "homecity": "homecitySPC_JC.xml",
+      "age_techs": [
+        "YPAge0JapaneseSPC",
+        "YPColonializeJapanese",
+        "YPFortressizeJapanese",
+        "YPIndustrializeJapanese",
+        "YPImperializeJapanese"
+      ],
+      "revolution_techs": [],
+      "starting_units": [
+        "ypberrywagon1"
+      ],
+      "units": [
+        "depetelephant",
+        "depethippo",
+        "depetleopard",
+        "depetwarthog",
+        "monitor",
+        "priest",
+        "surgeon",
+        "xpspy",
+        "ypashigaru",
+        "ypatakabune",
+        "ypconsulatebestieros",
+        "ypconsulatecannon",
+        "ypconsulatecarabineer",
+        "ypconsulateculverin",
+        "ypconsulateespadachins",
+        "ypconsulatefalconet",
+        "ypconsulategendarmes",
+        "ypconsulategreatbombard",
+        "ypconsulateguerreiros",
+        "ypconsulatehorseartillery",
+        "ypconsulatejinete",
+        "ypconsulatelifeguard",
+        "ypconsulatemortar",
+        "ypconsulateredcoat",
+        "ypconsulaterogersranger",
+        "ypconsulatesiberiancossack",
+        "ypconsulatestadhouders",
+        "ypconsulatetercio",
+        "ypconsulatetufancicorps",
+        "ypconsulatevoltigeur",
+        "ypconsulateyounggarde",
+        "ypconsulatezweihander",
+        "ypfishingboatasian",
+        "ypflamingarrow",
+        "ypfune",
+        "ypkensei",
+        "ypmorutaru",
+        "ypnaginatarider",
+        "yppetorangutan",
+        "ypsettlerjapanese",
+        "ypshinobihorse",
+        "yptekkousen",
+        "ypyabusame",
+        "ypyamabushi",
+        "ypyumi"
+      ],
+      "tech_counts": {
+        "active": 24,
+        "obtainable": 122
+      },
+      "unique_units": [],
+      "unique_techs": [],
+      "is_playable": false
+    },
+    "DEInca": {
+      "name": "印加人",
+      "name_en": "DEInca",
+      "culture": "Inca",
+      "statsid": "IC",
+      "is_main": true,
+      "is_revolution": false,
+      "homecity": "homecitydeinca.xml",
+      "age_techs": [
+        "DEAge0Inca",
+        "DEColonializeInca",
+        "DEFortressizeInca",
+        "DEIndustrializeInca",
+        "DEImperializeInca"
+      ],
+      "revolution_techs": [],
+      "starting_units": [
+        "deincawarchief",
+        "llama"
+      ],
+      "units": [
+        "canoe",
+        "debolaswarrior",
+        "dechasqui",
+        "dechincharaft",
+        "deincarunner",
+        "deincaspearman",
+        "deincawarchief",
+        "dejunglebowman",
+        "demaceman",
+        "depetelephant",
+        "depethippo",
+        "depetwarthog",
+        "deslinger",
+        "fishingboat",
+        "settlernative",
+        "surgeon",
+        "xpwarrior",
+        "yppetorangutan"
+      ],
+      "tech_counts": {
+        "active": 20,
+        "obtainable": 92
+      },
+      "unique_units": [
+        "debolaswarrior",
+        "dechasqui",
+        "dechincharaft",
+        "deincarunner",
+        "deincaspearman",
+        "deincawarchief",
+        "dejunglebowman",
+        "demaceman",
+        "deslinger"
+      ],
+      "unique_techs": [
+        "DEAge0Inca",
+        "DEBigMarketIntiFestivalIndependence",
+        "DEChampionBolasWarriors",
+        "DEChampionBowmen",
+        "DEChampionMacemen",
+        "DEChampionRunners",
+        "DEChampionSlingers",
+        "DEChampionSpearmen",
+        "DEColonializeInca",
+        "DEEliteBolasWarriorsShadow",
+        "DEEliteBowmen",
+        "DEEliteMacemenShadow",
+        "DEEliteRunners",
+        "DEEliteSlingersShadow",
+        "DEEliteSpearmen",
+        "DEFortressizeInca",
+        "DEImpLegendaryBolasWarriors",
+        "DEImpLegendaryBowmen",
+        "DEImpLegendaryMacemen",
+        "DEImpLegendaryRunners",
+        "DEImpLegendarySlingers",
+        "DEImpLegendarySpearmen",
+        "DEImperializeInca",
+        "DEIncaTamboShadow",
+        "DEIncaTamboShadowAfrican",
+        "DEIncaTamboShadowAsian",
+        "DEIncaTamboShadowEuropean",
+        "DEIndustrializeInca",
+        "TribalIncaChief2",
+        "TribalIncaChief3",
+        "TribalIncaChief4",
+        "TribalIncaChief5",
+        "TribalIncaShaman2",
+        "TribalIncaShaman3",
+        "TribalIncaShaman4",
+        "TribalIncaShaman5",
+        "TribalIncaWarrior2",
+        "TribalIncaWarrior3",
+        "TribalIncaWarrior4",
+        "TribalIncaWarrior5",
+        "TribalIncaWisewoman2",
+        "TribalIncaWisewoman3",
+        "TribalIncaWisewoman4",
+        "TribalIncaWisewoman5",
+        "TribalIncaYouth2",
+        "TribalIncaYouth3",
+        "TribalIncaYouth4",
+        "TribalIncaYouth5",
+        "deBigDockTotora",
+        "deBigFarmUrcuchillay",
+        "deBigFirePitRoyalFestival",
+        "deBigFirePitViracochaIndependence",
+        "deBigHouseQueensFestival",
+        "deBigIncaRaidingParty",
+        "deBigIncaScoutingParty",
+        "deBigIncaWarParty",
+        "deBigKallankaViracocha",
+        "deBigMarketIntiFestival",
+        "deBigPlantationCoca",
+        "deBigStrongholdThunderbolts",
+        "deBigWarHutHualcana",
+        "deMightyTambos",
+        "dePukaras",
+        "deSacsayhuaman"
+      ],
+      "is_playable": true
+    },
+    "DESwedish": {
+      "name": "瑞典人",
+      "name_en": "DESwedish",
+      "culture": "EasternEurope",
+      "statsid": "SW",
+      "is_main": true,
+      "is_revolution": false,
+      "homecity": "homecityswedish.xml",
+      "age_techs": [
+        "DEAge0Swedish",
+        "DEColonializeSwedish",
+        "DEFortressizeSwedish",
+        "DEIndustrializeSwedish",
+        "DEImperializeSwedish"
+      ],
+      "revolution_techs": [],
+      "starting_units": [
+        "explorer"
+      ],
+      "units": [
+        "caravel",
+        "crossbowman",
+        "culverin",
+        "decarolean",
+        "definnishrider",
+        "deleathercannon",
+        "depetelephant",
+        "depethippo",
+        "depetleopard",
+        "depetwarthog",
+        "explorer",
+        "falconet",
+        "fishingboat",
+        "frigate",
+        "galleon",
+        "grenadier",
+        "hussar",
+        "mercblackrider",
+        "mercjaeger",
+        "monitor",
+        "mortar",
+        "pikeman",
+        "priest",
+        "settler",
+        "surgeon",
+        "xphorseartillery",
+        "xppetard",
+        "xpspy",
+        "yppetorangutan",
+        "yprepentantblackrider",
+        "yprepentantjaeger"
+      ],
+      "tech_counts": {
+        "active": 25,
+        "obtainable": 128
+      },
+      "unique_units": [
+        "decarolean",
+        "definnishrider",
+        "deleathercannon",
+        "mercblackrider",
+        "mercjaeger",
+        "yprepentantblackrider",
+        "yprepentantjaeger"
+      ],
+      "unique_techs": [
+        "DEAge0Swedish",
+        "DEChurchGustavianGuards",
+        "DEChurchPikePush",
+        "DEChurchSavolaxJaegers",
+        "DEColonializeSwedish",
+        "DEFortressizeSwedish",
+        "DEImperializeSwedish",
+        "DEIndustrializeSwedish",
+        "DEPoliticianCavalierSwedish",
+        "DEPoliticianGeneralSwedish",
+        "DEPoliticianLogisticianSwedish",
+        "DEPoliticianMarksmanSwedish",
+        "DEPoliticianMercContractorFortressSwedish",
+        "DEPoliticianMusketeerSwedish",
+        "DEPoliticianPapalGuardSwedish",
+        "DEPoliticianRoyalistSwedish",
+        "GuardCaroleans",
+        "ImperialCaroleans",
+        "ImperialDalkarl",
+        "ImperialDrabants",
+        "MineWagonCardShadow",
+        "RGDalkarl",
+        "RGDrabants",
+        "SaloonBlackRider",
+        "SaloonJaeger",
+        "VeteranCaroleans",
+        "VeteranFinnishRiders",
+        "deImperialInfantryGuns",
+        "deInfantryGuns"
+      ],
+      "is_playable": true
+    },
+    "SPCBarbaryPirates": {
+      "name": "巴巴里海盗",
+      "name_en": "SPCBarbaryPirates",
+      "culture": "Mediterranean",
+      "statsid": "",
+      "is_main": true,
+      "is_revolution": false,
+      "homecity": "homecityspcbarbary.xml",
+      "age_techs": [
+        "DEAge0BarbarySPC",
+        "ColonializeOttoman",
+        "Fortressize",
+        "IndustrializeOttoman",
+        "ImperializeOttoman"
+      ],
+      "revolution_techs": [],
+      "starting_units": [],
+      "units": [
+        "culverin",
+        "debarbaryarcher",
+        "debarbarycavalry",
+        "debarbaryskirmisher",
+        "debarbaryspearman",
+        "debedouinhorsearcher",
+        "dehumbaraci",
+        "depetelephant",
+        "depethippo",
+        "depetleopard",
+        "depetwarthog",
+        "despcprivateer",
+        "falconet",
+        "fishingboat",
+        "galley",
+        "imam",
+        "mercbarbarycorsair",
+        "settler",
+        "surgeon",
+        "xppetard",
+        "yppetorangutan"
+      ],
+      "tech_counts": {
+        "active": 26,
+        "obtainable": 88
+      },
+      "unique_units": [],
+      "unique_techs": [],
+      "is_playable": false
+    },
+    "SPCAmericans": {
+      "name": "美国",
+      "name_en": "SPCAmericans",
+      "culture": "WesternEurope",
+      "statsid": "",
+      "is_main": true,
+      "is_revolution": false,
+      "homecity": "homecityrevolution.xml",
+      "age_techs": [
+        "DEAge0AmericansSPC",
+        "ColonializeSPCAct3",
+        "FortressizeSPCAct3",
+        "IndustrializeSPCAct3",
+        "ImperializeSPCAct3"
+      ],
+      "revolution_techs": [],
+      "starting_units": [],
+      "units": [
+        "caravel",
+        "culverin",
+        "depetelephant",
+        "depethippo",
+        "depetleopard",
+        "depetwarthog",
+        "despcusregular",
+        "despcusvolunteer",
+        "dragoon",
+        "falconet",
+        "fishingboat",
+        "frigate",
+        "galleon",
+        "grenadier",
+        "hussar",
+        "monitor",
+        "mortar",
+        "priest",
+        "rocket",
+        "settler",
+        "surgeon",
+        "yppetorangutan"
+      ],
+      "tech_counts": {
+        "active": 22,
+        "obtainable": 91
+      },
+      "unique_units": [],
+      "unique_techs": [],
+      "is_playable": false
+    },
+    "SPCTatars": {
+      "name": "鞑靼人",
+      "name_en": "SPCTatars",
+      "culture": "EasternEurope",
+      "statsid": "",
+      "is_main": true,
+      "is_revolution": false,
+      "homecity": "homecitychinese.xml",
+      "age_techs": [
+        "DEAge0TatarsSPC",
+        "ColonializeRussian",
+        "FortressizeRussian",
+        "IndustrializeRussian",
+        "ImperializeRussian"
+      ],
+      "revolution_techs": [],
+      "starting_units": [],
+      "units": [
+        "denatmerctatararcher",
+        "depetelephant",
+        "depethippo",
+        "depetleopard",
+        "depetwarthog",
+        "imam",
+        "settler",
+        "surgeon",
+        "ypironflail",
+        "ypkeshik",
+        "ypmeteorhammer",
+        "yppetorangutan",
+        "ypstepperider"
+      ],
+      "tech_counts": {
+        "active": 21,
+        "obtainable": 88
+      },
+      "unique_units": [],
+      "unique_techs": [],
+      "is_playable": false
+    },
+    "SPCEthiopians": {
+      "name": "埃塞俄比亚人",
+      "name_en": "SPCEthiopians",
+      "culture": "AfricaEast",
+      "statsid": "",
+      "is_main": true,
+      "is_revolution": false,
+      "homecity": "",
+      "age_techs": [
+        "DEAge0EthiopiansSPC",
+        "Colonialize",
+        "Fortressize",
+        "Industrialize",
+        "Imperialize"
+      ],
+      "revolution_techs": [],
+      "starting_units": [],
+      "units": [
+        "depetelephant",
+        "depethippo",
+        "depetleopard",
+        "depetwarthog",
+        "fishingboat",
+        "priest",
+        "settler",
+        "surgeon",
+        "yppetorangutan"
+      ],
+      "tech_counts": {
+        "active": 17,
+        "obtainable": 74
+      },
+      "unique_units": [],
+      "unique_techs": [],
+      "is_playable": false
+    },
+    "SPCSomalis": {
+      "name": "索马里人",
+      "name_en": "SPCSomalis",
+      "culture": "AfricaEast",
+      "statsid": "",
+      "is_main": true,
+      "is_revolution": false,
+      "homecity": "",
+      "age_techs": [
+        "XPTrickle",
+        "Colonialize",
+        "Fortressize",
+        "Industrialize",
+        "Imperialize"
+      ],
+      "revolution_techs": [],
+      "starting_units": [],
+      "units": [],
+      "tech_counts": {
+        "active": 8,
+        "obtainable": 5
+      },
+      "unique_units": [],
+      "unique_techs": [],
+      "is_playable": false
+    },
+    "SPCRenoGang": {
+      "name": "雷诺帮",
+      "name_en": "SPCRenoGang",
+      "culture": "WesternEurope",
+      "statsid": "",
+      "is_main": true,
+      "is_revolution": false,
+      "homecity": "",
+      "age_techs": [
+        "Age0SPCBandits",
+        "Colonialize",
+        "Fortressize",
+        "Industrialize",
+        "Imperialize"
+      ],
+      "revolution_techs": [],
+      "starting_units": [],
+      "units": [
+        "cuirassier",
+        "culverin",
+        "depetelephant",
+        "depethippo",
+        "depetleopard",
+        "depetwarthog",
+        "dragoon",
+        "explorer",
+        "falconet",
+        "hussar",
+        "mercfusilier",
+        "mercstradiot",
+        "settler",
+        "surgeon",
+        "yppetorangutan"
+      ],
+      "tech_counts": {
+        "active": 22,
+        "obtainable": 81
+      },
+      "unique_units": [],
+      "unique_techs": [],
+      "is_playable": false
+    },
+    "SPCHoleGang": {
+      "name": "墙洞帮",
+      "name_en": "SPCHoleGang",
+      "culture": "WesternEurope",
+      "statsid": "",
+      "is_main": true,
+      "is_revolution": false,
+      "homecity": "",
+      "age_techs": [
+        "Age0SPCBandits",
+        "Colonialize",
+        "Fortressize",
+        "Industrialize",
+        "Imperialize"
+      ],
+      "revolution_techs": [],
+      "starting_units": [],
+      "units": [
+        "cuirassier",
+        "culverin",
+        "depetelephant",
+        "depethippo",
+        "depetleopard",
+        "depetwarthog",
+        "dragoon",
+        "explorer",
+        "falconet",
+        "hussar",
+        "mercfusilier",
+        "mercstradiot",
+        "settler",
+        "surgeon",
+        "yppetorangutan"
+      ],
+      "tech_counts": {
+        "active": 22,
+        "obtainable": 81
+      },
+      "unique_units": [],
+      "unique_techs": [],
+      "is_playable": false
+    },
+    "XPSPCFalcon": {
+      "name": "猎鹰公司",
+      "name_en": "XPSPCFalcon",
+      "culture": "WesternEurope",
+      "statsid": "",
+      "is_main": true,
+      "is_revolution": false,
+      "homecity": "homecityXPSPCFalcon.xml",
+      "age_techs": [
+        "Age0XPSPCFalcon",
+        "ColonializeXPSPCFalcon",
+        "FortressizeXPSPCFalcon",
+        "IndustrializeXPSPCFalcon",
+        "ImperializeXPSPCFalcon"
+      ],
+      "revolution_techs": [],
+      "starting_units": [],
+      "units": [
+        "caravel",
+        "culverin",
+        "dragoon",
+        "falconet",
+        "fishingboat",
+        "galleon",
+        "hussar",
+        "musketeer",
+        "priest",
+        "settler",
+        "skirmisher"
+      ],
+      "tech_counts": {
+        "active": 13,
+        "obtainable": 52
+      },
+      "unique_units": [],
+      "unique_techs": [],
+      "is_playable": false
+    },
+    "XPSPCLakota": {
+      "name": "拉科塔人",
+      "name_en": "XPSPCLakota",
+      "culture": "Sioux",
+      "statsid": "",
+      "is_main": true,
+      "is_revolution": false,
+      "homecity": "homecityXPSPCFalcon.xml",
+      "age_techs": [
+        "Age0XPSPCLakota",
+        "ColonializeXPSPCLakota",
+        "FortressizeXPSPCLakota",
+        "IndustrializeXPSPCLakota",
+        "ImperializeXPSPCLakota"
+      ],
+      "revolution_techs": [],
+      "starting_units": [],
+      "units": [
+        "culverin",
+        "falconet",
+        "fishingboat",
+        "settlernative",
+        "xpaxerider",
+        "xpbowrider",
+        "xpwarcanoe",
+        "xpwarclub",
+        "xpwarrifle"
+      ],
+      "tech_counts": {
+        "active": 13,
+        "obtainable": 45
+      },
+      "unique_units": [],
+      "unique_techs": [],
+      "is_playable": false
+    },
+    "DEAmericans": {
+      "name": "美国",
+      "name_en": "DEAmericans",
+      "culture": "WesternEurope",
+      "statsid": "US",
+      "is_main": true,
+      "is_revolution": false,
+      "homecity": "homecityamericans.xml",
+      "age_techs": [
+        "DEAge0Americans",
+        "DEColonializeAmericans",
+        "DEFortressizeAmericans",
+        "DEIndustrializeAmericans",
+        "DEImperializeAmericans"
+      ],
+      "revolution_techs": [],
+      "starting_units": [
+        "degeneral"
+      ],
+      "units": [
+        "culverin",
+        "deminuteman",
+        "depetelephant",
+        "depethippo",
+        "depetleopard",
+        "depetwarthog",
+        "deregular",
+        "derifleman",
+        "desloop",
+        "destatemilitia",
+        "desteamer",
+        "deuscavalry",
+        "fishingboat",
+        "frigate",
+        "hussar",
+        "mortar",
+        "saloonoutlawpistol",
+        "saloonoutlawrider",
+        "saloonoutlawrifleman",
+        "settler",
+        "surgeon",
+        "xpgatlinggun",
+        "xphorseartillery",
+        "xpironclad",
+        "xppetard",
+        "xpspy",
+        "yppetorangutan"
+      ],
+      "tech_counts": {
+        "active": 24,
+        "obtainable": 123
+      },
+      "unique_units": [
+        "deminuteman",
+        "deregular",
+        "derifleman",
+        "destatemilitia",
+        "deuscavalry",
+        "saloonoutlawpistol",
+        "saloonoutlawrider",
+        "saloonoutlawrifleman",
+        "xpgatlinggun"
+      ],
+      "unique_techs": [
+        "DEAge0Americans",
+        "DEBillOfRights",
+        "DECapitolGoldRush",
+        "DEColonializeAmericans",
+        "DEConstitution",
+        "DEFortressizeAmericans",
+        "DEGuardRiflemen",
+        "DEGuardUSCavalry",
+        "DEGuardUSMinutemen",
+        "DEGuardUSRegulars",
+        "DEHCUSExpeditionShadow",
+        "DEImperialRiflemen",
+        "DEImperialUSCavalry",
+        "DEImperialUSMinutemen",
+        "DEImperialUSRegulars",
+        "DEImperialVolunteers",
+        "DEImperializeAmericans",
+        "DEIndustrializeAmericans",
+        "DEMedicalScience",
+        "DEOregonTrail",
+        "DEOutlawChargedActions",
+        "DEPoliticianFederalCalifornia",
+        "DEPoliticianFederalConnecticut",
+        "DEPoliticianFederalDelaware",
+        "DEPoliticianFederalFlorida",
+        "DEPoliticianFederalIllinois",
+        "DEPoliticianFederalIndiana",
+        "DEPoliticianFederalKentucky",
+        "DEPoliticianFederalMaryland",
+        "DEPoliticianFederalMassachusetts",
+        "DEPoliticianFederalNewHampshire",
+        "DEPoliticianFederalNewJersey",
+        "DEPoliticianFederalNewYork",
+        "DEPoliticianFederalOhio",
+        "DEPoliticianFederalPennsylvania",
+        "DEPoliticianFederalRhodeIsland",
+        "DEPoliticianFederalSouthCarolina",
+        "DEPoliticianFederalTennessee",
+        "DEPoliticianFederalTexas",
+        "DEPoliticianFederalVermont",
+        "DEPoliticianFederalVirginia",
+        "DEStatehood",
+        "DEUSLevy",
+        "DEVeteranRiflemenShadow",
+        "DEVeteranStateMilitia",
+        "DEVeteranUSCavalryShadow",
+        "DEVeteranUSRegulars",
+        "DEVolunteers",
+        "HeavyGatlingGun",
+        "ImpDeforestationAmericans",
+        "ImpImmigrantsAmericans",
+        "ImpLargeScaleAgricultureAmericans",
+        "ImperialGatlingGun",
+        "deGeneralChargeCarbine",
+        "deGeneralInspiringFlag"
+      ],
+      "is_playable": true
+    },
+    "DEEthiopians": {
+      "name": "埃塞俄比亚人",
+      "name_en": "DEEthiopians",
+      "culture": "AfricaEast",
+      "statsid": "ET",
+      "is_main": true,
+      "is_revolution": false,
+      "homecity": "homecityethiopians.xml",
+      "age_techs": [
+        "DEAge0Ethiopian",
+        "DEColonializeEthiopian",
+        "DEFortressizeEthiopian",
+        "DEIndustrializeEthiopian",
+        "DEImperializeEthiopian"
+      ],
+      "revolution_techs": [],
+      "starting_units": [
+        "delivestockmarketwagon",
+        "deprince"
+      ],
+      "units": [
+        "deabun",
+        "debattlecanoe",
+        "debowmanlevy",
+        "decannonboat",
+        "defishingboatafrican",
+        "degascenya",
+        "degunnerlevy",
+        "dejavelinrider",
+        "demercdhow",
+        "deneftenya",
+        "deoromowarrior",
+        "deoutlawdesertarcher",
+        "deoutlawdesertraider",
+        "deoutlawdesertwarrior",
+        "depetelephant",
+        "depethippo",
+        "depetwarthog",
+        "desebastopolmortar",
+        "desettlerafrican",
+        "deshotelwarrior",
+        "despearmanlevy",
+        "missionary",
+        "surgeon",
+        "yppetorangutan"
+      ],
+      "tech_counts": {
+        "active": 26,
+        "obtainable": 98
+      },
+      "unique_units": [
+        "deabun",
+        "degascenya",
+        "demercdhow",
+        "deneftenya",
+        "deoromowarrior",
+        "desebastopolmortar",
+        "deshotelwarrior"
+      ],
+      "unique_techs": [
+        "DEAge0Ethiopian",
+        "DEAllegianceArab5",
+        "DEAllegianceHabesha2",
+        "DEAllegianceHabesha3",
+        "DEAllegianceHabesha4",
+        "DEAllegianceHabesha5",
+        "DEAllegianceIndian3",
+        "DEAllegianceIndian4",
+        "DEAllegianceIndian5",
+        "DEAllegianceJesuit2",
+        "DEAllegianceJesuit3",
+        "DEAllegianceJesuit4",
+        "DEAllegianceJesuit5",
+        "DEAllegianceOromo4",
+        "DEAllegianceOromo5",
+        "DEAllegiancePortuguese2",
+        "DEAllegiancePortuguese3",
+        "DEAllegiancePortuguese4",
+        "DEAllegiancePortuguese5",
+        "DEAllegianceSomali2",
+        "DEAllegianceSomali3",
+        "DEAllegianceSomali4",
+        "DEAllegianceSomali5",
+        "DEAllegianceSudanese2",
+        "DEAllegianceSudanese3",
+        "DEAllegianceSudanese4",
+        "DEAllegianceSudanese5",
+        "DEAxumChronicle",
+        "DEBookOfAxum",
+        "DEChampionCavalryEthiopian",
+        "DEChampionInfantryEthiopian",
+        "DEColonializeEthiopian",
+        "DEEliteCavalryEthiopian",
+        "DEEliteInfantryEthiopian",
+        "DEFortifiedCitiesEthiopians",
+        "DEFortressizeEthiopian",
+        "DEImperializeEthiopian",
+        "DEIndustrializeEthiopian",
+        "DELegendaryCavalryEthiopian",
+        "DELegendaryInfantryEthiopian",
+        "DEMountainMonasteryAbandon",
+        "DESolomonicDynasty"
+      ],
+      "is_playable": true
+    },
+    "DEHausa": {
+      "name": "豪萨人",
+      "name_en": "DEHausa",
+      "culture": "AfricaWest",
+      "statsid": "HA",
+      "is_main": true,
+      "is_revolution": false,
+      "homecity": "homecityhausa.xml",
+      "age_techs": [
+        "DEAge0Hausa",
+        "DEColonializeHausa",
+        "DEFortressizeHausa",
+        "DEIndustrializeHausa",
+        "DEImperializeHausa"
+      ],
+      "revolution_techs": [],
+      "starting_units": [
+        "deemir",
+        "delivestockmarketwagon"
+      ],
+      "units": [
+        "debattlecanoe",
+        "debowmanlevy",
+        "decannonboat",
+        "defishingboatafrican",
+        "defulawarrior",
+        "degriot",
+        "degunnerlevy",
+        "dejavelinrider",
+        "delifidi",
+        "demaigadi",
+        "demercxebec",
+        "deoutlawdesertarcher",
+        "deoutlawdesertraider",
+        "deoutlawdesertwarrior",
+        "depetelephant",
+        "depethippo",
+        "depetwarthog",
+        "deraider",
+        "desettlerafrican",
+        "despearmanlevy",
+        "surgeon",
+        "yppetorangutan"
+      ],
+      "tech_counts": {
+        "active": 25,
+        "obtainable": 98
+      },
+      "unique_units": [
+        "defulawarrior",
+        "degriot",
+        "delifidi",
+        "demaigadi",
+        "demercxebec",
+        "deraider"
+      ],
+      "unique_techs": [
+        "DEAge0Hausa",
+        "DEAllegianceAkan2",
+        "DEAllegianceAkan3",
+        "DEAllegianceAkan4",
+        "DEAllegianceAkan5",
+        "DEAllegianceBerber2",
+        "DEAllegianceBerber3",
+        "DEAllegianceBerber4",
+        "DEAllegianceBerber5",
+        "DEAllegianceBritish5",
+        "DEAllegianceFulani3",
+        "DEAllegianceFulani4",
+        "DEAllegianceFulani5",
+        "DEAllegianceHausa2",
+        "DEAllegianceHausa3",
+        "DEAllegianceHausa4",
+        "DEAllegianceHausa5",
+        "DEAllegianceMoroccan2",
+        "DEAllegianceMoroccan3",
+        "DEAllegianceMoroccan4",
+        "DEAllegianceMoroccan5",
+        "DEAllegianceSonghai2",
+        "DEAllegianceSonghai3",
+        "DEAllegianceSonghai4",
+        "DEAllegianceSonghai5",
+        "DEAllegianceYoruba4",
+        "DEAllegianceYoruba5",
+        "DEBanzaBakwai",
+        "DEChampionArchersHausa",
+        "DEChampionHeavyCavalryHausa",
+        "DEColonializeHausa",
+        "DEEliteArchersHausa",
+        "DEEliteHeavyCavalryHausa",
+        "DEFortifiedCitiesHausa",
+        "DEFortressizeHausa",
+        "DEHausaBakwai",
+        "DEImperializeHausa",
+        "DEIndustrializeHausa",
+        "DELegendaryArchersHausa",
+        "DELegendaryHeavyCavalryHausa",
+        "DETimbuktuManuscripts"
+      ],
+      "is_playable": true
+    },
+    "SPCMoroccans": {
+      "name": "摩洛哥人",
+      "name_en": "SPCMoroccans",
+      "culture": "Mediterranean",
+      "statsid": "",
+      "is_main": true,
+      "is_revolution": false,
+      "homecity": "homecityspcbarbary.xml",
+      "age_techs": [
+        "DEAge0MoroccanSPC",
+        "ColonializeOttoman",
+        "Fortressize",
+        "IndustrializeOttoman",
+        "ImperializeOttoman"
+      ],
+      "revolution_techs": [],
+      "starting_units": [],
+      "units": [
+        "culverin",
+        "debarbaryarcher",
+        "debarbarycavalry",
+        "debarbaryskirmisher",
+        "debarbaryspearman",
+        "debedouinhorsearcher",
+        "dehumbaraci",
+        "depetelephant",
+        "depethippo",
+        "depetleopard",
+        "depetwarthog",
+        "despcprivateer",
+        "falconet",
+        "fishingboat",
+        "galley",
+        "imam",
+        "settler",
+        "surgeon",
+        "xppetard",
+        "yppetorangutan"
+      ],
+      "tech_counts": {
+        "active": 25,
+        "obtainable": 72
+      },
+      "unique_units": [],
+      "unique_techs": [],
+      "is_playable": false
+    },
+    "DEMexicans": {
+      "name": "墨西哥人",
+      "name_en": "DEMexicans",
+      "culture": "Mediterranean",
+      "statsid": "MX",
+      "is_main": true,
+      "is_revolution": false,
+      "homecity": "homecitymexicans.xml",
+      "age_techs": [
+        "DEAge0Mexicans",
+        "DEColonializeMexicans",
+        "DEFortressizeMexicans",
+        "DEIndustrializeMexicans",
+        "DEImperializeMexicans"
+      ],
+      "revolution_techs": [],
+      "starting_units": [
+        "cow",
+        "degeneral"
+      ],
+      "units": [
+        "culverin",
+        "dechinaco",
+        "deemboscador",
+        "deinsurgente",
+        "depadre",
+        "depetelephant",
+        "depethippo",
+        "depetleopard",
+        "depetwarthog",
+        "desaloonbandido",
+        "desaloondesperado",
+        "desaloonvaquero",
+        "desloop",
+        "desoldado",
+        "desteamer",
+        "dragoon",
+        "falconet",
+        "fishingboat",
+        "frigate",
+        "mortar",
+        "settler",
+        "surgeon",
+        "xphorseartillery",
+        "xpironclad",
+        "xppetard",
+        "xpspy",
+        "yppetorangutan"
+      ],
+      "tech_counts": {
+        "active": 27,
+        "obtainable": 138
+      },
+      "unique_units": [
+        "dechinaco",
+        "deemboscador",
+        "deinsurgente",
+        "depadre",
+        "desaloonbandido",
+        "desaloondesperado",
+        "desaloonvaquero",
+        "desoldado"
+      ],
+      "unique_techs": [
+        "DEAge0Mexicans",
+        "DECharros",
+        "DEChurchDiaDeLosMuertos",
+        "DEChurchFirstGuarantee",
+        "DEChurchMissionFervor",
+        "DEChurchSecondGuarantee",
+        "DEChurchSevenHouses",
+        "DEChurchThirdGuarantee",
+        "DEColonializeMexicans",
+        "DECryofDolores",
+        "DEFortressizeMexicans",
+        "DEGuardInsurgentes",
+        "DEGuardSoldados",
+        "DEImperialCharros",
+        "DEImperialInsurgentes",
+        "DEImperialSoldados",
+        "DEImperialVigilantes",
+        "DEImperializeMexicans",
+        "DEIndustrializeMexicans",
+        "DEMercantilismMX",
+        "DEMexicanPadreUpgradeShadow",
+        "DEPacifyGuardiansShadow",
+        "DEPoliticianFederalMXChiapas",
+        "DEPoliticianFederalMXChihuahua",
+        "DEPoliticianFederalMXCoahuila",
+        "DEPoliticianFederalMXDurango",
+        "DEPoliticianFederalMXGuanajuato",
+        "DEPoliticianFederalMXGuerrero",
+        "DEPoliticianFederalMXJalisco",
+        "DEPoliticianFederalMXMexico",
+        "DEPoliticianFederalMXMichoacan",
+        "DEPoliticianFederalMXOaxaca",
+        "DEPoliticianFederalMXPuebla",
+        "DEPoliticianFederalMXQueretaro",
+        "DEPoliticianFederalMXSanLuisPotosi",
+        "DEPoliticianFederalMXSinaloa",
+        "DEPoliticianFederalMXSonora",
+        "DEPoliticianFederalMXTabasco",
+        "DEPoliticianFederalMXTamaulipas",
+        "DEPoliticianFederalMXTlaxcala",
+        "DEPoliticianFederalMXVeracruz",
+        "DEPoliticianFederalMXZacatecas",
+        "DERevolutionMXBajaCalifornia",
+        "DERevolutionMXCalifornia",
+        "DERevolutionMXCentralAmerica",
+        "DERevolutionMXRioGrande",
+        "DERevolutionMXTexas",
+        "DERevolutionMXYucatan",
+        "DERevolutionaryNerfShadowColonial",
+        "DERevolutionaryNerfShadowFortress",
+        "DERevolutionaryNerfShadowIndustrialize",
+        "DESecretSocieties",
+        "DESpawnMexicanPadre",
+        "DEStateReligion",
+        "DEVeteranChinacos",
+        "DEVeteranEmboscadors",
+        "DEVeteranInsurgentes",
+        "DEVeteranSoldados",
+        "DEVigilantes",
+        "deGeneralInspiringFlagMexican",
+        "deHaciendaSettler",
+        "dePadreChargeHeavyStrike"
+      ],
+      "is_playable": true
+    },
+    "SPCCanadians": {
+      "name": "加拿大人",
+      "name_en": "SPCCanadians",
+      "culture": "WesternEurope",
+      "statsid": "",
+      "is_main": true,
+      "is_revolution": false,
+      "homecity": "homecitybritish.xml",
+      "age_techs": [
+        "DEAge0CanadiansSPC",
+        "ColonializeBritish",
+        "FortressizeBritish",
+        "IndustrializeBritish",
+        "ImperializeBritish"
+      ],
+      "revolution_techs": [],
+      "starting_units": [
+        "explorer"
+      ],
+      "units": [
+        "caravel",
+        "culverin",
+        "depetelephant",
+        "depethippo",
+        "depetleopard",
+        "depetwarthog",
+        "derifleman",
+        "destatemilitia",
+        "dragoon",
+        "explorer",
+        "falconet",
+        "fishingboat",
+        "frigate",
+        "galleon",
+        "grenadier",
+        "hussar",
+        "monitor",
+        "mortar",
+        "musketeer",
+        "priest",
+        "settler",
+        "surgeon",
+        "xphorseartillery",
+        "xppetard",
+        "xpspy",
+        "yppetorangutan"
+      ],
+      "tech_counts": {
+        "active": 23,
+        "obtainable": 118
+      },
+      "unique_units": [],
+      "unique_techs": [],
+      "is_playable": false
+    },
+    "DEItalians": {
+      "name": "意大利人",
+      "name_en": "DEItalians",
+      "culture": "Mediterranean",
+      "statsid": "IT",
+      "is_main": true,
+      "is_revolution": false,
+      "homecity": "homecityitalians.xml",
+      "age_techs": [
+        "DEAge0Italians",
+        "DEColonializeItalians",
+        "DEFortressizeItalians",
+        "DEIndustrializeItalians",
+        "DEImperializeItalians"
+      ],
+      "revolution_techs": [],
+      "starting_units": [
+        "dearchitect",
+        "explorer"
+      ],
+      "units": [
+        "caravel",
+        "culverin",
+        "dearchitect",
+        "debersagliere",
+        "degalleass",
+        "depavisier",
+        "depetelephant",
+        "depethippo",
+        "depetleopard",
+        "depetwarthog",
+        "dragoon",
+        "explorer",
+        "falconet",
+        "fishingboat",
+        "frigate",
+        "grenadier",
+        "halberdier",
+        "hussar",
+        "monitor",
+        "mortar",
+        "musketeer",
+        "pikeman",
+        "priest",
+        "settler",
+        "surgeon",
+        "xphorseartillery",
+        "xppetard",
+        "xpspy",
+        "yppetorangutan"
+      ],
+      "tech_counts": {
+        "active": 23,
+        "obtainable": 127
+      },
+      "unique_units": [
+        "dearchitect",
+        "debersagliere",
+        "degalleass",
+        "depavisier"
+      ],
+      "unique_techs": [
+        "DEAge0Italians",
+        "DEChurchCarabinieri",
+        "DEChurchPapacy",
+        "DEChurchRisorgimento",
+        "DEColonializeItalians",
+        "DEFortressizeItalians",
+        "DEGalileans",
+        "DEGuardBersaglieriShadow",
+        "DEImperialBersaglieri",
+        "DEImperialGalileans",
+        "DEImperialPapalBombard",
+        "DEImperialSpingardes",
+        "DEImperializeItalians",
+        "DEIndustrializeItalians",
+        "DEPoliticianGeneralItalian",
+        "DEPoliticianMediciItalian",
+        "DEPoliticianPapalGuardItalian",
+        "DESpingardes",
+        "DEVeteranBersagliereShadow",
+        "DEVeteranPavisiers",
+        "PoliticianAdventurerItalian",
+        "PoliticianCavalierItalian",
+        "PoliticianMarksmanItalian",
+        "deChurchCarabinieriIndependence"
+      ],
+      "is_playable": true
+    },
+    "DEMaltese": {
+      "name": "马耳他人",
+      "name_en": "DEMaltese",
+      "culture": "Mediterranean",
+      "statsid": "MT",
+      "is_main": true,
+      "is_revolution": false,
+      "homecity": "homecitymaltese.xml",
+      "age_techs": [
+        "DEAge0Maltese",
+        "DEColonializeMaltese",
+        "DEFortressizeMaltese",
+        "DEIndustrializeMaltese",
+        "DEImperializeMaltese"
+      ],
+      "revolution_techs": [],
+      "starting_units": [
+        "degrandmaster"
+      ],
+      "units": [
+        "crossbowman",
+        "culverin",
+        "degrandmaster",
+        "dehoopthrower",
+        "dehospitaller",
+        "demaltesemusketeer",
+        "deordergalley",
+        "depetelephant",
+        "depethippo",
+        "depetleopard",
+        "depetwarthog",
+        "falconet",
+        "fishingboat",
+        "frigate",
+        "galleon",
+        "monitor",
+        "mortar",
+        "pikeman",
+        "priest",
+        "settler",
+        "surgeon",
+        "xppetard",
+        "xpspy",
+        "ypconsulatejinete",
+        "ypconsulatelifeguard",
+        "yppetorangutan"
+      ],
+      "tech_counts": {
+        "active": 23,
+        "obtainable": 119
+      },
+      "unique_units": [
+        "degrandmaster",
+        "dehoopthrower",
+        "dehospitaller",
+        "demaltesemusketeer",
+        "deordergalley"
+      ],
+      "unique_techs": [
+        "DEAge0Maltese",
+        "DEBasilisks",
+        "DEChurchCrusaderKnights",
+        "DEChurchKnightsHospital",
+        "DEChurchTeutonicKnights",
+        "DEColonializeMaltese",
+        "DEFortressizeMaltese",
+        "DEGuardHoopThrowers",
+        "DEGuardHospitallers",
+        "DEGuardSentinels",
+        "DEImperialArbalester",
+        "DEImperialBasilisks",
+        "DEImperialHoopThrowers",
+        "DEImperialHospitallers",
+        "DEImperialSentinels",
+        "DEImperializeMaltese",
+        "DEIndustrializeMaltese",
+        "DEMaltaFortOrderUnitFix",
+        "DEPoliticianMercContractorFortressMaltese",
+        "DEPoliticianMorganBlack",
+        "DEPoliticianPapalGuardMaltese",
+        "DERGArbalester",
+        "DERevolutionHungaryMaltese",
+        "DEVeteranHoopThrowers",
+        "DEVeteranHospitallers",
+        "DEVeteranSentinels",
+        "GuardPikemen",
+        "ImperialPikemen",
+        "PoliticianAdmiralMaltese",
+        "PoliticianSergeantMaltese",
+        "PoliticianWarMinisterMaltese"
+      ],
+      "is_playable": true
+    },
+    "DEDanish": {
+      "name": "丹麦人",
+      "name_en": "DEDanish",
+      "culture": "EasternEurope",
+      "statsid": "DK",
+      "is_main": true,
+      "is_revolution": false,
+      "homecity": "homecitydanish.xml",
+      "age_techs": [
+        "DEAge0Danish",
+        "DEColonializeDanish",
+        "DEFortressizeDanish",
+        "DEIndustrializeDanish",
+        "DEImperializeDanish"
+      ],
+      "revolution_techs": [],
+      "starting_units": [
+        "explorer"
+      ],
+      "units": [
+        "caravel",
+        "crossbowman",
+        "culverin",
+        "degunboat",
+        "depetelephant",
+        "depethippo",
+        "depetleopard",
+        "depetwarthog",
+        "dragoon",
+        "explorer",
+        "falconet",
+        "fishingboat",
+        "frigate",
+        "galleon",
+        "grenadier",
+        "halberdier",
+        "hussar",
+        "minuteman",
+        "monitor",
+        "mortar",
+        "musketeer",
+        "pikeman",
+        "priest",
+        "settler",
+        "skirmisher",
+        "surgeon",
+        "xphorseartillery",
+        "xppetard",
+        "xpspy",
+        "yppetorangutan"
+      ],
+      "tech_counts": {
+        "active": 24,
+        "obtainable": 147
+      },
+      "unique_units": [
+        "degunboat",
+        "minuteman"
+      ],
+      "unique_techs": [
+        "DEAge0Danish",
+        "DEBorsen",
+        "DECargoInspections",
+        "DEChurchEspingolen",
+        "DEChurchStruenseeReforms",
+        "DEChurchZealandBosniaks",
+        "DEChurchZealandBosniaksIndependence",
+        "DEColonializeDanish",
+        "DECustomsCruiserAge2Shadow",
+        "DECustomsCruiserAge3Shadow",
+        "DECustomsCruiserAge4Shadow",
+        "DECustomsHouseAge1Shadow",
+        "DECustomsHouseAge1SingleShadow",
+        "DECustomsHouseAge2Shadow",
+        "DECustomsHouseAge2SingleShadow",
+        "DECustomsHouseAge3Shadow",
+        "DECustomsHouseAge4Shadow",
+        "DECustomsHouseAge4SingleShadow",
+        "DEFortressizeDanish",
+        "DEHouseDisruption",
+        "DEHouseRoyalService",
+        "DEHouseZealandJaegers",
+        "DEImperializeDanish",
+        "DEIndustrializeDanish",
+        "DEPoliticianCavalierDanish",
+        "DEPoliticianLogisticianColonialDanish",
+        "DEPoliticianMarksmanDanish",
+        "DEPoliticianRoyalistDanish",
+        "DEPoliticianScoutDanish",
+        "DESnaphaner",
+        "DETollRegister",
+        "ImperialDanishCrossbowmen",
+        "ImperialDanishCulverins",
+        "ImperialDanishDragoons",
+        "ImperialDanishFalconets",
+        "ImperialDanishGrenadiers",
+        "ImperialDanishHalberdiers",
+        "ImperialDanishHorseArtillery",
+        "ImperialDanishHussars",
+        "ImperialDanishMortars",
+        "ImperialDanishMusketeers",
+        "ImperialDanishPikemen",
+        "ImperialDanishSkirmishers",
+        "ImperialFriskytter",
+        "RGDanishCrossbowmen",
+        "RGDanishCulverins",
+        "RGDanishDragoons",
+        "RGDanishFalconets",
+        "RGDanishGrenadiers",
+        "RGDanishHalberdiers",
+        "RGDanishHorseArtillery",
+        "RGDanishHussars",
+        "RGDanishMortars",
+        "RGDanishMusketeers",
+        "RGDanishPikemen",
+        "RGDanishSkirmishers",
+        "RGFriskytter",
+        "VeteranSnaphaner"
+      ],
+      "is_playable": true
+    },
+    "DEPolish": {
+      "name": "波兰人",
+      "name_en": "DEPolish",
+      "culture": "EasternEurope",
+      "statsid": "PL",
+      "is_main": true,
+      "is_revolution": false,
+      "homecity": "homecitypolish.xml",
+      "age_techs": [
+        "DEAge0Polish",
+        "DEColonializePolish",
+        "DEFortressizePolish",
+        "DEIndustrializePolish",
+        "DEImperializePolish"
+      ],
+      "revolution_techs": [],
+      "starting_units": [
+        "dehetman"
+      ],
+      "units": [
+        "caravel",
+        "cavalryarcher",
+        "crossbowman",
+        "culverin",
+        "delithuanianrider",
+        "depetelephant",
+        "depethippo",
+        "depetleopard",
+        "depetwarthog",
+        "depiechur",
+        "dewingedhussar",
+        "falconet",
+        "fishingboat",
+        "frigate",
+        "galleon",
+        "monitor",
+        "mortar",
+        "pikeman",
+        "priest",
+        "settler",
+        "surgeon",
+        "xphorseartillery",
+        "xppetard",
+        "xpspy",
+        "yppetorangutan"
+      ],
+      "tech_counts": {
+        "active": 28,
+        "obtainable": 135
+      },
+      "unique_units": [
+        "delithuanianrider",
+        "depiechur",
+        "dewingedhussar"
+      ],
+      "unique_techs": [
+        "DEAge0Polish",
+        "DEChurchBarConfederation",
+        "DEChurchCrownGrenadiers",
+        "DEChurchCrownJanissaries",
+        "DEChurchLiberumVeto",
+        "DEColonializePolish",
+        "DEFolwarkDowngrade",
+        "DEFolwarkUpgradeDefensive",
+        "DEFolwarkUpgradeFarm",
+        "DEFolwarkUpgradeLivestock",
+        "DEFortressizePolish",
+        "DEHCPolishRoyalShadow",
+        "DEImperializePolish",
+        "DEIndustrializePolish",
+        "DEPoliticianCavalierPolish",
+        "DEPoliticianKnightPolish",
+        "DEPoliticianLogisticianColonialPolish",
+        "DEPoliticianMarksmanPolish",
+        "DEPoliticianMercContractorFortressPolish",
+        "DEPoliticianRoyalistPolish",
+        "DEPoliticianScoutPolish",
+        "DERevolutionCossackHetmanate",
+        "DERevolutionWarsaw",
+        "DESejmCoin1",
+        "DESejmCoin2",
+        "DESejmCoin3",
+        "DESejmFood1",
+        "DESejmFood2",
+        "DESejmFood3",
+        "DESejmHetman1",
+        "DESejmHetman2",
+        "DESejmHetman3",
+        "DESejmNatives1",
+        "DESejmNatives2",
+        "DESejmWood1",
+        "DESejmWood2",
+        "DESejmWood3",
+        "GuardWingedHussars",
+        "ImperialKurpie",
+        "ImperialPancerni",
+        "ImperialScythemen",
+        "ImperialVanguards",
+        "ImperialWingedHussars",
+        "RGKurpie",
+        "RGPancerni",
+        "RGScythemen",
+        "RGVanguards",
+        "VeteranLithuanianRiders",
+        "VeteranPiechurs",
+        "VeteranWingedHussars"
+      ],
+      "is_playable": true
+    },
+    "Aztecs": {
+      "name": "阿兹特克人",
+      "name_en": "Aztecs",
+      "culture": "Stone",
+      "statsid": "",
+      "is_main": false,
+      "is_revolution": false,
+      "homecity": "",
+      "age_techs": [
+        "NativeAztec"
+      ],
+      "revolution_techs": [],
+      "starting_units": [],
+      "units": [
+        "canoe",
+        "nateaglewarrior",
+        "natjaguarwarrior"
+      ],
+      "tech_counts": {
+        "active": 1,
+        "obtainable": 10
+      },
+      "unique_units": [],
+      "unique_techs": [],
+      "is_playable": false
+    },
+    "Caribs": {
+      "name": "加勒比人",
+      "name_en": "Caribs",
+      "culture": "Grass",
+      "statsid": "",
+      "is_main": false,
+      "is_revolution": false,
+      "homecity": "",
+      "age_techs": [
+        "NativeCarib"
+      ],
+      "revolution_techs": [],
+      "starting_units": [],
+      "units": [
+        "canoe",
+        "natblowgunwarrior"
+      ],
+      "tech_counts": {
+        "active": 1,
+        "obtainable": 10
+      },
+      "unique_units": [],
+      "unique_techs": [],
+      "is_playable": false
+    },
+    "Cherokee": {
+      "name": "切罗基人",
+      "name_en": "Cherokee",
+      "culture": "Wood",
+      "statsid": "",
+      "is_main": false,
+      "is_revolution": false,
+      "homecity": "",
+      "age_techs": [
+        "NativeCherokee"
+      ],
+      "revolution_techs": [],
+      "starting_units": [],
+      "units": [
+        "canoe",
+        "natrifleman"
+      ],
+      "tech_counts": {
+        "active": 1,
+        "obtainable": 9
+      },
+      "unique_units": [],
+      "unique_techs": [],
+      "is_playable": false
+    },
+    "Comanche": {
+      "name": "卡曼契人",
+      "name_en": "Comanche",
+      "culture": "Hide",
+      "statsid": "",
+      "is_main": false,
+      "is_revolution": false,
+      "homecity": "",
+      "age_techs": [
+        "NativeComanche"
+      ],
+      "revolution_techs": [],
+      "starting_units": [],
+      "units": [
+        "canoe",
+        "nathorsearcher"
+      ],
+      "tech_counts": {
+        "active": 1,
+        "obtainable": 9
+      },
+      "unique_units": [],
+      "unique_techs": [],
+      "is_playable": false
+    },
+    "Cree": {
+      "name": "克里人",
+      "name_en": "Cree",
+      "culture": "Wood",
+      "statsid": "",
+      "is_main": false,
+      "is_revolution": false,
+      "homecity": "",
+      "age_techs": [
+        "NativeCree"
+      ],
+      "revolution_techs": [],
+      "starting_units": [],
+      "units": [
+        "canoe",
+        "coureurcree",
+        "nattracker"
+      ],
+      "tech_counts": {
+        "active": 1,
+        "obtainable": 9
+      },
+      "unique_units": [],
+      "unique_techs": [],
+      "is_playable": false
+    },
+    "Incas": {
+      "name": "克丘亚人",
+      "name_en": "Incas",
+      "culture": "Stone",
+      "statsid": "",
+      "is_main": false,
+      "is_revolution": false,
+      "homecity": "",
+      "age_techs": [
+        "NativeInca"
+      ],
+      "revolution_techs": [],
+      "starting_units": [],
+      "units": [
+        "canoe",
+        "natbolaswarrior",
+        "nathuaminca"
+      ],
+      "tech_counts": {
+        "active": 1,
+        "obtainable": 9
+      },
+      "unique_units": [],
+      "unique_techs": [],
+      "is_playable": false
+    },
+    "Iroquois": {
+      "name": "豪德诺索尼人",
+      "name_en": "Iroquois",
+      "culture": "Wood",
+      "statsid": "",
+      "is_main": false,
+      "is_revolution": false,
+      "homecity": "",
+      "age_techs": [
+        "NativeIroquois"
+      ],
+      "revolution_techs": [],
+      "starting_units": [],
+      "units": [
+        "canoe",
+        "natmantlet",
+        "nattomahawk"
+      ],
+      "tech_counts": {
+        "active": 1,
+        "obtainable": 9
+      },
+      "unique_units": [],
+      "unique_techs": [],
+      "is_playable": false
+    },
+    "Lakota": {
+      "name": "拉科塔人",
+      "name_en": "Lakota",
+      "culture": "Hide",
+      "statsid": "",
+      "is_main": false,
+      "is_revolution": false,
+      "homecity": "",
+      "age_techs": [
+        "NativeLakota"
+      ],
+      "revolution_techs": [],
+      "starting_units": [],
+      "units": [
+        "canoe",
+        "nataxerider"
+      ],
+      "tech_counts": {
+        "active": 1,
+        "obtainable": 9
+      },
+      "unique_units": [],
+      "unique_techs": [],
+      "is_playable": false
+    },
+    "Maya": {
+      "name": "玛雅人",
+      "name_en": "Maya",
+      "culture": "Stone",
+      "statsid": "",
+      "is_main": false,
+      "is_revolution": false,
+      "homecity": "",
+      "age_techs": [
+        "NativeMaya"
+      ],
+      "revolution_techs": [],
+      "starting_units": [],
+      "units": [
+        "canoe",
+        "denatholcanjavelineer",
+        "natmedicineman"
+      ],
+      "tech_counts": {
+        "active": 1,
+        "obtainable": 9
+      },
+      "unique_units": [],
+      "unique_techs": [],
+      "is_playable": false
+    },
+    "Nootka": {
+      "name": "努特卡人",
+      "name_en": "Nootka",
+      "culture": "Wood",
+      "statsid": "",
+      "is_main": false,
+      "is_revolution": false,
+      "homecity": "",
+      "age_techs": [
+        "NativeNootka"
+      ],
+      "revolution_techs": [],
+      "starting_units": [],
+      "units": [
+        "canoe",
+        "natclubman"
+      ],
+      "tech_counts": {
+        "active": 1,
+        "obtainable": 9
+      },
+      "unique_units": [],
+      "unique_techs": [],
+      "is_playable": false
+    },
+    "Seminoles": {
+      "name": "塞米诺尔人",
+      "name_en": "Seminoles",
+      "culture": "Grass",
+      "statsid": "",
+      "is_main": false,
+      "is_revolution": false,
+      "homecity": "",
+      "age_techs": [
+        "NativeSeminole"
+      ],
+      "revolution_techs": [],
+      "starting_units": [],
+      "units": [
+        "canoe",
+        "natsharktoothbowman"
+      ],
+      "tech_counts": {
+        "active": 1,
+        "obtainable": 9
+      },
+      "unique_units": [],
+      "unique_techs": [],
+      "is_playable": false
+    },
+    "Tupi": {
+      "name": "图皮人",
+      "name_en": "Tupi",
+      "culture": "Grass",
+      "statsid": "",
+      "is_main": false,
+      "is_revolution": false,
+      "homecity": "",
+      "age_techs": [
+        "NativeTupi"
+      ],
+      "revolution_techs": [],
+      "starting_units": [],
+      "units": [
+        "canoe",
+        "natblackwoodarcher"
+      ],
+      "tech_counts": {
+        "active": 1,
+        "obtainable": 9
+      },
+      "unique_units": [],
+      "unique_techs": [],
+      "is_playable": false
+    },
+    "Zapotec": {
+      "name": "萨波特克人",
+      "name_en": "Zapotec",
+      "culture": "Stone",
+      "statsid": "",
+      "is_main": false,
+      "is_revolution": false,
+      "homecity": "",
+      "age_techs": [
+        "NativeZapotec"
+      ],
+      "revolution_techs": [],
+      "starting_units": [],
+      "units": [
+        "canoe",
+        "natlightningwarrior"
+      ],
+      "tech_counts": {
+        "active": 1,
+        "obtainable": 9
+      },
+      "unique_units": [],
+      "unique_techs": [],
+      "is_playable": false
+    },
+    "Huron": {
+      "name": "休伦人",
+      "name_en": "Huron",
+      "culture": "Wood",
+      "statsid": "",
+      "is_main": false,
+      "is_revolution": false,
+      "homecity": "",
+      "age_techs": [
+        "NativeHuron"
+      ],
+      "revolution_techs": [],
+      "starting_units": [],
+      "units": [
+        "canoe",
+        "nathuronmantlet"
+      ],
+      "tech_counts": {
+        "active": 1,
+        "obtainable": 9
+      },
+      "unique_units": [],
+      "unique_techs": [],
+      "is_playable": false
+    },
+    "Cheyenne": {
+      "name": "夏安人",
+      "name_en": "Cheyenne",
+      "culture": "Hide",
+      "statsid": "",
+      "is_main": false,
+      "is_revolution": false,
+      "homecity": "",
+      "age_techs": [
+        "NativeCheyenne"
+      ],
+      "revolution_techs": [],
+      "starting_units": [],
+      "units": [
+        "canoe",
+        "natcheyennerider"
+      ],
+      "tech_counts": {
+        "active": 1,
+        "obtainable": 9
+      },
+      "unique_units": [],
+      "unique_techs": [],
+      "is_playable": false
+    },
+    "Klamath": {
+      "name": "克拉马斯人",
+      "name_en": "Klamath",
+      "culture": "Wood",
+      "statsid": "",
+      "is_main": false,
+      "is_revolution": false,
+      "homecity": "",
+      "age_techs": [
+        "NativeKlamath"
+      ],
+      "revolution_techs": [],
+      "starting_units": [],
+      "units": [
+        "canoe",
+        "natklamathrifleman"
+      ],
+      "tech_counts": {
+        "active": 1,
+        "obtainable": 9
+      },
+      "unique_units": [],
+      "unique_techs": [],
+      "is_playable": false
+    },
+    "Mapuche": {
+      "name": "马普切人",
+      "name_en": "Mapuche",
+      "culture": "Grass",
+      "statsid": "",
+      "is_main": false,
+      "is_revolution": false,
+      "homecity": "",
+      "age_techs": [
+        "NativeMapuche"
+      ],
+      "revolution_techs": [],
+      "starting_units": [],
+      "units": [
+        "canoe",
+        "denatbolasrider",
+        "natmapucheclubman"
+      ],
+      "tech_counts": {
+        "active": 1,
+        "obtainable": 9
+      },
+      "unique_units": [],
+      "unique_techs": [],
+      "is_playable": false
+    },
+    "Navajo": {
+      "name": "纳瓦霍人",
+      "name_en": "Navajo",
+      "culture": "Grass",
+      "statsid": "",
+      "is_main": false,
+      "is_revolution": false,
+      "homecity": "",
+      "age_techs": [
+        "NativeNavajo"
+      ],
+      "revolution_techs": [],
+      "starting_units": [],
+      "units": [
+        "canoe",
+        "natnavajorifleman"
+      ],
+      "tech_counts": {
+        "active": 1,
+        "obtainable": 9
+      },
+      "unique_units": [],
+      "unique_techs": [],
+      "is_playable": false
+    },
+    "Apache": {
+      "name": "阿帕切人",
+      "name_en": "Apache",
+      "culture": "Hide",
+      "statsid": "",
+      "is_main": false,
+      "is_revolution": false,
+      "homecity": "",
+      "age_techs": [
+        "NativeApache"
+      ],
+      "revolution_techs": [],
+      "starting_units": [],
+      "units": [
+        "canoe",
+        "natapachecavalry"
+      ],
+      "tech_counts": {
+        "active": 1,
+        "obtainable": 9
+      },
+      "unique_units": [],
+      "unique_techs": [],
+      "is_playable": false
+    },
+    "Udasi": {
+      "name": "乌达西派",
+      "name_en": "Udasi",
+      "culture": "Stone",
+      "statsid": "",
+      "is_main": false,
+      "is_revolution": false,
+      "homecity": "",
+      "age_techs": [
+        "ypNativeUdasi"
+      ],
+      "revolution_techs": [],
+      "starting_units": [],
+      "units": [
+        "ypnatchakram"
+      ],
+      "tech_counts": {
+        "active": 1,
+        "obtainable": 10
+      },
+      "unique_units": [],
+      "unique_techs": [],
+      "is_playable": false
+    },
+    "Zen": {
+      "name": "禅宗",
+      "name_en": "Zen",
+      "culture": "Wood",
+      "statsid": "",
+      "is_main": false,
+      "is_revolution": false,
+      "homecity": "",
+      "age_techs": [
+        "ypNativeZen"
+      ],
+      "revolution_techs": [],
+      "starting_units": [],
+      "units": [
+        "ypnatsohei"
+      ],
+      "tech_counts": {
+        "active": 1,
+        "obtainable": 11
+      },
+      "unique_units": [],
+      "unique_techs": [],
+      "is_playable": false
+    },
+    "Shaolin": {
+      "name": "少林",
+      "name_en": "Shaolin",
+      "culture": "Stone",
+      "statsid": "",
+      "is_main": false,
+      "is_revolution": false,
+      "homecity": "",
+      "age_techs": [
+        "ypNativeShaolin"
+      ],
+      "revolution_techs": [],
+      "starting_units": [],
+      "units": [
+        "ypnatrattanshield"
+      ],
+      "tech_counts": {
+        "active": 1,
+        "obtainable": 11
+      },
+      "unique_units": [],
+      "unique_techs": [],
+      "is_playable": false
+    },
+    "Saltpeter": {
+      "name": "硝石",
+      "name_en": "Saltpeter",
+      "culture": "Stone",
+      "statsid": "",
+      "is_main": false,
+      "is_revolution": false,
+      "homecity": "",
+      "age_techs": [
+        "ypNativeSaltpeter"
+      ],
+      "revolution_techs": [],
+      "starting_units": [],
+      "units": [],
+      "tech_counts": {
+        "active": 1,
+        "obtainable": 1
+      },
+      "unique_units": [],
+      "unique_techs": [],
+      "is_playable": false
+    },
+    "Bhakti": {
+      "name": "巴克提教派",
+      "name_en": "Bhakti",
+      "culture": "Stone",
+      "statsid": "",
+      "is_main": false,
+      "is_revolution": false,
+      "homecity": "",
+      "age_techs": [
+        "ypNativeBhakti"
+      ],
+      "revolution_techs": [],
+      "starting_units": [],
+      "units": [
+        "ypnatmerctigerclaw",
+        "ypnattigerclaw",
+        "ypnatwarelephant"
+      ],
+      "tech_counts": {
+        "active": 1,
+        "obtainable": 11
+      },
+      "unique_units": [],
+      "unique_techs": [],
+      "is_playable": false
+    },
+    "Jesuit": {
+      "name": "耶稣会",
+      "name_en": "Jesuit",
+      "culture": "Stone",
+      "statsid": "",
+      "is_main": false,
+      "is_revolution": false,
+      "homecity": "",
+      "age_techs": [
+        "ypNativeJesuit"
+      ],
+      "revolution_techs": [],
+      "starting_units": [],
+      "units": [
+        "ypnatconquistador"
+      ],
+      "tech_counts": {
+        "active": 1,
+        "obtainable": 11
+      },
+      "unique_units": [],
+      "unique_techs": [],
+      "is_playable": false
+    },
+    "Sufi": {
+      "name": "苏菲派",
+      "name_en": "Sufi",
+      "culture": "Stone",
+      "statsid": "",
+      "is_main": false,
+      "is_revolution": false,
+      "homecity": "",
+      "age_techs": [
+        "ypNativeSufi"
+      ],
+      "revolution_techs": [],
+      "starting_units": [],
+      "units": [
+        "denatqizilbash"
+      ],
+      "tech_counts": {
+        "active": 1,
+        "obtainable": 11
+      },
+      "unique_units": [],
+      "unique_techs": [],
+      "is_playable": false
+    },
+    "DESPCBerbers": {
+      "name": "柏柏尔人",
+      "name_en": "DESPCBerbers",
+      "culture": "Stone",
+      "statsid": "",
+      "is_main": false,
+      "is_revolution": false,
+      "homecity": "",
+      "age_techs": [
+        "DENativeSPCBerbers"
+      ],
+      "revolution_techs": [],
+      "starting_units": [],
+      "units": [],
+      "tech_counts": {
+        "active": 1,
+        "obtainable": 4
+      },
+      "unique_units": [],
+      "unique_techs": [],
+      "is_playable": false
+    },
+    "Akan": {
+      "name": "阿坎人",
+      "name_en": "Akan",
+      "culture": "Stone",
+      "statsid": "",
+      "is_main": false,
+      "is_revolution": false,
+      "homecity": "",
+      "age_techs": [
+        "DENativeAkan"
+      ],
+      "revolution_techs": [],
+      "starting_units": [],
+      "units": [
+        "denatakanmusketeer",
+        "privateer"
+      ],
+      "tech_counts": {
+        "active": 1,
+        "obtainable": 11
+      },
+      "unique_units": [],
+      "unique_techs": [],
+      "is_playable": false
+    },
+    "Yoruba": {
+      "name": "约鲁巴人",
+      "name_en": "Yoruba",
+      "culture": "Stone",
+      "statsid": "",
+      "is_main": false,
+      "is_revolution": false,
+      "homecity": "",
+      "age_techs": [
+        "DENativeYoruba"
+      ],
+      "revolution_techs": [],
+      "starting_units": [],
+      "units": [
+        "denatyorubalegionary",
+        "denatyorubarider",
+        "privateer"
+      ],
+      "tech_counts": {
+        "active": 1,
+        "obtainable": 11
+      },
+      "unique_units": [],
+      "unique_techs": [],
+      "is_playable": false
+    },
+    "Somali": {
+      "name": "索马里人",
+      "name_en": "Somali",
+      "culture": "Stone",
+      "statsid": "",
+      "is_main": false,
+      "is_revolution": false,
+      "homecity": "",
+      "age_techs": [
+        "DENativeSomali"
+      ],
+      "revolution_techs": [],
+      "starting_units": [],
+      "units": [
+        "denatsomalidarood",
+        "denatsomalijavelineer",
+        "privateer"
+      ],
+      "tech_counts": {
+        "active": 1,
+        "obtainable": 14
+      },
+      "unique_units": [],
+      "unique_techs": [],
+      "is_playable": false
+    },
+    "Sudanese": {
+      "name": "苏丹人",
+      "name_en": "Sudanese",
+      "culture": "Stone",
+      "statsid": "",
+      "is_main": false,
+      "is_revolution": false,
+      "homecity": "",
+      "age_techs": [
+        "DENativeSudanese"
+      ],
+      "revolution_techs": [],
+      "starting_units": [],
+      "units": [
+        "denatsudanesedervish",
+        "privateer"
+      ],
+      "tech_counts": {
+        "active": 1,
+        "obtainable": 10
+      },
+      "unique_units": [],
+      "unique_techs": [],
+      "is_playable": false
+    },
+    "Berbers": {
+      "name": "柏柏尔人",
+      "name_en": "Berbers",
+      "culture": "Stone",
+      "statsid": "",
+      "is_main": false,
+      "is_revolution": false,
+      "homecity": "",
+      "age_techs": [
+        "DENativeBerbers"
+      ],
+      "revolution_techs": [],
+      "starting_units": [],
+      "units": [
+        "denatcamelrider",
+        "denatnomad",
+        "privateer"
+      ],
+      "tech_counts": {
+        "active": 1,
+        "obtainable": 11
+      },
+      "unique_units": [],
+      "unique_techs": [],
+      "is_playable": false
+    },
+    "DESPCLenape": {
+      "name": "莱纳佩人",
+      "name_en": "DESPCLenape",
+      "culture": "Wood",
+      "statsid": "",
+      "is_main": false,
+      "is_revolution": false,
+      "homecity": "",
+      "age_techs": [
+        "DESPCNativeLenape"
+      ],
+      "revolution_techs": [],
+      "starting_units": [],
+      "units": [
+        "canoe",
+        "denatspclenaperifleman",
+        "denatspclenapevillager"
+      ],
+      "tech_counts": {
+        "active": 1,
+        "obtainable": 9
+      },
+      "unique_units": [],
+      "unique_techs": [],
+      "is_playable": false
+    },
+    "SPCCityState": {
+      "name": "柏柏尔人",
+      "name_en": "SPCCityState",
+      "culture": "Stone",
+      "statsid": "",
+      "is_main": false,
+      "is_revolution": false,
+      "homecity": "",
+      "age_techs": [
+        "DENativeSPCCityState"
+      ],
+      "revolution_techs": [],
+      "starting_units": [],
+      "units": [],
+      "tech_counts": {
+        "active": 2,
+        "obtainable": 5
+      },
+      "unique_units": [],
+      "unique_techs": [],
+      "is_playable": false
+    },
+    "SPCMilitaryDistrict": {
+      "name": "军事区",
+      "name_en": "SPCMilitaryDistrict",
+      "culture": "Stone",
+      "statsid": "",
+      "is_main": false,
+      "is_revolution": false,
+      "homecity": "",
+      "age_techs": [
+        "DENativeSPCMilitaryDistrict"
+      ],
+      "revolution_techs": [],
+      "starting_units": [],
+      "units": [],
+      "tech_counts": {
+        "active": 1,
+        "obtainable": 0
+      },
+      "unique_units": [],
+      "unique_techs": [],
+      "is_playable": false
+    },
+    "SPCMarketDistrict": {
+      "name": "市场区",
+      "name_en": "SPCMarketDistrict",
+      "culture": "Stone",
+      "statsid": "",
+      "is_main": false,
+      "is_revolution": false,
+      "homecity": "",
+      "age_techs": [
+        "DENativeSPCMarketDistrict"
+      ],
+      "revolution_techs": [],
+      "starting_units": [],
+      "units": [],
+      "tech_counts": {
+        "active": 1,
+        "obtainable": 0
+      },
+      "unique_units": [],
+      "unique_techs": [],
+      "is_playable": false
+    },
+    "SPCArtilleryDistrict": {
+      "name": "炮兵区",
+      "name_en": "SPCArtilleryDistrict",
+      "culture": "Stone",
+      "statsid": "",
+      "is_main": false,
+      "is_revolution": false,
+      "homecity": "",
+      "age_techs": [
+        "DENativeSPCArtilleryDistrict"
+      ],
+      "revolution_techs": [],
+      "starting_units": [],
+      "units": [],
+      "tech_counts": {
+        "active": 1,
+        "obtainable": 0
+      },
+      "unique_units": [],
+      "unique_techs": [],
+      "is_playable": false
+    },
+    "SPCReligiousDistrict": {
+      "name": "宗教区",
+      "name_en": "SPCReligiousDistrict",
+      "culture": "Stone",
+      "statsid": "",
+      "is_main": false,
+      "is_revolution": false,
+      "homecity": "",
+      "age_techs": [
+        "DENativeSPCReligiousDistrict"
+      ],
+      "revolution_techs": [],
+      "starting_units": [],
+      "units": [],
+      "tech_counts": {
+        "active": 1,
+        "obtainable": 0
+      },
+      "unique_units": [],
+      "unique_techs": [],
+      "is_playable": false
+    },
+    "Jagiellon": {
+      "name": "雅盖隆王朝",
+      "name_en": "Jagiellon",
+      "culture": "Stone",
+      "statsid": "",
+      "is_main": false,
+      "is_revolution": false,
+      "homecity": "",
+      "age_techs": [
+        "DENativeJagiellon",
+        "DENativeJagiellonColonialize"
+      ],
+      "revolution_techs": [],
+      "starting_units": [],
+      "units": [
+        "demercbattleship",
+        "denatlipkatatar",
+        "denatshockrider"
+      ],
+      "tech_counts": {
+        "active": 3,
+        "obtainable": 11
+      },
+      "unique_units": [],
+      "unique_techs": [],
+      "is_playable": false
+    },
+    "Bourbon": {
+      "name": "波旁王朝",
+      "name_en": "Bourbon",
+      "culture": "Stone",
+      "statsid": "",
+      "is_main": false,
+      "is_revolution": false,
+      "homecity": "",
+      "age_techs": [
+        "DENativeBourbon",
+        "DENativeBourbonColonialize"
+      ],
+      "revolution_techs": [],
+      "starting_units": [],
+      "units": [
+        "demercbattleship",
+        "denatroyaldragoon",
+        "denatroyalmusketeer"
+      ],
+      "tech_counts": {
+        "active": 3,
+        "obtainable": 13
+      },
+      "unique_units": [],
+      "unique_techs": [],
+      "is_playable": false
+    },
+    "Habsburg": {
+      "name": "哈布斯堡王朝",
+      "name_en": "Habsburg",
+      "culture": "Stone",
+      "statsid": "",
+      "is_main": false,
+      "is_revolution": false,
+      "homecity": "",
+      "age_techs": [
+        "DENativeHabsburg",
+        "DENativeHabsburgColonialize"
+      ],
+      "revolution_techs": [],
+      "starting_units": [],
+      "units": [
+        "demercbattleship",
+        "denatlineinfantry",
+        "denatmountedinfantryrider"
+      ],
+      "tech_counts": {
+        "active": 3,
+        "obtainable": 13
+      },
+      "unique_units": [],
+      "unique_techs": [],
+      "is_playable": false
+    },
+    "Hanover": {
+      "name": "汉诺威王朝",
+      "name_en": "Hanover",
+      "culture": "Stone",
+      "statsid": "",
+      "is_main": false,
+      "is_revolution": false,
+      "homecity": "",
+      "age_techs": [
+        "DENativeHanover",
+        "DENativeHanoverColonialize"
+      ],
+      "revolution_techs": [],
+      "starting_units": [],
+      "units": [
+        "demercbattleship",
+        "denatbrunswicker",
+        "denatdrummer",
+        "denattotenkopf"
+      ],
+      "tech_counts": {
+        "active": 3,
+        "obtainable": 11
+      },
+      "unique_units": [],
+      "unique_techs": [],
+      "is_playable": false
+    },
+    "Oldenburg": {
+      "name": "奥尔登堡王朝",
+      "name_en": "Oldenburg",
+      "culture": "Stone",
+      "statsid": "",
+      "is_main": false,
+      "is_revolution": false,
+      "homecity": "",
+      "age_techs": [
+        "DENativeOldenburg",
+        "DENativeOldenburgColonialize"
+      ],
+      "revolution_techs": [],
+      "starting_units": [],
+      "units": [
+        "demercbattleship",
+        "denatnorthernmusketeer",
+        "denatroyalhuntsman"
+      ],
+      "tech_counts": {
+        "active": 3,
+        "obtainable": 11
+      },
+      "unique_units": [],
+      "unique_techs": [],
+      "is_playable": false
+    },
+    "Phanar": {
+      "name": "法纳尔王朝",
+      "name_en": "Phanar",
+      "culture": "Stone",
+      "statsid": "",
+      "is_main": false,
+      "is_revolution": false,
+      "homecity": "",
+      "age_techs": [
+        "DENativePhanar",
+        "DENativePhanarColonialize"
+      ],
+      "revolution_techs": [],
+      "starting_units": [],
+      "units": [
+        "demercbattleship",
+        "denatboyar",
+        "denatevzone"
+      ],
+      "tech_counts": {
+        "active": 3,
+        "obtainable": 11
+      },
+      "unique_units": [],
+      "unique_techs": [],
+      "is_playable": false
+    },
+    "Vasa": {
+      "name": "瓦萨王朝",
+      "name_en": "Vasa",
+      "culture": "Stone",
+      "statsid": "",
+      "is_main": false,
+      "is_revolution": false,
+      "homecity": "",
+      "age_techs": [
+        "DENativeVasa",
+        "DENativeVasaColonialize"
+      ],
+      "revolution_techs": [],
+      "starting_units": [],
+      "units": [
+        "demercbattleship",
+        "denatcompanion",
+        "denatroyalarquebusier"
+      ],
+      "tech_counts": {
+        "active": 3,
+        "obtainable": 11
+      },
+      "unique_units": [],
+      "unique_techs": [],
+      "is_playable": false
+    },
+    "Wettin": {
+      "name": "韋廷王朝",
+      "name_en": "Wettin",
+      "culture": "Stone",
+      "statsid": "",
+      "is_main": false,
+      "is_revolution": false,
+      "homecity": "",
+      "age_techs": [
+        "DENativeWettin",
+        "DENativeWettinColonialize"
+      ],
+      "revolution_techs": [],
+      "starting_units": [],
+      "units": [
+        "demercbattleship",
+        "denatsaxoncuirassier",
+        "denattrabant"
+      ],
+      "tech_counts": {
+        "active": 3,
+        "obtainable": 12
+      },
+      "unique_units": [],
+      "unique_techs": [],
+      "is_playable": false
+    },
+    "Wittelsbach": {
+      "name": "维特尔斯巴赫王朝",
+      "name_en": "Wittelsbach",
+      "culture": "Stone",
+      "statsid": "",
+      "is_main": false,
+      "is_revolution": false,
+      "homecity": "",
+      "age_techs": [
+        "DENativeWittelsbach",
+        "DENativeWittelsbachColonialize"
+      ],
+      "revolution_techs": [],
+      "starting_units": [],
+      "units": [
+        "demercbattleship",
+        "denatchevauleger",
+        "denatmountaintrooper"
+      ],
+      "tech_counts": {
+        "active": 3,
+        "obtainable": 11
+      },
+      "unique_units": [],
+      "unique_techs": [],
+      "is_playable": false
+    },
+    "Tengri": {
+      "name": "腾格里",
+      "name_en": "Tengri",
+      "culture": "Stone",
+      "statsid": "",
+      "is_main": false,
+      "is_revolution": false,
+      "homecity": "",
+      "age_techs": [
+        "DENativeTengri"
+      ],
+      "revolution_techs": [],
+      "starting_units": [],
+      "units": [
+        "denattatararcher",
+        "denattengriwolf"
+      ],
+      "tech_counts": {
+        "active": 1,
+        "obtainable": 11
+      },
+      "unique_units": [],
+      "unique_techs": [],
+      "is_playable": false
+    },
+    "Stuart": {
+      "name": "斯图亚特王朝",
+      "name_en": "Stuart",
+      "culture": "Stone",
+      "statsid": "",
+      "is_main": false,
+      "is_revolution": false,
+      "homecity": "",
+      "age_techs": [
+        "DENativeStuart",
+        "DENativeStuartColonialize"
+      ],
+      "revolution_techs": [],
+      "starting_units": [],
+      "units": [
+        "demercbattleship",
+        "denatbagpiper",
+        "denatclansman",
+        "denatlowlanderinfantry"
+      ],
+      "tech_counts": {
+        "active": 3,
+        "obtainable": 13
+      },
+      "unique_units": [],
+      "unique_techs": [],
+      "is_playable": false
+    },
+    "Inuit": {
+      "name": "因纽特人",
+      "name_en": "Inuit",
+      "culture": "Stone",
+      "statsid": "",
+      "is_main": false,
+      "is_revolution": false,
+      "homecity": "",
+      "age_techs": [
+        "DENativeInuit"
+      ],
+      "revolution_techs": [],
+      "starting_units": [],
+      "units": [
+        "canoe",
+        "denatinuithunter",
+        "denatinuitqamutik"
+      ],
+      "tech_counts": {
+        "active": 1,
+        "obtainable": 9
+      },
+      "unique_units": [],
+      "unique_techs": [],
+      "is_playable": false
+    },
+    "Sami": {
+      "name": "萨米人",
+      "name_en": "Sami",
+      "culture": "Stone",
+      "statsid": "",
+      "is_main": false,
+      "is_revolution": false,
+      "homecity": "",
+      "age_techs": [
+        "DENativeSami"
+      ],
+      "revolution_techs": [],
+      "starting_units": [],
+      "units": [
+        "canoe",
+        "denatnoaidi"
+      ],
+      "tech_counts": {
+        "active": 1,
+        "obtainable": 9
+      },
+      "unique_units": [],
+      "unique_techs": [],
+      "is_playable": false
+    },
+    "Louverture": {
+      "name": "Louverture",
+      "name_en": "Louverture",
+      "culture": "",
+      "statsid": "",
+      "is_main": false,
+      "is_revolution": false,
+      "homecity": "",
+      "age_techs": [],
+      "revolution_techs": [],
+      "starting_units": [],
+      "units": [],
+      "tech_counts": {
+        "active": 0,
+        "obtainable": 0
+      },
+      "unique_units": [],
+      "unique_techs": [],
+      "is_playable": false
+    },
+    "Washington": {
+      "name": "Washington",
+      "name_en": "Washington",
+      "culture": "",
+      "statsid": "",
+      "is_main": false,
+      "is_revolution": false,
+      "homecity": "",
+      "age_techs": [],
+      "revolution_techs": [],
+      "starting_units": [],
+      "units": [],
+      "tech_counts": {
+        "active": 0,
+        "obtainable": 0
+      },
+      "unique_units": [],
+      "unique_techs": [],
+      "is_playable": false
+    },
+    "Hidalgo": {
+      "name": "Hidalgo",
+      "name_en": "Hidalgo",
+      "culture": "",
+      "statsid": "",
+      "is_main": false,
+      "is_revolution": false,
+      "homecity": "",
+      "age_techs": [],
+      "revolution_techs": [],
+      "starting_units": [],
+      "units": [],
+      "tech_counts": {
+        "active": 0,
+        "obtainable": 0
+      },
+      "unique_units": [],
+      "unique_techs": [],
+      "is_playable": false
+    },
+    "Bonifacio": {
+      "name": "Bonifacio",
+      "name_en": "Bonifacio",
+      "culture": "",
+      "statsid": "",
+      "is_main": false,
+      "is_revolution": false,
+      "homecity": "",
+      "age_techs": [],
+      "revolution_techs": [],
+      "starting_units": [],
+      "units": [],
+      "tech_counts": {
+        "active": 0,
+        "obtainable": 0
+      },
+      "unique_units": [],
+      "unique_techs": [],
+      "is_playable": false
+    },
+    "Bolivar": {
+      "name": "Bolivar",
+      "name_en": "Bolivar",
+      "culture": "",
+      "statsid": "",
+      "is_main": false,
+      "is_revolution": false,
+      "homecity": "",
+      "age_techs": [],
+      "revolution_techs": [],
+      "starting_units": [],
+      "units": [],
+      "tech_counts": {
+        "active": 0,
+        "obtainable": 0
+      },
+      "unique_units": [],
+      "unique_techs": [],
+      "is_playable": false
+    },
+    "SanMartin": {
+      "name": "SanMartin",
+      "name_en": "SanMartin",
+      "culture": "",
+      "statsid": "",
+      "is_main": false,
+      "is_revolution": false,
+      "homecity": "",
+      "age_techs": [],
+      "revolution_techs": [],
+      "starting_units": [],
+      "units": [],
+      "tech_counts": {
+        "active": 0,
+        "obtainable": 0
+      },
+      "unique_units": [],
+      "unique_techs": [],
+      "is_playable": false
+    },
+    "Santander": {
+      "name": "Santander",
+      "name_en": "Santander",
+      "culture": "",
+      "statsid": "",
+      "is_main": false,
+      "is_revolution": false,
+      "homecity": "",
+      "age_techs": [],
+      "revolution_techs": [],
+      "starting_units": [],
+      "units": [],
+      "tech_counts": {
+        "active": 0,
+        "obtainable": 0
+      },
+      "unique_units": [],
+      "unique_techs": [],
+      "is_playable": false
+    },
+    "OHiggins": {
+      "name": "OHiggins",
+      "name_en": "OHiggins",
+      "culture": "",
+      "statsid": "",
+      "is_main": false,
+      "is_revolution": false,
+      "homecity": "",
+      "age_techs": [],
+      "revolution_techs": [],
+      "starting_units": [],
+      "units": [],
+      "tech_counts": {
+        "active": 0,
+        "obtainable": 0
+      },
+      "unique_units": [],
+      "unique_techs": [],
+      "is_playable": false
+    },
+    "DERevHaiti": {
+      "name": "海地人",
+      "name_en": "DERevHaiti",
+      "culture": "",
+      "statsid": "",
+      "is_main": false,
+      "is_revolution": true,
+      "homecity": "",
+      "age_techs": [],
+      "revolution_techs": [
+        "DERevolutionHaiti"
+      ],
+      "starting_units": [],
+      "units": [
+        "coureur",
+        "fishingboat",
+        "privateer",
+        "saloonpirate",
+        "settler",
+        "settlerwagon",
+        "xpcolonialmilitia"
+      ],
+      "tech_counts": {
+        "active": 3,
+        "obtainable": 1
+      },
+      "unique_units": [],
+      "unique_techs": [],
+      "is_playable": false
+    },
+    "DERevUSA": {
+      "name": "美国革命军",
+      "name_en": "DERevUSA",
+      "culture": "",
+      "statsid": "",
+      "is_main": false,
+      "is_revolution": true,
+      "homecity": "",
+      "age_techs": [],
+      "revolution_techs": [
+        "DERevolutionUSA"
+      ],
+      "starting_units": [],
+      "units": [
+        "coureur",
+        "degeneral",
+        "fishingboat",
+        "settler",
+        "settlerwagon",
+        "xpcolonialmilitia",
+        "xpgatlinggun"
+      ],
+      "tech_counts": {
+        "active": 8,
+        "obtainable": 2
+      },
+      "unique_units": [],
+      "unique_techs": [],
+      "is_playable": false
+    },
+    "DERevMexico": {
+      "name": "墨西哥革命军",
+      "name_en": "DERevMexico",
+      "culture": "",
+      "statsid": "",
+      "is_main": false,
+      "is_revolution": true,
+      "homecity": "",
+      "age_techs": [],
+      "revolution_techs": [
+        "DERevolutionMexico"
+      ],
+      "starting_units": [],
+      "units": [
+        "coureur",
+        "derevvaquero",
+        "desaloonbandido",
+        "desaloondesperado",
+        "desaloonvaquero",
+        "fishingboat",
+        "settler",
+        "settlerwagon"
+      ],
+      "tech_counts": {
+        "active": 5,
+        "obtainable": 3
+      },
+      "unique_units": [],
+      "unique_techs": [],
+      "is_playable": false
+    },
+    "DERevBrazil": {
+      "name": "巴西人",
+      "name_en": "DERevBrazil",
+      "culture": "",
+      "statsid": "",
+      "is_main": false,
+      "is_revolution": true,
+      "homecity": "",
+      "age_techs": [],
+      "revolution_techs": [
+        "DERevolutionBrazil"
+      ],
+      "starting_units": [],
+      "units": [
+        "coureur",
+        "fishingboat",
+        "settler",
+        "settlerwagon"
+      ],
+      "tech_counts": {
+        "active": 3,
+        "obtainable": 1
+      },
+      "unique_units": [],
+      "unique_techs": [],
+      "is_playable": false
+    },
+    "DERevPeru": {
+      "name": "秘鲁人",
+      "name_en": "DERevPeru",
+      "culture": "",
+      "statsid": "",
+      "is_main": false,
+      "is_revolution": true,
+      "homecity": "",
+      "age_techs": [],
+      "revolution_techs": [
+        "DERevolutionPeru"
+      ],
+      "starting_units": [],
+      "units": [
+        "coureur",
+        "debolaswarrior",
+        "deincarunner",
+        "deincaspearman",
+        "demaceman",
+        "deslinger",
+        "fishingboat",
+        "settler",
+        "settlerwagon",
+        "xpcolonialmilitia"
+      ],
+      "tech_counts": {
+        "active": 13,
+        "obtainable": 5
+      },
+      "unique_units": [],
+      "unique_techs": [],
+      "is_playable": false
+    },
+    "DERevArgentina": {
+      "name": "阿根廷人",
+      "name_en": "DERevArgentina",
+      "culture": "",
+      "statsid": "",
+      "is_main": false,
+      "is_revolution": true,
+      "homecity": "",
+      "age_techs": [],
+      "revolution_techs": [
+        "DERevolutionArgentina"
+      ],
+      "starting_units": [],
+      "units": [
+        "coureur",
+        "derevgaucho",
+        "fishingboat",
+        "lancer",
+        "saloonoutlawrider",
+        "settler",
+        "settlerwagon",
+        "xpcolonialmilitia"
+      ],
+      "tech_counts": {
+        "active": 3,
+        "obtainable": 3
+      },
+      "unique_units": [],
+      "unique_techs": [],
+      "is_playable": false
+    },
+    "DERevColombia": {
+      "name": "哥伦比亚人",
+      "name_en": "DERevColombia",
+      "culture": "",
+      "statsid": "",
+      "is_main": false,
+      "is_revolution": true,
+      "homecity": "",
+      "age_techs": [],
+      "revolution_techs": [
+        "DERevolutionColombia",
+        "DERevolutionColombiaPortuguese"
+      ],
+      "starting_units": [],
+      "units": [
+        "coureur",
+        "fishingboat",
+        "musketeer",
+        "settler",
+        "settlerwagon",
+        "xpironclad"
+      ],
+      "tech_counts": {
+        "active": 5,
+        "obtainable": 2
+      },
+      "unique_units": [],
+      "unique_techs": [],
+      "is_playable": false
+    },
+    "DERevChile": {
+      "name": "智利人",
+      "name_en": "DERevChile",
+      "culture": "",
+      "statsid": "",
+      "is_main": false,
+      "is_revolution": true,
+      "homecity": "",
+      "age_techs": [],
+      "revolution_techs": [
+        "DERevolutionChile"
+      ],
+      "starting_units": [],
+      "units": [
+        "coureur",
+        "fishingboat",
+        "hussar",
+        "settler",
+        "settlerwagon",
+        "xpcolonialmilitia",
+        "ypconsulatearmygerman1",
+        "ypconsulatearmygerman2",
+        "ypconsulatearmygerman3"
+      ],
+      "tech_counts": {
+        "active": 7,
+        "obtainable": 7
+      },
+      "unique_units": [],
+      "unique_techs": [],
+      "is_playable": false
+    },
+    "DERevCanada": {
+      "name": "加拿大人",
+      "name_en": "DERevCanada",
+      "culture": "",
+      "statsid": "",
+      "is_main": false,
+      "is_revolution": true,
+      "homecity": "",
+      "age_techs": [],
+      "revolution_techs": [
+        "DERevolutionCanadaFrench",
+        "DERevolutionCanadaBritish"
+      ],
+      "starting_units": [],
+      "units": [],
+      "tech_counts": {
+        "active": 3,
+        "obtainable": 0
+      },
+      "unique_units": [],
+      "unique_techs": [],
+      "is_playable": false
+    },
+    "DERevEgypt": {
+      "name": "埃及人",
+      "name_en": "DERevEgypt",
+      "culture": "",
+      "statsid": "",
+      "is_main": false,
+      "is_revolution": true,
+      "homecity": "",
+      "age_techs": [],
+      "revolution_techs": [
+        "DERevolutionEgypt"
+      ],
+      "starting_units": [],
+      "units": [
+        "coureur",
+        "fishingboat",
+        "mercmameluke",
+        "mercstradiot",
+        "settler",
+        "settlerwagon",
+        "xpcolonialmilitia"
+      ],
+      "tech_counts": {
+        "active": 5,
+        "obtainable": 1
+      },
+      "unique_units": [],
+      "unique_techs": [],
+      "is_playable": false
+    },
+    "DERevFinland": {
+      "name": "芬兰人",
+      "name_en": "DERevFinland",
+      "culture": "",
+      "statsid": "",
+      "is_main": false,
+      "is_revolution": true,
+      "homecity": "",
+      "age_techs": [],
+      "revolution_techs": [
+        "DERevolutionFinland"
+      ],
+      "starting_units": [],
+      "units": [
+        "definnishrider",
+        "mercjaeger",
+        "settler",
+        "skirmisher",
+        "yprepentantjaeger"
+      ],
+      "tech_counts": {
+        "active": 8,
+        "obtainable": 2
+      },
+      "unique_units": [],
+      "unique_techs": [],
+      "is_playable": false
+    },
+    "DERevHungary": {
+      "name": "匈牙利人",
+      "name_en": "DERevHungary",
+      "culture": "",
+      "statsid": "",
+      "is_main": false,
+      "is_revolution": true,
+      "homecity": "",
+      "age_techs": [],
+      "revolution_techs": [
+        "DERevolutionHungaryOttoman",
+        "DERevolutionHungaryGerman",
+        "DERevolutionHungaryRussian",
+        "DERevolutionHungaryMaltese"
+      ],
+      "starting_units": [],
+      "units": [
+        "coureur",
+        "demercpandour",
+        "denathungariangrenadier",
+        "desaloonhajduk",
+        "fishingboat",
+        "grenadier",
+        "settler",
+        "settlerwagon",
+        "xpcolonialmilitia"
+      ],
+      "tech_counts": {
+        "active": 16,
+        "obtainable": 1
+      },
+      "unique_units": [],
+      "unique_techs": [],
+      "is_playable": false
+    },
+    "DERevIndonesia": {
+      "name": "印度尼西亚人",
+      "name_en": "DERevIndonesia",
+      "culture": "",
+      "statsid": "",
+      "is_main": false,
+      "is_revolution": true,
+      "homecity": "",
+      "age_techs": [],
+      "revolution_techs": [
+        "DERevolutionIndonesia"
+      ],
+      "starting_units": [],
+      "units": [
+        "cacadore",
+        "coureur",
+        "crossbowman",
+        "derevcetbang",
+        "derevjavaspearman",
+        "dragoon",
+        "fishingboat",
+        "grenadier",
+        "halberdier",
+        "hussar",
+        "musketeer",
+        "pikeman",
+        "ruyter",
+        "settler",
+        "settlerwagon",
+        "skirmisher",
+        "xpcolonialmilitia",
+        "ypwokoujunk"
+      ],
+      "tech_counts": {
+        "active": 3,
+        "obtainable": 1
+      },
+      "unique_units": [],
+      "unique_techs": [],
+      "is_playable": false
+    },
+    "DERevRomania": {
+      "name": "罗马尼亚人",
+      "name_en": "DERevRomania",
+      "culture": "",
+      "statsid": "",
+      "is_main": false,
+      "is_revolution": true,
+      "homecity": "",
+      "age_techs": [],
+      "revolution_techs": [
+        "DERevolutionRomania"
+      ],
+      "starting_units": [],
+      "units": [
+        "coureur",
+        "fishingboat",
+        "settler",
+        "settlerwagon",
+        "xpcolonialmilitia",
+        "ypconsulatearmyrussian1",
+        "ypconsulatearmyrussian2",
+        "ypconsulatearmyrussian3"
+      ],
+      "tech_counts": {
+        "active": 7,
+        "obtainable": 7
+      },
+      "unique_units": [],
+      "unique_techs": [],
+      "is_playable": false
+    },
+    "DERevSouthAfrica": {
+      "name": "南非人",
+      "name_en": "DERevSouthAfrica",
+      "culture": "",
+      "statsid": "",
+      "is_main": false,
+      "is_revolution": true,
+      "homecity": "",
+      "age_techs": [],
+      "revolution_techs": [
+        "DERevolutionSouthAfrica"
+      ],
+      "starting_units": [],
+      "units": [
+        "derevstartrekwagon"
+      ],
+      "tech_counts": {
+        "active": 3,
+        "obtainable": 0
+      },
+      "unique_units": [],
+      "unique_techs": [],
+      "is_playable": false
+    },
+    "DERevBarbaryStates": {
+      "name": "巴巴里海盗",
+      "name_en": "DERevBarbaryStates",
+      "culture": "",
+      "statsid": "",
+      "is_main": false,
+      "is_revolution": true,
+      "homecity": "",
+      "age_techs": [],
+      "revolution_techs": [
+        "DERevolutionBarbaryStates"
+      ],
+      "starting_units": [],
+      "units": [
+        "coureur",
+        "culverin",
+        "deallegiancebarbarymarksman",
+        "deazap",
+        "dedeli",
+        "dehumbaraci",
+        "derevbarbarywarrior",
+        "falconet",
+        "fishingboat",
+        "privateer",
+        "settler",
+        "settlerwagon"
+      ],
+      "tech_counts": {
+        "active": 3,
+        "obtainable": 5
+      },
+      "unique_units": [],
+      "unique_techs": [],
+      "is_playable": false
+    },
+    "DERevMXCentralAmerica": {
+      "name": "中美洲人",
+      "name_en": "DERevMXCentralAmerica",
+      "culture": "",
+      "statsid": "",
+      "is_main": false,
+      "is_revolution": true,
+      "homecity": "",
+      "age_techs": [],
+      "revolution_techs": [
+        "DERevolutionMXCentralAmerica"
+      ],
+      "starting_units": [],
+      "units": [
+        "fishingboat",
+        "settler",
+        "xpcolonialmilitia"
+      ],
+      "tech_counts": {
+        "active": 2,
+        "obtainable": 2
+      },
+      "unique_units": [],
+      "unique_techs": [],
+      "is_playable": false
+    },
+    "DERevMXBajaCalifornia": {
+      "name": "军事冒险家",
+      "name_en": "DERevMXBajaCalifornia",
+      "culture": "",
+      "statsid": "",
+      "is_main": false,
+      "is_revolution": true,
+      "homecity": "",
+      "age_techs": [],
+      "revolution_techs": [
+        "DERevolutionMXBajaCalifornia"
+      ],
+      "starting_units": [],
+      "units": [
+        "derevfilibuster",
+        "settler"
+      ],
+      "tech_counts": {
+        "active": 2,
+        "obtainable": 1
+      },
+      "unique_units": [],
+      "unique_techs": [],
+      "is_playable": false
+    },
+    "DERevMXYucatan": {
+      "name": "西裔尤卡坦人",
+      "name_en": "DERevMXYucatan",
+      "culture": "",
+      "statsid": "",
+      "is_main": false,
+      "is_revolution": true,
+      "homecity": "",
+      "age_techs": [],
+      "revolution_techs": [
+        "DERevolutionMXYucatan"
+      ],
+      "starting_units": [],
+      "units": [
+        "fishingboat",
+        "settler",
+        "xpcolonialmilitia"
+      ],
+      "tech_counts": {
+        "active": 3,
+        "obtainable": 4
+      },
+      "unique_units": [],
+      "unique_techs": [],
+      "is_playable": false
+    },
+    "DERevMXRioGrande": {
+      "name": "里奥格兰德",
+      "name_en": "DERevMXRioGrande",
+      "culture": "",
+      "statsid": "",
+      "is_main": false,
+      "is_revolution": true,
+      "homecity": "",
+      "age_techs": [],
+      "revolution_techs": [
+        "DERevolutionMXRioGrande"
+      ],
+      "starting_units": [],
+      "units": [
+        "settler",
+        "xpcolonialmilitia"
+      ],
+      "tech_counts": {
+        "active": 2,
+        "obtainable": 1
+      },
+      "unique_units": [],
+      "unique_techs": [],
+      "is_playable": false
+    },
+    "DERevMXMaya": {
+      "name": "玛雅人",
+      "name_en": "DERevMXMaya",
+      "culture": "",
+      "statsid": "",
+      "is_main": false,
+      "is_revolution": true,
+      "homecity": "",
+      "age_techs": [],
+      "revolution_techs": [
+        "DERevolutionMXMaya"
+      ],
+      "starting_units": [],
+      "units": [
+        "culverin",
+        "dechinaco",
+        "deemboscador",
+        "deinsurgente",
+        "demerccapturedmortar",
+        "denatholcanjavelineer",
+        "derevcruzobinfantry",
+        "desteamer",
+        "dragoon",
+        "falconet",
+        "frigate",
+        "galleon",
+        "mortar",
+        "nativescout",
+        "xphorseartillery",
+        "xpironclad",
+        "xplightcannon",
+        "xptlaloccanoe",
+        "xpwarcanoe"
+      ],
+      "tech_counts": {
+        "active": 11,
+        "obtainable": 8
+      },
+      "unique_units": [],
+      "unique_techs": [],
+      "is_playable": false
+    },
+    "DERevMXCalifornia": {
+      "name": "加利福尼亚人",
+      "name_en": "DERevMXCalifornia",
+      "culture": "",
+      "statsid": "",
+      "is_main": false,
+      "is_revolution": true,
+      "homecity": "",
+      "age_techs": [],
+      "revolution_techs": [
+        "DERevolutionMXCalifornia"
+      ],
+      "starting_units": [],
+      "units": [
+        "derevcalifornio",
+        "settler"
+      ],
+      "tech_counts": {
+        "active": 2,
+        "obtainable": 1
+      },
+      "unique_units": [],
+      "unique_techs": [],
+      "is_playable": false
+    },
+    "DERevMXTexas": {
+      "name": "德克萨斯人",
+      "name_en": "DERevMXTexas",
+      "culture": "",
+      "statsid": "",
+      "is_main": false,
+      "is_revolution": true,
+      "homecity": "",
+      "age_techs": [],
+      "revolution_techs": [
+        "DERevolutionMXTexas"
+      ],
+      "starting_units": [],
+      "units": [
+        "deemboscador",
+        "deinsurgente",
+        "deregular",
+        "derifleman",
+        "desoldado",
+        "destatemilitia",
+        "settler"
+      ],
+      "tech_counts": {
+        "active": 10,
+        "obtainable": 0
+      },
+      "unique_units": [],
+      "unique_techs": [],
+      "is_playable": false
+    },
+    "DERevFrance": {
+      "name": "革命法国",
+      "name_en": "DERevFrance",
+      "culture": "",
+      "statsid": "",
+      "is_main": false,
+      "is_revolution": true,
+      "homecity": "",
+      "age_techs": [],
+      "revolution_techs": [
+        "DERevolutionFrance"
+      ],
+      "starting_units": [],
+      "units": [
+        "derevolutionaryscout",
+        "nativescout",
+        "xpcolonialmilitia"
+      ],
+      "tech_counts": {
+        "active": 4,
+        "obtainable": 0
+      },
+      "unique_units": [],
+      "unique_techs": [],
+      "is_playable": false
+    },
+    "DERevFranceNE": {
+      "name": "拿破仑法军",
+      "name_en": "DERevFranceNE",
+      "culture": "",
+      "statsid": "",
+      "is_main": false,
+      "is_revolution": true,
+      "homecity": "",
+      "age_techs": [],
+      "revolution_techs": [
+        "DERevolutionFranceNE"
+      ],
+      "starting_units": [],
+      "units": [
+        "demercnapoleongun",
+        "denatmercroyaldragoon",
+        "denatmercroyalmusketeer"
+      ],
+      "tech_counts": {
+        "active": 6,
+        "obtainable": 5
+      },
+      "unique_units": [],
+      "unique_techs": [],
+      "is_playable": false
+    },
+    "DERevCossacks": {
+      "name": "哥萨克",
+      "name_en": "DERevCossacks",
+      "culture": "",
+      "statsid": "",
+      "is_main": false,
+      "is_revolution": true,
+      "homecity": "",
+      "age_techs": [],
+      "revolution_techs": [
+        "DERevolutionCossackHetmanate"
+      ],
+      "starting_units": [],
+      "units": [
+        "crossbowman",
+        "delithuanianrider",
+        "derevhaidamaka",
+        "derevhaidamakarider",
+        "desaloonoutlawcossack",
+        "desaloonoutlawcossackrider",
+        "fishingboat"
+      ],
+      "tech_counts": {
+        "active": 3,
+        "obtainable": 0
+      },
+      "unique_units": [],
+      "unique_techs": [],
+      "is_playable": false
+    },
+    "DERevWarsaw": {
+      "name": "公爵波兰人",
+      "name_en": "DERevWarsaw",
+      "culture": "",
+      "statsid": "",
+      "is_main": false,
+      "is_revolution": true,
+      "homecity": "",
+      "age_techs": [],
+      "revolution_techs": [
+        "DERevolutionWarsaw"
+      ],
+      "starting_units": [],
+      "units": [
+        "cannon",
+        "cavalryarcher",
+        "coureur",
+        "crossbowman",
+        "delithuanianrider",
+        "depiechur",
+        "derevpolishlancer",
+        "dragoon",
+        "fishingboat",
+        "musketeer",
+        "settler",
+        "settlerwagon",
+        "skirmisher"
+      ],
+      "tech_counts": {
+        "active": 8,
+        "obtainable": 0
+      },
+      "unique_units": [],
+      "unique_techs": [],
+      "is_playable": false
+    },
+    "DERevLivonia": {
+      "name": "立窝尼亚人",
+      "name_en": "DERevLivonia",
+      "culture": "",
+      "statsid": "",
+      "is_main": false,
+      "is_revolution": true,
+      "homecity": "",
+      "age_techs": [],
+      "revolution_techs": [
+        "DERevolutionLivonia"
+      ],
+      "starting_units": [],
+      "units": [
+        "derevhighmaster"
+      ],
+      "tech_counts": {
+        "active": 4,
+        "obtainable": 0
+      },
+      "unique_units": [],
+      "unique_techs": [],
+      "is_playable": false
+    },
+    "DERevPrussia": {
+      "name": "普鲁士人",
+      "name_en": "DERevPrussia",
+      "culture": "",
+      "statsid": "",
+      "is_main": false,
+      "is_revolution": true,
+      "homecity": "",
+      "age_techs": [],
+      "revolution_techs": [
+        "DERevolutionPrussia"
+      ],
+      "starting_units": [],
+      "units": [
+        "coureur",
+        "crossbowman",
+        "delandwehr",
+        "demercgrenadier",
+        "dragoon",
+        "fishingboat",
+        "musketeer",
+        "pikeman",
+        "settler",
+        "settlerwagon",
+        "warwagon"
+      ],
+      "tech_counts": {
+        "active": 17,
+        "obtainable": 9
+      },
+      "unique_units": [],
+      "unique_techs": [],
+      "is_playable": false
+    },
+    "DERevGermany": {
+      "name": "德意志邦联联军",
+      "name_en": "DERevGermany",
+      "culture": "",
+      "statsid": "",
+      "is_main": false,
+      "is_revolution": true,
+      "homecity": "",
+      "age_techs": [],
+      "revolution_techs": [
+        "DERevolutionGermany"
+      ],
+      "starting_units": [],
+      "units": [
+        "derevcossacktabor",
+        "xpcolonialmilitia"
+      ],
+      "tech_counts": {
+        "active": 1,
+        "obtainable": 1
+      },
+      "unique_units": [],
+      "unique_techs": [],
+      "is_playable": false
+    },
+    "DEImpJapaneseFlag": {
+      "name": "大日本帝国",
+      "name_en": "DEImpJapaneseFlag",
+      "culture": "",
+      "statsid": "",
+      "is_main": false,
+      "is_revolution": false,
+      "homecity": "",
+      "age_techs": [],
+      "revolution_techs": [],
+      "starting_units": [],
+      "units": [],
+      "tech_counts": {
+        "active": 0,
+        "obtainable": 0
+      },
+      "unique_units": [],
+      "unique_techs": [],
+      "is_playable": false
+    }
+  },
+  "unit_civs": {
+    "abusgun": [
+      "Ottomans"
+    ],
+    "cacadore": [
+      "Portuguese"
+    ],
+    "canoe": [
+      "DEInca",
+      "XPAztec",
+      "XPIroquois",
+      "XPSioux"
+    ],
+    "caravel": [
+      "British",
+      "DEDanish",
+      "DEItalians",
+      "DEPolish",
+      "DESwedish",
+      "Dutch",
+      "French",
+      "Germans",
+      "Indians",
+      "Portuguese",
+      "Russians",
+      "Spanish"
+    ],
+    "cavalryarcher": [
+      "DEPolish",
+      "Ottomans",
+      "Russians"
+    ],
+    "cossack": [
+      "Russians"
+    ],
+    "coureur": [
+      "French"
+    ],
+    "crossbowman": [
+      "DEDanish",
+      "DEMaltese",
+      "DEPolish",
+      "DESwedish",
+      "French",
+      "Germans",
+      "Portuguese",
+      "Spanish"
+    ],
+    "cuirassier": [
+      "French"
+    ],
+    "culverin": [
+      "British",
+      "DEAmericans",
+      "DEDanish",
+      "DEItalians",
+      "DEMaltese",
+      "DEMexicans",
+      "DEPolish",
+      "DESwedish",
+      "Dutch",
+      "French",
+      "Germans",
+      "Ottomans",
+      "Portuguese",
+      "Russians",
+      "Spanish"
+    ],
+    "deabun": [
+      "DEEthiopians"
+    ],
+    "dearchitect": [
+      "DEItalians"
+    ],
+    "deazap": [
+      "Ottomans"
+    ],
+    "debattlecanoe": [
+      "DEEthiopians",
+      "DEHausa"
+    ],
+    "debersagliere": [
+      "DEItalians"
+    ],
+    "debolaswarrior": [
+      "DEInca"
+    ],
+    "debowmanlevy": [
+      "DEEthiopians",
+      "DEHausa"
+    ],
+    "decannonboat": [
+      "DEEthiopians",
+      "DEHausa"
+    ],
+    "decarolean": [
+      "DESwedish"
+    ],
+    "dechasqui": [
+      "DEInca"
+    ],
+    "dechinaco": [
+      "DEMexicans"
+    ],
+    "dechincharaft": [
+      "DEInca"
+    ],
+    "dedeli": [
+      "Ottomans"
+    ],
+    "deeaglescout": [
+      "XPAztec"
+    ],
+    "deemboscador": [
+      "DEMexicans"
+    ],
+    "definnishrider": [
+      "DESwedish"
+    ],
+    "defishingboatafrican": [
+      "DEEthiopians",
+      "DEHausa"
+    ],
+    "defulawarrior": [
+      "DEHausa"
+    ],
+    "degalleass": [
+      "DEItalians"
+    ],
+    "degascenya": [
+      "DEEthiopians"
+    ],
+    "degrandmaster": [
+      "DEMaltese"
+    ],
+    "degriot": [
+      "DEHausa"
+    ],
+    "degunboat": [
+      "DEDanish"
+    ],
+    "degunnerlevy": [
+      "DEEthiopians",
+      "DEHausa"
+    ],
+    "dehoopthrower": [
+      "DEMaltese"
+    ],
+    "dehospitaller": [
+      "DEMaltese"
+    ],
+    "dehumbaraci": [
+      "Ottomans"
+    ],
+    "deincarunner": [
+      "DEInca"
+    ],
+    "deincaspearman": [
+      "DEInca"
+    ],
+    "deincawarchief": [
+      "DEInca"
+    ],
+    "deinsurgente": [
+      "DEMexicans"
+    ],
+    "dejavelinrider": [
+      "DEEthiopians",
+      "DEHausa"
+    ],
+    "dejunglebowman": [
+      "DEInca"
+    ],
+    "deleathercannon": [
+      "DESwedish"
+    ],
+    "delifidi": [
+      "DEHausa"
+    ],
+    "delithuanianrider": [
+      "DEPolish"
+    ],
+    "demaceman": [
+      "DEInca"
+    ],
+    "demaigadi": [
+      "DEHausa"
+    ],
+    "demaltesemusketeer": [
+      "DEMaltese"
+    ],
+    "demercdhow": [
+      "DEEthiopians"
+    ],
+    "demercxebec": [
+      "DEHausa"
+    ],
+    "deminuteman": [
+      "DEAmericans"
+    ],
+    "deneftenya": [
+      "DEEthiopians"
+    ],
+    "deordergalley": [
+      "DEMaltese"
+    ],
+    "deoromowarrior": [
+      "DEEthiopians"
+    ],
+    "deoutlawdesertarcher": [
+      "DEEthiopians",
+      "DEHausa"
+    ],
+    "deoutlawdesertraider": [
+      "DEEthiopians",
+      "DEHausa"
+    ],
+    "deoutlawdesertwarrior": [
+      "DEEthiopians",
+      "DEHausa"
+    ],
+    "depadre": [
+      "DEMexicans"
+    ],
+    "depavisier": [
+      "DEItalians"
+    ],
+    "depetelephant": [
+      "British",
+      "Chinese",
+      "DEAmericans",
+      "DEDanish",
+      "DEEthiopians",
+      "DEHausa",
+      "DEInca",
+      "DEItalians",
+      "DEMaltese",
+      "DEMexicans",
+      "DEPolish",
+      "DESwedish",
+      "Dutch",
+      "French",
+      "Germans",
+      "Indians",
+      "Japanese",
+      "Ottomans",
+      "Portuguese",
+      "Russians",
+      "Spanish",
+      "XPAztec",
+      "XPIroquois",
+      "XPSioux"
+    ],
+    "depethippo": [
+      "British",
+      "Chinese",
+      "DEAmericans",
+      "DEDanish",
+      "DEEthiopians",
+      "DEHausa",
+      "DEInca",
+      "DEItalians",
+      "DEMaltese",
+      "DEMexicans",
+      "DEPolish",
+      "DESwedish",
+      "Dutch",
+      "French",
+      "Germans",
+      "Indians",
+      "Japanese",
+      "Ottomans",
+      "Portuguese",
+      "Russians",
+      "Spanish",
+      "XPAztec",
+      "XPIroquois",
+      "XPSioux"
+    ],
+    "depetleopard": [
+      "British",
+      "Chinese",
+      "DEAmericans",
+      "DEDanish",
+      "DEItalians",
+      "DEMaltese",
+      "DEMexicans",
+      "DEPolish",
+      "DESwedish",
+      "Dutch",
+      "French",
+      "Germans",
+      "Indians",
+      "Japanese",
+      "Ottomans",
+      "Portuguese",
+      "Russians",
+      "Spanish"
+    ],
+    "depetwarthog": [
+      "British",
+      "Chinese",
+      "DEAmericans",
+      "DEDanish",
+      "DEEthiopians",
+      "DEHausa",
+      "DEInca",
+      "DEItalians",
+      "DEMaltese",
+      "DEMexicans",
+      "DEPolish",
+      "DESwedish",
+      "Dutch",
+      "French",
+      "Germans",
+      "Indians",
+      "Japanese",
+      "Ottomans",
+      "Portuguese",
+      "Russians",
+      "Spanish",
+      "XPAztec",
+      "XPIroquois",
+      "XPSioux"
+    ],
+    "depiechur": [
+      "DEPolish"
+    ],
+    "deraider": [
+      "DEHausa"
+    ],
+    "deregular": [
+      "DEAmericans"
+    ],
+    "derifleman": [
+      "DEAmericans"
+    ],
+    "derussianhalberdier": [
+      "Russians"
+    ],
+    "derussianmusketeer": [
+      "Russians"
+    ],
+    "desaloonbandido": [
+      "DEMexicans"
+    ],
+    "desaloondesperado": [
+      "DEMexicans"
+    ],
+    "desaloonvaquero": [
+      "DEMexicans"
+    ],
+    "desebastopolmortar": [
+      "DEEthiopians"
+    ],
+    "desettlerafrican": [
+      "DEEthiopians",
+      "DEHausa"
+    ],
+    "deshotelwarrior": [
+      "DEEthiopians"
+    ],
+    "deslinger": [
+      "DEInca"
+    ],
+    "desloop": [
+      "DEAmericans",
+      "DEMexicans"
+    ],
+    "desoldado": [
+      "DEMexicans"
+    ],
+    "despearmanlevy": [
+      "DEEthiopians",
+      "DEHausa"
+    ],
+    "despyottoman": [
+      "Ottomans"
+    ],
+    "destatemilitia": [
+      "DEAmericans"
+    ],
+    "desteamer": [
+      "DEAmericans",
+      "DEMexicans"
+    ],
+    "deuscavalry": [
+      "DEAmericans"
+    ],
+    "dewingedhussar": [
+      "DEPolish"
+    ],
+    "dopplesoldner": [
+      "Germans"
+    ],
+    "dragoon": [
+      "British",
+      "DEDanish",
+      "DEItalians",
+      "DEMexicans",
+      "French",
+      "Portuguese",
+      "Spanish"
+    ],
+    "envoy": [
+      "Dutch"
+    ],
+    "explorer": [
+      "British",
+      "DEDanish",
+      "DEItalians",
+      "DESwedish",
+      "Dutch",
+      "French",
+      "Germans",
+      "Ottomans",
+      "Portuguese",
+      "Russians",
+      "Spanish"
+    ],
+    "falconet": [
+      "British",
+      "DEDanish",
+      "DEItalians",
+      "DEMaltese",
+      "DEMexicans",
+      "DEPolish",
+      "DESwedish",
+      "Dutch",
+      "French",
+      "Germans",
+      "Ottomans",
+      "Russians",
+      "Spanish"
+    ],
+    "fishingboat": [
+      "British",
+      "DEAmericans",
+      "DEDanish",
+      "DEInca",
+      "DEItalians",
+      "DEMaltese",
+      "DEMexicans",
+      "DEPolish",
+      "DESwedish",
+      "Dutch",
+      "French",
+      "Germans",
+      "Ottomans",
+      "Portuguese",
+      "Russians",
+      "Spanish",
+      "XPAztec",
+      "XPIroquois",
+      "XPSioux"
+    ],
+    "fluyt": [
+      "Dutch"
+    ],
+    "frigate": [
+      "British",
+      "DEAmericans",
+      "DEDanish",
+      "DEItalians",
+      "DEMaltese",
+      "DEMexicans",
+      "DEPolish",
+      "DESwedish",
+      "Dutch",
+      "French",
+      "Germans",
+      "Indians",
+      "Ottomans",
+      "Portuguese",
+      "Russians",
+      "Spanish"
+    ],
+    "galleon": [
+      "British",
+      "DEDanish",
+      "DEMaltese",
+      "DEPolish",
+      "DESwedish",
+      "French",
+      "Germans",
+      "Indians",
+      "Ottomans",
+      "Portuguese",
+      "Russians",
+      "Spanish"
+    ],
+    "galley": [
+      "Ottomans"
+    ],
+    "grenadier": [
+      "British",
+      "DEDanish",
+      "DEItalians",
+      "DESwedish",
+      "Dutch",
+      "Russians"
+    ],
+    "halberdier": [
+      "DEDanish",
+      "DEItalians",
+      "Dutch",
+      "French",
+      "Portuguese"
+    ],
+    "hussar": [
+      "British",
+      "DEAmericans",
+      "DEDanish",
+      "DEItalians",
+      "DESwedish",
+      "Dutch",
+      "French",
+      "Portuguese",
+      "Spanish"
+    ],
+    "imam": [
+      "Ottomans"
+    ],
+    "janissary": [
+      "Ottomans"
+    ],
+    "lancer": [
+      "Spanish"
+    ],
+    "longbowman": [
+      "British"
+    ],
+    "mercblackrider": [
+      "DESwedish"
+    ],
+    "mercjaeger": [
+      "DESwedish"
+    ],
+    "minuteman": [
+      "DEDanish"
+    ],
+    "missionary": [
+      "DEEthiopians",
+      "Spanish"
+    ],
+    "monitor": [
+      "British",
+      "Chinese",
+      "DEDanish",
+      "DEItalians",
+      "DEMaltese",
+      "DEPolish",
+      "DESwedish",
+      "Dutch",
+      "French",
+      "Germans",
+      "Indians",
+      "Japanese",
+      "Ottomans",
+      "Portuguese",
+      "Russians",
+      "Spanish"
+    ],
+    "mortar": [
+      "British",
+      "DEAmericans",
+      "DEDanish",
+      "DEItalians",
+      "DEMaltese",
+      "DEMexicans",
+      "DEPolish",
+      "DESwedish",
+      "Dutch",
+      "French",
+      "Germans",
+      "Ottomans",
+      "Portuguese",
+      "Russians",
+      "Spanish"
+    ],
+    "musketeer": [
+      "British",
+      "DEDanish",
+      "DEItalians",
+      "French",
+      "Portuguese",
+      "Spanish"
+    ],
+    "nativescout": [
+      "French",
+      "XPAztec",
+      "XPIroquois",
+      "XPSioux"
+    ],
+    "oprichnik": [
+      "Russians"
+    ],
+    "organgun": [
+      "Portuguese"
+    ],
+    "pikeman": [
+      "British",
+      "DEDanish",
+      "DEItalians",
+      "DEMaltese",
+      "DEPolish",
+      "DESwedish",
+      "Dutch",
+      "French",
+      "Germans",
+      "Portuguese",
+      "Spanish"
+    ],
+    "priest": [
+      "British",
+      "DEDanish",
+      "DEItalians",
+      "DEMaltese",
+      "DEPolish",
+      "DESwedish",
+      "Dutch",
+      "French",
+      "Germans",
+      "Japanese",
+      "Portuguese",
+      "Russians"
+    ],
+    "rodelero": [
+      "Spanish"
+    ],
+    "ruyter": [
+      "Dutch"
+    ],
+    "saloonoutlawpistol": [
+      "DEAmericans"
+    ],
+    "saloonoutlawrider": [
+      "DEAmericans"
+    ],
+    "saloonoutlawrifleman": [
+      "DEAmericans"
+    ],
+    "settler": [
+      "British",
+      "DEAmericans",
+      "DEDanish",
+      "DEItalians",
+      "DEMaltese",
+      "DEMexicans",
+      "DEPolish",
+      "DESwedish",
+      "Dutch",
+      "Germans",
+      "Portuguese",
+      "Russians",
+      "Spanish"
+    ],
+    "settlernative": [
+      "DEInca",
+      "XPAztec",
+      "XPIroquois",
+      "XPSioux"
+    ],
+    "settlerwagon": [
+      "Germans"
+    ],
+    "skirmisher": [
+      "DEDanish",
+      "Dutch",
+      "French",
+      "Germans",
+      "Spanish"
+    ],
+    "spahi": [
+      "Ottomans"
+    ],
+    "strelet": [
+      "Russians"
+    ],
+    "surgeon": [
+      "British",
+      "Chinese",
+      "DEAmericans",
+      "DEDanish",
+      "DEEthiopians",
+      "DEHausa",
+      "DEInca",
+      "DEItalians",
+      "DEMaltese",
+      "DEMexicans",
+      "DEPolish",
+      "DESwedish",
+      "Dutch",
+      "French",
+      "Germans",
+      "Indians",
+      "Japanese",
+      "Ottomans",
+      "Portuguese",
+      "Russians",
+      "Spanish",
+      "XPAztec",
+      "XPIroquois",
+      "XPSioux"
+    ],
+    "uhlan": [
+      "Germans"
+    ],
+    "wardog": [
+      "Spanish"
+    ],
+    "warwagon": [
+      "Germans"
+    ],
+    "xpaenna": [
+      "XPIroquois"
+    ],
+    "xparrowknight": [
+      "XPAztec"
+    ],
+    "xpaxerider": [
+      "XPSioux"
+    ],
+    "xpaztecwarchief": [
+      "XPAztec"
+    ],
+    "xpbowrider": [
+      "XPSioux"
+    ],
+    "xpcouprider": [
+      "XPSioux"
+    ],
+    "xpcoyoteman": [
+      "XPAztec"
+    ],
+    "xpdogsoldier": [
+      "XPSioux"
+    ],
+    "xpeagleknight": [
+      "XPAztec"
+    ],
+    "xpgatlinggun": [
+      "DEAmericans"
+    ],
+    "xphorseartillery": [
+      "British",
+      "DEAmericans",
+      "DEDanish",
+      "DEItalians",
+      "DEMexicans",
+      "DEPolish",
+      "DESwedish",
+      "Dutch",
+      "French",
+      "Germans",
+      "Ottomans",
+      "Portuguese",
+      "Russians",
+      "Spanish"
+    ],
+    "xphorseman": [
+      "XPIroquois"
+    ],
+    "xpironclad": [
+      "DEAmericans",
+      "DEMexicans"
+    ],
+    "xpiroquoiswarchief": [
+      "XPIroquois"
+    ],
+    "xpjaguarknight": [
+      "XPAztec"
+    ],
+    "xplakotawarchief": [
+      "XPSioux"
+    ],
+    "xplightcannon": [
+      "XPIroquois"
+    ],
+    "xpmacehualtin": [
+      "XPAztec"
+    ],
+    "xpmantlet": [
+      "XPIroquois"
+    ],
+    "xpmedicineman": [
+      "XPIroquois",
+      "XPSioux"
+    ],
+    "xpmedicinemanaztec": [
+      "XPAztec"
+    ],
+    "xpmusketrider": [
+      "XPIroquois"
+    ],
+    "xpmusketwarrior": [
+      "XPIroquois"
+    ],
+    "xppetard": [
+      "British",
+      "DEAmericans",
+      "DEDanish",
+      "DEItalians",
+      "DEMaltese",
+      "DEMexicans",
+      "DEPolish",
+      "DESwedish",
+      "Dutch",
+      "French",
+      "Germans",
+      "Ottomans",
+      "Portuguese",
+      "Russians",
+      "Spanish"
+    ],
+    "xppumaman": [
+      "XPAztec"
+    ],
+    "xpram": [
+      "XPIroquois"
+    ],
+    "xpriflerider": [
+      "XPSioux"
+    ],
+    "xpskullknight": [
+      "XPAztec"
+    ],
+    "xpspy": [
+      "British",
+      "DEAmericans",
+      "DEDanish",
+      "DEItalians",
+      "DEMaltese",
+      "DEMexicans",
+      "DEPolish",
+      "DESwedish",
+      "Dutch",
+      "French",
+      "Germans",
+      "Japanese",
+      "Portuguese",
+      "Russians",
+      "Spanish"
+    ],
+    "xptlaloccanoe": [
+      "XPAztec"
+    ],
+    "xptomahawk": [
+      "XPIroquois"
+    ],
+    "xpwarbow": [
+      "XPSioux"
+    ],
+    "xpwarcanoe": [
+      "XPAztec",
+      "XPIroquois",
+      "XPSioux"
+    ],
+    "xpwarclub": [
+      "XPSioux"
+    ],
+    "xpwarrifle": [
+      "XPSioux"
+    ],
+    "xpwarrior": [
+      "DEInca",
+      "XPAztec",
+      "XPIroquois",
+      "XPSioux"
+    ],
+    "yparquebusier": [
+      "Chinese"
+    ],
+    "ypashigaru": [
+      "Japanese"
+    ],
+    "ypatakabune": [
+      "Japanese"
+    ],
+    "ypblackflagarmy": [
+      "Chinese"
+    ],
+    "ypchangdao": [
+      "Chinese"
+    ],
+    "ypchukonu": [
+      "Chinese"
+    ],
+    "ypconsulatebestieros": [
+      "Chinese",
+      "Indians",
+      "Japanese"
+    ],
+    "ypconsulatecannon": [
+      "Chinese",
+      "Indians",
+      "Japanese"
+    ],
+    "ypconsulatecarabineer": [
+      "Chinese",
+      "Indians",
+      "Japanese"
+    ],
+    "ypconsulateculverin": [
+      "Chinese",
+      "Indians",
+      "Japanese"
+    ],
+    "ypconsulateespadachins": [
+      "Chinese",
+      "Indians",
+      "Japanese"
+    ],
+    "ypconsulatefalconet": [
+      "Chinese",
+      "Indians",
+      "Japanese"
+    ],
+    "ypconsulategendarmes": [
+      "Chinese",
+      "Indians",
+      "Japanese"
+    ],
+    "ypconsulategreatbombard": [
+      "Chinese",
+      "Indians",
+      "Japanese"
+    ],
+    "ypconsulateguerreiros": [
+      "Chinese",
+      "Indians",
+      "Japanese"
+    ],
+    "ypconsulatehorseartillery": [
+      "Chinese",
+      "Indians",
+      "Japanese"
+    ],
+    "ypconsulatejinete": [
+      "Chinese",
+      "DEMaltese",
+      "Indians",
+      "Japanese"
+    ],
+    "ypconsulatelifeguard": [
+      "Chinese",
+      "DEMaltese",
+      "Indians",
+      "Japanese"
+    ],
+    "ypconsulatemortar": [
+      "Chinese",
+      "Indians",
+      "Japanese"
+    ],
+    "ypconsulateredcoat": [
+      "Chinese",
+      "Indians",
+      "Japanese"
+    ],
+    "ypconsulaterogersranger": [
+      "Chinese",
+      "Indians",
+      "Japanese"
+    ],
+    "ypconsulatesiberiancossack": [
+      "Chinese",
+      "Indians",
+      "Japanese"
+    ],
+    "ypconsulatestadhouders": [
+      "Chinese",
+      "Indians",
+      "Japanese"
+    ],
+    "ypconsulatetercio": [
+      "Chinese",
+      "Indians",
+      "Japanese"
+    ],
+    "ypconsulatetufancicorps": [
+      "Chinese",
+      "Indians",
+      "Japanese"
+    ],
+    "ypconsulatevoltigeur": [
+      "Chinese",
+      "Indians",
+      "Japanese"
+    ],
+    "ypconsulateyounggarde": [
+      "Chinese",
+      "Indians",
+      "Japanese"
+    ],
+    "ypconsulatezweihander": [
+      "Chinese",
+      "Indians",
+      "Japanese"
+    ],
+    "ypfireship": [
+      "Chinese"
+    ],
+    "ypfishingboatasian": [
+      "Chinese",
+      "Indians",
+      "Japanese"
+    ],
+    "ypflamethrower": [
+      "Chinese"
+    ],
+    "ypflamingarrow": [
+      "Japanese"
+    ],
+    "ypforbiddenarmy": [
+      "Chinese"
+    ],
+    "ypfuchuan": [
+      "Chinese"
+    ],
+    "ypfune": [
+      "Japanese"
+    ],
+    "yphandmortar": [
+      "Chinese"
+    ],
+    "yphowdah": [
+      "Indians"
+    ],
+    "yphowdahmansabdar": [
+      "Indians"
+    ],
+    "ypimperialarmy": [
+      "Chinese"
+    ],
+    "ypironflail": [
+      "Chinese"
+    ],
+    "ypkensei": [
+      "Japanese"
+    ],
+    "ypkeshik": [
+      "Chinese"
+    ],
+    "ypmahout": [
+      "Indians"
+    ],
+    "ypmahoutmansabdar": [
+      "Indians"
+    ],
+    "ypmercflailiphant": [
+      "Indians"
+    ],
+    "ypmercflailiphantmansabdar": [
+      "Indians"
+    ],
+    "ypmeteorhammer": [
+      "Chinese"
+    ],
+    "ypmingarmy": [
+      "Chinese"
+    ],
+    "ypmongolianarmy": [
+      "Chinese"
+    ],
+    "ypmonkchinese": [
+      "Chinese"
+    ],
+    "ypmonkdisciple": [
+      "Chinese"
+    ],
+    "ypmonkindian": [
+      "Indians"
+    ],
+    "ypmonkindian2": [
+      "Indians"
+    ],
+    "ypmonkjapanese": [
+      "Japanese"
+    ],
+    "ypmonkjapanese2": [
+      "Japanese"
+    ],
+    "ypmorutaru": [
+      "Japanese"
+    ],
+    "ypnaginatarider": [
+      "Japanese"
+    ],
+    "ypnatmercgurkha": [
+      "Indians"
+    ],
+    "ypnatmercgurkhajemadar": [
+      "Indians"
+    ],
+    "yppetorangutan": [
+      "British",
+      "Chinese",
+      "DEAmericans",
+      "DEDanish",
+      "DEEthiopians",
+      "DEHausa",
+      "DEInca",
+      "DEItalians",
+      "DEMaltese",
+      "DEMexicans",
+      "DEPolish",
+      "DESwedish",
+      "Dutch",
+      "French",
+      "Germans",
+      "Indians",
+      "Japanese",
+      "Ottomans",
+      "Portuguese",
+      "Russians",
+      "Spanish",
+      "XPAztec",
+      "XPIroquois",
+      "XPSioux"
+    ],
+    "ypqiangpikeman": [
+      "Chinese"
+    ],
+    "yprajput": [
+      "Indians"
+    ],
+    "yprajputmansabdar": [
+      "Indians"
+    ],
+    "yprepentantblackrider": [
+      "DESwedish"
+    ],
+    "yprepentantjaeger": [
+      "DESwedish"
+    ],
+    "ypsepoy": [
+      "Indians"
+    ],
+    "ypsepoymansabdar": [
+      "Indians"
+    ],
+    "ypsettlerasian": [
+      "Chinese"
+    ],
+    "ypsettlerindian": [
+      "Indians"
+    ],
+    "ypsettlerjapanese": [
+      "Japanese"
+    ],
+    "ypshinobihorse": [
+      "Japanese"
+    ],
+    "ypsiegeelephant": [
+      "Indians"
+    ],
+    "ypsiegeelephantmansabdar": [
+      "Indians"
+    ],
+    "ypsowar": [
+      "Indians"
+    ],
+    "ypsowarmansabdar": [
+      "Indians"
+    ],
+    "ypstandardarmy": [
+      "Chinese"
+    ],
+    "ypstepperider": [
+      "Chinese"
+    ],
+    "yptekkousen": [
+      "Japanese"
+    ],
+    "ypterritorialarmy": [
+      "Chinese"
+    ],
+    "ypwarjunk": [
+      "Chinese"
+    ],
+    "ypyabusame": [
+      "Japanese"
+    ],
+    "ypyamabushi": [
+      "Japanese"
+    ],
+    "ypyumi": [
+      "Japanese"
+    ],
+    "ypzamburak": [
+      "Indians"
+    ],
+    "ypzamburakmansabdar": [
+      "Indians"
+    ]
+  },
+  "unit_rev_civs": {
+    "cacadore": [
+      "DERevIndonesia"
+    ],
+    "cannon": [
+      "DERevWarsaw"
+    ],
+    "cavalryarcher": [
+      "DERevWarsaw"
+    ],
+    "coureur": [
+      "DERevArgentina",
+      "DERevBarbaryStates",
+      "DERevBrazil",
+      "DERevChile",
+      "DERevColombia",
+      "DERevEgypt",
+      "DERevHaiti",
+      "DERevHungary",
+      "DERevIndonesia",
+      "DERevMexico",
+      "DERevPeru",
+      "DERevPrussia",
+      "DERevRomania",
+      "DERevUSA",
+      "DERevWarsaw"
+    ],
+    "crossbowman": [
+      "DERevCossacks",
+      "DERevIndonesia",
+      "DERevPrussia",
+      "DERevWarsaw"
+    ],
+    "culverin": [
+      "DERevBarbaryStates",
+      "DERevMXMaya"
+    ],
+    "deallegiancebarbarymarksman": [
+      "DERevBarbaryStates"
+    ],
+    "deazap": [
+      "DERevBarbaryStates"
+    ],
+    "debolaswarrior": [
+      "DERevPeru"
+    ],
+    "dechinaco": [
+      "DERevMXMaya"
+    ],
+    "dedeli": [
+      "DERevBarbaryStates"
+    ],
+    "deemboscador": [
+      "DERevMXMaya",
+      "DERevMXTexas"
+    ],
+    "definnishrider": [
+      "DERevFinland"
+    ],
+    "degeneral": [
+      "DERevUSA"
+    ],
+    "dehumbaraci": [
+      "DERevBarbaryStates"
+    ],
+    "deincarunner": [
+      "DERevPeru"
+    ],
+    "deincaspearman": [
+      "DERevPeru"
+    ],
+    "deinsurgente": [
+      "DERevMXMaya",
+      "DERevMXTexas"
+    ],
+    "delandwehr": [
+      "DERevPrussia"
+    ],
+    "delithuanianrider": [
+      "DERevCossacks",
+      "DERevWarsaw"
+    ],
+    "demaceman": [
+      "DERevPeru"
+    ],
+    "demerccapturedmortar": [
+      "DERevMXMaya"
+    ],
+    "demercgrenadier": [
+      "DERevPrussia"
+    ],
+    "demercnapoleongun": [
+      "DERevFranceNE"
+    ],
+    "demercpandour": [
+      "DERevHungary"
+    ],
+    "denatholcanjavelineer": [
+      "DERevMXMaya"
+    ],
+    "denathungariangrenadier": [
+      "DERevHungary"
+    ],
+    "denatmercroyaldragoon": [
+      "DERevFranceNE"
+    ],
+    "denatmercroyalmusketeer": [
+      "DERevFranceNE"
+    ],
+    "depiechur": [
+      "DERevWarsaw"
+    ],
+    "deregular": [
+      "DERevMXTexas"
+    ],
+    "derevbarbarywarrior": [
+      "DERevBarbaryStates"
+    ],
+    "derevcalifornio": [
+      "DERevMXCalifornia"
+    ],
+    "derevcetbang": [
+      "DERevIndonesia"
+    ],
+    "derevcossacktabor": [
+      "DERevGermany"
+    ],
+    "derevcruzobinfantry": [
+      "DERevMXMaya"
+    ],
+    "derevfilibuster": [
+      "DERevMXBajaCalifornia"
+    ],
+    "derevgaucho": [
+      "DERevArgentina"
+    ],
+    "derevhaidamaka": [
+      "DERevCossacks"
+    ],
+    "derevhaidamakarider": [
+      "DERevCossacks"
+    ],
+    "derevhighmaster": [
+      "DERevLivonia"
+    ],
+    "derevjavaspearman": [
+      "DERevIndonesia"
+    ],
+    "derevolutionaryscout": [
+      "DERevFrance"
+    ],
+    "derevpolishlancer": [
+      "DERevWarsaw"
+    ],
+    "derevstartrekwagon": [
+      "DERevSouthAfrica"
+    ],
+    "derevvaquero": [
+      "DERevMexico"
+    ],
+    "derifleman": [
+      "DERevMXTexas"
+    ],
+    "desaloonbandido": [
+      "DERevMexico"
+    ],
+    "desaloondesperado": [
+      "DERevMexico"
+    ],
+    "desaloonhajduk": [
+      "DERevHungary"
+    ],
+    "desaloonoutlawcossack": [
+      "DERevCossacks"
+    ],
+    "desaloonoutlawcossackrider": [
+      "DERevCossacks"
+    ],
+    "desaloonvaquero": [
+      "DERevMexico"
+    ],
+    "deslinger": [
+      "DERevPeru"
+    ],
+    "desoldado": [
+      "DERevMXTexas"
+    ],
+    "destatemilitia": [
+      "DERevMXTexas"
+    ],
+    "desteamer": [
+      "DERevMXMaya"
+    ],
+    "dragoon": [
+      "DERevIndonesia",
+      "DERevMXMaya",
+      "DERevPrussia",
+      "DERevWarsaw"
+    ],
+    "falconet": [
+      "DERevBarbaryStates",
+      "DERevMXMaya"
+    ],
+    "fishingboat": [
+      "DERevArgentina",
+      "DERevBarbaryStates",
+      "DERevBrazil",
+      "DERevChile",
+      "DERevColombia",
+      "DERevCossacks",
+      "DERevEgypt",
+      "DERevHaiti",
+      "DERevHungary",
+      "DERevIndonesia",
+      "DERevMXCentralAmerica",
+      "DERevMXYucatan",
+      "DERevMexico",
+      "DERevPeru",
+      "DERevPrussia",
+      "DERevRomania",
+      "DERevUSA",
+      "DERevWarsaw"
+    ],
+    "frigate": [
+      "DERevMXMaya"
+    ],
+    "galleon": [
+      "DERevMXMaya"
+    ],
+    "grenadier": [
+      "DERevHungary",
+      "DERevIndonesia"
+    ],
+    "halberdier": [
+      "DERevIndonesia"
+    ],
+    "hussar": [
+      "DERevChile",
+      "DERevIndonesia"
+    ],
+    "lancer": [
+      "DERevArgentina"
+    ],
+    "mercjaeger": [
+      "DERevFinland"
+    ],
+    "mercmameluke": [
+      "DERevEgypt"
+    ],
+    "mercstradiot": [
+      "DERevEgypt"
+    ],
+    "mortar": [
+      "DERevMXMaya"
+    ],
+    "musketeer": [
+      "DERevColombia",
+      "DERevIndonesia",
+      "DERevPrussia",
+      "DERevWarsaw"
+    ],
+    "nativescout": [
+      "DERevFrance",
+      "DERevMXMaya"
+    ],
+    "pikeman": [
+      "DERevIndonesia",
+      "DERevPrussia"
+    ],
+    "privateer": [
+      "DERevBarbaryStates",
+      "DERevHaiti"
+    ],
+    "ruyter": [
+      "DERevIndonesia"
+    ],
+    "saloonoutlawrider": [
+      "DERevArgentina"
+    ],
+    "saloonpirate": [
+      "DERevHaiti"
+    ],
+    "settler": [
+      "DERevArgentina",
+      "DERevBarbaryStates",
+      "DERevBrazil",
+      "DERevChile",
+      "DERevColombia",
+      "DERevEgypt",
+      "DERevFinland",
+      "DERevHaiti",
+      "DERevHungary",
+      "DERevIndonesia",
+      "DERevMXBajaCalifornia",
+      "DERevMXCalifornia",
+      "DERevMXCentralAmerica",
+      "DERevMXRioGrande",
+      "DERevMXTexas",
+      "DERevMXYucatan",
+      "DERevMexico",
+      "DERevPeru",
+      "DERevPrussia",
+      "DERevRomania",
+      "DERevUSA",
+      "DERevWarsaw"
+    ],
+    "settlerwagon": [
+      "DERevArgentina",
+      "DERevBarbaryStates",
+      "DERevBrazil",
+      "DERevChile",
+      "DERevColombia",
+      "DERevEgypt",
+      "DERevHaiti",
+      "DERevHungary",
+      "DERevIndonesia",
+      "DERevMexico",
+      "DERevPeru",
+      "DERevPrussia",
+      "DERevRomania",
+      "DERevUSA",
+      "DERevWarsaw"
+    ],
+    "skirmisher": [
+      "DERevFinland",
+      "DERevIndonesia",
+      "DERevWarsaw"
+    ],
+    "warwagon": [
+      "DERevPrussia"
+    ],
+    "xpcolonialmilitia": [
+      "DERevArgentina",
+      "DERevChile",
+      "DERevEgypt",
+      "DERevFrance",
+      "DERevGermany",
+      "DERevHaiti",
+      "DERevHungary",
+      "DERevIndonesia",
+      "DERevMXCentralAmerica",
+      "DERevMXRioGrande",
+      "DERevMXYucatan",
+      "DERevPeru",
+      "DERevRomania",
+      "DERevUSA"
+    ],
+    "xpgatlinggun": [
+      "DERevUSA"
+    ],
+    "xphorseartillery": [
+      "DERevMXMaya"
+    ],
+    "xpironclad": [
+      "DERevColombia",
+      "DERevMXMaya"
+    ],
+    "xplightcannon": [
+      "DERevMXMaya"
+    ],
+    "xptlaloccanoe": [
+      "DERevMXMaya"
+    ],
+    "xpwarcanoe": [
+      "DERevMXMaya"
+    ],
+    "ypconsulatearmygerman1": [
+      "DERevChile"
+    ],
+    "ypconsulatearmygerman2": [
+      "DERevChile"
+    ],
+    "ypconsulatearmygerman3": [
+      "DERevChile"
+    ],
+    "ypconsulatearmyrussian1": [
+      "DERevRomania"
+    ],
+    "ypconsulatearmyrussian2": [
+      "DERevRomania"
+    ],
+    "ypconsulatearmyrussian3": [
+      "DERevRomania"
+    ],
+    "yprepentantjaeger": [
+      "DERevFinland"
+    ],
+    "ypwokoujunk": [
+      "DERevIndonesia"
+    ]
+  }
+}
