@@ -1,0 +1,107 @@
+{
+  "_meta": {
+    "doc": "docs/games/aoe3-civ-war-wip.md",
+    "status": "WIP",
+    "notes": [
+      "generic_archetypes 的 values 是资源占比，不是单位数量占比",
+      "fixed_ratio 的 values 是原游戏固定单位数量比例",
+      "通用比例是第一轮审计基线，后续只通过离线模拟和群测调整"
+    ]
+  },
+  "generic_archetypes": [
+    {
+      "id": "musk_shock",
+      "title": "火枪马",
+      "roles": ["musk", "shock"],
+      "allocation": {"kind": "resource_shares", "values": [0.6, 0.4]}
+    },
+    {
+      "id": "dragoon_skirm",
+      "title": "龙骑散",
+      "roles": ["dragoon", "skirm"],
+      "allocation": {"kind": "resource_shares", "values": [0.45, 0.55]}
+    },
+    {
+      "id": "skirm_shock",
+      "title": "散马",
+      "roles": ["skirm", "shock"],
+      "allocation": {"kind": "resource_shares", "values": [0.6, 0.4]}
+    },
+    {
+      "id": "musk_artillery",
+      "title": "火枪炮",
+      "roles": ["musk", "anti_infantry_artillery"],
+      "allocation": {"kind": "resource_shares", "values": [0.7, 0.3]}
+    },
+    {
+      "id": "dragoon_artillery",
+      "title": "龙骑炮",
+      "roles": ["dragoon", "anti_infantry_artillery"],
+      "allocation": {"kind": "resource_shares", "values": [0.65, 0.35]}
+    },
+    {
+      "id": "musk_skirm",
+      "title": "火枪散",
+      "roles": ["musk", "skirm"],
+      "allocation": {"kind": "resource_shares", "values": [0.5, 0.5]}
+    },
+    {
+      "id": "heavy_skirm",
+      "title": "重步散",
+      "roles": ["anti_cavalry_heavy", "skirm"],
+      "allocation": {"kind": "resource_shares", "values": [0.4, 0.6]}
+    },
+    {
+      "id": "skirm_dragoon_artillery",
+      "title": "散龙炮",
+      "roles": ["skirm", "dragoon", "anti_infantry_artillery"],
+      "allocation": {"kind": "resource_shares", "values": [0.45, 0.3, 0.25]}
+    }
+  ],
+  "civ_tactics": {
+    "Chinese": [
+      {
+        "id": "old_han_army",
+        "title": "旧汉军",
+        "min_age": 2,
+        "unit_ids": ["ypchukonu", "ypqiangpikeman"],
+        "allocation": {"kind": "fixed_ratio", "values": [3, 3]}
+      },
+      {
+        "id": "standard_army",
+        "title": "正规军",
+        "min_age": 2,
+        "unit_ids": ["ypchukonu", "ypstepperider"],
+        "allocation": {"kind": "fixed_ratio", "values": [3, 2]}
+      },
+      {
+        "id": "ming_army",
+        "title": "明军",
+        "min_age": 2,
+        "unit_ids": ["ypqiangpikeman", "ypkeshik"],
+        "allocation": {"kind": "fixed_ratio", "values": [2, 3]}
+      },
+      {
+        "id": "territorial_army",
+        "title": "地方军",
+        "min_age": 3,
+        "unit_ids": ["ypchangdao", "yparquebusier"],
+        "allocation": {"kind": "fixed_ratio", "values": [3, 3]}
+      },
+      {
+        "id": "imperial_army",
+        "title": "帝国军",
+        "min_age": 3,
+        "unit_ids": ["yparquebusier", "ypironflail"],
+        "allocation": {"kind": "fixed_ratio", "values": [3, 2]}
+      },
+      {
+        "id": "forbidden_army",
+        "title": "禁卫军",
+        "min_age": 3,
+        "unit_ids": ["ypironflail", "ypmeteorhammer"],
+        "allocation": {"kind": "fixed_ratio", "values": [2, 2]}
+      }
+    ]
+  }
+}

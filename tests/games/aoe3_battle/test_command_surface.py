@@ -9,6 +9,7 @@ def test_mode_aliases_keep_only_short_public_names():
 
     assert aliases["duel"] == ("单挑",)
     assert aliases["blacklist"] == ("乱斗",)
+    assert aliases["civ_war"] == ("国战",)
     assert aliases["custom"] == ()
     assert aliases["rival"] == ("王中王",)
     assert aliases["rival_tournament"] == ("锦标赛",)

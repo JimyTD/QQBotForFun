@@ -26,6 +26,26 @@ def extract_age(parts: list[str]) -> tuple[int | None, list[str]]:
     return age, rest
 
 
+def parse_civ_war_args(
+    parts: list[str],
+) -> tuple[list[str] | None, int | None, str | None]:
+    """Parse ``国战 [文明A 文明B] [预算]`` after age extraction."""
+    tokens = list(parts)
+    budget: int | None = None
+    if tokens and tokens[-1].isdigit():
+        budget = int(tokens.pop())
+
+    if not tokens:
+        return None, budget, None
+    if len(tokens) == 1:
+        return None, budget, "⚠️ 国战要么不写文明随机对阵，要么指定两个不同文明"
+    if len(tokens) > 2:
+        return None, budget, "⚠️ 国战最多指定两个文明和一个资源预算"
+    if tokens[0].lower() == tokens[1].lower():
+        return None, budget, "⚠️ 国战双方必须是两个不同文明"
+    return tokens, budget, None
+
+
 def parse_custom_battle_args(
     parts: list[str],
 ) -> tuple[list[str], list[int] | None, int | None, str | None]:

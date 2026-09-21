@@ -1,0 +1,118 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>帝国 3 国战编制浏览器</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <header class="topbar">
+      <div class="brand" aria-label="帝国 3 国战编制浏览器">
+        <span class="brand-mark">III</span>
+        <span>国战编制浏览器</span>
+        <span class="review-badge">开发审查</span>
+      </div>
+      <label class="civ-picker">
+        <span class="sr-only">选择文明</span>
+        <input id="civ-search" list="civ-options" autocomplete="off" placeholder="搜索文明" />
+        <datalist id="civ-options"></datalist>
+      </label>
+      <div class="age-control" role="group" aria-label="时代">
+        <button type="button" data-age="3" class="active">III</button>
+        <button type="button" data-age="4">IV</button>
+        <button type="button" data-age="5">V</button>
+      </div>
+      <label class="toggle">
+        <input id="local-only" type="checkbox" />
+        <span>仅本国单位</span>
+      </label>
+      <label class="toggle">
+        <input id="include-consulate" type="checkbox" checked />
+        <span>包含领事馆</span>
+      </label>
+    </header>
+
+    <main class="shell">
+      <aside class="units-panel" aria-label="正规军单位列表">
+        <div class="panel-heading">
+          <div>
+            <p class="eyebrow">正规军兵池</p>
+            <h1 id="civ-title">加载中</h1>
+          </div>
+          <span id="unit-count" class="count"></span>
+        </div>
+        <div id="quick-civs" class="quick-civs" aria-label="代表文明快捷切换"></div>
+        <div id="unit-list" class="unit-list"></div>
+      </aside>
+
+      <section class="workspace">
+        <nav class="tabs" aria-label="浏览视图">
+          <button type="button" class="tab active" data-tab="lineups">通用骨架</button>
+          <button type="button" class="tab" data-tab="national">国家战术</button>
+          <button type="button" class="tab" data-tab="audit">审计</button>
+        </nav>
+
+        <section id="lineups-view" class="view active" aria-label="通用骨架候选">
+          <div class="view-header">
+            <div>
+              <p class="eyebrow">已解析为具体单位</p>
+              <h2>通用骨架候选</h2>
+            </div>
+            <p id="lineup-summary" class="muted"></p>
+          </div>
+          <div id="archetype-list" class="archetype-list"></div>
+        </section>
+
+        <section id="national-view" class="view" aria-label="国家战术">
+          <div class="view-header">
+            <div>
+              <p class="eyebrow">固定编制与探索记录</p>
+              <h2>国家战术</h2>
+            </div>
+          </div>
+          <section class="national-section">
+            <div class="section-title-row">
+              <h3>中国旗军</h3>
+              <span class="fixed-badge">固定人数比例</span>
+            </div>
+            <p class="muted">旗军代币不进入通用候选；这里按已还原的实际单位与原始人数比例展示。</p>
+            <div id="banners-list" class="banners-list"></div>
+          </section>
+          <section id="pending-section" class="national-section pending-section"></section>
+        </section>
+
+        <section id="audit-view" class="view" aria-label="审计">
+          <div class="view-header">
+            <div>
+              <p class="eyebrow">规则输出</p>
+              <h2>文明审计</h2>
+            </div>
+          </div>
+          <div class="audit-grid">
+            <section class="audit-section">
+              <h3>骨架候选数</h3>
+              <div id="candidate-counts" class="candidate-counts"></div>
+            </section>
+            <section class="audit-section">
+              <h3>生态位覆盖</h3>
+              <div id="role-coverage" class="role-coverage"></div>
+            </section>
+          </div>
+          <section class="audit-section exclusions">
+            <div class="section-title-row">
+              <h3>排除与当前时代不可用</h3>
+              <span id="excluded-count" class="count"></span>
+            </div>
+            <div id="excluded-list" class="excluded-list"></div>
+          </section>
+        </section>
+      </section>
+    </main>
+
+    <template id="unit-icon-template">
+      <span class="unit-icon fallback" aria-hidden="true"></span>
+    </template>
+    <script src="app.js"></script>
+  </body>
+</html>

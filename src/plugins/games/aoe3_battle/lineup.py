@@ -280,6 +280,10 @@ class MatchLineup:
     mode: str                  # "bet" | "duel" | "rival" | ...
     rival_theme: str | None = None   # 王中王展示名，如「散兵王」
     age: int | None = None     # 本局时代（2~5）；None = 未启用改良/时代限定
+    red_civ_name: str | None = None
+    blue_civ_name: str | None = None
+    red_strategy: str | None = None
+    blue_strategy: str | None = None
 
 
 # =====================================================================
@@ -1045,7 +1049,11 @@ def _find_counter_relations(
 
 
 def format_side_panel(
-    lineup: Lineup, side: str, mode: str, opponent: "Lineup | None" = None
+    lineup: Lineup,
+    side: str,
+    mode: str,
+    opponent: "Lineup | None" = None,
+    identity: str | None = None,
 ) -> str:
     """生成单方的详情面板文本（配合 icon 图片发送）。
 
@@ -1054,6 +1062,7 @@ def format_side_panel(
     """
     emoji = "🔴" if side == "red" else "🔵"
     label = "1号" if side == "red" else "2号"
+    display_label = f"{label} · {identity}" if identity else label
 
     lines: list[str] = []
 
@@ -1061,7 +1070,7 @@ def format_side_panel(
 
     if mode == "duel":
         # 单挑模式：简洁
-        lines.append(f"{emoji} {label} · {lineup.unit.name}")
+        lines.append(f"{emoji} {display_label} · {lineup.unit.name}")
         u = lineup.unit
         lines.append(f"类型：{_type_str_zh(u)}")
         lines.append(f"❤️{u.hp} 🦶{u.speed}")
@@ -1072,7 +1081,7 @@ def format_side_panel(
 
     elif not lineup.is_multi:
         # 单兵种押注 / 指定兵种 / 王中王 / 乱斗单兵种：紧凑
-        lines.append(f"{emoji} {label} · {lineup.unit.name} ×{lineup.count}")
+        lines.append(f"{emoji} {display_label} · {lineup.unit.name} ×{lineup.count}")
         u = lineup.unit
         lines.append(f"类型：{_type_str_zh(u)}")
         if is_blacklist:
@@ -1095,17 +1104,19 @@ def format_side_panel(
         # 多兵种押注模式 / 黑名单乱斗多兵种：每个兵种一段
         if is_blacklist:
             lines.append(
-                f"{emoji} {label}（总战力 {lineup.total_power:,.0f}，总人数 {lineup.total_count}）"
+                f"{emoji} {display_label}（总战力 {lineup.total_power:,.0f}，"
+                f"总人数 {lineup.total_count}）"
             )
         else:
             pop_part = lineup.total_pop * POP_HOUSE_COST
             if pop_part:
                 lines.append(
-                    f"{emoji} {label}（总资源 {lineup.total_cost}，含人口 +{pop_part}）"
+                    f"{emoji} {display_label}（总资源 {lineup.total_cost}，含人口 +{pop_part}）"
                 )
             else:
                 lines.append(
-                    f"{emoji} {label}（总资源 {lineup.total_cost}，人口 {lineup.total_pop}）"
+                    f"{emoji} {display_label}（总资源 {lineup.total_cost}，"
+                    f"人口 {lineup.total_pop}）"
                 )
         for slot in lineup.slots:
             u = slot.unit
@@ -1189,6 +1200,18 @@ def format_vs_banner(lineup: MatchLineup) -> str:
         else:
             red_str = f"🔴 {r.unit.name} ×{r.count}"
             blue_str = f"🔵 {b.unit.name} ×{b.count}"
+    elif lineup.mode == "civ_war":
+        title = "🌍 帝国3斗蛐蛐 · 国战"
+        red_parts = "+".join(f"{s.count}{s.unit.name}" for s in r.slots)
+        blue_parts = "+".join(f"{s.count}{s.unit.name}" for s in b.slots)
+        red_identity = " · ".join(
+            part for part in (lineup.red_civ_name, lineup.red_strategy) if part
+        )
+        blue_identity = " · ".join(
+            part for part in (lineup.blue_civ_name, lineup.blue_strategy) if part
+        )
+        red_str = f"🔴 {red_identity} [{red_parts}]"
+        blue_str = f"🔵 {blue_identity} [{blue_parts}]"
     elif r.is_multi or b.is_multi:
         title = "⚔️ 帝国3斗蛐蛐"
         red_parts = "+".join(f"{s.count}{s.unit.name}" for s in r.slots)

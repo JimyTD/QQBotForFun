@@ -11,7 +11,7 @@ from __future__ import annotations
 import random
 from datetime import datetime, timedelta, timezone
 
-from nonebot import on_command
+from nonebot import logger, on_command
 from nonebot.adapters.onebot.v11 import GroupMessageEvent, Message
 from nonebot.matcher import Matcher
 from nonebot.params import CommandArg
@@ -19,10 +19,11 @@ from nonebot.rule import to_me
 
 from core import game_base
 from core.errors import GameAlreadyRunningError
-from plugins.aoe3_battle_args import extract_age, parse_custom_battle_args
-
-from nonebot import logger
-
+from plugins.aoe3_battle_args import (
+    extract_age,
+    parse_civ_war_args,
+    parse_custom_battle_args,
+)
 
 # 北京时间（服务器容器是 UTC，展示给群里的时刻要换算）
 _CST = timezone(timedelta(hours=8))
@@ -156,6 +157,8 @@ def _extract_age(parts: list[str]) -> tuple[int | None, list[str]]:
 
 _AGE_CONFIG_KEY = "aoe3_battle.default_age"
 _AGE_NAMES = {2: "商业时代", 3: "要塞时代", 4: "工业时代", 5: "帝王时代"}
+_BATTLE_BUDGET_MIN = 1000
+_BATTLE_BUDGET_MAX = 50000
 
 
 async def _get_default_age(group_id: int) -> int | None:
@@ -201,6 +204,7 @@ async def _(matcher: Matcher, event: GroupMessageEvent, args: Message = CommandA
 
     # ---- 时代参数（所有模式通用）："斗蛐蛐 5时代" / "斗蛐蛐 火枪 3时代" ----
     age, parts = _extract_age(arg_text.split())
+    explicit_age = age is not None
 
     # ---- 只写时代、没有其他词 → 设置本群默认时代，不开局 ----
     if age is not None and not parts:
@@ -210,6 +214,17 @@ async def _(matcher: Matcher, event: GroupMessageEvent, args: Message = CommandA
     # 没有显式指定时代 → 读本群持久默认
     if age is None:
         age = await _get_default_age(int(event.group_id))
+
+    # ---- 国战：随机文明 / 明确两个文明 ----
+    if parts and parts[0] == "国战":
+        await _handle_civ_war_battle(
+            matcher,
+            event,
+            parts[1:],
+            age=age,
+            explicit_age=explicit_age,
+        )
+        return
 
     # ---- 锦标赛："斗蛐蛐 锦标赛" ----
     if parts and parts[0] == "锦标赛":
@@ -223,7 +238,7 @@ async def _(matcher: Matcher, event: GroupMessageEvent, args: Message = CommandA
 
     # ---- 指定兵种：参数中有非模式关键词且非纯数字 → 当作兵种名 ----
     _MODE_KEYWORDS = {
-        "单挑", "乱斗", "王中王", "锦标赛",
+        "单挑", "乱斗", "国战", "王中王", "锦标赛",
     }
     unknown_words = [p for p in parts if p not in _MODE_KEYWORDS and not p.isdigit()]
     if unknown_words:
@@ -258,6 +273,59 @@ async def _(matcher: Matcher, event: GroupMessageEvent, args: Message = CommandA
     )
 
 
+async def _handle_civ_war_battle(
+    matcher: Matcher,
+    event: GroupMessageEvent,
+    parts: list[str],
+    *,
+    age: int | None,
+    explicit_age: bool,
+) -> None:
+    """Handle ``斗蛐蛐 国战 [文明A 文明B] [预算]``."""
+    civ_tokens, budget, error = parse_civ_war_args(parts)
+    if error:
+        await matcher.finish(error)
+        return
+    if explicit_age and age == 2:
+        await matcher.finish("⚠️ 国战第一期支持 3~5 时代，不支持 2 时代")
+        return
+    if age is None or age < 3:
+        age = 3
+    if budget is not None and not _BATTLE_BUDGET_MIN <= budget <= _BATTLE_BUDGET_MAX:
+        await matcher.finish(
+            f"⚠️ 资源预算需在 {_BATTLE_BUDGET_MIN}~{_BATTLE_BUDGET_MAX} 之间"
+        )
+        return
+
+    civ_ids: list[str] = []
+    if civ_tokens is not None:
+        from src.plugins.games.aoe3_battle.civ_war_civs import resolve_civ
+
+        profiles = []
+        for token in civ_tokens:
+            profile = resolve_civ(token)
+            if profile is None:
+                await matcher.finish(f"⚠️ 找不到可玩主文明「{token}」")
+                return
+            profiles.append(profile)
+        if profiles[0].id == profiles[1].id:
+            await matcher.finish("⚠️ 国战双方必须是两个不同文明")
+            return
+        civ_ids = [profile.id for profile in profiles]
+
+    config: dict = {"mode": "civ_war", "age": age, "civ_ids": civ_ids}
+    if budget is not None:
+        config["budget"] = budget
+    await _launch_game(
+        matcher,
+        group_id=int(event.group_id),
+        initiator_id=int(event.user_id),
+        game_id="aoe3_battle",
+        mode_id="civ_war",
+        extra_config=config,
+    )
+
+
 async def _handle_custom_battle(
     matcher: Matcher, event: GroupMessageEvent, arg_text: str,
     age: int | None = None,
@@ -283,8 +351,8 @@ async def _handle_custom_battle(
         return
 
     # 预验证兵种名（避免无效请求进入 game 流程）
-    from src.plugins.games.aoe3_battle.lineup import resolve_unit_name
     from src.plugins.aoe3.repository import UnitRepo
+    from src.plugins.games.aoe3_battle.lineup import resolve_unit_name
     repo = UnitRepo.get()
     for name in unit_names:
         u = resolve_unit_name(repo, name)

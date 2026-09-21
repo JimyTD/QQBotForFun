@@ -16,26 +16,27 @@ from pathlib import Path
 from typing import Any
 
 from core import economy, render, session
-from core.game_base import GameBase, GameMode, register_game
 from core.errors import InsufficientFundsError
+from core.game_base import GameBase, GameMode, register_game
+from core.group_config import get_group_config
 from core.types import EndReason, GameContext
-
 from src.plugins.aoe3.icons import BLUE_ICON_BACKGROUND, RED_ICON_BACKGROUND, render_icon_png
 from src.plugins.aoe3.repository import UnitRepo
 
 from .broadcaster import (
+    MODE_BRIEF,
     Broadcaster,
     BroadcastSegment,
     _hp_bar,
     _hp_summary,
     battle_resource_loss,
     format_battle_report,
-    MODE_BRIEF,
 )
-from core.group_config import get_group_config
+from .civ_war_civs import get_civ_profile, pick_random_civs
+from .civ_war_matchup import generate_civ_war_lineup
 from .lineup import (
-    MatchLineup,
     POP_HOUSE_COST,
+    MatchLineup,
     _unit_cost,
     approx_lcm_budget,
     format_formation_panel,
@@ -212,6 +213,13 @@ def _dump_battle_log(
             "result": result_data,
             "mvp": mvp_data,
         }
+        if match.mode == "civ_war":
+            header["civ_war"] = {
+                "red_civ": match.red_civ_name,
+                "red_strategy": match.red_strategy,
+                "blue_civ": match.blue_civ_name,
+                "blue_strategy": match.blue_strategy,
+            }
 
         # ── 写精简版（远程 cat 用，目标 <4KB）──
         summary = {
@@ -300,6 +308,12 @@ class AoE3BattleGame(GameBase):
             aliases=("乱斗",),
         ),
         GameMode(
+            id="civ_war",
+            name="国战",
+            description="文明战术编制对决",
+            aliases=("国战",),
+        ),
+        GameMode(
             id="custom",
             name="指定兵种对决",
             description="指定 1~2 种兵对决，相同资源",
@@ -337,6 +351,24 @@ class AoE3BattleGame(GameBase):
             match = generate_duel_lineup(repo, age=age, rng=rng)
         elif mode_id == "blacklist":
             match = generate_blacklist_lineup(repo, rng=rng)
+        elif mode_id == "civ_war":
+            age = max(3, age)
+            configured_civs = list((ctx.config or {}).get("civ_ids", []))
+            if configured_civs:
+                if len(configured_civs) != 2:
+                    raise ValueError("国战必须指定两个文明，或不指定文明随机对阵")
+                red_civ = get_civ_profile(configured_civs[0])
+                blue_civ = get_civ_profile(configured_civs[1])
+            else:
+                red_civ, blue_civ = pick_random_civs(rng=rng)
+            match, civ_estimate = generate_civ_war_lineup(
+                repo,
+                red_civ.id,
+                blue_civ.id,
+                budget=budget,
+                age=age,
+                rng=rng,
+            )
         elif mode_id == "custom":
             unit_names = (ctx.config or {}).get("unit_names", [])
             unit_counts = (ctx.config or {}).get("unit_counts")
@@ -396,6 +428,7 @@ class AoE3BattleGame(GameBase):
         # 序列化阵容到 state（供持久化）
         ctx.state.update(
             mode=mode_id,
+            budget=budget,
             age=match.age,
             phase="betting",          # betting → fighting → ended
             # 阵容信息（序列化为可 JSON 的格式）
@@ -417,6 +450,16 @@ class AoE3BattleGame(GameBase):
             # 押注记录：{str(qq_id): "red"|"blue"}
             bets={},
         )
+        if mode_id == "civ_war":
+            ctx.state["civ_war"] = {
+                "red_civ_id": red_civ.id,
+                "red_civ_name": red_civ.name,
+                "red_strategy": match.red_strategy,
+                "blue_civ_id": blue_civ.id,
+                "blue_civ_name": blue_civ.name,
+                "blue_strategy": match.blue_strategy,
+                "static_balance_gap": round(civ_estimate.balance_gap, 6),
+            }
 
         # 运行时缓存（不进 state）
         self._match: MatchLineup = match
@@ -425,6 +468,7 @@ class AoE3BattleGame(GameBase):
     async def on_start(self, ctx: GameContext) -> None:
         """广播对阵面板（图片+详情+VS总览），进入押注阶段。"""
         import base64
+
         from nonebot.adapters.onebot.v11 import Message, MessageSegment
 
         from src.plugins.aoe3.repository import UnitRepo as _UnitRepo
@@ -439,7 +483,22 @@ class AoE3BattleGame(GameBase):
         match = self._match
 
         # ── 发红方（图片 + 详情）──
-        red_text = format_side_panel(match.red, "red", mode, opponent=match.blue)
+        red_identity = None
+        blue_identity = None
+        if mode == "civ_war":
+            red_identity = " · ".join(
+                part for part in (match.red_civ_name, match.red_strategy) if part
+            )
+            blue_identity = " · ".join(
+                part for part in (match.blue_civ_name, match.blue_strategy) if part
+            )
+        red_text = format_side_panel(
+            match.red,
+            "red",
+            mode,
+            opponent=match.blue,
+            identity=red_identity,
+        )
         red_msg = Message()
         for slot in match.red.slots:
             icon_path = _UnitRepo.get().get_icon_path(slot.unit)
@@ -450,7 +509,13 @@ class AoE3BattleGame(GameBase):
         await session.broadcast_rich(ctx.group_id, red_msg, red_text)
 
         # ── 发蓝方（图片 + 详情）──
-        blue_text = format_side_panel(match.blue, "blue", mode, opponent=match.red)
+        blue_text = format_side_panel(
+            match.blue,
+            "blue",
+            mode,
+            opponent=match.red,
+            identity=blue_identity,
+        )
         blue_msg = Message()
         for slot in match.blue.slots:
             icon_path = _UnitRepo.get().get_icon_path(slot.unit)
@@ -673,6 +738,11 @@ class AoE3BattleGame(GameBase):
 
             # 3. 最终战报 + 押注结算
             report = format_battle_report(result)
+            if match.mode == "civ_war":
+                report = (
+                    f"🌍 国战 · {match.red_civ_name}（{match.red_strategy}）"
+                    f" vs {match.blue_civ_name}（{match.blue_strategy}）\n\n{report}"
+                )
             settlement = await self._settle_bets(ctx, result)
 
             # 合并战报和结算为一条消息
@@ -831,7 +901,9 @@ class AoE3BattleGame(GameBase):
     ) -> None:
         """发送当前阶段的对阵图。"""
         import base64
+
         from nonebot.adapters.onebot.v11 import Message, MessageSegment
+
         from .bracket_renderer import render_bracket
 
         icon_paths = self._get_tournament_icon_paths()
@@ -846,7 +918,9 @@ class AoE3BattleGame(GameBase):
     async def _tournament_send_ranking(self, ctx: GameContext) -> None:
         """发送最终排名图。"""
         import base64
+
         from nonebot.adapters.onebot.v11 import Message, MessageSegment
+
         from .bracket_renderer import render_ranking
 
         icon_paths = self._get_tournament_icon_paths()

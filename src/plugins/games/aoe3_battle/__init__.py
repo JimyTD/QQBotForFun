@@ -18,6 +18,6 @@ except Exception:
 
 __plugin_meta__ = PluginMetadata(
     name="aoe3_battle",
-    description="帝国3电子斗蛐蛐（兵种对战模拟 · 单挑/乱斗/王中王/锦标赛）",
-    usage="@我 斗蛐蛐 / @我 斗蛐蛐 王中王 / @我 斗蛐蛐 锦标赛",
+    description="帝国3电子斗蛐蛐（兵种对战模拟 · 国战/单挑/乱斗/王中王/锦标赛）",
+    usage="@我 斗蛐蛐 / @我 斗蛐蛐 国战 / @我 斗蛐蛐 王中王 / @我 斗蛐蛐 锦标赛",
 )

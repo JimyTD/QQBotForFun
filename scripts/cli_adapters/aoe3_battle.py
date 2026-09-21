@@ -11,13 +11,14 @@ import random
 import time
 
 from cli_adapters.base import C, GameMode, info, prompt
-
 from plugins.aoe3.repository import UnitRepo
 from plugins.games.aoe3_battle.broadcaster import (
     MODE_BRIEF,
     Broadcaster,
     format_battle_report,
 )
+from plugins.games.aoe3_battle.civ_war_civs import pick_random_civs, resolve_civ
+from plugins.games.aoe3_battle.civ_war_matchup import generate_civ_war_lineup
 from plugins.games.aoe3_battle.game import AGE_DEFAULT
 from plugins.games.aoe3_battle.lineup import (
     MatchLineup,
@@ -61,6 +62,12 @@ MODES = [
         aliases=("乱斗",),
     ),
     GameMode(
+        id="civ_war",
+        name="国战",
+        description="文明战术编制对决",
+        aliases=("国战",),
+    ),
+    GameMode(
         id="custom",
         name="指定兵种对决",
         description="指定 1~2 种兵对决，相同资源",
@@ -100,6 +107,38 @@ class AoE3BattleCLIAdapter:
             if budget_str.isdigit():
                 self._budget = max(1000, min(50000, int(budget_str)))
             info(f"本局资源预算：{self._budget}")
+
+        # 国战：随机文明或指定两个文明
+        if mode_id == "civ_war":
+            civ_text = prompt("文明（留空随机，或输入两个文明，如：英国 日本）> ").strip()
+            if civ_text:
+                tokens = civ_text.split()
+                if len(tokens) != 2:
+                    info("国战必须留空随机，或输入两个文明")
+                    return
+                profiles = [resolve_civ(token) for token in tokens]
+                if any(profile is None for profile in profiles):
+                    info("存在无法识别的文明")
+                    return
+                red_civ, blue_civ = profiles
+                assert red_civ is not None and blue_civ is not None
+                if red_civ.id == blue_civ.id:
+                    info("国战双方必须是不同文明")
+                    return
+            else:
+                red_civ, blue_civ = pick_random_civs()
+            budget_str = prompt("资源预算（直接回车默认 10000）> ").strip()
+            if budget_str.isdigit():
+                self._budget = max(1000, min(50000, int(budget_str)))
+            self._match, _ = generate_civ_war_lineup(
+                self._repo,
+                red_civ.id,
+                blue_civ.id,
+                budget=self._budget,
+                age=AGE_DEFAULT,
+                rng=random.Random(),
+            )
+            return
 
         # 指定兵种对决：让玩家输入兵种名
         if mode_id == "custom":
