@@ -5,6 +5,8 @@ from __future__ import annotations
 import re
 
 _CUSTOM_UNIT_COUNT_MAX = 1000
+_BATTLE_BUDGET_MIN = 1000
+_BATTLE_BUDGET_MAX = 50000
 _AGE_TOKEN_RE = re.compile(
     r"^(?:(\d)\s*时代|时代\s*(\d)|age\s*(\d))$",
     re.IGNORECASE,
@@ -24,6 +26,22 @@ def extract_age(parts: list[str]) -> tuple[int | None, list[str]]:
                 continue
         rest.append(part)
     return age, rest
+
+
+def parse_default_budget(parts: list[str]) -> tuple[int | None, str | None]:
+    """Parse the persistent group default form ``预算 <N>``.
+
+    Returns ``(budget, error)``.  A bare ``预算`` is intentionally invalid:
+    the persistent setting has no separate query form.
+    """
+    if not parts or parts[0] != "预算":
+        return None, None
+    if len(parts) != 2 or not parts[1].isdigit():
+        return None, "⚠️ 用法: @我 斗蛐蛐 预算 15000 (范围 1000~50000)"
+    budget = int(parts[1])
+    if not _BATTLE_BUDGET_MIN <= budget <= _BATTLE_BUDGET_MAX:
+        return None, f"⚠️ 资源预算需在 {_BATTLE_BUDGET_MIN}~{_BATTLE_BUDGET_MAX} 之间"
+    return budget, None
 
 
 def parse_civ_war_args(

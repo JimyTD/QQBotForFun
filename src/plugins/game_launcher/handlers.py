@@ -21,6 +21,7 @@ from core import game_base
 from core.errors import GameAlreadyRunningError
 from plugins.aoe3_battle_args import (
     extract_age,
+    parse_default_budget,
     parse_civ_war_args,
     parse_custom_battle_args,
 )
@@ -156,6 +157,7 @@ def _extract_age(parts: list[str]) -> tuple[int | None, list[str]]:
 
 
 _AGE_CONFIG_KEY = "aoe3_battle.default_age"
+_BUDGET_CONFIG_KEY = "aoe3_battle.default_budget"
 _AGE_NAMES = {2: "商业时代", 3: "要塞时代", 4: "工业时代", 5: "帝王时代"}
 _BATTLE_BUDGET_MIN = 1000
 _BATTLE_BUDGET_MAX = 50000
@@ -176,6 +178,44 @@ async def _set_default_age(matcher: Matcher, group_id: int, age: int) -> None:
     await set_group_config(group_id, _AGE_CONFIG_KEY, str(age))
     name = _AGE_NAMES.get(age, f"{age}时代")
     await matcher.finish(f"✅ 本群斗蛐蛐默认时代已设为【{name}（{age}）】")
+
+
+async def _get_default_budget(group_id: int) -> int | None:
+    """读取本群持久默认预算（未设置或异常时返回 None，由 game.py 兜底）。"""
+    from core.group_config import get_group_config
+
+    value = await get_group_config(group_id, _BUDGET_CONFIG_KEY)
+    if value.isdigit() and _BATTLE_BUDGET_MIN <= int(value) <= _BATTLE_BUDGET_MAX:
+        return int(value)
+    return None
+
+
+async def _set_default_budget(
+    matcher: Matcher,
+    group_id: int,
+    budget: int,
+) -> None:
+    """设置本群持久默认预算，不开启对局。"""
+    from core.group_config import set_group_config
+
+    await set_group_config(group_id, _BUDGET_CONFIG_KEY, str(budget))
+    await matcher.finish(f"✅ 本群斗蛐蛐默认预算已设为【{budget}】")
+
+
+async def _handle_default_budget(
+    matcher: Matcher,
+    group_id: int,
+    parts: list[str],
+) -> bool:
+    """Handle the persistent-budget branch. Return True when it consumed input."""
+    budget, error = parse_default_budget(parts)
+    if error:
+        await matcher.finish(error)
+        return True
+    if budget is None:
+        return False
+    await _set_default_budget(matcher, group_id, budget)
+    return True
 
 
 # -------------------- 快捷开局：斗蛐蛐 --------------------
@@ -202,8 +242,13 @@ async def _(matcher: Matcher, event: GroupMessageEvent, args: Message = CommandA
         await set_group_config(int(event.group_id), "aoe3_battle.broadcast_mode", "brief")
         await matcher.finish("✅ 已切换为【极简播报】模式（只显示开战和战报）")
 
+    # ---- 永久默认预算（只设置，不开局）----
+    raw_parts = arg_text.split()
+    if await _handle_default_budget(matcher, int(event.group_id), raw_parts):
+        return
+
     # ---- 时代参数（所有模式通用）："斗蛐蛐 5时代" / "斗蛐蛐 火枪 3时代" ----
-    age, parts = _extract_age(arg_text.split())
+    age, parts = _extract_age(raw_parts)
     explicit_age = age is not None
 
     # ---- 只写时代、没有其他词 → 设置本群默认时代，不开局 ----
@@ -214,6 +259,7 @@ async def _(matcher: Matcher, event: GroupMessageEvent, args: Message = CommandA
     # 没有显式指定时代 → 读本群持久默认
     if age is None:
         age = await _get_default_age(int(event.group_id))
+    group_budget = await _get_default_budget(int(event.group_id))
 
     # ---- 国战：随机文明 / 明确两个文明 ----
     if parts and parts[0] == "国战":
@@ -223,17 +269,26 @@ async def _(matcher: Matcher, event: GroupMessageEvent, args: Message = CommandA
             parts[1:],
             age=age,
             explicit_age=explicit_age,
+            group_budget=group_budget,
         )
         return
 
     # ---- 锦标赛："斗蛐蛐 锦标赛" ----
     if parts and parts[0] == "锦标赛":
-        await _handle_tournament_battle(matcher, event, age=age)
+        await _handle_tournament_battle(
+            matcher, event, age=age, budget=group_budget
+        )
         return
 
     # ---- 王中王："斗蛐蛐 王中王" / "斗蛐蛐 王中王 散兵 15000" ----
     if parts and parts[0] == "王中王":
-        await _handle_rival_battle(matcher, event, " ".join(parts[1:]), age=age)
+        await _handle_rival_battle(
+            matcher,
+            event,
+            " ".join(parts[1:]),
+            age=age,
+            group_budget=group_budget,
+        )
         return
 
     # ---- 指定兵种：参数中有非模式关键词且非纯数字 → 当作兵种名 ----
@@ -243,7 +298,13 @@ async def _(matcher: Matcher, event: GroupMessageEvent, args: Message = CommandA
     unknown_words = [p for p in parts if p not in _MODE_KEYWORDS and not p.isdigit()]
     if unknown_words:
         # 有无法识别为模式的词 → 视为兵种名，走指定兵种对决。
-        await _handle_custom_battle(matcher, event, " ".join(parts), age=age)
+        await _handle_custom_battle(
+            matcher,
+            event,
+            " ".join(parts),
+            age=age,
+            group_budget=group_budget,
+        )
         return
 
     mode_id = "bet"  # 默认押注模式
@@ -261,6 +322,8 @@ async def _(matcher: Matcher, event: GroupMessageEvent, args: Message = CommandA
     config = {"mode": mode_id}
     if budget is not None:
         config["budget"] = budget
+    elif group_budget is not None:
+        config["budget"] = group_budget
     if age is not None:
         config["age"] = age
     await _launch_game(
@@ -280,6 +343,7 @@ async def _handle_civ_war_battle(
     *,
     age: int | None,
     explicit_age: bool,
+    group_budget: int | None,
 ) -> None:
     """Handle ``斗蛐蛐 国战 [文明A 文明B] [预算]``."""
     civ_tokens, budget, error = parse_civ_war_args(parts)
@@ -316,6 +380,8 @@ async def _handle_civ_war_battle(
     config: dict = {"mode": "civ_war", "age": age, "civ_ids": civ_ids}
     if budget is not None:
         config["budget"] = budget
+    elif group_budget is not None:
+        config["budget"] = group_budget
     await _launch_game(
         matcher,
         group_id=int(event.group_id),
@@ -329,6 +395,7 @@ async def _handle_civ_war_battle(
 async def _handle_custom_battle(
     matcher: Matcher, event: GroupMessageEvent, arg_text: str,
     age: int | None = None,
+    group_budget: int | None = None,
 ) -> None:
     """处理 ``斗蛐蛐 <兵种A> [兵种B] [预算]`` 的指定兵种对决。"""
     if not arg_text:
@@ -365,6 +432,8 @@ async def _handle_custom_battle(
         config["unit_counts"] = unit_counts
     if budget is not None:
         config["budget"] = budget
+    elif group_budget is not None:
+        config["budget"] = group_budget
     if age is not None:
         config["age"] = age
     await _launch_game(
@@ -380,6 +449,7 @@ async def _handle_custom_battle(
 async def _handle_tournament_battle(
     matcher: Matcher, event: GroupMessageEvent,
     age: int | None = None,
+    budget: int | None = None,
 ) -> None:
     """王中王锦标赛：随机 3 主题 + 表情选（同王中王流程）。"""
     from src.plugins.games.aoe3_battle.rival_pick import start_tournament_pick
@@ -390,6 +460,7 @@ async def _handle_tournament_battle(
     err = await start_tournament_pick(
         group_id=group_id,
         initiator_id=initiator_id,
+        budget=budget,
         age=age,
     )
     if err:
@@ -399,6 +470,7 @@ async def _handle_tournament_battle(
 async def _handle_rival_battle(
     matcher: Matcher, event: GroupMessageEvent, arg_text: str,
     age: int | None = None,
+    group_budget: int | None = None,
 ) -> None:
     """王中王：无参数 → 随机 3 主题 + 表情选；有主题名 → 直接开局。"""
     from src.plugins.games.aoe3_battle.rival_pick import (
@@ -413,7 +485,7 @@ async def _handle_rival_battle(
         age = age_inline
 
     theme_token: str | None = None
-    budget: int | None = None
+    budget = group_budget
     for part in parts:
         if part.isdigit():
             budget = int(part)
