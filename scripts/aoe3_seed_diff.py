@@ -11,7 +11,6 @@
 对比维度：
   1. units.json            新增 / 消失 / 字段级变更（含代表动作 protoaction_* 结构性变更高亮）
   2. unit_upgrades.json    单位改良数据变化
-  3. generic_techs.json    类别科技变化
   4. icon_manifest.json    icon 来源变化 / 新增 / 消失
   5. 人工干预清单核查       源码中的 BLACKLIST / BATTLE_BLACKLIST / _EXCLUDED_IDS / icon_overrides
   6. 兵种池体检             复用 lineup.py 真实筛选逻辑，对比三种池子的进出
@@ -85,21 +84,6 @@ def _load_units(p: Path) -> dict[str, dict]:
 def _canon(v) -> str:
     """把任意值规范化为可比字符串。"""
     return json.dumps(v, sort_keys=True, ensure_ascii=False)
-
-
-def _index_techs(container) -> dict:
-    """收拢 generic_techs 的科技条目为 {id: entry}；techs 可能是 list[dict] 或 dict。"""
-    techs = container.get("techs", {}) if isinstance(container, dict) else {}
-    if isinstance(techs, dict):
-        return techs
-    idx: dict[str, object] = {}
-    for item in techs:
-        if isinstance(item, dict):
-            key = item.get("id") or item.get("name") or _canon(item)
-        else:
-            key = str(item)
-        idx[key] = item
-    return idx
 
 
 def _fmt(v, limit: int = 120) -> str:
@@ -320,11 +304,9 @@ def build_report(prev: Path, cur: Path) -> tuple[str, str]:
     prev_pools = pool_snapshot(prev_seeds / "units.json")
     cur_pools = pool_snapshot(cur_seeds / "units.json")
 
-    # 单位改良 / 通用科技
+    # 单位改良
     old_up = _load_json(prev_seeds / "unit_upgrades.json") or {}
     new_up = _load_json(cur_seeds / "unit_upgrades.json") or {}
-    old_gt = _load_json(prev_seeds / "generic_techs.json") or {}
-    new_gt = _load_json(cur_seeds / "generic_techs.json") or {}
 
     # icon
     old_icon = (_load_json(prev / "icon_manifest.json") or {}).get("entries", {})
@@ -376,8 +358,6 @@ def build_report(prev: Path, cur: Path) -> tuple[str, str]:
     A(f"| 单位总量 | {len(old_u)} | {len(new_u)} | {len(new_u) - len(old_u):+} |")
     o_up, n_up = len(old_up.get("units", {})), len(new_up.get("units", {}))
     A(f"| 有改良数据的单位 | {o_up} | {n_up} | {n_up - o_up:+} |")
-    o_gt, n_gt = len(old_gt.get("techs", {})), len(new_gt.get("techs", {}))
-    A(f"| 通用科技条数 | {o_gt} | {n_gt} | {n_gt - o_gt:+} |")
     A("")
 
     # ---- 2 新增
@@ -503,8 +483,8 @@ def build_report(prev: Path, cur: Path) -> tuple[str, str]:
         A(f"- 来源变化 id（前 40）：{', '.join('`' + i + '`' for i in icon_src_changed[:40])}")
     A("")
 
-    # ---- 9 单位改良 / 通用科技
-    A("## 9. 单位改良 / 通用科技变化")
+    # ---- 9 单位改良
+    A("## 9. 单位改良变化")
     A("")
     A("### 9.1 单位改良（unit_upgrades.json）")
     A("")
@@ -552,20 +532,6 @@ def build_report(prev: Path, cur: Path) -> tuple[str, str]:
         if mark is None:
             mark = "**数据变化**" if _canon(ov) != _canon(nv) else "无变化"
         A(f"- `{k}`：{mark}")
-    A("")
-
-    A("### 9.3 通用科技（generic_techs.json）")
-    A("")
-    ot, nt = _index_techs(old_gt), _index_techs(new_gt)
-    added_t, lost_t = sorted(set(nt) - set(ot)), sorted(set(ot) - set(nt))
-    chg_t = [k for k in sorted(set(ot) & set(nt)) if _canon(ot[k]) != _canon(nt[k])]
-    A(f"- 科技条数：{len(ot)} → {len(nt)}")
-    if added_t:
-        A(f"- 新增（{len(added_t)}）：{', '.join('`' + i + '`' for i in added_t[:60])}")
-    if lost_t:
-        A(f"- 消失（{len(lost_t)}）：{', '.join('`' + i + '`' for i in lost_t[:60])}")
-    if chg_t:
-        A(f"- 数据变化（{len(chg_t)}）：{', '.join('`' + i + '`' for i in chg_t[:60])}")
     A("")
 
     # ---- 10 待决
@@ -639,7 +605,6 @@ def build_report(prev: Path, cur: Path) -> tuple[str, str]:
     T.append(f"  unit_upgrades: {len(ou)} -> {len(nu)} units (new {len(added_up)}, lost {len(lost_up)}, changed {len(chg_up)})")
     for uid in chg_up[:40]:
         T.append(f"    ~ {uid}")
-    T.append(f"  generic_techs: {len(ot)} -> {len(nt)} (new {len(added_t)}, lost {len(lost_t)}, changed {len(chg_t)})")
     for name_t in added_t[:40]:
         T.append(f"    + {name_t}")
     for name_t in chg_t[:20]:

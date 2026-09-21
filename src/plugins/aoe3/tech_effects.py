@@ -1,95 +1,15 @@
-"""AoE3 通用科技（roguelike 随机研发科技）—— 运行时选择与应用。
+"""AoE3 科技效果运行时应用。
 
-读取 ``seeds/aoe3/generic_techs.json``（由 ``scripts/crawler/aoe3_generic_techs_parser.py``
-离线生成），每局为双方各随机 K/2 条**与己方阵容相关**的横向增益，叠在 tier 之上。
-
-设计依据：docs/games/aoe3-battle.md §3.10（通用科技 roguelike）。
-
-要点：
-  - 每方 K/2 条科技（单挑/自选 K=2 → 各 1；押注 K=4 → 各 2）。
-  - **相关性**：科技 scope ∩ 己方单位 type 非空才入候选。
-  - **age 门槛**：tech.age ≤ 本局 age。
-  - 双方独立抽取，可能抽到同一条（共用 → 白赚）。
-  - 应用顺序：先 tier（apply_upgrades），再通用科技（apply_generic_techs）。
-  - 效果规整逻辑与 upgrades.py 同源（op 里保留 action，按单位代表动作分 ranged/melee 槽）。
+科技 parser 将游戏 ``techtreey.xml`` 的效果规整为 ``scope`` + ``ops`` 后，
+由本模块把**已明确选定**的科技作用到 Unit 副本。它不读取科技池、不选择科技、
+也不引入随机性；未来的文明科技树和主城国策共用这套效果语义。
 """
 from __future__ import annotations
 
 import dataclasses
-import json
-import logging
-import random
-from pathlib import Path
 from typing import Sequence
 
 from .models import Multiplier, Unit
-
-logger = logging.getLogger("aoe3.generic_techs")
-
-_DATA_PATH = Path(__file__).resolve().parents[3] / "seeds" / "aoe3" / "generic_techs.json"
-
-_cache: list[dict] | None = None
-
-
-def _load() -> list[dict]:
-    global _cache
-    if _cache is None:
-        try:
-            data = json.loads(_DATA_PATH.read_text(encoding="utf-8"))
-            _cache = data.get("techs", [])
-        except (OSError, json.JSONDecodeError) as e:
-            logger.warning("加载 generic_techs.json 失败：%s（通用科技将跳过）", e)
-            _cache = []
-    return _cache
-
-
-# ------------------------------------------------------------------
-# 选择
-# ------------------------------------------------------------------
-
-def _unit_tags(units: Sequence[Unit]) -> set[str]:
-    """收集一方所有单位的 type 标签（含具体 id，用于具体兵科技如细红线→musketeer）。"""
-    tags: set[str] = set()
-    for u in units:
-        tags.update(u.type)
-        tags.add(u.id)
-    return tags
-
-
-def _is_relevant(tech: dict, tags: set[str]) -> bool:
-    """科技 scope 与己方单位标签有交集 → 相关。"""
-    for s in tech["scope"]:
-        if s in tags:
-            return True
-    return False
-
-
-def select_techs(
-    red_units: Sequence[Unit],
-    blue_units: Sequence[Unit],
-    age: int,
-    *,
-    k: int = 4,
-    rng: random.Random | None = None,
-) -> tuple[list[dict], list[dict]]:
-    """为双方各抽 k//2 条相关通用科技。
-
-    Returns (red_techs, blue_techs)，每条是 generic_techs.json 里的原始 dict。
-    池中不够时尽量抽满但不报错。
-    """
-    if rng is None:
-        rng = random.Random()
-    pool = [t for t in _load() if t["age"] <= age]
-    per_side = k // 2 or 1
-
-    red_tags = _unit_tags(red_units)
-    blue_tags = _unit_tags(blue_units)
-    red_pool = [t for t in pool if _is_relevant(t, red_tags)]
-    blue_pool = [t for t in pool if _is_relevant(t, blue_tags)]
-
-    red_techs = rng.sample(red_pool, min(per_side, len(red_pool)))
-    blue_techs = rng.sample(blue_pool, min(per_side, len(blue_pool)))
-    return red_techs, blue_techs
 
 
 # ------------------------------------------------------------------
@@ -189,7 +109,7 @@ def _deduplicate_ops(ops: list[dict], unit: Unit) -> list[dict]:
 
 
 def _apply_one_tech(unit: Unit, tech: dict, base: Unit) -> Unit:
-    """把一条通用科技叠到单位上，返回新副本（无效不动）。
+    """把一条已选科技叠到单位上，返回新副本（无效不动）。
 
     base: tier 升级前的原始 Unit，用于 BasePercent 加算（AoE3 所有 BasePercent
     效果加算于原始基础值，而非乘在 tier 之后的值上）。
@@ -304,12 +224,12 @@ def _apply_one_tech(unit: Unit, tech: dict, base: Unit) -> Unit:
     return dataclasses.replace(unit, **changes)
 
 
-def apply_generic_techs(
+def apply_techs(
     units: Sequence[Unit],
     techs: list[dict],
     base_units: Sequence[Unit] | None = None,
 ) -> list[Unit]:
-    """对一方的所有单位叠加通用科技列表，返回新副本列表。
+    """对一方的所有单位叠加已选科技列表，返回新副本列表。
 
     base_units: tier 升级前的原始 Unit 列表（与 units 同序），用于 BasePercent
     加算。如果为 None 则用 units 自身作为 base（适用于无 tier 的场景）。
@@ -330,11 +250,13 @@ def apply_generic_techs(
 # 战报展示
 # ------------------------------------------------------------------
 
-def format_tech_lines(red_techs: list[dict], blue_techs: list[dict]) -> list[str]:
-    """生成通用科技展示行（嵌入到 VS banner）。"""
+def format_tech_lines(
+    red_techs: list[dict], blue_techs: list[dict], *, title: str = "🔬 本局科技"
+) -> list[str]:
+    """生成已选科技展示行（嵌入到 VS banner）。"""
     if not red_techs and not blue_techs:
         return []
-    lines = ["🔬 本局通用科技（roguelike）："]
+    lines = [title + "："]
     for t in red_techs:
         lines.append(f"   🔴 {t['name_zh']}（{_brief_desc(t)}）")
     for t in blue_techs:

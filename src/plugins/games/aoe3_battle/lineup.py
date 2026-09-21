@@ -10,7 +10,7 @@ from __future__ import annotations
 import logging
 import math
 import random
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from typing import Sequence
 
 from src.plugins.aoe3.formatter import append_unit_tooltip
@@ -280,7 +280,6 @@ class MatchLineup:
     mode: str                  # "bet" | "duel" | "rival" | ...
     rival_theme: str | None = None   # 王中王展示名，如「散兵王」
     age: int | None = None     # 本局时代（2~5）；None = 未启用改良/时代限定
-    generic_tech_lines: list[str] = field(default_factory=list)
 
 
 # =====================================================================
@@ -687,7 +686,7 @@ def allocate_lineup_counts(lineup: "Lineup", budget: int) -> None:
     """按当前 unit.cost 为 lineup 的每个槽位分配数量。
 
     用于「选兵种→升级→分配数量」流程的最后一步，
-    在 tier / 通用科技都已应用（cost 可能已被修改）后调用。
+    在单位效果已应用、最终 cost 已确定后调用。
     """
     costs = [_unit_cost(s.unit) for s in lineup.slots]
     if len(lineup.slots) == 1:
@@ -753,7 +752,7 @@ def generate_bet_lineup(
     - ``age`` 给定时兵池按时代限定，并对双方叠加该时代改良（§3.10.6）
 
     ``defer_counts=True``：只选兵种 + 叠时代改良，不分配数量（count=1 占位）、
-    不做 LCM 平衡。调用方在通用科技等修改 cost 后，自行调
+    不做 LCM 平衡。调用方在未来的单位效果修改 cost 后，自行调
     ``allocate_lineup_counts`` + ``_apply_lcm_balance``。
     """
     if rng is None:
@@ -1216,8 +1215,6 @@ def format_vs_banner(lineup: MatchLineup) -> str:
         for name, hp_mult in cats:
             pct = round((hp_mult - 1.0) * 100)
             lines.append(f"   · {name}：血/攻 +{pct}%")
-    if lineup.generic_tech_lines:
-        lines.extend(lineup.generic_tech_lines)
     if lineup.mode == "blacklist":
         lines.append(
             f"⭐战力 🔴 {r.total_power:,.0f} vs 🔵 {b.total_power:,.0f}"

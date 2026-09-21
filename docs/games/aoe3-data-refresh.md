@@ -17,8 +17,8 @@ ArtUnits.bar ──aoe3_anim_extractor──> raw/anims/                  (windu
                                         │
       ┌──────────────┬──────────────────┼──────────────────────────────┐
       ▼              ▼                  ▼                              ▼
-aoe3_gamedata_parser  aoe3_civs_parser  aoe3_upgrades_parser  aoe3_generic_techs_parser
-  seeds/units.json      seeds/civs.json   seeds/unit_upgrades.json  seeds/generic_techs.json
+aoe3_gamedata_parser  aoe3_civs_parser  aoe3_upgrades_parser
+  seeds/units.json      seeds/civs.json   seeds/unit_upgrades.json
   seeds/i18n_zh.json
   data/aoe3/manifest.json
 
@@ -61,7 +61,6 @@ uv run python scripts/crawler/aoe3_anim_extractor.py --art-bar <ArtUnits.bar>
 uv run python scripts/crawler/aoe3_gamedata_parser.py
 uv run python scripts/crawler/aoe3_civs_parser.py
 uv run python scripts/crawler/aoe3_upgrades_parser.py
-uv run python scripts/crawler/aoe3_generic_techs_parser.py
 ```
 
 ### 2.4 出对比名单
@@ -71,7 +70,7 @@ uv run python scripts/aoe3_seed_diff.py --prev data/aoe3/_prev
 ```
 
 产出报告（默认 `docs/aoe3-data-refresh-<日期>.md`）：新增/消失单位、**结构性变更**（代表动作变化）、
-数值变更、**人工干预清单核查**、兵种池进出、单位改良/通用科技/图标变化、待决问题。
+数值变更、**人工干预清单核查**、兵种池进出、单位改良/图标变化、待决问题。
 
 ### 2.5 兼容核查（唯一需要判断的环节）
 

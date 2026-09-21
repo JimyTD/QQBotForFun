@@ -34,10 +34,8 @@ from .broadcaster import (
 )
 from core.group_config import get_group_config
 from .lineup import (
-    Lineup,
     MatchLineup,
     POP_HOUSE_COST,
-    UnitSlot,
     _unit_cost,
     approx_lcm_budget,
     format_formation_panel,
@@ -332,8 +330,6 @@ class AoE3BattleGame(GameBase):
         # 时代（§3.10.6）：默认 3 时代；黑名单乱斗不启用（怪物互殴无改良意义）
         age = (ctx.config or {}).get("age", AGE_DEFAULT)
         age = max(AGE_MIN, min(AGE_MAX, int(age)))
-        generic_techs_on = bool((ctx.config or {}).get("generic_techs", False))
-
         repo = UnitRepo.get()
         rng = random.Random()
 
@@ -393,49 +389,9 @@ class AoE3BattleGame(GameBase):
             self._battle_task = None
             return  # 提前返回，不走普通 match 的 state 序列化
         else:
-            _defer = generic_techs_on and age is not None
             match = generate_bet_lineup(
                 repo, rng=rng, budget=budget, age=age,
-                defer_counts=_defer,
             )
-
-        # 通用科技（roguelike 横向加成，叠在 tier 之上）
-        if generic_techs_on and mode_id != "blacklist" and match.age is not None:
-            from src.plugins.aoe3.generic_techs import (
-                apply_generic_techs,
-                format_tech_lines,
-                select_techs,
-            )
-            from src.plugins.games.aoe3_battle.lineup import (
-                _apply_lcm_balance,
-                allocate_lineup_counts,
-            )
-            k = 2 if mode_id == "duel" else 4
-            red_units = [s.unit for s in match.red.slots]
-            blue_units = [s.unit for s in match.blue.slots]
-            red_techs, blue_techs = select_techs(
-                red_units, blue_units, match.age, k=k, rng=rng,
-            )
-            if red_techs or blue_techs:
-                base_red = [repo.get_by_id(s.unit.id) for s in match.red.slots]
-                base_blue = [repo.get_by_id(s.unit.id) for s in match.blue.slots]
-                new_red = apply_generic_techs(red_units, red_techs, base_red)
-                new_blue = apply_generic_techs(blue_units, blue_techs, base_blue)
-                for i, slot in enumerate(match.red.slots):
-                    match.red.slots[i] = UnitSlot(new_red[i], slot.count)
-                for i, slot in enumerate(match.blue.slots):
-                    match.blue.slots[i] = UnitSlot(new_blue[i], slot.count)
-                match.generic_tech_lines = format_tech_lines(red_techs, blue_techs)
-            # 科技应用完毕（cost 可能已变）→ 按最终 cost 分配数量（唯一一次）。
-            # 固定数量是玩家明确约束，任何加成都不能覆盖它。
-            fixed_custom_counts = (
-                mode_id == "custom"
-                and (ctx.config or {}).get("unit_counts") is not None
-            )
-            if mode_id != "duel" and not fixed_custom_counts:
-                allocate_lineup_counts(match.red, budget)
-                allocate_lineup_counts(match.blue, budget)
-                _apply_lcm_balance(match.red, match.blue, budget)
 
         # 序列化阵容到 state（供持久化）
         ctx.state.update(

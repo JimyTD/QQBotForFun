@@ -1,91 +1,19 @@
-"""通用科技（roguelike 横向加成）测试。
-
-覆盖：
-  - 数据加载 + 基本完整性
-  - 选择逻辑：age 门槛、相关性过滤、每方 K/2
-  - 应用逻辑：hp/damage mult、速度双刃、射程加成、scope 不命中不生效
-  - 战报展示
-"""
+"""已选科技效果的运行时应用测试。"""
 from __future__ import annotations
-
-import random
-from pathlib import Path
 
 import pytest
 
 from plugins.aoe3.repository import UnitRepo
-from plugins.aoe3.generic_techs import (
+from plugins.aoe3.tech_effects import (
     _apply_one_tech,
-    _load,
-    apply_generic_techs,
+    apply_techs,
     format_tech_lines,
-    select_techs,
 )
 
 
 @pytest.fixture(scope="module")
 def repo() -> UnitRepo:
     return UnitRepo.get()
-
-
-# ------------------------------------------------------------------
-# 数据加载
-# ------------------------------------------------------------------
-
-def test_load_nonempty():
-    techs = _load()
-    assert len(techs) >= 20, f"通用科技池太小：{len(techs)}"
-
-
-def test_all_techs_have_required_fields():
-    for t in _load():
-        assert "id" in t and "name_zh" in t and "scope" in t and "ops" in t
-        assert t["age"] in (2, 3, 4, 5), f"{t['id']} age={t['age']}"
-        assert len(t["scope"]) > 0
-        assert len(t["ops"]) > 0
-
-
-# ------------------------------------------------------------------
-# 选择逻辑
-# ------------------------------------------------------------------
-
-def test_select_age_gate(repo):
-    """age2 时不应选到 age3+ 的科技。"""
-    musk = repo.get_by_id("musketeer")
-    rng = random.Random(42)
-    red, blue = select_techs([musk], [musk], age=2, k=4, rng=rng)
-    all_techs = red + blue
-    for t in all_techs:
-        assert t["age"] <= 2, f"age2 局选到了 {t['id']}(age{t['age']})"
-
-
-def test_select_relevance(repo):
-    """纯炮兵双方 → 不应选到骑兵/步兵科技。"""
-    falconet = repo.get_by_id("falconet")
-    rng = random.Random(123)
-    red, blue = select_techs([falconet], [falconet], age=5, k=4, rng=rng)
-    arty_tags = set(falconet.type) | {falconet.id}
-    for t in red + blue:
-        assert any(s in arty_tags for s in t["scope"]), \
-            f"炮兵局选到不相关科技 {t['id']} scope={t['scope']}"
-
-
-def test_select_k_per_side(repo):
-    """k=4 → 每方 ≤2 条。"""
-    musk = repo.get_by_id("musketeer")
-    rng = random.Random(99)
-    red, blue = select_techs([musk], [musk], age=5, k=4, rng=rng)
-    assert len(red) <= 2
-    assert len(blue) <= 2
-
-
-def test_select_k2_duel(repo):
-    """k=2 → 每方 ≤1 条。"""
-    musk = repo.get_by_id("musketeer")
-    rng = random.Random(77)
-    red, blue = select_techs([musk], [musk], age=5, k=2, rng=rng)
-    assert len(red) <= 1
-    assert len(blue) <= 1
 
 
 # ------------------------------------------------------------------
@@ -119,7 +47,7 @@ def test_apply_damage_mult(repo):
 
 
 def test_apply_hp_additive_on_tier(repo):
-    """tier 已乘 1.5 后，通用科技 +15% 应加算于 base 而非乘在 tier 上。"""
+    """tier 已乘 1.5 后，横向科技 +15% 应加算于 base 而非乘在 tier 上。"""
     import dataclasses
     musk_base = repo.get_by_id("musketeer")
     musk_tier = dataclasses.replace(musk_base, hp=round(musk_base.hp * 1.5))
@@ -157,8 +85,8 @@ def test_apply_scope_miss(repo):
     assert up is musk
 
 
-def test_apply_generic_techs_list(repo):
-    """apply_generic_techs 对列表逐个叠加（加算于 base）。"""
+def test_apply_techs_list(repo):
+    """apply_techs 对列表逐个叠加（加算于 base）。"""
     musk = repo.get_by_id("musketeer")
     techs = [
         {"scope": ["AbstractInfantry"], "ops": [
@@ -168,7 +96,7 @@ def test_apply_generic_techs_list(repo):
             {"stat": "damage", "kind": "mult", "value": 1.15, "action": None, "allactions": True}
         ]},
     ]
-    result = apply_generic_techs([musk], techs, base_units=[musk])
+    result = apply_techs([musk], techs, base_units=[musk])
     assert len(result) == 1
     up = result[0]
     # 加算：hp + base_hp × 0.15

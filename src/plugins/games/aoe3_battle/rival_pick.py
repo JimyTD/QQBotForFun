@@ -40,7 +40,6 @@ class _PendingPick:
     emoji_to_index: dict[str, int]
     budget: int | None
     age: int | None = None
-    generic_techs: bool = False
     tournament: bool = False           # 锦标赛模式
     resolved: bool = False
     picks_enabled: bool = False
@@ -111,7 +110,6 @@ async def start_theme_pick(
     initiator_id: int,
     budget: int | None = None,
     age: int | None = None,
-    generic_techs: bool = False,
 ) -> str | None:
     """发起选主题。成功返回 None；失败返回错误提示文本。"""
     async with _pick_lock:
@@ -144,7 +142,6 @@ async def start_theme_pick(
         emoji_to_index=emoji_to_index,
         budget=budget,
         age=age,
-        generic_techs=generic_techs,
         picks_enabled=False,
     )
     _pending[group_id] = pending
@@ -259,7 +256,6 @@ async def launch_rival_direct(
     theme_token: str,
     budget: int | None = None,
     age: int | None = None,
-    generic_techs: bool = False,
 ) -> str | None:
     """指定主题直接开局。失败返回错误文本。"""
     theme = resolve_theme(theme_token)
@@ -271,7 +267,6 @@ async def launch_rival_direct(
         theme=theme,
         budget=budget,
         age=age,
-        generic_techs=generic_techs,
     )
 
 
@@ -287,7 +282,6 @@ async def _consume_choice(group_id: int, index: int, picker_id: int) -> None:
         theme = p.options[index]
         budget = p.budget
         age = p.age
-        generic_techs = p.generic_techs
         tournament = p.tournament
         _pending.pop(group_id, None)
 
@@ -297,7 +291,6 @@ async def _consume_choice(group_id: int, index: int, picker_id: int) -> None:
         theme=theme,
         budget=budget,
         age=age,
-        generic_techs=generic_techs,
         tournament=tournament,
     )
     if err:
@@ -311,7 +304,6 @@ async def _launch_with_theme(
     theme: RivalTheme,
     budget: int | None,
     age: int | None = None,
-    generic_techs: bool = False,
     tournament: bool = False,
 ) -> str | None:
     if game_base.get_runner_by_group(group_id) is not None:
@@ -322,8 +314,6 @@ async def _launch_with_theme(
         config["budget"] = budget
     if age is not None:
         config["age"] = age
-    if generic_techs and not tournament:
-        config["generic_techs"] = True
     try:
         await game_base.create_and_start(
             "aoe3_battle",
