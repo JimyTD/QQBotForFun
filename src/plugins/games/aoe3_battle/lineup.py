@@ -1072,7 +1072,7 @@ def format_side_panel(
             _append_counter_info(lines, u, opponent)
 
     elif not lineup.is_multi:
-        # 单兵种押注 / 自选 / 王中王 / 黑名单单兵种：紧凑
+        # 单兵种押注 / 指定兵种 / 王中王 / 乱斗单兵种：紧凑
         lines.append(f"{emoji} {label} · {lineup.unit.name} ×{lineup.count}")
         u = lineup.unit
         lines.append(f"类型：{_type_str_zh(u)}")
@@ -1172,7 +1172,7 @@ def format_vs_banner(lineup: MatchLineup) -> str:
         red_str = f"🔴 {r.unit.name}"
         blue_str = f"🔵 {b.unit.name}"
     elif lineup.mode == "custom":
-        title = "🎯 帝国3斗蛐蛐 · 自选对决"
+        title = "🎯 帝国3斗蛐蛐 · 指定兵种对决"
         red_str = f"🔴 {r.unit.name} ×{r.count}"
         blue_str = f"🔵 {b.unit.name} ×{b.count}"
     elif lineup.mode == "rival":
@@ -1181,7 +1181,7 @@ def format_vs_banner(lineup: MatchLineup) -> str:
         red_str = f"🔴 {r.unit.name} ×{r.count}"
         blue_str = f"🔵 {b.unit.name} ×{b.count}"
     elif lineup.mode == "blacklist":
-        title = "🎪 帝国3斗蛐蛐 · 黑名单乱斗"
+        title = "🎪 帝国3斗蛐蛐 · 乱斗"
         if r.is_multi or b.is_multi:
             red_parts = "+".join(f"{s.count}{s.unit.name}" for s in r.slots)
             blue_parts = "+".join(f"{s.count}{s.unit.name}" for s in b.slots)
@@ -1338,7 +1338,7 @@ def format_formation_panel(lineup: MatchLineup) -> str:
 
 
 # =====================================================================
-# 自选兵种对决
+# 指定兵种对决
 # =====================================================================
 
 def resolve_unit_name(repo: UnitRepo, name: str) -> Unit | None:
@@ -1371,7 +1371,7 @@ def generate_custom_lineup(
     age: int | None = None,
     rng: random.Random | None = None,
 ) -> MatchLineup | str:
-    """生成自选兵种对决阵容。
+    """生成指定兵种对决阵容。
 
     参数：
       unit_names: 玩家输入的 1~2 个兵种名
@@ -1410,7 +1410,7 @@ def generate_custom_lineup(
         if u is None:
             return (
                 f"⚠️ 找不到兵种「{name}」"
-                "（需可训练战斗单位；村民/战役专属/占位符不可自选）"
+                "（需可训练战斗单位；村民/战役专属/占位符不可指定）"
             )
         resolved_units.append(u)
 
@@ -1451,13 +1451,13 @@ def generate_custom_lineup(
 
     if unit_counts is not None:
         logger.info(
-            "自选阵容：固定数量 🔴 %s ×%d (%d) vs 🔵 %s ×%d (%d)",
+            "指定兵种阵容：固定数量 🔴 %s ×%d (%d) vs 🔵 %s ×%d (%d)",
             red_unit.name, red_count, red.total_cost,
             blue_unit.name, blue_count, blue.total_cost,
         )
     else:
         logger.info(
-            "自选阵容：LCM预算 %d → %d，🔴 %s ×%d (%d) vs 🔵 %s ×%d (%d) 差=%d",
+            "指定兵种阵容：LCM预算 %d → %d，🔴 %s ×%d (%d) vs 🔵 %s ×%d (%d) 差=%d",
             budget, lcm_budget,
             red_unit.name, red_count, red.total_cost,
             blue_unit.name, blue_count, blue.total_cost,
@@ -1477,7 +1477,7 @@ def generate_rival_lineup(
     age: int | None = None,
     rng: random.Random | None = None,
 ) -> MatchLineup | str:
-    """生成王中王阵容：主题池内随机两兵种 + LCM（同自选）。"""
+    """生成王中王阵容：主题池内随机两兵种 + LCM（同指定兵种对决）。"""
     from .rival_themes import filter_theme_pool, get_theme_by_id
 
     if rng is None:

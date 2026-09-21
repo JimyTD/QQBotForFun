@@ -1,6 +1,6 @@
 """AoE3 斗蛐蛐 CLI 适配器。
 
-MODES 定义在此（押注 / 单挑 / 黑名单乱斗）。
+MODES 定义在此（押注 / 单挑 / 乱斗）。
 CLI 流程：
 - 开局 → 生成阵容 → 展示面板 → 模拟押注 → 跑模拟 → 播报 → 战报
 """
@@ -52,25 +52,25 @@ MODES = [
         id="duel",
         name="单挑模式",
         description="随机两个兵种，真 1v1",
-        aliases=("单挑", "1v1"),
+        aliases=("单挑",),
     ),
     GameMode(
         id="blacklist",
-        name="黑名单乱斗",
+        name="乱斗模式",
         description="怪物 / 战役英雄 / 作弊码兵互殴，战力分平衡",
-        aliases=("黑名单", "乱斗", "黑名单乱斗", "blacklist"),
+        aliases=("乱斗",),
     ),
     GameMode(
         id="custom",
-        name="自选模式",
-        description="自选 1~2 种兵对决，相同资源",
-        aliases=("自选",),
+        name="指定兵种对决",
+        description="指定 1~2 种兵对决，相同资源",
+        aliases=(),
     ),
     GameMode(
         id="rival",
         name="王中王",
         description="职能主题对决 · 表情选主题或指定主题",
-        aliases=("王中王", "宿敌", "宿敌挑战"),
+        aliases=("王中王",),
     ),
 ]
 
@@ -101,9 +101,9 @@ class AoE3BattleCLIAdapter:
                 self._budget = max(1000, min(50000, int(budget_str)))
             info(f"本局资源预算：{self._budget}")
 
-        # 自选模式：让玩家输入兵种名
+        # 指定兵种对决：让玩家输入兵种名
         if mode_id == "custom":
-            info("自选模式：输入 1~2 个兵种名（空格分隔）")
+            info("指定兵种对决：输入 1~2 个兵种名（空格分隔）")
             names_str = prompt("兵种名（如：火枪手 散兵）> ").strip()
             if not names_str:
                 info("未输入兵种名，退出")
@@ -162,7 +162,7 @@ class AoE3BattleCLIAdapter:
             return
 
         # 生成阵容
-        # 时代: 与线上默认一致 (game.AGE_DEFAULT, §3.10.6); 黑名单乱斗线上不启用时代
+        # 时代: 与线上默认一致 (game.AGE_DEFAULT, §3.10.6); 乱斗线上不启用时代
         rng = random.Random()
         if mode_id == "duel":
             self._match = generate_duel_lineup(self._repo, age=AGE_DEFAULT, rng=rng)

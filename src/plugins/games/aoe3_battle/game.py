@@ -275,7 +275,7 @@ class AoE3BattleGame(GameBase):
 
     id = "aoe3_battle"
     name = "帝国3斗蛐蛐"
-    description = "兵种对战模拟 · 押注 / 单挑 / 黑名单乱斗 / 自选 / 王中王 / 锦标赛"
+    description = "兵种对战模拟 · 押注 / 单挑 / 乱斗 / 王中王 / 锦标赛"
     min_players = 0            # 无人押注也能打
     max_players = 50
     version = "1.0"
@@ -293,31 +293,31 @@ class AoE3BattleGame(GameBase):
             id="duel",
             name="单挑模式",
             description="随机两个兵种，真 1v1",
-            aliases=("单挑", "1v1"),
+            aliases=("单挑",),
         ),
         GameMode(
             id="blacklist",
-            name="黑名单乱斗",
+            name="乱斗模式",
             description="怪物 / 战役英雄 / 作弊码兵互殴，战力分平衡",
-            aliases=("黑名单", "乱斗", "黑名单乱斗", "blacklist"),
+            aliases=("乱斗",),
         ),
         GameMode(
             id="custom",
-            name="自选模式",
-            description="自选 1~2 种兵对决，相同资源",
-            aliases=("自选",),
+            name="指定兵种对决",
+            description="指定 1~2 种兵对决，相同资源",
+            aliases=(),
         ),
         GameMode(
             id="rival",
             name="王中王",
             description="职能主题对决 · 表情选主题或指定主题",
-            aliases=("王中王", "宿敌", "宿敌挑战"),
+            aliases=("王中王",),
         ),
         GameMode(
             id="rival_tournament",
             name="王中王锦标赛",
             description="8 兵种单败淘汰锦标赛 · 表情选主题",
-            aliases=("王中王锦标赛", "锦标赛", "tournament"),
+            aliases=("锦标赛",),
         ),
     ]
 

@@ -1,4 +1,4 @@
-"""AoE3 斗蛐蛐自选参数解析（无 NoneBot 依赖）。"""
+"""AoE3 斗蛐蛐指定兵种参数解析（无 NoneBot 依赖）。"""
 
 from __future__ import annotations
 

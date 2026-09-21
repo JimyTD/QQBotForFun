@@ -238,44 +238,34 @@ async def _(matcher: Matcher, event: GroupMessageEvent, args: Message = CommandA
     # 通用科技开关 → 传入 config
     generic_techs_on = await _get_generic_techs_enabled(int(event.group_id))
 
-    # ---- 王中王锦标赛："斗蛐蛐 王中王锦标赛" / "斗蛐蛐 锦标赛" ----
-    _TOURNAMENT_KEYWORDS = {"王中王锦标赛", "锦标赛", "tournament"}
-    if parts and parts[0] in _TOURNAMENT_KEYWORDS:
+    # ---- 锦标赛："斗蛐蛐 锦标赛" ----
+    if parts and parts[0] == "锦标赛":
         await _handle_tournament_battle(matcher, event, age=age)
         return
 
     # ---- 王中王："斗蛐蛐 王中王" / "斗蛐蛐 王中王 散兵 15000" ----
-    _RIVAL_KEYWORDS = {"王中王", "宿敌", "宿敌挑战", "rival"}
-    if parts and parts[0] in _RIVAL_KEYWORDS:
+    if parts and parts[0] == "王中王":
         await _handle_rival_battle(matcher, event, " ".join(parts[1:]), age=age)
         return
 
-    # ---- 自选模式："斗蛐蛐 自选 火枪手 散兵 15000" ----
-    if parts and parts[0] == "自选":
-        await _handle_custom_battle(matcher, event, " ".join(parts[1:]), age=age)
-        return
-
-    # ---- 隐式自选：参数中有非模式关键词且非纯数字 → 当作兵种名 ----
+    # ---- 指定兵种：参数中有非模式关键词且非纯数字 → 当作兵种名 ----
     _MODE_KEYWORDS = {
-        "单挑", "1v1", "duel",
-        "黑名单", "乱斗", "黑名单乱斗", "blacklist",
-        "王中王", "宿敌", "宿敌挑战", "rival",
-        "王中王锦标赛", "锦标赛", "tournament",
+        "单挑", "乱斗", "王中王", "锦标赛",
     }
     unknown_words = [p for p in parts if p not in _MODE_KEYWORDS and not p.isdigit()]
     if unknown_words:
-        # 有无法识别为模式的词 → 视为兵种名，走自选逻辑
+        # 有无法识别为模式的词 → 视为兵种名，走指定兵种对决。
         await _handle_custom_battle(matcher, event, " ".join(parts), age=age)
         return
 
     mode_id = "bet"  # 默认押注模式
     budget = None     # None = 使用默认值
 
-    # 解析参数：可以是模式（单挑/黑名单乱斗）或资源数字
+    # 解析参数：可以是模式（单挑/乱斗）或资源数字
     for part in parts:
-        if part in ("单挑", "1v1", "duel"):
+        if part == "单挑":
             mode_id = "duel"
-        elif part in ("黑名单", "乱斗", "黑名单乱斗", "blacklist"):
+        elif part == "乱斗":
             mode_id = "blacklist"
         elif part.isdigit():
             budget = int(part)
@@ -298,30 +288,14 @@ async def _(matcher: Matcher, event: GroupMessageEvent, args: Message = CommandA
     )
 
 
-# -------------------- 快捷开局：斗蛐蛐自选 --------------------
-_quick_battle_custom = on_command(
-    "斗蛐蛐自选",
-    rule=to_me(),
-    priority=2,       # 比普通"斗蛐蛐"优先级高，避免被吃掉
-    block=True,
-)
-
-@_quick_battle_custom.handle()
-async def _(matcher: Matcher, event: GroupMessageEvent, args: Message = CommandArg()) -> None:
-    """自选兵种对决：@bot 斗蛐蛐自选 火枪手 散兵 15000"""
-    arg_text = args.extract_plain_text().strip()
-    age = await _get_default_age(int(event.group_id))
-    await _handle_custom_battle(matcher, event, arg_text, age=age)
-
-
 async def _handle_custom_battle(
     matcher: Matcher, event: GroupMessageEvent, arg_text: str,
     age: int | None = None,
 ) -> None:
-    """自选兵种对决的公共处理逻辑（供 '斗蛐蛐自选' 和 '斗蛐蛐 自选' 共用）。"""
+    """处理 ``斗蛐蛐 <兵种A> [兵种B] [预算]`` 的指定兵种对决。"""
     if not arg_text:
         await matcher.finish(
-            "🎯 斗蛐蛐自选用法：\n"
+            "🎯 指定兵种对决用法：\n"
             "  @我 斗蛐蛐 兵种A 兵种B\n"
             "  @我 斗蛐蛐 兵种A 兵种B 15000（预算模式）\n"
             "  @我 斗蛐蛐 兵种A 100 兵种B 50（固定数量，1~1000）\n"
@@ -329,7 +303,7 @@ async def _handle_custom_battle(
         )
         return
 
-    # 时代词可能仍在 arg_text 里（独立 '斗蛐蛐自选' 入口），就地再抽一次
+    # 时代词已在主入口处理；这里防御性地再抽一次，便于直接调用此函数的测试。
     age_inline, parts = _extract_age(arg_text.split())
     if age is None:
         age = age_inline
