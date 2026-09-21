@@ -10,6 +10,7 @@ nonebot.init()
 from core.group_config import get_group_config  # noqa: E402
 from plugins.aoe3_battle_args import parse_default_budget  # noqa: E402
 from src.plugins.game_launcher import handlers  # noqa: E402
+from src.plugins.games.aoe3_battle.rival_pick import _resolve_budget  # noqa: E402
 
 
 class _Matcher:
@@ -65,3 +66,12 @@ async def test_invalid_stored_default_budget_falls_back() -> None:
 
     await set_group_config(12345, handlers._BUDGET_CONFIG_KEY, "broken")
     assert await handlers._get_default_budget(12345) is None
+
+
+@pytest.mark.asyncio
+async def test_rival_pick_resolves_group_budget_and_explicit_override() -> None:
+    from core.group_config import set_group_config
+
+    await set_group_config(54321, handlers._BUDGET_CONFIG_KEY, "15000")
+    assert await _resolve_budget(54321, None) == 15000
+    assert await _resolve_budget(54321, 5000) == 5000

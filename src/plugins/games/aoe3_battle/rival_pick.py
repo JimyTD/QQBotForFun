@@ -17,6 +17,7 @@ from nonebot.rule import Rule
 
 from core import game_base, session
 from core.errors import GameAlreadyRunningError
+from core.group_config import get_group_config
 
 from .rival_themes import (
     PICK_SLOT_EMOJIS,
@@ -29,6 +30,17 @@ from .rival_themes import (
 # group_id -> pending
 _pending: dict[int, _PendingPick] = {}
 _pick_lock = asyncio.Lock()
+_DEFAULT_BUDGET_KEY = "aoe3_battle.default_budget"
+
+
+async def _resolve_budget(group_id: int, budget: int | None) -> int | None:
+    """Explicit per-match budget wins; otherwise use the persistent group value."""
+    if budget is not None:
+        return budget
+    value = await get_group_config(group_id, _DEFAULT_BUDGET_KEY)
+    if value.isdigit() and 1000 <= int(value) <= 50000:
+        return int(value)
+    return None
 
 
 @dataclasses.dataclass
@@ -112,6 +124,7 @@ async def start_theme_pick(
     age: int | None = None,
 ) -> str | None:
     """发起选主题。成功返回 None；失败返回错误提示文本。"""
+    budget = await _resolve_budget(group_id, budget)
     async with _pick_lock:
         if game_base.get_runner_by_group(group_id) is not None:
             return "⚠️ 本群已有进行中的斗蛐蛐，先 @我 结束 再开王中王"
@@ -185,6 +198,7 @@ async def start_tournament_pick(
     age: int | None = None,
 ) -> str | None:
     """发起锦标赛选主题。流程与普通王中王一样（随机 3 主题 + 表情/数字选）。"""
+    budget = await _resolve_budget(group_id, budget)
     async with _pick_lock:
         if game_base.get_runner_by_group(group_id) is not None:
             return "⚠️ 本群已有进行中的斗蛐蛐，先 @我 结束 再开锦标赛"
@@ -258,6 +272,7 @@ async def launch_rival_direct(
     age: int | None = None,
 ) -> str | None:
     """指定主题直接开局。失败返回错误文本。"""
+    budget = await _resolve_budget(group_id, budget)
     theme = resolve_theme(theme_token)
     if theme is None:
         return f"⚠️ 未识别的王中王主题「{theme_token}」"
