@@ -256,10 +256,10 @@ class UnitRepo:
 
         profile = resolve_civ(civ)
         if profile is not None:
-            from plugins.games.aoe3_battle.civ_war_roles import (
+            from src.plugins.games.aoe3_battle.civ_war_roles import (
                 is_regular_civ_war_unit,
             )
-            from plugins.games.aoe3_battle.lineup import get_bet_pool
+            from src.plugins.games.aoe3_battle.lineup import get_bet_pool
 
             civ_data = json.loads(_CIVS_PATH.read_text(encoding="utf-8"))["civs"]
             allowed_ids = set(civ_data[profile.id]["units"])
