@@ -28,9 +28,9 @@ def test_low_positive_multiplier_is_visible(repo: UnitRepo) -> None:
 
     outgoing, _ = _find_counter_relations(meteor, opponent)
 
-    assert outgoing == ["对帝国野战炮 近战 x1.34（炮兵 x1.34）"]
+    assert outgoing == ["克制 帝国野战炮（近战，炮兵 x1.34 = x1.34）"]
     text = format_side_panel(lineup, "red", "custom", opponent=opponent)
-    assert "🎯 对帝国野战炮 近战 x1.34（炮兵 x1.34）" in text
+    assert "✅ 克制 帝国野战炮（近战，炮兵 x1.34 = x1.34）" in text
 
 
 def test_positive_and_negative_multipliers_are_multiplied(repo: UnitRepo) -> None:
@@ -42,12 +42,12 @@ def test_positive_and_negative_multipliers_are_multiplied(repo: UnitRepo) -> Non
     outgoing, _ = _find_counter_relations(yumi, opponent)
 
     assert outgoing == [
-        "对枪骑兵 远程 x1.5（轻型骑兵 x2.5 × 骑兵 x0.6）",
-        "对枪骑兵 近战 x1.5（轻型骑兵 x2 × 骑兵 x0.75）",
+        "克制 枪骑兵（远程，轻型骑兵 x2.5 × 骑兵 x0.6 = x1.5）",
+        "克制 枪骑兵（近战，轻型骑兵 x2 × 骑兵 x0.75 = x1.5）",
     ]
     text = format_side_panel(lineup, "red", "custom", opponent=opponent)
-    assert "🎯 对枪骑兵 远程 x1.5（轻型骑兵 x2.5 × 骑兵 x0.6）" in text
-    assert "🎯 对枪骑兵 近战 x1.5（轻型骑兵 x2 × 骑兵 x0.75）" in text
+    assert "✅ 克制 枪骑兵（远程，轻型骑兵 x2.5 × 骑兵 x0.6 = x1.5）" in text
+    assert "✅ 克制 枪骑兵（近战，轻型骑兵 x2 × 骑兵 x0.75 = x1.5）" in text
 
 
 def test_incoming_multipliers_show_complete_product(repo: UnitRepo) -> None:
@@ -59,6 +59,6 @@ def test_incoming_multipliers_show_complete_product(repo: UnitRepo) -> None:
 
     assert not outgoing
     assert incoming == [
-        "受日本长弓兵远程攻击 承伤 x1.5（轻型骑兵 x2.5 × 骑兵 x0.6）",
-        "受日本长弓兵近战攻击 承伤 x1.5（轻型骑兵 x2 × 骑兵 x0.75）",
+        "被 日本长弓兵 克制（远程，轻型骑兵 x2.5 × 骑兵 x0.6 = x1.5）",
+        "被 日本长弓兵 克制（近战，轻型骑兵 x2 × 骑兵 x0.75 = x1.5）",
     ]

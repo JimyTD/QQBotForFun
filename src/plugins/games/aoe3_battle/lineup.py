@@ -1031,7 +1031,20 @@ def _format_multiplier_matches(
 
     detail = " × ".join(f"{t_mult_vs(vs)} x{value:g}" for vs, value in matches)
     product = _multiplier_product(matches)
-    return f"{attack_mode} x{product:g}（{detail}）"
+    return f"（{attack_mode}，{detail} = x{product:g}）"
+
+
+def _format_counter_line(
+    unit_name: str,
+    matches: list[tuple[str, float]],
+    *,
+    attack_mode: str,
+    incoming: bool,
+) -> str:
+    detail = _format_multiplier_matches(matches, attack_mode=attack_mode)
+    if incoming:
+        return f"被 {unit_name} 克制{detail}"
+    return f"克制 {unit_name}{detail}"
 
 
 def _find_counter_relations(
@@ -1055,12 +1068,22 @@ def _find_counter_relations(
         ranged_matches = _matching_multipliers(unit.multipliers_ranged, opp_type_set)
         if ranged_matches:
             outgoing.append(
-                f"对{opp.name} {_format_multiplier_matches(ranged_matches, attack_mode='远程')}"
+                _format_counter_line(
+                    opp.name,
+                    ranged_matches,
+                    attack_mode="远程",
+                    incoming=False,
+                )
             )
         melee_matches = _matching_multipliers(unit.multipliers_melee, opp_type_set)
         if melee_matches:
             outgoing.append(
-                f"对{opp.name} {_format_multiplier_matches(melee_matches, attack_mode='近战')}"
+                _format_counter_line(
+                    opp.name,
+                    melee_matches,
+                    attack_mode="近战",
+                    incoming=False,
+                )
             )
 
         opp_ranged_matches = _matching_multipliers(
@@ -1068,16 +1091,24 @@ def _find_counter_relations(
         )
         if opp_ranged_matches:
             incoming.append(
-                f"受{opp.name}远程攻击 "
-                f"{_format_multiplier_matches(opp_ranged_matches, attack_mode='承伤')}"
+                _format_counter_line(
+                    opp.name,
+                    opp_ranged_matches,
+                    attack_mode="远程",
+                    incoming=True,
+                )
             )
         opp_melee_matches = _matching_multipliers(
             opp.multipliers_melee, my_type_set
         )
         if opp_melee_matches:
             incoming.append(
-                f"受{opp.name}近战攻击 "
-                f"{_format_multiplier_matches(opp_melee_matches, attack_mode='承伤')}"
+                _format_counter_line(
+                    opp.name,
+                    opp_melee_matches,
+                    attack_mode="近战",
+                    incoming=True,
+                )
             )
 
     return outgoing, incoming
@@ -1200,9 +1231,9 @@ def _append_counter_info(
     """追加完整攻击/承伤倍率，包括 x1 以下和多标签叠乘。"""
     outgoing, incoming = _find_counter_relations(u, opponent)
     for line in outgoing:
-        lines.append(f"{indent}🎯 {line}")
+        lines.append(f"{indent}✅ {line}")
     for line in incoming:
-        lines.append(f"{indent}🛡️ {line}")
+        lines.append(f"{indent}⚠️ {line}")
 
 
 def format_vs_banner(lineup: MatchLineup) -> str:
