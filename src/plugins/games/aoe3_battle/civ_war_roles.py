@@ -97,6 +97,7 @@ class ResolvedArchetype:
 _ROOT = Path(__file__).resolve().parents[4]
 _CIVS_PATH = _ROOT / "seeds" / "aoe3" / "civs.json"
 _ARCHETYPES_PATH = _ROOT / "seeds" / "aoe3" / "civ_war_archetypes.json"
+_PREFERRED_TACTICS_PATH = _ROOT / "seeds" / "aoe3" / "civ_war_preferred_tactics.json"
 
 
 def _parse_allocation(raw: dict, *, slot_count: int) -> AllocationRule:
@@ -117,6 +118,7 @@ def _load_archetype_config() -> tuple[
     tuple[Archetype, ...],
     tuple[NationalTactic, ...],
     SourcePolicy,
+    dict[str, frozenset[str]],
 ]:
     data = json.loads(_ARCHETYPES_PATH.read_text(encoding="utf-8"))
     archetypes: list[Archetype] = []
@@ -143,6 +145,20 @@ def _load_archetype_config() -> tuple[
                 unit_ids=unit_ids,
                 allocation=_parse_allocation(raw["allocation"], slot_count=len(unit_ids)),
             ))
+    preferred_data = json.loads(_PREFERRED_TACTICS_PATH.read_text(encoding="utf-8"))
+    for civ_id, entries in preferred_data.get("civs", {}).items():
+        for raw in entries:
+            if raw.get("status", "approved") != "approved":
+                continue
+            unit_ids = tuple(raw["unit_ids"])
+            tactics.append(NationalTactic(
+                civ_id=civ_id,
+                id=raw["id"],
+                title=raw["title"],
+                min_age=int(raw.get("min_age", 3)),
+                unit_ids=unit_ids,
+                allocation=_parse_allocation(raw["allocation"], slot_count=len(unit_ids)),
+            ))
     raw_policy = data["source_policy"]
     policy = SourcePolicy(
         preferred_strategy_weight=float(raw_policy["preferred_strategy_weight"]),
@@ -161,10 +177,21 @@ def _load_archetype_config() -> tuple[
         raise ValueError(f"invalid civ-war source weights: {policy}")
     if abs(policy.local_weight + policy.mixed_consulate_weight - 1.0) > 1e-9:
         raise ValueError(f"civ-war source weights must sum to 1: {policy}")
-    return tuple(archetypes), tuple(tactics), policy
+    extra_unit_ids = {
+        civ_id: frozenset(unit_ids)
+        for civ_id, unit_ids in preferred_data.get("_meta", {}).get(
+            "extra_unit_ids", {}
+        ).items()
+    }
+    return tuple(archetypes), tuple(tactics), policy, extra_unit_ids
 
 
-GENERIC_ARCHETYPES, NATIONAL_TACTICS, SOURCE_POLICY = _load_archetype_config()
+(
+    GENERIC_ARCHETYPES,
+    NATIONAL_TACTICS,
+    SOURCE_POLICY,
+    PREFERRED_EXTRA_UNIT_IDS,
+) = _load_archetype_config()
 
 
 def _has_multiplier(unit: Unit, *, attack: str, targets: frozenset[str]) -> bool:

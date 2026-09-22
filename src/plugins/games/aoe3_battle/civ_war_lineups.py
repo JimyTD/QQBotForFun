@@ -10,10 +10,12 @@ from src.plugins.aoe3.repository import UnitRepo
 from src.plugins.aoe3.upgrades import apply_upgrades
 from src.plugins.games.aoe3_battle.civ_war_roles import (
     NATIONAL_TACTICS,
+    PREFERRED_EXTRA_UNIT_IDS,
     SOURCE_POLICY,
     AllocationRule,
     NationalTactic,
     civ_regular_units,
+    is_regular_civ_war_unit,
     load_curated_civ_units,
     resolve_archetypes,
 )
@@ -23,6 +25,7 @@ from src.plugins.games.aoe3_battle.lineup import (
     UnitSlot,
     _unit_cost,
     get_bet_pool,
+    unit_game_age,
 )
 
 
@@ -128,6 +131,16 @@ def generate_civ_candidates(
         get_bet_pool(repo, age=age),
         civ_units=civ_units,
     )
+    national_available_by_id = {unit.id: unit for unit in units}
+    for unit_id in PREFERRED_EXTRA_UNIT_IDS.get(civ_id, ()):
+        unit = repo.get_by_id(unit_id)
+        if (
+            unit is not None
+            and unit.id not in national_available_by_id
+            and unit_game_age(unit) <= age
+            and is_regular_civ_war_unit(unit)
+        ):
+            national_available_by_id[unit.id] = unit
     unique_ids = _UNIQUE_UNITS[civ_id]
     candidates = [
         CivWarCandidate(
@@ -143,9 +156,13 @@ def generate_civ_candidates(
         )
         for resolved in resolve_archetypes(units)
     ]
-    candidates.extend(_resolve_national_tactics(civ_id, age, {unit.id: unit for unit in units}))
+    candidates.extend(_resolve_national_tactics(civ_id, age, national_available_by_id))
     if not SOURCE_POLICY.allow_pure_consulate:
-        candidates = [candidate for candidate in candidates if not candidate.is_pure_consulate]
+        candidates = [
+            candidate
+            for candidate in candidates
+            if candidate.source == "national" or not candidate.is_pure_consulate
+        ]
     candidates.sort(key=lambda candidate: (
         candidate.identity_tier,
         -candidate.distinctive_count,

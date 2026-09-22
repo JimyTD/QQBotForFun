@@ -48,12 +48,12 @@
 
       <section class="workspace">
         <nav class="tabs" aria-label="浏览视图">
-          <button type="button" class="tab active" data-tab="lineups">通用骨架</button>
-          <button type="button" class="tab" data-tab="national">国家战术</button>
+          <button type="button" class="tab" data-tab="lineups">通用骨架</button>
+          <button type="button" class="tab active" data-tab="national">优势策略审核</button>
           <button type="button" class="tab" data-tab="audit">审计</button>
         </nav>
 
-        <section id="lineups-view" class="view active" aria-label="通用骨架候选">
+        <section id="lineups-view" class="view" aria-label="通用骨架候选">
           <div class="view-header">
             <div>
               <p class="eyebrow">已解析为具体单位</p>
@@ -64,22 +64,24 @@
           <div id="archetype-list" class="archetype-list"></div>
         </section>
 
-        <section id="national-view" class="view" aria-label="国家战术">
+        <section id="national-view" class="view active" aria-label="国家战术">
           <div class="view-header">
             <div>
-              <p class="eyebrow">固定编制与探索记录</p>
-              <h2>国家战术</h2>
+              <p class="eyebrow">第一版 · 已启用 · 可继续维护</p>
+              <h2>国家优势策略</h2>
             </div>
+            <p id="preferred-summary" class="muted"></p>
           </div>
-          <section class="national-section">
+          <div class="review-notice" id="preferred-note"></div>
+          <div id="preferred-civ-nav" class="preferred-civ-nav" aria-label="优势策略文明导航"></div>
+          <section class="national-section preferred-review-section">
             <div class="section-title-row">
-              <h3>中国旗军</h3>
-              <span class="fixed-badge">固定人数比例</span>
+              <h3 id="preferred-civ-title">当前文明</h3>
+              <button id="add-preferred" class="text-command" type="button">新增策略</button>
             </div>
-            <p class="muted">旗军代币不进入通用候选；这里按已还原的实际单位与原始人数比例展示。</p>
-            <div id="banners-list" class="banners-list"></div>
+            <p class="muted">展示使用当前时代升级和 10000 资源换算后的实际人数。草案不会进入正式国战随机。</p>
+            <div id="preferred-list" class="preferred-list"></div>
           </section>
-          <section id="pending-section" class="national-section pending-section"></section>
         </section>
 
         <section id="audit-view" class="view" aria-label="审计">
@@ -113,6 +115,31 @@
     <template id="unit-icon-template">
       <span class="unit-icon fallback" aria-hidden="true"></span>
     </template>
+    <dialog id="tactic-editor" class="tactic-dialog">
+      <form id="tactic-form" method="dialog">
+        <header class="dialog-header">
+          <div><p class="eyebrow">策略维护</p><h2 id="editor-heading">编辑优势策略</h2></div>
+          <button type="button" id="close-editor" class="icon-command" aria-label="关闭">×</button>
+        </header>
+        <input id="editor-id" type="hidden" />
+        <label class="editor-field"><span>策略名称</span><input id="editor-title" maxlength="30" required /></label>
+        <div class="editor-grid">
+          <label class="editor-field"><span>最早时代</span><select id="editor-age"><option value="3">3 时代</option><option value="4">4 时代</option><option value="5">5 时代</option></select></label>
+          <label class="editor-field"><span>依据标签，逗号分隔</span><input id="editor-basis" maxlength="80" placeholder="皇家护卫, 经典火枪马" /></label>
+        </div>
+        <label class="editor-activation"><input id="editor-approved" type="checkbox" /><span>正式启用到国战随机；不勾选则只作为审核草案展示</span></label>
+        <div class="editor-units-heading"><span>兵种与资源占比</span><span id="share-total">合计 100%</span></div>
+        <div id="editor-unit-rows" class="editor-unit-rows"></div>
+        <label class="editor-field"><span>入选说明</span><textarea id="editor-reason" rows="3" maxlength="240" required></textarea></label>
+        <div id="editor-error" class="editor-error" role="alert"></div>
+        <footer class="dialog-actions">
+          <button type="button" id="delete-tactic" class="danger-command">删除策略</button>
+          <span class="dialog-spacer"></span>
+          <button type="button" id="cancel-editor" class="secondary-command">取消</button>
+          <button type="submit" class="primary-command">保存策略</button>
+        </footer>
+      </form>
+    </dialog>
     <script src="app.js"></script>
   </body>
 </html>

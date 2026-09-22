@@ -16,6 +16,7 @@ import argparse
 import io
 import json
 import logging
+import re
 import sys
 from collections import Counter, defaultdict
 from http import HTTPStatus
@@ -26,6 +27,7 @@ from urllib.parse import parse_qs, urlparse
 ROOT = Path(__file__).resolve().parent.parent
 STATIC_DIR = ROOT / "tools" / "aoe3_civ_war_browser"
 ICON_DIR = ROOT / "resources" / "aoe3" / "icons"
+PREFERRED_TACTICS_PATH = ROOT / "seeds" / "aoe3" / "civ_war_preferred_tactics.json"
 
 for import_path in (str(ROOT), str(ROOT / "src")):
     if import_path not in sys.path:
@@ -44,6 +46,10 @@ logging.disable(logging.CRITICAL)
 from plugins.aoe3.models import Unit  # noqa: E402
 from plugins.aoe3.repository import UnitRepo, is_excluded_unit  # noqa: E402
 from plugins.aoe3.upgrades import apply_upgrades  # noqa: E402
+from plugins.games.aoe3_battle.civ_war_lineups import (  # noqa: E402
+    CivWarCandidate,
+    allocate_candidate,
+)
 from plugins.games.aoe3_battle.civ_war_roles import (  # noqa: E402
     DEDICATED_DEMOLITION_IDS,
     GENERIC_ARCHETYPES,
@@ -54,7 +60,9 @@ from plugins.games.aoe3_battle.civ_war_roles import (  # noqa: E402
     ROLE_MUSK,
     ROLE_SHOCK,
     ROLE_SKIRM,
+    AllocationRule,
     civ_regular_units,
+    is_regular_civ_war_unit,
     load_curated_civ_units,
     resolve_archetypes,
     unit_roles,
@@ -267,6 +275,106 @@ class BrowserData:
         self.civ_units = load_curated_civ_units()
         civs_path = ROOT / "seeds" / "aoe3" / "civs.json"
         self.civ_data = json.loads(civs_path.read_text(encoding="utf-8"))["civs"]
+        self.preferred_tactics = json.loads(
+            PREFERRED_TACTICS_PATH.read_text(encoding="utf-8")
+        )
+        self.preferred_extra_units = {
+            civ_id: set(unit_ids)
+            for civ_id, unit_ids in self.preferred_tactics["_meta"].get(
+                "extra_unit_ids", {}
+            ).items()
+        }
+
+    def _persist_preferred_tactics(self) -> None:
+        temp_path = PREFERRED_TACTICS_PATH.with_suffix(".json.tmp")
+        temp_path.write_text(
+            json.dumps(self.preferred_tactics, ensure_ascii=False, indent=2) + "\n",
+            encoding="utf-8",
+        )
+        temp_path.replace(PREFERRED_TACTICS_PATH)
+
+    def _validate_preferred_tactic(self, civ_id: str, tactic: dict) -> dict:
+        if civ_id not in self.civ_units:
+            raise ValueError(f"Not a curated civ: {civ_id}")
+        tactic_id = str(tactic.get("id", "")).strip()
+        if not re.fullmatch(r"[a-z0-9_]{3,64}", tactic_id):
+            raise ValueError("策略 id 只能使用 3~64 位小写字母、数字和下划线")
+        if any(item.civ_id == civ_id and item.id == tactic_id for item in NATIONAL_TACTICS):
+            raise ValueError("已实现的固定国家战术不能在草案页修改")
+        title = str(tactic.get("title", "")).strip()
+        reason = str(tactic.get("reason", "")).strip()
+        if not title or len(title) > 30:
+            raise ValueError("策略名称不能为空且最多 30 字")
+        if not reason or len(reason) > 240:
+            raise ValueError("入选说明不能为空且最多 240 字")
+        min_age = int(tactic.get("min_age", 3))
+        if min_age not in {3, 4, 5}:
+            raise ValueError("最早时代必须为 3、4 或 5")
+
+        unit_ids = [str(unit_id).strip() for unit_id in tactic.get("unit_ids", ())]
+        if not 1 <= len(unit_ids) <= 3 or len(set(unit_ids)) != len(unit_ids):
+            raise ValueError("策略必须包含 1~3 个不同兵种")
+        allowed_ids = set(self.civ_units[civ_id]) | self.preferred_extra_units.get(
+            civ_id, set()
+        )
+        for unit_id in unit_ids:
+            unit = self.repo.get_by_id(unit_id)
+            if unit is None or unit_id not in allowed_ids:
+                raise ValueError(f"{unit_id} 不是该文明可用单位")
+            if not is_regular_civ_war_unit(unit):
+                raise ValueError(f"{unit.name} 不属于国战正规军")
+            if is_consulate_unit(unit) and unit_id not in self.preferred_extra_units.get(
+                civ_id, set()
+            ):
+                raise ValueError("优势策略草案只能使用本国单位，不能使用领事馆单位")
+            min_age = max(min_age, unit_game_age(unit))
+
+        allocation = tactic.get("allocation", {})
+        if allocation.get("kind") != "resource_shares":
+            raise ValueError("草案目前只支持资源占比")
+        values = [float(value) for value in allocation.get("values", ())]
+        if len(values) != len(unit_ids) or any(value <= 0 for value in values):
+            raise ValueError("每个兵种必须有正数资源占比")
+        if abs(sum(values) - 1.0) > 1e-6:
+            raise ValueError("资源占比合计必须为 100%")
+        basis = [
+            str(item).strip()
+            for item in tactic.get("basis", ())
+            if str(item).strip()
+        ][:6]
+        return {
+            "id": tactic_id,
+            "status": (
+                "approved" if tactic.get("status", "approved") == "approved" else "draft"
+            ),
+            "title": title,
+            "min_age": min_age,
+            "unit_ids": unit_ids,
+            "allocation": {"kind": "resource_shares", "values": values},
+            "basis": basis,
+            "reason": reason,
+        }
+
+    def save_preferred_tactic(self, civ_id: str, tactic: dict) -> None:
+        normalized = self._validate_preferred_tactic(civ_id, tactic)
+        entries = self.preferred_tactics["civs"][civ_id]
+        for index, current in enumerate(entries):
+            if current["id"] == normalized["id"]:
+                entries[index] = normalized
+                break
+        else:
+            entries.append(normalized)
+        self._persist_preferred_tactics()
+
+    def delete_preferred_tactic(self, civ_id: str, tactic_id: str) -> None:
+        if civ_id not in self.civ_units:
+            raise ValueError(f"Not a curated civ: {civ_id}")
+        entries = self.preferred_tactics["civs"][civ_id]
+        remaining = [entry for entry in entries if entry["id"] != tactic_id]
+        if len(remaining) == len(entries):
+            raise ValueError("找不到可删除的审核草案")
+        self.preferred_tactics["civs"][civ_id] = remaining
+        self._persist_preferred_tactics()
 
     def bootstrap(self) -> dict:
         civs = []
@@ -289,7 +397,98 @@ class BrowserData:
                 "Japanese",
                 "Spanish",
             ],
+            "preferred_counts": {
+                civ_id: len(self.preferred_tactics["civs"].get(civ_id, ()))
+                + sum(
+                    tactic.civ_id == civ_id
+                    and tactic.id not in {
+                        entry["id"]
+                        for entry in self.preferred_tactics["civs"].get(civ_id, ())
+                    }
+                    for tactic in NATIONAL_TACTICS
+                )
+                for civ_id in self.civ_units
+            },
+            "preferred_draft_note": self.preferred_tactics["_meta"]["note"],
         }
+
+    def _preferred_tactics(self, civ_id: str, age: int) -> list[dict]:
+        raw_entries = list(self.preferred_tactics["civs"].get(civ_id, ()))
+        entries: list[dict] = []
+        configured_ids = {entry["id"] for entry in raw_entries}
+
+        for tactic in NATIONAL_TACTICS:
+            if tactic.civ_id != civ_id or tactic.id in configured_ids:
+                continue
+            raw_entries.append({
+                "id": tactic.id,
+                "title": tactic.title,
+                "min_age": tactic.min_age,
+                "unit_ids": list(tactic.unit_ids),
+                "allocation": {
+                    "kind": tactic.allocation.kind,
+                    "values": list(tactic.allocation.values),
+                },
+                "basis": ["已实现", "原游戏固定编制"],
+                "reason": "中国旗军按原游戏固定单位数量比例扩编。",
+                "status": "implemented",
+            })
+
+        for raw in raw_entries:
+            min_age = int(raw.get("min_age", 3))
+            units = tuple(
+                unit
+                for unit_id in raw["unit_ids"]
+                if (unit := self.repo.get_by_id(unit_id)) is not None
+            )
+            if units:
+                min_age = max(min_age, *(unit_game_age(unit) for unit in units))
+            allocation_raw = raw["allocation"]
+            allocation = AllocationRule(
+                allocation_raw["kind"],
+                tuple(float(value) for value in allocation_raw["values"]),
+            )
+            available = age >= min_age and len(units) == len(raw["unit_ids"])
+            lineup = None
+            if available:
+                candidate = CivWarCandidate(
+                    id=f"review:{raw['id']}",
+                    title=raw["title"],
+                    civ_id=civ_id,
+                    units=units,
+                    allocation=allocation,
+                    source="national",
+                    strategy_id=raw["id"],
+                )
+                lineup = allocate_candidate(
+                    candidate,
+                    budget=int(self.preferred_tactics["_meta"]["budget"]),
+                    age=age,
+                )
+            counts_by_id = {
+                slot.unit.id: slot.count for slot in lineup.slots
+            } if lineup is not None else {}
+            entries.append({
+                "id": raw["id"],
+                "title": raw["title"],
+                "status": raw.get("status", "approved"),
+                "min_age": min_age,
+                "available": available,
+                "basis": raw.get("basis", []),
+                "reason": raw.get("reason", ""),
+                "allocation_kind": allocation.kind,
+                "allocation_values": list(allocation.values),
+                "total_cost": lineup.total_cost if lineup is not None else None,
+                "units": [
+                    {
+                        **unit_payload(unit, age, civ_id=civ_id),
+                        "count": counts_by_id.get(unit.id),
+                        "share": allocation.values[index],
+                    }
+                    for index, unit in enumerate(units)
+                ],
+            })
+        return entries
 
     def _audit_exclusions(self, civ_id: str, age: int) -> list[dict]:
         excluded: list[dict] = []
@@ -335,6 +534,13 @@ class BrowserData:
             if (include_consulate or not is_consulate_unit(unit))
             and (not local_only or not is_consulate_unit(unit))
         ]
+        preferred_editor_units = list(displayed_units)
+        preferred_editor_ids = {unit.id for unit in preferred_editor_units}
+        for unit_id in self.preferred_extra_units.get(civ_id, set()):
+            unit = self.repo.get_by_id(unit_id)
+            if unit is not None and unit.id not in preferred_editor_ids:
+                preferred_editor_units.append(unit)
+                preferred_editor_ids.add(unit.id)
 
         resolved = resolve_archetypes(displayed_units)
         grouped: dict[str, list[dict]] = defaultdict(list)
@@ -373,6 +579,13 @@ class BrowserData:
                     key=lambda entry: (is_consulate_unit(entry), entry.name_en.lower()),
                 )
             ],
+            "preferred_unit_options": [
+                unit_payload(unit, age, civ_id=civ_id)
+                for unit in sorted(
+                    preferred_editor_units,
+                    key=lambda entry: entry.name_en.lower(),
+                )
+            ],
             "unit_counts": {
                 "safe_regular": len(regular_units),
                 "shown": len(displayed_units),
@@ -387,6 +600,7 @@ class BrowserData:
             "excluded": self._audit_exclusions(civ_id, age),
             "chinese_banners": self._chinese_banners(age),
             "pending_tactic": self._pending_tactic(pending, age, civ_id=civ_id),
+            "preferred_tactics": self._preferred_tactics(civ_id, age),
         }
 
     def _chinese_banners(self, age: int) -> list[dict]:
@@ -483,6 +697,28 @@ class RequestHandler(SimpleHTTPRequestHandler):
         if parsed.path == "/":
             self.path = "/index.html"
         super().do_GET()
+
+    def do_POST(self) -> None:
+        parsed = urlparse(self.path)
+        if parsed.path != "/api/preferred-tactic":
+            self.send_error(HTTPStatus.NOT_FOUND)
+            return
+        try:
+            content_length = int(self.headers.get("Content-Length", "0"))
+            if content_length <= 0 or content_length > 64_000:
+                raise ValueError("请求正文大小无效")
+            payload = json.loads(self.rfile.read(content_length).decode("utf-8"))
+            action = payload.get("action")
+            civ_id = str(payload.get("civ_id", ""))
+            if action == "save":
+                DATA.save_preferred_tactic(civ_id, payload.get("tactic", {}))
+            elif action == "delete":
+                DATA.delete_preferred_tactic(civ_id, str(payload.get("tactic_id", "")))
+            else:
+                raise ValueError("未知编辑操作")
+            self._json({"ok": True})
+        except (OSError, TypeError, ValueError, json.JSONDecodeError) as exc:
+            self._json({"error": str(exc)}, status=HTTPStatus.BAD_REQUEST)
 
     def _json(self, payload: dict, *, status: HTTPStatus = HTTPStatus.OK) -> None:
         body = json.dumps(payload, ensure_ascii=False).encode("utf-8")

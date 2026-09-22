@@ -27,7 +27,8 @@ def test_generic_candidates_carry_reviewed_resource_shares(repo: UnitRepo) -> No
     candidate = next(
         candidate
         for candidate in generate_civ_candidates(repo, "DEEthiopians", age=3)
-        if candidate.unit_ids == ("degascenya", "deshotelwarrior")
+        if candidate.source == "generic"
+        and candidate.unit_ids == ("degascenya", "deshotelwarrior")
     )
     assert candidate.title == "火枪马"
     assert candidate.allocation.kind == "resource_shares"
@@ -62,6 +63,28 @@ def test_chinese_banner_armies_are_fixed_ratio_candidates(repo: UnitRepo) -> Non
     standard = national["正规军"]
     lineup = allocate_candidate(standard, budget=10000, age=3)
     assert lineup.slots[0].count * 2 == lineup.slots[1].count * 3
+
+
+def test_approved_preferred_tactics_are_runtime_candidates(repo: UnitRepo) -> None:
+    french = {
+        candidate.title: candidate
+        for candidate in generate_civ_candidates(repo, "French", age=3)
+        if candidate.source == "national"
+    }
+    assert "法兰西近卫军" in french
+    lineup = allocate_candidate(french["法兰西近卫军"], budget=10000, age=3)
+    assert [slot.unit.id for slot in lineup.slots] == ["skirmisher", "cuirassier"]
+
+
+def test_unapproved_review_tactics_are_not_runtime_candidates(repo: UnitRepo) -> None:
+    japanese = {
+        candidate.title for candidate in generate_civ_candidates(repo, "Japanese", age=3)
+    }
+    ottoman = {
+        candidate.title for candidate in generate_civ_candidates(repo, "Ottomans", age=4)
+    }
+    assert "幕府旗本众" not in japanese
+    assert "君士坦丁炮阵" not in ottoman
 
 
 def test_national_candidates_sort_before_generic_candidates(repo: UnitRepo) -> None:

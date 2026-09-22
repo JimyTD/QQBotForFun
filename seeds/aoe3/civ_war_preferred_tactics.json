@@ -1,0 +1,1592 @@
+{
+  "_meta": {
+    "status": "approved_v1",
+    "doc": "docs/games/aoe3-civ-war-wip.md",
+    "note": "优势策略第一版已确认，参与正式国战随机；本地编辑器可继续维护后续版本。",
+    "budget": 10000,
+    "extra_unit_ids": {
+      "Japanese": [
+        "ypconsulateronin"
+      ],
+      "Ottomans": [
+        "greatbombard"
+      ]
+    }
+  },
+  "civs": {
+    "British": [
+      {
+        "id": "redcoat_hussar",
+        "title": "皇家红衫军",
+        "min_age": 3,
+        "unit_ids": [
+          "musketeer",
+          "hussar"
+        ],
+        "allocation": {
+          "kind": "resource_shares",
+          "values": [
+            0.6,
+            0.4
+          ]
+        },
+        "basis": [
+          "双皇家护卫",
+          "经典火枪马"
+        ],
+        "reason": "红衫军火枪兵与英国皇家轻骑兵构成标准火枪马。"
+      },
+      {
+        "id": "draft_muc3gh48",
+        "title": "英军步兵旅",
+        "min_age": 3,
+        "unit_ids": [
+          "musketeer",
+          "longbowman"
+        ],
+        "allocation": {
+          "kind": "resource_shares",
+          "values": [
+            0.6,
+            0.4
+          ]
+        },
+        "basis": [],
+        "reason": "纯步兵英国组合 不遇到炮战力还是很高的"
+      }
+    ],
+    "Chinese": [],
+    "DEAmericans": [
+      {
+        "id": "regular_carbine_gatling",
+        "title": "联邦钢铁旅",
+        "min_age": 3,
+        "unit_ids": [
+          "deregular",
+          "deuscavalry",
+          "xpgatlinggun"
+        ],
+        "allocation": {
+          "kind": "resource_shares",
+          "values": [
+            0.4,
+            0.3,
+            0.3
+          ]
+        },
+        "basis": [
+          "特色兵",
+          "三兵种"
+        ],
+        "reason": "正规军顶线，卡宾枪骑兵反骑，加特林机枪压制步兵。"
+      },
+      {
+        "id": "rifle_carbine_gatling",
+        "title": "现代化美军",
+        "min_age": 3,
+        "unit_ids": [
+          "derifleman",
+          "deuscavalry",
+          "xpgatlinggun"
+        ],
+        "allocation": {
+          "kind": "resource_shares",
+          "values": [
+            0.45,
+            0.3,
+            0.25
+          ]
+        },
+        "basis": [
+          "特色兵",
+          "散龙炮"
+        ],
+        "reason": "美国特色散兵、远程骑兵和加特林构成完整远程体系。"
+      }
+    ],
+    "DEDanish": [
+      {
+        "id": "danish_musk_huss_falc",
+        "title": "北海王家军",
+        "unit_ids": [
+          "musketeer",
+          "hussar",
+          "falconet"
+        ],
+        "allocation": {
+          "kind": "resource_shares",
+          "values": [
+            0.5,
+            0.3,
+            0.2
+          ]
+        },
+        "basis": [
+          "全陆军皇家护卫",
+          "三兵种"
+        ],
+        "reason": "丹麦全部陆军具皇家护卫线，以火枪、轻骑、鹰炮组成传统联合军。"
+      },
+      {
+        "id": "danish_skirm_goon_falc",
+        "title": "北海雷霆",
+        "unit_ids": [
+          "skirmisher",
+          "dragoon",
+          "falconet"
+        ],
+        "allocation": {
+          "kind": "resource_shares",
+          "values": [
+            0.45,
+            0.3,
+            0.25
+          ]
+        },
+        "basis": [
+          "全陆军皇家护卫",
+          "散龙炮"
+        ],
+        "reason": "使用丹麦强化后的散兵、龙骑和鹰炮。"
+      }
+    ],
+    "DEEthiopians": [
+      {
+        "id": "gascenya_shotel",
+        "title": "埃塞突击旅",
+        "min_age": 3,
+        "unit_ids": [
+          "degascenya",
+          "deshotelwarrior"
+        ],
+        "allocation": {
+          "kind": "resource_shares",
+          "values": [
+            0.6,
+            0.4
+          ]
+        },
+        "basis": [
+          "玩家方案",
+          "特色兵"
+        ],
+        "reason": "加塞尼亚承担火枪位，弯刀勇士承担高机动切散位。"
+      },
+      {
+        "id": "neftenya_oromo",
+        "title": "埃塞贵族旅",
+        "min_age": 3,
+        "unit_ids": [
+          "deneftenya",
+          "deoromowarrior"
+        ],
+        "allocation": {
+          "kind": "resource_shares",
+          "values": [
+            0.6,
+            0.4
+          ]
+        },
+        "basis": [
+          "特色兵",
+          "散马"
+        ],
+        "reason": "远程反重步与重骑冲击构成埃塞俄比亚散马。"
+      }
+    ],
+    "DEHausa": [
+      {
+        "id": "fula_lifidi",
+        "title": "黄金骑士团",
+        "unit_ids": [
+          "defulawarrior",
+          "delifidi"
+        ],
+        "allocation": {
+          "kind": "resource_shares",
+          "values": [
+            0.6,
+            0.4
+          ]
+        },
+        "basis": [
+          "特色兵",
+          "散马"
+        ],
+        "reason": "富拉尼远程输出配合利菲迪重骑冲阵。"
+      },
+      {
+        "id": "javelin_fula",
+        "title": "漫天箭雨",
+        "min_age": 3,
+        "unit_ids": [
+          "dejavelinrider",
+          "defulawarrior"
+        ],
+        "allocation": {
+          "kind": "resource_shares",
+          "values": [
+            0.45,
+            0.55
+          ]
+        },
+        "basis": [
+          "特色兵",
+          "龙骑散"
+        ],
+        "reason": "标枪骑兵反重骑，富拉尼步弓手负责反重步。"
+      },
+      {
+        "id": "draft_muc3p7g3",
+        "title": "豪萨铁骑",
+        "min_age": 3,
+        "unit_ids": [
+          "deraider",
+          "delifidi"
+        ],
+        "allocation": {
+          "kind": "resource_shares",
+          "values": [
+            0.6,
+            0.4
+          ]
+        },
+        "basis": [],
+        "reason": "纯骑兵突击组合"
+      }
+    ],
+    "DEInca": [
+      {
+        "id": "bolas_jungle_spear",
+        "title": "太阳神卫队",
+        "unit_ids": [
+          "debolaswarrior",
+          "dejunglebowman",
+          "deincaspearman"
+        ],
+        "allocation": {
+          "kind": "resource_shares",
+          "values": [
+            0.35,
+            0.4,
+            0.25
+          ]
+        },
+        "basis": [
+          "特色兵",
+          "无骑文明"
+        ],
+        "reason": "掷石绳反骑、丛林弓反重步、羽饰长矛保护后排。"
+      },
+      {
+        "id": "jungle_chimu",
+        "title": "安第斯猎风",
+        "unit_ids": [
+          "dejunglebowman",
+          "deincarunner"
+        ],
+        "allocation": {
+          "kind": "resource_shares",
+          "values": [
+            0.6,
+            0.4
+          ]
+        },
+        "basis": [
+          "特色兵",
+          "散马等价"
+        ],
+        "reason": "奇穆游击兵替代骑兵承担高速切散位。"
+      },
+      {
+        "id": "draft_muc3rxr1",
+        "title": "印加超人",
+        "min_age": 3,
+        "unit_ids": [
+          "demaceman",
+          "deincarunner"
+        ],
+        "allocation": {
+          "kind": "resource_shares",
+          "values": [
+            0.7,
+            0.3
+          ]
+        },
+        "basis": [],
+        "reason": "掩护槌兵上去黏住就是锤"
+      }
+    ],
+    "DEItalians": [
+      {
+        "id": "pavisier_goon_falc",
+        "title": "罗马远征军",
+        "unit_ids": [
+          "depavisier",
+          "dragoon",
+          "falconet"
+        ],
+        "allocation": {
+          "kind": "resource_shares",
+          "values": [
+            0.45,
+            0.3,
+            0.25
+          ]
+        },
+        "basis": [
+          "特色兵",
+          "散龙炮"
+        ],
+        "reason": "墙盾手作为国家特色远程核心，龙骑和鹰炮补足反骑与范围火力。"
+      },
+      {
+        "id": "draft_muc5i6lh",
+        "title": "意大利黑衫军",
+        "min_age": 4,
+        "unit_ids": [
+          "debersagliere",
+          "dragoon"
+        ],
+        "allocation": {
+          "kind": "resource_shares",
+          "values": [
+            0.6,
+            0.4
+          ]
+        },
+        "basis": [],
+        "reason": "强力龙骑散"
+      }
+    ],
+    "DEMaltese": [
+      {
+        "id": "sentinel_firethrower",
+        "title": "圣焰卫队",
+        "unit_ids": [
+          "demaltesemusketeer",
+          "dehoopthrower"
+        ],
+        "allocation": {
+          "kind": "resource_shares",
+          "values": [
+            0.5,
+            0.5
+          ]
+        },
+        "basis": [
+          "特色兵",
+          "火枪散"
+        ],
+        "reason": "卫士承担前排反骑，火焰兵处理重步。"
+      },
+      {
+        "id": "hospitaller_firethrower",
+        "title": "医院骑士团",
+        "unit_ids": [
+          "dehospitaller",
+          "dehoopthrower"
+        ],
+        "allocation": {
+          "kind": "resource_shares",
+          "values": [
+            0.4,
+            0.6
+          ]
+        },
+        "basis": [
+          "特色兵",
+          "重步散"
+        ],
+        "reason": "医院骑士反骑护后排，火焰兵提供远程反步兵。"
+      }
+    ],
+    "DEMexicans": [
+      {
+        "id": "soldado_chinaco",
+        "title": "自由墨西哥军",
+        "unit_ids": [
+          "desoldado",
+          "dechinaco"
+        ],
+        "allocation": {
+          "kind": "resource_shares",
+          "values": [
+            0.6,
+            0.4
+          ]
+        },
+        "basis": [
+          "特色兵",
+          "火枪马"
+        ],
+        "reason": "墨西哥士兵与游击叛兵组成国家特色火枪马。"
+      },
+      {
+        "id": "emboscador_chinaco",
+        "title": "荒原游击队",
+        "unit_ids": [
+          "deemboscador",
+          "dechinaco"
+        ],
+        "allocation": {
+          "kind": "resource_shares",
+          "values": [
+            0.6,
+            0.4
+          ]
+        },
+        "basis": [
+          "特色兵",
+          "散马"
+        ],
+        "reason": "劫匪远程输出，游击叛兵切后排。"
+      },
+      {
+        "id": "soldado_legion",
+        "status": "draft",
+        "title": "墨西哥国民军",
+        "min_age": 3,
+        "unit_ids": [
+          "desoldado"
+        ],
+        "allocation": {
+          "kind": "resource_shares",
+          "values": [
+            1.0
+          ]
+        },
+        "basis": [
+          "特色重步",
+          "纯兵种"
+        ],
+        "reason": "墨西哥士兵凭借高生命与远程火力形成纯重步军团。"
+      }
+    ],
+    "DEPolish": [
+      {
+        "id": "piechur_winged_hussar",
+        "title": "白鹰翼骑团",
+        "unit_ids": [
+          "depiechur",
+          "dewingedhussar"
+        ],
+        "allocation": {
+          "kind": "resource_shares",
+          "values": [
+            0.6,
+            0.4
+          ]
+        },
+        "basis": [
+          "特色兵",
+          "散马"
+        ],
+        "reason": "库尔皮神射手与翼骑兵体现波兰核心兵种。"
+      },
+      {
+        "id": "piechur_pancerni_falc",
+        "title": "王冠远征军",
+        "unit_ids": [
+          "depiechur",
+          "cavalryarcher",
+          "falconet"
+        ],
+        "allocation": {
+          "kind": "resource_shares",
+          "values": [
+            0.45,
+            0.3,
+            0.25
+          ]
+        },
+        "basis": [
+          "皇家护卫",
+          "散龙炮"
+        ],
+        "reason": "波兰步兵、装甲骑射与炮兵构成远程联合军。"
+      },
+      {
+        "id": "winged_hussar_host",
+        "status": "draft",
+        "title": "翼骑兵洪流",
+        "min_age": 3,
+        "unit_ids": [
+          "dewingedhussar"
+        ],
+        "allocation": {
+          "kind": "resource_shares",
+          "values": [
+            1.0
+          ]
+        },
+        "basis": [
+          "国家象征",
+          "纯兵种"
+        ],
+        "reason": "波兰翼骑兵以重骑冲击和国家辨识度独立成军。"
+      }
+    ],
+    "DESwedish": [
+      {
+        "id": "carolean_leather",
+        "title": "卡尔火炮旅",
+        "unit_ids": [
+          "decarolean",
+          "deleathercannon"
+        ],
+        "allocation": {
+          "kind": "resource_shares",
+          "values": [
+            0.7,
+            0.3
+          ]
+        },
+        "basis": [
+          "特色兵",
+          "火枪炮"
+        ],
+        "reason": "卡尔远征军保护瑞典特色皮革炮。"
+      },
+      {
+        "id": "carolean_hussar",
+        "title": "北境机动军",
+        "unit_ids": [
+          "decarolean",
+          "hussar"
+        ],
+        "allocation": {
+          "kind": "resource_shares",
+          "values": [
+            0.6,
+            0.4
+          ]
+        },
+        "basis": [
+          "特色兵",
+          "火枪马"
+        ],
+        "reason": "卡尔远征军与轻骑构成瑞典基础机动编制。"
+      },
+      {
+        "id": "carolean_mass",
+        "status": "draft",
+        "title": "卡尔远征军",
+        "min_age": 3,
+        "unit_ids": [
+          "decarolean"
+        ],
+        "allocation": {
+          "kind": "resource_shares",
+          "values": [
+            1.0
+          ]
+        },
+        "basis": [
+          "国家核心",
+          "纯兵种"
+        ],
+        "reason": "卡尔远征军拥有独特远近战反骑机制，纯量产本身就是瑞典特色打法。"
+      }
+    ],
+    "Dutch": [
+      {
+        "id": "ruyter_skirm",
+        "title": "低地机动军",
+        "unit_ids": [
+          "ruyter",
+          "skirmisher"
+        ],
+        "allocation": {
+          "kind": "resource_shares",
+          "values": [
+            0.45,
+            0.55
+          ]
+        },
+        "basis": [
+          "皇家护卫",
+          "龙骑散"
+        ],
+        "reason": "荷兰手枪骑兵是国家核心，配散兵形成标准龙骑散。"
+      },
+      {
+        "id": "draft_muc3x8ur",
+        "title": "荷兰流氓",
+        "min_age": 4,
+        "unit_ids": [
+          "ruyter",
+          "xphorseartillery"
+        ],
+        "allocation": {
+          "kind": "resource_shares",
+          "values": [
+            0.6,
+            0.4
+          ]
+        },
+        "basis": [],
+        "reason": "高速强力组合"
+      }
+    ],
+    "French": [
+      {
+        "id": "voltigeur_gendarme",
+        "title": "法兰西近卫军",
+        "unit_ids": [
+          "skirmisher",
+          "cuirassier"
+        ],
+        "allocation": {
+          "kind": "resource_shares",
+          "values": [
+            0.6,
+            0.4
+          ]
+        },
+        "basis": [
+          "双皇家护卫",
+          "经典散马"
+        ],
+        "reason": "法国最具辨识度的散马组合。"
+      },
+      {
+        "id": "cuirassier_mass",
+        "status": "draft",
+        "title": "法兰西钢铁洪流",
+        "min_age": 3,
+        "unit_ids": [
+          "cuirassier"
+        ],
+        "allocation": {
+          "kind": "resource_shares",
+          "values": [
+            1.0
+          ]
+        },
+        "basis": [
+          "国家核心",
+          "纯兵种",
+          "AOE重骑"
+        ],
+        "reason": "纯胸甲骑依靠高生命与近战范围伤害强行冲阵，即使被龙骑克制也存在反杀可能。"
+      }
+    ],
+    "Germans": [
+      {
+        "id": "needle_uhlan",
+        "title": "普鲁士铁骑",
+        "unit_ids": [
+          "skirmisher",
+          "uhlan"
+        ],
+        "allocation": {
+          "kind": "resource_shares",
+          "values": [
+            0.6,
+            0.4
+          ]
+        },
+        "basis": [
+          "双皇家护卫",
+          "经典散马"
+        ],
+        "reason": "德国散兵和德国骑兵均为皇家护卫。"
+      },
+      {
+        "id": "needle_warwagon",
+        "title": "条顿战车队",
+        "unit_ids": [
+          "warwagon",
+          "skirmisher"
+        ],
+        "allocation": {
+          "kind": "resource_shares",
+          "values": [
+            0.45,
+            0.55
+          ]
+        },
+        "basis": [
+          "特色兵",
+          "龙骑散"
+        ],
+        "reason": "马战车承担远程反骑，散兵处理重步。"
+      },
+      {
+        "id": "draft_muc4a6ve",
+        "title": "铁血武士",
+        "min_age": 3,
+        "unit_ids": [
+          "dopplesoldner",
+          "uhlan"
+        ],
+        "allocation": {
+          "kind": "resource_shares",
+          "values": [
+            0.5,
+            0.5
+          ]
+        },
+        "basis": [],
+        "reason": "强力的近战大军"
+      },
+      {
+        "id": "warwagon_mass",
+        "status": "draft",
+        "title": "胡斯战车群",
+        "min_age": 3,
+        "unit_ids": [
+          "warwagon"
+        ],
+        "allocation": {
+          "kind": "resource_shares",
+          "values": [
+            1.0
+          ]
+        },
+        "basis": [
+          "特色龙骑",
+          "纯兵种"
+        ],
+        "reason": "马战车拥有高生命和强反骑火力，纯战车群体现德国独特生态。"
+      }
+    ],
+    "Indians": [
+      {
+        "id": "sepoy_sowar",
+        "title": "莫卧儿近卫军",
+        "unit_ids": [
+          "ypsepoy",
+          "ypsowar"
+        ],
+        "allocation": {
+          "kind": "resource_shares",
+          "values": [
+            0.6,
+            0.4
+          ]
+        },
+        "basis": [
+          "特色兵",
+          "火枪马"
+        ],
+        "reason": "印度兵与印度重装骑兵构成清晰的本国火枪马。"
+      },
+      {
+        "id": "gurkha_zamburak",
+        "title": "山地驼骑军",
+        "unit_ids": [
+          "ypzamburak",
+          "ypnatmercgurkha"
+        ],
+        "allocation": {
+          "kind": "resource_shares",
+          "values": [
+            0.45,
+            0.55
+          ]
+        },
+        "basis": [
+          "特色兵",
+          "龙骑散"
+        ],
+        "reason": "骆驼骑兵反重骑，廓尔喀反重步。"
+      },
+      {
+        "id": "mughal_elephant_corps",
+        "status": "draft",
+        "title": "莫卧儿象军",
+        "min_age": 3,
+        "unit_ids": [
+          "yphowdah",
+          "ypmahout",
+          "ypmercflailiphant"
+        ],
+        "allocation": {
+          "kind": "resource_shares",
+          "values": [
+            0.35,
+            0.4,
+            0.25
+          ]
+        },
+        "basis": [
+          "国家象征",
+          "全象军",
+          "独特体系"
+        ],
+        "reason": "象轿兵反骑反炮、长矛象夫冲击步兵、连枷象提供范围伤害，组成完整印度象军。"
+      },
+      {
+        "id": "mahout_mass",
+        "status": "draft",
+        "title": "战象洪流",
+        "min_age": 3,
+        "unit_ids": [
+          "ypmahout"
+        ],
+        "allocation": {
+          "kind": "resource_shares",
+          "values": [
+            1.0
+          ]
+        },
+        "basis": [
+          "国家象征",
+          "纯兵种",
+          "AOE重骑"
+        ],
+        "reason": "纯长矛象夫依靠极高生命和范围近战直接碾压步兵阵线。"
+      }
+    ],
+    "Japanese": [
+      {
+        "id": "ashigaru_naginata",
+        "title": "幕府先锋",
+        "unit_ids": [
+          "ypashigaru",
+          "ypnaginatarider"
+        ],
+        "allocation": {
+          "kind": "resource_shares",
+          "values": [
+            0.6,
+            0.4
+          ]
+        },
+        "basis": [
+          "特色兵",
+          "经典火枪马"
+        ],
+        "reason": "足轻与薙刀骑兵构成日本标志性火枪马。"
+      },
+      {
+        "id": "yumi_naginata",
+        "title": "疾风长弓队",
+        "unit_ids": [
+          "ypyumi",
+          "ypnaginatarider"
+        ],
+        "allocation": {
+          "kind": "resource_shares",
+          "values": [
+            0.6,
+            0.4
+          ]
+        },
+        "basis": [
+          "特色兵",
+          "经典散马"
+        ],
+        "reason": "日本长弓负责远程反重步，薙刀骑兵切后排。"
+      },
+      {
+        "id": "ashigaru_yumi_naginata",
+        "title": "战国三军",
+        "unit_ids": [
+          "ypashigaru",
+          "ypyumi",
+          "ypnaginatarider"
+        ],
+        "allocation": {
+          "kind": "resource_shares",
+          "values": [
+            0.4,
+            0.35,
+            0.25
+          ]
+        },
+        "basis": [
+          "玩家认知",
+          "三兵种"
+        ],
+        "reason": "足轻、长弓、薙刀骑兵组成完整日本军。"
+      },
+      {
+        "id": "hatamoto_host",
+        "status": "draft",
+        "title": "幕府旗本众",
+        "min_age": 3,
+        "unit_ids": [
+          "ypconsulateronin"
+        ],
+        "allocation": {
+          "kind": "resource_shares",
+          "values": [
+            1.0
+          ]
+        },
+        "basis": [
+          "幕府精锐",
+          "纯兵种",
+          "领事馆特例"
+        ],
+        "reason": "旗本武士是日本闭关体系的顶级近战重步，允许作为审核通过的国家优势策略直接出场。"
+      },
+      {
+        "id": "samurai_host",
+        "status": "draft",
+        "title": "武士决死队",
+        "min_age": 3,
+        "unit_ids": [
+          "ypkensei"
+        ],
+        "allocation": {
+          "kind": "resource_shares",
+          "values": [
+            1.0
+          ]
+        },
+        "basis": [
+          "国家象征",
+          "纯兵种",
+          "范围近战"
+        ],
+        "reason": "日本武士依靠范围近战和反骑能力组成纯武士冲阵。"
+      }
+    ],
+    "Ottomans": [
+      {
+        "id": "janissary_deli",
+        "title": "新月近卫军",
+        "unit_ids": [
+          "janissary",
+          "dedeli"
+        ],
+        "allocation": {
+          "kind": "resource_shares",
+          "values": [
+            0.6,
+            0.4
+          ]
+        },
+        "basis": [
+          "皇家护卫",
+          "火枪马"
+        ],
+        "reason": "奥斯曼火枪兵顶线，皇家护卫轻骑切后排。"
+      },
+      {
+        "id": "abus_spahi",
+        "title": "苏丹雷霆",
+        "unit_ids": [
+          "abusgun",
+          "spahi"
+        ],
+        "allocation": {
+          "kind": "resource_shares",
+          "values": [
+            0.6,
+            0.4
+          ]
+        },
+        "basis": [
+          "特色兵",
+          "散马"
+        ],
+        "reason": "奥斯曼枪手配合西帕希重骑形成高辨识度组合。"
+      },
+      {
+        "id": "janissary_abus",
+        "title": "苏丹火器营",
+        "unit_ids": [
+          "janissary",
+          "abusgun"
+        ],
+        "allocation": {
+          "kind": "resource_shares",
+          "values": [
+            0.5,
+            0.5
+          ]
+        },
+        "basis": [
+          "特色兵",
+          "火枪散"
+        ],
+        "reason": "两种奥斯曼核心步兵互补反骑与反重步。"
+      },
+      {
+        "id": "ulufeli_corps",
+        "status": "draft",
+        "title": "乌鲁菲利炮兵团",
+        "min_age": 3,
+        "unit_ids": [
+          "dehumbaraci"
+        ],
+        "allocation": {
+          "kind": "resource_shares",
+          "values": [
+            1.0
+          ]
+        },
+        "basis": [
+          "皇家护卫",
+          "纯兵种",
+          "范围火力"
+        ],
+        "reason": "乌鲁菲利拥有完整皇家护卫强化、范围伤害和反炮能力，纯量产本身就是奥斯曼特色。"
+      },
+      {
+        "id": "spahi_host",
+        "status": "draft",
+        "title": "苏丹西帕希",
+        "min_age": 3,
+        "unit_ids": [
+          "spahi"
+        ],
+        "allocation": {
+          "kind": "resource_shares",
+          "values": [
+            1.0
+          ]
+        },
+        "basis": [
+          "国家精锐",
+          "纯兵种",
+          "AOE重骑"
+        ],
+        "reason": "西帕希依靠极厚身板和范围冲击组成苏丹直属重骑军。"
+      },
+      {
+        "id": "great_bombard_battery",
+        "status": "draft",
+        "title": "君士坦丁炮阵",
+        "min_age": 4,
+        "unit_ids": [
+          "janissary",
+          "greatbombard"
+        ],
+        "allocation": {
+          "kind": "resource_shares",
+          "values": [
+            0.7,
+            0.3
+          ]
+        },
+        "basis": [
+          "国家重炮",
+          "火枪保护",
+          "工业时代"
+        ],
+        "reason": "奥斯曼火枪兵保护重型火炮，让巨大范围火力具备实际接战能力。"
+      }
+    ],
+    "Portuguese": [
+      {
+        "id": "jinete_cassador",
+        "title": "葡萄牙远征军",
+        "unit_ids": [
+          "dragoon",
+          "cacadore"
+        ],
+        "allocation": {
+          "kind": "resource_shares",
+          "values": [
+            0.45,
+            0.55
+          ]
+        },
+        "basis": [
+          "皇家护卫",
+          "特色兵"
+        ],
+        "reason": "军团龙骑兵配葡萄牙长枪兵，体现葡萄牙远程体系。"
+      },
+      {
+        "id": "guerreiro_organ",
+        "title": "风琴炮兵团",
+        "unit_ids": [
+          "musketeer",
+          "organgun"
+        ],
+        "allocation": {
+          "kind": "resource_shares",
+          "values": [
+            0.7,
+            0.3
+          ]
+        },
+        "basis": [
+          "皇家护卫",
+          "特色炮兵"
+        ],
+        "reason": "皇家护卫火枪兵保护葡萄牙特色风琴炮。"
+      }
+    ],
+    "Russians": [
+      {
+        "id": "rekrut_cossack",
+        "title": "沙皇近卫军",
+        "unit_ids": [
+          "derussianmusketeer",
+          "cossack"
+        ],
+        "allocation": {
+          "kind": "resource_shares",
+          "values": [
+            0.6,
+            0.4
+          ]
+        },
+        "basis": [
+          "特色兵",
+          "火枪马"
+        ],
+        "reason": "俄国重装步兵与哥萨克组成国家基础机动军。"
+      },
+      {
+        "id": "strelet_cossack",
+        "title": "哥萨克洪流",
+        "unit_ids": [
+          "strelet",
+          "cossack"
+        ],
+        "allocation": {
+          "kind": "resource_shares",
+          "values": [
+            0.6,
+            0.4
+          ]
+        },
+        "basis": [
+          "特色兵",
+          "散马"
+        ],
+        "reason": "俄国长枪兵与哥萨克是经典廉价量产组合。"
+      },
+      {
+        "id": "strelet_cavarcher_falc",
+        "title": "冰原炮骑军",
+        "unit_ids": [
+          "strelet",
+          "cavalryarcher",
+          "falconet"
+        ],
+        "allocation": {
+          "kind": "resource_shares",
+          "values": [
+            0.45,
+            0.3,
+            0.25
+          ]
+        },
+        "basis": [
+          "皇家护卫",
+          "散龙炮"
+        ],
+        "reason": "俄国散兵、皇家护卫骑射和炮兵构成远程联合军。"
+      },
+      {
+        "id": "draft_muc59qjq",
+        "title": "垃圾海",
+        "min_age": 3,
+        "unit_ids": [
+          "strelet"
+        ],
+        "allocation": {
+          "kind": "resource_shares",
+          "values": [
+            1.0
+          ]
+        },
+        "basis": [],
+        "reason": "就是多"
+      },
+      {
+        "id": "draft_muc5adg6",
+        "title": "俄罗斯步兵大队",
+        "min_age": 3,
+        "unit_ids": [
+          "derussianmusketeer",
+          "strelet"
+        ],
+        "allocation": {
+          "kind": "resource_shares",
+          "values": [
+            0.5,
+            0.5
+          ]
+        },
+        "basis": [],
+        "reason": "全方位的高性价比步兵"
+      }
+    ],
+    "Spanish": [
+      {
+        "id": "skirm_lancer",
+        "title": "黄金枪骑团",
+        "unit_ids": [
+          "skirmisher",
+          "lancer"
+        ],
+        "allocation": {
+          "kind": "resource_shares",
+          "values": [
+            0.6,
+            0.4
+          ]
+        },
+        "basis": [
+          "皇家护卫",
+          "散马"
+        ],
+        "reason": "散兵远程输出，长矛骑兵利用反步兵优势冲击后排。"
+      },
+      {
+        "id": "rodelero_skirm",
+        "title": "征服者军团",
+        "unit_ids": [
+          "rodelero",
+          "skirmisher"
+        ],
+        "allocation": {
+          "kind": "resource_shares",
+          "values": [
+            0.4,
+            0.6
+          ]
+        },
+        "basis": [
+          "皇家护卫",
+          "重步散"
+        ],
+        "reason": "剑盾手反骑护卫散兵，是比长矛加剑盾更完整的组合。"
+      },
+      {
+        "id": "musk_lancer",
+        "title": "伊比利亚先锋",
+        "unit_ids": [
+          "musketeer",
+          "lancer"
+        ],
+        "allocation": {
+          "kind": "resource_shares",
+          "values": [
+            0.6,
+            0.4
+          ]
+        },
+        "basis": [
+          "皇家护卫",
+          "火枪马"
+        ],
+        "reason": "火枪兵顶线，长矛骑兵发挥西班牙特色冲击能力。"
+      },
+      {
+        "id": "lancer_host",
+        "status": "draft",
+        "title": "征服者剑骑团",
+        "min_age": 3,
+        "unit_ids": [
+          "rodelero",
+          "lancer"
+        ],
+        "allocation": {
+          "kind": "resource_shares",
+          "values": [
+            0.45,
+            0.55
+          ]
+        },
+        "basis": [
+          "双皇家护卫",
+          "近战双核心"
+        ],
+        "reason": "剑盾手反骑、长矛骑兵反步兵，两种西班牙近战皇家护卫互相补盲。"
+      }
+    ],
+    "XPAztec": [
+      {
+        "id": "mace_coyote",
+        "title": "郊狼战团",
+        "min_age": 3,
+        "unit_ids": [
+          "xpmacehualtin",
+          "xpcoyoteman"
+        ],
+        "allocation": {
+          "kind": "resource_shares",
+          "values": [
+            0.4,
+            0.6
+          ]
+        },
+        "basis": [
+          "特色兵",
+          "散马等价"
+        ],
+        "reason": "投石绳兵负责远程反重步，郊狼游击兵承担骑兵冲击位。"
+      },
+      {
+        "id": "eagle_mace",
+        "title": "鹰神猎阵",
+        "unit_ids": [
+          "xpeagleknight",
+          "xpmacehualtin"
+        ],
+        "allocation": {
+          "kind": "resource_shares",
+          "values": [
+            0.45,
+            0.55
+          ]
+        },
+        "basis": [
+          "特色兵",
+          "龙骑散等价"
+        ],
+        "reason": "鹰游击反重骑，投石绳兵反重步。"
+      },
+      {
+        "id": "skull_knight_host",
+        "status": "draft",
+        "title": "骷髅武士祭团",
+        "min_age": 3,
+        "unit_ids": [
+          "xpskullknight"
+        ],
+        "allocation": {
+          "kind": "resource_shares",
+          "values": [
+            1.0
+          ]
+        },
+        "basis": [
+          "国家精锐",
+          "纯兵种",
+          "范围近战"
+        ],
+        "reason": "骷髅武士拥有高生命、范围近战和强反骑能力，适合独立组成祭司军团。"
+      },
+      {
+        "id": "arrow_knight_host",
+        "status": "draft",
+        "title": "烈焰豹卫",
+        "min_age": 3,
+        "unit_ids": [
+          "xparrowknight",
+          "xpjaguarknight"
+        ],
+        "allocation": {
+          "kind": "resource_shares",
+          "values": [
+            0.35,
+            0.65
+          ]
+        },
+        "basis": [
+          "特色反炮",
+          "近战保护",
+          "超远射程"
+        ],
+        "reason": "弓箭武士负责超远程反炮，豹游荡武士处理重步和骑兵并保护其接战。"
+      },
+      {
+        "id": "draft_muc5cndk",
+        "title": "致命黑豹",
+        "min_age": 3,
+        "unit_ids": [
+          "xpjaguarknight"
+        ],
+        "allocation": {
+          "kind": "resource_shares",
+          "values": [
+            1.0
+          ]
+        },
+        "basis": [],
+        "reason": "强力的豹游荡解决所有问题 专打火枪马"
+      }
+    ],
+    "XPIroquois": [
+      {
+        "id": "tomahawk_horseman",
+        "title": "战斧骑团",
+        "unit_ids": [
+          "xptomahawk",
+          "xphorseman"
+        ],
+        "allocation": {
+          "kind": "resource_shares",
+          "values": [
+            0.6,
+            0.4
+          ]
+        },
+        "basis": [
+          "特色兵",
+          "火枪马"
+        ],
+        "reason": "战斧兵顶线反骑，坎亚骑兵冲击后排。"
+      },
+      {
+        "id": "musket_rider_aenna",
+        "title": "森林猎骑",
+        "unit_ids": [
+          "xpmusketrider",
+          "xpaenna"
+        ],
+        "allocation": {
+          "kind": "resource_shares",
+          "values": [
+            0.45,
+            0.55
+          ]
+        },
+        "basis": [
+          "特色兵",
+          "龙骑散"
+        ],
+        "reason": "火枪骑兵反重骑，艾那弓箭步兵反重步。"
+      },
+      {
+        "id": "tomahawk_aenna_horseman",
+        "title": "五族联盟军",
+        "unit_ids": [
+          "xptomahawk",
+          "xpaenna",
+          "xphorseman"
+        ],
+        "allocation": {
+          "kind": "resource_shares",
+          "values": [
+            0.4,
+            0.35,
+            0.25
+          ]
+        },
+        "basis": [
+          "特色兵",
+          "三兵种"
+        ],
+        "reason": "战斧、艾那弓和坎亚骑兵形成完整本国三线军。"
+      },
+      {
+        "id": "mantlet_cannon_column",
+        "status": "draft",
+        "title": "移动堡垒",
+        "min_age": 4,
+        "unit_ids": [
+          "xpmantlet",
+          "xplightcannon"
+        ],
+        "allocation": {
+          "kind": "resource_shares",
+          "values": [
+            0.55,
+            0.45
+          ]
+        },
+        "basis": [
+          "独特体系",
+          "防弹盾",
+          "轻型加农炮"
+        ],
+        "reason": "防弹盾承担移动掩体，轻型加农炮从后方输出，形成豪德诺索尼独有推进阵。"
+      }
+    ],
+    "XPSioux": [
+      {
+        "id": "rifle_rider_warbow",
+        "title": "草原猎骑",
+        "unit_ids": [
+          "xpriflerider",
+          "xpwarbow"
+        ],
+        "allocation": {
+          "kind": "resource_shares",
+          "values": [
+            0.45,
+            0.55
+          ]
+        },
+        "basis": [
+          "多生态位",
+          "龙骑散"
+        ],
+        "reason": "步枪骑士兼具反骑、反重步与反炮，鹰神弓补充远程质量。"
+      },
+      {
+        "id": "axe_rifle_cavalry",
+        "title": "大平原铁骑",
+        "unit_ids": [
+          "xpaxerider",
+          "xpriflerider"
+        ],
+        "allocation": {
+          "kind": "resource_shares",
+          "values": [
+            0.5,
+            0.5
+          ]
+        },
+        "basis": [
+          "独特体系",
+          "纯骑"
+        ],
+        "reason": "斧骑冲击配步枪骑多生态位火力，体现拉科塔全骑特色。"
+      },
+      {
+        "id": "dog_soldier_host",
+        "status": "draft",
+        "title": "托卡拉战团",
+        "min_age": 3,
+        "unit_ids": [
+          "xpdogsoldier"
+        ],
+        "allocation": {
+          "kind": "resource_shares",
+          "values": [
+            1.0
+          ]
+        },
+        "basis": [
+          "国家精锐",
+          "纯兵种",
+          "重骑"
+        ],
+        "reason": "托卡拉士兵是拉科塔重骑精锐，允许以纯骑战团独立冲锋。"
+      },
+      {
+        "id": "rifle_rider_host",
+        "status": "draft",
+        "title": "雷霆步枪骑",
+        "min_age": 3,
+        "unit_ids": [
+          "xpriflerider"
+        ],
+        "allocation": {
+          "kind": "resource_shares",
+          "values": [
+            1.0
+          ]
+        },
+        "basis": [
+          "多生态位强兵",
+          "纯兵种"
+        ],
+        "reason": "步枪骑士兼具反重骑、反重步与反炮倍率，纯量产能形成独特全能骑兵军。"
+      },
+      {
+        "id": "draft_muc5f03n",
+        "title": "飞天射手拉科塔人",
+        "min_age": 3,
+        "unit_ids": [
+          "xpbowrider",
+          "xpriflerider"
+        ],
+        "allocation": {
+          "kind": "resource_shares",
+          "values": [
+            0.6,
+            0.4
+          ]
+        },
+        "basis": [],
+        "reason": "强力高速的龙骑组合 又弥补了龙骑的反重步能力"
+      }
+    ]
+  }
+}
