@@ -18,6 +18,7 @@ from .models import Unit
 _ROOT = Path(__file__).resolve().parent.parent.parent.parent  # project root
 _SEEDS_DIR = _ROOT / "seeds" / "aoe3"
 _ICONS_DIR = _ROOT / "resources" / "aoe3" / "icons"
+_CIVS_PATH = _SEEDS_DIR / "civs.json"
 
 
 # =====================================================================
@@ -246,10 +247,34 @@ class UnitRepo:
     # ------ 高级查询 ------
 
     def list_by_civ(self, civ: str) -> list[Unit]:
-        """按文明名查找（支持中文，通过 i18n 反查）。"""
+        """按文明名查找可用单位，优先使用 civs.json 的权威归属。"""
         q = civ.strip().lower()
 
-        # 利用 i18n 反向表
+        # `units.json` 的 civs 字段保留给独立单位数据使用；当前解析管线不写它。
+        # 文明归属的唯一权威源是 civs.json，因此这里先解析文明 id，再查其 units 白名单。
+        from src.plugins.games.aoe3_battle.civ_war_civs import resolve_civ
+
+        profile = resolve_civ(civ)
+        if profile is not None:
+            from plugins.games.aoe3_battle.civ_war_roles import (
+                is_regular_civ_war_unit,
+            )
+            from plugins.games.aoe3_battle.lineup import get_bet_pool
+
+            civ_data = json.loads(_CIVS_PATH.read_text(encoding="utf-8"))["civs"]
+            allowed_ids = set(civ_data[profile.id]["units"])
+            safe_ids = {
+                unit.id
+                for unit in get_bet_pool(self)
+                if is_regular_civ_war_unit(unit)
+            }
+            return [
+                unit
+                for unit in self._units
+                if unit.id in allowed_ids and unit.id in safe_ids
+            ]
+
+        # 兼容非 curated / 革命文明和旧数据：优先走 i18n 反查，再按 id/名称匹配。
         q_en = reverse_lookup("civs", q)
         if not q_en:
             q_en = q

@@ -291,13 +291,27 @@ def render_civ_units(units: list[Unit], civ: str) -> str:
         return f"未找到「{civ}」的兵种。"
 
     trainable = [u for u in units if u.is_trainable]
+    trainable.sort(
+        key=lambda unit: (
+            any(tag.startswith("AbstractConsulate") for tag in unit.type),
+            unit.age,
+            unit.name,
+        )
+    )
 
-    lines = [f"🏰 {civ} 可用兵种 ({len(trainable)} 个)", "━" * 30]
+    lines = [f"🏰 {civ} 可用兵种 ({len(trainable)} 个)", "━" * 36]
 
     for u in trainable:
         name = _unit_display_name(u)
         atk = u.attack_ranged or u.attack_melee or u.attack_siege or 0
         age_zh = t_age(u.age) if u.age else "?"
-        lines.append(f"  {name:<15} │ {age_zh} │ HP {u.hp} ATK {atk:g}")
+        source = (
+            "领事馆"
+            if any(tag.startswith("AbstractConsulate") for tag in u.type)
+            else "本单位"
+        )
+        lines.append(
+            f"  {name:<16} │ {age_zh} │ {source} │ HP {u.hp} ATK {atk:g}"
+        )
 
     return "\n".join(lines)
