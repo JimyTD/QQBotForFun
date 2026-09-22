@@ -13,8 +13,8 @@ from src.plugins.aoe3.icons import BLUE_ICON_BACKGROUND, RED_ICON_BACKGROUND, co
 from src.plugins.aoe3.models import Unit
 
 ICON_SIZE = 58
-FLAG_W = 42
-FLAG_H = 28
+FLAG_W = 84
+FLAG_H = 56
 CANVAS_W = 940
 SIDE_GAP = 28
 SIDE_W = (CANVAS_W - 60 - SIDE_GAP) // 2
