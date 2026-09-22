@@ -24,6 +24,7 @@
 |------|------|------|
 | `data/aoe3/raw/` | 权威解包源（protoy、techtreey、civs、stringtable、tactics、anims） | 游戏 BAR，**入库 git**（≈41 MB） |
 | `data/aoe3/raw/homecity/` | 主城卡片定义：39 个文件 / **6721 张卡**（`name`/次数/主城等级/前置卡/时代） | 游戏 `Data.bar`，随灌库一起解出；卡片的**效果**在同名 tech（见 `techtreey.xml`） |
+| `resources/aoe3/civ_flags/` | 文明旗帜（国战开屏用）：**86 个文明 / 1249 KB**，命名 `{civ_id}.png` | 游戏 `UIResources1.bar` 的 `homecityflagiconwpf`，`aoe3_civ_flag_extractor.py` 提取 |
 | `data/aoe3/manifest.json` | 灌库/生成元数据 | parser 自动生成 |
 | `seeds/aoe3/units.json` | 单位属性（斗蛐蛐/卡片用派生视图） | parser 从 raw 生成 |
 | `seeds/aoe3/civs.json` | 文明归属：文明→兵种/科技、单位→文明反查（137 条目：**24 可玩主文明 + 30 革命 + 37 原住民/结盟部落**） | `aoe3_civs_parser.py`：主文明走 `civs.xml` 的 agetech；**革命走 `techtreey.xml` 的 `<revolutionciv>`**；部落走 `NativeXxx` |
