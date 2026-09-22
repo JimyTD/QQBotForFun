@@ -56,18 +56,30 @@ class CivWarCandidate:
         )
 
     @property
+    def external_count(self) -> int:
+        """Units supplied by consulates, mercenaries, or outlaws."""
+        return sum(
+            any(
+                tag.startswith("AbstractConsulate")
+                or tag in {"Mercenary", "AbstractOutlaw"}
+                for tag in unit.type
+            )
+            for unit in self.units
+        )
+
+    @property
     def identity_tier(self) -> int:
         if self.source == "national":
             return 0
         return 1 if self.consulate_count == 0 else 2
 
     @property
-    def is_pure_consulate(self) -> bool:
-        return self.consulate_count == len(self.units)
+    def is_pure_external(self) -> bool:
+        return self.external_count == len(self.units)
 
     @property
-    def is_mixed_consulate(self) -> bool:
-        return 0 < self.consulate_count < len(self.units)
+    def is_mixed_external(self) -> bool:
+        return 0 < self.external_count < len(self.units)
 
 
 def _load_unique_units() -> dict[str, frozenset[str]]:
@@ -164,7 +176,7 @@ def generate_civ_candidates(
         candidates = [
             candidate
             for candidate in candidates
-            if candidate.source == "national" or not candidate.is_pure_consulate
+            if candidate.source == "national" or not candidate.is_pure_external
         ]
     candidates.sort(key=lambda candidate: (
         candidate.identity_tier,
@@ -192,10 +204,10 @@ def shortlist_candidates(
         if group[0].source == "national":
             selected.extend(group)
             continue
-        local = [candidate for candidate in group if candidate.consulate_count == 0]
-        consulate = [candidate for candidate in group if candidate.consulate_count > 0]
+        local = [candidate for candidate in group if candidate.external_count == 0]
+        external = [candidate for candidate in group if candidate.external_count > 0]
         selected.extend(local[:local_per_strategy])
-        selected.extend(consulate[:consulate_per_strategy])
+        selected.extend(external[:consulate_per_strategy])
     selected.sort(key=lambda candidate: (
         candidate.identity_tier,
         -candidate.distinctive_count,
@@ -212,8 +224,8 @@ def choose_source_pool(
     rng: random.Random,
 ) -> list[CivWarCandidate]:
     """Choose local or mixed-consulate candidates before matchup ranking."""
-    local = [candidate for candidate in candidates if candidate.consulate_count == 0]
-    mixed = [candidate for candidate in candidates if candidate.is_mixed_consulate]
+    local = [candidate for candidate in candidates if candidate.external_count == 0]
+    mixed = [candidate for candidate in candidates if candidate.is_mixed_external]
     if not local:
         return mixed
     if not mixed:

@@ -108,20 +108,42 @@ def test_native_candidates_sort_before_consulate_fillers(repo: UnitRepo) -> None
     assert all(candidate.consulate_count == 0 for candidate in candidates[:first_consulate])
 
 
-def test_pure_consulate_candidates_are_never_generated(repo: UnitRepo) -> None:
+def test_pure_external_candidates_are_never_generated(repo: UnitRepo) -> None:
     for civ_id in ("Chinese", "Japanese", "Indians"):
         candidates = generate_civ_candidates(repo, civ_id, age=3)
         assert not any(
-            candidate.is_pure_consulate and candidate.source != "national"
+            candidate.is_pure_external and candidate.source != "national"
             for candidate in candidates
         )
+
+
+def test_mercenary_and_outlaw_units_share_external_bucket(repo: UnitRepo) -> None:
+    units = repo.all_units
+    mercenary = next(unit for unit in units if "Mercenary" in unit.type)
+    outlaw = next(unit for unit in units if "AbstractOutlaw" in unit.type)
+    assert "Mercenary" in mercenary.type
+    assert "AbstractOutlaw" in outlaw.type
+
+    candidate = next(
+        candidate
+        for candidate in generate_civ_candidates(repo, "British", age=3)
+        if candidate.units
+    )
+    assert candidate.external_count == sum(
+        any(
+            tag.startswith("AbstractConsulate")
+            or tag in {"Mercenary", "AbstractOutlaw"}
+            for tag in unit.type
+        )
+        for unit in candidate.units
+    )
 
 
 def test_source_pool_uses_approved_seventy_five_twenty_five_split(repo: UnitRepo) -> None:
     candidates = generate_civ_candidates(repo, "Japanese", age=3)
     rng = random.Random(17)
     mixed_draws = sum(
-        choose_source_pool(candidates, rng=rng)[0].is_mixed_consulate
+        choose_source_pool(candidates, rng=rng)[0].is_mixed_external
         for _ in range(4000)
     )
     assert mixed_draws / 4000 == pytest.approx(0.25, abs=0.025)
@@ -144,11 +166,11 @@ def test_strategy_is_chosen_before_concrete_candidate_count(repo: UnitRepo) -> N
         assert count / 5000 == pytest.approx(expected, abs=0.025)
 
 
-def test_choose_candidate_never_returns_pure_consulate(repo: UnitRepo) -> None:
+def test_choose_candidate_never_returns_pure_external(repo: UnitRepo) -> None:
     candidates = generate_civ_candidates(repo, "Indians", age=3)
     rng = random.Random(5)
     assert not any(
-        choose_candidate(candidates, rng=rng).is_pure_consulate
+        choose_candidate(candidates, rng=rng).is_pure_external
         for _ in range(500)
     )
 
