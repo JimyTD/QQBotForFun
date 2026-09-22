@@ -6,6 +6,7 @@ import json
 from pathlib import Path
 
 from plugins.aoe3.repository import UnitRepo
+from plugins.games.aoe3_battle.civ_war_lineups import allocate_candidate, generate_civ_candidates
 from plugins.games.aoe3_battle.civ_war_roles import (
     NATIONAL_TACTICS,
     PREFERRED_EXTRA_UNIT_IDS,
@@ -68,7 +69,7 @@ def test_preferred_tactics_contain_valid_single_unit_strategy() -> None:
     assert single["allocation"] == {"kind": "resource_shares", "values": [1.0]}
 
 
-def test_only_approved_preferred_tactics_enter_runtime() -> None:
+def test_all_first_version_preferred_tactics_enter_runtime() -> None:
     data = json.loads(_TACTICS_PATH.read_text(encoding="utf-8"))
     runtime_ids = {
         (tactic.civ_id, tactic.id)
@@ -77,10 +78,8 @@ def test_only_approved_preferred_tactics_enter_runtime() -> None:
     for civ_id, tactics in data["civs"].items():
         for tactic in tactics:
             key = (civ_id, tactic["id"])
-            if tactic.get("status", "approved") == "approved":
-                assert key in runtime_ids
-            else:
-                assert key not in runtime_ids
+            assert tactic.get("status", "approved") == "approved"
+            assert key in runtime_ids
 
 
 def test_preferred_extra_units_are_explicitly_whitelisted() -> None:
@@ -90,3 +89,19 @@ def test_preferred_extra_units_are_explicitly_whitelisted() -> None:
         for civ_id, unit_ids in data["_meta"]["extra_unit_ids"].items()
     }
     assert PREFERRED_EXTRA_UNIT_IDS == expected
+
+
+def test_all_first_version_preferred_tactics_allocate() -> None:
+    data = json.loads(_TACTICS_PATH.read_text(encoding="utf-8"))
+    repo = UnitRepo.get()
+    for civ_id, tactics in data["civs"].items():
+        for tactic in tactics:
+            age = int(tactic.get("min_age", 3))
+            candidate = next(
+                candidate
+                for candidate in generate_civ_candidates(repo, civ_id, age=age)
+                if candidate.source == "national" and candidate.strategy_id == tactic["id"]
+            )
+            lineup = allocate_candidate(candidate, budget=10000, age=age)
+            assert lineup.total_cost <= 10000
+            assert all(slot.count >= 1 for slot in lineup.slots)

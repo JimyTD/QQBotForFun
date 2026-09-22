@@ -444,7 +444,6 @@
       },
       {
         "id": "soldado_legion",
-        "status": "draft",
         "title": "墨西哥国民军",
         "min_age": 3,
         "unit_ids": [
@@ -508,7 +507,6 @@
       },
       {
         "id": "winged_hussar_host",
-        "status": "draft",
         "title": "翼骑兵洪流",
         "min_age": 3,
         "unit_ids": [
@@ -570,7 +568,6 @@
       },
       {
         "id": "carolean_mass",
-        "status": "draft",
         "title": "卡尔远征军",
         "min_age": 3,
         "unit_ids": [
@@ -652,7 +649,6 @@
       },
       {
         "id": "cuirassier_mass",
-        "status": "draft",
         "title": "法兰西钢铁洪流",
         "min_age": 3,
         "unit_ids": [
@@ -733,7 +729,6 @@
       },
       {
         "id": "warwagon_mass",
-        "status": "draft",
         "title": "胡斯战车群",
         "min_age": 3,
         "unit_ids": [
@@ -795,7 +790,6 @@
       },
       {
         "id": "mughal_elephant_corps",
-        "status": "draft",
         "title": "莫卧儿象军",
         "min_age": 3,
         "unit_ids": [
@@ -820,7 +814,6 @@
       },
       {
         "id": "mahout_mass",
-        "status": "draft",
         "title": "战象洪流",
         "min_age": 3,
         "unit_ids": [
@@ -905,7 +898,6 @@
       },
       {
         "id": "hatamoto_host",
-        "status": "draft",
         "title": "幕府旗本众",
         "min_age": 3,
         "unit_ids": [
@@ -926,7 +918,6 @@
       },
       {
         "id": "samurai_host",
-        "status": "draft",
         "title": "武士决死队",
         "min_age": 3,
         "unit_ids": [
@@ -1009,7 +1000,6 @@
       },
       {
         "id": "ulufeli_corps",
-        "status": "draft",
         "title": "乌鲁菲利炮兵团",
         "min_age": 3,
         "unit_ids": [
@@ -1030,7 +1020,6 @@
       },
       {
         "id": "spahi_host",
-        "status": "draft",
         "title": "苏丹西帕希",
         "min_age": 3,
         "unit_ids": [
@@ -1051,7 +1040,6 @@
       },
       {
         "id": "great_bombard_battery",
-        "status": "draft",
         "title": "君士坦丁炮阵",
         "min_age": 4,
         "unit_ids": [
@@ -1276,7 +1264,6 @@
       },
       {
         "id": "lancer_host",
-        "status": "draft",
         "title": "征服者剑骑团",
         "min_age": 3,
         "unit_ids": [
@@ -1341,7 +1328,6 @@
       },
       {
         "id": "skull_knight_host",
-        "status": "draft",
         "title": "骷髅武士祭团",
         "min_age": 3,
         "unit_ids": [
@@ -1362,7 +1348,6 @@
       },
       {
         "id": "arrow_knight_host",
-        "status": "draft",
         "title": "烈焰豹卫",
         "min_age": 3,
         "unit_ids": [
@@ -1465,7 +1450,6 @@
       },
       {
         "id": "mantlet_cannon_column",
-        "status": "draft",
         "title": "移动堡垒",
         "min_age": 4,
         "unit_ids": [
@@ -1530,7 +1514,6 @@
       },
       {
         "id": "dog_soldier_host",
-        "status": "draft",
         "title": "托卡拉战团",
         "min_age": 3,
         "unit_ids": [
@@ -1551,7 +1534,6 @@
       },
       {
         "id": "rifle_rider_host",
-        "status": "draft",
         "title": "雷霆步枪骑",
         "min_age": 3,
         "unit_ids": [

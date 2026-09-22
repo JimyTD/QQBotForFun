@@ -76,15 +76,15 @@ def test_approved_preferred_tactics_are_runtime_candidates(repo: UnitRepo) -> No
     assert [slot.unit.id for slot in lineup.slots] == ["skirmisher", "cuirassier"]
 
 
-def test_unapproved_review_tactics_are_not_runtime_candidates(repo: UnitRepo) -> None:
+def test_first_version_special_tactics_are_runtime_candidates(repo: UnitRepo) -> None:
     japanese = {
         candidate.title for candidate in generate_civ_candidates(repo, "Japanese", age=3)
     }
     ottoman = {
         candidate.title for candidate in generate_civ_candidates(repo, "Ottomans", age=4)
     }
-    assert "幕府旗本众" not in japanese
-    assert "君士坦丁炮阵" not in ottoman
+    assert "幕府旗本众" in japanese
+    assert "君士坦丁炮阵" in ottoman
 
 
 def test_national_candidates_sort_before_generic_candidates(repo: UnitRepo) -> None:
@@ -111,7 +111,10 @@ def test_native_candidates_sort_before_consulate_fillers(repo: UnitRepo) -> None
 def test_pure_consulate_candidates_are_never_generated(repo: UnitRepo) -> None:
     for civ_id in ("Chinese", "Japanese", "Indians"):
         candidates = generate_civ_candidates(repo, civ_id, age=3)
-        assert not any(candidate.is_pure_consulate for candidate in candidates)
+        assert not any(
+            candidate.is_pure_consulate and candidate.source != "national"
+            for candidate in candidates
+        )
 
 
 def test_source_pool_uses_approved_seventy_five_twenty_five_split(repo: UnitRepo) -> None:
