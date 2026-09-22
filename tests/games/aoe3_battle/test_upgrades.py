@@ -108,6 +108,55 @@ def test_apply_age2_noop(repo):
     assert apply_upgrades(musk, 2) is musk
 
 
+# ---------------- 文明专属时代升级（国战） ----------------
+
+def test_civ_upgrade_keeps_veteran_tier_unchanged(repo):
+    musk = repo.get_by_id("musketeer")
+    assert apply_upgrades(musk, 3, civ_id="British") == apply_upgrades(musk, 3)
+
+
+def test_british_redcoat_uses_guard_dependency_plus_rg_bonus(repo):
+    musk = repo.get_by_id("musketeer")
+    generic = apply_upgrades(musk, 4)
+    redcoat = apply_upgrades(musk, 4, civ_id="British")
+    assert generic.hp == round(musk.hp * 1.5)
+    assert generic.attack_ranged == round(musk.attack_ranged * 1.5, 2)
+    assert redcoat.hp == round(musk.hp * 1.55)
+    assert redcoat.attack_ranged == round(musk.attack_ranged * 1.65, 2)
+    assert redcoat.name == "红衫军火枪兵"
+
+
+def test_self_contained_ottoman_rg_is_not_double_counted(repo):
+    humbaraci = repo.get_by_id("dehumbaraci")
+    upgraded = apply_upgrades(humbaraci, 4, civ_id="Ottomans")
+    assert upgraded.hp == round(humbaraci.hp * 1.6)
+    assert upgraded.attack_ranged == round(humbaraci.attack_ranged * 1.6, 2)
+    assert upgraded.cost["gold"] == humbaraci.cost["gold"] - 5
+
+
+def test_shared_artillery_gets_its_own_civilization_variant(repo):
+    culverin = repo.get_by_id("culverin")
+    italian = apply_upgrades(culverin, 4, civ_id="DEItalians")
+    maltese = apply_upgrades(culverin, 4, civ_id="DEMaltese")
+    assert italian.hp == round(culverin.hp * 1.35)
+    assert italian.attack_ranged == round(culverin.attack_ranged * 1.25, 2)
+    assert italian.armor_ranged == pytest.approx(culverin.armor_ranged + 0.05)
+    assert maltese.hp == round(culverin.hp * 1.25)
+    assert maltese.attack_ranged == round(culverin.attack_ranged * 1.35, 2)
+
+
+def test_portuguese_ordinance_pikeman_applies_cost_discount(repo):
+    pikeman = repo.get_by_id("pikeman")
+    upgraded = apply_upgrades(pikeman, 4, civ_id="Portuguese")
+    assert upgraded.cost == {"food": 30, "wood": 30}
+
+
+def test_polish_scytheman_applies_rof_delta(repo):
+    pikeman = repo.get_by_id("pikeman")
+    upgraded = apply_upgrades(pikeman, 4, civ_id="DEPolish")
+    assert upgraded.rof_melee == pytest.approx(pikeman.rof_melee - 0.25)
+
+
 def test_outlaw_via_category(repo):
     """亡命徒走类别科技（无逐兵链）。"""
     # 找一个带 AbstractOutlaw 标签的单位

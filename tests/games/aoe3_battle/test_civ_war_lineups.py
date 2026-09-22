@@ -2,11 +2,16 @@
 
 from __future__ import annotations
 
+import random
+
 import pytest
 
 from plugins.aoe3.repository import UnitRepo
 from plugins.games.aoe3_battle.civ_war_lineups import (
     allocate_candidate,
+    choose_candidate,
+    choose_source_pool,
+    choose_strategy_pool,
     generate_civ_candidates,
     shortlist_candidates,
 )
@@ -78,6 +83,58 @@ def test_native_candidates_sort_before_consulate_fillers(repo: UnitRepo) -> None
         index for index, candidate in enumerate(candidates) if candidate.consulate_count
     )
     assert all(candidate.consulate_count == 0 for candidate in candidates[:first_consulate])
+
+
+def test_pure_consulate_candidates_are_never_generated(repo: UnitRepo) -> None:
+    for civ_id in ("Chinese", "Japanese", "Indians"):
+        candidates = generate_civ_candidates(repo, civ_id, age=3)
+        assert not any(candidate.is_pure_consulate for candidate in candidates)
+
+
+def test_source_pool_uses_approved_seventy_five_twenty_five_split(repo: UnitRepo) -> None:
+    candidates = generate_civ_candidates(repo, "Japanese", age=3)
+    rng = random.Random(17)
+    mixed_draws = sum(
+        choose_source_pool(candidates, rng=rng)[0].is_mixed_consulate
+        for _ in range(4000)
+    )
+    assert mixed_draws / 4000 == pytest.approx(0.25, abs=0.025)
+
+
+def test_strategy_is_chosen_before_concrete_candidate_count(repo: UnitRepo) -> None:
+    candidates = [
+        candidate
+        for candidate in generate_civ_candidates(repo, "French", age=3)
+        if candidate.consulate_count == 0
+    ]
+    rng = random.Random(23)
+    strategy_counts: dict[str, int] = {}
+    for _ in range(5000):
+        pool = choose_strategy_pool(candidates, rng=rng)
+        strategy_counts[pool[0].strategy_id] = strategy_counts.get(pool[0].strategy_id, 0) + 1
+
+    expected = 1 / len(strategy_counts)
+    for count in strategy_counts.values():
+        assert count / 5000 == pytest.approx(expected, abs=0.025)
+
+
+def test_choose_candidate_never_returns_pure_consulate(repo: UnitRepo) -> None:
+    candidates = generate_civ_candidates(repo, "Indians", age=3)
+    rng = random.Random(5)
+    assert not any(
+        choose_candidate(candidates, rng=rng).is_pure_consulate
+        for _ in range(500)
+    )
+
+
+def test_preferred_and_ordinary_strategy_tiers_are_even(repo: UnitRepo) -> None:
+    candidates = generate_civ_candidates(repo, "Chinese", age=3)
+    rng = random.Random(29)
+    preferred = sum(
+        choose_candidate(candidates, rng=rng).source == "national"
+        for _ in range(4000)
+    )
+    assert preferred / 4000 == pytest.approx(0.5, abs=0.025)
 
 
 @pytest.mark.parametrize("age", [3, 4, 5])

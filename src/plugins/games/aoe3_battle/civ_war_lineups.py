@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import random
 from dataclasses import dataclass
 
 from src.plugins.aoe3.models import Unit
@@ -9,6 +10,7 @@ from src.plugins.aoe3.repository import UnitRepo
 from src.plugins.aoe3.upgrades import apply_upgrades
 from src.plugins.games.aoe3_battle.civ_war_roles import (
     NATIONAL_TACTICS,
+    SOURCE_POLICY,
     AllocationRule,
     NationalTactic,
     civ_regular_units,
@@ -54,6 +56,14 @@ class CivWarCandidate:
         if self.source == "national":
             return 0
         return 1 if self.consulate_count == 0 else 2
+
+    @property
+    def is_pure_consulate(self) -> bool:
+        return self.consulate_count == len(self.units)
+
+    @property
+    def is_mixed_consulate(self) -> bool:
+        return 0 < self.consulate_count < len(self.units)
 
 
 def _load_unique_units() -> dict[str, frozenset[str]]:
@@ -134,6 +144,8 @@ def generate_civ_candidates(
         for resolved in resolve_archetypes(units)
     ]
     candidates.extend(_resolve_national_tactics(civ_id, age, {unit.id: unit for unit in units}))
+    if not SOURCE_POLICY.allow_pure_consulate:
+        candidates = [candidate for candidate in candidates if not candidate.is_pure_consulate]
     candidates.sort(key=lambda candidate: (
         candidate.identity_tier,
         -candidate.distinctive_count,
@@ -172,6 +184,83 @@ def shortlist_candidates(
         candidate.unit_ids,
     ))
     return selected
+
+
+def choose_source_pool(
+    candidates: list[CivWarCandidate],
+    *,
+    rng: random.Random,
+) -> list[CivWarCandidate]:
+    """Choose local or mixed-consulate candidates before matchup ranking."""
+    local = [candidate for candidate in candidates if candidate.consulate_count == 0]
+    mixed = [candidate for candidate in candidates if candidate.is_mixed_consulate]
+    if not local:
+        return mixed
+    if not mixed:
+        return local
+    source = rng.choices(
+        ("local", "mixed"),
+        weights=(SOURCE_POLICY.local_weight, SOURCE_POLICY.mixed_consulate_weight),
+        k=1,
+    )[0]
+    return local if source == "local" else mixed
+
+
+def choose_strategy_pool(
+    candidates: list[CivWarCandidate],
+    *,
+    rng: random.Random,
+) -> list[CivWarCandidate]:
+    """Choose one strategy before choosing a concrete unit implementation.
+
+    All national tactics share one top-level strategy bucket so a civilization
+    with many authored national tactics does not crowd out generic tactics.
+    """
+    grouped: dict[tuple[str, str], list[CivWarCandidate]] = {}
+    for candidate in candidates:
+        key = (
+            ("national", "national")
+            if candidate.source == "national"
+            else ("generic", candidate.strategy_id)
+        )
+        grouped.setdefault(key, []).append(candidate)
+    if not grouped:
+        return []
+    chosen_key = rng.choice(list(grouped))
+    return grouped[chosen_key]
+
+
+def choose_candidate(
+    candidates: list[CivWarCandidate],
+    *,
+    rng: random.Random,
+) -> CivWarCandidate:
+    """Choose preferred/ordinary, then ordinary source, strategy and implementation."""
+    preferred = [candidate for candidate in candidates if candidate.source == "national"]
+    ordinary = [candidate for candidate in candidates if candidate.source != "national"]
+    if preferred and ordinary:
+        tier = rng.choices(
+            ("preferred", "ordinary"),
+            weights=(
+                SOURCE_POLICY.preferred_strategy_weight,
+                SOURCE_POLICY.ordinary_strategy_weight,
+            ),
+            k=1,
+        )[0]
+        if tier == "preferred":
+            strategy_pool = choose_strategy_pool(preferred, rng=rng)
+            return rng.choice(strategy_pool)
+    elif preferred:
+        strategy_pool = choose_strategy_pool(preferred, rng=rng)
+        return rng.choice(strategy_pool)
+    elif not ordinary:
+        raise ValueError("no civ-war candidates available")
+
+    source_pool = choose_source_pool(ordinary, rng=rng)
+    strategy_pool = choose_strategy_pool(source_pool, rng=rng)
+    if not strategy_pool:
+        raise ValueError("no civ-war candidates available")
+    return rng.choice(strategy_pool)
 
 
 def _allocate_resource_shares(
@@ -228,7 +317,10 @@ def allocate_candidate(
     age: int = 3,
 ) -> Lineup:
     """Apply age upgrades and allocate quantities using the candidate's own policy."""
-    upgraded = tuple(apply_upgrades(unit, age) for unit in candidate.units)
+    upgraded = tuple(
+        apply_upgrades(unit, age, civ_id=candidate.civ_id)
+        for unit in candidate.units
+    )
     if candidate.allocation.kind == "resource_shares":
         counts = _allocate_resource_shares(upgraded, budget, candidate.allocation.values)
     elif candidate.allocation.kind == "fixed_ratio":

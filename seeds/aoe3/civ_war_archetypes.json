@@ -8,6 +8,13 @@
       "通用比例是第一轮审计基线，后续只通过离线模拟和群测调整"
     ]
   },
+  "source_policy": {
+    "preferred_strategy_weight": 0.5,
+    "ordinary_strategy_weight": 0.5,
+    "local_weight": 0.75,
+    "mixed_consulate_weight": 0.25,
+    "allow_pure_consulate": false
+  },
   "generic_archetypes": [
     {
       "id": "musk_shock",

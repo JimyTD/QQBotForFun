@@ -181,6 +181,11 @@ def main() -> None:
             )
         )
         for candidate in candidates:
+            if all(
+                any(tag.startswith("AbstractConsulate") for tag in unit.type)
+                for unit in candidate.units
+            ):
+                continue
             grouped[candidate.archetype.id].append(candidate.unit_ids)
             titles[candidate.archetype.id] = candidate.archetype.title
 

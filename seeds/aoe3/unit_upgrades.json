@@ -1,6 +1,6 @@
 {
   "_meta": {
-    "generated_at": "2026-09-17T14:32:37.851004+00:00",
+    "generated_at": "2026-09-22T02:07:31.227028+00:00",
     "source": "data/aoe3/raw/techtreey.xml",
     "doc": "docs/games/aoe3-battle.md §3.10",
     "fields": [
@@ -128,7 +128,7 @@
       "4": {
         "hp_mult": 1.5,
         "damage_mult": 1.5,
-        "name": "劲弩手"
+        "name": "护卫弩手"
       },
       "5": {
         "hp_mult": 2.0,
@@ -156,12 +156,12 @@
     "culverin": {
       "4": {
         "hp_mult": 1.25,
-        "damage_mult": 1.35,
+        "damage_mult": 1.25,
         "name": "皇家长管炮"
       },
       "5": {
         "hp_mult": 1.75,
-        "damage_mult": 1.85,
+        "damage_mult": 1.75,
         "name": "帝国长管炮"
       }
     },
@@ -2612,12 +2612,12 @@
     "mortar": {
       "4": {
         "hp_mult": 1.25,
-        "damage_mult": 1.35,
-        "name": "皇家迫击炮"
+        "damage_mult": 1.25,
+        "name": "榴弹炮"
       },
       "5": {
         "hp_mult": 1.75,
-        "damage_mult": 1.85,
+        "damage_mult": 1.75,
         "name": "帝国皇家迫击炮"
       }
     },

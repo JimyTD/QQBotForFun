@@ -163,8 +163,14 @@ def role_explanations(unit: Unit, roles: frozenset[str]) -> dict[str, str]:
     return explanations
 
 
-def unit_payload(unit: Unit, age: int, *, slot_role: str | None = None) -> dict:
-    upgraded = apply_upgrades(unit, age)
+def unit_payload(
+    unit: Unit,
+    age: int,
+    *,
+    civ_id: str | None = None,
+    slot_role: str | None = None,
+) -> dict:
+    upgraded = apply_upgrades(unit, age, civ_id=civ_id)
     roles = unit_roles(upgraded)
     ranged_counters = has_multiplier(
         upgraded,
@@ -333,8 +339,10 @@ class BrowserData:
         resolved = resolve_archetypes(displayed_units)
         grouped: dict[str, list[dict]] = defaultdict(list)
         for candidate in resolved:
+            if all(is_consulate_unit(unit) for unit in candidate.units):
+                continue
             slots = [
-                unit_payload(unit, age, slot_role=role)
+                unit_payload(unit, age, civ_id=civ_id, slot_role=role)
                 for role, unit in zip(candidate.archetype.roles, candidate.units, strict=True)
             ]
             grouped[candidate.archetype.id].append(
@@ -359,7 +367,7 @@ class BrowserData:
             "age": age,
             "filters": {"local_only": local_only, "include_consulate": include_consulate},
             "units": [
-                unit_payload(unit, age)
+                unit_payload(unit, age, civ_id=civ_id)
                 for unit in sorted(
                     displayed_units,
                     key=lambda entry: (is_consulate_unit(entry), entry.name_en.lower()),
@@ -378,7 +386,7 @@ class BrowserData:
             "empty_roles": [role for role in ROLE_ORDER if not role_coverage[role]],
             "excluded": self._audit_exclusions(civ_id, age),
             "chinese_banners": self._chinese_banners(age),
-            "pending_tactic": self._pending_tactic(pending, age),
+            "pending_tactic": self._pending_tactic(pending, age, civ_id=civ_id),
         }
 
     def _chinese_banners(self, age: int) -> list[dict]:
@@ -394,7 +402,7 @@ class BrowserData:
             ):
                 unit = self.repo.get_by_id(unit_id)
                 if unit is not None:
-                    item = unit_payload(unit, age)
+                    item = unit_payload(unit, age, civ_id="Chinese")
                     item["count"] = int(count)
                     entries.append(item)
             banners.append(
@@ -407,7 +415,13 @@ class BrowserData:
             )
         return banners
 
-    def _pending_tactic(self, pending: tuple[str, ...] | None, age: int) -> dict | None:
+    def _pending_tactic(
+        self,
+        pending: tuple[str, ...] | None,
+        age: int,
+        *,
+        civ_id: str,
+    ) -> dict | None:
         if pending is None:
             return None
         title, *unit_ids = pending
@@ -415,7 +429,7 @@ class BrowserData:
         for unit_id in unit_ids:
             unit = self.repo.get_by_id(unit_id)
             if unit is not None:
-                units.append(unit_payload(unit, age))
+                units.append(unit_payload(unit, age, civ_id=civ_id))
         return {"title": title, "units": units}
 
 

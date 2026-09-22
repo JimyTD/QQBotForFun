@@ -22,6 +22,9 @@ from .models import Unit
 logger = logging.getLogger("aoe3.upgrades")
 
 _DATA_PATH = Path(__file__).resolve().parents[3] / "seeds" / "aoe3" / "unit_upgrades.json"
+_CIV_DATA_PATH = (
+    Path(__file__).resolve().parents[3] / "seeds" / "aoe3" / "civ_unit_upgrades.json"
+)
 
 # 类别标签 → 中文展示名（押注简报「已激活类别科技」用）
 CATEGORY_LABELS = {
@@ -31,6 +34,7 @@ CATEGORY_LABELS = {
 }
 
 _cache: dict | None = None
+_civ_cache: dict | None = None
 
 
 def _load() -> dict:
@@ -42,6 +46,26 @@ def _load() -> dict:
             logger.warning("加载 unit_upgrades.json 失败：%s（改良将全部跳过）", e)
             _cache = {"units": {}, "category": {}}
     return _cache
+
+
+def _load_civ() -> dict:
+    global _civ_cache
+    if _civ_cache is None:
+        try:
+            _civ_cache = json.loads(_CIV_DATA_PATH.read_text(encoding="utf-8"))
+        except (OSError, json.JSONDecodeError) as e:
+            logger.warning("加载 civ_unit_upgrades.json 失败: %s", e)
+            _civ_cache = {"civs": {}}
+    return _civ_cache
+
+
+def _unit_upgrade_table(unit: Unit, civ_id: str | None) -> dict[str, dict]:
+    base = _load().get("units", {}).get(unit.id, {})
+    if civ_id:
+        override = _load_civ().get("civs", {}).get(civ_id, {}).get(unit.id)
+        if override:
+            return {**base, **override}
+    return base
 
 
 def _pick(table: dict[str, dict], age: int) -> dict | None:
@@ -65,7 +89,11 @@ def _category_tag(unit: Unit) -> str | None:
     return None
 
 
-def get_multipliers(unit: Unit, age: int) -> tuple[float, float, str | None]:
+def get_multipliers(
+    unit: Unit,
+    age: int,
+    civ_id: str | None = None,
+) -> tuple[float, float, str | None]:
     """返回 (hp_mult, damage_mult, source)。
 
     source: "unit"（逐兵链）/ 类别标签名 / None（无加成）。
@@ -79,7 +107,7 @@ def get_multipliers(unit: Unit, age: int) -> tuple[float, float, str | None]:
     #   - 避免共享单位的小额文明逐兵档（如瑞士长枪荷兰 Waardgelders +10）
     #     顶掉更大的类别加成（佣兵 +50）。
     candidates: list[tuple[float, float, str]] = []
-    per_id = data.get("units", {}).get(unit.id)
+    per_id = _unit_upgrade_table(unit, civ_id)
     if per_id:
         e = _pick(per_id, age)
         if e:
@@ -95,14 +123,14 @@ def get_multipliers(unit: Unit, age: int) -> tuple[float, float, str | None]:
     return max(candidates, key=lambda c: c[0])
 
 
-def _unit_extras(unit: Unit, age: int) -> dict:
+def _unit_extras(unit: Unit, age: int, civ_id: str | None = None) -> dict:
     """取逐兵链在 ≤age 的 extras 整包（range/aoe/rof/速度/护甲/倍率）。
 
     extras 只挂在逐兵条目（"units"）上；类别科技不带这些字段。
     """
     if age is None or age < 2:
         return {}
-    per_id = _load().get("units", {}).get(unit.id)
+    per_id = _unit_upgrade_table(unit, civ_id)
     if not per_id:
         return {}
     return _pick(per_id, age) or {}
@@ -123,23 +151,23 @@ def _apply_mult_add(mults: list, mult_add_vs: dict[str, float]) -> list | None:
     return out if out != list(mults) else None
 
 
-def _unit_age_name(unit: Unit, age: int) -> str | None:
+def _unit_age_name(unit: Unit, age: int, civ_id: str | None = None) -> str | None:
     """取该单位在指定时代的升级名（SetName），无则 None。"""
-    per_id = _load().get("units", {}).get(unit.id)
+    per_id = _unit_upgrade_table(unit, civ_id)
     if not per_id:
         return None
     e = _pick(per_id, age)
     return e.get("name") if e else None
 
 
-def apply_upgrades(unit: Unit, age: int) -> Unit:
+def apply_upgrades(unit: Unit, age: int, *, civ_id: str | None = None) -> Unit:
     """按时代叠加改良，返回 Unit 副本（无加成时返回原对象）。
 
     血/攻取逐兵与类别 max 整包；range/aoe/rof/速度/护甲/倍率 取逐兵链整包。
     """
-    hp_mult, dmg_mult, _ = get_multipliers(unit, age)
-    extras = _unit_extras(unit, age)
-    upgraded_name = _unit_age_name(unit, age)
+    hp_mult, dmg_mult, _ = get_multipliers(unit, age, civ_id)
+    extras = _unit_extras(unit, age, civ_id)
+    upgraded_name = _unit_age_name(unit, age, civ_id)
     if hp_mult == 1.0 and dmg_mult == 1.0 and not extras and not upgraded_name:
         return unit
 
@@ -158,6 +186,8 @@ def apply_upgrades(unit: Unit, age: int) -> Unit:
             changes["damage_cap_ranged"] = round(unit.damage_cap_ranged * dmg_mult, 2)
         if unit.damage_cap_melee:
             changes["damage_cap_melee"] = round(unit.damage_cap_melee * dmg_mult, 2)
+    if extras.get("cost") is not None:
+        changes["cost"] = dict(extras["cost"])
 
     # --- extras（整包，relativity 已在生成期换算）---
     range_add = extras.get("range_add", {})
@@ -177,6 +207,13 @@ def apply_upgrades(unit: Unit, age: int) -> Unit:
         changes["rof_ranged"] = round(float(rof_set["ranged"]), 3)
     if rof_set.get("melee"):
         changes["rof_melee"] = round(float(rof_set["melee"]), 3)
+    rof_add = extras.get("rof_add", {})
+    if rof_add.get("ranged") and unit.rof_ranged:
+        current = changes.get("rof_ranged", unit.rof_ranged)
+        changes["rof_ranged"] = round(max(0.1, current + rof_add["ranged"]), 3)
+    if rof_add.get("melee") and unit.rof_melee:
+        current = changes.get("rof_melee", unit.rof_melee)
+        changes["rof_melee"] = round(max(0.1, current + rof_add["melee"]), 3)
 
     armor_add = extras.get("armor_add", {})
     if armor_add.get("melee"):

@@ -72,6 +72,17 @@ class NationalTactic:
 
 
 @dataclass(frozen=True)
+class SourcePolicy:
+    """Top-level strategy and ordinary-source probabilities."""
+
+    preferred_strategy_weight: float
+    ordinary_strategy_weight: float
+    local_weight: float
+    mixed_consulate_weight: float
+    allow_pure_consulate: bool
+
+
+@dataclass(frozen=True)
 class ResolvedArchetype:
     """已落实到具体兵种的通用骨架候选。"""
 
@@ -102,7 +113,11 @@ def _parse_allocation(raw: dict, *, slot_count: int) -> AllocationRule:
     return AllocationRule(kind, values)
 
 
-def _load_archetype_config() -> tuple[tuple[Archetype, ...], tuple[NationalTactic, ...]]:
+def _load_archetype_config() -> tuple[
+    tuple[Archetype, ...],
+    tuple[NationalTactic, ...],
+    SourcePolicy,
+]:
     data = json.loads(_ARCHETYPES_PATH.read_text(encoding="utf-8"))
     archetypes: list[Archetype] = []
     for raw in data["generic_archetypes"]:
@@ -128,10 +143,28 @@ def _load_archetype_config() -> tuple[tuple[Archetype, ...], tuple[NationalTacti
                 unit_ids=unit_ids,
                 allocation=_parse_allocation(raw["allocation"], slot_count=len(unit_ids)),
             ))
-    return tuple(archetypes), tuple(tactics)
+    raw_policy = data["source_policy"]
+    policy = SourcePolicy(
+        preferred_strategy_weight=float(raw_policy["preferred_strategy_weight"]),
+        ordinary_strategy_weight=float(raw_policy["ordinary_strategy_weight"]),
+        local_weight=float(raw_policy["local_weight"]),
+        mixed_consulate_weight=float(raw_policy["mixed_consulate_weight"]),
+        allow_pure_consulate=bool(raw_policy["allow_pure_consulate"]),
+    )
+    if policy.preferred_strategy_weight < 0 or policy.ordinary_strategy_weight <= 0:
+        raise ValueError(f"invalid civ-war strategy weights: {policy}")
+    if abs(
+        policy.preferred_strategy_weight + policy.ordinary_strategy_weight - 1.0
+    ) > 1e-9:
+        raise ValueError(f"civ-war strategy weights must sum to 1: {policy}")
+    if policy.local_weight <= 0 or policy.mixed_consulate_weight < 0:
+        raise ValueError(f"invalid civ-war source weights: {policy}")
+    if abs(policy.local_weight + policy.mixed_consulate_weight - 1.0) > 1e-9:
+        raise ValueError(f"civ-war source weights must sum to 1: {policy}")
+    return tuple(archetypes), tuple(tactics), policy
 
 
-GENERIC_ARCHETYPES, NATIONAL_TACTICS = _load_archetype_config()
+GENERIC_ARCHETYPES, NATIONAL_TACTICS, SOURCE_POLICY = _load_archetype_config()
 
 
 def _has_multiplier(unit: Unit, *, attack: str, targets: frozenset[str]) -> bool:

@@ -307,6 +307,8 @@ def build_report(prev: Path, cur: Path) -> tuple[str, str]:
     # 单位改良
     old_up = _load_json(prev_seeds / "unit_upgrades.json") or {}
     new_up = _load_json(cur_seeds / "unit_upgrades.json") or {}
+    old_civ_up = _load_json(prev_seeds / "civ_unit_upgrades.json") or {}
+    new_civ_up = _load_json(cur_seeds / "civ_unit_upgrades.json") or {}
 
     # icon
     old_icon = (_load_json(prev / "icon_manifest.json") or {}).get("entries", {})
@@ -532,6 +534,32 @@ def build_report(prev: Path, cur: Path) -> tuple[str, str]:
         if mark is None:
             mark = "**数据变化**" if _canon(ov) != _canon(nv) else "无变化"
         A(f"- `{k}`：{mark}")
+    A("")
+
+    A("### 9.3 文明专属改良（civ_unit_upgrades.json）")
+    A("")
+    ocu, ncu = old_civ_up.get("civs", {}), new_civ_up.get("civs", {})
+    old_pairs = {(civ, uid): value for civ, units in ocu.items() for uid, value in units.items()}
+    new_pairs = {(civ, uid): value for civ, units in ncu.items() for uid, value in units.items()}
+    added_civ_up = sorted(set(new_pairs) - set(old_pairs))
+    lost_civ_up = sorted(set(old_pairs) - set(new_pairs))
+    changed_civ_up = sorted(
+        key
+        for key in set(old_pairs) & set(new_pairs)
+        if _canon(old_pairs[key]) != _canon(new_pairs[key])
+    )
+    A(
+        f"- 文明：{len(ocu)} → {len(ncu)}；文明-单位覆盖："
+        f"{len(old_pairs)} → {len(new_pairs)}（新增 {len(added_civ_up)}，"
+        f"消失 {len(lost_civ_up)}，变化 {len(changed_civ_up)}）"
+    )
+    for label, rows in (
+        ("新增", added_civ_up),
+        ("消失", lost_civ_up),
+        ("变化", changed_civ_up),
+    ):
+        if rows:
+            A(f"- {label}（前 40）：{', '.join(f'`{civ}/{uid}`' for civ, uid in rows[:40])}")
     A("")
 
     # ---- 10 待决

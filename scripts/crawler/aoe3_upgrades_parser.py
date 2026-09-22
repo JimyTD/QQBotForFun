@@ -31,6 +31,7 @@ from pathlib import Path
 PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent
 TECHTREE_PATH = PROJECT_ROOT / "data" / "aoe3" / "raw" / "techtreey.xml"
 UNITS_PATH = PROJECT_ROOT / "seeds" / "aoe3" / "units.json"
+CIVS_PATH = PROJECT_ROOT / "seeds" / "aoe3" / "civs.json"
 OUTPUT_PATH = PROJECT_ROOT / "seeds" / "aoe3" / "unit_upgrades.json"
 
 # 升时代状态 → 游戏时代号（与 units.json age 名口径一致：探索1/商业2/要塞3/工业4/帝王5）
@@ -362,13 +363,22 @@ def _build_tag_to_units(units_by_id: dict) -> dict[str, set[str]]:
     return {tag: ids for tag, ids in tag_map.items() if len(ids) <= 10}
 
 
-def build_unit_upgrades(blocks, resolver, units_by_id,
-                        stringtable: dict[str, str] | None = None):
+def build_unit_upgrades(
+    blocks,
+    resolver,
+    units_by_id,
+    stringtable: dict[str, str] | None = None,
+    *,
+    civ_specific_techs: set[str] | None = None,
+    shared_unit_ids: set[str] | None = None,
+):
     """返回 {id: {age: {hp_mult, damage_mult, name, ...}}}（cumulative）。"""
     valid_ids = set(units_by_id)
     tag_to_units = _build_tag_to_units(units_by_id)
     if stringtable is None:
         stringtable = {}
+    civ_specific_techs = civ_specific_techs or set()
+    shared_unit_ids = shared_unit_ids or set()
     # 收集：id -> age -> list[(line_priority, hp_inc, dmg_inc, tech_name, setname_proto)]
     # setname_proto: SetName 查找时需要用原始大小写 proto 名
     per_id: dict[str, dict[int, list]] = {}
@@ -387,6 +397,8 @@ def build_unit_upgrades(blocks, resolver, units_by_id,
         for tgt in targets:
             tid = tgt.lower()
             if tid in valid_ids:
+                if name in civ_specific_techs and tid in shared_unit_ids:
+                    continue
                 hp_inc, dmg_inc = hp_dmg_increments(block, tid)
                 if not hp_inc and not dmg_inc:
                     continue
@@ -398,6 +410,8 @@ def build_unit_upgrades(blocks, resolver, units_by_id,
                 if not hp_inc and not dmg_inc:
                     continue
                 for resolved_uid in tag_to_units[tid]:
+                    if name in civ_specific_techs and resolved_uid in shared_unit_ids:
+                        continue
                     per_id.setdefault(resolved_uid, {}).setdefault(age, []).append(
                         (_line_priority(name), hp_inc or 0.0, dmg_inc or 0.0, name, tgt)
                     )
@@ -531,7 +545,35 @@ def main():
     resolver = AgeResolver(blocks)
     stringtable = _load_stringtable()
 
-    unit_up = build_unit_upgrades(blocks, resolver, units_by_id, stringtable)
+    civ_data = json.loads(CIVS_PATH.read_text(encoding="utf-8"))
+    unique_upgrade_techs = {
+        tech
+        for civ_id in civ_data["_meta"]["curated_civs"]
+        for tech in civ_data["civs"][civ_id].get("unique_techs", ())
+    }
+    # Shared units must use their neutral upgrade line in ordinary battles.
+    # Most Royal Guard lines use RG/DERG prefixes; Italy and Malta use named
+    # artillery upgrades instead. Unique-unit Guard lines remain valid because
+    # there is no cross-civilization ambiguity for those unit ids.
+    civ_specific_techs = {
+        tech
+        for tech in unique_upgrade_techs
+        if tech.startswith(("RG", "DERG"))
+        or tech in {"DESpingardes", "DEGalileans", "DEBasilisks"}
+    }
+    shared_unit_ids = {
+        unit_id
+        for unit_id, owners in civ_data.get("unit_civs", {}).items()
+        if len(owners) > 1
+    }
+    unit_up = build_unit_upgrades(
+        blocks,
+        resolver,
+        units_by_id,
+        stringtable,
+        civ_specific_techs=civ_specific_techs,
+        shared_unit_ids=shared_unit_ids,
+    )
     cat_up = build_category_upgrades(blocks, resolver)
 
     out = {

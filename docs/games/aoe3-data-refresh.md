@@ -17,8 +17,8 @@ ArtUnits.bar ──aoe3_anim_extractor──> raw/anims/                  (windu
                                         │
       ┌──────────────┬──────────────────┼──────────────────────────────┐
       ▼              ▼                  ▼                              ▼
-aoe3_gamedata_parser  aoe3_civs_parser  aoe3_upgrades_parser
-  seeds/units.json      seeds/civs.json   seeds/unit_upgrades.json
+aoe3_gamedata_parser  aoe3_civs_parser  aoe3_upgrades_parser  aoe3_civ_upgrades_parser
+  seeds/units.json      seeds/civs.json   seeds/unit_upgrades.json  seeds/civ_unit_upgrades.json
   seeds/i18n_zh.json
   data/aoe3/manifest.json
 
@@ -61,6 +61,7 @@ uv run python scripts/crawler/aoe3_anim_extractor.py --art-bar <ArtUnits.bar>
 uv run python scripts/crawler/aoe3_gamedata_parser.py
 uv run python scripts/crawler/aoe3_civs_parser.py
 uv run python scripts/crawler/aoe3_upgrades_parser.py
+uv run python scripts/crawler/aoe3_civ_upgrades_parser.py
 ```
 
 ### 2.4 出对比名单

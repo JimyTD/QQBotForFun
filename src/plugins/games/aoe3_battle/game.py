@@ -281,7 +281,7 @@ class AoE3BattleGame(GameBase):
 
     id = "aoe3_battle"
     name = "帝国3斗蛐蛐"
-    description = "兵种对战模拟 · 押注 / 单挑 / 乱斗 / 王中王 / 锦标赛"
+    description = "兵种对战模拟 · 押注 / 国战 / 单挑 / 乱斗 / 王中王 / 锦标赛"
     min_players = 0            # 无人押注也能打
     max_players = 50
     version = "1.0"

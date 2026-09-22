@@ -12,6 +12,7 @@ from src.plugins.games.aoe3_battle.civ_war_civs import get_civ_profile
 from src.plugins.games.aoe3_battle.civ_war_lineups import (
     CivWarCandidate,
     allocate_candidate,
+    choose_candidate,
     generate_civ_candidates,
     shortlist_candidates,
 )
@@ -19,8 +20,6 @@ from src.plugins.games.aoe3_battle.lineup import BUDGET, Lineup, MatchLineup
 
 _IDENTITY_TIER_PENALTY = 0.04
 _MIRROR_STRATEGY_PENALTY = 0.06
-_SELECTION_WINDOW = 0.08
-_SELECTION_POOL_LIMIT = 12
 
 
 @dataclass(frozen=True)
@@ -192,21 +191,20 @@ def select_civ_matchup(
         raise ValueError("civ war requires two distinct civilizations")
     if rng is None:
         rng = random.Random()
-    ranked = rank_matchups(
+    red_candidate = choose_candidate(
         generate_civ_candidates(repo, red_civ, age=age),
+        rng=rng,
+    )
+    blue_candidate = choose_candidate(
         generate_civ_candidates(repo, blue_civ, age=age),
+        rng=rng,
+    )
+    return estimate_matchup(
+        red_candidate,
+        blue_candidate,
         budget=budget,
         age=age,
     )
-    if not ranked:
-        raise ValueError("no valid civ-war matchup candidates")
-    best_score = ranked[0].selection_score
-    selection_pool = [
-        estimate
-        for estimate in ranked[:_SELECTION_POOL_LIMIT]
-        if estimate.selection_score <= best_score + _SELECTION_WINDOW
-    ]
-    return rng.choice(selection_pool)
 
 
 def generate_civ_war_lineup(
