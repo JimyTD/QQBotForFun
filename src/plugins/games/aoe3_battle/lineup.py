@@ -1002,52 +1002,85 @@ def _type_str_zh(u: Unit) -> str:
 
 
 
+def _matching_multipliers(
+    multipliers: list,
+    target_types: set[str],
+) -> list[tuple[str, float]]:
+    """Return all multipliers that exactly match target logical types."""
+    matches: list[tuple[str, float]] = []
+    for multiplier in multipliers:
+        vs_clean = multiplier.vs.rstrip(" *")
+        if vs_clean in target_types:
+            matches.append((vs_clean, multiplier.value))
+    return matches
+
+
+def _multiplier_product(matches: list[tuple[str, float]]) -> float:
+    product = 1.0
+    for _, value in matches:
+        product *= value
+    return product
+
+
+def _format_multiplier_matches(
+    matches: list[tuple[str, float]],
+    *,
+    attack_mode: str,
+) -> str:
+    from src.plugins.aoe3.i18n import t_mult_vs
+
+    detail = " × ".join(f"{t_mult_vs(vs)} x{value:g}" for vs, value in matches)
+    product = _multiplier_product(matches)
+    return f"{attack_mode} x{product:g}（{detail}）"
+
+
 def _find_counter_relations(
-    unit: Unit, opponent_lineup: "Lineup", *, threshold: float = 1.5
+    unit: Unit,
+    opponent_lineup: "Lineup",
 ) -> tuple[list[str], list[str]]:
-    """分析一个兵种与对方阵容的克制关系。
+    """Return complete outgoing and incoming multiplier summaries.
 
-    返回 (advantages, disadvantages):
-      advantages: 己方克制对方的描述列表，如 "→ 克制 火枪手(重步兵 x3)"
-      disadvantages: 己方被对方克制的描述列表，如 "← 被 散兵 克制(轻步兵 x2)"
+    Unlike the old threshold-based helper, this mirrors the simulator: every
+    matching logical type contributes to the product, including values below
+    1.0 and values below the old x1.5 display cutoff.
     """
-    from src.plugins.aoe3.i18n import t
-
-    advantages: list[str] = []
-    disadvantages: list[str] = []
-
+    outgoing: list[str] = []
+    incoming: list[str] = []
     my_type_set = set(unit.type)
-    my_mults = unit.multipliers_ranged + unit.multipliers_melee
 
     for slot in opponent_lineup.slots:
         opp = slot.unit
         opp_type_set = set(opp.type)
 
-        # 己方克制对方：我的倍率 vs 匹配对方的 type
-        best_adv: tuple[str, float] | None = None
-        for m in my_mults:
-            # 去掉倍率 vs 后面的 * 号再匹配
-            vs_clean = m.vs.rstrip(" *")
-            if vs_clean in opp_type_set and m.value >= threshold:
-                if best_adv is None or m.value > best_adv[1]:
-                    best_adv = (vs_clean, m.value)
-        if best_adv:
-            vs_zh = t("tags", best_adv[0])
-            advantages.append(f"克制 {opp.name}({vs_zh} x{best_adv[1]:g})")
+        ranged_matches = _matching_multipliers(unit.multipliers_ranged, opp_type_set)
+        if ranged_matches:
+            outgoing.append(
+                f"对{opp.name} {_format_multiplier_matches(ranged_matches, attack_mode='远程')}"
+            )
+        melee_matches = _matching_multipliers(unit.multipliers_melee, opp_type_set)
+        if melee_matches:
+            outgoing.append(
+                f"对{opp.name} {_format_multiplier_matches(melee_matches, attack_mode='近战')}"
+            )
 
-        # 对方克制己方：对方的倍率 vs 匹配我的 type
-        opp_mults = opp.multipliers_ranged + opp.multipliers_melee
-        best_dis: tuple[str, float] | None = None
-        for m in opp_mults:
-            vs_clean = m.vs.rstrip(" *")
-            if vs_clean in my_type_set and m.value >= threshold:
-                if best_dis is None or m.value > best_dis[1]:
-                    best_dis = (vs_clean, m.value)
-        if best_dis:
-            vs_zh = t("tags", best_dis[0])
-            disadvantages.append(f"被 {opp.name} 克制({vs_zh} x{best_dis[1]:g})")
+        opp_ranged_matches = _matching_multipliers(
+            opp.multipliers_ranged, my_type_set
+        )
+        if opp_ranged_matches:
+            incoming.append(
+                f"受{opp.name}远程攻击 "
+                f"{_format_multiplier_matches(opp_ranged_matches, attack_mode='承伤')}"
+            )
+        opp_melee_matches = _matching_multipliers(
+            opp.multipliers_melee, my_type_set
+        )
+        if opp_melee_matches:
+            incoming.append(
+                f"受{opp.name}近战攻击 "
+                f"{_format_multiplier_matches(opp_melee_matches, attack_mode='承伤')}"
+            )
 
-    return advantages, disadvantages
+    return outgoing, incoming
 
 
 def format_side_panel(
@@ -1164,14 +1197,12 @@ def _append_extras(lines: list[str], u: Unit, indent: str = "") -> None:
 def _append_counter_info(
     lines: list[str], u: Unit, opponent: "Lineup", indent: str = ""
 ) -> None:
-    """追加克制关系高亮行。"""
-    advantages, disadvantages = _find_counter_relations(u, opponent)
-    if advantages:
-        for adv in advantages:
-            lines.append(f"{indent}✅ {adv}")
-    if disadvantages:
-        for dis in disadvantages:
-            lines.append(f"{indent}⚠️ {dis}")
+    """追加完整攻击/承伤倍率，包括 x1 以下和多标签叠乘。"""
+    outgoing, incoming = _find_counter_relations(u, opponent)
+    for line in outgoing:
+        lines.append(f"{indent}🎯 {line}")
+    for line in incoming:
+        lines.append(f"{indent}🛡️ {line}")
 
 
 def format_vs_banner(lineup: MatchLineup) -> str:
