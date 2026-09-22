@@ -6,7 +6,11 @@ import json
 from pathlib import Path
 
 from plugins.aoe3.repository import UnitRepo
-from plugins.games.aoe3_battle.civ_war_roles import NATIONAL_TACTICS, load_curated_civ_units
+from plugins.games.aoe3_battle.civ_war_roles import (
+    NATIONAL_TACTICS,
+    PREFERRED_EXTRA_UNIT_IDS,
+    load_curated_civ_units,
+)
 from plugins.games.aoe3_battle.lineup import unit_game_age
 
 _TACTICS_PATH = (
@@ -62,3 +66,27 @@ def test_preferred_tactics_contain_valid_single_unit_strategy() -> None:
         if len(tactic["unit_ids"]) == 1
     )
     assert single["allocation"] == {"kind": "resource_shares", "values": [1.0]}
+
+
+def test_only_approved_preferred_tactics_enter_runtime() -> None:
+    data = json.loads(_TACTICS_PATH.read_text(encoding="utf-8"))
+    runtime_ids = {
+        (tactic.civ_id, tactic.id)
+        for tactic in NATIONAL_TACTICS
+    }
+    for civ_id, tactics in data["civs"].items():
+        for tactic in tactics:
+            key = (civ_id, tactic["id"])
+            if tactic.get("status", "approved") == "approved":
+                assert key in runtime_ids
+            else:
+                assert key not in runtime_ids
+
+
+def test_preferred_extra_units_are_explicitly_whitelisted() -> None:
+    data = json.loads(_TACTICS_PATH.read_text(encoding="utf-8"))
+    expected = {
+        civ_id: frozenset(unit_ids)
+        for civ_id, unit_ids in data["_meta"]["extra_unit_ids"].items()
+    }
+    assert PREFERRED_EXTRA_UNIT_IDS == expected

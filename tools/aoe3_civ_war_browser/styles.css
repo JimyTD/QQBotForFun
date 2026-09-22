@@ -46,7 +46,8 @@ button { color: inherit; }
 .review-badge, .fixed-badge, .consulate-flag, .pending-badge {
   border: 1px solid var(--line-strong); border-radius: 3px; padding: 2px 5px; font-size: 11px; font-weight: 600;
 }
-.implemented-badge { border: 1px solid #8dad9b; border-radius: 3px; padding: 2px 5px; font-size: 10px; font-weight: 700; color: var(--accent); background: var(--accent-soft); white-space: nowrap; }
+.implemented-badge, .draft-badge { border: 1px solid #8dad9b; border-radius: 3px; padding: 2px 5px; font-size: 10px; font-weight: 700; color: var(--accent); background: var(--accent-soft); white-space: nowrap; }
+.draft-badge { color: var(--danger); border-color: #cf9b91; background: var(--danger-soft); }
 .review-badge { color: var(--accent); border-color: #98b8a7; background: var(--accent-soft); }
 .civ-picker { min-width: 200px; max-width: 320px; flex: 1; }
 .civ-picker input { width: 100%; border: 1px solid var(--line-strong); border-radius: 4px; background: var(--panel); padding: 7px 9px; outline: none; }

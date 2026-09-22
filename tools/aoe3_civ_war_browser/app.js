@@ -107,7 +107,9 @@ function allocationLabel(tactic) {
 function preferredTacticCard(tactic) {
   const status = tactic.status === "implemented"
     ? '<span class="implemented-badge">已实现固定战术</span>'
-    : '<span class="implemented-badge">已启用</span>';
+    : tactic.status === "draft"
+      ? '<span class="draft-badge">审核草案</span>'
+      : '<span class="implemented-badge">已启用</span>';
   return `
     <article class="preferred-card ${tactic.available ? "" : "unavailable"}">
       <header class="preferred-card-header">
@@ -176,8 +178,10 @@ function renderLineups(snapshot) {
 }
 
 function renderNational(snapshot) {
-  const total = Object.values(state.bootstrap.preferred_counts).reduce((sum, value) => sum + value, 0);
-  $("#preferred-summary").textContent = `24 个文明 · ${total} 套首版策略`;
+  const counts = Object.values(state.bootstrap.preferred_counts);
+  const total = counts.reduce((sum, value) => sum + value, 0);
+  const drafts = snapshot.preferred_tactics.filter((tactic) => tactic.status === "draft").length;
+  $("#preferred-summary").textContent = `24 个文明 · ${total} 套策略 · 当前文明 ${drafts} 套草案`;
   $("#preferred-note").textContent = state.bootstrap.preferred_draft_note;
   $("#preferred-civ-title").textContent = `${snapshot.civ.name} · ${snapshot.preferred_tactics.length} 套`;
   $("#preferred-civ-nav").innerHTML = state.bootstrap.civs.map((civ) => `
