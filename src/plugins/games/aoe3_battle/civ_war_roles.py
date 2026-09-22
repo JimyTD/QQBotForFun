@@ -66,6 +66,7 @@ class NationalTactic:
     civ_id: str
     id: str
     title: str
+    description: str
     min_age: int
     unit_ids: tuple[str, ...]
     allocation: AllocationRule
@@ -141,6 +142,7 @@ def _load_archetype_config() -> tuple[
                 civ_id=civ_id,
                 id=raw["id"],
                 title=raw["title"],
+                description=str(raw.get("reason", "")).strip(),
                 min_age=int(raw["min_age"]),
                 unit_ids=unit_ids,
                 allocation=_parse_allocation(raw["allocation"], slot_count=len(unit_ids)),
@@ -155,6 +157,7 @@ def _load_archetype_config() -> tuple[
                 civ_id=civ_id,
                 id=raw["id"],
                 title=raw["title"],
+                description=str(raw.get("reason", "")).strip(),
                 min_age=int(raw.get("min_age", 3)),
                 unit_ids=unit_ids,
                 allocation=_parse_allocation(raw["allocation"], slot_count=len(unit_ids)),

@@ -3,11 +3,12 @@
 from __future__ import annotations
 
 from datetime import datetime
+from unittest.mock import AsyncMock
 
 import pytest
 
 from core.types import GameContext
-from plugins.games.aoe3_battle.game import AoE3BattleGame
+from plugins.games.aoe3_battle.game import AoE3BattleGame, session
 from plugins.games.aoe3_battle.simulator import BattleSimulator
 
 
@@ -62,3 +63,39 @@ async def test_random_civ_war_ignores_age_two_group_default() -> None:
     await game.on_create(ctx)
     assert ctx.state["age"] == 3
     assert ctx.state["civ_war"]["red_civ_id"] != ctx.state["civ_war"]["blue_civ_id"]
+
+
+@pytest.mark.asyncio
+async def test_civ_war_sends_image_and_short_bet_hint(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    game = AoE3BattleGame()
+    ctx = GameContext(
+        session_id="TESTCW3",
+        game_id="aoe3_battle",
+        group_id=1,
+        host_id=2,
+        players=[],
+        started_at=datetime.utcnow(),
+        config={
+            "mode": "civ_war",
+            "civ_ids": ["British", "Japanese"],
+            "age": 3,
+            "budget": 10000,
+        },
+    )
+    await game.on_create(ctx)
+    rich = AsyncMock()
+    plain = AsyncMock()
+    monkeypatch.setattr(session, "broadcast_rich", rich)
+    monkeypatch.setattr(session, "broadcast", plain)
+
+    await game.on_start(ctx)
+
+    rich.assert_awaited_once()
+    image_message = rich.await_args.args[1]
+    assert "base64://" in str(image_message)
+    plain.assert_awaited_once()
+    hint = plain.await_args.args[1]
+    assert "押红方" in hint
+    assert "押蓝方" in hint

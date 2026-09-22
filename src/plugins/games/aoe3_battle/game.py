@@ -50,6 +50,11 @@ from .lineup import (
     generate_rival_lineup,
     generate_tournament_lineup,
 )
+from .opening_renderer import (
+    OpeningSide,
+    format_civ_war_fallback,
+    render_civ_war_opening,
+)
 from .simulator import ArmySlot, BattleResult, BattleSimulator, Side
 from .tournament import Tournament, TournamentStage
 
@@ -481,6 +486,46 @@ class AoE3BattleGame(GameBase):
             return
 
         match = self._match
+        if mode == "civ_war":
+            red_side = OpeningSide(
+                civ_name=match.red_civ_name or "",
+                civ_id=ctx.state["civ_war"]["red_civ_id"],
+                strategy=match.red_strategy or "",
+                units=tuple((slot.unit, slot.count) for slot in match.red.slots),
+            )
+            blue_side = OpeningSide(
+                civ_name=match.blue_civ_name or "",
+                civ_id=ctx.state["civ_war"]["blue_civ_id"],
+                strategy=match.blue_strategy or "",
+                units=tuple((slot.unit, slot.count) for slot in match.blue.slots),
+            )
+            png_bytes = render_civ_war_opening(
+                red=red_side,
+                blue=blue_side,
+                age=match.age or 3,
+            )
+            b64 = base64.b64encode(png_bytes).decode()
+            image_msg = Message()
+            image_msg.append(MessageSegment.image(f"base64://{b64}"))
+            bet_text = "@ 1 押红方 | @ 2 押蓝方\n@ 开战 直接开打"
+            await session.broadcast_rich(
+                ctx.group_id,
+                image_msg,
+                format_civ_war_fallback(red_side, blue_side, age=match.age or 3),
+            )
+            await session.broadcast(ctx.group_id, bet_text)
+            logger.info(
+                "[aoe3_battle] 对局 %s 开始，模式=%s 🔴 %s vs 🔵 %s",
+                ctx.session_id,
+                ctx.state["mode"],
+                " + ".join(
+                    f"{s['unit_name']}×{s['count']}" for s in ctx.state["red_army"]
+                ),
+                " + ".join(
+                    f"{s['unit_name']}×{s['count']}" for s in ctx.state["blue_army"]
+                ),
+            )
+            return
 
         # ── 发红方（图片 + 详情）──
         red_identity = None

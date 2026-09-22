@@ -40,6 +40,7 @@ class CivWarCandidate:
     allocation: AllocationRule
     source: str
     strategy_id: str
+    strategy_description: str = ""
     roles: tuple[str, ...] = ()
     distinctive_count: int = 0
 
@@ -109,6 +110,7 @@ def _national_candidate(tactic: NationalTactic, units: tuple[Unit, ...]) -> CivW
         allocation=tactic.allocation,
         source="national",
         strategy_id=tactic.id,
+        strategy_description=tactic.description,
         distinctive_count=len(units),
     )
 
@@ -151,6 +153,7 @@ def generate_civ_candidates(
             allocation=resolved.archetype.allocation,
             source="generic",
             strategy_id=resolved.archetype.id,
+            strategy_description="",
             roles=resolved.archetype.roles,
             distinctive_count=sum(unit.id in unique_ids for unit in resolved.units),
         )

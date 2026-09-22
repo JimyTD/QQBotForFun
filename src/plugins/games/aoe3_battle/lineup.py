@@ -284,6 +284,8 @@ class MatchLineup:
     blue_civ_name: str | None = None
     red_strategy: str | None = None
     blue_strategy: str | None = None
+    red_strategy_description: str | None = None
+    blue_strategy_description: str | None = None
 
 
 # =====================================================================

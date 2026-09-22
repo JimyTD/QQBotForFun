@@ -66,6 +66,7 @@ napcat/data/
 # Misc
 *.bak
 *.tmp
+artifacts/
 
 # 清洗产物（自动生成，不入库；可由 scripts/crawler/clean_crawled.py 重新产出）
 scripts/crawler/raw/*.cleaned.json

@@ -236,5 +236,7 @@ def generate_civ_war_lineup(
         blue_civ_name=blue_profile.name,
         red_strategy=estimate.red_candidate.title,
         blue_strategy=estimate.blue_candidate.title,
+        red_strategy_description=estimate.red_candidate.strategy_description,
+        blue_strategy_description=estimate.blue_candidate.strategy_description,
     )
     return match, estimate
