@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import asyncio
+import base64
 import logging
 import time
 from pathlib import Path
@@ -67,7 +68,8 @@ def cleanup_replay_files(*, now: float | None = None) -> int:
     return removed
 
 
-def _write_replay_file(video: bytes) -> Path:
+def _save_failed_replay(video: bytes) -> Path:
+    """Keep a failed upload locally for diagnostics, subject to cleanup."""
     cleanup_replay_files()
     REPLAY_DIR.mkdir(parents=True, exist_ok=True)
     path = REPLAY_DIR / f"replay-{int(time.time() * 1000)}.mp4"
@@ -102,30 +104,29 @@ async def generate_replays_video(replays: list[Replay]) -> bytes:
 
 async def broadcast_replay_video(group_id: int, video: bytes) -> bool:
     """Send a rendered replay to a group."""
-    path = await asyncio.to_thread(_write_replay_file, video)
-    message = Message(MessageSegment.video(path))
+    b64 = base64.b64encode(video).decode()
+    message = Message(MessageSegment.video(f"base64://{b64}"))
     last_exc: Exception | None = None
-    try:
-        for attempt in range(1, 3):
-            try:
-                await session.broadcast(group_id, message)
-                return True
-            except Exception as exc:
-                last_exc = exc
-                logger.warning(
-                    "battle replay upload attempt %d/2 failed: %s",
-                    attempt,
-                    exc,
-                )
-                if attempt == 1:
-                    await _retry_delay()
-        logger.warning("battle replay upload failed: %s", last_exc)
-        return False
-    finally:
+    for attempt in range(1, 3):
         try:
-            path.unlink(missing_ok=True)
-        except OSError:
-            logger.debug("failed to remove replay after send %s", path, exc_info=True)
+            await session.broadcast(group_id, message)
+            return True
+        except Exception as exc:
+            last_exc = exc
+            logger.warning(
+                "battle replay upload attempt %d/2 failed: %s",
+                attempt,
+                exc,
+            )
+            if attempt == 1:
+                await _retry_delay()
+    logger.warning("battle replay upload failed: %s", last_exc)
+    try:
+        path = await asyncio.to_thread(_save_failed_replay, video)
+        logger.info("failed replay retained for diagnostics: %s", path)
+    except OSError:
+        logger.debug("failed to retain replay after upload failure", exc_info=True)
+    return False
 
 
 async def broadcast_replay(group_id: int, replay: Replay) -> bool:

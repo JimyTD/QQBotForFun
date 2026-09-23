@@ -216,6 +216,25 @@ async def test_broadcast_replay_video_retries_then_succeeds(monkeypatch) -> None
     assert attempts == 2
 
 
+@pytest.mark.asyncio
+async def test_broadcast_replay_video_uses_base64_for_napcat(monkeypatch) -> None:
+    sent = []
+
+    async def fake_broadcast(_group_id, message, **_kwargs):
+        sent.append(message)
+
+    monkeypatch.setattr(
+        "src.plugins.games.aoe3_battle.replay.service.session.broadcast",
+        fake_broadcast,
+    )
+
+    assert await broadcast_replay_video(1, b"video") is True
+    assert sent[0].extract_plain_text() == ""
+    video_segment = sent[0][0]
+    assert video_segment.type == "video"
+    assert video_segment.data["file"] == "base64://dmlkZW8="
+
+
 def test_renderer_rejects_empty_replay() -> None:
     replay = Replay(
         session_id="empty",
