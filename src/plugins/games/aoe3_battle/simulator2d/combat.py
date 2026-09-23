@@ -5,6 +5,7 @@ from __future__ import annotations
 import logging
 from dataclasses import dataclass
 
+from .aoe import resolve_aoe
 from .compat import EventType
 from .config import Simulation2DConfig
 from .model import AttackMode, Soldier2D
@@ -22,6 +23,9 @@ class SlotStats:
     damage_type: str
     aoe_radius: int
     damage_cap_proto: float
+    area_sort_mode: str
+    outer_damage_area_distance: float
+    outer_damage_area_factor: float
 
 
 def combat_slot_stats(unit, mode: AttackMode) -> SlotStats | None:
@@ -35,6 +39,9 @@ def combat_slot_stats(unit, mode: AttackMode) -> SlotStats | None:
             damage_type=unit.damage_type_melee,
             aoe_radius=unit.aoe_radius_melee,
             damage_cap_proto=unit.damage_cap_melee,
+            area_sort_mode=unit.area_sort_mode_melee,
+            outer_damage_area_distance=unit.outer_damage_area_distance_melee,
+            outer_damage_area_factor=unit.outer_damage_area_factor_melee,
         )
     if mode == AttackMode.RANGED:
         return SlotStats(
@@ -45,6 +52,9 @@ def combat_slot_stats(unit, mode: AttackMode) -> SlotStats | None:
             damage_type=unit.damage_type_ranged,
             aoe_radius=unit.aoe_radius_ranged,
             damage_cap_proto=unit.damage_cap_ranged,
+            area_sort_mode=unit.area_sort_mode_ranged,
+            outer_damage_area_distance=unit.outer_damage_area_distance_ranged,
+            outer_damage_area_factor=unit.outer_damage_area_factor_ranged,
         )
     return None
 
@@ -344,31 +354,28 @@ class CombatSystem:
         if stats is None or stats.aoe_radius <= 0:
             return 0
 
-        radius = float(stats.aoe_radius)
-        candidates = self.spatial_hash.query_circle(
-            main_target.pos,
-            radius,
-            predicate=lambda other: (
-                other.alive and other.id != main_target.id and other.side != attacker.side
-            ),
-        )
-        candidates.sort(key=lambda item: (item.distance_sq_to(main_target), item.id))
-        if not candidates:
-            return 0
-
-        splash_count = len(candidates)
         base_attack = stats.base_damage * stats.num_projectiles
         # User-approved fallback for missing caps; never replace a real cap.
-        # Equal sharing remains a simplification, not original-game falloff.
         damage_cap = stats.damage_cap_proto if stats.damage_cap_proto > 0 else base_attack * 2.0
-        splash_damage = min(damage_cap / splash_count, base_attack)
+        hits = resolve_aoe(
+            attacker=attacker,
+            main_target=main_target,
+            radius=float(stats.aoe_radius),
+            base_damage=base_attack,
+            damage_cap=damage_cap,
+            area_sort_mode=stats.area_sort_mode,
+            outer_distance=stats.outer_damage_area_distance,
+            outer_factor=stats.outer_damage_area_factor,
+            spatial_hash=self.spatial_hash,
+        )
 
-        for target in candidates:
+        for hit in hits:
+            target = hit.target
             multiplier = calc_multiplier(stats.multipliers, target)
             armor = armor_for_damage_type(stats.damage_type, target)
             final_damage = max(
                 0.0,
-                splash_damage * multiplier * (1.0 - armor),
+                hit.damage * multiplier * (1.0 - armor),
             )
             self.emit(
                 EventType.AOE_SPLASH,
@@ -379,6 +386,9 @@ class CombatSystem:
                     "splash_target_id": target.id,
                     "splash_target_name": target.name,
                     "splash_damage": round(final_damage, 1),
+                    "distance": round(hit.distance, 3),
+                    "distance_factor": round(hit.distance_factor, 4),
+                    "area_sort_mode": stats.area_sort_mode,
                     "engine": "2d",
                 },
             )
@@ -389,4 +399,4 @@ class CombatSystem:
                 mode,
                 is_splash=True,
             )
-        return splash_count
+        return len(hits)

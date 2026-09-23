@@ -1,0 +1,196 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>帝国 3 AOE 审计</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <header class="topbar">
+      <div class="brand">
+        <span class="brand-mark">III</span>
+        <div>
+          <h1>AOE 数据审计</h1>
+          <p>DamageCap 覆盖与攻击槽位口径</p>
+        </div>
+      </div>
+      <div class="source" id="source"></div>
+    </header>
+
+    <main class="shell">
+      <section class="hero">
+        <div>
+          <p class="eyebrow">当前快照</p>
+          <h2>大多数 AOE 攻击都已有显式 cap</h2>
+          <p class="hero-copy" id="hero-copy">正在读取数据…</p>
+        </div>
+        <div class="coverage-ring" id="coverage-ring" aria-label="显式 cap 覆盖率">
+          <strong>--%</strong>
+          <span>AOE 槽位</span>
+        </div>
+      </section>
+
+      <section class="summary-grid" id="summary-grid" aria-label="统计总览"></section>
+
+      <section class="panel">
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow">口径拆分</p>
+            <h2>四个互不混淆的集合</h2>
+          </div>
+          <p>AOE 与 cap 都按远程/近战攻击槽位计算；一个单位可能贡献两个槽位。</p>
+        </div>
+        <div class="matrix" id="coverage-matrix"></div>
+      </section>
+
+      <section class="panel non-two-x-panel">
+        <div class="section-heading table-heading">
+          <div>
+            <p class="eyebrow">最值得检查的原始数据</p>
+            <h2>显式 cap 但不是 2×</h2>
+          </div>
+          <div class="non-two-x-summary" id="non-two-x-summary"></div>
+        </div>
+        <p class="section-note">
+          合并基础攻击 = 基础攻击 × 弹丸数。这里只列 XML 已明确给出
+          <code>damagecap</code>、且该值不等于 2× 合并基础攻击的槽位；缺字段后由模拟器补成
+          2× 的槽位不在这里。
+        </p>
+        <div class="table-wrap non-two-x-table">
+          <table>
+            <thead>
+              <tr>
+                <th>单位</th>
+                <th>槽位</th>
+                <th class="number">AOE</th>
+                <th class="number">显式 cap</th>
+                <th class="number">合并基础攻击</th>
+                <th class="number">cap / 基础</th>
+                <th class="number">相对 2×</th>
+              </tr>
+            </thead>
+            <tbody id="non-two-x-rows"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="panel geometry-panel">
+        <div class="section-heading table-heading">
+          <div>
+            <p class="eyebrow">二维结算参数</p>
+            <h2>2D AOE 几何与距离衰减</h2>
+          </div>
+          <span class="count-pill" id="geometry-count"></span>
+        </div>
+        <p class="section-note">
+          来自 <code>.tactics</code> 的 <code>areasortmode</code>、
+          <code>outerdamageareadistance</code> 和 <code>outerdamageareafactor</code>。
+          <strong>Directional</strong> 表示方向性范围；外圈参数缺失时按圆内系数 1 退化。
+        </p>
+        <div class="table-wrap non-two-x-table">
+          <table>
+            <thead>
+              <tr>
+                <th>单位</th>
+                <th>槽位</th>
+                <th class="number">AOE</th>
+                <th>排序模式</th>
+                <th class="number">外圈距离 → 系数</th>
+                <th>basedamagecap</th>
+              </tr>
+            </thead>
+            <tbody id="geometry-rows"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="panel split-panel fallback-panel">
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow">缺口清单</p>
+            <h2>有 AOE、但缺显式 cap</h2>
+          </div>
+          <span class="count-pill" id="fallback-count"></span>
+        </div>
+        <p class="section-note">
+          这些槽位在斗蛐蛐中仍会触发 AOE，但 cap 由模拟器按
+          <code>合并基础攻击 × 2</code> 估算。
+        </p>
+        <div class="unit-stack" id="fallback-list"></div>
+      </section>
+
+      <section class="panel split-panel cap-only-panel">
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow">数据噪音</p>
+            <h2>有 cap、但没有 AOE</h2>
+          </div>
+          <span class="count-pill muted-pill" id="cap-only-count"></span>
+        </div>
+        <p class="section-note">
+          当前模拟器不会在普通攻击中使用这些 cap，因为它们不满足
+          <code>aoe_radius &gt; 0</code>。
+        </p>
+        <div class="unit-stack compact" id="cap-only-list"></div>
+      </section>
+
+      <section class="panel table-panel">
+        <div class="section-heading table-heading">
+          <div>
+            <p class="eyebrow">单位明细</p>
+            <h2>所有 AOE 与 cap 槽位</h2>
+          </div>
+          <div class="table-actions">
+            <label>
+              <span class="sr-only">搜索单位</span>
+              <input id="search" type="search" placeholder="搜索单位 / id" autocomplete="off" />
+            </label>
+            <select id="coverage-filter" aria-label="覆盖筛选">
+              <option value="all">全部槽位</option>
+              <option value="aoe">仅 AOE</option>
+              <option value="non-two-x">非 2× cap</option>
+              <option value="fallback">AOE 缺 cap</option>
+              <option value="cap-only">cap 无 AOE</option>
+            </select>
+            <select id="slot-filter" aria-label="槽位筛选">
+              <option value="all">远程 + 近战</option>
+              <option value="ranged">仅远程</option>
+              <option value="melee">仅近战</option>
+            </select>
+          </div>
+        </div>
+        <p class="table-meta" id="table-meta"></p>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>单位</th>
+                <th>槽位</th>
+                <th>状态</th>
+                <th class="number">AOE</th>
+                <th class="number">数据 cap</th>
+                <th class="number">有效 cap</th>
+                <th>排序模式</th>
+                <th class="number">外圈距离 → 系数</th>
+                <th class="number">基础攻击</th>
+                <th>伤害类型</th>
+              </tr>
+            </thead>
+            <tbody id="slot-rows"></tbody>
+          </table>
+        </div>
+      </section>
+    </main>
+
+    <template id="summary-card-template">
+      <article class="summary-card">
+        <span class="summary-label"></span>
+        <strong class="summary-value"></strong>
+        <small class="summary-detail"></small>
+      </article>
+    </template>
+
+    <script src="app.js"></script>
+  </body>
+</html>

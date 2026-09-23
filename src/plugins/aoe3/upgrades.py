@@ -181,7 +181,9 @@ def apply_upgrades(unit: Unit, age: int, *, civ_id: str | None = None) -> Unit:
             changes["attack_ranged"] = round(unit.attack_ranged * dmg_mult, 2)
         if unit.attack_melee:
             changes["attack_melee"] = round(unit.attack_melee * dmg_mult, 2)
-        # 溅射伤害池随主伤害同比例缩放，保持铁律一致
+        # DamageCap tracks damage growth. ``basedamagecap`` is not a switch
+        # for this: the game relies on cap being the same percentage above
+        # base damage, and only a handful of actions carry the legacy flag.
         if unit.damage_cap_ranged:
             changes["damage_cap_ranged"] = round(unit.damage_cap_ranged * dmg_mult, 2)
         if unit.damage_cap_melee:

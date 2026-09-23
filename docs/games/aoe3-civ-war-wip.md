@@ -199,6 +199,59 @@
 - 国战维持 3 至 5 时代现状，2 时代暂不开放，玩法方后续明确提出时再讨论。
 - 不增加其他三兵种通用扩展，玩法方后续明确提出时再讨论。
 
+## AOE 参数与科技解锁（研究记录，未改实现）
+
+### 已确认
+
+- `damagearea` / `damagecap` 是攻击动作级字段，二者可独立存在：
+  - 全量 `protoy.xml` 中，有 cap 无 area 102 个动作；
+  - 有 area 无 cap 55 个动作；
+  - 二者同时存在 596 个动作。
+- 因此不能把 `damagecap` 继续解释为“仅 AOE 才有的溅射总伤害池”。它至少是攻击动作级伤害上限，AOE 只是同时读取 `damagearea` 和成长科技。
+- 已确认“无 area 但有 cap”既包含运行时补 AOE，也包含通用 cap。利菲迪骑士 `deLifidi`、突袭者 `deRaider` 的 cap-only 近战动作，确认由豪萨主城科技 `DEHCDurbarParade` 解锁 AOE：
+  - `MeleeHandAttack` +1.00 DamageArea
+  - `TrampleHandAttack` +2.00 DamageArea
+  - 影子科技 `DEHCDurbarParadeShadow` 继续为 `DefendHandAttack`、`GuardianAttack` +1.00 DamageArea
+- `.tactics` 已确认存在 `outerdamageareadistance`、`outerdamageareafactor`、`areasortmode`。这说明 AOE 有内外圈衰减和目标排序，不是圆内等额伤害或随机抽人。
+- `basedamagecap` 出现在带 cap 的动作上，用于 cap 随 BasePercent 科技缩放；不是“2×基础伤害”的替代字段。
+- 2022 年官方论坛讨论与场景编辑器实测支持以下口径：
+  - 主目标吃完整基础伤害；`damagecap` 不限制主目标。
+  - `damagecap` 限制主目标之外的 AOE 伤害总量或分配预算，不等同于“每个副目标各自的上限”。
+  - 倍率先参与计算，cap 随伤害与倍率增长；例如铁连枷基础 20、cap 40，仍可对散兵造成最高 60 的伤害。
+  - 单个副目标实际伤害受距离和落点影响，近处高、远处低，所以不能简单写成 `cap / 实际溅射人数`。
+- 实机样本：
+  - 榴弹兵基础 16、cap 36、AOE 3，打 3×3 火枪阵时稳定伤到 3 人：主目标 16，另外两人约 11-14，总伤约 40。
+  - 将榴弹兵 cap 翻倍到 72 后，测试得到总伤约翻倍且命中人数增加到 6。
+  - 旧版风琴炮 30×6、cap 60，紧密阵型测试单次总伤约 671；帝国胸甲单次多目标总伤约 129-155。说明实际总伤可超过静态 cap，也说明当前 `cap / 人数` 模型过于确定。
+- 近战与炮击的命中形状不同：旧版实测中骑兵近战呈方向性线/锥形，炮击更接近命中点前方的半圆/圆形；`areasortmode` 和 `.tactics` 参数与此对应。
+- 伤害成长与 cap：
+  - 官方科技树中 `DamageCap` effect 只有 2 条，均属日本和尚特殊升级；普通伤害升级只写 `Damage`。
+  - `basedamagecap` 仅 13 条动作使用，其中 10 条同时有 cap、3 条只有 basedcap；它不是绝大多数 cap 的缩放开关。
+  - 因此常规规则应理解为 cap 与伤害成长联动，而不是每项科技都单独更新 cap。
+- 斗蛐蛐当前实现已做对的部分：
+  - `apply_upgrades()` 会在时代伤害倍率变化时同步缩放已有 `damage_cap_ranged/melee`。
+  - `_apply_one_tech()` 会在普通 `Damage` 科技变化时同步缩放已有 cap。
+- 斗蛐蛐当前实现仍有风险：
+  - 模拟器先计算 `min(damage_cap / splash_count, base_atk)`，再乘克制倍率与护甲。
+  - 公开实机证据支持“倍率先计入，cap 随倍率一起增长”，例如铁连枷基础 20、cap 40，对散兵仍可造成最高 60 伤害。当前顺序会把 cap 切成未乘倍率的预算，可能低估对克制目标的溅射。
+  - `DamageBonus` 型克制科技当前只改 `multipliers_*`，不会同步改变 cap；需要与引擎的“cap 随倍率增长”规则一起核实。
+
+### 暂不改动
+
+- 不据此修改模拟器 AOE 公式。
+- 不把 `damagecap / 人数` 认定为原版规则。
+- 不把当前“最多 round(radius) 人、随机抽取”当作 AoE3 实际规则。
+- 不批量把科技 `DamageArea` 效果写进 `seeds/aoe3/units.json`，先保留为研究证据。
+
+### 后续待核
+
+- 仍需拿到引擎级实现或一致的重现实测，精确确认 cap 与距离衰减、命中顺序、护甲、倍率、多发弹丸的完整计算顺序。
+- 当前证据更支持“主目标另算 + 副目标总预算/分配上限”，但尚不能写出精确公式。
+- 核实伤害升级、`DamageBonus`/隐藏倍率、护甲与 cap 的结算先后；当前最可疑点是 cap 在倍率前分摊。
+- 建立 `DamageArea` 科技效果的完整映射，区分国战当前时代是否实际可研究。
+- 核对外圈伤害公式，尤其是 `outerdamageareadistance` 到 `outerdamageareafactor` 之间的插值方式。
+- 仅在数据证据、玩法目标都明确后，再决定是否扩展模型或 UI。
+
 ## 后续期
 
 - 国战面板中展示国家正式名还是常用简称。

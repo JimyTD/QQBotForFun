@@ -346,6 +346,18 @@ def parse_unit(el: ET.Element, strings_en: dict, strings_zh: dict) -> dict | Non
             result["aoe_radius_ranged"] = ranged["aoe_radius"]
         if ranged.get("damage_cap", 0) > 0:
             result["damage_cap_ranged"] = ranged["damage_cap"]
+        if ranged.get("area_sort_mode"):
+            result["area_sort_mode_ranged"] = ranged["area_sort_mode"]
+        if ranged.get("outer_damage_area_distance", 0) > 0:
+            result["outer_damage_area_distance_ranged"] = ranged[
+                "outer_damage_area_distance"
+            ]
+        if ranged.get("outer_damage_area_factor", 0) > 0:
+            result["outer_damage_area_factor_ranged"] = ranged[
+                "outer_damage_area_factor"
+            ]
+        if ranged.get("basedamagecap"):
+            result["basedamagecap_ranged"] = True
         if ranged["multipliers"]:
             result.setdefault("multipliers", {})["ranged"] = ranged["multipliers"]
 
@@ -361,6 +373,18 @@ def parse_unit(el: ET.Element, strings_en: dict, strings_zh: dict) -> dict | Non
             result["aoe_radius_melee"] = melee["aoe_radius"]
         if melee.get("damage_cap", 0) > 0:
             result["damage_cap_melee"] = melee["damage_cap"]
+        if melee.get("area_sort_mode"):
+            result["area_sort_mode_melee"] = melee["area_sort_mode"]
+        if melee.get("outer_damage_area_distance", 0) > 0:
+            result["outer_damage_area_distance_melee"] = melee[
+                "outer_damage_area_distance"
+            ]
+        if melee.get("outer_damage_area_factor", 0) > 0:
+            result["outer_damage_area_factor_melee"] = melee[
+                "outer_damage_area_factor"
+            ]
+        if melee.get("basedamagecap"):
+            result["basedamagecap_melee"] = True
         if melee["multipliers"]:
             result.setdefault("multipliers", {})["melee"] = melee["multipliers"]
 
@@ -481,6 +505,22 @@ def _load_tactics_actions(tactics_filename: str) -> dict[str, dict[str, Any]]:
                     val = round(float(raw), 2)
                     if val > 0:
                         entry[range_key] = val
+                except ValueError:
+                    pass
+            sort_mode = action.findtext("areasortmode", "").strip()
+            if sort_mode:
+                entry["area_sort_mode"] = sort_mode
+            for key, output_key in (
+                ("outerdamageareadistance", "outer_damage_area_distance"),
+                ("outerdamageareafactor", "outer_damage_area_factor"),
+            ):
+                raw = action.findtext(key, "").strip()
+                if not raw:
+                    continue
+                try:
+                    val = float(raw)
+                    if val > 0:
+                        entry[output_key] = round(val, 4)
                 except ValueError:
                     pass
             if entry:
@@ -642,6 +682,11 @@ def _parse_attacks(
         damagearea = round(float(action.findtext("damagearea", "0") or "0"), 2)
         aoe_radius = round(damagearea) if damagearea > 0 else 0
         damagecap = round(float(action.findtext("damagecap", "0") or "0"), 2)
+        basedamagecap_raw = (action.findtext("basedamagecap", "") or "").strip()
+        try:
+            basedamagecap = bool(float(basedamagecap_raw))
+        except ValueError:
+            basedamagecap = False
 
         # Projectile count from tactics (displayednumberprojectiles)
         num_projectiles = tactics_proj.get(name, 1)
@@ -680,6 +725,14 @@ def _parse_attacks(
             "minrange": minrange,
             "aoe_radius": aoe_radius,
             "damage_cap": damagecap,
+            "area_sort_mode": tact.get("area_sort_mode", ""),
+            "outer_damage_area_distance": tact.get(
+                "outer_damage_area_distance", 0.0
+            ),
+            "outer_damage_area_factor": tact.get(
+                "outer_damage_area_factor", 0.0
+            ),
+            "basedamagecap": basedamagecap,
             "num_projectiles": num_projectiles,
             "multipliers": multipliers,
         }

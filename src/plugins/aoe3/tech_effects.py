@@ -27,25 +27,11 @@ def _slots_for_op(op: dict, unit: Unit) -> list[str]:
         if unit.attack_melee:
             slots.append("melee")
         return slots
-    # protoaction_ranged/melee 存在 Unit 的上游 JSON 但 dataclass 没直接暴露
-    # → 用 internal_name / type 不够；需要看 unit_json。
-    # 但 Unit 无 protoaction 字段（历史原因），直接在此用规则近似：
-    #   远程代表动作含 "Ranged/Bow/Volley" → ranged 槽
-    #   近战代表动作含 "Hand/Melee/Defend" → melee 槽
-    # 更稳妥的做法是给 Unit 加 protoaction_ranged/melee 字段，但改动面大，暂用这套。
-    # 注意：scope 已保证科技只对有该标签的兵起作用，action 不匹配顶多不生效。
-    al = action.lower()
-    if "ranged" in al or "bow" in al or "volley" in al or "stagger" in al:
+    if action == unit.protoaction_ranged:
         return ["ranged"] if unit.attack_ranged else []
-    if "hand" in al or "melee" in al or "defend" in al or "trample" in al:
+    if action == unit.protoaction_melee:
         return ["melee"] if unit.attack_melee else []
-    # fallback: 两个槽都给
-    slots = []
-    if unit.attack_ranged:
-        slots.append("ranged")
-    if unit.attack_melee:
-        slots.append("melee")
-    return slots
+    return []
 
 
 def _op_dedup_key(op: dict, unit: Unit) -> tuple[str, ...]:

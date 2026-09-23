@@ -969,6 +969,18 @@ AOE3 有三种伤害类型，每种只被对应的抗性减免：
 | `<damagearea>` | 溅射半径（游戏内 AoE 圆半径） |
 | `<damagecap>` | **溅射总伤害池**（不含主目标全额伤害；主目标另算） |
 | `<basedamagecap>` | 多为 `1`，表示伤害上限随科技/升级按 BasePercent 缩放（见 `techtreey.xml` 的 `subtype="DamageCap"`） |
+| `.tactics` `<areasortmode>` | `Radial` / `Directional`，决定 AOE 是全圆还是方向性区域 |
+| `.tactics` `<outerdamageareadistance>` | 距离衰减的外圈距离参数 |
+| `.tactics` `<outerdamageareafactor>` | 外圈最低伤害系数 |
+
+对应 seed 字段：
+
+| tactics / protoy | units.json |
+|---|---|
+| `areasortmode` | `area_sort_mode_ranged/melee` |
+| `outerdamageareadistance` | `outer_damage_area_distance_ranged/melee` |
+| `outerdamageareafactor` | `outer_damage_area_factor_ranged/melee` |
+| `basedamagecap` | `basedamagecap_ranged/melee` |
 
 **解包里没有**溅射分配公式（距离衰减、随机选目标、Bolos 弹跳等特殊模式均在引擎 C++ 里）。社区/实测共识（AoE3 Heaven、ESOCommunity、Fandom）：
 
@@ -979,19 +991,27 @@ AOE3 有三种伤害类型，每种只被对应的抗性减免：
 
 #### 斗蛐蛐简化 AOE 模型
 
-二维场地中以真实位置判断溅射；2026-09-23 删除旧人数配额和随机抽取规则：
+二维场地中以真实位置判断溅射；2026-09-23 删除旧人数配额、随机抽取和
+`DamageCap / 人数` 均分规则：
 
 - 有 AOE 属性的兵种攻击时：
   - 主目标受 **100% 完整伤害**
-  - **与主目标距离 ≤ aoe_radius 的所有存活敌方个体**参与溅射，排除主目标；半径是距离，不是人数上限。
-  - 不随机抽选受害单位；同兵种的每个个体也使用自身的二维位置判断。
+  - 以主目标位置为命中点，按二维欧氏距离筛选半径内的敌方个体，排除主目标。
+  - `area_sort_mode` 来自 `.tactics`：
+    - `Radial`：全圆筛选。
+    - `Directional`：只保留攻击方向前方的目标。
+  - 距离衰减按 `outer_damage_area_distance` / `outer_damage_area_factor`：
+    - 无参数时，半径内系数为 1。
+    - 有参数时，命中点处系数为 1，到外圈距离后降为外圈系数，并在半径内保持该下限。
   - **DamageCap**：优先使用本次攻击槽位的 `damage_cap_*`；没有正数 cap 时使用 `合并基础伤害 × 2`，即 `damage × num_projectiles × 2`。
   - 缺 cap 的两倍兜底是用户明确确认保留的模型决策，不得作为未授权平衡补丁删除，也不宣称这是原作引擎的已证实缺省值。
-  - 仍保留均分简化：每个副目标基础伤害为 `min(DamageCap / 实际溅射人数, 合并基础攻)`，再乘倍率/抗性。
-  - 不把小于 1 的伤害抬高到 1，避免多目标时绕过伤害池。
-  - 溅射伤害同样应用倍率和抗性
-  - 主目标的超杀伤害不转移
-  - **未实现**：距离衰减、锥形/圆形精确几何、Bolos 弹跳等非 protoy 字段逻辑
+  - 副目标按到命中点的距离从近到远排序，依次消耗 cap：
+    - 每个目标基础伤害 = `合并基础伤害 × 距离系数`。
+    - 实际分配 = `min(基础伤害, 剩余 cap)`。
+    - 最终伤害 = `实际分配 × 克制倍率 × (1 - 护甲)`。
+    - cap 耗尽后，不再命中更远的副目标。
+  - 主目标不消耗副目标 cap；超杀不转移。
+  - 不随机选目标，不按人数均分，不把每个副目标的伤害上限写成 `cap / 人数`。
 - `aoe_radius` 字段缺失或为 0 的兵种 → **单体攻击**，不走 AOE 流程
 - 兵种实际有 AOE 但字段缺失 → **数据 bug**，列入 §四数据缺失清单修复
 - 模拟器**不做兜底猜测**（不能“看到是炮就猜 aoe=3”，数据是什么就是什么）

@@ -79,6 +79,16 @@ class Unit:
     aoe_radius_siege: int = 0        # 攻城攻击 AOE 半径
     damage_cap_ranged: float = 0.0   # 远程溅射总伤害池（protoy damagecap）
     damage_cap_melee: float = 0.0    # 近战溅射总伤害池
+    area_sort_mode_ranged: str = ""  # tactics areasortmode
+    area_sort_mode_melee: str = ""   # tactics areasortmode
+    outer_damage_area_distance_ranged: float = 0.0
+    outer_damage_area_distance_melee: float = 0.0
+    outer_damage_area_factor_ranged: float = 0.0
+    outer_damage_area_factor_melee: float = 0.0
+    basedamagecap_ranged: bool = False
+    basedamagecap_melee: bool = False
+    protoaction_ranged: str = ""
+    protoaction_melee: str = ""
     damage_type_ranged: str = ""     # "Ranged" / "Siege" / "Hand"
     damage_type_melee: str = ""      # "Hand" / 其他
 
@@ -201,6 +211,24 @@ class Unit:
             aoe_radius_siege=d.get("aoe_radius_siege", 0),
             damage_cap_ranged=d.get("damage_cap_ranged", 0.0),
             damage_cap_melee=d.get("damage_cap_melee", 0.0),
+            area_sort_mode_ranged=d.get("area_sort_mode_ranged", ""),
+            area_sort_mode_melee=d.get("area_sort_mode_melee", ""),
+            outer_damage_area_distance_ranged=d.get(
+                "outer_damage_area_distance_ranged", 0.0
+            ),
+            outer_damage_area_distance_melee=d.get(
+                "outer_damage_area_distance_melee", 0.0
+            ),
+            outer_damage_area_factor_ranged=d.get(
+                "outer_damage_area_factor_ranged", 0.0
+            ),
+            outer_damage_area_factor_melee=d.get(
+                "outer_damage_area_factor_melee", 0.0
+            ),
+            basedamagecap_ranged=bool(d.get("basedamagecap_ranged", False)),
+            basedamagecap_melee=bool(d.get("basedamagecap_melee", False)),
+            protoaction_ranged=d.get("protoaction_ranged", ""),
+            protoaction_melee=d.get("protoaction_melee", ""),
             damage_type_ranged=d.get("damage_type_ranged", ""),
             damage_type_melee=d.get("damage_type_melee", ""),
             windups={k: float(v) for k, v in d.get("windups", {}).items()},

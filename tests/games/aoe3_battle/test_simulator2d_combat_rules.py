@@ -139,14 +139,14 @@ def test_aoe_hits_geometry_not_a_random_radius_sized_quota():
 
 def test_real_cap_is_preserved_without_inventing_a_minimum_one_damage():
     _sim, _main, others, count = _splash(4)
-    assert count == 8
+    assert count == 1
     assert sum(10000 - unit.hp for unit in others) == pytest.approx(4)
 
 
 @pytest.mark.parametrize("projectiles", [1, 3])
 def test_missing_cap_uses_user_approved_twice_combined_base_attack(projectiles):
     _sim, _main, others, count = _splash(0, projectiles)
-    assert count == 8
+    assert count == 2
     assert sum(10000 - unit.hp for unit in others) == pytest.approx(20 * projectiles * 2)
 
 

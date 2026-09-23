@@ -378,6 +378,9 @@
     "damage_type_ranged": "Siege",
     "aoe_radius_ranged": 4,
     "damage_cap_ranged": 400.0,
+    "area_sort_mode_ranged": "Directional",
+    "outer_damage_area_distance_ranged": 0.25,
+    "outer_damage_area_factor_ranged": 0.2,
     "multipliers": {
       "ranged": [
         {
@@ -501,6 +504,7 @@
     "damage_type_ranged": "Siege",
     "aoe_radius_ranged": 4,
     "damage_cap_ranged": 400.0,
+    "area_sort_mode_ranged": "Radial",
     "multipliers": {
       "ranged": [
         {
@@ -1037,6 +1041,7 @@
     "damage_type_ranged": "Siege",
     "aoe_radius_ranged": 1,
     "damage_cap_ranged": 80.0,
+    "area_sort_mode_ranged": "Directional",
     "multipliers": {
       "ranged": [
         {
@@ -2474,6 +2479,7 @@
     "damage_type_ranged": "Siege",
     "aoe_radius_ranged": 3,
     "damage_cap_ranged": 160.0,
+    "area_sort_mode_ranged": "Radial",
     "multipliers": {
       "ranged": [
         {
@@ -3748,6 +3754,9 @@
     "damage_type_ranged": "Siege",
     "aoe_radius_ranged": 4,
     "damage_cap_ranged": 600.0,
+    "area_sort_mode_ranged": "Radial",
+    "outer_damage_area_distance_ranged": 0.25,
+    "outer_damage_area_factor_ranged": 0.2,
     "multipliers": {
       "ranged": [
         {
@@ -4311,6 +4320,9 @@
     "rof_ranged": 2.0,
     "damage_type_ranged": "Siege",
     "aoe_radius_ranged": 4,
+    "area_sort_mode_ranged": "Directional",
+    "outer_damage_area_distance_ranged": 0.25,
+    "outer_damage_area_factor_ranged": 0.2,
     "multipliers": {
       "ranged": [
         {
@@ -5784,6 +5796,7 @@
     "damage_type_ranged": "Siege",
     "aoe_radius_ranged": 2,
     "damage_cap_ranged": 70.0,
+    "area_sort_mode_ranged": "Directional",
     "multipliers": {
       "ranged": [
         {
@@ -5799,6 +5812,7 @@
     "damage_type_melee": "Hand",
     "aoe_radius_melee": 3,
     "damage_cap_melee": 700.0,
+    "basedamagecap_melee": true,
     "windups": {
       "ShuntAttack": 0.1
     },
@@ -6216,6 +6230,7 @@
     "damage_type_ranged": "Siege",
     "aoe_radius_ranged": 3,
     "damage_cap_ranged": 160.0,
+    "area_sort_mode_ranged": "Radial",
     "multipliers": {
       "ranged": [
         {
@@ -6588,6 +6603,7 @@
     "damage_type_ranged": "Siege",
     "aoe_radius_ranged": 2,
     "damage_cap_ranged": 36.0,
+    "area_sort_mode_ranged": "Radial",
     "multipliers": {
       "ranged": [
         {
@@ -7489,6 +7505,9 @@
     "damage_type_ranged": "Siege",
     "aoe_radius_ranged": 2,
     "damage_cap_ranged": 80.0,
+    "area_sort_mode_ranged": "Directional",
+    "outer_damage_area_distance_ranged": 0.25,
+    "outer_damage_area_factor_ranged": 0.2,
     "multipliers": {
       "ranged": [
         {
@@ -7655,6 +7674,7 @@
     "damage_type_ranged": "Siege",
     "aoe_radius_ranged": 3,
     "damage_cap_ranged": 32.0,
+    "area_sort_mode_ranged": "Radial",
     "multipliers": {
       "ranged": [
         {
@@ -7926,6 +7946,9 @@
     "damage_type_melee": "Hand",
     "aoe_radius_melee": 2,
     "damage_cap_melee": 72.0,
+    "area_sort_mode_melee": "Directional",
+    "outer_damage_area_distance_melee": 0.45,
+    "outer_damage_area_factor_melee": 0.5,
     "multipliers": {
       "melee": [
         {
@@ -8128,6 +8151,7 @@
     "damage_type_ranged": "Siege",
     "aoe_radius_ranged": 1,
     "damage_cap_ranged": 600.0,
+    "area_sort_mode_ranged": "Radial",
     "multipliers": {
       "ranged": [
         {
@@ -8451,6 +8475,7 @@
     "damage_type_ranged": "Siege",
     "aoe_radius_ranged": 8,
     "damage_cap_ranged": 400.0,
+    "area_sort_mode_ranged": "Radial",
     "multipliers": {
       "ranged": [
         {
@@ -8769,6 +8794,7 @@
     "damage_type_ranged": "Siege",
     "aoe_radius_ranged": 4,
     "damage_cap_ranged": 75.0,
+    "area_sort_mode_ranged": "Radial",
     "multipliers": {
       "ranged": [
         {
@@ -8906,6 +8932,7 @@
     "damage_type_ranged": "Siege",
     "aoe_radius_ranged": 1,
     "damage_cap_ranged": 210.0,
+    "area_sort_mode_ranged": "Directional",
     "multipliers": {
       "ranged": [
         {
@@ -9543,6 +9570,9 @@
     "damage_type_ranged": "Siege",
     "aoe_radius_ranged": 2,
     "damage_cap_ranged": 200.0,
+    "area_sort_mode_ranged": "Directional",
+    "outer_damage_area_distance_ranged": 0.25,
+    "outer_damage_area_factor_ranged": 0.2,
     "multipliers": {
       "ranged": [
         {
@@ -9889,6 +9919,9 @@
     "damage_type_ranged": "Siege",
     "aoe_radius_ranged": 2,
     "damage_cap_ranged": 120.0,
+    "area_sort_mode_ranged": "Directional",
+    "outer_damage_area_distance_ranged": 0.25,
+    "outer_damage_area_factor_ranged": 0.2,
     "multipliers": {
       "ranged": [
         {
@@ -9953,6 +9986,7 @@
     "damage_type_ranged": "Siege",
     "aoe_radius_ranged": 1,
     "damage_cap_ranged": 360.0,
+    "area_sort_mode_ranged": "Directional",
     "multipliers": {
       "ranged": [
         {
@@ -10139,6 +10173,7 @@
     "damage_type_ranged": "Siege",
     "aoe_radius_ranged": 5,
     "damage_cap_ranged": 120.0,
+    "area_sort_mode_ranged": "Radial",
     "multipliers": {
       "ranged": [
         {
@@ -10532,12 +10567,14 @@
     "rof_ranged": 3.0,
     "damage_type_ranged": "Ranged",
     "aoe_radius_ranged": 1,
+    "basedamagecap_ranged": true,
     "protoaction_melee": "HandAttack",
     "attack_melee": 13.0,
     "range_melee": 1.75,
     "rof_melee": 1.5,
     "damage_type_melee": "Hand",
     "aoe_radius_melee": 1,
+    "basedamagecap_melee": true,
     "multipliers": {
       "melee": [
         {
@@ -11454,6 +11491,7 @@
     "damage_type_ranged": "Siege",
     "aoe_radius_ranged": 3,
     "damage_cap_ranged": 32.0,
+    "area_sort_mode_ranged": "Radial",
     "multipliers": {
       "ranged": [
         {
@@ -18488,6 +18526,9 @@
     "damage_type_ranged": "Siege",
     "aoe_radius_ranged": 4,
     "damage_cap_ranged": 860.0,
+    "area_sort_mode_ranged": "Directional",
+    "outer_damage_area_distance_ranged": 0.25,
+    "outer_damage_area_factor_ranged": 0.2,
     "multipliers": {
       "ranged": [
         {
@@ -18783,6 +18824,7 @@
     "damage_type_ranged": "Siege",
     "aoe_radius_ranged": 1,
     "damage_cap_ranged": 170.0,
+    "area_sort_mode_ranged": "Directional",
     "multipliers": {
       "ranged": [
         {
@@ -19113,6 +19155,7 @@
     "rof_ranged": 2.0,
     "damage_type_ranged": "Siege",
     "damage_cap_ranged": 100.0,
+    "area_sort_mode_ranged": "Directional",
     "multipliers": {
       "ranged": [
         {
@@ -19538,6 +19581,7 @@
     "damage_type_melee": "Hand",
     "aoe_radius_melee": 1,
     "damage_cap_melee": 50.0,
+    "basedamagecap_melee": true,
     "multipliers": {
       "melee": [
         {
@@ -20080,6 +20124,7 @@
     "damage_type_ranged": "Siege",
     "aoe_radius_ranged": 1,
     "damage_cap_ranged": 1000.0,
+    "area_sort_mode_ranged": "Radial",
     "multipliers": {
       "ranged": [
         {
@@ -20139,6 +20184,7 @@
     "rof_melee": 1.5,
     "damage_type_melee": "Hand",
     "damage_cap_melee": 44.0,
+    "basedamagecap_melee": true,
     "multipliers": {
       "melee": [
         {
@@ -20820,6 +20866,9 @@
     "damage_type_ranged": "Siege",
     "aoe_radius_ranged": 1,
     "damage_cap_ranged": 110.0,
+    "area_sort_mode_ranged": "Directional",
+    "outer_damage_area_distance_ranged": 0.25,
+    "outer_damage_area_factor_ranged": 0.2,
     "multipliers": {
       "ranged": [
         {
@@ -21303,6 +21352,7 @@
     "damage_type_ranged": "Siege",
     "aoe_radius_ranged": 2,
     "damage_cap_ranged": 32.0,
+    "area_sort_mode_ranged": "Radial",
     "multipliers": {
       "ranged": [
         {
@@ -23781,6 +23831,9 @@
     "rof_ranged": 3.0,
     "damage_type_ranged": "Ranged",
     "damage_cap_ranged": 60.0,
+    "area_sort_mode_ranged": "Directional",
+    "outer_damage_area_distance_ranged": 0.25,
+    "outer_damage_area_factor_ranged": 0.2,
     "multipliers": {
       "ranged": [
         {
@@ -24159,6 +24212,7 @@
     "damage_type_ranged": "Siege",
     "aoe_radius_ranged": 3,
     "damage_cap_ranged": 60.0,
+    "area_sort_mode_ranged": "Radial",
     "multipliers": {
       "ranged": [
         {
@@ -25102,6 +25156,10 @@
     "damage_type_ranged": "Siege",
     "aoe_radius_ranged": 4,
     "damage_cap_ranged": 600.0,
+    "area_sort_mode_ranged": "Radial",
+    "outer_damage_area_distance_ranged": 0.25,
+    "outer_damage_area_factor_ranged": 0.2,
+    "basedamagecap_ranged": true,
     "multipliers": {
       "ranged": [
         {
@@ -25509,6 +25567,7 @@
     "damage_type_ranged": "Siege",
     "aoe_radius_ranged": 1,
     "damage_cap_ranged": 230.0,
+    "area_sort_mode_ranged": "Directional",
     "multipliers": {
       "ranged": [
         {
@@ -25718,6 +25777,7 @@
     "damage_type_ranged": "Siege",
     "aoe_radius_ranged": 1,
     "damage_cap_ranged": 200.0,
+    "area_sort_mode_ranged": "Directional",
     "multipliers": {
       "ranged": [
         {
@@ -25886,6 +25946,9 @@
     "damage_type_ranged": "Siege",
     "aoe_radius_ranged": 5,
     "damage_cap_ranged": 1000.0,
+    "area_sort_mode_ranged": "Directional",
+    "outer_damage_area_distance_ranged": 0.25,
+    "outer_damage_area_factor_ranged": 0.2,
     "multipliers": {
       "ranged": [
         {
@@ -27431,6 +27494,7 @@
     "damage_type_ranged": "Siege",
     "aoe_radius_ranged": 1,
     "damage_cap_ranged": 200.0,
+    "area_sort_mode_ranged": "Directional",
     "multipliers": {
       "ranged": [
         {
@@ -27991,6 +28055,7 @@
     "damage_type_ranged": "Siege",
     "aoe_radius_ranged": 1,
     "damage_cap_ranged": 200.0,
+    "area_sort_mode_ranged": "Directional",
     "multipliers": {
       "ranged": [
         {
@@ -28198,6 +28263,7 @@
     "damage_type_ranged": "Siege",
     "aoe_radius_ranged": 1,
     "damage_cap_ranged": 100.0,
+    "area_sort_mode_ranged": "Directional",
     "multipliers": {
       "ranged": [
         {
@@ -28247,6 +28313,9 @@
     "damage_type_ranged": "Siege",
     "aoe_radius_ranged": 4,
     "damage_cap_ranged": 150.0,
+    "area_sort_mode_ranged": "Directional",
+    "outer_damage_area_distance_ranged": 0.25,
+    "outer_damage_area_factor_ranged": 0.2,
     "multipliers": {
       "ranged": [
         {
@@ -29067,6 +29136,9 @@
     "damage_type_ranged": "Siege",
     "aoe_radius_ranged": 3,
     "damage_cap_ranged": 200.0,
+    "area_sort_mode_ranged": "Directional",
+    "outer_damage_area_distance_ranged": 0.25,
+    "outer_damage_area_factor_ranged": 0.2,
     "multipliers": {
       "ranged": [
         {
@@ -29226,6 +29298,7 @@
     "damage_type_ranged": "Siege",
     "aoe_radius_ranged": 1,
     "damage_cap_ranged": 140.0,
+    "area_sort_mode_ranged": "Directional",
     "multipliers": {
       "ranged": [
         {
@@ -29315,6 +29388,7 @@
     "damage_type_ranged": "Siege",
     "aoe_radius_ranged": 1,
     "damage_cap_ranged": 180.0,
+    "area_sort_mode_ranged": "Directional",
     "multipliers": {
       "ranged": [
         {
@@ -29365,6 +29439,7 @@
     "damage_type_ranged": "Siege",
     "aoe_radius_ranged": 1,
     "damage_cap_ranged": 100.0,
+    "area_sort_mode_ranged": "Directional",
     "multipliers": {
       "ranged": [
         {
@@ -29415,6 +29490,7 @@
     "damage_type_ranged": "Siege",
     "aoe_radius_ranged": 1,
     "damage_cap_ranged": 140.0,
+    "area_sort_mode_ranged": "Directional",
     "multipliers": {
       "ranged": [
         {
@@ -29511,6 +29587,9 @@
     "damage_type_ranged": "Siege",
     "aoe_radius_ranged": 5,
     "damage_cap_ranged": 1000.0,
+    "area_sort_mode_ranged": "Directional",
+    "outer_damage_area_distance_ranged": 0.25,
+    "outer_damage_area_factor_ranged": 0.2,
     "multipliers": {
       "ranged": [
         {
@@ -29588,6 +29667,7 @@
     "damage_type_ranged": "Siege",
     "aoe_radius_ranged": 3,
     "damage_cap_ranged": 32.0,
+    "area_sort_mode_ranged": "Radial",
     "multipliers": {
       "ranged": [
         {
@@ -29842,6 +29922,9 @@
     "damage_type_ranged": "Siege",
     "aoe_radius_ranged": 5,
     "damage_cap_ranged": 800.0,
+    "area_sort_mode_ranged": "Directional",
+    "outer_damage_area_distance_ranged": 0.25,
+    "outer_damage_area_factor_ranged": 0.2,
     "multipliers": {
       "ranged": [
         {
@@ -30504,6 +30587,9 @@
     "damage_type_ranged": "Siege",
     "aoe_radius_ranged": 10,
     "damage_cap_ranged": 100000.0,
+    "area_sort_mode_ranged": "Directional",
+    "outer_damage_area_distance_ranged": 0.25,
+    "outer_damage_area_factor_ranged": 0.2,
     "windups": {
       "CannonAttack": 0.1
     },
@@ -30845,6 +30931,9 @@
     "damage_type_ranged": "Siege",
     "aoe_radius_ranged": 4,
     "damage_cap_ranged": 800.0,
+    "area_sort_mode_ranged": "Directional",
+    "outer_damage_area_distance_ranged": 0.25,
+    "outer_damage_area_factor_ranged": 0.2,
     "multipliers": {
       "ranged": [
         {
@@ -31695,6 +31784,7 @@
     "damage_type_ranged": "Siege",
     "aoe_radius_ranged": 10,
     "damage_cap_ranged": 400.0,
+    "area_sort_mode_ranged": "Radial",
     "multipliers": {
       "ranged": [
         {
@@ -31843,6 +31933,7 @@
     "damage_type_ranged": "Siege",
     "aoe_radius_ranged": 4,
     "damage_cap_ranged": 90.0,
+    "area_sort_mode_ranged": "Radial",
     "multipliers": {
       "ranged": [
         {
@@ -35556,6 +35647,7 @@
     "damage_type_ranged": "Siege",
     "aoe_radius_ranged": 1,
     "damage_cap_ranged": 200.0,
+    "area_sort_mode_ranged": "Directional",
     "multipliers": {
       "ranged": [
         {
@@ -35604,6 +35696,9 @@
     "damage_type_ranged": "Siege",
     "aoe_radius_ranged": 4,
     "damage_cap_ranged": 600.0,
+    "area_sort_mode_ranged": "Radial",
+    "outer_damage_area_distance_ranged": 0.25,
+    "outer_damage_area_factor_ranged": 0.2,
     "multipliers": {
       "ranged": [
         {
@@ -35733,6 +35828,9 @@
     "damage_type_ranged": "Siege",
     "aoe_radius_ranged": 6,
     "damage_cap_ranged": 1350.0,
+    "area_sort_mode_ranged": "Directional",
+    "outer_damage_area_distance_ranged": 0.25,
+    "outer_damage_area_factor_ranged": 0.2,
     "windups": {
       "CannonAttack": 0.06
     },
@@ -37131,6 +37229,7 @@
     "rof_ranged": 0.85,
     "damage_type_ranged": "Siege",
     "aoe_radius_ranged": 4,
+    "area_sort_mode_ranged": "Directional",
     "aoe_radius": 4
   },
   {
@@ -37174,6 +37273,7 @@
     "rof_ranged": 5.0,
     "damage_type_ranged": "Siege",
     "aoe_radius_ranged": 2,
+    "area_sort_mode_ranged": "Radial",
     "multipliers": {
       "ranged": [
         {
@@ -37241,6 +37341,7 @@
     "damage_type_ranged": "Siege",
     "aoe_radius_ranged": 1,
     "damage_cap_ranged": 164.0,
+    "area_sort_mode_ranged": "Directional",
     "aoe_radius": 1
   },
   {
@@ -37546,6 +37647,9 @@
     "damage_type_ranged": "Siege",
     "aoe_radius_ranged": 6,
     "damage_cap_ranged": 1350.0,
+    "area_sort_mode_ranged": "Directional",
+    "outer_damage_area_distance_ranged": 0.25,
+    "outer_damage_area_factor_ranged": 0.2,
     "windups": {
       "CannonAttack": 0.06
     },
@@ -38891,6 +38995,9 @@
     "damage_type_ranged": "Siege",
     "aoe_radius_ranged": 3,
     "damage_cap_ranged": 250.0,
+    "area_sort_mode_ranged": "Directional",
+    "outer_damage_area_distance_ranged": 0.25,
+    "outer_damage_area_factor_ranged": 0.2,
     "multipliers": {
       "ranged": [
         {
@@ -39020,6 +39127,7 @@
     "damage_type_ranged": "Siege",
     "aoe_radius_ranged": 6,
     "damage_cap_ranged": 400.0,
+    "area_sort_mode_ranged": "Radial",
     "multipliers": {
       "ranged": [
         {
@@ -39297,6 +39405,9 @@
     "damage_type_ranged": "Siege",
     "aoe_radius_ranged": 2,
     "damage_cap_ranged": 140.0,
+    "area_sort_mode_ranged": "Directional",
+    "outer_damage_area_distance_ranged": 0.25,
+    "outer_damage_area_factor_ranged": 0.2,
     "multipliers": {
       "ranged": [
         {
@@ -41111,6 +41222,7 @@
     "damage_type_ranged": "Siege",
     "aoe_radius_ranged": 1,
     "damage_cap_ranged": 70.0,
+    "area_sort_mode_ranged": "Directional",
     "multipliers": {
       "ranged": [
         {
@@ -43070,6 +43182,9 @@
     "damage_type_ranged": "Siege",
     "aoe_radius_ranged": 4,
     "damage_cap_ranged": 400.0,
+    "area_sort_mode_ranged": "Directional",
+    "outer_damage_area_distance_ranged": 0.25,
+    "outer_damage_area_factor_ranged": 0.2,
     "multipliers": {
       "ranged": [
         {
@@ -43236,6 +43351,7 @@
     "damage_type_ranged": "Siege",
     "aoe_radius_ranged": 1,
     "damage_cap_ranged": 80.0,
+    "area_sort_mode_ranged": "Directional",
     "multipliers": {
       "ranged": [
         {
@@ -43431,6 +43547,9 @@
     "damage_type_ranged": "Siege",
     "aoe_radius_ranged": 3,
     "damage_cap_ranged": 200.0,
+    "area_sort_mode_ranged": "Directional",
+    "outer_damage_area_distance_ranged": 0.25,
+    "outer_damage_area_factor_ranged": 0.2,
     "multipliers": {
       "ranged": [
         {
@@ -43660,6 +43779,9 @@
     "damage_type_ranged": "Siege",
     "aoe_radius_ranged": 5,
     "damage_cap_ranged": 1000.0,
+    "area_sort_mode_ranged": "Directional",
+    "outer_damage_area_distance_ranged": 0.25,
+    "outer_damage_area_factor_ranged": 0.2,
     "multipliers": {
       "ranged": [
         {
@@ -43809,6 +43931,9 @@
     "damage_type_ranged": "Siege",
     "aoe_radius_ranged": 3,
     "damage_cap_ranged": 250.0,
+    "area_sort_mode_ranged": "Directional",
+    "outer_damage_area_distance_ranged": 0.25,
+    "outer_damage_area_factor_ranged": 0.2,
     "multipliers": {
       "ranged": [
         {
@@ -44120,6 +44245,7 @@
     "damage_type_ranged": "Siege",
     "aoe_radius_ranged": 4,
     "damage_cap_ranged": 90.0,
+    "area_sort_mode_ranged": "Radial",
     "multipliers": {
       "ranged": [
         {
@@ -45129,6 +45255,7 @@
     "damage_type_ranged": "Siege",
     "aoe_radius_ranged": 3,
     "damage_cap_ranged": 32.0,
+    "area_sort_mode_ranged": "Radial",
     "multipliers": {
       "ranged": [
         {
@@ -45864,6 +45991,9 @@
     "damage_type_ranged": "Siege",
     "aoe_radius_ranged": 2,
     "damage_cap_ranged": 140.0,
+    "area_sort_mode_ranged": "Directional",
+    "outer_damage_area_distance_ranged": 0.25,
+    "outer_damage_area_factor_ranged": 0.2,
     "multipliers": {
       "ranged": [
         {
@@ -45928,6 +46058,9 @@
     "damage_type_ranged": "Siege",
     "aoe_radius_ranged": 3,
     "damage_cap_ranged": 380.0,
+    "area_sort_mode_ranged": "Radial",
+    "outer_damage_area_distance_ranged": 0.25,
+    "outer_damage_area_factor_ranged": 0.2,
     "multipliers": {
       "ranged": [
         {
@@ -46067,6 +46200,7 @@
     "damage_type_ranged": "Siege",
     "aoe_radius_ranged": 1,
     "damage_cap_ranged": 180.0,
+    "area_sort_mode_ranged": "Directional",
     "multipliers": {
       "ranged": [
         {
@@ -46117,6 +46251,7 @@
     "damage_type_ranged": "Siege",
     "aoe_radius_ranged": 1,
     "damage_cap_ranged": 80.0,
+    "area_sort_mode_ranged": "Directional",
     "multipliers": {
       "ranged": [
         {
@@ -46202,6 +46337,7 @@
     "damage_type_ranged": "Siege",
     "aoe_radius_ranged": 1,
     "damage_cap_ranged": 10.0,
+    "area_sort_mode_ranged": "Radial",
     "multipliers": {
       "ranged": [
         {
@@ -48498,6 +48634,7 @@
     "damage_type_ranged": "Siege",
     "aoe_radius_ranged": 3,
     "damage_cap_ranged": 48.0,
+    "area_sort_mode_ranged": "Radial",
     "multipliers": {
       "ranged": [
         {
@@ -49763,6 +49900,7 @@
     "damage_type_ranged": "Siege",
     "aoe_radius_ranged": 4,
     "damage_cap_ranged": 69.0,
+    "area_sort_mode_ranged": "Radial",
     "multipliers": {
       "ranged": [
         {
@@ -49895,6 +50033,7 @@
     "damage_type_ranged": "Ranged",
     "aoe_radius_ranged": 2,
     "damage_cap_ranged": 36.0,
+    "area_sort_mode_ranged": "Radial",
     "multipliers": {
       "ranged": [
         {
@@ -50128,6 +50267,7 @@
     "damage_type_ranged": "Ranged",
     "aoe_radius_ranged": 2,
     "damage_cap_ranged": 36.0,
+    "area_sort_mode_ranged": "Radial",
     "multipliers": {
       "ranged": [
         {
@@ -51892,6 +52032,7 @@
     "damage_type_ranged": "Siege",
     "aoe_radius_ranged": 3,
     "damage_cap_ranged": 56.0,
+    "area_sort_mode_ranged": "Radial",
     "multipliers": {
       "ranged": [
         {
@@ -52450,6 +52591,9 @@
     "damage_type_ranged": "Siege",
     "aoe_radius_ranged": 4,
     "damage_cap_ranged": 800.0,
+    "area_sort_mode_ranged": "Directional",
+    "outer_damage_area_distance_ranged": 0.25,
+    "outer_damage_area_factor_ranged": 0.2,
     "multipliers": {
       "ranged": [
         {
@@ -54639,6 +54783,9 @@
     "damage_type_ranged": "Siege",
     "aoe_radius_ranged": 1,
     "damage_cap_ranged": 200.0,
+    "area_sort_mode_ranged": "Directional",
+    "outer_damage_area_distance_ranged": 0.25,
+    "outer_damage_area_factor_ranged": 0.2,
     "multipliers": {
       "ranged": [
         {
@@ -54721,6 +54868,9 @@
     "damage_type_ranged": "Siege",
     "aoe_radius_ranged": 1,
     "damage_cap_ranged": 400.0,
+    "area_sort_mode_ranged": "Directional",
+    "outer_damage_area_distance_ranged": 0.25,
+    "outer_damage_area_factor_ranged": 0.2,
     "multipliers": {
       "ranged": [
         {
@@ -55004,6 +55154,7 @@
     "damage_type_ranged": "Siege",
     "aoe_radius_ranged": 3,
     "damage_cap_ranged": 32.0,
+    "area_sort_mode_ranged": "Radial",
     "multipliers": {
       "ranged": [
         {
@@ -55496,6 +55647,7 @@
     "damage_type_ranged": "Siege",
     "aoe_radius_ranged": 1,
     "damage_cap_ranged": 180.0,
+    "area_sort_mode_ranged": "Directional",
     "multipliers": {
       "ranged": [
         {
@@ -55876,6 +56028,7 @@
     "damage_type_ranged": "Siege",
     "aoe_radius_ranged": 1,
     "damage_cap_ranged": 100.0,
+    "area_sort_mode_ranged": "Directional",
     "multipliers": {
       "ranged": [
         {
@@ -55926,6 +56079,7 @@
     "damage_type_ranged": "Siege",
     "aoe_radius_ranged": 1,
     "damage_cap_ranged": 100.0,
+    "area_sort_mode_ranged": "Directional",
     "multipliers": {
       "ranged": [
         {
@@ -56131,6 +56285,7 @@
     "damage_type_ranged": "Siege",
     "aoe_radius_ranged": 1,
     "damage_cap_ranged": 140.0,
+    "area_sort_mode_ranged": "Directional",
     "multipliers": {
       "ranged": [
         {

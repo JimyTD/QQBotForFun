@@ -90,6 +90,17 @@ def test_apply_upgrades_returns_copy(repo):
     assert up.attack_ranged == round(musk.attack_ranged * 2, 2)
 
 
+def test_damage_upgrade_scales_aoe_cap_with_attack(repo):
+    falconet = repo.get_by_id("falconet")
+    upgraded = apply_upgrades(falconet, 5)
+
+    ratio = upgraded.attack_ranged / falconet.attack_ranged
+    assert upgraded.damage_cap_ranged == pytest.approx(
+        falconet.damage_cap_ranged * ratio,
+        abs=0.02,
+    )
+
+
 def test_apply_upgrades_renames_unit(repo):
     """时代升级后兵种改名（SetName）。"""
     musk = repo.get_by_id("musketeer")
