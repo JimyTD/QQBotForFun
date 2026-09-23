@@ -56,6 +56,12 @@ from .opening_renderer import (
     format_civ_war_fallback,
     render_civ_war_opening,
 )
+from .replay import ReplaySession
+from .replay.service import (
+    broadcast_replay_video,
+    broadcast_replays,
+    generate_replay_video,
+)
 from .simulator2d import BattleSimulator2D
 from .tournament import Tournament, TournamentStage
 
@@ -75,6 +81,19 @@ AGE_MAX = 5                  # 时代上限（帝王）
 AGE_DEFAULT = 3              # 默认时代（§3.10.6：693 兵，默认即有改良）
 BATTLE_LOG_DIR = Path(__file__).resolve().parents[4] / "logs" / "aoe3_battle"
 BATTLE_LOG_KEEP = 5          # 保留最近 N 局（精简+完整各算一个文件）
+
+
+def _replay_side_label(match: MatchLineup, side: str) -> str:
+    """Build a compact side label for the replay intro card."""
+    lineup = match.red if side == "red" else match.blue
+    civ_name = match.red_civ_name if side == "red" else match.blue_civ_name
+    strategy = match.red_strategy if side == "red" else match.blue_strategy
+    prefix = " · ".join(part for part in (civ_name, strategy) if part)
+    units = " + ".join(
+        f"{slot.unit.name or slot.unit.name_en}×{slot.count}"
+        for slot in lineup.slots
+    )
+    return f"{prefix}｜{units}" if prefix else units
 
 
 def _dump_battle_log(
@@ -760,16 +779,34 @@ class AoE3BattleGame(GameBase):
 
             # 1. 跑模拟
             is_duel = ctx.state.get("mode") == "duel"
+            replay_session = ReplaySession(
+                session_id=ctx.session_id,
+                mode=match.mode,
+                match_label=(
+                    getattr(match, "rival_theme", None)
+                    or f"{match.red.unit.name} vs {match.blue.unit.name}"
+                ),
+                red_label=_replay_side_label(match, "red"),
+                blue_label=_replay_side_label(match, "blue"),
+                red_count=match.red.total_count,
+                blue_count=match.blue.total_count,
+            )
             sim = BattleSimulator2D(
                 red_army=[(s.unit, s.count) for s in match.red.slots],
                 blue_army=[(s.unit, s.count) for s in match.blue.slots],
                 duel_mode=is_duel,
                 session_id=ctx.session_id,
+                match_label=replay_session.recorder.match_label,
+                frame_callback=replay_session.frame_callback,
             )
             result = sim.run()
+            replay = replay_session.finish(result)
 
             # dump 战斗日志
             _dump_battle_log(ctx.session_id, match, result)
+
+            # 视频编码与文字播报并行，避免阻塞战斗收尾。
+            replay_task = asyncio.create_task(generate_replay_video(replay))
 
             # 2. 播报
             broadcast_mode = await get_group_config(
@@ -799,6 +836,23 @@ class AoE3BattleGame(GameBase):
                 full_report = report
 
             await session.broadcast(ctx.group_id, full_report)
+
+            try:
+                video = await replay_task
+            except Exception as exc:  # noqa: BLE001
+                logger.warning(
+                    "[aoe3_battle] %s 回放编码失败: %s",
+                    ctx.session_id,
+                    exc,
+                    exc_info=True,
+                )
+            else:
+                sent = await broadcast_replay_video(ctx.group_id, video)
+                if not sent:
+                    logger.warning(
+                        "[aoe3_battle] %s 回放发送失败，文字战报已保留",
+                        ctx.session_id,
+                    )
 
             # 4. 结束对局
             ctx.state["phase"] = "ended"
@@ -1092,6 +1146,7 @@ class AoE3BattleGame(GameBase):
                 pending = t.get_current_round_matches()
 
             budget = ctx.state.get("budget", BUDGET_DEFAULT)
+            round_replays = []
 
             for match_obj in pending:
                 # 一场比赛：双方各 1 兵种，LCM 平衡数量
@@ -1110,12 +1165,27 @@ class AoE3BattleGame(GameBase):
                 count_b = max(1, lcm_budget // cost_b)
 
                 # 跑模拟
+                replay_session = ReplaySession(
+                    session_id=f"{ctx.session_id}:{match_obj.match_id}",
+                    mode="rival_tournament",
+                    match_label=(
+                        f"{t.theme_title} · {match_obj.label} · "
+                        f"{tu_a.display_name} vs {tu_b.display_name}"
+                    ),
+                    red_label=tu_a.display_name,
+                    blue_label=tu_b.display_name,
+                    red_count=count_a,
+                    blue_count=count_b,
+                )
                 sim = BattleSimulator2D(
                     red_army=[(tu_a.unit, count_a)],
                     blue_army=[(tu_b.unit, count_b)],
                     session_id=ctx.session_id,
+                    match_label=replay_session.recorder.match_label,
+                    frame_callback=replay_session.frame_callback,
                 )
                 result = sim.run()
+                round_replays.append(replay_session.finish(result))
 
                 # 确定胜者
                 if result.winner == Side.RED:
@@ -1184,6 +1254,9 @@ class AoE3BattleGame(GameBase):
                 ]
                 await session.broadcast(ctx.group_id, "\n".join(report_lines))
                 await asyncio.sleep(2.0)
+
+            if round_replays:
+                await broadcast_replays(ctx.group_id, round_replays)
 
             # 先检查循环内 try_advance 后是否已进入出图阶段
             # （必须在第二次 try_advance 前检查，否则 QF_DONE/SF_DONE 会被跳过）
