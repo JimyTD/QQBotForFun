@@ -97,6 +97,11 @@ class Unit:
     windup_ranged: float = 0.0
     windup_melee: float = 0.0
 
+    # 炮兵架设：开局移动，首次交火后永久部署。
+    has_limber_stance: bool = False
+    deploy_time: float = 0.0
+    deployed_speed_multiplier: float = 1.0
+
     # 官方 tooltip（stringtable ← protoy rollovertextid）
     description: str = ""
     description_en: str = ""
@@ -234,6 +239,11 @@ class Unit:
             windups={k: float(v) for k, v in d.get("windups", {}).items()},
             windup_ranged=float(d.get("windup_ranged", 0) or 0),
             windup_melee=float(d.get("windup_melee", 0) or 0),
+            has_limber_stance=bool(d.get("has_limber_stance", False)),
+            deploy_time=float(d.get("deploy_time", 0) or 0),
+            deployed_speed_multiplier=float(
+                d.get("deployed_speed_multiplier", 1) or 1
+            ),
             description=d.get("description", ""),
             description_en=d.get("description_en", ""),
             internal_name=d.get("internal_name", ""),

@@ -22,7 +22,7 @@ from .geometry import (
     unit_bounding_radius,
     unit_radius,
 )
-from .model import AttackMode, Soldier2D, TickSummary, Vec2
+from .model import ArtilleryState, AttackMode, Soldier2D, TickSummary, Vec2
 from .movement import CollisionResolver, LocalAvoidance
 from .navigation import plan_detour, route_clear, segment_distance_sq
 from .spatial import SpatialHash
@@ -368,6 +368,23 @@ class BattleSimulator2D:
                         "prepared_mode": soldier.prepared_mode.value
                         if soldier.prepared_mode is not None
                         else None,
+                        "artillery_state": (
+                            soldier.artillery_state.value
+                            if soldier.is_artillery
+                            else None
+                        ),
+                        "deploy_cd": (
+                            round(
+                                max(
+                                    0.0,
+                                    soldier.deploy_ready_at
+                                    - self._tick * self.config.tick_interval,
+                                ),
+                                3,
+                            )
+                            if soldier.is_artillery
+                            else None
+                        ),
                         "kills": soldier.kills,
                         "damage": round(soldier.total_damage_dealt, 1),
                         "steer_reason": soldier.last_steer_reason,
@@ -704,6 +721,9 @@ class BattleSimulator2D:
         steering = {}
 
         for soldier in alive:
+            if soldier.artillery_state == ArtilleryState.DEPLOYING:
+                desired_velocities[soldier.id] = Vec2(0.0, 0.0)
+                continue
             if not soldier.stopped:
                 desired, target = self._desired_velocity(soldier)
                 desired_velocities[soldier.id] = desired
@@ -939,6 +959,12 @@ class BattleSimulator2D:
         for soldier in move_order:
             if soldier.stopped or not soldier.alive or soldier.last_steer_reason == "minimum_range":
                 continue
+            if soldier.artillery_state == ArtilleryState.DEPLOYING:
+                soldier.no_progress_ticks = 0
+                soldier.motion_samples.clear()
+                soldier.oscillating = False
+                soldier.motion_stalled = False
+                continue
             goal = goals.get(soldier.id)
             displacement = soldier.pos - starts[soldier.id]
             goal_key = (
@@ -1098,6 +1124,26 @@ class BattleSimulator2D:
                 soldier.stopped = False
                 soldier.target_id = None
 
+    def _process_artillery_states(self) -> None:
+        """Advance the one-way Limber -> Deploying -> Deployed lifecycle."""
+        assert self._combat is not None
+        now = self._tick * self.config.tick_interval
+        for soldier in self._alive():
+            if not soldier.is_artillery:
+                continue
+            if soldier.artillery_state == ArtilleryState.DEPLOYING:
+                if now + 1e-9 >= soldier.deploy_ready_at:
+                    soldier.artillery_state = ArtilleryState.DEPLOYED
+                continue
+            if soldier.artillery_state != ArtilleryState.LIMBER:
+                continue
+            if self._combat.has_valid_target(soldier):
+                soldier.artillery_state = ArtilleryState.DEPLOYING
+                soldier.deploy_ready_at = now + soldier.unit.deploy_time
+                soldier.stopped = False
+                soldier.target_id = None
+                self._combat.interrupt_preparation(soldier)
+
     def _apply_damage(
         self,
         attacker: Soldier2D,
@@ -1244,6 +1290,7 @@ class BattleSimulator2D:
             timeout = False
             for tick in range(self.config.max_ticks):
                 self._tick = tick
+                self._process_artillery_states()
                 self._refresh_stopped()
                 summary = self._process_movement()
                 assert self._combat is not None

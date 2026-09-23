@@ -218,7 +218,7 @@ class LocalAvoidance:
         blocked_ticks: int,
         arrival_zone: tuple[Vec2, float] | None = None,
     ) -> SteeringResult:
-        desired = desired.clamped_length(soldier.unit.speed)
+        desired = desired.clamped_length(soldier.effective_speed)
         if desired.length_sq() <= 1e-12:
             return SteeringResult(Vec2(0.0, 0.0), "desired_zero")
 

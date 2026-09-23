@@ -404,6 +404,10 @@ def parse_unit(el: ET.Element, strings_en: dict, strings_zh: dict) -> dict | Non
         if melee and melee["name"] in windups:
             result["windup_melee"] = windups[melee["name"]]
 
+    artillery_stance = _load_artillery_stance(tactics_filename)
+    if artillery_stance:
+        result.update(artillery_stance)
+
     # AOE radius (max across attacks)
     aoe_vals = [result.get("aoe_radius_ranged", 0), result.get("aoe_radius_melee", 0)]
     max_aoe = max(aoe_vals)
@@ -465,6 +469,7 @@ def _age_num_to_name(age_num: str) -> str:
 # ============================================================
 # 缓存：tactics filename → {action_name → {"anim": str, "projectiles": int}}
 _tactics_cache: dict[str, dict[str, dict[str, Any]]] = {}
+_artillery_stance_cache: dict[str, dict[str, Any]] = {}
 
 
 def _load_tactics_actions(tactics_filename: str) -> dict[str, dict[str, Any]]:
@@ -540,6 +545,70 @@ def _load_tactics(tactics_filename: str) -> dict[str, int]:
         for name, meta in actions.items()
         if meta.get("projectiles")
     }
+
+
+def _load_artillery_stance(tactics_filename: str) -> dict[str, Any]:
+    """Parse the one-way Limber -> Bombard transition."""
+    if tactics_filename in _artillery_stance_cache:
+        return _artillery_stance_cache[tactics_filename]
+
+    result: dict[str, Any] = {}
+    tactics_path = TACTICS_DIR / tactics_filename if tactics_filename else None
+    if tactics_path is None or not tactics_path.is_file():
+        _artillery_stance_cache[tactics_filename] = result
+        return result
+
+    try:
+        root = ET.parse(tactics_path).getroot()
+    except ET.ParseError:
+        _artillery_stance_cache[tactics_filename] = result
+        return result
+
+    tactics = {
+        (tactic.text or "").strip(): tactic
+        for tactic in root.findall("tactic")
+    }
+    limber = tactics.get("Limber")
+    bombard = tactics.get("Bombard")
+    if limber is None or bombard is None:
+        _artillery_stance_cache[tactics_filename] = result
+        return result
+
+    transition = next(
+        (
+            item
+            for item in limber.findall("transition")
+            if (item.findtext("tactic") or "").strip() == "Bombard"
+        ),
+        None,
+    )
+    if transition is None:
+        _artillery_stance_cache[tactics_filename] = result
+        return result
+
+    raw_length = (transition.findtext("length") or "").strip()
+    deploy_time = 0.0
+    if raw_length:
+        try:
+            deploy_time = max(0.0, float(raw_length))
+        except ValueError:
+            deploy_time = 0.0
+
+    raw_speed = (bombard.findtext("speedmodifier") or "").strip()
+    deployed_speed_multiplier = 1.0
+    if raw_speed:
+        try:
+            deployed_speed_multiplier = max(0.0, float(raw_speed))
+        except ValueError:
+            deployed_speed_multiplier = 1.0
+
+    result = {
+        "has_limber_stance": True,
+        "deploy_time": round(deploy_time, 4),
+        "deployed_speed_multiplier": round(deployed_speed_multiplier, 4),
+    }
+    _artillery_stance_cache[tactics_filename] = result
+    return result
 
 
 # ============================================================

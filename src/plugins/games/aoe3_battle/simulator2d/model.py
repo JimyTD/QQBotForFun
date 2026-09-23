@@ -18,6 +18,14 @@ class AttackMode(StrEnum):
     MELEE = "melee"
 
 
+class ArtilleryState(StrEnum):
+    """One-way artillery readiness state."""
+
+    LIMBER = "limber"
+    DEPLOYING = "deploying"
+    DEPLOYED = "deployed"
+
+
 @dataclass(frozen=True)
 class Vec2:
     """Small immutable 2D vector."""
@@ -80,6 +88,8 @@ class Soldier2D:
     aim_ready_at: float | None = None
     prepared_mode: AttackMode | None = None
     reconsider_attack_mode: bool = False
+    artillery_state: ArtilleryState = ArtilleryState.LIMBER
+    deploy_ready_at: float = 0.0
     target_id: int | None = None
     move_target_id: int | None = None
     move_target_tick: int = -1
@@ -121,6 +131,24 @@ class Soldier2D:
     effective_ranged_range: float = 0.0
     effective_ranged_rof: float = 0.0
     effective_ranged_range_min: float = 0.0
+
+    @property
+    def is_artillery(self) -> bool:
+        return self.unit.has_limber_stance
+
+    @property
+    def can_attack(self) -> bool:
+        return not self.is_artillery or self.artillery_state == ArtilleryState.DEPLOYED
+
+    @property
+    def speed_multiplier(self) -> float:
+        if self.artillery_state == ArtilleryState.DEPLOYED:
+            return self.unit.deployed_speed_multiplier
+        return 1.0
+
+    @property
+    def effective_speed(self) -> float:
+        return self.unit.speed * self.speed_multiplier
 
     @property
     def name(self) -> str:

@@ -415,6 +415,9 @@
       "CaseShotAttack": 0.08
     },
     "windup_ranged": 0.0,
+    "has_limber_stance": true,
+    "deploy_time": 2.0,
+    "deployed_speed_multiplier": 0.4,
     "aoe_radius": 4
   },
   {
@@ -1084,6 +1087,9 @@
       "BombardAttack": 0.0
     },
     "windup_ranged": 0.0,
+    "has_limber_stance": true,
+    "deploy_time": 2.0,
+    "deployed_speed_multiplier": 0.4,
     "aoe_radius": 1
   },
   {
@@ -3785,6 +3791,9 @@
       "CannonAttack": 0.37
     },
     "windup_ranged": 0.37,
+    "has_limber_stance": true,
+    "deploy_time": 2.0,
+    "deployed_speed_multiplier": 0.4,
     "aoe_radius": 4
   },
   {
@@ -4815,6 +4824,9 @@
       "CannonAttack": 0.51
     },
     "windup_ranged": 0.51,
+    "has_limber_stance": true,
+    "deploy_time": 1.5,
+    "deployed_speed_multiplier": 0.6,
     "aoe_radius": 2
   },
   {
@@ -8820,6 +8832,9 @@
       "BarrageAttack": 0.51
     },
     "windup_ranged": 0.51,
+    "has_limber_stance": true,
+    "deploy_time": 4.0,
+    "deployed_speed_multiplier": 0.4,
     "aoe_radius": 4
   },
   {
@@ -9946,6 +9961,9 @@
       "CannonAttack": 0.45
     },
     "windup_ranged": 0.45,
+    "has_limber_stance": true,
+    "deploy_time": 2.0,
+    "deployed_speed_multiplier": 0.0,
     "aoe_radius": 2
   },
   {
@@ -18558,6 +18576,9 @@
       "CannonAttack": 0.06
     },
     "windup_ranged": 0.06,
+    "has_limber_stance": true,
+    "deploy_time": 2.0,
+    "deployed_speed_multiplier": 0.4,
     "aoe_radius": 4
   },
   {
@@ -25981,6 +26002,9 @@
       "CannonAttack": 0.0
     },
     "windup_ranged": 0.0,
+    "has_limber_stance": true,
+    "deploy_time": 2.0,
+    "deployed_speed_multiplier": 0.4,
     "aoe_radius": 5
   },
   {
@@ -29165,6 +29189,9 @@
       "BombardAttack": 0.0
     },
     "windup_ranged": 0.0,
+    "has_limber_stance": true,
+    "deploy_time": 2.0,
+    "deployed_speed_multiplier": 0.4,
     "aoe_radius": 3
   },
   {
@@ -29622,6 +29649,9 @@
       "CannonAttack": 0.1
     },
     "windup_ranged": 0.1,
+    "has_limber_stance": true,
+    "deploy_time": 2.0,
+    "deployed_speed_multiplier": 0.4,
     "aoe_radius": 5
   },
   {
@@ -30594,6 +30624,9 @@
       "CannonAttack": 0.1
     },
     "windup_ranged": 0.1,
+    "has_limber_stance": true,
+    "deploy_time": 2.0,
+    "deployed_speed_multiplier": 0.4,
     "aoe_radius": 10
   },
   {
@@ -30958,6 +30991,9 @@
       "CannonAttack": 0.06
     },
     "windup_ranged": 0.06,
+    "has_limber_stance": true,
+    "deploy_time": 2.0,
+    "deployed_speed_multiplier": 0.4,
     "aoe_radius": 4
   },
   {
@@ -31959,6 +31995,9 @@
       "BarrageAttack": 0.51
     },
     "windup_ranged": 0.51,
+    "has_limber_stance": true,
+    "deploy_time": 4.0,
+    "deployed_speed_multiplier": 0.4,
     "aoe_radius": 4
   },
   {
@@ -35060,6 +35099,9 @@
       "CannonAttack": 0.51
     },
     "windup_ranged": 0.51,
+    "has_limber_stance": true,
+    "deploy_time": 1.5,
+    "deployed_speed_multiplier": 0.6,
     "aoe_radius": 2
   },
   {
@@ -35727,6 +35769,9 @@
       "CannonAttack": 0.37
     },
     "windup_ranged": 0.37,
+    "has_limber_stance": true,
+    "deploy_time": 2.0,
+    "deployed_speed_multiplier": 0.4,
     "aoe_radius": 4
   },
   {
@@ -35835,6 +35880,9 @@
       "CannonAttack": 0.06
     },
     "windup_ranged": 0.06,
+    "has_limber_stance": true,
+    "deploy_time": 2.0,
+    "deployed_speed_multiplier": 0.4,
     "aoe_radius": 6
   },
   {
@@ -37654,6 +37702,9 @@
       "CannonAttack": 0.06
     },
     "windup_ranged": 0.06,
+    "has_limber_stance": true,
+    "deploy_time": 2.0,
+    "deployed_speed_multiplier": 0.4,
     "aoe_radius": 6
   },
   {
@@ -38955,6 +39006,9 @@
       "RepeatingAttack": 0.11
     },
     "windup_ranged": 0.11,
+    "has_limber_stance": true,
+    "deploy_time": 1.5,
+    "deployed_speed_multiplier": 0.6,
     "aoe_radius": 2
   },
   {
@@ -39024,6 +39078,9 @@
       "BombardAttack": 0.0
     },
     "windup_ranged": 0.0,
+    "has_limber_stance": true,
+    "deploy_time": 3.0,
+    "deployed_speed_multiplier": 0.4,
     "aoe_radius": 3
   },
   {
@@ -43217,6 +43274,9 @@
       "CannonAttack": 0.0
     },
     "windup_ranged": 0.0,
+    "has_limber_stance": true,
+    "deploy_time": 2.0,
+    "deployed_speed_multiplier": 0.4,
     "aoe_radius": 4
   },
   {
@@ -43392,6 +43452,9 @@
       "CannonAttack": 0.0
     },
     "windup_ranged": 0.0,
+    "has_limber_stance": true,
+    "deploy_time": 2.0,
+    "deployed_speed_multiplier": 0.4,
     "aoe_radius": 1
   },
   {
@@ -43574,6 +43637,9 @@
       "CannonAttack": 0.0
     },
     "windup_ranged": 0.0,
+    "has_limber_stance": true,
+    "deploy_time": 2.0,
+    "deployed_speed_multiplier": 0.4,
     "aoe_radius": 3
   },
   {
@@ -43814,6 +43880,9 @@
       "CannonAttack": 0.0
     },
     "windup_ranged": 0.0,
+    "has_limber_stance": true,
+    "deploy_time": 2.0,
+    "deployed_speed_multiplier": 0.4,
     "aoe_radius": 5
   },
   {
@@ -43958,6 +44027,9 @@
       "CannonAttack": 0.08
     },
     "windup_ranged": 0.08,
+    "has_limber_stance": true,
+    "deploy_time": 3.0,
+    "deployed_speed_multiplier": 0.4,
     "aoe_radius": 3
   },
   {
@@ -44271,6 +44343,9 @@
       "BarrageAttack": 0.51
     },
     "windup_ranged": 0.51,
+    "has_limber_stance": true,
+    "deploy_time": 4.0,
+    "deployed_speed_multiplier": 0.4,
     "aoe_radius": 4
   },
   {
@@ -46018,6 +46093,9 @@
       "CannonAttack": 0.26
     },
     "windup_ranged": 0.26,
+    "has_limber_stance": true,
+    "deploy_time": 0.0,
+    "deployed_speed_multiplier": 1.0,
     "aoe_radius": 2
   },
   {
@@ -46089,6 +46167,9 @@
       "CannonAttack": 0.46
     },
     "windup_ranged": 0.46,
+    "has_limber_stance": true,
+    "deploy_time": 2.0,
+    "deployed_speed_multiplier": 0.4,
     "aoe_radius": 3
   },
   {
@@ -46370,6 +46451,9 @@
       "CannonAttack": 0.76
     },
     "windup_ranged": 0.76,
+    "has_limber_stance": true,
+    "deploy_time": 2.0,
+    "deployed_speed_multiplier": 0.4,
     "aoe_radius": 1
   },
   {
@@ -52610,6 +52694,9 @@
       "CannonAttack": 0.06
     },
     "windup_ranged": 0.06,
+    "has_limber_stance": true,
+    "deploy_time": 2.0,
+    "deployed_speed_multiplier": 0.4,
     "aoe_radius": 4
   },
   {
@@ -54907,6 +54994,9 @@
       "CannonAttack": 0.05
     },
     "windup_ranged": 0.05,
+    "has_limber_stance": true,
+    "deploy_time": 0.0,
+    "deployed_speed_multiplier": 1.0,
     "aoe_radius": 1
   },
   {

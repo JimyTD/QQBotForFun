@@ -126,6 +126,8 @@ class CombatSystem:
     ) -> bool:
         if not target.alive or target.side == soldier.side:
             return False
+        if not soldier.can_attack:
+            return False
         distance = soldier.distance_to(target)
         if mode == AttackMode.MELEE:
             return soldier.has_melee and distance <= soldier.effective_melee_range
@@ -159,6 +161,8 @@ class CombatSystem:
 
     def attack_candidates(self, soldier: Soldier2D) -> list[Soldier2D]:
         """Return living enemies currently inside a legal attack envelope."""
+        if not soldier.can_attack:
+            return []
         if not soldier.has_ranged and not soldier.has_melee:
             return []
         radius = max(
@@ -179,6 +183,34 @@ class CombatSystem:
                 result.append(enemy)
         result.sort(key=lambda item: (item.distance_sq_to(soldier), item.id))
         return result
+
+    def has_valid_target(self, soldier: Soldier2D) -> bool:
+        """Return whether an enemy is inside a legal attack envelope."""
+        if not soldier.has_ranged and not soldier.has_melee:
+            return False
+        radius = max(
+            soldier.effective_ranged_range if soldier.has_ranged else 0.0,
+            soldier.effective_melee_range if soldier.has_melee else 0.0,
+        )
+        if radius <= 0:
+            return False
+        enemies = self.spatial_hash.query_circle(
+            soldier.pos,
+            radius + self.config.stop_check_slack,
+            predicate=lambda other: other.alive and other.side != soldier.side,
+        )
+        for enemy in enemies:
+            distance = soldier.distance_to(enemy)
+            if soldier.has_melee and distance <= soldier.effective_melee_range:
+                return True
+            if (
+                soldier.has_ranged
+                and soldier.effective_ranged_range_min
+                <= distance
+                <= soldier.effective_ranged_range
+            ):
+                return True
+        return False
 
     def can_commit_to_attack(
         self,
@@ -290,6 +322,8 @@ class CombatSystem:
         volley: list[tuple[Soldier2D, Soldier2D, AttackMode, float]] = []
         for soldier in soldiers:
             if not soldier.alive:
+                continue
+            if not soldier.can_attack:
                 continue
             if not soldier.stopped:
                 continue
