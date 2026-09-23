@@ -16,6 +16,7 @@ from .combat import CombatSystem
 from .compat import ArmySlot, BattleEvent, BattleResult, EventType, Side
 from .config import Simulation2DConfig
 from .formation import build_deployment
+from .geometry import combined_radius, unit_radius
 from .model import AttackMode, Soldier2D, TickSummary, Vec2
 from .movement import CollisionResolver, LocalAvoidance
 from .spatial import SpatialHash
@@ -77,6 +78,29 @@ class BattleSimulator2D:
                 }
             )
         self.config = base
+        if self.config.max_known_unit_radius <= 0:
+            known_units = [
+                unit
+                for unit, _count in (red_army or [(red_unit, red_count)])
+                if unit is not None
+            ] + [
+                unit
+                for unit, _count in (blue_army or [(blue_unit, blue_count)])
+                if unit is not None
+            ]
+            max_radius = max(
+                (
+                    unit_radius(unit, self.config.fallback_unit_radius)
+                    for unit in known_units
+                ),
+                default=self.config.fallback_unit_radius,
+            )
+            self.config = Simulation2DConfig(
+                **{
+                    **asdict(self.config),
+                    "max_known_unit_radius": max_radius,
+                }
+            )
 
         if red_army is not None:
             self.red_army = [ArmySlot(unit, count) for unit, count in red_army]
@@ -396,7 +420,10 @@ class BattleSimulator2D:
         if soldier.detour_waypoint_x is not None:
             waypoint = Vec2(soldier.detour_waypoint_x, soldier.detour_waypoint_y or 0.0)
             direction = waypoint - soldier.pos
-            if direction.length() <= self.config.unit_radius * 1.2:
+            if direction.length() <= unit_radius(
+                soldier.unit,
+                self.config.fallback_unit_radius,
+            ) * 1.2:
                 soldier.detour_waypoint_x = None
                 soldier.detour_waypoint_y = None
                 soldier.detour_active_ticks = 0
@@ -449,7 +476,10 @@ class BattleSimulator2D:
                 def target_score(candidate: Soldier2D) -> tuple[int, float, int]:
                     crowd = self._spatial_hash.query_circle(
                         candidate.pos,
-                        self.config.unit_radius * 3.5,
+                        unit_radius(
+                            candidate.unit,
+                            self.config.fallback_unit_radius,
+                        ) * 3.5,
                         predicate=lambda other: (
                             other.alive and other.side == soldier.side
                         ),
@@ -525,7 +555,14 @@ class BattleSimulator2D:
                 else 0.0
             )
             lateral_offset = edge_lateral + sign * (
-                self.config.unit_radius * 4.0
+                max(
+                    unit_radius(
+                        soldier.unit,
+                        self.config.fallback_unit_radius,
+                    ),
+                    self.config.fallback_unit_radius,
+                )
+                * 4.0
             )
             # Deterministic alternating preference, with edge length as the
             # secondary criterion.  Pure nearest-edge geometry sends a whole
@@ -542,7 +579,13 @@ class BattleSimulator2D:
         side = side_axis * soldier.detour_sign
         forward_offset = min(
             self.config.avoidance_radius,
-            max(self.config.unit_radius * 1.0, abs(edge_lateral) * 0.15),
+            max(
+                unit_radius(
+                    soldier.unit,
+                    self.config.fallback_unit_radius,
+                ),
+                abs(edge_lateral) * 0.15,
+            ),
         )
         waypoint = soldier.pos + side * lateral_offset + forward * forward_offset
         soldier.detour_waypoint_x = waypoint.x
@@ -746,7 +789,6 @@ class BattleSimulator2D:
     ) -> None:
         substeps = max(1, self.config.movement_substeps)
         dt = self.config.tick_interval / substeps
-        radius = self.config.unit_radius
         for _ in range(substeps):
             for soldier in move_order:
                 if not soldier.alive or soldier.stopped:
@@ -764,8 +806,18 @@ class BattleSimulator2D:
                 proposed_y = soldier.y + blocked_y * dt
                 soldier.x = proposed_x
                 soldier.y = proposed_y
-                soldier.x = min(max(soldier.x, radius), self._field_width - radius)
-                soldier.y = min(max(soldier.y, radius), self._field_height - radius)
+                radius = unit_radius(
+                    soldier.unit,
+                    self.config.fallback_unit_radius,
+                )
+                soldier.x = min(
+                    max(soldier.x, radius),
+                    self._field_width - radius,
+                )
+                soldier.y = min(
+                    max(soldier.y, radius),
+                    self._field_height - radius,
+                )
                 progress = math.hypot(soldier.x - start_x, soldier.y - start_y)
                 if progress < self.config.blocked_progress_epsilon:
                     soldier.no_progress_ticks += 1
@@ -789,10 +841,15 @@ class BattleSimulator2D:
             direction = (waypoint - soldier.pos).normalized() * soldier.unit.speed
             return direction.x, direction.y
 
-        minimum = self.config.unit_radius * 2.0
         nearby = self._spatial_hash.query_circle(
             soldier.pos,
-            self.config.unit_radius * 3.0,
+            max(
+                unit_radius(
+                    soldier.unit,
+                    self.config.fallback_unit_radius,
+                ) * 3.0,
+                self.config.avoidance_radius,
+            ),
             predicate=lambda other, soldier_id=soldier.id: (
                 other.id != soldier_id and other.alive
             ),
@@ -829,7 +886,14 @@ class BattleSimulator2D:
             y = soldier.y + candidate_y * (self.config.tick_interval / 2.0)
             if all(
                 (x - other.x) ** 2 + (y - other.y) ** 2
-                >= (minimum - self.config.separation_slop) ** 2
+                >= (
+                    combined_radius(
+                        soldier.unit,
+                        other.unit,
+                        self.config.fallback_unit_radius,
+                    )
+                    - self.config.separation_slop
+                ) ** 2
                 for other in nearby
             ):
                 return candidate_x, candidate_y
@@ -847,7 +911,13 @@ class BattleSimulator2D:
             if can_stop and not soldier.stopped:
                 blockers = self._spatial_hash.query_circle(
                     soldier.pos,
-                    self.config.unit_radius * 3.2,
+                    max(
+                        unit_radius(
+                            soldier.unit,
+                            self.config.fallback_unit_radius,
+                        ) * 3.2,
+                        self.config.avoidance_radius,
+                    ),
                     predicate=lambda other, soldier_id=soldier.id, side=soldier.side: (
                         other.id != soldier_id
                         and other.stopped
@@ -860,9 +930,14 @@ class BattleSimulator2D:
                         key=lambda item: item.distance_sq_to(soldier),
                     )
                     separation = soldier.distance_to(nearest_blocker)
-                    can_stop = separation >= self.config.unit_radius * 1.9
+                    minimum = combined_radius(
+                        soldier.unit,
+                        nearest_blocker.unit,
+                        self.config.fallback_unit_radius,
+                    )
+                    can_stop = separation >= minimum * 0.95
                     if can_stop and len(blockers) >= 3:
-                        can_stop = separation >= self.config.unit_radius * 2.7
+                        can_stop = separation >= minimum * 1.35
             if can_stop and candidates:
                 if not soldier.stopped:
                     soldier.stopped = True

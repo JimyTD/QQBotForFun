@@ -6,6 +6,7 @@ from dataclasses import dataclass
 
 from .compat import ArmySlot, Side
 from .config import Simulation2DConfig
+from .geometry import unit_radius
 from .model import Vec2
 
 
@@ -53,13 +54,28 @@ def build_deployment(
     red_columns, red_rows = _formation_shape(len(red_units), config)
     blue_columns, blue_rows = _formation_shape(len(blue_units), config)
     max_columns = max(red_columns, blue_columns, 1)
-    lateral_span = (max_columns - 1) * config.formation_spacing
+    max_unit_diameter = max(
+        (
+            unit_radius(unit, config.fallback_unit_radius) * 2.0
+            for unit in red_units + blue_units
+        ),
+        default=0.0,
+    )
+    lateral_spacing = max(
+        config.formation_spacing,
+        max_unit_diameter + config.separation_slop * 2.0,
+    )
+    lateral_span = (max_columns - 1) * lateral_spacing
     field_height = max(
         config.field_length,
         lateral_span + config.formation_side_margin * 2,
     )
-    red_depth_span = (red_rows - 1) * config.row_spacing
-    blue_depth_span = (blue_rows - 1) * config.row_spacing
+    row_spacing = max(
+        config.row_spacing,
+        max_unit_diameter + config.separation_slop * 2.0,
+    )
+    red_depth_span = (red_rows - 1) * row_spacing
+    blue_depth_span = (blue_rows - 1) * row_spacing
     field_width = (
         config.formation_depth_margin * 2
         + config.field_length
@@ -78,6 +94,8 @@ def build_deployment(
             front_x=red_front_x,
             mid_y=mid_y,
             direction=-1.0,
+            spacing=lateral_spacing,
+            row_spacing=row_spacing,
             config=config,
         )
     )
@@ -88,6 +106,8 @@ def build_deployment(
             front_x=blue_front_x,
             mid_y=mid_y,
             direction=1.0,
+            spacing=lateral_spacing,
+            row_spacing=row_spacing,
             config=config,
         )
     )
@@ -108,6 +128,8 @@ def _place_side(
     front_x: float,
     mid_y: float,
     direction: float,
+    spacing: float,
+    row_spacing: float,
     config: Simulation2DConfig,
 ) -> list[Vec2]:
     positions: list[Vec2] = []
@@ -118,8 +140,8 @@ def _place_side(
         row = index // columns
         column = index % columns
         visible_columns = min(columns, len(units) - row * columns)
-        row_width = (visible_columns - 1) * config.formation_spacing
-        y = mid_y - row_width / 2.0 + column * config.formation_spacing
-        x = front_x + direction * row * config.row_spacing
+        row_width = (visible_columns - 1) * spacing
+        y = mid_y - row_width / 2.0 + column * spacing
+        x = front_x + direction * row * row_spacing
         positions.append(Vec2(x, y))
     return positions

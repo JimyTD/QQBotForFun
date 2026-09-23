@@ -12,6 +12,7 @@
 from __future__ import annotations
 
 import json
+import math
 import os
 import re
 import subprocess
@@ -275,6 +276,10 @@ def parse_unit(el: ET.Element, strings_en: dict, strings_zh: dict) -> dict | Non
     # --- LOS ---
     los = round(float(el.findtext("los", "0") or "0"), 1)
 
+    # --- Collision obstruction ---
+    obstruction_x = round(float(el.findtext("obstructionradiusx", "0") or "0"), 4)
+    obstruction_z = round(float(el.findtext("obstructionradiusz", "0") or "0"), 4)
+
     # --- Armor ---
     armor_melee = 0.0
     armor_ranged = 0.0
@@ -315,6 +320,13 @@ def parse_unit(el: ET.Element, strings_en: dict, strings_zh: dict) -> dict | Non
     }
     if armor_siege > 0:
         result["armor_siege"] = armor_siege
+
+    if obstruction_x > 0 and obstruction_z > 0:
+        result["obstruction_radius_x"] = obstruction_x
+        result["obstruction_radius_z"] = obstruction_z
+        result["obstruction_radius_equiv"] = round(
+            math.sqrt(obstruction_x * obstruction_z), 4
+        )
 
     if description_en:
         result["description_en"] = description_en

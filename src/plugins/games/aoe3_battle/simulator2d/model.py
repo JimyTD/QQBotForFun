@@ -8,6 +8,7 @@ from enum import StrEnum
 
 from ....aoe3.models import Unit
 from .compat import Side
+from .geometry import unit_radius
 
 
 class AttackMode(StrEnum):
@@ -130,6 +131,9 @@ class Soldier2D:
 
     def distance_to(self, other: Soldier2D) -> float:
         return math.sqrt(self.distance_sq_to(other))
+
+    def radius(self, fallback: float) -> float:
+        return unit_radius(self.unit, fallback)
 
 
 @dataclass

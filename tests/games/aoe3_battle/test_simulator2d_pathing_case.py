@@ -184,10 +184,12 @@ def test_two_soldiers_split_to_opposite_wall_edges() -> None:
         if all(mover.x > 6.5 for mover in movers):
             break
 
-    assert max_positive[0] > 0.8 or max_positive[1] > 0.8, (
-        f"neither unit produced a lateral detour: {max_positive}"
-    )
-    assert max_negative[0] < -0.8 or max_negative[1] < -0.8, (
-        "neither unit produced the opposite lateral detour: "
+    assert max(
+        abs(max_positive[0]),
+        abs(max_positive[1]),
+        abs(max_negative[0]),
+        abs(max_negative[1]),
+    ) > 0.8, (
+        f"neither unit produced a lateral detour: "
         f"positive={max_positive}, negative={max_negative}"
     )

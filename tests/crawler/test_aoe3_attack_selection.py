@@ -72,3 +72,25 @@ def test_inca_warchief_no_crackshot_ranged(units_by_id: dict[str, dict]) -> None
     assert not u.get("attack_ranged")
     assert u.get("protoaction_melee") == "HandAttack"
     assert u.get("attack_melee") == 6.0
+
+
+@pytest.mark.parametrize(
+    "unit_id,radius_x,radius_z,radius_equiv",
+    [
+        ("musketeer", 0.49, 0.49, 0.49),
+        ("falconet", 0.99, 0.99, 0.99),
+        ("ypmahout", 0.39, 0.89, 0.5892),
+        ("deafricancatamaran", 1.59, 1.99, 1.7788),
+    ],
+)
+def test_unit_obstruction_radii_are_parsed(
+    units_by_id: dict[str, dict],
+    unit_id: str,
+    radius_x: float,
+    radius_z: float,
+    radius_equiv: float,
+) -> None:
+    u = units_by_id[unit_id]
+    assert u.get("obstruction_radius_x") == radius_x
+    assert u.get("obstruction_radius_z") == radius_z
+    assert u.get("obstruction_radius_equiv") == radius_equiv

@@ -41,7 +41,8 @@ class Simulation2DConfig:
     pop_house_cost: int = POP_HOUSE_COST
     close_range_penalty: float = 0.5
 
-    unit_radius: float = 0.45
+    fallback_unit_radius: float = 0.45
+    max_known_unit_radius: float = 0.0
     formation_spacing: float = 1.25
     row_spacing: float = 2.0
     max_columns: int = 40

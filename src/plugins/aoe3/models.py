@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import math
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
@@ -46,6 +47,9 @@ class Unit:
     armor_melee: float = 0.0
     armor_ranged: float = 0.0
     armor_siege: float = 0.0        # 攻城抗性（极少见）
+    obstruction_radius_x: float = 0.0  # 原版 protoy obstructionradiusx
+    obstruction_radius_z: float = 0.0  # 原版 protoy obstructionradiusz
+    obstruction_radius_equiv: float = 0.0  # 等面积圆半径 sqrt(x*z)
 
     # 远程攻击
     attack_ranged: float = 0.0
@@ -126,6 +130,19 @@ class Unit:
     def type_str(self) -> str:
         return " / ".join(self.type) if self.type else ""
 
+    @property
+    def collision_radius(self) -> float:
+        """Return the equivalent circular collision radius.
+
+        Missing or malformed obstruction data returns ``0.0`` so callers can
+        apply their own data fallback.
+        """
+        if self.obstruction_radius_equiv > 0:
+            return self.obstruction_radius_equiv
+        if self.obstruction_radius_x > 0 and self.obstruction_radius_z > 0:
+            return math.sqrt(self.obstruction_radius_x * self.obstruction_radius_z)
+        return 0.0
+
     @classmethod
     def from_dict(cls, d: dict[str, Any]) -> Unit:
         """从 units.json 的字典构造。"""
@@ -160,6 +177,9 @@ class Unit:
             armor_melee=d.get("armor_melee", 0.0),
             armor_ranged=d.get("armor_ranged", 0.0),
             armor_siege=d.get("armor_siege", 0.0),
+            obstruction_radius_x=d.get("obstruction_radius_x", 0.0),
+            obstruction_radius_z=d.get("obstruction_radius_z", 0.0),
+            obstruction_radius_equiv=d.get("obstruction_radius_equiv", 0.0),
             attack_ranged=d.get("attack_ranged", 0.0),
             range=d.get("range", 0.0),
             range_min=d.get("range_min", 0.0),

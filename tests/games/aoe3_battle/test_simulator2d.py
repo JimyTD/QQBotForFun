@@ -4,9 +4,11 @@ from __future__ import annotations
 
 import random
 
+import pytest
+
 from plugins.aoe3.models import Multiplier, Unit
-from plugins.games.aoe3_battle.broadcaster import format_battle_report
 from plugins.games.aoe3_battle.battle_contract import EventType, Side
+from plugins.games.aoe3_battle.broadcaster import format_battle_report
 from plugins.games.aoe3_battle.simulator2d import (
     BattleSimulator2D,
     Simulation2DConfig,
@@ -31,6 +33,9 @@ def _unit(
     range_: float = 0.0,
     aoe_radius_ranged: int = 0,
     damage_cap_ranged: float = 0.0,
+    obstruction_radius_x: float = 0.0,
+    obstruction_radius_z: float = 0.0,
+    obstruction_radius_equiv: float = 0.0,
 ) -> Unit:
     return Unit(
         id=unit_id,
@@ -45,6 +50,9 @@ def _unit(
         rof_ranged=1.0,
         aoe_radius_ranged=aoe_radius_ranged,
         damage_cap_ranged=damage_cap_ranged,
+        obstruction_radius_x=obstruction_radius_x,
+        obstruction_radius_z=obstruction_radius_z,
+        obstruction_radius_equiv=obstruction_radius_equiv,
         multipliers_ranged=[
             Multiplier(vs="Infantry", value=1.0),
         ],
@@ -79,7 +87,10 @@ def test_initial_formation_has_no_overlap() -> None:
 
     for index, first in enumerate(soldiers):
         for second in soldiers[index + 1 :]:
-            assert first.distance_to(second) >= simulator.config.unit_radius * 1.99
+            minimum = first.radius(simulator.config.fallback_unit_radius) + second.radius(
+                simulator.config.fallback_unit_radius
+            )
+            assert first.distance_to(second) >= minimum * 0.99
 
 
 def test_initial_formation_stays_inside_dynamic_field() -> None:
@@ -91,10 +102,47 @@ def test_initial_formation_stays_inside_dynamic_field() -> None:
     )
     simulator._init_soldiers()
     soldiers = simulator._alive()
-    radius = simulator.config.unit_radius
+    assert all(
+        soldier.radius(simulator.config.fallback_unit_radius)
+        <= soldier.x
+        <= simulator._field_width
+        - soldier.radius(simulator.config.fallback_unit_radius)
+        for soldier in soldiers
+    )
+    assert all(
+        soldier.radius(simulator.config.fallback_unit_radius)
+        <= soldier.y
+        <= simulator._field_height
+        - soldier.radius(simulator.config.fallback_unit_radius)
+        for soldier in soldiers
+    )
 
-    assert all(radius <= soldier.x <= simulator._field_width - radius for soldier in soldiers)
-    assert all(radius <= soldier.y <= simulator._field_height - radius for soldier in soldiers)
+
+def test_larger_units_use_their_real_obstruction_radius() -> None:
+    infantry = _unit(
+        "infantry",
+        obstruction_radius_equiv=0.49,
+    )
+    elephant = _unit(
+        "elephant",
+        hp=400,
+        obstruction_radius_x=0.49,
+        obstruction_radius_z=0.99,
+        obstruction_radius_equiv=0.6964,
+    )
+    simulator = BattleSimulator2D(
+        red_army=[(elephant, 1)],
+        blue_army=[(infantry, 1)],
+        seed=11,
+    )
+    simulator._init_soldiers()
+    first, second = simulator._alive()
+
+    assert first.radius(simulator.config.fallback_unit_radius) == pytest.approx(0.6964)
+    assert second.radius(simulator.config.fallback_unit_radius) == pytest.approx(0.49)
+    assert first.distance_to(second) >= first.radius(
+        simulator.config.fallback_unit_radius
+    ) + second.radius(simulator.config.fallback_unit_radius)
 
 
 def test_spatial_hash_circle_query() -> None:

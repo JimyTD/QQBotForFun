@@ -8,6 +8,7 @@ from dataclasses import dataclass
 from typing import Any
 
 from .config import CollisionMode, Simulation2DConfig
+from .geometry import combined_radius, unit_radius
 from .model import Soldier2D, Vec2
 from .spatial import SpatialHash
 
@@ -30,19 +31,26 @@ def _time_to_collision(
     velocity: Vec2,
     neighbor: Soldier2D,
     *,
-    radius: float,
+    fallback_radius: float,
     horizon: float,
 ) -> float | None:
     relative_position = Vec2(neighbor.x - soldier.x, neighbor.y - soldier.y)
     relative_velocity = velocity if neighbor.stopped else velocity - neighbor.velocity
-    combined_radius = radius * 2.0
+    minimum_distance = combined_radius(
+        soldier.unit,
+        neighbor.unit,
+        fallback_radius,
+    )
 
-    if relative_position.length_sq() <= combined_radius * combined_radius:
+    if relative_position.length_sq() <= minimum_distance * minimum_distance:
         # Already overlapping: only an outward-moving velocity is admissible.
         returning_to_contact = relative_position.dot(relative_velocity) >= 0.0
         return 0.0 if returning_to_contact else None
 
-    c = relative_position.dot(relative_position) - combined_radius * combined_radius
+    c = (
+        relative_position.dot(relative_position)
+        - minimum_distance * minimum_distance
+    )
     a = relative_velocity.dot(relative_velocity)
     if a <= 1e-12:
         return None
@@ -66,20 +74,25 @@ def _candidate_score(
     candidate: Vec2,
     neighbors: list[Soldier2D],
     *,
-    radius: float,
+    fallback_radius: float,
     horizon: float,
 ) -> tuple[float, float | None, int | None]:
     nearest_ttc: float | None = None
     blocking_id: int | None = None
     currently_overlapping = False
     for neighbor in neighbors:
-        if neighbor.distance_sq_to(soldier) < (radius * 2.0) ** 2:
+        minimum_distance = combined_radius(
+            soldier.unit,
+            neighbor.unit,
+            fallback_radius,
+        )
+        if neighbor.distance_sq_to(soldier) < minimum_distance * minimum_distance:
             currently_overlapping = True
         ttc = _time_to_collision(
             soldier,
             candidate,
             neighbor,
-            radius=radius,
+            fallback_radius=fallback_radius,
             horizon=horizon,
         )
         if ttc is not None and (nearest_ttc is None or ttc < nearest_ttc):
@@ -195,14 +208,18 @@ class LocalAvoidance:
         separating_from_overlap = False
         for neighbor in neighbors:
             if neighbor.distance_sq_to(soldier) < (
-                self.config.unit_radius * 2.0
+                combined_radius(
+                    soldier.unit,
+                    neighbor.unit,
+                    self.config.fallback_unit_radius,
+                )
             ) ** 2:
                 separating_from_overlap = True
             if _time_to_collision(
                 soldier,
                 desired,
                 neighbor,
-                radius=self.config.unit_radius,
+                fallback_radius=self.config.fallback_unit_radius,
                 horizon=self.config.avoidance_horizon,
             ) is not None:
                 free_path = False
@@ -231,7 +248,7 @@ class LocalAvoidance:
                     desired,
                     candidate,
                     neighbors,
-                    radius=self.config.unit_radius,
+                    fallback_radius=self.config.fallback_unit_radius,
                     horizon=self.config.avoidance_horizon,
                 )
                 # Prefer genuinely collision-free candidates, then allow
@@ -305,7 +322,7 @@ class LocalAvoidance:
         wall_contact = False
         x = velocity.x
         y = velocity.y
-        radius = self.config.unit_radius
+        radius = unit_radius(soldier.unit, self.config.fallback_unit_radius)
         if soldier.x <= radius and x < 0:
             x = 0.0
             wall_contact = True
@@ -421,7 +438,20 @@ class CollisionResolver:
                     nx,
                     ny,
                     (
-                        min(overlap, self.config.unit_radius * 0.35)
+                        min(
+                            overlap,
+                            min(
+                                unit_radius(
+                                    first.unit,
+                                    self.config.fallback_unit_radius,
+                                ),
+                                unit_radius(
+                                    second.unit,
+                                    self.config.fallback_unit_radius,
+                                ),
+                            )
+                            * 0.35,
+                        )
                         if self.config.collision_mode == CollisionMode.SOFT
                         else overlap
                     ),
@@ -463,17 +493,21 @@ class CollisionResolver:
         alive: list[Soldier2D],
     ) -> list[tuple[float, Soldier2D, Soldier2D, float]]:
         pairs: list[tuple[float, Soldier2D, Soldier2D, float]] = []
-        minimum = self.config.unit_radius * 2.0
         for soldier in sorted(alive, key=lambda item: item.id):
             nearby = self.spatial_hash.query_circle(
                 soldier.pos,
-                minimum * 1.05,
+                self._pair_search_radius(soldier),
                 predicate=lambda other, soldier_id=soldier.id: (
                     other.id > soldier_id
                 ),
             )
             for other in nearby:
                 distance = soldier.distance_to(other)
+                minimum = combined_radius(
+                    soldier.unit,
+                    other.unit,
+                    self.config.fallback_unit_radius,
+                )
                 overlap = minimum - distance
                 if overlap > self.config.separation_slop:
                     pairs.append((overlap, soldier, other, distance))
@@ -490,17 +524,21 @@ class CollisionResolver:
         max_overlap = 0.0
         pair_count = 0
         details: list[dict[str, Any]] = []
-        minimum = self.config.unit_radius * 2.0
         for soldier in sorted(alive, key=lambda item: item.id):
             nearby = self.spatial_hash.query_circle(
                 soldier.pos,
-                minimum * 1.05,
+                self._pair_search_radius(soldier),
                 predicate=lambda other, soldier_id=soldier.id: (
                     other.id > soldier_id
                 ),
             )
             for other in nearby:
                 distance = soldier.distance_to(other)
+                minimum = combined_radius(
+                    soldier.unit,
+                    other.unit,
+                    self.config.fallback_unit_radius,
+                )
                 overlap = minimum - distance
                 if overlap <= self.config.separation_slop:
                     continue
@@ -517,6 +555,20 @@ class CollisionResolver:
                         }
                     )
         return max_overlap, pair_count, details
+
+    def _pair_search_radius(self, soldier: Soldier2D) -> float:
+        """Return a conservative collision-pair query radius for ``soldier``.
+
+        The largest obstruction in the loaded unit data is currently under 10
+        world units, so the previous global-radius search can no longer be
+        expressed as twice one fixed radius.  A bounded scan over the loaded
+        unit archetypes keeps this query conservative without making the hot
+        path depend on the number of live soldiers.
+        """
+        unit = soldier.unit
+        own_radius = unit_radius(unit, self.config.fallback_unit_radius)
+        max_known_radius = self.config.max_known_unit_radius or own_radius
+        return (own_radius + max_known_radius) * 1.05
 
     def _separate_pair(
         self,
@@ -548,9 +600,16 @@ class CollisionResolver:
         second.x += nx * correction * second_share
         second.y += ny * correction * second_share
 
-        radius = self.config.unit_radius
-        first.x = min(max(first.x, radius), field_width - radius)
-        first.y = min(max(first.y, radius), field_height - radius)
-        second.x = min(max(second.x, radius), field_width - radius)
-        second.y = min(max(second.y, radius), field_height - radius)
+        first_radius = unit_radius(
+            first.unit,
+            self.config.fallback_unit_radius,
+        )
+        second_radius = unit_radius(
+            second.unit,
+            self.config.fallback_unit_radius,
+        )
+        first.x = min(max(first.x, first_radius), field_width - first_radius)
+        first.y = min(max(first.y, first_radius), field_height - first_radius)
+        second.x = min(max(second.x, second_radius), field_width - second_radius)
+        second.y = min(max(second.y, second_radius), field_height - second_radius)
         return correction
