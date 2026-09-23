@@ -276,6 +276,54 @@ def test_renderer_image_is_png() -> None:
     assert image.size == (960, 540)
 
 
+def test_renderer_caches_unit_icons(monkeypatch, tmp_path) -> None:
+    icon = Image.new("RGBA", (32, 32), (180, 120, 60, 255))
+    icon_path = tmp_path / "musketeer.png"
+    icon.save(icon_path)
+    calls = 0
+
+    class Repo:
+        @classmethod
+        def get(cls):
+            return cls()
+
+        def get_by_id(self, unit_id):
+            return SimpleNamespace(id=unit_id) if unit_id == "musketeer" else None
+
+        def get_icon_path(self, unit):
+            nonlocal calls
+            calls += 1
+            return icon_path
+
+    monkeypatch.setattr("src.plugins.aoe3.repository.UnitRepo", Repo)
+    renderer = ReplayRenderer()
+    unit = {"unit_id": "musketeer", "side": "red"}
+
+    first = renderer._unit_icon(unit, (255, 0, 0))
+    second = renderer._unit_icon(unit, (255, 0, 0))
+
+    assert first is second
+    assert calls == 1
+    assert first.size == (64, 64)
+
+
+def test_renderer_falls_back_without_unit_icon(monkeypatch) -> None:
+    class Repo:
+        @classmethod
+        def get(cls):
+            return cls()
+
+        def get_by_id(self, _unit_id):
+            return None
+
+    monkeypatch.setattr("src.plugins.aoe3.repository.UnitRepo", Repo)
+
+    assert ReplayRenderer()._unit_icon(
+        {"unit_id": "missing", "side": "blue"},
+        (0, 0, 255),
+    ) is None
+
+
 def test_cleanup_replay_files_removes_expired_and_excess(monkeypatch, tmp_path) -> None:
     monkeypatch.setattr(
         "src.plugins.games.aoe3_battle.replay.service.REPLAY_DIR",

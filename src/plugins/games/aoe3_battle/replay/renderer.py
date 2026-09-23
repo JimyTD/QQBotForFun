@@ -7,6 +7,7 @@ import logging
 import subprocess
 import tempfile
 from pathlib import Path
+from typing import Any
 
 from PIL import Image, ImageDraw, ImageFont
 
@@ -19,21 +20,27 @@ logger = logging.getLogger("aoe3_battle.replay.renderer")
 WIDTH = 960
 HEIGHT = 540
 FPS = 10
-SCENE_TOP = 96
+SCENE_TOP = 108
 SCENE_BOTTOM = 472
-HUD_TOP = 16
-HUD_BOTTOM = 84
-TIMELINE_TOP = 484
-TIMELINE_BOTTOM = 526
-BACKGROUND = (13, 20, 17)
-SCENE = (20, 32, 25)
-GRID = (45, 63, 51)
+HUD_BOTTOM = 98
+BACKGROUND = (32, 39, 43)
+SCENE = (45, 56, 59)
+GRID = (58, 71, 75)
+PANEL = (26, 32, 36)
 RED = (239, 83, 80)
 BLUE = (76, 141, 255)
-TEXT = (237, 246, 240)
-MUTED = (146, 166, 152)
-WHITE = (245, 250, 247)
-BLACK = (5, 8, 6)
+TEXT = (232, 240, 242)
+MUTED = (166, 180, 186)
+WHITE = (247, 251, 252)
+PROJECTILE_RANGED = (235, 225, 190)
+PROJECTILE_MELEE = (216, 207, 186)
+AOE_RING = (196, 196, 170)
+DEATH_MARK = (226, 205, 160)
+ICON_SIZE = 64
+ICON_CACHE_LIMIT = 64
+PROJECTILE_LIFETIME = 0.25
+AOE_LIFETIME = 0.3
+DEATH_MARK_LIFETIME = 0.6
 
 
 def _font(size: int, bold: bool = False) -> ImageFont.FreeTypeFont | ImageFont.ImageFont:
@@ -71,6 +78,7 @@ class ReplayRenderer:
         self._font = _font(16)
         self._font_bold = _font(18, bold=True)
         self._font_title = _font(24, bold=True)
+        self._icon_cache: dict[tuple[str, str], Image.Image] = {}
 
     def render(self, replay: Replay) -> bytes:
         """Render and encode a replay, returning MP4 bytes."""
@@ -167,6 +175,7 @@ class ReplayRenderer:
             outro_frames = self.fps * 3
         for replay in replays:
             plan = build_playback_plan(replay)
+            self._icon_cache.clear()
             for _ in range(intro_frames):
                 yield self._render_intro(replay)
             for _output_time, source_time in plan.iter_output_samples(self.fps):
@@ -258,9 +267,8 @@ class ReplayRenderer:
         image = Image.new("RGB", (self.width, self.height), BACKGROUND)
         draw = ImageDraw.Draw(image)
         self._draw_hud(draw, replay, frame, plan=plan)
-        self._draw_scene(draw, replay, frame)
+        self._draw_scene(image, draw, replay, frame)
         self._draw_subtitle(draw, replay, frame)
-        self._draw_timeline(draw, replay, frame, plan=plan)
         return image
 
     def _draw_hud(
@@ -273,7 +281,7 @@ class ReplayRenderer:
     ) -> None:
         red = frame.sides.get("red", {})
         blue = frame.sides.get("blue", {})
-        draw.rectangle((0, 0, self.width, HUD_BOTTOM), fill=(17, 26, 21))
+        draw.rectangle((0, 0, self.width, HUD_BOTTOM), fill=PANEL)
         draw.text((20, 12), "红方", font=self._font_small, fill=RED)
         draw.text((self.width - 76, 12), "蓝方", font=self._font_small, fill=BLUE)
         draw.text(
@@ -288,23 +296,52 @@ class ReplayRenderer:
             font=self._font_bold,
             fill=TEXT,
         )
-        self._draw_bar(draw, 92, 38, 290, float(red.get("hp_ratio", 0)), RED)
-        self._draw_bar(draw, self.width - 410, 38, 290, float(blue.get("hp_ratio", 0)), BLUE)
+        self._draw_bar(draw, 92, 55, 290, float(red.get("hp_ratio", 0)), RED)
+        self._draw_bar(draw, self.width - 382, 55, 290, float(blue.get("hp_ratio", 0)), BLUE)
         label = replay.match_label or "二维战场"
         draw.text(
-            (self.width // 2 - 180, 22),
+            (self.width // 2, 10),
             _fit_text(draw, label, self._font, 360),
+            anchor="ma",
             font=self._font,
             fill=WHITE,
         )
-        draw.text((self.width // 2 - 40, 49), f"{frame.time:05.1f}s", font=self._font, fill=MUTED)
+        draw.text(
+            (self.width // 2, 34),
+            f"{frame.time:05.1f}s",
+            anchor="ma",
+            font=self._font,
+            fill=MUTED,
+        )
         if plan is not None and plan.max_speed > 1.01:
             draw.text(
                 (self.width // 2 + 58, 48),
                 f"×{plan.speed_at(frame.time):.1f}",
                 font=self._font_small,
-                fill=(225, 185, 75),
+                fill=(196, 205, 190),
             )
+        red_composition = self._composition_text(red)
+        blue_composition = self._composition_text(blue)
+        if red_composition:
+            draw.text((20, 76), red_composition, font=self._font_small, fill=MUTED)
+        if blue_composition:
+            draw.text(
+                (self.width - 20, 76),
+                blue_composition,
+                anchor="ra",
+                font=self._font_small,
+                fill=MUTED,
+            )
+
+    @staticmethod
+    def _composition_text(side: dict[str, Any]) -> str:
+        parts = []
+        for item in side.get("composition") or []:
+            name = str(item.get("name") or item.get("unit_id") or "")
+            count = int(item.get("count") or 0)
+            if name and count > 0:
+                parts.append(f"{name}×{count}")
+        return " · ".join(parts[:4])
 
     def _draw_bar(
         self,
@@ -322,11 +359,16 @@ class ReplayRenderer:
 
     def _draw_scene(
         self,
+        image: Image.Image,
         draw: ImageDraw.ImageDraw,
         replay: Replay,
         frame: ReplayFrame,
     ) -> None:
-        draw.rectangle((20, SCENE_TOP, self.width - 20, SCENE_BOTTOM), fill=SCENE, outline=GRID)
+        draw.rectangle(
+            (20, SCENE_TOP, self.width - 20, SCENE_BOTTOM),
+            fill=SCENE,
+            outline=GRID,
+        )
         field_width = max(1.0, float(frame.field.get("width", 1.0)))
         field_height = max(1.0, float(frame.field.get("height", 1.0)))
         pad = 22
@@ -343,109 +385,199 @@ class ReplayRenderer:
 
         units = frame.units
         by_id = {int(unit.get("id", -1)): unit for unit in units}
-        for event in replay.events:
-            if event.event_type != "DEATH" or event.x is None or event.y is None:
-                continue
-            if abs(event.time - frame.time) > 0.35:
-                continue
-            x = offset_x + event.x * scale
-            y = offset_y + event.y * scale
-            draw.line((x - 6, y - 6, x + 6, y + 6), fill=(255, 208, 96), width=2)
-            draw.line((x - 6, y + 6, x + 6, y - 6), fill=(255, 208, 96), width=2)
-        for unit in units:
-            target_id = unit.get("target_id")
-            if target_id is None:
-                continue
-            target = by_id.get(int(target_id))
-            if target is None:
-                continue
-            color = RED if unit.get("side") == "red" else BLUE
-            draw.line(
-                (
-                    offset_x + float(unit.get("x", 0)) * scale,
-                    offset_y + float(unit.get("y", 0)) * scale,
-                    offset_x + float(target.get("x", 0)) * scale,
-                    offset_y + float(target.get("y", 0)) * scale,
-                ),
-                fill=tuple(channel // 3 for channel in color),
-                width=1,
-            )
+        self._draw_projectiles(draw, replay, frame, by_id, scale, offset_x, offset_y)
+        self._draw_aoe_rings(draw, replay, frame, scale, offset_x, offset_y)
+        self._draw_death_marks(draw, replay, frame, scale, offset_x, offset_y)
 
         for unit in units:
             x = offset_x + float(unit.get("x", 0)) * scale
             y = offset_y + float(unit.get("y", 0)) * scale
             hp_ratio = float(unit.get("hp", 0)) / max(1.0, float(unit.get("max_hp", 1)))
             color = RED if unit.get("side") == "red" else BLUE
-            radius_value = unit.get("radius")
             radius = max(
-                2.2,
+                10,
                 min(
-                    6.0,
-                    float(0.45 if radius_value is None else radius_value) * scale,
+                    ICON_SIZE // 2,
+                    round(float(unit.get("radius") or 0.45) * scale * 1.8),
                 ),
             )
-            alpha = 0.38 + 0.62 * max(0.0, min(1.0, hp_ratio))
-            unit_color = tuple(int(channel * alpha) for channel in color)
-            draw.ellipse((x - radius, y - radius, x + radius, y + radius), fill=unit_color)
+            size = radius * 2
+            icon = self._unit_icon(unit, color)
+            if icon is None:
+                draw.ellipse(
+                    (x - radius, y - radius, x + radius, y + radius),
+                    fill=color,
+                )
+            else:
+                image.paste(icon, (round(x - size / 2), round(y - size / 2)), icon)
+                draw.ellipse(
+                    (x - size / 2, y - size / 2, x + size / 2, y + size / 2),
+                    outline=color,
+                    width=2,
+                )
+            self._draw_unit_hp_ring(draw, x, y, hp_ratio, color, size=size)
             if unit.get("stopped"):
                 draw.ellipse(
-                    (x - radius - 1, y - radius - 1, x + radius + 1, y + radius + 1),
-                    outline=WHITE,
+                    (x - size / 2 + 2, y - size / 2 + 2, x + size / 2 - 2, y + size / 2 - 2),
+                    outline=(196, 207, 202),
                 )
 
-    def _draw_timeline(
+    def _draw_projectiles(
         self,
         draw: ImageDraw.ImageDraw,
         replay: Replay,
         frame: ReplayFrame,
-        *,
-        plan: PlaybackPlan | None = None,
+        by_id: dict[int, dict[str, Any]],
+        scale: float,
+        offset_x: float,
+        offset_y: float,
     ) -> None:
-        draw.rectangle((20, TIMELINE_TOP, self.width - 20, TIMELINE_BOTTOM), fill=(17, 26, 21))
-        left = 36
-        right = self.width - 36
-        draw.line((left, 505, right, 505), fill=(70, 88, 76), width=2)
-        duration = max(0.1, replay.duration)
-        marker_output_time = (
-            frame.time if plan is None else plan.output_time_at(frame.time)
-        )
-        marker_x = left + (right - left) * min(
-            1.0,
-            marker_output_time / max(0.1, plan.output_duration if plan else duration),
-        )
-        draw.ellipse((marker_x - 4, 501, marker_x + 4, 509), fill=(225, 185, 75))
-        first_attack = next(
-            (event.time for event in replay.events if event.event_type == "ATTACK"),
-            None,
-        )
-        first_death = next(
-            (event.time for event in replay.events if event.event_type == "DEATH"),
-            None,
-        )
-        for label, event_time, color in (
-            ("接敌", first_attack, (225, 185, 75)),
-            ("伤亡", first_death, (239, 83, 80)),
-        ):
-            if event_time is None:
+        for event in replay.events:
+            if event.event_type not in {"ATTACK", "AOE_SPLASH"}:
                 continue
-            event_output_time = (
-                event_time
-                if plan is None
-                else plan.output_time_at(event_time)
+            age = frame.time - event.time
+            if age < 0 or age > PROJECTILE_LIFETIME:
+                continue
+            attacker = by_id.get(int(event.data.get("attacker_id", -1)))
+            target = by_id.get(int(event.data.get("target_id", -1)))
+            if attacker is None or target is None:
+                continue
+            start_x = offset_x + float(attacker.get("x", 0)) * scale
+            start_y = offset_y + float(attacker.get("y", 0)) * scale
+            end_x = offset_x + float(target.get("x", 0)) * scale
+            end_y = offset_y + float(target.get("y", 0)) * scale
+            progress = min(1.0, age / PROJECTILE_LIFETIME)
+            tip_x = start_x + (end_x - start_x) * progress
+            tip_y = start_y + (end_y - start_y) * progress
+            mode = str(event.data.get("mode") or "")
+            color = PROJECTILE_MELEE if "melee" in mode else PROJECTILE_RANGED
+            if mode == "melee":
+                draw.arc(
+                    (start_x - 12, start_y - 12, start_x + 12, start_y + 12),
+                    start=0,
+                    end=180,
+                    fill=color,
+                    width=2,
+                )
+            else:
+                tail = 0.18
+                tail_x = start_x + (end_x - start_x) * max(0.0, progress - tail)
+                tail_y = start_y + (end_y - start_y) * max(0.0, progress - tail)
+                draw.line((tail_x, tail_y, tip_x, tip_y), fill=color, width=2)
+                draw.ellipse((tip_x - 2, tip_y - 2, tip_x + 2, tip_y + 2), fill=color)
+
+    def _draw_aoe_rings(
+        self,
+        draw: ImageDraw.ImageDraw,
+        replay: Replay,
+        frame: ReplayFrame,
+        scale: float,
+        offset_x: float,
+        offset_y: float,
+    ) -> None:
+        for event in replay.events:
+            if event.event_type != "AOE_SPLASH" or event.x is None or event.y is None:
+                continue
+            age = frame.time - event.time
+            if age < 0 or age > AOE_LIFETIME:
+                continue
+            radius = float(event.data.get("radius") or event.data.get("aoe_radius") or 3.0)
+            progress = min(1.0, age / AOE_LIFETIME)
+            current = radius * scale * (0.45 + 0.55 * progress)
+            x = offset_x + event.x * scale
+            y = offset_y + event.y * scale
+            color = tuple(
+                int(channel * (0.75 - 0.35 * progress))
+                for channel in AOE_RING
             )
-            event_scale = max(0.1, plan.output_duration if plan else duration)
-            event_x = left + (right - left) * min(
-                1.0,
-                event_output_time / event_scale,
+            draw.ellipse(
+                (x - current, y - current, x + current, y + current),
+                outline=color,
+                width=2,
             )
-            draw.line((event_x, 499, event_x, 511), fill=color, width=2)
-            draw.text(
-                (event_x - 18, 488),
-                label,
-                font=self._font_small,
-                fill=color,
+
+    def _draw_death_marks(
+        self,
+        draw: ImageDraw.ImageDraw,
+        replay: Replay,
+        frame: ReplayFrame,
+        scale: float,
+        offset_x: float,
+        offset_y: float,
+    ) -> None:
+        for event in replay.events:
+            if event.event_type != "DEATH" or event.x is None or event.y is None:
+                continue
+            age = frame.time - event.time
+            if age < 0 or age > DEATH_MARK_LIFETIME:
+                continue
+            alpha = 1.0 - age / DEATH_MARK_LIFETIME
+            color = tuple(int(channel * alpha) for channel in DEATH_MARK)
+            x = offset_x + event.x * scale
+            y = offset_y + event.y * scale
+            draw.line((x - 5, y - 5, x + 5, y + 5), fill=color, width=2)
+            draw.line((x - 5, y + 5, x + 5, y - 5), fill=color, width=2)
+
+    def _unit_icon(
+        self,
+        unit: dict[str, Any],
+        color: tuple[int, int, int],
+    ) -> Image.Image | None:
+        unit_id = str(unit.get("unit_id") or "")
+        side = str(unit.get("side") or "")
+        if not unit_id:
+            return None
+        key = (unit_id, side)
+        cached = self._icon_cache.get(key)
+        if cached is not None:
+            return cached
+        if len(self._icon_cache) >= ICON_CACHE_LIMIT:
+            return None
+        try:
+            from src.plugins.aoe3.repository import UnitRepo
+
+            unit_model = UnitRepo.get().get_by_id(unit_id)
+            path = UnitRepo.get().get_icon_path(unit_model) if unit_model else None
+            if path is None:
+                return None
+            with Image.open(path) as source:
+                icon = source.convert("RGBA")
+            side_color = (36, 43, 47)
+            canvas = Image.new("RGBA", (ICON_SIZE, ICON_SIZE), (*side_color, 255))
+            fitted = icon.copy()
+            fitted.thumbnail((ICON_SIZE - 8, ICON_SIZE - 8), Image.Resampling.LANCZOS)
+            canvas.paste(
+                fitted,
+                ((ICON_SIZE - fitted.width) // 2, (ICON_SIZE - fitted.height) // 2),
+                fitted,
             )
-        draw.text((right - 100, 488), f"{frame.time:.1f}s", font=self._font_small, fill=MUTED)
+            mask = Image.new("L", (ICON_SIZE, ICON_SIZE), 0)
+            ImageDraw.Draw(mask).ellipse((0, 0, ICON_SIZE - 1, ICON_SIZE - 1), fill=255)
+            canvas.putalpha(mask)
+            self._icon_cache[key] = canvas
+            return canvas
+        except Exception:
+            logger.debug("failed to cache replay icon unit=%s", unit_id, exc_info=True)
+            return None
+
+    @staticmethod
+    def _draw_unit_hp_ring(
+        draw: ImageDraw.ImageDraw,
+        x: float,
+        y: float,
+        hp_ratio: float,
+        color: tuple[int, int, int],
+        *,
+        size: int = ICON_SIZE,
+    ) -> None:
+        radius = size / 2 - 2
+        draw.arc(
+            (x - radius, y - radius, x + radius, y + radius),
+            start=-90,
+            end=-90 + max(0.0, min(1.0, hp_ratio)) * 360,
+            fill=color,
+            width=3,
+        )
 
     def _draw_subtitle(
         self,
