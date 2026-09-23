@@ -15,6 +15,10 @@ from plugins.games.aoe3_battle.simulator2d import (
 )
 from plugins.games.aoe3_battle.simulator2d.combat import CombatSystem
 from plugins.games.aoe3_battle.simulator2d.config import CollisionMode
+from plugins.games.aoe3_battle.simulator2d.geometry import (
+    shape_contact,
+    shape_for_unit,
+)
 from plugins.games.aoe3_battle.simulator2d.model import Soldier2D, Vec2
 from plugins.games.aoe3_battle.simulator2d.movement import (
     CollisionResolver,
@@ -143,6 +147,40 @@ def test_larger_units_use_their_real_obstruction_radius() -> None:
     assert first.distance_to(second) >= first.radius(
         simulator.config.fallback_unit_radius
     ) + second.radius(simulator.config.fallback_unit_radius)
+
+
+def test_ellipse_contact_respects_orientation() -> None:
+    elephant = _unit(
+        "elephant",
+        obstruction_radius_x=1.49,
+        obstruction_radius_z=0.49,
+    )
+    first = shape_for_unit(elephant, 0.0, 0.0, 0.0, 0.45)
+    second = shape_for_unit(elephant, 1.0, 0.0, 0.0, 0.45)
+
+    contact = shape_contact(first, second)
+
+    assert contact is not None
+    assert first.extent(1.0, 0.0) == pytest.approx(1.49)
+    assert second.extent(1.0, 0.0) == pytest.approx(1.49)
+    assert abs(contact.normal_x) > 0.99
+    assert abs(contact.normal_y) < 0.01
+    assert contact.depth == pytest.approx(1.98, abs=0.02)
+
+
+def test_rotated_ellipse_uses_long_axis_extent() -> None:
+    elephant = _unit(
+        "elephant",
+        obstruction_radius_x=1.49,
+        obstruction_radius_z=0.49,
+    )
+    horizontal = shape_for_unit(elephant, 0.0, 0.0, 0.0, 0.45)
+    rotated = shape_for_unit(elephant, 0.0, 0.0, 1.5707963267948966, 0.45)
+
+    assert horizontal.extent(1.0, 0.0) == pytest.approx(1.49)
+    assert horizontal.extent(0.0, 1.0) == pytest.approx(0.49)
+    assert rotated.extent(1.0, 0.0) == pytest.approx(0.49)
+    assert rotated.extent(0.0, 1.0) == pytest.approx(1.49)
 
 
 def test_spatial_hash_circle_query() -> None:

@@ -76,6 +76,7 @@ class Soldier2D:
     max_hp: float
     x: float
     y: float
+    facing: float = 0.0
     attack_cd: float = 0.0
     target_id: int | None = None
     move_target_id: int | None = None

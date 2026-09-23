@@ -8,7 +8,13 @@ from dataclasses import dataclass
 from typing import Any
 
 from .config import CollisionMode, Simulation2DConfig
-from .geometry import combined_radius, unit_radius
+from .geometry import (
+    combined_radius,
+    shape_contact,
+    shape_for_unit,
+    unit_bounding_radius,
+    unit_radius,
+)
 from .model import Soldier2D, Vec2
 from .spatial import SpatialHash
 
@@ -410,18 +416,30 @@ class CollisionResolver:
                     )
 
             pair_limit = len(pairs)
-            for overlap, first, second, distance in pairs[:pair_limit]:
+            for overlap, first, second, _distance in pairs[:pair_limit]:
                 if overlap <= self.config.separation_slop:
                     continue
-                dx = second.x - first.x
-                dy = second.y - first.y
-                if distance <= 1e-9:
-                    angle = math.radians((first.id * 37 + second.id * 17) % 360)
-                    nx = math.cos(angle)
-                    ny = math.sin(angle)
-                else:
-                    nx = dx / distance
-                    ny = dy / distance
+                contact = shape_contact(
+                    shape_for_unit(
+                        first.unit,
+                        first.x,
+                        first.y,
+                        first.facing,
+                        self.config.fallback_unit_radius,
+                    ),
+                    shape_for_unit(
+                        second.unit,
+                        second.x,
+                        second.y,
+                        second.facing,
+                        self.config.fallback_unit_radius,
+                    ),
+                )
+                if contact is None:
+                    continue
+                nx = contact.normal_x
+                ny = contact.normal_y
+                overlap = contact.depth
                 moved = True
                 iteration_pairs += 1
                 iteration_max = max(iteration_max, overlap)
@@ -441,11 +459,11 @@ class CollisionResolver:
                         min(
                             overlap,
                             min(
-                                unit_radius(
+                                unit_bounding_radius(
                                     first.unit,
                                     self.config.fallback_unit_radius,
                                 ),
-                                unit_radius(
+                                unit_bounding_radius(
                                     second.unit,
                                     self.config.fallback_unit_radius,
                                 ),
@@ -503,14 +521,24 @@ class CollisionResolver:
             )
             for other in nearby:
                 distance = soldier.distance_to(other)
-                minimum = combined_radius(
-                    soldier.unit,
-                    other.unit,
-                    self.config.fallback_unit_radius,
+                contact = shape_contact(
+                    shape_for_unit(
+                        soldier.unit,
+                        soldier.x,
+                        soldier.y,
+                        soldier.facing,
+                        self.config.fallback_unit_radius,
+                    ),
+                    shape_for_unit(
+                        other.unit,
+                        other.x,
+                        other.y,
+                        other.facing,
+                        self.config.fallback_unit_radius,
+                    ),
                 )
-                overlap = minimum - distance
-                if overlap > self.config.separation_slop:
-                    pairs.append((overlap, soldier, other, distance))
+                if contact is not None and contact.depth > self.config.separation_slop:
+                    pairs.append((contact.depth, soldier, other, distance))
         return pairs
 
     def _measure_residual(
@@ -534,14 +562,25 @@ class CollisionResolver:
             )
             for other in nearby:
                 distance = soldier.distance_to(other)
-                minimum = combined_radius(
-                    soldier.unit,
-                    other.unit,
-                    self.config.fallback_unit_radius,
+                contact = shape_contact(
+                    shape_for_unit(
+                        soldier.unit,
+                        soldier.x,
+                        soldier.y,
+                        soldier.facing,
+                        self.config.fallback_unit_radius,
+                    ),
+                    shape_for_unit(
+                        other.unit,
+                        other.x,
+                        other.y,
+                        other.facing,
+                        self.config.fallback_unit_radius,
+                    ),
                 )
-                overlap = minimum - distance
-                if overlap <= self.config.separation_slop:
+                if contact is None or contact.depth <= self.config.separation_slop:
                     continue
+                overlap = contact.depth
                 pair_count += 1
                 max_overlap = max(max_overlap, overlap)
                 if len(details) < 16:
@@ -566,7 +605,7 @@ class CollisionResolver:
         path depend on the number of live soldiers.
         """
         unit = soldier.unit
-        own_radius = unit_radius(unit, self.config.fallback_unit_radius)
+        own_radius = unit_bounding_radius(unit, self.config.fallback_unit_radius)
         max_known_radius = self.config.max_known_unit_radius or own_radius
         return (own_radius + max_known_radius) * 1.05
 
@@ -600,11 +639,11 @@ class CollisionResolver:
         second.x += nx * correction * second_share
         second.y += ny * correction * second_share
 
-        first_radius = unit_radius(
+        first_radius = unit_bounding_radius(
             first.unit,
             self.config.fallback_unit_radius,
         )
-        second_radius = unit_radius(
+        second_radius = unit_bounding_radius(
             second.unit,
             self.config.fallback_unit_radius,
         )

@@ -16,7 +16,11 @@ from .combat import CombatSystem
 from .compat import ArmySlot, BattleEvent, BattleResult, EventType, Side
 from .config import Simulation2DConfig
 from .formation import build_deployment
-from .geometry import combined_radius, unit_radius
+from .geometry import (
+    combined_directional_extent,
+    unit_bounding_radius,
+    unit_radius,
+)
 from .model import AttackMode, Soldier2D, TickSummary, Vec2
 from .movement import CollisionResolver, LocalAvoidance
 from .spatial import SpatialHash
@@ -90,7 +94,7 @@ class BattleSimulator2D:
             ]
             max_radius = max(
                 (
-                    unit_radius(unit, self.config.fallback_unit_radius)
+                    unit_bounding_radius(unit, self.config.fallback_unit_radius)
                     for unit in known_units
                 ),
                 default=self.config.fallback_unit_radius,
@@ -173,6 +177,7 @@ class BattleSimulator2D:
             max_hp=float(unit.hp),
             x=position.x,
             y=position.y,
+            facing=0.0 if side == Side.RED else math.pi,
         )
         soldier.has_ranged = unit.attack_ranged > 0 and unit.range > 0
         soldier.has_melee = unit.attack_melee > 0
@@ -649,6 +654,8 @@ class BattleSimulator2D:
             soldier.previous_velocity_y = soldier.velocity_y
             soldier.velocity_x = result.velocity.x
             soldier.velocity_y = result.velocity.y
+            if result.velocity.length_sq() > 1e-8:
+                soldier.facing = math.atan2(result.velocity.y, result.velocity.x)
             soldier.last_steer_reason = result.reason
             if result.reason.startswith(("avoid", "fallback", "detour")):
                 blocked += 1
@@ -887,9 +894,13 @@ class BattleSimulator2D:
             if all(
                 (x - other.x) ** 2 + (y - other.y) ** 2
                 >= (
-                    combined_radius(
+                    combined_directional_extent(
                         soldier.unit,
+                        soldier.facing,
                         other.unit,
+                        other.facing,
+                        x - soldier.x,
+                        y - soldier.y,
                         self.config.fallback_unit_radius,
                     )
                     - self.config.separation_slop
@@ -930,9 +941,15 @@ class BattleSimulator2D:
                         key=lambda item: item.distance_sq_to(soldier),
                     )
                     separation = soldier.distance_to(nearest_blocker)
-                    minimum = combined_radius(
+                    direction_x = soldier.x - nearest_blocker.x
+                    direction_y = soldier.y - nearest_blocker.y
+                    minimum = combined_directional_extent(
                         soldier.unit,
+                        soldier.facing,
                         nearest_blocker.unit,
+                        nearest_blocker.facing,
+                        direction_x,
+                        direction_y,
                         self.config.fallback_unit_radius,
                     )
                     can_stop = separation >= minimum * 0.95
