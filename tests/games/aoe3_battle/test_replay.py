@@ -160,6 +160,22 @@ def test_recorder_keeps_only_public_replay_fields() -> None:
     assert (death.x, death.y) == (15.0, 12.0)
 
 
+def test_recorder_backfills_radius_for_legacy_frames() -> None:
+    session = ReplaySession(
+        session_id="legacy-frame",
+        mode="bet",
+        red_count=1,
+        blue_count=1,
+    )
+    frame = _frame(0, target_id=2)
+    for unit in frame["units"]:
+        unit.pop("radius")
+
+    session.frame_callback(frame)
+
+    assert session.recorder.frames[0].units[0]["radius"] == 0.45
+
+
 def test_renderer_produces_expected_frame_sequence() -> None:
     replay = _replay()
     frames = list(ReplayRenderer().iter_images(replay))

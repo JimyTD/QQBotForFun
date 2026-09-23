@@ -52,7 +52,11 @@ class ReplayRecorder:
                 "max_hp": unit.get("max_hp", 0.0),
                 "stopped": bool(unit.get("stopped")),
                 "target_id": unit.get("target_id"),
-                "radius": unit.get("radius"),
+                "radius": (
+                    unit.get("radius")
+                    if unit.get("radius") is not None
+                    else 0.45
+                ),
             }
             for unit in frame.get("units") or []
         ]

@@ -324,7 +324,14 @@ class ReplayRenderer:
             y = offset_y + float(unit.get("y", 0)) * scale
             hp_ratio = float(unit.get("hp", 0)) / max(1.0, float(unit.get("max_hp", 1)))
             color = RED if unit.get("side") == "red" else BLUE
-            radius = max(2.2, min(6.0, float(unit.get("radius", 0.45)) * scale))
+            radius_value = unit.get("radius")
+            radius = max(
+                2.2,
+                min(
+                    6.0,
+                    float(0.45 if radius_value is None else radius_value) * scale,
+                ),
+            )
             alpha = 0.38 + 0.62 * max(0.0, min(1.0, hp_ratio))
             unit_color = tuple(int(channel * alpha) for channel in color)
             draw.ellipse((x - radius, y - radius, x + radius, y + radius), fill=unit_color)
