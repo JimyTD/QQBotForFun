@@ -54,7 +54,7 @@ body {
   border-radius: 8px;
   font-size: 13px;
   font-weight: 800;
-  letter-spacing: 0.04em;
+  letter-spacing: 0;
 }
 
 .brand h1,
@@ -327,7 +327,7 @@ body {
   display: block;
   color: var(--muted);
   font-size: 11px;
-  letter-spacing: 0.08em;
+  letter-spacing: 0;
   text-transform: uppercase;
 }
 
@@ -443,6 +443,27 @@ body {
   gap: 7px;
 }
 
+.overlay-controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 14px;
+  font-size: 12px;
+}
+
+.overlay-controls label {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+#pathing-setup:not(.hidden) {
+  display: grid;
+  gap: 5px;
+  color: var(--muted);
+  font-size: 12px;
+}
+
 button,
 select {
   min-height: 34px;
@@ -548,5 +569,28 @@ button.active {
 
   .setup-actions {
     padding-left: 0;
+    flex-wrap: wrap;
+  }
+
+  .setup-row-main.civ-war-row {
+    grid-template-columns: 1fr;
+  }
+
+  #red-civ, #blue-civ {
+    min-width: 0;
+  }
+
+  .topbar {
+    height: auto;
+    min-height: 70px;
+    flex-wrap: wrap;
+    gap: 10px;
+    padding: 12px 20px;
+  }
+
+  .stage-head {
+    align-items: start;
+    gap: 12px;
+    flex-direction: column;
   }
 }

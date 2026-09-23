@@ -16,7 +16,6 @@ class AttackMode(StrEnum):
 
     RANGED = "ranged"
     MELEE = "melee"
-    RANGED_PENALIZED = "ranged_penalized"
 
 
 @dataclass(frozen=True)
@@ -77,7 +76,10 @@ class Soldier2D:
     x: float
     y: float
     facing: float = 0.0
-    attack_cd: float = 0.0
+    attack_ready_at: float = 0.0
+    aim_ready_at: float | None = None
+    prepared_mode: AttackMode | None = None
+    reconsider_attack_mode: bool = False
     target_id: int | None = None
     move_target_id: int | None = None
     move_target_tick: int = -1
@@ -99,6 +101,17 @@ class Soldier2D:
     detour_waypoint_x: float | None = None
     detour_waypoint_y: float | None = None
     detour_active_ticks: int = 0
+    detour_remaining: list[Vec2] = field(default_factory=list)
+    detour_target_id: int | None = None
+    detour_retry_tick: int = 0
+    progress_goal: tuple | None = None
+    progress_best_distance: float = float("inf")
+    motion_samples: list[Vec2] = field(default_factory=list)
+    oscillating: bool = False
+    motion_stalled: bool = False
+    last_motion_log_tick: int = -1000
+    detour_replans: int = 0
+    detour_shortcuts: int = 0
     last_steer_reason: str = "init"
 
     has_ranged: bool = False

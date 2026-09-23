@@ -39,7 +39,6 @@ class Simulation2DConfig:
     default_rof_ranged: float = DEFAULT_ROF_RANGED
     default_rof_melee: float = DEFAULT_ROF_MELEE
     pop_house_cost: int = POP_HOUSE_COST
-    close_range_penalty: float = 0.5
 
     fallback_unit_radius: float = 0.45
     max_known_unit_radius: float = 0.0
@@ -67,7 +66,10 @@ class Simulation2DConfig:
     blocked_window_ticks: int = 6
     blocked_progress_epsilon: float = 0.015
     detour_commit_ticks: int = 30
-    detour_angle_degrees: float = 48.0
+    navigation_max_obstacles: int = 24
+    navigation_max_expansions: int = 96
+    navigation_max_stretch: float = 2.5
+    progress_window_ticks: int = 20
 
     candidate_angles_degrees: tuple[float, ...] = (
         0.0,
@@ -84,7 +86,7 @@ class Simulation2DConfig:
         90.0,
         -90.0,
     )
-    candidate_speed_scales: tuple[float, ...] = (1.0, 0.65, 0.35)
+    candidate_speed_scales: tuple[float, ...] = (1.0, 0.65, 0.35, 0.15, 0.0)
 
     stop_check_slack: float = 0.02
     nearest_search_min_radius: float = 2.0

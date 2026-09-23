@@ -1,4 +1,4 @@
-"""Combat rules shared conceptually with the 1D engine, in 2D space."""
+"""Data-driven attack eligibility and damage in the 2D battlefield."""
 
 from __future__ import annotations
 
@@ -36,7 +36,7 @@ def combat_slot_stats(unit, mode: AttackMode) -> SlotStats | None:
             aoe_radius=unit.aoe_radius_melee,
             damage_cap_proto=unit.damage_cap_melee,
         )
-    if mode in (AttackMode.RANGED, AttackMode.RANGED_PENALIZED):
+    if mode == AttackMode.RANGED:
         return SlotStats(
             slot="ranged",
             base_damage=unit.attack_ranged,
@@ -96,6 +96,56 @@ class CombatSystem:
         self.damage_callback = damage_callback
         self.field_width = field_width
         self.field_height = field_height
+
+    @property
+    def now(self) -> float:
+        return self.tick_getter() * self.config.tick_interval
+
+    def interrupt_preparation(self, soldier: Soldier2D) -> None:
+        """A movement command cancels preparation, never the weapon cooldown."""
+        soldier.aim_ready_at = None
+        soldier.prepared_mode = None
+        soldier.reconsider_attack_mode = False
+        soldier.target_id = None
+
+    def is_mode_valid(
+        self,
+        soldier: Soldier2D,
+        target: Soldier2D,
+        mode: AttackMode,
+    ) -> bool:
+        if not target.alive or target.side == soldier.side:
+            return False
+        distance = soldier.distance_to(target)
+        if mode == AttackMode.MELEE:
+            return soldier.has_melee and distance <= soldier.effective_melee_range
+        return (
+            soldier.has_ranged
+            and soldier.effective_ranged_range_min <= distance <= soldier.effective_ranged_range
+        )
+
+    def prepare_attack(self, soldier: Soldier2D, target: Soldier2D) -> AttackMode | None:
+        mode = soldier.prepared_mode
+        # Keep the selected action through aiming and the ROF wait. Reconsider
+        # after a shot or when that action is no longer legal, not on range jitter.
+        if (
+            mode is None
+            or soldier.reconsider_attack_mode
+            or not self.is_mode_valid(soldier, target, mode)
+        ):
+            mode = self.determine_attack_mode(soldier, target)
+        if mode is None:
+            return None
+        if soldier.prepared_mode != mode or soldier.aim_ready_at is None:
+            windup = (
+                soldier.unit.windup_melee
+                if mode == AttackMode.MELEE
+                else soldier.unit.windup_ranged
+            )
+            soldier.prepared_mode = mode
+            soldier.aim_ready_at = self.now + max(0.0, windup)
+        soldier.reconsider_attack_mode = False
+        return mode
 
     def attack_candidates(self, soldier: Soldier2D) -> list[Soldier2D]:
         """Return living enemies currently inside a legal attack envelope."""
@@ -158,9 +208,7 @@ class CombatSystem:
                 predicate=lambda other: other.alive and other.side != soldier.side,
             )
             if candidates:
-                candidates.sort(
-                    key=lambda item: (item.distance_sq_to(soldier), item.id)
-                )
+                candidates.sort(key=lambda item: (item.distance_sq_to(soldier), item.id))
                 best = candidates[0]
                 break
             radius *= 2.0
@@ -178,6 +226,7 @@ class CombatSystem:
                 and existing.alive
                 and self.determine_attack_mode(soldier, existing) is not None
             ):
+                self.prepare_attack(soldier, existing)
                 return
 
         candidates = self.attack_candidates(soldier)
@@ -186,6 +235,7 @@ class CombatSystem:
             return
         target = candidates[0]
         soldier.target_id = target.id
+        self.prepare_attack(soldier, target)
         self.emit(
             EventType.TARGET_LOCK,
             {
@@ -204,29 +254,10 @@ class CombatSystem:
         soldier: Soldier2D,
         target: Soldier2D,
     ) -> AttackMode | None:
-        distance = soldier.distance_to(target)
-
-        if distance <= soldier.effective_melee_range:
-            if soldier.has_melee:
-                return AttackMode.MELEE
-            if soldier.has_ranged:
-                return AttackMode.RANGED_PENALIZED
-
-        if (
-            soldier.has_ranged
-            and soldier.effective_ranged_range_min
-            <= distance
-            <= soldier.effective_ranged_range
-        ):
+        if self.is_mode_valid(soldier, target, AttackMode.MELEE):
+            return AttackMode.MELEE
+        if self.is_mode_valid(soldier, target, AttackMode.RANGED):
             return AttackMode.RANGED
-
-        if (
-            soldier.has_ranged
-            and distance < soldier.effective_ranged_range_min
-        ):
-            if soldier.has_melee:
-                return None
-            return AttackMode.RANGED_PENALIZED
 
         return None
 
@@ -242,30 +273,29 @@ class CombatSystem:
         multiplier = calc_multiplier(stats.multipliers, target)
         armor = armor_for_damage_type(stats.damage_type, target)
         damage = stats.base_damage * stats.num_projectiles * multiplier * (1.0 - armor)
-        if mode == AttackMode.RANGED_PENALIZED:
-            damage *= self.config.close_range_penalty
-        return max(1.0, damage)
+        return max(0.0, damage)
 
     def process_attacks(self, soldiers: list[Soldier2D]) -> int:
         """Resolve simultaneous fire for the current tick."""
         volley: list[tuple[Soldier2D, Soldier2D, AttackMode, float]] = []
         for soldier in soldiers:
-            if not soldier.alive or not soldier.stopped:
+            if not soldier.alive:
                 continue
-            if soldier.attack_cd > 0:
-                soldier.attack_cd -= self.config.tick_interval
-                if soldier.attack_cd > 0.001:
-                    continue
+            if not soldier.stopped:
+                continue
             if soldier.target_id is None:
                 continue
             target = self.soldier_map.get(soldier.target_id)
-            if target is None:
+            if target is None or not target.alive:
                 soldier.target_id = None
                 continue
-            mode = self.determine_attack_mode(soldier, target)
+            mode = self.prepare_attack(soldier, target)
             if mode is None:
                 soldier.stopped = False
                 soldier.target_id = None
+                continue
+            assert soldier.aim_ready_at is not None
+            if self.now + 1e-9 < max(soldier.attack_ready_at, soldier.aim_ready_at):
                 continue
             damage = self.calc_damage(soldier, target, mode)
             if mode == AttackMode.MELEE:
@@ -280,7 +310,8 @@ class CombatSystem:
                     if soldier.effective_ranged_rof > 0
                     else self.config.default_rof_ranged
                 )
-            soldier.attack_cd = rof
+            soldier.attack_ready_at = self.now + rof
+            soldier.reconsider_attack_mode = True
             volley.append((soldier, target, mode, damage))
 
         if not volley:
@@ -318,31 +349,25 @@ class CombatSystem:
             main_target.pos,
             radius,
             predicate=lambda other: (
-                other.alive
-                and other.id != main_target.id
-                and other.side != attacker.side
+                other.alive and other.id != main_target.id and other.side != attacker.side
             ),
         )
         candidates.sort(key=lambda item: (item.distance_sq_to(main_target), item.id))
         if not candidates:
             return 0
 
-        max_splash = round(radius)
-        splash_count = min(max_splash, len(candidates))
-        splash_targets = self.rng.sample(candidates, splash_count)
+        splash_count = len(candidates)
         base_attack = stats.base_damage * stats.num_projectiles
-        damage_cap = (
-            stats.damage_cap_proto
-            if stats.damage_cap_proto > 0
-            else base_attack * 2.0
-        )
+        # User-approved fallback for missing caps; never replace a real cap.
+        # Equal sharing remains a simplification, not original-game falloff.
+        damage_cap = stats.damage_cap_proto if stats.damage_cap_proto > 0 else base_attack * 2.0
         splash_damage = min(damage_cap / splash_count, base_attack)
 
-        for target in splash_targets:
+        for target in candidates:
             multiplier = calc_multiplier(stats.multipliers, target)
             armor = armor_for_damage_type(stats.damage_type, target)
             final_damage = max(
-                1.0,
+                0.0,
                 splash_damage * multiplier * (1.0 - armor),
             )
             self.emit(

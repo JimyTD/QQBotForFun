@@ -36,6 +36,11 @@ const collisionModeSelect = document.getElementById("collision-mode");
 const unitsSetup = document.getElementById("units-setup");
 const civWarSetup = document.getElementById("civ-war-setup");
 const setupRowMain = document.querySelector(".setup-row-main");
+const pathingSetup = document.getElementById("pathing-setup");
+const scenarioSelect = document.getElementById("pathing-scenario");
+const showTrails = document.getElementById("show-trails");
+const showRoutes = document.getElementById("show-routes");
+const showTargets = document.getElementById("show-targets");
 
 const FALLBACK_CIVS = [
   ["British", "英国"],
@@ -115,13 +120,17 @@ const state = {
   viewport: { width: 0, height: 0, scale: 1, offsetX: 0, offsetY: 0 },
   mode: "units",
   catalog: { units: [], civs: [] },
+  trails: new Map(),
 };
 
 function resizeCanvas() {
   const rect = canvas.getBoundingClientRect();
   const dpr = Math.max(1, window.devicePixelRatio || 1);
-  canvas.width = Math.max(1, Math.floor(rect.width * dpr));
-  canvas.height = Math.max(1, Math.floor(rect.height * dpr));
+  const width = Math.max(1, Math.floor(rect.width * dpr));
+  const height = Math.max(1, Math.floor(rect.height * dpr));
+  if (canvas.width === width && canvas.height === height) return;
+  canvas.width = width;
+  canvas.height = height;
   ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
 }
 
@@ -211,7 +220,7 @@ function drawFrame(frame) {
   const byId = new Map(units.map((unit) => [unit.id, unit]));
   const attackTargets = [];
 
-  for (const unit of units) {
+  for (const unit of showTargets.checked ? units : []) {
     const targetId = unit.target_id || unit.move_target_id;
     const target = targetId ? byId.get(targetId) : null;
     if (!target) continue;
@@ -236,11 +245,47 @@ function drawFrame(frame) {
     ctx.stroke();
   }
 
-  const radius = Math.max(2.3, 0.46 * scale);
   for (const unit of units) {
+    const selected = unit.id === state.selectedUnitId;
+    if (showTrails.checked && (selected || frame.diagnostic)) {
+      const samples = (state.trails.get(unit.id) || []).filter(
+        (p) => p.index <= state.frameIndex && p.index >= state.frameIndex - 160,
+      );
+      ctx.strokeStyle = selected ? "#62d68b" : unit.side === "red" ? "#f09b81" : "#78b5ef";
+      ctx.lineWidth = selected ? 2.2 : 1.4;
+      ctx.beginPath();
+      samples.forEach((sample, i) => {
+        const p = toScreen(sample.x, sample.y);
+        if (i === 0) ctx.moveTo(p.x, p.y);
+        else ctx.lineTo(p.x, p.y);
+      });
+      ctx.stroke();
+    }
+    if (showRoutes.checked && unit.detour_path?.length) {
+      const start = toScreen(unit.x, unit.y);
+      ctx.strokeStyle = selected ? "#62d68b" : "#e8b95b";
+      ctx.lineWidth = selected ? 2 : 1;
+      ctx.setLineDash([5, 4]);
+      ctx.beginPath();
+      ctx.moveTo(start.x, start.y);
+      for (const [x, y] of unit.detour_path) {
+        const p = toScreen(x, y);
+        ctx.lineTo(p.x, p.y);
+      }
+      ctx.stroke();
+      ctx.setLineDash([]);
+      for (const [x, y] of unit.detour_path) {
+        const p = toScreen(x, y);
+        ctx.strokeRect(p.x - 3, p.y - 3, 6, 6);
+      }
+    }
+  }
+
+  for (const unit of units) {
+    const radius = Math.max(2.3, (unit.radius || 0.46) * scale);
     const point = toScreen(unit.x, unit.y);
     const hpRatio = unit.max_hp > 0 ? unit.hp / unit.max_hp : 0;
-    const color = unit.side === "red" ? "#ef5350" : "#4c8dff";
+    const color = unit.unit_id === "pathing_wall" ? "#899a90" : unit.side === "red" ? "#ef5350" : "#4c8dff";
 
     ctx.beginPath();
     ctx.fillStyle = color;
@@ -286,7 +331,11 @@ function drawFrame(frame) {
   metrics.noProgress.textContent = summary.no_progress_units ?? "—";
   metrics.overlap.textContent = Number(summary.max_overlap || 0).toFixed(3);
 
-  if (frame.status === "finished") {
+  if (frame.status === "error") {
+    setStatus(`模拟失败：${frame.error || "未知错误"}`, "finished");
+  } else if (frame.diagnostic) {
+    setStatus(`${frame.status === "finished" ? "检验结束" : "检验中"} · 越过障碍 ${frame.diagnostic.reached}/${frame.diagnostic.total}`, frame.status);
+  } else if (frame.status === "finished") {
     const winner = frame.winner === "red" ? "红方胜利" : frame.winner === "blue" ? "蓝方胜利" : "平局";
     setStatus(`已结束 · ${winner}`, "finished");
   } else {
@@ -305,17 +354,29 @@ function renderUnitDetail(unit) {
     return;
   }
   unitDetail.className = "";
+  const preparation = unit.prepared_mode === "melee" ? "近战" : unit.prepared_mode === "ranged" ? "远程" : "未准备";
+  const actionState = unit.stopped
+    ? Number(unit.aim_cd || 0) > 0 ? "抬手准备" : Number(unit.attack_cd || 0) > 0 ? "等待 ROF" : "准备出手"
+    : unit.steer_reason === "minimum_range" ? "最小射程内待命"
+      : unit.prepared_mode ? "保持准备姿态" : "移动中";
   unitDetail.innerHTML = `
     <dl class="detail-grid">
       <dt>编号</dt><dd>#${unit.id}</dd>
       <dt>阵营</dt><dd>${unit.side === "red" ? "红方" : "蓝方"}</dd>
       <dt>兵种</dt><dd>${escapeHtml(unit.name)}</dd>
       <dt>HP</dt><dd>${unit.hp} / ${unit.max_hp}</dd>
-      <dt>状态</dt><dd>${unit.stopped ? "停止攻击" : "移动中"}</dd>
+      <dt>状态</dt><dd>${actionState}</dd>
+      <dt>ROF 剩余</dt><dd>${Number(unit.attack_cd || 0).toFixed(2)} s</dd>
+      <dt>抬手剩余</dt><dd>${unit.aim_cd == null ? "未准备" : `${Number(unit.aim_cd).toFixed(2)} s`}</dd>
+      <dt>准备方式</dt><dd>${preparation}</dd>
+      <dt>近战射程</dt><dd>${unit.has_melee ? unit.melee_range ?? "—" : "无"}</dd>
+      <dt>远程射程</dt><dd>${unit.has_ranged ? `${unit.ranged_range_min ?? 0} – ${unit.ranged_range ?? "—"}` : "无"}</dd>
       <dt>转向</dt><dd>${escapeHtml(unit.steer_reason || "—")}</dd>
       <dt>攻击目标</dt><dd>${unit.target_id ?? "—"}</dd>
       <dt>移动目标</dt><dd>${unit.move_target_id ?? "—"}</dd>
       <dt>无进展</dt><dd>${unit.no_progress_ticks} tick</dd>
+      <dt>绕行选择</dt><dd>${unit.detour_path?.length ? `${unit.detour_sign > 0 ? "正侧" : "负侧"} · ${unit.detour_path.length} 路点` : "无"}</dd>
+      <dt>实际位置</dt><dd>${unit.x.toFixed(2)}, ${unit.y.toFixed(2)}</dd>
       <dt>伤害</dt><dd>${unit.damage}</dd>
       <dt>击杀</dt><dd>${unit.kills}</dd>
     </dl>
@@ -381,12 +442,14 @@ async function fetchFrame(index) {
   }
 }
 
-async function fillFrames() {
+async function fillFrames(generation) {
   while (state.frames.length < state.remoteCount) {
     const frame = await fetchFrame(state.frames.length);
+    if (generation !== state.generation) return;
     if (!frame) break;
-    if (frame.tick !== state.frames.length) {
-      break;
+    for (const unit of frame.units || []) {
+      if (!state.trails.has(unit.id)) state.trails.set(unit.id, []);
+      state.trails.get(unit.id).push({ x: unit.x, y: unit.y, index: state.frames.length });
     }
     state.frames.push(frame);
   }
@@ -411,7 +474,7 @@ async function refreshMeta() {
     const meta = await response.json();
     if (generation !== state.generation) return;
     state.remoteCount = Number(meta.frames || 0);
-    await fillFrames();
+    await fillFrames(generation);
   } catch {
     setStatus("等待本地模拟服务…");
   } finally {
@@ -428,13 +491,16 @@ function setMode(mode) {
   });
   unitsSetup.classList.toggle("hidden", mode !== "units");
   civWarSetup.classList.toggle("hidden", mode !== "civ_war");
+  pathingSetup.classList.toggle("hidden", mode !== "pathing");
   setupRowMain.classList.toggle("civ-war-row", mode === "civ_war");
 }
 
 async function restartSimulation() {
   const collisionMode = collisionModeSelect.value;
   const payload =
-    state.mode === "civ_war"
+    state.mode === "pathing"
+      ? { mode: "pathing", scenario: scenarioSelect.value, seed: Number(seedInput.value), collision_mode: collisionMode }
+      : state.mode === "civ_war"
       ? {
           mode: "civ_war",
           red_civ: redCivSelect.value,
@@ -452,6 +518,8 @@ async function restartSimulation() {
         };
   restartButton.disabled = true;
   restartButton.textContent = "准备中…";
+  state.generation += 1;
+  state.fetchInFlight = true;
   try {
     if (
       state.mode === "civ_war"
@@ -469,6 +537,7 @@ async function restartSimulation() {
       throw new Error(result.error || "start failed");
     }
     state.frames = [];
+    state.trails.clear();
     state.frameIndex = 0;
     state.remoteCount = 0;
     state.generation += 1;
@@ -480,6 +549,7 @@ async function restartSimulation() {
   } catch (error) {
     setStatus(`启动失败：${error.message}`, "finished");
   } finally {
+    state.fetchInFlight = false;
     restartButton.disabled = false;
     restartButton.textContent = "重新模拟";
   }
@@ -558,6 +628,11 @@ function bootViewer() {
   if (bootstrapped) return;
   bootstrapped = true;
   populateCivSelects(FALLBACK_CIVS);
+  const scenario = new URLSearchParams(location.search).get("scenario");
+  if (Array.from(scenarioSelect.options).some(option => option.value === scenario)) {
+    setMode("pathing");
+    scenarioSelect.value = scenario;
+  }
   setInterval(refreshMeta, 180);
   bootstrapCatalog().then(() => {
     refreshMeta();

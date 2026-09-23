@@ -290,12 +290,12 @@ def test_nearest_enemy_query_scales_to_large_distance() -> None:
     assert combat.nearest_enemy(searcher) is nearer
 
 
-def test_blocked_unit_keeps_lateral_flow_with_friendly_wall() -> None:
+def test_stall_flag_does_not_rotate_a_currently_clear_velocity() -> None:
     config = Simulation2DConfig()
     unit = _unit("wall", speed=5.0, attack_melee=10.0)
-    mover = Soldier2D(1, Side.RED, unit, 100.0, 1.0, 5.0, 0.0)
+    mover = Soldier2D(1, Side.RED, unit, 100.0, 1.0, 5.0, 10.0)
     wall = [
-        Soldier2D(index, Side.RED, unit, 100.0, 1.0, 5.0 + index * 1.1, 0.0)
+        Soldier2D(index, Side.RED, unit, 100.0, 1.0, 5.0 + index * 1.1, 10.0)
         for index in range(2, 8)
     ]
     for blocker in wall:
@@ -312,8 +312,7 @@ def test_blocked_unit_keeps_lateral_flow_with_friendly_wall() -> None:
         blocked_ticks=config.blocked_window_ticks,
     )
 
-    assert abs(result.velocity.y) > 0.05
-    assert result.velocity.length() > 0.1
+    assert result.velocity == Vec2(1.0, 0.0)
 
 
 def test_rigid_collision_correction_is_bounded() -> None:

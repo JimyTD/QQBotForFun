@@ -49,18 +49,18 @@ def _time_to_collision(
     )
 
     if relative_position.length_sq() <= minimum_distance * minimum_distance:
-        # Already overlapping: only an outward-moving velocity is admissible.
-        returning_to_contact = relative_position.dot(relative_velocity) >= 0.0
+        # An outward or tangential step may escape existing overlap.
+        returning_to_contact = (
+            relative_position.dot(relative_velocity) > 1e-9
+            or relative_velocity.length_sq() <= 1e-12
+        )
         return 0.0 if returning_to_contact else None
 
-    c = (
-        relative_position.dot(relative_position)
-        - minimum_distance * minimum_distance
-    )
+    c = relative_position.dot(relative_position) - minimum_distance * minimum_distance
     a = relative_velocity.dot(relative_velocity)
     if a <= 1e-12:
         return None
-    b = relative_position.dot(relative_velocity)
+    b = -relative_position.dot(relative_velocity)
     if b >= 0.0:
         return None
 
@@ -131,6 +131,7 @@ def _sliding_score(
     blocked_ticks: int,
     blocked_window_ticks: int,
     detour_sign: int,
+    previous: Vec2 = Vec2(0.0, 0.0),
 ) -> float:
     """Score candidates with collision as a smooth penalty, not a hard veto.
 
@@ -139,20 +140,19 @@ def _sliding_score(
     direction and slide along the formation edge.
     """
     collision_penalty = (
-        0.0
-        if nearest_ttc is None
-        else 35.0 * (1.0 - nearest_ttc / max(horizon, 1e-9))
+        0.0 if nearest_ttc is None else 35.0 * (1.0 - nearest_ttc / max(horizon, 1e-9))
     )
     preferred_dir = preferred.normalized()
     candidate_dir = candidate.normalized()
     forward_penalty = 1.0 - max(-1.0, min(1.0, preferred_dir.dot(candidate_dir)))
-    displacement = candidate.length()
-    progress_bonus = displacement * (2.5 if blocked_ticks > 0 else 0.8)
-    return (
-        collision_penalty
-        + forward_penalty * 4.0
-        + progress_bonus
-    )
+    speed_penalty = max(0.0, preferred.length() - candidate.length()) * 0.8
+    cross = preferred_dir.x * candidate_dir.y - preferred_dir.y * candidate_dir.x
+    side_penalty = 0.005 if cross * detour_sign < 0 else 0.0
+    turn_penalty = 0.0
+    if previous.length() > 0.1 and candidate.length() > 0.1:
+        alignment = previous.normalized().dot(candidate_dir)
+        turn_penalty = max(0.0, -alignment) * 6.0
+    return collision_penalty + forward_penalty * 4.0 + speed_penalty + side_penalty + turn_penalty
 
 
 class LocalAvoidance:
@@ -187,9 +187,10 @@ class LocalAvoidance:
         neighbors.sort(
             key=lambda item: (
                 item.distance_sq_to(soldier)
-                - max(0.0, item.velocity.dot(
-                    Vec2(item.x - soldier.x, item.y - soldier.y).normalized()
-                )),
+                - max(
+                    0.0,
+                    item.velocity.dot(Vec2(item.x - soldier.x, item.y - soldier.y).normalized()),
+                ),
                 item.id,
             )
         )
@@ -204,30 +205,31 @@ class LocalAvoidance:
                 field_height=field_height,
             )
 
-        if blocked_ticks >= self.config.blocked_window_ticks:
-            desired = desired.rotated(
-                math.radians(self.config.detour_angle_degrees)
-                * soldier.detour_sign
-            )
-
         free_path = True
         separating_from_overlap = False
         for neighbor in neighbors:
-            if neighbor.distance_sq_to(soldier) < (
-                combined_radius(
-                    soldier.unit,
-                    neighbor.unit,
-                    self.config.fallback_unit_radius,
+            if (
+                neighbor.distance_sq_to(soldier)
+                < (
+                    combined_radius(
+                        soldier.unit,
+                        neighbor.unit,
+                        self.config.fallback_unit_radius,
+                    )
                 )
-            ) ** 2:
+                ** 2
+            ):
                 separating_from_overlap = True
-            if _time_to_collision(
-                soldier,
-                desired,
-                neighbor,
-                fallback_radius=self.config.fallback_unit_radius,
-                horizon=self.config.avoidance_horizon,
-            ) is not None:
+            if (
+                _time_to_collision(
+                    soldier,
+                    desired,
+                    neighbor,
+                    fallback_radius=self.config.fallback_unit_radius,
+                    horizon=self.config.avoidance_horizon,
+                )
+                is not None
+            ):
                 free_path = False
                 break
         if free_path:
@@ -242,13 +244,19 @@ class LocalAvoidance:
             )
 
         best: tuple[float, Vec2, float | None, int | None, float] | None = None
-        best_progress: tuple[float, Vec2, float | None, int | None, float] | None = None
 
         base_direction = desired.normalized()
         for speed_scale in self.config.candidate_speed_scales:
-            speed = soldier.unit.speed * speed_scale
+            speed = desired.length() * speed_scale
             for angle in self.config.candidate_angles_degrees:
                 candidate = base_direction.rotated(math.radians(angle)) * speed
+                candidate = self._apply_walls(
+                    soldier,
+                    candidate,
+                    blocked_by=(),
+                    field_width=field_width,
+                    field_height=field_height,
+                ).velocity
                 _hard_score, ttc, blocking_id = _candidate_score(
                     soldier,
                     desired,
@@ -259,30 +267,21 @@ class LocalAvoidance:
                 )
                 # Prefer genuinely collision-free candidates, then allow
                 # collision-penalized sliding candidates instead of freezing.
-                score = (
-                    _sliding_score(
-                        desired,
-                        candidate,
-                        ttc,
-                        horizon=self.config.avoidance_horizon,
-                        blocked_ticks=blocked_ticks,
-                        blocked_window_ticks=self.config.blocked_window_ticks,
-                        detour_sign=soldier.detour_sign,
-                    )
+                score = _sliding_score(
+                    desired,
+                    candidate,
+                    ttc,
+                    horizon=self.config.avoidance_horizon,
+                    blocked_ticks=blocked_ticks,
+                    blocked_window_ticks=self.config.blocked_window_ticks,
+                    detour_sign=soldier.detour_sign,
+                    previous=soldier.velocity,
                 )
                 item = (score, candidate, ttc, blocking_id, angle)
                 if best is None or score < best[0]:
                     best = item
-                # Keep the best candidate that actually has a meaningful
-                # tangential displacement.  This is what turns a blocked
-                # front into side-flow instead of a nearly zero stuck step.
-                if (
-                    item[1].length() >= soldier.unit.speed * 0.25
-                    and (best_progress is None or score < best_progress[0])
-                ):
-                    best_progress = item
 
-        selected = best_progress or best
+        selected = best
         if selected is None:
             return self._apply_walls(
                 soldier,
@@ -477,14 +476,20 @@ class CollisionResolver:
                     field_height=field_height,
                     max_correction=allowed,
                 )
-                correction_budget[first.id] = correction_budget.get(
-                    first.id,
-                    self.config.max_position_correction_per_tick,
-                ) - applied
-                correction_budget[second.id] = correction_budget.get(
-                    second.id,
-                    self.config.max_position_correction_per_tick,
-                ) - applied
+                correction_budget[first.id] = (
+                    correction_budget.get(
+                        first.id,
+                        self.config.max_position_correction_per_tick,
+                    )
+                    - applied
+                )
+                correction_budget[second.id] = (
+                    correction_budget.get(
+                        second.id,
+                        self.config.max_position_correction_per_tick,
+                    )
+                    - applied
+                )
 
             total_pairs += iteration_pairs
             if not moved or iteration_max <= self.config.separation_slop:
@@ -515,9 +520,7 @@ class CollisionResolver:
             nearby = self.spatial_hash.query_circle(
                 soldier.pos,
                 self._pair_search_radius(soldier),
-                predicate=lambda other, soldier_id=soldier.id: (
-                    other.id > soldier_id
-                ),
+                predicate=lambda other, soldier_id=soldier.id: other.id > soldier_id,
             )
             for other in nearby:
                 distance = soldier.distance_to(other)
@@ -556,9 +559,7 @@ class CollisionResolver:
             nearby = self.spatial_hash.query_circle(
                 soldier.pos,
                 self._pair_search_radius(soldier),
-                predicate=lambda other, soldier_id=soldier.id: (
-                    other.id > soldier_id
-                ),
+                predicate=lambda other, soldier_id=soldier.id: other.id > soldier_id,
             )
             for other in nearby:
                 distance = soldier.distance_to(other)

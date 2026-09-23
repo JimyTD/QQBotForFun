@@ -27,6 +27,12 @@ class SpatialHash:
             if soldier.alive:
                 self._cells[self._key(soldier.x, soldier.y)].append(soldier)
 
+    def update(self, soldier: Soldier2D, previous: Vec2) -> None:
+        old_key = self._key(previous.x, previous.y)
+        new_key = self._key(soldier.x, soldier.y)
+        if old_key != new_key:
+            self._cells[old_key].remove(soldier)
+            self._cells[new_key].append(soldier)
 
     def _key(self, x: float, y: float) -> tuple[int, int]:
         return (

@@ -28,6 +28,7 @@
             <div class="mode-tabs" role="tablist" aria-label="模拟模式">
               <button type="button" class="mode-tab active" data-mode="units">普通阵容</button>
               <button type="button" class="mode-tab" data-mode="civ_war">国战阵容</button>
+              <button type="button" class="mode-tab" data-mode="pathing">绕行检验</button>
             </div>
             <label class="physics-select">
               <span>物理语义</span>
@@ -76,6 +77,19 @@
             </label>
           </div>
             <div class="setup-actions">
+              <label class="hidden" id="pathing-setup">
+                <span>检验场景</span>
+                <select id="pathing-scenario">
+                  <option value="split">双侧绕墙</option>
+                  <option value="crowd">密集队列</option>
+                  <option value="border">贴边绕行</option>
+                  <option value="mirror">左右镜像</option>
+                  <option value="mixed">多排混合体积</option>
+                  <option value="staggered">错列通道</option>
+                  <option value="opening">阵亡后通道开放</option>
+                  <option value="moving">移动单位堵口</option>
+                </select>
+              </label>
               <label class="seed-field">
                 <span>Seed</span>
                 <input id="seed" type="number" value="42" />
@@ -168,6 +182,11 @@
         </section>
 
         <section class="controls">
+          <div class="overlay-controls">
+            <label><input type="checkbox" id="show-trails" checked />轨迹</label>
+            <label><input type="checkbox" id="show-routes" checked />绕行路点</label>
+            <label><input type="checkbox" id="show-targets" />目标连线</label>
+          </div>
           <div class="control-row">
             <button id="pause" type="button">暂停</button>
             <button id="step-back" type="button">后退</button>

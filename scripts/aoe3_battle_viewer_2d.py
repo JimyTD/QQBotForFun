@@ -44,8 +44,13 @@ from plugins.games.aoe3_battle.simulator2d import (  # noqa: E402
 from plugins.games.aoe3_battle.simulator2d.config import (  # noqa: E402
     CollisionMode,
 )
+from scripts.aoe3_pathing_scenarios import SCENARIOS, PathingDemo  # noqa: E402
 
 VIEWER_DIR = _ROOT / "tools" / "aoe3_battle_viewer_2d"
+
+
+class SimulationSupersededError(RuntimeError):
+    """A newer viewer request owns the frame store."""
 
 
 class BattleRunner:
@@ -90,23 +95,30 @@ class BattleRunner:
                 ),
             )
             simulator.run()
+        except SimulationSupersededError:
+            return
         except Exception as exc:
             logging.exception("2D viewer simulation failed")
-            self.store.publish(
-                {
-                    "engine": "2d",
-                    "status": "error",
-                    "tick": 0,
-                    "time": 0.0,
-                    "field": {"width": 1, "height": 1},
-                    "winner": None,
-                    "timeout": False,
-                    "summary": {},
-                    "sides": {},
-                    "units": [],
-                    "error": str(exc),
-                }
-            )
+            try:
+                self._publish(
+                    generation,
+                    cancelled,
+                    {
+                        "engine": "2d",
+                        "status": "error",
+                        "tick": 0,
+                        "time": 0.0,
+                        "field": {"width": 1, "height": 1},
+                        "winner": None,
+                        "timeout": False,
+                        "summary": {},
+                        "sides": {},
+                        "units": [],
+                        "error": str(exc),
+                    },
+                )
+            except SimulationSupersededError:
+                return
 
     def _publish(
         self,
@@ -114,9 +126,10 @@ class BattleRunner:
         cancelled: threading.Event,
         frame: dict[str, Any],
     ) -> None:
-        if generation != self._generation or cancelled.is_set():
-            raise RuntimeError("simulation superseded")
-        self.store.publish(frame)
+        with self._lock:
+            if generation != self._generation or cancelled.is_set():
+                raise SimulationSupersededError("simulation superseded")
+            self.store.publish(frame)
 
 
 class FrameStore:
@@ -198,7 +211,7 @@ class ViewerHandler(BaseHTTPRequestHandler):
         self.end_headers()
         try:
             self.wfile.write(data)
-        except (BrokenPipeError, ConnectionResetError):
+        except (BrokenPipeError, ConnectionResetError, ConnectionAbortedError):
             pass
 
     def do_GET(self) -> None:
@@ -207,11 +220,7 @@ class ViewerHandler(BaseHTTPRequestHandler):
         if path == "/api/frame":
             frame = self.store.latest()
             if query:
-                params = dict(
-                    item.split("=", 1)
-                    for item in query.split("&")
-                    if "=" in item
-                )
+                params = dict(item.split("=", 1) for item in query.split("&") if "=" in item)
                 if "index" in params:
                     try:
                         frame = self.store.frame(int(params["index"]))
@@ -366,9 +375,7 @@ def _build_simulator(
         seed=seed,
         session_id="viewer2d",
         frame_callback=frame_callback,
-        config=Simulation2DConfig(
-            collision_mode=CollisionMode(collision_mode)
-        ),
+        config=Simulation2DConfig(collision_mode=CollisionMode(collision_mode)),
     )
 
 
@@ -376,12 +383,17 @@ def build_simulator_from_request(
     request: dict[str, Any],
     *,
     frame_callback,
-) -> BattleSimulator2D:
+) -> BattleSimulator2D | PathingDemo:
     mode = str(request.get("mode") or "units")
-    collision_mode = str(
-        request.get("collision_mode") or CollisionMode.RIGID.value
-    )
+    collision_mode = str(request.get("collision_mode") or CollisionMode.RIGID.value)
     seed = int(request.get("seed", 42))
+    if mode == "pathing":
+        return PathingDemo(
+            str(request.get("scenario") or "split"),
+            seed,
+            Simulation2DConfig(collision_mode=CollisionMode(collision_mode)),
+            frame_callback,
+        )
     if mode == "civ_war":
         repo = UnitRepo.get()
         match, _estimate = generate_civ_war_lineup(
@@ -392,12 +404,8 @@ def build_simulator_from_request(
             rng=__import__("random").Random(seed),
         )
         simulator = BattleSimulator2D(
-            red_army=[
-                (slot.unit, slot.count) for slot in match.red.slots
-            ],
-            blue_army=[
-                (slot.unit, slot.count) for slot in match.blue.slots
-            ],
+            red_army=[(slot.unit, slot.count) for slot in match.red.slots],
+            blue_army=[(slot.unit, slot.count) for slot in match.blue.slots],
             seed=seed,
             session_id=f"viewer2d_civwar_{seed}",
             match_label=(
@@ -405,9 +413,7 @@ def build_simulator_from_request(
                 f"vs {match.blue_civ_name}（{match.blue_strategy}）"
             ),
             frame_callback=frame_callback,
-            config=Simulation2DConfig(
-                collision_mode=CollisionMode(collision_mode)
-            ),
+            config=Simulation2DConfig(collision_mode=CollisionMode(collision_mode)),
         )
         return simulator
 
@@ -430,6 +436,7 @@ def main() -> None:
     parser.add_argument("--history", type=int, default=2400)
     parser.add_argument("--no-open", action="store_true")
     parser.add_argument("--debug", action="store_true")
+    parser.add_argument("--scenario", choices=tuple(SCENARIOS))
     args = parser.parse_args()
 
     logging.basicConfig(
@@ -462,7 +469,8 @@ def main() -> None:
     try:
         runner.start(
             {
-                "mode": "units",
+                "mode": "pathing" if args.scenario else "units",
+                "scenario": args.scenario,
                 "red": args.red,
                 "blue": args.blue,
                 "seed": args.seed,

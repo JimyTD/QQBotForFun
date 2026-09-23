@@ -1,195 +1,259 @@
-"""Focused movement tests for 2D pathing / bypass behavior."""
+"""Physical paths, not just opposite sign flags, are the routing contract."""
 
 from __future__ import annotations
 
+import math
+from dataclasses import replace
+
+import pytest
+
 from plugins.aoe3.models import Unit
-from plugins.games.aoe3_battle.simulator2d import (
-    BattleSimulator2D,
-    Simulation2DConfig,
-)
-from plugins.games.aoe3_battle.simulator2d.engine import (
-    BattleSimulator2D as _Engine,
-)
+from plugins.games.aoe3_battle.simulator2d import BattleSimulator2D, Simulation2DConfig
 from plugins.games.aoe3_battle.simulator2d.model import Side, Soldier2D, Vec2
-from plugins.games.aoe3_battle.simulator2d.movement import LocalAvoidance
-from plugins.games.aoe3_battle.simulator2d.spatial import SpatialHash
+from plugins.games.aoe3_battle.simulator2d.movement import _time_to_collision
 
 
-def _unit(unit_id: str) -> Unit:
-    return Unit(
-        id=unit_id,
-        name=unit_id,
-        name_en=unit_id,
-        hp=100000,
+def _scene(*, count=2, center=10.0, mirror=False, substeps=2, radius=0.45):
+    unit = Unit(
+        id="mover",
+        name="mover",
+        name_en="mover",
+        hp=100,
         speed=4.0,
         attack_melee=10.0,
         rof_melee=1.0,
+        obstruction_radius_equiv=radius,
     )
-
-
-def test_unit_can_bypass_stopped_friendly_wall() -> None:
-    config = Simulation2DConfig()
-    unit = _unit("mover")
-    mover = Soldier2D(1, Side.RED, unit, 100000, 100000, 1.0, 0.0)
-    wall = [
-        Soldier2D(index, Side.RED, unit, 100000, 100000, 4.0, y)
-        for index, y in enumerate([-2.0, -1.0, 0.0, 1.0, 2.0], start=2)
-    ]
-    for blocker in wall:
-        blocker.stopped = True
-    spatial = SpatialHash(config.spatial_cell_size)
-    spatial.rebuild([mover, *wall])
-    avoidance = LocalAvoidance(config, spatial)
-
-    result = avoidance.choose_velocity(
-        mover,
-        Vec2(1.0, 0.0),
-        field_width=30.0,
-        field_height=30.0,
-        blocked_ticks=config.blocked_window_ticks,
-    )
-
-    assert abs(result.velocity.y) > 0.5, (
-        "A unit facing a full friendly wall must select a lateral path, "
-        f"got {result.velocity}"
-    )
-
-
-def test_integrated_simulation_makes_units_reach_contact() -> None:
-    unit = _unit("mover")
-    result = BattleSimulator2D(
-        red_unit=unit,
-        red_count=20,
-        blue_unit=unit,
-        blue_count=20,
-        seed=42,
-        config=Simulation2DConfig(),
-    ).run()
-
-    assert any(
-        event.data.get("mode") == "melee"
-        for event in result.events
-        if event.event_type.value == "ATTACK"
-    )
-
-
-def test_mover_physically_crosses_blocking_wall() -> None:
-    config = Simulation2DConfig()
-    unit = _unit("mover")
-    simulator = _Engine(
-        red_army=[(unit, 1)],
-        blue_army=[(unit, 1)],
-        seed=1,
-        config=config,
-    )
-    simulator._init_soldiers()
-    mover = simulator._soldiers[0]
-    target = simulator._soldiers[1]
-    target.x = 12.0
-    target.y = 0.0
-    mover.x = 1.0
-    mover.y = 0.0
-    wall = []
-    for index, y in enumerate([-2.0, -1.0, 0.0, 1.0, 2.0], start=10):
-        blocker = Soldier2D(index, Side.RED, unit, 100000, 100000, 6.0, y)
-        blocker.stopped = True
-        wall.append(blocker)
-    simulator._soldiers.extend(wall)
-    simulator._spatial_hash.rebuild(simulator._soldiers)
-
-    crossed = False
-    path = []
-    lateral_before_forward = 0.0
-    for _ in range(300):
-        simulator._tick += 1
-        desired, _ = simulator._desired_velocity(mover)
-        result = simulator._movement.choose_velocity(
-            mover,
-            desired,
-            field_width=30.0,
-            field_height=30.0,
-            blocked_ticks=mover.no_progress_ticks,
-        )
-        mover.velocity_x = result.velocity.x
-        mover.velocity_y = result.velocity.y
-        simulator._integrate_movement(
-            simulator._alive(),
-            [mover],
-        )
-        simulator._spatial_hash.rebuild(simulator._soldiers)
-        path.append((mover.x, mover.y))
-        if mover.x < 6.0:
-            lateral_before_forward = max(lateral_before_forward, abs(mover.y))
-        if mover.x > 6.9 and abs(mover.y) > 2.4:
-            crossed = True
-            break
-
-    assert crossed, (
-        f"mover did not travel around the wall: "
-        f"pos=({mover.x:.2f},{mover.y:.2f}), "
-        f"vel=({mover.velocity_x:.2f},{mover.velocity_y:.2f})"
-    )
-    assert lateral_before_forward < 4.5, (
-        "unit ran too far sideways before passing the wall: "
-        f"lateral={lateral_before_forward:.2f}, path={path[:20]}"
-    )
-
-
-def test_two_soldiers_split_to_opposite_wall_edges() -> None:
-    config = Simulation2DConfig()
-    unit = _unit("mover")
-    simulator = _Engine(
-        red_army=[(unit, 2)],
+    sim = BattleSimulator2D(
+        red_army=[(unit, count)],
         blue_army=[(unit, 1)],
         seed=7,
-        config=config,
+        config=Simulation2DConfig(movement_substeps=substeps),
     )
-    simulator._init_soldiers()
-    movers = simulator._soldiers[:2]
-    target = simulator._soldiers[2]
-    target.x = 12.0
-    target.y = 0.0
-    for index, mover in enumerate(movers):
-        mover.x = 1.0
-        mover.y = -0.45 + index * 0.9
+    sim._init_soldiers()
+    sim._field_width = 24.0
+    sim._field_height = 20.0
+    movers = sim._soldiers[:count]
+    target = sim._soldiers[count]
+    target.x, target.y, target.stopped = 16.0, center, True
+    for i, mover in enumerate(movers):
+        mover.x, mover.y = 2.0, center + (i - (count - 1) / 2) * (2 * radius + 0.3)
     wall = [
-        Soldier2D(index, Side.RED, unit, 100000, 100000, 6.0, y)
-        for index, y in enumerate([-2.0, -1.0, 0.0, 1.0, 2.0], start=10)
+        Soldier2D(100 + i, Side.RED, unit, 100, 100, 8.0, center + i - 2, stopped=True)
+        for i in range(5)
     ]
-    for blocker in wall:
-        blocker.stopped = True
-    simulator._soldiers.extend(wall)
-    simulator._spatial_hash.rebuild(simulator._soldiers)
-    # Let the engine accumulate blockage naturally before creating detours.
-    for _ in range(80):
-        simulator._tick += 1
-        simulator._process_movement()
-        simulator._refresh_stopped()
-    simulator._set_detour_waypoint(movers[0], target)
-    simulator._set_detour_waypoint(movers[1], target)
-    side_signs = [mover.detour_sign for mover in movers]
-    assert side_signs[0] != side_signs[1], (
-        f"detour edge selection did not split: {side_signs}"
-    )
+    sim._soldiers.extend(wall)
+    sim._soldier_map.update({s.id: s for s in wall})
+    if mirror:
+        for s in sim._soldiers:
+            s.x = 24.0 - s.x
+            s.facing = math.pi
+    sim._spatial_hash.rebuild(sim._soldiers)
+    return sim, movers, target, wall
 
-    max_positive = [0.0, 0.0]
-    max_negative = [0.0, 0.0]
-    for _ in range(180):
-        simulator._tick += 1
-        simulator._process_movement()
-        simulator._refresh_stopped()
-        for index, mover in enumerate(movers):
-            max_positive[index] = max(max_positive[index], mover.y)
-            max_negative[index] = min(max_negative[index], mover.y)
-        if all(mover.x > 6.5 for mover in movers):
+
+@pytest.mark.parametrize("velocity,expected", [(Vec2(4, 0), 0.525), (Vec2(-4, 0), None)])
+def test_collision_prediction_distinguishes_approach_from_separation(velocity, expected):
+    _sim, movers, _, wall = _scene(count=1)
+    mover, blocker = movers[0], wall[2]
+    blocker.x = mover.x + 3
+    result = _time_to_collision(mover, velocity, blocker, fallback_radius=0.45, horizon=1)
+    assert result == pytest.approx(expected) if expected is not None else result is None
+
+
+def test_opposite_choices_have_opposite_world_waypoints():
+    results = []
+    for unit_id in (1, 2):
+        sim, movers, target, _ = _scene(count=1)
+        mover = movers[0]
+        mover.id = unit_id + 10
+        sim._set_detour_waypoint(mover, target)
+        assert mover.detour_waypoint_y is not None
+        results.append(mover.detour_waypoint_y - mover.y)
+    assert results[0] < 0 < results[1]
+
+
+@pytest.mark.parametrize("mirror", [False, True])
+@pytest.mark.parametrize("substeps", [1, 2, 4])
+def test_units_physically_split_and_cross_wall_without_penetration(mirror, substeps):
+    sim, movers, _, wall = _scene(mirror=mirror, substeps=substeps)
+    extremes = [[s.y, s.y] for s in movers]
+    crossed = set()
+    initial_wall = [(s.x, s.y) for s in wall]
+    for _ in range(200):
+        previous = [s.pos for s in movers]
+        sim._tick += 1
+        sim._process_movement()
+        for i, mover in enumerate(movers):
+            extremes[i][0] = min(extremes[i][0], mover.y)
+            extremes[i][1] = max(extremes[i][1], mover.y)
+            assert (mover.pos - previous[i]).length() <= 0.401
+            assert all(mover.distance_to(b) >= 0.895 for b in wall)
+            if mover.x < 15.0 if mirror else mover.x > 9.0:
+                crossed.add(i)
+        if len(crossed) == len(movers):
             break
+    assert len(crossed) == 2, [(s.x, s.y, s.no_progress_ticks) for s in movers]
+    assert extremes[0][0] < 7.2
+    assert extremes[1][1] > 12.8
+    assert [(s.x, s.y) for s in wall] == initial_wall
 
-    assert max(
-        abs(max_positive[0]),
-        abs(max_positive[1]),
-        abs(max_negative[0]),
-        abs(max_negative[1]),
-    ) > 0.8, (
-        f"neither unit produced a lateral detour: "
-        f"positive={max_positive}, negative={max_negative}"
+
+def test_border_rejects_unreachable_side():
+    sim, movers, target, _ = _scene(count=1, center=2.5)
+    sim._set_detour_waypoint(movers[0], target)
+    assert movers[0].detour_waypoint_y > 4.5
+    assert all(p.y >= 0.45 for p in movers[0].detour_remaining)
+
+
+def test_nearer_edge_wins_over_id_parity():
+    sim, movers, target, _ = _scene(count=1)
+    movers[0].y = 11.5
+    target.y = 11.5
+    sim._spatial_hash.rebuild(sim._soldiers)
+    sim._set_detour_waypoint(movers[0], target)
+    assert movers[0].detour_sign == 1
+
+
+def test_dead_target_clears_route():
+    sim, movers, target, _ = _scene(count=1)
+    sim._set_detour_waypoint(movers[0], target)
+    target.alive = False
+    desired, _ = sim._desired_velocity(movers[0])
+    assert not movers[0].detour_remaining
+    assert movers[0].detour_waypoint_x is None
+    assert desired.length() == 0
+
+
+def test_detour_cannot_disable_collision_guard():
+    sim, movers, target, wall = _scene(count=1)
+    mover = movers[0]
+    mover.x = 7.0
+    mover.move_target_id = target.id
+    mover.detour_waypoint_x, mover.detour_waypoint_y = 10.0, 10.0
+    mover.velocity_x = 4.0
+    sim._spatial_hash.rebuild(sim._soldiers)
+    sim._integrate_movement(sim._soldiers, [mover])
+    assert mover.x < 8.0
+    assert all(mover.distance_to(b) >= 0.895 for b in wall)
+
+
+def test_integrated_simulation_makes_units_reach_contact():
+    sim, _, _, _ = _scene()
+    unit = sim.red_army[0].unit
+    result = BattleSimulator2D(unit, 20, unit, 20, seed=42, max_ticks=180).run()
+    assert any(
+        e.data.get("mode") == "melee" for e in result.events if e.event_type.value == "ATTACK"
     )
+
+
+def test_high_speed_step_does_not_tunnel_through_distant_wall():
+    sim, movers, _, wall = _scene(count=1, substeps=1)
+    mover = movers[0]
+    mover.velocity_x = 100.0
+    sim._integrate_movement(sim._soldiers, [mover])
+    assert mover.x < wall[0].x
+
+
+def test_large_mover_uses_its_own_clearance():
+    sim, movers, target, wall = _scene(count=1, radius=0.8)
+    for blocker in wall:
+        blocker.unit = replace(blocker.unit, obstruction_radius_equiv=0.45)
+    sim._spatial_hash.rebuild(sim._soldiers)
+    sim._set_detour_waypoint(movers[0], target)
+    for _ in range(150):
+        sim._tick += 1
+        sim._process_movement()
+        assert all(movers[0].distance_to(blocker) >= 1.245 for blocker in wall)
+        if movers[0].x > 9.5:
+            break
+    assert movers[0].x > 9.5
+
+
+def test_route_rotates_with_the_scene():
+    sim, movers, target, _ = _scene(count=1)
+    sim._set_detour_waypoint(movers[0], target)
+    original = Vec2(movers[0].detour_waypoint_x, movers[0].detour_waypoint_y)
+    rotated, movers, target, _ = _scene(count=1)
+    rotated._field_width = rotated._field_height = 30.0
+    for soldier in rotated._soldiers:
+        soldier.x, soldier.y = 24.0 - soldier.y, soldier.x + 2.0
+    rotated._spatial_hash.rebuild(rotated._soldiers)
+    rotated._set_detour_waypoint(movers[0], target)
+    assert movers[0].detour_waypoint_x == pytest.approx(24.0 - original.y)
+    assert movers[0].detour_waypoint_y == pytest.approx(original.x + 2.0)
+
+
+def test_alternating_steps_do_not_reset_the_progress_watchdog():
+    sim, movers, target, wall = _scene(count=1)
+    for blocker in wall:
+        blocker.alive = False
+    sim._spatial_hash.rebuild(sim._soldiers)
+    mover = movers[0]
+    mover.move_target_id = target.id
+    for tick in range(24):
+        sim._tick = tick
+        mover.velocity_x = 2.0 if tick % 2 == 0 else -2.0
+        sim._integrate_movement(sim._soldiers, [mover])
+    assert mover.no_progress_ticks >= 20
+    assert mover.oscillating
+
+
+def test_fast_cavalry_brakes_into_attack_range_instead_of_strafing():
+    from plugins.aoe3.repository import UnitRepo
+
+    repo = UnitRepo.get()
+    sim = BattleSimulator2D(
+        repo.get_by_id("delifidi"), 1, repo.get_by_id("dejunglebowman"), 1, seed=42
+    )
+    sim._init_soldiers()
+    mover, target = sim._soldiers
+    mover.x, mover.y = 17.353, 8.250
+    target.x, target.y, target.stopped = 15.479, 7.546, True
+    sim._spatial_hash.rebuild(sim._soldiers)
+    path = 0.0
+    for tick in range(20):
+        sim._tick = tick
+        previous = mover.pos
+        sim._process_movement()
+        path += (mover.pos - previous).length()
+        if mover.distance_to(target) <= mover.effective_melee_range:
+            break
+    assert mover.distance_to(target) <= mover.effective_melee_range
+    assert path < 1.0
+    assert mover.distance_to(target) >= mover.radius(0.45) + target.radius(0.45)
+
+
+def test_route_is_cancelled_when_deaths_open_the_direct_path():
+    sim, movers, target, wall = _scene(count=1)
+    mover = movers[0]
+    sim._set_detour_waypoint(mover, target)
+    assert mover.detour_waypoint_x is not None
+    for blocker in wall:
+        blocker.alive = False
+    sim._spatial_hash.rebuild(sim._soldiers)
+    sim._shorten_detour(mover, target)
+    assert mover.detour_waypoint_x is None
+    assert mover.detour_shortcuts == 1
+
+
+def test_route_shortcut_never_cuts_through_a_live_wall():
+    sim, movers, target, _ = _scene(count=1)
+    mover = movers[0]
+    sim._set_detour_waypoint(mover, target)
+    sim._shorten_detour(mover, target)
+    assert mover.detour_waypoint_x is not None
+
+
+def test_committed_route_does_not_strafe_when_already_inside_attack_range():
+    sim, movers, target, wall = _scene(count=1)
+    mover = movers[0]
+    mover.x, mover.y = target.x - 1.4, target.y
+    for blocker in wall:
+        blocker.alive = False
+    mover.detour_waypoint_x, mover.detour_waypoint_y = 18.0, 14.0
+    mover.detour_target_id = target.id
+    sim._spatial_hash.rebuild(sim._soldiers)
+    sim._refresh_stopped()
+    assert mover.stopped
+    assert mover.detour_waypoint_x is None
