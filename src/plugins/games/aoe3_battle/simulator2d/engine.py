@@ -25,10 +25,10 @@ logger = logging.getLogger("aoe3_battle.simulator2d")
 
 
 class BattleSimulator2D:
-    """2D replacement candidate for :class:`BattleSimulator`.
+    """Production 2D battle simulator.
 
-    It intentionally exposes the same constructor shape and ``run()`` result
-    as the 1D implementation.  No production call site imports this class yet.
+    It exposes the same constructor shape and ``run()`` result contract as the
+    historical 1D implementation.
     """
 
     def __init__(

@@ -6,7 +6,7 @@ import random
 
 from plugins.aoe3.models import Multiplier, Unit
 from plugins.games.aoe3_battle.broadcaster import format_battle_report
-from plugins.games.aoe3_battle.simulator import EventType, Side
+from plugins.games.aoe3_battle.battle_contract import EventType, Side
 from plugins.games.aoe3_battle.simulator2d import (
     BattleSimulator2D,
     Simulation2DConfig,

@@ -41,7 +41,8 @@ from plugins.games.aoe3_battle.civ_war_roles import (  # noqa: E402
     resolve_archetypes,
 )
 from plugins.games.aoe3_battle.lineup import _unit_cost, get_bet_pool  # noqa: E402
-from plugins.games.aoe3_battle.simulator import BattleSimulator, Side  # noqa: E402
+from plugins.games.aoe3_battle.battle_contract import Side  # noqa: E402
+from plugins.games.aoe3_battle.simulator2d import BattleSimulator2D  # noqa: E402
 
 
 def _remaining_value(soldiers: list) -> float:
@@ -58,7 +59,7 @@ def _simulate_estimate(estimate, *, runs: int) -> tuple[int, int, int, float]:
     blue_army = [(slot.unit, slot.count) for slot in estimate.blue_lineup.slots]
     for simulation_seed in range(runs):
         for swapped in (False, True):
-            result = BattleSimulator(
+            result = BattleSimulator2D(
                 red_army=blue_army if swapped else red_army,
                 blue_army=red_army if swapped else blue_army,
                 seed=simulation_seed,

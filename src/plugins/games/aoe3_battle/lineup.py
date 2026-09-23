@@ -1373,12 +1373,63 @@ def _unit_emoji(unit) -> str:
 
 def format_formation_panel(lineup: MatchLineup) -> str:
     """生成双方阵型排布面板文本（群聊开战前发送）。"""
-    from .simulator import (
-        ArmySlot as SimSlot,
-        FormationRow,
-        Side,
-        compute_formation_rows,
-    )
+    from dataclasses import dataclass
+
+    from .battle_contract import ArmySlot as SimSlot, Side
+    from .simulator2d.config import Simulation2DConfig
+    from .simulator2d.formation import build_deployment
+
+    @dataclass
+    class FormationRow:
+        row_index: int
+        pos: float
+        slots: list[tuple[Unit, int]]
+        total: int
+
+        @property
+        def label(self) -> str:
+            return "+".join(
+                f"{(unit.name or unit.name_en)}×{count}"
+                for unit, count in self.slots
+            )
+
+    def compute_formation_rows(
+        sim_army: list[SimSlot],
+        side: Side,
+    ) -> list[FormationRow]:
+        del side
+        config = Simulation2DConfig()
+        deployment = build_deployment(sim_army, [], config)
+        units = [
+            slot.unit
+            for slot in sim_army
+            for _ in range(slot.count)
+        ]
+        red_columns = deployment.columns[Side.RED]
+        positions = deployment.positions[:len(units)]
+        rows: list[FormationRow] = []
+        for index in range(0, len(positions), red_columns):
+            row_positions = positions[index:index + red_columns]
+            slots: list[tuple[Unit, int]] = []
+            cursor = index
+            while cursor < index + len(row_positions):
+                unit = units[cursor]
+                count = 1
+                cursor += 1
+                while (
+                    cursor < index + len(row_positions)
+                    and units[cursor] is unit
+                ):
+                    count += 1
+                    cursor += 1
+                slots.append((unit, count))
+            rows.append(FormationRow(
+                row_index=len(rows),
+                pos=round(row_positions[-1].x, 1),
+                slots=slots,
+                total=len(row_positions),
+            ))
+        return rows
 
     def _format_row(row: FormationRow, num_rows: int) -> str:
         icons = ""

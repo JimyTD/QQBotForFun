@@ -5,7 +5,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from enum import StrEnum
 
-from ..simulator import (
+from .constants import (
     DEFAULT_ROF_MELEE,
     DEFAULT_ROF_RANGED,
     FIELD_LENGTH,
@@ -27,8 +27,7 @@ class CollisionMode(StrEnum):
 class Simulation2DConfig:
     """All tunable values for the 2D movement and combat model.
 
-    The defaults are intentionally conservative.  They preserve the 1D
-    engine's timing and combat constants while replacing only the spatial
+    The defaults are intentionally conservative and tuned for the 2D spatial
     model.
     """
 

@@ -9,7 +9,7 @@ import pytest
 
 from core.types import GameContext
 from plugins.games.aoe3_battle.game import AoE3BattleGame, session
-from plugins.games.aoe3_battle.simulator import BattleSimulator
+from plugins.games.aoe3_battle.simulator2d import BattleSimulator2D
 
 
 @pytest.mark.asyncio
@@ -39,7 +39,7 @@ async def test_civ_war_on_create_builds_serializable_betting_state() -> None:
     assert ctx.state["red_army"] and ctx.state["blue_army"]
     assert game._match.mode == "civ_war"
 
-    result = BattleSimulator(
+    result = BattleSimulator2D(
         red_army=[(slot.unit, slot.count) for slot in game._match.red.slots],
         blue_army=[(slot.unit, slot.count) for slot in game._match.blue.slots],
         seed=1,

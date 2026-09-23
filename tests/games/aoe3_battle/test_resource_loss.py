@@ -6,7 +6,24 @@ from plugins.games.aoe3_battle.broadcaster import (
     battle_resource_loss,
     format_battle_report,
 )
-from plugins.games.aoe3_battle.simulator import ArmySlot, BattleResult, Side, Soldier
+from plugins.games.aoe3_battle.battle_contract import (
+    ArmySlot,
+    BattleResult,
+    Side,
+)
+
+
+class _DeadSoldier:
+    def __init__(self, *, side: Side, unit: Unit, alive: bool) -> None:
+        self.side = side
+        self.unit = unit
+        self.hp = 50.0 if alive else 0.0
+        self.max_hp = 50.0
+        self.alive = alive
+        self.kills = 0
+        self.total_damage_dealt = 0.0
+        self.id = 1
+        self.name = getattr(unit, "name", unit.id)
 
 
 def _soldier(
@@ -14,16 +31,8 @@ def _soldier(
     side: Side,
     unit: Unit,
     alive: bool,
-) -> Soldier:
-    return Soldier(
-        id=1,
-        side=side,
-        unit=unit,
-        hp=50.0 if alive else 0.0,
-        max_hp=50.0,
-        pos=0.0,
-        alive=alive,
-    )
+    ) -> _DeadSoldier:
+    return _DeadSoldier(side=side, unit=unit, alive=alive)
 
 
 def _unit(unit_id: str, *, food: int = 0, wood: int = 0, gold: int = 0, pop: int = 99) -> Unit:
@@ -37,7 +46,10 @@ def _unit(unit_id: str, *, food: int = 0, wood: int = 0, gold: int = 0, pop: int
     )
 
 
-def _result(red_dead: list[Soldier], blue_dead: list[Soldier]) -> BattleResult:
+def _result(
+    red_dead: list[_DeadSoldier],
+    blue_dead: list[_DeadSoldier],
+) -> BattleResult:
     red_unit = red_dead[0].unit if red_dead else _unit("red")
     blue_unit = blue_dead[0].unit if blue_dead else _unit("blue")
     return BattleResult(

@@ -34,7 +34,8 @@ from plugins.games.aoe3_battle.rival_themes import (
     pick_random_themes,
     resolve_theme,
 )
-from plugins.games.aoe3_battle.simulator import BattleResult, BattleSimulator
+from plugins.games.aoe3_battle.battle_contract import BattleResult
+from plugins.games.aoe3_battle.simulator2d import BattleSimulator2D
 
 # =====================================================================
 # 模式定义
@@ -269,10 +270,11 @@ class AoE3BattleCLIAdapter:
         # 3. 跑模拟
         print(f"\n{C.DIM}战斗模拟中...{C.R}")
         is_duel = self._mode_id == "duel"
-        sim = BattleSimulator(
+        sim = BattleSimulator2D(
             red_army=[(s.unit, s.count) for s in match.red.slots],
             blue_army=[(s.unit, s.count) for s in match.blue.slots],
             duel_mode=is_duel,
+            session_id="cli",
         )
         result = sim.run()
         self._result = result

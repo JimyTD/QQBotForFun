@@ -1,9 +1,8 @@
-"""Independent 2D replacement engine for AoE3 battle simulations.
+"""Production 2D battle engine for AoE3 simulations.
 
-The 1D simulator remains the production implementation until this package is
-explicitly selected by a caller.  The public result/event contract is shared
-with the 1D engine so broadcast and economy code do not need to know which
-engine produced a battle.
+The 1D simulator is retained only as a historical reference and explicit
+development comparison.  The public result/event contract remains shared so
+broadcast and economy code does not depend on engine internals.
 """
 
 from .config import Simulation2DConfig

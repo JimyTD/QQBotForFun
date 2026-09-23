@@ -12,7 +12,7 @@ from __future__ import annotations
 import random
 from dataclasses import dataclass
 
-from .simulator import (
+from .battle_contract import (
     BattleEvent,
     BattleResult,
     EventType,

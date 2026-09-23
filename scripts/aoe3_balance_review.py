@@ -47,7 +47,8 @@ logging.disable(logging.CRITICAL)
 
 from plugins.aoe3.models import Unit  # noqa: E402
 from plugins.games.aoe3_battle.lineup import power_score  # noqa: E402
-from plugins.games.aoe3_battle.simulator import BattleSimulator, Side  # noqa: E402
+from plugins.games.aoe3_battle.battle_contract import Side  # noqa: E402
+from plugins.games.aoe3_battle.simulator2d import BattleSimulator2D  # noqa: E402
 
 # 数据刷新前的 seeds 快照（2026-05-29 快照派生，见 docs/aoe3-data-refresh-20260917.md）
 DEFAULT_OLD_REV = "b6c8f08^"
@@ -281,7 +282,7 @@ def sim_mirror(new_u: Unit, old_u: Unit, count: int, seeds: list[int]) -> dict:
     for s in seeds:
         for red, blue, tag in ((new_u, old_u, "new"), (old_u, new_u, "old")):
             try:
-                res = BattleSimulator(red, count, blue, count, seed=s).run()
+                res = BattleSimulator2D(red, count, blue, count, seed=s).run()
             except Exception:  # pragma: no cover - 单场异常不中断整体
                 st["error"] += 1
                 continue
@@ -312,7 +313,7 @@ def sim_vs_ref(unit_ver: Unit, ref: Unit, count: int, seeds: list[int]) -> dict:
     for s in seeds:
         for a, b, mine_is_red in ((unit_ver, ref, True), (ref, unit_ver, False)):
             try:
-                res = BattleSimulator(a, count, b, count, seed=s).run()
+                res = BattleSimulator2D(a, count, b, count, seed=s).run()
             except Exception:  # pragma: no cover
                 continue
             if res.winner is None:

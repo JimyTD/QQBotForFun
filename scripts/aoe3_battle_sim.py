@@ -40,8 +40,7 @@ if sys.platform == "win32":
 
 from plugins.aoe3.repository import UnitRepo  # noqa: E402
 from plugins.aoe3.models import Unit  # noqa: E402
-from plugins.games.aoe3_battle.simulator import (  # noqa: E402
-    BattleSimulator,
+from plugins.games.aoe3_battle.battle_contract import (  # noqa: E402
     BattleResult,
     EventType,
     Side,
@@ -96,46 +95,26 @@ def _build_simulator(
     duel_mode: bool = False,
 ):
     """Construct the selected engine through one development-only factory."""
-    engine = getattr(args, "engine", "1d")
-    if engine == "2d":
-        if red_army is not None and blue_army is not None:
-            return BattleSimulator2D(
-                red_army=red_army,
-                blue_army=blue_army,
-                seed=args.seed,
-                duel_mode=duel_mode,
-                session_id=getattr(args, "session_id", "local"),
-                trace=getattr(args, "trace", False),
-            )
-        if red_unit is None or blue_unit is None:
-            raise ValueError("2D simulator requires both armies")
+    if red_army is not None and blue_army is not None:
         return BattleSimulator2D(
-            red_unit,
-            red_count,
-            blue_unit,
-            blue_count,
+            red_army=red_army,
+            blue_army=blue_army,
             seed=args.seed,
             duel_mode=duel_mode,
             session_id=getattr(args, "session_id", "local"),
             trace=getattr(args, "trace", False),
         )
-
-    if red_army is not None and blue_army is not None:
-        return BattleSimulator(
-            red_army=red_army,
-            blue_army=blue_army,
-            seed=args.seed,
-            duel_mode=duel_mode,
-        )
     if red_unit is None or blue_unit is None:
-        raise ValueError("1D simulator requires both armies")
-    return BattleSimulator(
+        raise ValueError("2D simulator requires both armies")
+    return BattleSimulator2D(
         red_unit,
         red_count,
         blue_unit,
         blue_count,
         seed=args.seed,
         duel_mode=duel_mode,
+        session_id=getattr(args, "session_id", "local"),
+        trace=getattr(args, "trace", False),
     )
 
 
@@ -400,7 +379,6 @@ def interactive_mode(
     repo: UnitRepo,
     verbose: bool = False,
     seed: int | None = None,
-    engine: str = "1d",
 ) -> None:
     """交互式选兵种 → 跑模拟。"""
     print(f"\n{C.B}{C.CYAN}=== AoE3 斗蛐蛐模拟器 ==={C.R}")
@@ -437,7 +415,7 @@ def interactive_mode(
         # 跑模拟
         print(f"\n{C.DIM}模拟中...{C.R}")
         sim = _build_simulator(
-            argparse.Namespace(engine=engine, seed=seed, trace=False),
+            argparse.Namespace(seed=seed, trace=False),
             red_unit=red_unit,
             red_count=red_count,
             blue_unit=blue_unit,
@@ -555,7 +533,7 @@ def run_dummy_mode(repo: UnitRepo, args) -> None:
         attack_count += 1
         last_attack_tick = tick
 
-    from plugins.games.aoe3_battle.simulator import TICK_INTERVAL
+    from plugins.games.aoe3_battle.simulator2d.constants import TICK_INTERVAL
 
     if first_attack_tick is not None:
         first_attack_time = first_attack_tick * TICK_INTERVAL
@@ -622,12 +600,6 @@ def main() -> None:
         "--debug", action="store_true", help="启用 DEBUG 级别日志"
     )
     parser.add_argument(
-        "--engine",
-        choices=("1d", "2d"),
-        default="1d",
-        help="模拟引擎（默认 1d；2d 为独立替换候选）",
-    )
-    parser.add_argument(
         "--trace",
         action="store_true",
         help="2D 引擎记录最近 tick 的移动/碰撞详情，异常时落盘",
@@ -659,8 +631,6 @@ def main() -> None:
         stream=sys.stderr,
     )
     # 模拟器日志单独控制
-    sim_logger = logging.getLogger("aoe3_battle.simulator")
-    sim_logger.setLevel(log_level)
     sim2d_logger = logging.getLogger("aoe3_battle.simulator2d")
     sim2d_logger.setLevel(log_level)
 
@@ -713,7 +683,6 @@ def main() -> None:
             repo,
             verbose=args.verbose,
             seed=args.seed,
-            engine=args.engine,
         )
         return
 

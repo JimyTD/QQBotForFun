@@ -6,7 +6,7 @@
 |------|---------|------|
 | [turtle-soup.md](turtle-soup.md) | `turtle_soup` | 海龟汤 · LLM 汤主模式 |
 | [trivia.md](trivia.md) | `trivia` | 趣味问答 · 听线索猜答案 |
-| [aoe3-battle.md](aoe3-battle.md) | `aoe3_battle` | 帝国3斗蛐蛐 · 一维自研模拟 |
+| [aoe3-battle.md](aoe3-battle.md) | `aoe3_battle` | 帝国3斗蛐蛐 · 二维自研模拟 |
 | [deep-sea-mission.md](deep-sea-mission.md) | `deep_sea_mission` | 深海任务 · 合作吃墩框架 |
 
 ## 子系统 / 参考文档
@@ -15,7 +15,6 @@
 |------|----------|------|
 | [trivia-bank.md](trivia-bank.md) | trivia | 题库子系统设计 |
 | [trivia-bank-generation-guide.md](trivia-bank-generation-guide.md) | trivia | 题库生成规范（多 Agent 协作） |
-| [aoe3-battle-state-machine.md](aoe3-battle-state-machine.md) | aoe3_battle | 状态机参考 |
 | [aoe3.md](aoe3.md) | aoe3_battle | 帝国3 数据解析相关 |
 | [aoe3-data-refresh.md](aoe3-data-refresh.md) | aoe3_battle | 帝国3 数据刷新 SOP（游戏更新后重建兵种数据） |
 | [aoe3-balance-review.md](aoe3-balance-review.md) | aoe3_battle | 帝国3 单位平衡变更审查工具与口径边界 |

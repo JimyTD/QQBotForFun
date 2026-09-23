@@ -50,12 +50,13 @@ from .lineup import (
     generate_rival_lineup,
     generate_tournament_lineup,
 )
+from .battle_contract import ArmySlot, BattleResult, Side
 from .opening_renderer import (
     OpeningSide,
     format_civ_war_fallback,
     render_civ_war_opening,
 )
-from .simulator import ArmySlot, BattleResult, BattleSimulator, Side
+from .simulator2d import BattleSimulator2D
 from .tournament import Tournament, TournamentStage
 
 logger = logging.getLogger("aoe3_battle.game")
@@ -178,7 +179,7 @@ def _dump_battle_log(
         ]
 
         # 击杀链：从事件流中提取 DEATH 事件
-        from .simulator import EventType
+        from .battle_contract import EventType
         kill_chain = []
         for e in result.events:
             if e.event_type == EventType.DEATH:
@@ -759,10 +760,11 @@ class AoE3BattleGame(GameBase):
 
             # 1. 跑模拟
             is_duel = ctx.state.get("mode") == "duel"
-            sim = BattleSimulator(
+            sim = BattleSimulator2D(
                 red_army=[(s.unit, s.count) for s in match.red.slots],
                 blue_army=[(s.unit, s.count) for s in match.blue.slots],
                 duel_mode=is_duel,
+                session_id=ctx.session_id,
             )
             result = sim.run()
 
@@ -1108,9 +1110,10 @@ class AoE3BattleGame(GameBase):
                 count_b = max(1, lcm_budget // cost_b)
 
                 # 跑模拟
-                sim = BattleSimulator(
+                sim = BattleSimulator2D(
                     red_army=[(tu_a.unit, count_a)],
                     blue_army=[(tu_b.unit, count_b)],
+                    session_id=ctx.session_id,
                 )
                 result = sim.run()
 
