@@ -11,6 +11,7 @@ from pathlib import Path
 from PIL import Image, ImageDraw, ImageFont
 
 from .model import Replay, ReplayFrame
+from .timeline import PlaybackPlan, build_playback_plan
 
 logger = logging.getLogger("aoe3_battle.replay.renderer")
 
@@ -158,19 +159,45 @@ class ReplayRenderer:
         yield from self.iter_images_many([replay])
 
     def iter_images_many(self, replays: list[Replay]):
-        """Yield rendered RGB frames for one or more replays."""
+        """Yield rendered RGB frames with adaptive source-time sampling."""
         intro_frames = self.fps * 2
         if len(replays) > 1:
             outro_frames = self.fps
         else:
             outro_frames = self.fps * 3
         for replay in replays:
+            plan = build_playback_plan(replay)
             for _ in range(intro_frames):
                 yield self._render_intro(replay)
-            for frame in replay.frames:
-                yield self._render_frame(replay, frame)
+            for _output_time, source_time in plan.iter_output_samples(self.fps):
+                yield self._render_frame(
+                    replay,
+                    self._frame_at(replay, source_time),
+                    plan=plan,
+                )
             for _ in range(outro_frames):
-                yield self._render_outro(replay)
+                yield self._render_outro(replay, plan=plan)
+
+    @staticmethod
+    def _frame_at(replay: Replay, source_time: float) -> ReplayFrame:
+        """Select the nearest captured frame for one mapped source timestamp."""
+        if not replay.frames:
+            raise ValueError("replay contains no frames")
+        low = 0
+        high = len(replay.frames) - 1
+        while low < high:
+            middle = (low + high) // 2
+            if replay.frames[middle].time < source_time:
+                low = middle + 1
+            else:
+                high = middle
+        if low == 0:
+            return replay.frames[0]
+        before = replay.frames[low - 1]
+        after = replay.frames[low]
+        if abs(before.time - source_time) <= abs(after.time - source_time):
+            return before
+        return after
 
     def _render_intro(self, replay: Replay) -> Image.Image:
         image = Image.new("RGB", (self.width, self.height), BACKGROUND)
@@ -192,7 +219,12 @@ class ReplayRenderer:
         draw.text((32, self.height - 54), "战场态势回放 · 无调试数据", font=self._font, fill=MUTED)
         return image
 
-    def _render_outro(self, replay: Replay) -> Image.Image:
+    def _render_outro(
+        self,
+        replay: Replay,
+        *,
+        plan: PlaybackPlan | None = None,
+    ) -> Image.Image:
         image = Image.new("RGB", (self.width, self.height), BACKGROUND)
         draw = ImageDraw.Draw(image)
         result = replay.result
@@ -216,16 +248,29 @@ class ReplayRenderer:
             draw.text((32, 240), "超时判定", font=self._font, fill=(225, 185, 75))
         return image
 
-    def _render_frame(self, replay: Replay, frame: ReplayFrame) -> Image.Image:
+    def _render_frame(
+        self,
+        replay: Replay,
+        frame: ReplayFrame,
+        *,
+        plan: PlaybackPlan | None = None,
+    ) -> Image.Image:
         image = Image.new("RGB", (self.width, self.height), BACKGROUND)
         draw = ImageDraw.Draw(image)
-        self._draw_hud(draw, replay, frame)
+        self._draw_hud(draw, replay, frame, plan=plan)
         self._draw_scene(draw, replay, frame)
         self._draw_subtitle(draw, replay, frame)
-        self._draw_timeline(draw, replay, frame)
+        self._draw_timeline(draw, replay, frame, plan=plan)
         return image
 
-    def _draw_hud(self, draw: ImageDraw.ImageDraw, replay: Replay, frame: ReplayFrame) -> None:
+    def _draw_hud(
+        self,
+        draw: ImageDraw.ImageDraw,
+        replay: Replay,
+        frame: ReplayFrame,
+        *,
+        plan: PlaybackPlan | None = None,
+    ) -> None:
         red = frame.sides.get("red", {})
         blue = frame.sides.get("blue", {})
         draw.rectangle((0, 0, self.width, HUD_BOTTOM), fill=(17, 26, 21))
@@ -253,6 +298,13 @@ class ReplayRenderer:
             fill=WHITE,
         )
         draw.text((self.width // 2 - 40, 49), f"{frame.time:05.1f}s", font=self._font, fill=MUTED)
+        if plan is not None and plan.max_speed > 1.01:
+            draw.text(
+                (self.width // 2 + 58, 48),
+                f"×{plan.speed_at(frame.time):.1f}",
+                font=self._font_small,
+                fill=(225, 185, 75),
+            )
 
     def _draw_bar(
         self,
@@ -346,13 +398,21 @@ class ReplayRenderer:
         draw: ImageDraw.ImageDraw,
         replay: Replay,
         frame: ReplayFrame,
+        *,
+        plan: PlaybackPlan | None = None,
     ) -> None:
         draw.rectangle((20, TIMELINE_TOP, self.width - 20, TIMELINE_BOTTOM), fill=(17, 26, 21))
         left = 36
         right = self.width - 36
         draw.line((left, 505, right, 505), fill=(70, 88, 76), width=2)
         duration = max(0.1, replay.duration)
-        marker_x = left + (right - left) * min(1.0, frame.time / duration)
+        marker_output_time = (
+            frame.time if plan is None else plan.output_time_at(frame.time)
+        )
+        marker_x = left + (right - left) * min(
+            1.0,
+            marker_output_time / max(0.1, plan.output_duration if plan else duration),
+        )
         draw.ellipse((marker_x - 4, 501, marker_x + 4, 509), fill=(225, 185, 75))
         first_attack = next(
             (event.time for event in replay.events if event.event_type == "ATTACK"),
@@ -368,7 +428,16 @@ class ReplayRenderer:
         ):
             if event_time is None:
                 continue
-            event_x = left + (right - left) * min(1.0, event_time / duration)
+            event_output_time = (
+                event_time
+                if plan is None
+                else plan.output_time_at(event_time)
+            )
+            event_scale = max(0.1, plan.output_duration if plan else duration)
+            event_x = left + (right - left) * min(
+                1.0,
+                event_output_time / event_scale,
+            )
             draw.line((event_x, 499, event_x, 511), fill=color, width=2)
             draw.text(
                 (event_x - 18, 488),

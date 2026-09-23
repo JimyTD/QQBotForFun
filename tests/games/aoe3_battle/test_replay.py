@@ -180,9 +180,25 @@ def test_renderer_produces_expected_frame_sequence() -> None:
     replay = _replay()
     frames = list(ReplayRenderer().iter_images(replay))
 
-    assert len(frames) == 2 * 10 + len(replay.frames) + 3 * 10
+    assert len(frames) == 2 * 10 + 2 + 3 * 10
     assert all(frame.size == (960, 540) for frame in frames)
     assert frames[20].getpixel((480, 270)) != (13, 20, 17)
+
+
+def test_renderer_compresses_long_replay_output_frames() -> None:
+    session = ReplaySession(
+        session_id="long",
+        mode="bet",
+        red_count=1,
+        blue_count=1,
+    )
+    for tick in range(0, 801, 10):
+        session.frame_callback(_frame(tick, target_id=2))
+    replay = session.recorder.build()
+
+    frames = list(ReplayRenderer().iter_images(replay))
+
+    assert len(frames) <= 36 * 10 + 5
 
 
 def test_renderer_encodes_mp4() -> None:
