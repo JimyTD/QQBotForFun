@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from PIL import Image
+
 from src.plugins.games.aoe3_battle.replay.model import (
     Replay,
     ReplayEvent,
@@ -146,3 +148,37 @@ def test_hud_contains_composition_and_speed() -> None:
     image = renderer._render_frame(replay, frame)
 
     assert image.size == (960, 540)
+
+
+def test_replay_icon_is_scaled_to_collision_diameter(monkeypatch) -> None:
+    replay = _replay([])
+    frame = replay.frames[1]
+    frame.field = {"width": 36.0, "height": 36.0}
+    frame.units[0]["radius"] = 0.5
+    frame.units[1]["radius"] = 1.0
+    frame.units[1]["id"] = 3
+    source = Image.new("RGBA", (64, 64), (255, 255, 255, 255))
+    pasted: list[tuple[int, int]] = []
+    rendered_images: list[Image.Image] = []
+
+    original_paste = Image.Image.paste
+    original_new = Image.new
+
+    def record_new(mode, size, color=0):
+        image = original_new(mode, size, color)
+        if size == (960, 540):
+            rendered_images.append(image)
+        return image
+
+    def record_paste(self, image, box=None, mask=None):
+        if rendered_images and self is rendered_images[-1]:
+            pasted.append((image.width, image.height))
+        return original_paste(self, image, box, mask)
+
+    renderer = ReplayRenderer()
+    monkeypatch.setattr(renderer, "_unit_icon", lambda *_args: source)
+    monkeypatch.setattr(Image, "new", record_new)
+    monkeypatch.setattr(Image.Image, "paste", record_paste)
+    renderer._render_frame(replay, frame)
+
+    assert pasted == [(8, 8), (18, 18)]

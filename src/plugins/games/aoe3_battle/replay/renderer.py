@@ -416,7 +416,16 @@ class ReplayRenderer:
                 )
             else:
                 faded = self._faded_icon(icon, opacity)
-                image.paste(faded, (round(x - size / 2), round(y - size / 2)), faded)
+                icon_size = max(1, round(size))
+                rendered_icon = faded.resize(
+                    (icon_size, icon_size),
+                    Image.Resampling.LANCZOS,
+                )
+                image.paste(
+                    rendered_icon,
+                    (round(x - icon_size / 2), round(y - icon_size / 2)),
+                    rendered_icon,
+                )
                 draw.ellipse(
                     (x - size / 2, y - size / 2, x + size / 2, y + size / 2),
                     outline=color,
