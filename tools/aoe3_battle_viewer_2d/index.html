@@ -1,0 +1,203 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="Cache-Control" content="no-store, no-cache, must-revalidate" />
+    <meta http-equiv="Pragma" content="no-cache" />
+    <meta http-equiv="Expires" content="0" />
+    <title>帝国3斗蛐蛐 · 二维实时战场</title>
+    <link rel="stylesheet" href="styles.css?v=20260923-2" />
+  </head>
+  <body>
+    <header class="topbar">
+      <div class="brand">
+        <span class="brand-mark">2D</span>
+        <div>
+          <h1>帝国3斗蛐蛐</h1>
+          <p>二维实时战场 · 开发观测</p>
+        </div>
+      </div>
+      <div class="status" id="status">等待模拟…</div>
+    </header>
+
+    <main class="layout">
+      <section class="stage-panel">
+        <section class="setup-panel">
+          <div class="setup-row setup-row-top">
+            <div class="mode-tabs" role="tablist" aria-label="模拟模式">
+              <button type="button" class="mode-tab active" data-mode="units">普通阵容</button>
+              <button type="button" class="mode-tab" data-mode="civ_war">国战阵容</button>
+            </div>
+            <label class="physics-select">
+              <span>物理语义</span>
+              <select id="collision-mode">
+              <option value="rigid" selected>严格实体</option>
+              <option value="soft">软实体</option>
+              </select>
+            </label>
+          </div>
+
+          <div class="setup-row setup-row-main">
+            <div class="setup-form" id="units-setup">
+              <label>
+                <span>红方兵种</span>
+                <input id="red-unit" list="unit-options" value="musketeer" autocomplete="off" />
+              </label>
+              <label class="count-field">
+                <span>数量</span>
+                <input id="red-count" type="number" min="1" max="1000" value="40" />
+              </label>
+              <label>
+                <span>蓝方兵种</span>
+                <input id="blue-unit" list="unit-options" value="pikeman" autocomplete="off" />
+              </label>
+              <label class="count-field">
+                <span>数量</span>
+                <input id="blue-count" type="number" min="1" max="1000" value="40" />
+              </label>
+            </div>
+            <div class="setup-form hidden" id="civ-war-setup">
+            <label>
+              <span>红方文明</span>
+              <select id="red-civ"></select>
+            </label>
+              <label>
+                <span>蓝方文明</span>
+                <select id="blue-civ"></select>
+              </label>
+              <label class="age-field">
+                <span>时代</span>
+                <select id="age">
+                  <option value="3" selected>3 时代</option>
+                  <option value="4">4 时代</option>
+                  <option value="5">5 时代</option>
+                </select>
+            </label>
+          </div>
+            <div class="setup-actions">
+              <label class="seed-field">
+                <span>Seed</span>
+                <input id="seed" type="number" value="42" />
+              </label>
+              <button id="restart" type="button" class="start-button">重新模拟</button>
+            </div>
+          </div>
+        </section>
+
+        <div class="match-label" id="match-label">普通阵容</div>
+        <div class="army-strip" id="army-strip">
+          <article class="army-card red" id="army-red">
+            <div class="army-heading">
+              <span>🔴 红方</span>
+              <strong class="army-alive">— / —</strong>
+            </div>
+            <div class="army-composition">等待数据…</div>
+            <div class="army-hp-row">
+              <div class="hp-track"><i></i></div>
+              <span class="hp-ratio">—</span>
+            </div>
+            <div class="army-meta">
+              <span class="army-moving">移动 —</span>
+              <span class="army-stopped">停止 —</span>
+              <span class="army-damage">伤害 —</span>
+              <span class="army-kills">击杀 —</span>
+            </div>
+          </article>
+          <article class="army-card blue" id="army-blue">
+            <div class="army-heading">
+              <span>🔵 蓝方</span>
+              <strong class="army-alive">— / —</strong>
+            </div>
+            <div class="army-composition">等待数据…</div>
+            <div class="army-hp-row">
+              <div class="hp-track"><i></i></div>
+              <span class="hp-ratio">—</span>
+            </div>
+            <div class="army-meta">
+              <span class="army-moving">移动 —</span>
+              <span class="army-stopped">停止 —</span>
+              <span class="army-damage">伤害 —</span>
+              <span class="army-kills">击杀 —</span>
+            </div>
+          </article>
+        </div>
+        <div class="stage-head">
+          <div>
+            <span class="eyebrow">战场</span>
+            <strong id="time-label">t = 0.0s</strong>
+          </div>
+          <div class="legend">
+            <span><i class="dot red"></i>红方</span>
+            <span><i class="dot blue"></i>蓝方</span>
+            <span><i class="ring stopped"></i>已停止攻击</span>
+            <span><i class="ring moving"></i>移动中</span>
+          </div>
+        </div>
+        <div class="canvas-wrap">
+          <canvas id="battlefield"></canvas>
+        </div>
+      </section>
+
+      <aside class="side-panel">
+        <section class="metrics">
+          <div class="metric">
+            <span>Tick</span>
+            <strong id="metric-tick">—</strong>
+          </div>
+          <div class="metric">
+            <span>存活</span>
+            <strong id="metric-alive">— / —</strong>
+          </div>
+          <div class="metric">
+            <span>移动单位</span>
+            <strong id="metric-movers">—</strong>
+          </div>
+          <div class="metric">
+            <span>受阻单位</span>
+            <strong id="metric-blocked">—</strong>
+          </div>
+          <div class="metric">
+            <span>无进展单位</span>
+            <strong id="metric-no-progress">—</strong>
+          </div>
+          <div class="metric">
+            <span>残留重叠</span>
+            <strong id="metric-overlap">—</strong>
+          </div>
+        </section>
+
+        <section class="controls">
+          <div class="control-row">
+            <button id="pause" type="button">暂停</button>
+            <button id="step-back" type="button">后退</button>
+            <button id="step-forward" type="button">前进</button>
+            <button id="live" type="button" class="active">实时</button>
+          </div>
+          <label class="timeline">
+            <span>时间轴</span>
+            <input id="timeline" type="range" min="0" max="0" value="0" />
+          </label>
+          <label class="speed-control">
+            <span>播放速度</span>
+            <select id="speed">
+              <option value="0.25">0.25×</option>
+              <option value="0.5">0.5×</option>
+              <option value="1" selected>1×</option>
+              <option value="2">2×</option>
+              <option value="4">4×</option>
+            </select>
+          </label>
+        </section>
+
+        <section class="detail">
+          <span class="eyebrow">选中单位</span>
+          <div id="unit-detail" class="empty">点击战场单位查看详情</div>
+        </section>
+      </aside>
+    </main>
+
+    <script src="app.js?v=20260923-2"></script>
+    <datalist id="unit-options"></datalist>
+  </body>
+</html>
