@@ -95,7 +95,7 @@ async def test_civ_war_sends_image_and_short_bet_hint(
     rich.assert_awaited_once()
     image_message = rich.await_args.args[1]
     assert "base64://" in str(image_message)
-    plain.assert_awaited_once()
-    hint = plain.await_args.args[1]
-    assert "押红方" in hint
-    assert "押蓝方" in hint
+    fallback = rich.await_args.args[2]
+    assert "押红方" in fallback
+    assert "押蓝方" in fallback
+    plain.assert_not_awaited()

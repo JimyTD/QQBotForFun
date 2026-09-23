@@ -2,14 +2,14 @@
 from __future__ import annotations
 
 from plugins.aoe3.models import Unit
-from plugins.games.aoe3_battle.broadcaster import (
-    battle_resource_loss,
-    format_battle_report,
-)
 from plugins.games.aoe3_battle.battle_contract import (
     ArmySlot,
     BattleResult,
     Side,
+)
+from plugins.games.aoe3_battle.broadcaster import (
+    battle_resource_loss,
+    format_battle_report,
 )
 
 
@@ -103,6 +103,8 @@ def test_battle_report_contains_resource_loss_line():
     report = format_battle_report(result)
 
     assert "💸 战损资源：红方 150 ｜ 蓝方 180" in report
+    assert "全灭" not in report
+    assert "存活0" in report
 
 
 def test_battle_resource_loss_zero_when_nobody_died():

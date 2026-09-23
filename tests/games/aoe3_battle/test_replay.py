@@ -17,7 +17,11 @@ from src.plugins.games.aoe3_battle.game import AoE3BattleGame
 from src.plugins.games.aoe3_battle.replay.model import Replay
 from src.plugins.games.aoe3_battle.replay.recorder import ReplaySession
 from src.plugins.games.aoe3_battle.replay.renderer import ReplayRenderer
-from src.plugins.games.aoe3_battle.replay.service import broadcast_replay_video
+from src.plugins.games.aoe3_battle.replay.service import (
+    REPLAY_DIR,
+    broadcast_replay_video,
+    cleanup_replay_files,
+)
 
 
 @dataclass
@@ -221,6 +225,224 @@ def test_renderer_image_is_png() -> None:
     assert image.size == (960, 540)
 
 
+def test_cleanup_replay_files_removes_expired_and_excess(monkeypatch, tmp_path) -> None:
+    monkeypatch.setattr(
+        "src.plugins.games.aoe3_battle.replay.service.REPLAY_DIR",
+        tmp_path,
+    )
+    monkeypatch.setattr(
+        "src.plugins.games.aoe3_battle.replay.service.REPLAY_MAX_FILES",
+        1,
+    )
+    old = tmp_path / "old.mp4"
+    new = tmp_path / "new.mp4"
+    old.write_bytes(b"old")
+    new.write_bytes(b"new")
+    old.touch()
+    new.touch()
+
+    assert cleanup_replay_files(now=old.stat().st_mtime + 2 * 24 * 60 * 60) == 2
+    assert not old.exists()
+    assert not new.exists()
+
+
+def test_replay_dir_is_under_logs() -> None:
+    assert REPLAY_DIR.parts[-3:] == ("logs", "aoe3_battle", "replays")
+
+
+@pytest.mark.asyncio
+async def test_generic_match_start_sends_one_opening_image(monkeypatch) -> None:
+    rich_messages = []
+    plain_messages = []
+
+    async def fake_rich(_group_id, message, fallback):
+        rich_messages.append((message, fallback))
+
+    async def fake_plain(_group_id, message, **_kwargs):
+        plain_messages.append(message)
+
+    monkeypatch.setattr(
+        "src.plugins.games.aoe3_battle.game.session.broadcast_rich",
+        fake_rich,
+    )
+    monkeypatch.setattr(
+        "src.plugins.games.aoe3_battle.game.session.broadcast",
+        fake_plain,
+    )
+    monkeypatch.setattr(
+        "src.plugins.games.aoe3_battle.game.render_match_opening",
+        lambda **_kwargs: b"png",
+    )
+
+    game = AoE3BattleGame()
+    game._match = SimpleNamespace(
+        mode="bet",
+        age=3,
+        rival_theme=None,
+        red=SimpleNamespace(
+            slots=[SimpleNamespace(unit=SimpleNamespace(name="火枪手"), count=1)]
+        ),
+        blue=SimpleNamespace(
+            slots=[SimpleNamespace(unit=SimpleNamespace(name="长枪兵"), count=1)]
+        ),
+    )
+    ctx = GameContext(
+        session_id="opening-card",
+        game_id="aoe3_battle",
+        group_id=1,
+        host_id=2,
+        players=[],
+        started_at=__import__("datetime").datetime.utcnow(),
+        config={},
+    )
+    ctx.state["mode"] = "bet"
+
+    await game.on_start(ctx)
+
+    assert len(rich_messages) == 1
+    assert plain_messages == []
+
+
+@pytest.mark.asyncio
+async def test_tournament_only_records_final(monkeypatch) -> None:
+    callbacks: list[object] = []
+    sent_videos: list[list] = []
+
+    class FakeReplaySession:
+        def __init__(self, **kwargs):
+            self.recorder = SimpleNamespace(match_label=kwargs["match_label"])
+
+        def frame_callback(self, _frame):
+            return None
+
+        def finish(self, _result):
+            return object()
+
+    class FakeSimulator:
+        def __init__(self, **kwargs):
+            callbacks.append(kwargs.get("frame_callback"))
+
+        def run(self):
+            return _Result(
+                winner=None,
+                events=[],
+                ticks=1,
+                duration=0.1,
+                red_alive=[],
+                blue_alive=[],
+                red_dead=[],
+                blue_dead=[],
+                red_army=[
+                    ArmySlot(SimpleNamespace(id="a", name="A"), 1)
+                ],
+                blue_army=[
+                    ArmySlot(SimpleNamespace(id="b", name="B"), 1)
+                ],
+                red_count=1,
+                blue_count=1,
+            )
+
+    class FakeTournament:
+        theme_title = "火枪王"
+
+        def __init__(self):
+            self.stage = SimpleNamespace(name="QF")
+            self.round = [
+                SimpleNamespace(
+                    match_id="QF1",
+                    label="八强赛",
+                    unit_a_idx=0,
+                    unit_b_idx=1,
+                    loser_idx=1,
+                ),
+                SimpleNamespace(
+                    match_id="FINAL",
+                    label="决赛",
+                    unit_a_idx=0,
+                    unit_b_idx=1,
+                    loser_idx=1,
+                ),
+            ]
+
+        def get_current_round_matches(self):
+            return self.round
+
+        def get_unit(self, idx):
+            unit = SimpleNamespace(name="火枪手" if idx == 0 else "长枪兵")
+            return SimpleNamespace(
+                unit=unit,
+                display_name=unit.name,
+            )
+
+        def record_result(self, *_args):
+            return None
+
+        def try_advance(self):
+            return None
+
+        def is_bracket_stage(self):
+            return False
+
+    async def fake_broadcast(*_args, **_kwargs):
+        return None
+
+    async def fake_send_videos(_group_id, replays):
+        sent_videos.append(replays)
+        return True
+
+    monkeypatch.setattr(
+        "src.plugins.games.aoe3_battle.game.BattleSimulator2D",
+        FakeSimulator,
+    )
+    monkeypatch.setattr(
+        "src.plugins.games.aoe3_battle.game.ReplaySession",
+        FakeReplaySession,
+    )
+    monkeypatch.setattr(
+        "src.plugins.games.aoe3_battle.game.broadcast_replay",
+        fake_send_videos,
+    )
+    monkeypatch.setattr(
+        "src.plugins.games.aoe3_battle.game.session.broadcast",
+        fake_broadcast,
+    )
+    monkeypatch.setattr(
+        "src.plugins.games.aoe3_battle.game._unit_cost",
+        lambda _unit: 1,
+    )
+    monkeypatch.setattr(
+        "src.plugins.games.aoe3_battle.game.approx_lcm_budget",
+        lambda *_args: 1,
+    )
+    monkeypatch.setattr(
+        "src.plugins.games.aoe3_battle.game.battle_resource_loss",
+        lambda _result: (0, 0),
+    )
+
+    game = AoE3BattleGame()
+    game._tournament = FakeTournament()
+    ctx = GameContext(
+        session_id="tournament",
+        game_id="aoe3_battle",
+        group_id=1,
+        host_id=2,
+        players=[],
+        started_at=__import__("datetime").datetime.utcnow(),
+        config={},
+    )
+    ctx.state.update(mode="rival_tournament", phase="tournament_fighting")
+    monkeypatch.setattr(
+        "src.plugins.games.aoe3_battle.game.TournamentStage",
+        SimpleNamespace(FINISHED=object()),
+    )
+
+    await game._run_tournament_round(ctx)
+
+    assert callbacks == [None, callbacks[1]]
+    assert callbacks[1] is not None
+    assert len(sent_videos) == 1
+
+
 @pytest.mark.asyncio
 async def test_run_battle_wires_recorder_and_sends_video(monkeypatch) -> None:
     captured_callback = None
@@ -302,10 +524,6 @@ async def test_run_battle_wires_recorder_and_sends_video(monkeypatch) -> None:
         fake_broadcast_video,
     )
     monkeypatch.setattr(
-        "src.plugins.games.aoe3_battle.game.get_group_config",
-        AsyncMock(return_value="brief"),
-    )
-    monkeypatch.setattr(
         "src.plugins.games.aoe3_battle.game._dump_battle_log",
         lambda *args, **kwargs: None,
     )
@@ -319,3 +537,100 @@ async def test_run_battle_wires_recorder_and_sends_video(monkeypatch) -> None:
 
     assert captured_callback is not None
     assert sent_video is True
+
+
+@pytest.mark.asyncio
+async def test_run_battle_sends_video_report_then_settlement(monkeypatch) -> None:
+    messages: list[str] = []
+
+    class FakeSimulator:
+        def __init__(self, **kwargs):
+            self.frame_callback = kwargs["frame_callback"]
+
+        def run(self):
+            self.frame_callback(_frame(0, target_id=2))
+            return _Result(
+                winner=None,
+                events=[],
+                ticks=1,
+                duration=0.1,
+                red_alive=[],
+                blue_alive=[],
+                red_dead=[],
+                blue_dead=[],
+                red_army=[
+                    ArmySlot(SimpleNamespace(id="musketeer", name="火枪手"), 1)
+                ],
+                blue_army=[
+                    ArmySlot(SimpleNamespace(id="pikeman", name="长枪兵"), 1)
+                ],
+                red_count=1,
+                blue_count=1,
+            )
+
+    async def fake_video(_replay):
+        return b"video"
+
+    async def fake_send_video(_group_id, video):
+        messages.append("video")
+        return True
+
+    async def fake_broadcast(_group_id, message, **kwargs):
+        messages.append(str(message))
+
+    game = AoE3BattleGame()
+    game._match = SimpleNamespace(
+        mode="bet",
+        rival_theme=None,
+        red=SimpleNamespace(
+            slots=[SimpleNamespace(unit=SimpleNamespace(name="火枪手"), count=1)],
+            total_count=1,
+            unit=SimpleNamespace(name="火枪手"),
+        ),
+        blue=SimpleNamespace(
+            slots=[SimpleNamespace(unit=SimpleNamespace(name="长枪兵"), count=1)],
+            total_count=1,
+            unit=SimpleNamespace(name="长枪兵"),
+        ),
+        red_civ_name=None,
+        blue_civ_name=None,
+        red_strategy=None,
+        blue_strategy=None,
+    )
+    ctx = GameContext(
+        session_id="replay-order",
+        game_id="aoe3_battle",
+        group_id=1,
+        host_id=2,
+        players=[],
+        started_at=__import__("datetime").datetime.utcnow(),
+        config={},
+    )
+    ctx.state.update(mode="bet", phase="fighting", bets={"1": "red"})
+    monkeypatch.setattr(
+        "src.plugins.games.aoe3_battle.game.BattleSimulator2D",
+        FakeSimulator,
+    )
+    monkeypatch.setattr(
+        "src.plugins.games.aoe3_battle.game.generate_replay_video",
+        fake_video,
+    )
+    monkeypatch.setattr(
+        "src.plugins.games.aoe3_battle.game.broadcast_replay_video",
+        fake_send_video,
+    )
+    monkeypatch.setattr(
+        "src.plugins.games.aoe3_battle.game.session.broadcast",
+        fake_broadcast,
+    )
+    monkeypatch.setattr(
+        "src.plugins.games.aoe3_battle.game._dump_battle_log",
+        lambda *args, **kwargs: None,
+    )
+    monkeypatch.setattr(game, "_settle_bets", AsyncMock(return_value="押注结算"))
+
+    await game._run_battle(ctx)
+
+    assert messages[0] == "video"
+    assert "战斗结果" in messages[1]
+    assert messages[2] == "押注结算"

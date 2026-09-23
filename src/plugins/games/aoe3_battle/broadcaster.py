@@ -349,10 +349,10 @@ def _hp_bar(current: float, maximum: float, filled: str, empty: str = "⬛") -> 
 def _hp_summary(current: float, maximum: float) -> str:
     """百分比 + 数值，全灭时特殊显示。"""
     if maximum <= 0:
-        return "0%  全灭"
+        return "0%"
     pct = max(0.0, current / maximum) * 100
     if current <= 0:
-        return "0%  全灭"
+        return "0%"
     return f"{pct:.0f}%  ({current:.0f}/{maximum:.0f})"
 
 
@@ -407,10 +407,7 @@ def format_battle_report(result: BattleResult) -> str:
         alive_of_type = [s for s in result.red_alive if s.unit.id == slot.unit.id]
         kills = sum(s.kills for s in soldiers_of_type)
         dmg = sum(s.total_damage_dealt for s in soldiers_of_type)
-        if len(alive_of_type) == 0:
-            status = "全灭"
-        else:
-            status = f"存活{len(alive_of_type)}"
+        status = f"存活{len(alive_of_type)}"
         lines.append(
             f"🔴 {slot.unit.name} ×{slot.count}"
             f" → {status}/击杀{kills}/伤害{dmg:.0f}"
@@ -423,10 +420,7 @@ def format_battle_report(result: BattleResult) -> str:
         alive_of_type = [s for s in result.blue_alive if s.unit.id == slot.unit.id]
         kills = sum(s.kills for s in soldiers_of_type)
         dmg = sum(s.total_damage_dealt for s in soldiers_of_type)
-        if len(alive_of_type) == 0:
-            status = "全灭"
-        else:
-            status = f"存活{len(alive_of_type)}"
+        status = f"存活{len(alive_of_type)}"
         lines.append(
             f"🔵 {slot.unit.name} ×{slot.count}"
             f" → {status}/击杀{kills}/伤害{dmg:.0f}"

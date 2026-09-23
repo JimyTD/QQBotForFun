@@ -15,18 +15,13 @@ import random
 from pathlib import Path
 from typing import Any
 
-from core import economy, render, session
+from core import economy, session
 from core.errors import InsufficientFundsError
 from core.game_base import GameBase, GameMode, register_game
-from core.group_config import get_group_config
 from core.types import EndReason, GameContext
-from src.plugins.aoe3.icons import BLUE_ICON_BACKGROUND, RED_ICON_BACKGROUND, render_icon_png
 from src.plugins.aoe3.repository import UnitRepo
 
 from .broadcaster import (
-    MODE_BRIEF,
-    Broadcaster,
-    BroadcastSegment,
     _hp_bar,
     _hp_summary,
     battle_resource_loss,
@@ -35,14 +30,9 @@ from .broadcaster import (
 from .civ_war_civs import get_civ_profile, pick_random_civs
 from .civ_war_matchup import generate_civ_war_lineup
 from .lineup import (
-    POP_HOUSE_COST,
     MatchLineup,
     _unit_cost,
     approx_lcm_budget,
-    format_formation_panel,
-    format_matchup_panel,
-    format_side_panel,
-    format_vs_banner,
     generate_bet_lineup,
     generate_blacklist_lineup,
     generate_custom_lineup,
@@ -52,14 +42,17 @@ from .lineup import (
 )
 from .battle_contract import ArmySlot, BattleResult, Side
 from .opening_renderer import (
+    MatchOpeningSide,
     OpeningSide,
     format_civ_war_fallback,
+    format_match_opening_fallback,
     render_civ_war_opening,
+    render_match_opening,
 )
-from .replay import ReplaySession
+from .replay import ReplaySession, cleanup_replay_files
 from .replay.service import (
+    broadcast_replay,
     broadcast_replay_video,
-    broadcast_replays,
     generate_replay_video,
 )
 from .simulator2d import BattleSimulator2D
@@ -491,12 +484,10 @@ class AoE3BattleGame(GameBase):
         self._battle_task: asyncio.Task[Any] | None = None
 
     async def on_start(self, ctx: GameContext) -> None:
-        """广播对阵面板（图片+详情+VS总览），进入押注阶段。"""
+        """广播单张开局图，进入押注阶段。"""
         import base64
 
         from nonebot.adapters.onebot.v11 import Message, MessageSegment
-
-        from src.plugins.aoe3.repository import UnitRepo as _UnitRepo
 
         mode = ctx.state["mode"]
 
@@ -527,13 +518,11 @@ class AoE3BattleGame(GameBase):
             b64 = base64.b64encode(png_bytes).decode()
             image_msg = Message()
             image_msg.append(MessageSegment.image(f"base64://{b64}"))
-            bet_text = "@ 1 押红方 | @ 2 押蓝方\n@ 开战 直接开打"
             await session.broadcast_rich(
                 ctx.group_id,
                 image_msg,
                 format_civ_war_fallback(red_side, blue_side, age=match.age or 3),
             )
-            await session.broadcast(ctx.group_id, bet_text)
             logger.info(
                 "[aoe3_battle] 对局 %s 开始，模式=%s 🔴 %s vs 🔵 %s",
                 ctx.session_id,
@@ -547,63 +536,51 @@ class AoE3BattleGame(GameBase):
             )
             return
 
-        # ── 发红方（图片 + 详情）──
-        red_identity = None
-        blue_identity = None
-        if mode == "civ_war":
-            red_identity = " · ".join(
-                part for part in (match.red_civ_name, match.red_strategy) if part
-            )
-            blue_identity = " · ".join(
-                part for part in (match.blue_civ_name, match.blue_strategy) if part
-            )
-        red_text = format_side_panel(
-            match.red,
-            "red",
-            mode,
-            opponent=match.blue,
-            identity=red_identity,
+        red_side = MatchOpeningSide(
+            label=" + ".join(
+                f"{slot.unit.name}×{slot.count}" for slot in match.red.slots
+            ),
+            units=tuple((slot.unit, slot.count) for slot in match.red.slots),
         )
-        red_msg = Message()
-        for slot in match.red.slots:
-            icon_path = _UnitRepo.get().get_icon_path(slot.unit)
-            if icon_path:
-                b64 = base64.b64encode(render_icon_png(icon_path, RED_ICON_BACKGROUND)).decode()
-                red_msg.append(MessageSegment.image(f"base64://{b64}"))
-        red_msg.append(MessageSegment.text(red_text))
-        await session.broadcast_rich(ctx.group_id, red_msg, red_text)
-
-        # ── 发蓝方（图片 + 详情）──
-        blue_text = format_side_panel(
-            match.blue,
-            "blue",
-            mode,
-            opponent=match.red,
-            identity=blue_identity,
+        blue_side = MatchOpeningSide(
+            label=" + ".join(
+                f"{slot.unit.name}×{slot.count}" for slot in match.blue.slots
+            ),
+            units=tuple((slot.unit, slot.count) for slot in match.blue.slots),
         )
-        blue_msg = Message()
-        for slot in match.blue.slots:
-            icon_path = _UnitRepo.get().get_icon_path(slot.unit)
-            if icon_path:
-                b64 = base64.b64encode(render_icon_png(icon_path, BLUE_ICON_BACKGROUND)).decode()
-                blue_msg.append(MessageSegment.image(f"base64://{b64}"))
-        blue_msg.append(MessageSegment.text(blue_text))
-        await session.broadcast_rich(ctx.group_id, blue_msg, blue_text)
-
-        # ── 发 VS 总览 + 押注提示 ──
-        vs_text = format_vs_banner(match)
-        await session.broadcast(ctx.group_id, vs_text)
-
-        # ── 发阵型面板（非单挑模式且人数 > 2 时才有意义）──
-        if mode != "duel" and match.red.total_count + match.blue.total_count > 2:
-            formation_text = format_formation_panel(match)
-            await session.broadcast(ctx.group_id, formation_text)
+        mode_labels = {
+            "bet": "普通对阵",
+            "duel": "单挑",
+            "blacklist": "乱斗",
+            "custom": "指定兵种对决",
+            "rival": "王中王",
+        }
+        mode_label = mode_labels.get(mode, "普通对阵")
+        png_bytes = render_match_opening(
+            red=red_side,
+            blue=blue_side,
+            age=match.age,
+            mode_label=mode_label,
+        )
+        b64 = base64.b64encode(png_bytes).decode()
+        image_msg = Message()
+        image_msg.append(MessageSegment.image(f"base64://{b64}"))
+        await session.broadcast_rich(
+            ctx.group_id,
+            image_msg,
+            format_match_opening_fallback(
+                red_side,
+                blue_side,
+                age=match.age,
+                mode_label=mode_label,
+            ),
+        )
 
         logger.info(
             "[aoe3_battle] 对局 %s 开始，模式=%s 🔴 %s vs 🔵 %s",
             ctx.session_id, ctx.state["mode"],
-            " + ".join(f"{s['unit_name']}×{s['count']}" for s in ctx.state["red_army"]),
-            " + ".join(f"{s['unit_name']}×{s['count']}" for s in ctx.state["blue_army"]),
+            " + ".join(f"{s['unit_name']}×{s['count']}" for s in ctx.state.get("red_army", [])),
+            " + ".join(f"{s['unit_name']}×{s['count']}" for s in ctx.state.get("blue_army", [])),
         )
 
     async def on_player_action(
@@ -749,23 +726,11 @@ class AoE3BattleGame(GameBase):
     # 战斗阶段
     # ================================================================
     async def _start_battle(self, ctx: GameContext) -> None:
-        """切换到战斗阶段，跑模拟 + 播报 + 结算。"""
+        """切换到战斗阶段，跑模拟 + 回放 + 结算。"""
         if ctx.state.get("phase") != "betting":
             return
         ctx.state["phase"] = "fighting"
-
-        bets: dict[str, str] = ctx.state.get("bets", {})
-        bet_count = len(bets)
-        if bet_count > 0:
-            await session.broadcast(
-                ctx.group_id,
-                f"🎲 押注截止！共 {bet_count} 人参与",
-            )
-        else:
-            await session.broadcast(
-                ctx.group_id,
-                "🎲 无人押注，直接开打！",
-            )
+        cleanup_replay_files()
 
         # 异步执行战斗（避免阻塞消息处理）
         self._battle_task = asyncio.create_task(
@@ -808,34 +773,13 @@ class AoE3BattleGame(GameBase):
             # 视频编码与文字播报并行，避免阻塞战斗收尾。
             replay_task = asyncio.create_task(generate_replay_video(replay))
 
-            # 2. 播报
-            broadcast_mode = await get_group_config(
-                ctx.group_id, "aoe3_battle.broadcast_mode", default=MODE_BRIEF
-            )
-            bc = Broadcaster(result, mode=broadcast_mode)
-            segments = bc.generate()
-
-            for seg in segments:
-                await session.broadcast(ctx.group_id, seg.text)
-                if seg.should_sleep:
-                    await asyncio.sleep(BROADCAST_SLEEP)
-
-            # 3. 最终战报 + 押注结算
+            # 2. 最终战报（过程由视频承载）
             report = format_battle_report(result)
             if match.mode == "civ_war":
                 report = (
                     f"🌍 国战 · {match.red_civ_name}（{match.red_strategy}）"
                     f" vs {match.blue_civ_name}（{match.blue_strategy}）\n\n{report}"
                 )
-            settlement = await self._settle_bets(ctx, result)
-
-            # 合并战报和结算为一条消息
-            if settlement:
-                full_report = f"{report}\n\n{settlement}"
-            else:
-                full_report = report
-
-            await session.broadcast(ctx.group_id, full_report)
 
             try:
                 video = await replay_task
@@ -853,6 +797,13 @@ class AoE3BattleGame(GameBase):
                         "[aoe3_battle] %s 回放发送失败，文字战报已保留",
                         ctx.session_id,
                     )
+
+            await session.broadcast(ctx.group_id, report)
+
+            # 3. 押注结算单独发送；没有押注则不发。
+            settlement = await self._settle_bets(ctx, result)
+            if settlement:
+                await session.broadcast(ctx.group_id, settlement)
 
             # 4. 结束对局
             ctx.state["phase"] = "ended"
@@ -1146,7 +1097,7 @@ class AoE3BattleGame(GameBase):
                 pending = t.get_current_round_matches()
 
             budget = ctx.state.get("budget", BUDGET_DEFAULT)
-            round_replays = []
+            final_replay_session: ReplaySession | None = None
 
             for match_obj in pending:
                 # 一场比赛：双方各 1 兵种，LCM 平衡数量
@@ -1165,27 +1116,40 @@ class AoE3BattleGame(GameBase):
                 count_b = max(1, lcm_budget // cost_b)
 
                 # 跑模拟
-                replay_session = ReplaySession(
-                    session_id=f"{ctx.session_id}:{match_obj.match_id}",
-                    mode="rival_tournament",
-                    match_label=(
-                        f"{t.theme_title} · {match_obj.label} · "
-                        f"{tu_a.display_name} vs {tu_b.display_name}"
-                    ),
-                    red_label=tu_a.display_name,
-                    blue_label=tu_b.display_name,
-                    red_count=count_a,
-                    blue_count=count_b,
-                )
+                if match_obj.match_id == "FINAL":
+                    final_replay_session = ReplaySession(
+                        session_id=f"{ctx.session_id}:{match_obj.match_id}",
+                        mode="rival_tournament",
+                        match_label=(
+                            f"{t.theme_title} · {match_obj.label} · "
+                            f"{tu_a.display_name} vs {tu_b.display_name}"
+                        ),
+                        red_label=tu_a.display_name,
+                        blue_label=tu_b.display_name,
+                        red_count=count_a,
+                        blue_count=count_b,
+                    )
                 sim = BattleSimulator2D(
                     red_army=[(tu_a.unit, count_a)],
                     blue_army=[(tu_b.unit, count_b)],
                     session_id=ctx.session_id,
-                    match_label=replay_session.recorder.match_label,
-                    frame_callback=replay_session.frame_callback,
+                    match_label=(
+                        final_replay_session.recorder.match_label
+                        if final_replay_session is not None
+                        else ""
+                    ),
+                    frame_callback=(
+                        final_replay_session.frame_callback
+                        if final_replay_session is not None
+                        else None
+                    ),
                 )
                 result = sim.run()
-                round_replays.append(replay_session.finish(result))
+                final_replay = (
+                    final_replay_session.finish(result)
+                    if final_replay_session is not None
+                    else None
+                )
 
                 # 确定胜者
                 if result.winner == Side.RED:
@@ -1207,7 +1171,6 @@ class AoE3BattleGame(GameBase):
                 winner_tu = t.get_unit(winner_idx)
                 loser_idx = match_obj.loser_idx
                 assert loser_idx is not None
-                loser_tu = t.get_unit(loser_idx)
 
                 # 血条数据
                 red_all = result.red_alive + result.red_dead
@@ -1253,10 +1216,9 @@ class AoE3BattleGame(GameBase):
                     f"✅ {winner_tu.display_name} 胜{promo}",
                 ]
                 await session.broadcast(ctx.group_id, "\n".join(report_lines))
+                if final_replay is not None:
+                    await broadcast_replay(ctx.group_id, final_replay)
                 await asyncio.sleep(2.0)
-
-            if round_replays:
-                await broadcast_replays(ctx.group_id, round_replays)
 
             # 先检查循环内 try_advance 后是否已进入出图阶段
             # （必须在第二次 try_advance 前检查，否则 QF_DONE/SF_DONE 会被跳过）

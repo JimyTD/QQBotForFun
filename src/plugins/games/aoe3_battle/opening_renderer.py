@@ -1,4 +1,3 @@
-# ruff: noqa: RUF001
 """Render the civilization-war opening card as a single QQ-friendly PNG."""
 
 from __future__ import annotations
@@ -56,6 +55,14 @@ class OpeningSide:
     civ_name: str
     civ_id: str
     strategy: str
+    units: tuple[tuple[Unit, int], ...]
+
+
+@dataclass(frozen=True)
+class MatchOpeningSide:
+    """One side of a generic match opening card."""
+
+    label: str
     units: tuple[tuple[Unit, int], ...]
 
 
@@ -236,12 +243,187 @@ def _draw_side(
         cursor += card_h + ROW_GAP
 
 
+def _draw_match_side(
+    image: Image.Image,
+    draw: ImageDraw.ImageDraw,
+    *,
+    x: int,
+    y: int,
+    side: MatchOpeningSide,
+    color: tuple[int, int, int],
+    icon_background: tuple[int, int, int],
+    side_label: str,
+) -> None:
+    font_title = _get_font(24)
+    font_name = _get_font(20)
+    font_count = _get_font(18)
+    font_desc = _get_font(14)
+
+    draw.rounded_rectangle(
+        (x, y, x + SIDE_W, y + HEADER_H - 12),
+        radius=9,
+        fill=(*color, 255),
+    )
+    draw.text((x + 18, y + 15), side_label, font=font_desc, fill=(245, 243, 238))
+    draw.text(
+        (x + 18, y + 42),
+        _wrap_text(draw, side.label, font_title, SIDE_W - 36, max_lines=1)[0],
+        font=font_title,
+        fill=(255, 255, 255),
+    )
+
+    cursor = y + HEADER_H
+    if not side.units:
+        draw.text((x + 18, cursor + 22), "暂无单位", font=font_desc, fill=COLORS["muted"])
+        return
+
+    for unit, count in side.units:
+        card_h = _unit_card_height(draw, unit)
+        draw.rounded_rectangle(
+            (x, cursor, x + SIDE_W, cursor + card_h),
+            radius=8,
+            fill=COLORS["panel"],
+            outline=COLORS["line"],
+            width=1,
+        )
+        draw.rectangle((x, cursor, x + 6, cursor + card_h), fill=(*color, 255))
+        icon = _load_icon(unit, background=icon_background)
+        image.paste(icon, (x + 16, cursor + 14), icon)
+        text_x = x + 16 + ICON_SIZE + 14
+        text_w = SIDE_W - (text_x - x) - 78
+        draw.text(
+            (text_x, cursor + 14),
+            _wrap_text(draw, unit.name, font_name, text_w, max_lines=1)[0],
+            font=font_name,
+            fill=COLORS["title"],
+        )
+        draw.text(
+            (x + SIDE_W - 18, cursor + 15),
+            f"×{count}",
+            anchor="ra",
+            font=font_count,
+            fill=color,
+        )
+        description_lines = _wrap_text(
+            draw,
+            _unit_short_description(unit),
+            font_desc,
+            SIDE_W - 32,
+        )
+        for line_index, line in enumerate(description_lines):
+            draw.text(
+                (x + 16, cursor + 72 + line_index * 21),
+                line,
+                font=font_desc,
+                fill=COLORS["body"],
+            )
+        cursor += card_h + ROW_GAP
+
+
+def format_match_opening_fallback(
+    red: MatchOpeningSide,
+    blue: MatchOpeningSide,
+    *,
+    age: int | None,
+    mode_label: str = "普通对阵",
+) -> str:
+    """Build a concise fallback for a generic match opening card."""
+    age_text = f" · {age} 时代" if age else ""
+    lines = [f"帝国3斗蛐蛐 · {mode_label}{age_text}"]
+    for marker, side in (("🔴", red), ("🔵", blue)):
+        lines.append(f"{marker} {side.label}")
+        lines.extend(f"  {unit.name} ×{count}" for unit, count in side.units)
+    lines.append("@ 1 押红方 | @ 2 押蓝方 · @ 开战 直接开打")
+    return "\n".join(lines)
+
+
+def render_match_opening(
+    *,
+    red: MatchOpeningSide,
+    blue: MatchOpeningSide,
+    age: int | None,
+    mode_label: str = "普通对阵",
+    bet_hint: str = "@ 1 押红方 | @ 2 押蓝方 · @ 开战 直接开打",
+) -> bytes:
+    """Return a PNG opening card for a non-civ match."""
+    measure_draw = ImageDraw.Draw(Image.new("RGB", (1, 1)))
+    red_units = red.units
+    blue_units = blue.units
+    body_h = max(
+        HEADER_H + sum(_unit_card_height(measure_draw, unit) + ROW_GAP for unit, _ in red_units),
+        HEADER_H + sum(_unit_card_height(measure_draw, unit) + ROW_GAP for unit, _ in blue_units),
+        HEADER_H + CARD_H + ROW_GAP,
+    )
+    title_h = 94
+    canvas_h = title_h + body_h + FOOTER_H
+    image = Image.new("RGB", (CANVAS_W, canvas_h), COLORS["bg"])
+    draw = ImageDraw.Draw(image)
+
+    font_title = _get_font(30)
+    font_subtitle = _get_font(16)
+    font_footer = _get_font(17)
+    draw.text(
+        (CANVAS_W // 2, 23),
+        f"帝国3斗蛐蛐 · {mode_label}",
+        anchor="ma",
+        font=font_title,
+        fill=COLORS["title"],
+    )
+    subtitle = "兵种对阵" if not age else f"{age} 时代 · 兵种对阵"
+    draw.text(
+        (CANVAS_W // 2, 62),
+        subtitle,
+        anchor="ma",
+        font=font_subtitle,
+        fill=COLORS["muted"],
+    )
+    draw.line((30, title_h - 8, CANVAS_W - 30, title_h - 8), fill=COLORS["line"], width=2)
+
+    left_x = 30
+    right_x = left_x + SIDE_W + SIDE_GAP
+    _draw_match_side(
+        image,
+        draw,
+        x=left_x,
+        y=title_h,
+        side=red,
+        color=COLORS["red"],
+        icon_background=RED_ICON_BACKGROUND,
+        side_label="1号",
+    )
+    _draw_match_side(
+        image,
+        draw,
+        x=right_x,
+        y=title_h,
+        side=blue,
+        color=COLORS["blue"],
+        icon_background=BLUE_ICON_BACKGROUND,
+        side_label="2号",
+    )
+
+    footer_y = title_h + body_h + 5
+    draw.line((30, footer_y, CANVAS_W - 30, footer_y), fill=COLORS["line"], width=1)
+    draw.text(
+        (CANVAS_W // 2, footer_y + 20),
+        bet_hint,
+        anchor="ma",
+        font=font_footer,
+        fill=COLORS["title"],
+    )
+
+    buffer = io.BytesIO()
+    image.save(buffer, format="PNG")
+    return buffer.getvalue()
+
+
 def format_civ_war_fallback(red: OpeningSide, blue: OpeningSide, *, age: int) -> str:
     """Build a concise text fallback when the opening PNG cannot be delivered."""
     lines = [f"🌍 帝国3斗蛐蛐 · 国战 · {age} 时代"]
     for marker, side in (("🔴", red), ("🔵", blue)):
         lines.append(f"{marker} {side.civ_name} · {side.strategy}")
         lines.extend(f"  {unit.name} ×{count}" for unit, count in side.units)
+    lines.append("@ 1 押红方 | @ 2 押蓝方 · @ 开战 直接开打")
     return "\n".join(lines)
 
 

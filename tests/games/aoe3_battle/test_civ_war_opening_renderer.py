@@ -12,10 +12,13 @@ from plugins.games.aoe3_battle.civ_war_civs import CIV_PROFILES, get_civ_profile
 from plugins.games.aoe3_battle.civ_war_lineups import generate_civ_candidates
 from plugins.games.aoe3_battle.civ_war_matchup import estimate_matchup
 from plugins.games.aoe3_battle.opening_renderer import (
+    MatchOpeningSide,
     OpeningSide,
     _load_flag,
     format_civ_war_fallback,
+    format_match_opening_fallback,
     render_civ_war_opening,
+    render_match_opening,
 )
 
 
@@ -85,3 +88,23 @@ def test_every_playable_civ_has_a_flag_file() -> None:
     """可玩文明必须都有国旗文件：缺失时开屏会静默留空，需在此拦住。"""
     missing = [profile.id for profile in CIV_PROFILES if _load_flag(profile.id) is None]
     assert missing == [], f"缺少国旗文件: {missing}"
+
+
+def test_generic_match_opening_renders_without_civ_fields() -> None:
+    repo = UnitRepo.get()
+    red_unit = repo.get_by_id("musketeer")
+    blue_unit = repo.get_by_id("pikeman")
+    assert red_unit is not None and blue_unit is not None
+    red = MatchOpeningSide(label="火枪手×8", units=((red_unit, 8),))
+    blue = MatchOpeningSide(label="长枪兵×8", units=((blue_unit, 8),))
+
+    png = render_match_opening(red=red, blue=blue, age=3)
+    fallback = format_match_opening_fallback(red, blue, age=3)
+
+    with Image.open(BytesIO(png)) as image:
+        assert image.format == "PNG"
+        assert image.width == 940
+        assert image.height > 300
+    assert "普通对阵" in fallback
+    assert "火枪手" in fallback
+    assert "长枪兵" in fallback
