@@ -584,11 +584,7 @@ class BattleSimulator2D:
             and distance < soldier.effective_ranged_range_min
         ):
             return Vec2(0.0, 0.0), target
-        desired_distance = (
-            soldier.effective_ranged_range
-            if soldier.has_ranged and distance > soldier.effective_ranged_range
-            else soldier.effective_melee_range
-        )
+        desired_distance = self._approach_range(soldier, target)
 
         if self._tick >= soldier.detour_retry_tick:
             lookahead = soldier.pos + direction.normalized() * min(
@@ -613,27 +609,19 @@ class BattleSimulator2D:
                     waypoint = Vec2(soldier.detour_waypoint_x, soldier.detour_waypoint_y)
                     return (waypoint - soldier.pos).normalized() * soldier.unit.speed, target
         heading = direction.normalized()
-        # Arrive inside attack range without predicting a collision beyond the
-        # stopping point. Match an escaping target's radial speed when chasing.
-        clearance = combined_directional_extent(
-            soldier.unit,
-            soldier.facing,
-            target.unit,
-            target.facing,
-            heading.x,
-            heading.y,
-            self.config.fallback_unit_radius,
-        )
-        target_speed = 0.0 if target.stopped else target.velocity.dot(heading)
-        safe_speed = max(
-            0.0, target_speed + (distance - clearance) / self.config.avoidance_horizon * 0.9
-        )
+        # Do not brake over the avoidance horizon. Clip only the last tick's
+        # travel to the attack envelope; collision prediction models that stop.
         arrival_speed = max(
             0.0,
             (distance - desired_distance + self.config.stop_check_slack)
             / self.config.tick_interval,
         )
-        return heading * min(soldier.unit.speed, safe_speed, arrival_speed), target
+        return heading * min(soldier.unit.speed, arrival_speed), target
+
+    def _approach_range(self, soldier: Soldier2D, target: Soldier2D) -> float:
+        if soldier.has_ranged and soldier.distance_to(target) > soldier.effective_ranged_range:
+            return soldier.effective_ranged_range
+        return soldier.effective_melee_range
 
     def _shorten_detour(self, soldier: Soldier2D, target: Soldier2D) -> None:
         if soldier.detour_waypoint_x is None:
@@ -712,11 +700,21 @@ class BattleSimulator2D:
         move_order = list(alive)
         self._rng.shuffle(move_order)
         desired_velocities: dict[int, Vec2] = {}
+        arrival_zones: dict[int, tuple[Vec2, float]] = {}
         steering = {}
 
         for soldier in alive:
             if not soldier.stopped:
-                desired_velocities[soldier.id] = self._desired_velocity(soldier)[0]
+                desired, target = self._desired_velocity(soldier)
+                desired_velocities[soldier.id] = desired
+                if target is not None and soldier.detour_waypoint_x is None:
+                    arrival_zones[soldier.id] = (
+                        target.pos,
+                        max(
+                            0.0,
+                            self._approach_range(soldier, target) - self.config.stop_check_slack,
+                        ),
+                    )
                 if desired_velocities[soldier.id].length_sq() > 1e-8:
                     assert self._combat is not None
                     self._combat.interrupt_preparation(soldier)
@@ -742,6 +740,7 @@ class BattleSimulator2D:
                 field_width=self._field_width,
                 field_height=self._field_height,
                 blocked_ticks=soldier.no_progress_ticks,
+                arrival_zone=arrival_zones.get(soldier.id),
             )
 
         for soldier in move_order:

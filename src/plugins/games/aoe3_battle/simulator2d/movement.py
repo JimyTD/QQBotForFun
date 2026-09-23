@@ -39,15 +39,41 @@ def _time_to_collision(
     *,
     fallback_radius: float,
     horizon: float,
+    stop_time: float | None = None,
 ) -> float | None:
     relative_position = Vec2(neighbor.x - soldier.x, neighbor.y - soldier.y)
-    relative_velocity = velocity if neighbor.stopped else velocity - neighbor.velocity
+    neighbor_velocity = Vec2(0.0, 0.0) if neighbor.stopped else neighbor.velocity
+    relative_velocity = velocity - neighbor_velocity
     minimum_distance = combined_radius(
         soldier.unit,
         neighbor.unit,
         fallback_radius,
     )
+    moving_horizon = horizon if stop_time is None else min(horizon, max(0.0, stop_time))
+    collision = _circle_entry_time(
+        relative_position, relative_velocity, minimum_distance, moving_horizon
+    )
+    if collision is not None or moving_horizon >= horizon:
+        return collision
 
+    # Arrival does not erase other moving bodies: predict the stationary
+    # remainder too, rather than discarding all collisions after arrival.
+    relative_at_stop = relative_position - relative_velocity * moving_horizon
+    collision = _circle_entry_time(
+        relative_at_stop,
+        neighbor_velocity * -1.0,
+        minimum_distance,
+        horizon - moving_horizon,
+    )
+    return moving_horizon + collision if collision is not None else None
+
+
+def _circle_entry_time(
+    relative_position: Vec2,
+    relative_velocity: Vec2,
+    minimum_distance: float,
+    horizon: float,
+) -> float | None:
     if relative_position.length_sq() <= minimum_distance * minimum_distance:
         # An outward or tangential step may escape existing overlap.
         returning_to_contact = (
@@ -74,6 +100,20 @@ def _time_to_collision(
     return None
 
 
+def _arrival_time(
+    position: Vec2,
+    velocity: Vec2,
+    arrival_zone: tuple[Vec2, float] | None,
+) -> float | None:
+    if arrival_zone is None:
+        return None
+    center, radius = arrival_zone
+    offset = center - position
+    if offset.length_sq() <= radius * radius:
+        return 0.0
+    return _circle_entry_time(offset, velocity, radius, math.inf)
+
+
 def _candidate_score(
     soldier: Soldier2D,
     preferred: Vec2,
@@ -82,6 +122,7 @@ def _candidate_score(
     *,
     fallback_radius: float,
     horizon: float,
+    stop_time: float | None = None,
 ) -> tuple[float, float | None, int | None]:
     nearest_ttc: float | None = None
     blocking_id: int | None = None
@@ -100,6 +141,7 @@ def _candidate_score(
             neighbor,
             fallback_radius=fallback_radius,
             horizon=horizon,
+            stop_time=stop_time,
         )
         if ttc is not None and (nearest_ttc is None or ttc < nearest_ttc):
             nearest_ttc = ttc
@@ -174,6 +216,7 @@ class LocalAvoidance:
         field_width: float,
         field_height: float,
         blocked_ticks: int,
+        arrival_zone: tuple[Vec2, float] | None = None,
     ) -> SteeringResult:
         desired = desired.clamped_length(soldier.unit.speed)
         if desired.length_sq() <= 1e-12:
@@ -207,6 +250,7 @@ class LocalAvoidance:
 
         free_path = True
         separating_from_overlap = False
+        desired_stop_time = _arrival_time(soldier.pos, desired, arrival_zone)
         for neighbor in neighbors:
             if (
                 neighbor.distance_sq_to(soldier)
@@ -227,6 +271,7 @@ class LocalAvoidance:
                     neighbor,
                     fallback_radius=self.config.fallback_unit_radius,
                     horizon=self.config.avoidance_horizon,
+                    stop_time=desired_stop_time,
                 )
                 is not None
             ):
@@ -264,6 +309,7 @@ class LocalAvoidance:
                     neighbors,
                     fallback_radius=self.config.fallback_unit_radius,
                     horizon=self.config.avoidance_horizon,
+                    stop_time=_arrival_time(soldier.pos, candidate, arrival_zone),
                 )
                 # Prefer genuinely collision-free candidates, then allow
                 # collision-penalized sliding candidates instead of freezing.
