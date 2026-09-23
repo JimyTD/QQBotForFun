@@ -30,6 +30,12 @@ from .trace import FlightRecorder
 
 logger = logging.getLogger("aoe3_battle.simulator2d")
 
+VISUAL_EVENT_LIFETIMES = {
+    EventType.ATTACK: 0.25,
+    EventType.AOE_SPLASH: 0.3,
+    EventType.DEATH: 0.6,
+}
+
 
 class BattleSimulator2D:
     """Production 2D battle simulator.
@@ -124,6 +130,7 @@ class BattleSimulator2D:
         self._rng = random.Random(seed)
         self._tick = 0
         self._events: list[BattleEvent] = []
+        self._pending_visual_events: list[dict[str, Any]] = []
         self._soldiers: list[Soldier2D] = []
         self._soldier_map: dict[int, Soldier2D] = {}
         self._next_id = 1
@@ -278,14 +285,81 @@ class BattleSimulator2D:
     ) -> None:
         payload = dict(data or {})
         payload.setdefault("engine", "2d")
-        self._events.append(
-            BattleEvent(
-                tick=self._tick,
-                time=self._tick * self.config.tick_interval,
-                event_type=event_type,
-                data=payload,
-            )
+        event = BattleEvent(
+            tick=self._tick,
+            time=self._tick * self.config.tick_interval,
+            event_type=event_type,
+            data=payload,
         )
+        self._events.append(event)
+        if self._frame_callback is not None:
+            visual_event = self._visual_event(event)
+            if visual_event is not None:
+                self._pending_visual_events.append(visual_event)
+
+    def _visual_event(self, event: BattleEvent) -> dict[str, Any] | None:
+        """Translate one battle event into a display event for the live viewer.
+
+        The battle event remains the source of truth.  This helper only
+        resolves the event's world position and attaches its display lifetime.
+        """
+        lifetime = VISUAL_EVENT_LIFETIMES.get(event.event_type)
+        if lifetime is None:
+            return None
+
+        event_data = event.data
+        if event.event_type == EventType.ATTACK:
+            if event_data.get("is_splash"):
+                return None
+            attacker = self._soldier_map.get(int(event_data.get("attacker_id", -1)))
+            target = self._soldier_map.get(int(event_data.get("target_id", -1)))
+            if attacker is None or target is None:
+                return None
+            payload = {
+                "type": "attack",
+                "attacker_id": attacker.id,
+                "target_id": target.id,
+                "mode": event_data.get("mode"),
+                "attacker_x": round(attacker.x, 3),
+                "attacker_y": round(attacker.y, 3),
+                "x": round(target.x, 3),
+                "y": round(target.y, 3),
+            }
+        elif event.event_type == EventType.AOE_SPLASH:
+            main_target = self._soldier_map.get(
+                int(event_data.get("main_target_id", -1))
+            )
+            if main_target is None:
+                return None
+            payload = {
+                "type": "aoe",
+                "x": round(main_target.x, 3),
+                "y": round(main_target.y, 3),
+                "radius": event_data.get("radius", 3.0),
+            }
+        else:
+            target = self._soldier_map.get(int(event_data.get("soldier_id", -1)))
+            if target is None:
+                return None
+            payload = {
+                "type": "death",
+                "unit_id": target.id,
+                "x": round(target.x, 3),
+                "y": round(target.y, 3),
+            }
+
+        payload["time"] = round(event.time, 3)
+        payload["expires_at"] = round(event.time + lifetime, 3)
+        if payload["type"] == "aoe" and any(
+            existing.get("type") == "aoe"
+            and existing.get("time") == payload["time"]
+            and existing.get("x") == payload["x"]
+            and existing.get("y") == payload["y"]
+            and existing.get("radius") == payload["radius"]
+            for existing in self._pending_visual_events
+        ):
+            return None
+        return payload
 
     def _emit_visual_frame(
         self,
@@ -299,6 +373,8 @@ class BattleSimulator2D:
             return
         summary = self._current_summary
         sides = {side.value: self._side_visual_summary(side) for side in (Side.RED, Side.BLUE)}
+        visual_events = self._pending_visual_events
+        self._pending_visual_events = []
         self._frame_callback(
             {
                 "engine": "2d",
@@ -313,6 +389,7 @@ class BattleSimulator2D:
                 },
                 "winner": winner.value if winner is not None else None,
                 "timeout": timeout,
+                "visual_events": visual_events,
                 "summary": {
                     "alive_red": summary.alive_red,
                     "alive_blue": summary.alive_blue,

@@ -90,8 +90,15 @@ class ReplayRecorder:
         frame_index = 0
         for event in result.events:
             position = None
-            target_id = event.data.get("target_id")
-            if event.event_type.value == "ATTACK" and target_id is not None:
+            event_type = event.event_type.value
+            position_target_id = (
+                event.data.get("target_id")
+                if event_type == "ATTACK"
+                else event.data.get("main_target_id")
+                if event_type == "AOE_SPLASH"
+                else None
+            )
+            if position_target_id is not None:
                 while (
                     frame_index + 1 < len(self.frames)
                     and self.frames[frame_index + 1].time <= event.time
@@ -102,7 +109,7 @@ class ReplayRecorder:
                     (
                         unit
                         for unit in frame.units
-                        if int(unit.get("id", -1)) == int(target_id)
+                        if int(unit.get("id", -1)) == int(position_target_id)
                     ),
                     None,
                 )
@@ -111,8 +118,19 @@ class ReplayRecorder:
                         float(target.get("x", 0.0)),
                         float(target.get("y", 0.0)),
                     )
-                    last_attack_target[int(target_id)] = position
-            elif event.event_type.value == "DEATH":
+                    if event_type == "ATTACK":
+                        last_attack_target[int(position_target_id)] = position
+            if (
+                position is None
+                and event_type == "AOE_SPLASH"
+                and event.data.get("impact_x") is not None
+                and event.data.get("impact_y") is not None
+            ):
+                position = (
+                    float(event.data["impact_x"]),
+                    float(event.data["impact_y"]),
+                )
+            elif event_type == "DEATH":
                 soldier_id = event.data.get("soldier_id")
                 if soldier_id is not None:
                     position = last_attack_target.get(int(soldier_id))
@@ -120,7 +138,7 @@ class ReplayRecorder:
                 ReplayEvent(
                     tick=event.tick,
                     time=event.time,
-                    event_type=event.event_type.value,
+                    event_type=event_type,
                     data=dict(event.data),
                     x=position[0] if position else None,
                     y=position[1] if position else None,

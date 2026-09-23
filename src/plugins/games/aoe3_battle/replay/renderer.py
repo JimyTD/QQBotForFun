@@ -79,6 +79,7 @@ class ReplayRenderer:
         self._font_bold = _font(18, bold=True)
         self._font_title = _font(24, bold=True)
         self._icon_cache: dict[tuple[str, str], Image.Image] = {}
+        self._faded_icon_cache: dict[tuple[int, int], Image.Image] = {}
 
     def render(self, replay: Replay) -> bytes:
         """Render and encode a replay, returning MP4 bytes."""
@@ -176,6 +177,7 @@ class ReplayRenderer:
         for replay in replays:
             plan = build_playback_plan(replay)
             self._icon_cache.clear()
+            self._faded_icon_cache.clear()
             for _ in range(intro_frames):
                 yield self._render_intro(replay)
             for _output_time, source_time in plan.iter_output_samples(self.fps):
@@ -341,7 +343,9 @@ class ReplayRenderer:
             count = int(item.get("count") or 0)
             if name and count > 0:
                 parts.append(f"{name}×{count}")
-        return " · ".join(parts[:4])
+        if len(parts) > 4:
+            return " · ".join(parts[:4]) + f" · 等{len(parts) - 4}种"
+        return " · ".join(parts)
 
     def _draw_bar(
         self,
@@ -394,28 +398,30 @@ class ReplayRenderer:
             y = offset_y + float(unit.get("y", 0)) * scale
             hp_ratio = float(unit.get("hp", 0)) / max(1.0, float(unit.get("max_hp", 1)))
             color = RED if unit.get("side") == "red" else BLUE
+            opacity = 0.42 + max(0.0, min(1.0, hp_ratio)) * 0.58
             radius = max(
-                10,
+                4,
                 min(
                     ICON_SIZE // 2,
-                    round(float(unit.get("radius") or 0.45) * scale * 1.8),
+                    round(float(unit.get("radius") or 0.45) * scale),
                 ),
             )
             size = radius * 2
             icon = self._unit_icon(unit, color)
             if icon is None:
+                draw_circle = tuple(int(channel * opacity) for channel in color)
                 draw.ellipse(
                     (x - radius, y - radius, x + radius, y + radius),
-                    fill=color,
+                    fill=draw_circle,
                 )
             else:
-                image.paste(icon, (round(x - size / 2), round(y - size / 2)), icon)
+                faded = self._faded_icon(icon, opacity)
+                image.paste(faded, (round(x - size / 2), round(y - size / 2)), faded)
                 draw.ellipse(
                     (x - size / 2, y - size / 2, x + size / 2, y + size / 2),
                     outline=color,
                     width=2,
                 )
-            self._draw_unit_hp_ring(draw, x, y, hp_ratio, color, size=size)
             if unit.get("stopped"):
                 draw.ellipse(
                     (x - size / 2 + 2, y - size / 2 + 2, x + size / 2 - 2, y + size / 2 - 2),
@@ -433,7 +439,7 @@ class ReplayRenderer:
         offset_y: float,
     ) -> None:
         for event in replay.events:
-            if event.event_type not in {"ATTACK", "AOE_SPLASH"}:
+            if event.event_type != "ATTACK" or event.data.get("is_splash"):
                 continue
             age = frame.time - event.time
             if age < 0 or age > PROJECTILE_LIFETIME:
@@ -475,13 +481,23 @@ class ReplayRenderer:
         offset_x: float,
         offset_y: float,
     ) -> None:
+        seen: set[tuple[float, float, float, float]] = set()
         for event in replay.events:
             if event.event_type != "AOE_SPLASH" or event.x is None or event.y is None:
                 continue
+            radius = float(event.data.get("radius") or event.data.get("aoe_radius") or 3.0)
+            key = (
+                round(event.time, 3),
+                round(float(event.x), 3),
+                round(float(event.y), 3),
+                radius,
+            )
+            if key in seen:
+                continue
+            seen.add(key)
             age = frame.time - event.time
             if age < 0 or age > AOE_LIFETIME:
                 continue
-            radius = float(event.data.get("radius") or event.data.get("aoe_radius") or 3.0)
             progress = min(1.0, age / AOE_LIFETIME)
             current = radius * scale * (0.45 + 0.55 * progress)
             x = offset_x + event.x * scale
@@ -560,24 +576,20 @@ class ReplayRenderer:
             logger.debug("failed to cache replay icon unit=%s", unit_id, exc_info=True)
             return None
 
-    @staticmethod
-    def _draw_unit_hp_ring(
-        draw: ImageDraw.ImageDraw,
-        x: float,
-        y: float,
-        hp_ratio: float,
-        color: tuple[int, int, int],
-        *,
-        size: int = ICON_SIZE,
-    ) -> None:
-        radius = size / 2 - 2
-        draw.arc(
-            (x - radius, y - radius, x + radius, y + radius),
-            start=-90,
-            end=-90 + max(0.0, min(1.0, hp_ratio)) * 360,
-            fill=color,
-            width=3,
-        )
+    def _faded_icon(self, icon: Image.Image, opacity: float) -> Image.Image:
+        if opacity >= 0.995:
+            return icon
+        bucket = max(1, min(10, round(opacity * 10)))
+        key = (id(icon), bucket)
+        cached = self._faded_icon_cache.get(key)
+        if cached is None:
+            cached = icon.copy()
+            alpha = cached.getchannel("A").point(
+                lambda value: int(value * bucket / 10)
+            )
+            cached.putalpha(alpha)
+            self._faded_icon_cache[key] = cached
+        return cached
 
     def _draw_subtitle(
         self,

@@ -1,15 +1,15 @@
 :root {
   color-scheme: dark;
-  --bg: #101512;
-  --panel: #19201c;
-  --panel-2: #202a24;
-  --line: #334138;
-  --text: #edf4ef;
-  --muted: #9aab9f;
+  --bg: #20272b;
+  --panel: #252e33;
+  --panel-2: #303b40;
+  --line: #3d4c52;
+  --text: #e8f0f2;
+  --muted: #a6b4ba;
   --red: #ef5350;
   --blue: #4c8dff;
   --green: #62d68b;
-  --amber: #e8b95b;
+  --amber: #c4bda2;
 }
 
 * {
@@ -36,7 +36,7 @@ body {
   justify-content: space-between;
   padding: 0 24px;
   border-bottom: 1px solid var(--line);
-  background: #141a16;
+  background: #1a2024;
 }
 
 .brand {
@@ -50,7 +50,7 @@ body {
   place-items: center;
   width: 40px;
   height: 40px;
-  border: 1px solid #617266;
+  border: 1px solid #68777d;
   border-radius: 8px;
   font-size: 13px;
   font-weight: 800;
@@ -181,7 +181,7 @@ body {
   padding: 0 9px;
   border: 1px solid var(--line);
   border-radius: 6px;
-  background: #111813;
+  background: #1d2529;
   color: var(--text);
   font: inherit;
   font-size: 12px;
@@ -201,8 +201,8 @@ body {
 .start-button {
   min-width: 104px;
   min-height: 34px;
-  border-color: #617a68;
-  background: #294331;
+  border-color: #6c837d;
+  background: #344b49;
   font-weight: 700;
 }
 
@@ -284,7 +284,7 @@ body {
   height: 7px;
   overflow: hidden;
   border-radius: 4px;
-  background: #0c110e;
+  background: #151c20;
 }
 
 .hp-track i {
@@ -371,7 +371,7 @@ body {
 }
 
 .ring {
-  border: 2px solid #d8e3dc;
+  border: 2px solid #c4cfcc;
   border-radius: 50%;
 }
 
@@ -390,7 +390,7 @@ body {
   background:
     linear-gradient(rgba(255, 255, 255, 0.025) 1px, transparent 1px),
     linear-gradient(90deg, rgba(255, 255, 255, 0.025) 1px, transparent 1px),
-    #0d120f;
+    #2d383b;
   background-size: 32px 32px;
 }
 
@@ -481,8 +481,8 @@ button {
 
 button:hover,
 button.active {
-  border-color: #718579;
-  background: #2b3830;
+  border-color: #7b8d94;
+  background: #3a484e;
 }
 
 .timeline,

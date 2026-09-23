@@ -41,6 +41,10 @@ const scenarioSelect = document.getElementById("pathing-scenario");
 const showTrails = document.getElementById("show-trails");
 const showRoutes = document.getElementById("show-routes");
 const showTargets = document.getElementById("show-targets");
+const iconCache = new Map();
+const PROJECTILE_LIFETIME = 0.25;
+const AOE_LIFETIME = 0.3;
+const DEATH_MARK_LIFETIME = 0.6;
 
 const FALLBACK_CIVS = [
   ["British", "英国"],
@@ -98,6 +102,9 @@ async function bootstrapCatalog() {
       option.value = unit.id;
       option.label = `${unit.name} · ${unit.name_en}`;
       unitOptions.appendChild(option);
+      if (unit.icon_url) {
+        state.unitIcons.set(unit.id, unit.icon_url);
+      }
     }
     populateCivSelects(catalog.civs || []);
     setStatus("阵容选择已加载", "running");
@@ -121,6 +128,7 @@ const state = {
   mode: "units",
   catalog: { units: [], civs: [] },
   trails: new Map(),
+  unitIcons: new Map(),
 };
 
 function resizeCanvas() {
@@ -200,6 +208,123 @@ function renderArmyCard(side, data) {
   card.querySelector(".army-kills").textContent = `击杀 ${data.kills ?? 0}`;
 }
 
+function unitIcon(unit) {
+  const unitId = unit.unit_id;
+  if (!unitId) return null;
+  const image = iconCache.get(unitId);
+  if (!image) {
+    const url = state.unitIcons.get(unitId);
+    if (!url) return null;
+    const pending = new Image();
+    pending.decoding = "async";
+    iconCache.set(unitId, pending);
+    pending.onload = () => {
+      if (!pending.complete || pending.naturalWidth <= 0) {
+        iconCache.delete(unitId);
+      }
+    };
+    pending.onerror = () => {
+      iconCache.delete(unitId);
+    };
+    pending.src = url;
+    return null;
+  }
+  return image.complete && image.naturalWidth > 0 ? image : null;
+}
+
+function activeEffects(frame, type) {
+  const effects = frame.visual_events || [];
+  const now = Number(frame.time || 0);
+  return effects.filter(
+    (effect) =>
+      effect.type === type
+      && now >= Number(effect.time || 0)
+      && now <= Number(effect.expires_at || 0),
+  );
+}
+
+function drawAttackEffects(frame) {
+  const units = frame.units || [];
+  const byId = new Map(units.map((unit) => [unit.id, unit]));
+  for (const effect of activeEffects(frame, "attack")) {
+    const unit = byId.get(effect.attacker_id);
+    const target = byId.get(effect.target_id);
+    const fromWorld = unit || { x: effect.attacker_x, y: effect.attacker_y };
+    const toWorld = target || { x: effect.x, y: effect.y };
+    if (fromWorld.x == null || fromWorld.y == null || toWorld.x == null || toWorld.y == null) continue;
+    const from = toScreen(fromWorld.x, fromWorld.y);
+    const to = toScreen(toWorld.x, toWorld.y);
+    const mode = effect.mode || "ranged";
+    const progress = Math.max(
+      0,
+      Math.min(1, (Number(frame.time || 0) - Number(effect.time || 0)) / PROJECTILE_LIFETIME),
+    );
+    if (mode === "melee") {
+      ctx.beginPath();
+      ctx.strokeStyle = "rgba(216,207,186,0.8)";
+      ctx.lineWidth = 2;
+      const angle = Math.atan2(to.y - from.y, to.x - from.x);
+      ctx.arc(from.x, from.y, 13, angle - 0.8, angle + 0.8);
+      ctx.stroke();
+    } else {
+      const tip = { x: from.x + (to.x - from.x) * progress, y: from.y + (to.y - from.y) * progress };
+      const tail = {
+        x: from.x + (to.x - from.x) * Math.max(0, progress - 0.2),
+        y: from.y + (to.y - from.y) * Math.max(0, progress - 0.2),
+      };
+      ctx.beginPath();
+      ctx.strokeStyle = "rgba(235,225,190,0.9)";
+      ctx.lineWidth = 2;
+      ctx.moveTo(tail.x, tail.y);
+      ctx.lineTo(tip.x, tip.y);
+      ctx.stroke();
+      ctx.beginPath();
+      ctx.fillStyle = "rgba(235,225,190,0.9)";
+      ctx.arc(tip.x, tip.y, 2, 0, Math.PI * 2);
+      ctx.fill();
+    }
+  }
+}
+
+function drawAoeEffects(frame) {
+  for (const effect of activeEffects(frame, "aoe")) {
+    if (effect.x == null || effect.y == null) continue;
+    const progress = Math.max(
+      0,
+      Math.min(1, (Number(frame.time || 0) - Number(effect.time || 0)) / AOE_LIFETIME),
+    );
+    const point = toScreen(effect.x, effect.y);
+    const radius = Math.max(
+      6,
+      Number(effect.radius || 2) * state.viewport.scale * (0.45 + progress * 0.55),
+    );
+    ctx.beginPath();
+    ctx.strokeStyle = "rgba(196,196,170,0.5)";
+    ctx.lineWidth = 2;
+    ctx.arc(point.x, point.y, radius, 0, Math.PI * 2);
+    ctx.stroke();
+  }
+}
+
+function drawDeathMarks(frame) {
+  for (const effect of activeEffects(frame, "death")) {
+    if (effect.x == null || effect.y == null) continue;
+    const progress = Math.max(
+      0,
+      Math.min(1, (Number(frame.time || 0) - Number(effect.time || 0)) / DEATH_MARK_LIFETIME),
+    );
+    const point = toScreen(effect.x, effect.y);
+    ctx.beginPath();
+    ctx.strokeStyle = `rgba(226,205,160,${0.75 * (1 - progress)})`;
+    ctx.lineWidth = 2;
+    ctx.moveTo(point.x - 5, point.y - 5);
+    ctx.lineTo(point.x + 5, point.y + 5);
+    ctx.moveTo(point.x - 5, point.y + 5);
+    ctx.lineTo(point.x + 5, point.y - 5);
+    ctx.stroke();
+  }
+}
+
 function drawFrame(frame) {
   const { width, height, scale, offsetX, offsetY } = state.viewport;
   ctx.clearRect(0, 0, width, height);
@@ -210,40 +335,32 @@ function drawFrame(frame) {
 
   const fieldWidth = frame.field.width * scale;
   const fieldHeight = frame.field.height * scale;
-  ctx.fillStyle = "#111a15";
+  ctx.fillStyle = "#2d383b";
   ctx.fillRect(offsetX, offsetY, fieldWidth, fieldHeight);
-  ctx.strokeStyle = "#435248";
+  ctx.strokeStyle = "#3a474b";
   ctx.lineWidth = 1;
   ctx.strokeRect(offsetX + 0.5, offsetY + 0.5, fieldWidth - 1, fieldHeight - 1);
 
   const units = frame.units || [];
   const byId = new Map(units.map((unit) => [unit.id, unit]));
-  const attackTargets = [];
-
-  for (const unit of showTargets.checked ? units : []) {
-    const targetId = unit.target_id || unit.move_target_id;
-    const target = targetId ? byId.get(targetId) : null;
-    if (!target) continue;
-    attackTargets.push({ unit, target });
+  if (showTargets.checked) {
+    ctx.lineWidth = 0.75;
+    for (const unit of units) {
+      const targetId = unit.target_id || unit.move_target_id;
+      const target = targetId ? byId.get(targetId) : null;
+      if (!target) continue;
+      const from = toScreen(unit.x, unit.y);
+      const to = toScreen(target.x, target.y);
+      ctx.strokeStyle = unit.side === "red" ? "rgba(239,83,80,0.14)" : "rgba(76,141,255,0.14)";
+      ctx.beginPath();
+      ctx.moveTo(from.x, from.y);
+      ctx.lineTo(to.x, to.y);
+      ctx.stroke();
+    }
   }
-
-  ctx.lineWidth = 0.75;
-  for (const { unit, target } of attackTargets) {
-    const from = toScreen(unit.x, unit.y);
-    const to = toScreen(target.x, target.y);
-    ctx.strokeStyle =
-      unit.target_id != null
-        ? unit.side === "red"
-          ? "rgba(239,83,80,0.20)"
-          : "rgba(76,141,255,0.20)"
-        : unit.side === "red"
-          ? "rgba(239,83,80,0.08)"
-          : "rgba(76,141,255,0.08)";
-    ctx.beginPath();
-    ctx.moveTo(from.x, from.y);
-    ctx.lineTo(to.x, to.y);
-    ctx.stroke();
-  }
+  drawAttackEffects(frame);
+  drawAoeEffects(frame);
+  drawDeathMarks(frame);
 
   for (const unit of units) {
     const selected = unit.id === state.selectedUnitId;
@@ -282,25 +399,34 @@ function drawFrame(frame) {
   }
 
   for (const unit of units) {
-    const radius = Math.max(2.3, (unit.radius || 0.46) * scale);
+    const radius = Math.max(4, Math.min(32, Math.round((unit.radius || 0.46) * scale)));
     const point = toScreen(unit.x, unit.y);
     const hpRatio = unit.max_hp > 0 ? unit.hp / unit.max_hp : 0;
     const color = unit.unit_id === "pathing_wall" ? "#899a90" : unit.side === "red" ? "#ef5350" : "#4c8dff";
+    const icon = unitIcon(unit);
 
     ctx.beginPath();
-    ctx.fillStyle = color;
-    ctx.globalAlpha = 0.42 + hpRatio * 0.58;
-    ctx.arc(point.x, point.y, radius, 0, Math.PI * 2);
-    ctx.fill();
+    if (icon) {
+      ctx.save();
+      ctx.beginPath();
+      ctx.arc(point.x, point.y, radius, 0, Math.PI * 2);
+      ctx.clip();
+      ctx.globalAlpha = 0.42 + hpRatio * 0.58;
+      ctx.drawImage(icon, point.x - radius, point.y - radius, radius * 2, radius * 2);
+      ctx.restore();
+    } else {
+      ctx.fillStyle = color;
+      ctx.globalAlpha = 0.42 + hpRatio * 0.58;
+      ctx.arc(point.x, point.y, radius, 0, Math.PI * 2);
+      ctx.fill();
+    }
     ctx.globalAlpha = 1;
 
     ctx.beginPath();
-    ctx.strokeStyle = unit.stopped ? "#eef4f0" : "rgba(238,244,240,0.34)";
-    ctx.lineWidth = unit.stopped ? 1.15 : 0.8;
-    if (!unit.stopped) ctx.setLineDash([2, 2]);
-    ctx.arc(point.x, point.y, radius + 1.4, 0, Math.PI * 2);
+    ctx.strokeStyle = color;
+    ctx.lineWidth = 2;
+    ctx.arc(point.x, point.y, radius + 1, 0, Math.PI * 2);
     ctx.stroke();
-    ctx.setLineDash([]);
 
     if (unit.id === state.selectedUnitId) {
       ctx.beginPath();
@@ -448,6 +574,7 @@ async function fillFrames(generation) {
     if (generation !== state.generation) return;
     if (!frame) break;
     for (const unit of frame.units || []) {
+      unitIcon(unit);
       if (!state.trails.has(unit.id)) state.trails.set(unit.id, []);
       state.trails.get(unit.id).push({ x: unit.x, y: unit.y, index: state.frames.length });
     }

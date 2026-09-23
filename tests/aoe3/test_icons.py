@@ -105,7 +105,7 @@ async def test_query_and_compare_send_black_icons(icon_path, count):
 
 
 @pytest.mark.parametrize("count", [1, 2])
-async def test_battle_sends_each_sides_background(icon_path, monkeypatch, count):
+async def test_battle_sends_single_opening_card(icon_path, monkeypatch, count):
     from core.types import GameContext
     from src.plugins.aoe3.models import Unit
     from src.plugins.games.aoe3_battle import game as game_module
@@ -113,13 +113,21 @@ async def test_battle_sends_each_sides_background(icon_path, monkeypatch, count)
 
     unit = Unit(id="test", name="Test", name_en="Test", hp=100)
     lineup = Lineup(slots=[UnitSlot(unit=unit, count=1) for _ in range(count)])
-    match = MatchLineup(red=lineup, blue=lineup, mode="bet")
+    match = MatchLineup(red=lineup, blue=lineup, mode="bet", age=3)
     game = game_module.AoE3BattleGame()
     game._match = match
     monkeypatch.setattr(game_module.UnitRepo, "get_icon_path", lambda self, unit: icon_path)
+    rendered = Image.new("RGB", (4, 4), RED_ICON_BACKGROUND)
+    output = BytesIO()
+    rendered.save(output, format="PNG")
     rich = AsyncMock()
     monkeypatch.setattr(game_module.session, "broadcast_rich", rich)
     monkeypatch.setattr(game_module.session, "broadcast", AsyncMock())
+    monkeypatch.setattr(
+        game_module,
+        "render_match_opening",
+        lambda **_kwargs: output.getvalue(),
+    )
     ctx = GameContext(
         session_id="ICON",
         game_id="aoe3_battle",
@@ -136,11 +144,13 @@ async def test_battle_sends_each_sides_background(icon_path, monkeypatch, count)
 
     await game.on_start(ctx)
 
-    assert rich.await_count == 2
-    for call, background in zip(
-        rich.await_args_list, [RED_ICON_BACKGROUND, BLUE_ICON_BACKGROUND], strict=True
-    ):
-        group_id, message, fallback = call.args
-        assert group_id == 42
-        _assert_message_icons(message, background, count)
-        assert message.extract_plain_text() == fallback
+    rich.assert_awaited_once()
+    group_id, message, fallback = rich.await_args.args
+    assert group_id == 42
+    images = [segment for segment in message if segment.type == "image"]
+    assert len(images) == 1
+    encoded = images[0].data["file"]
+    assert encoded.startswith("base64://")
+    with Image.open(BytesIO(base64.b64decode(encoded.removeprefix("base64://")))) as image:
+        assert image.size == (4, 4)
+    assert "普通对阵" in fallback

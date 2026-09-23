@@ -220,3 +220,28 @@ def test_frame_exposes_independent_remaining_times_without_mutating_deadlines():
     assert unit["attack_cd"] == 1.5
     assert unit["aim_cd"] == 0.0
     assert soldier.attack_ready_at == 2.0
+
+
+def test_visual_frame_carries_real_attack_and_death_events():
+    sim, soldier, target, _ = _scene(ranged_windup=0.0)
+    frames = []
+    sim._frame_callback = frames.append
+
+    _tick(sim, soldier, 0)
+    sim._emit_visual_frame(status="running", winner=None, timeout=False)
+
+    attack = next(event for event in frames[-1]["visual_events"] if event["type"] == "attack")
+    assert attack["attacker_id"] == soldier.id
+    assert attack["target_id"] == target.id
+    assert attack["x"] == target.x
+    assert attack["y"] == target.y
+
+    target.hp = 0.1
+    sim._tick = 1
+    sim._apply_damage(soldier, target, 1.0, AttackMode.RANGED)
+    sim._emit_visual_frame(status="running", winner=None, timeout=False)
+
+    death = next(event for event in frames[-1]["visual_events"] if event["type"] == "death")
+    assert death["unit_id"] == target.id
+    assert death["x"] == target.x
+    assert death["y"] == target.y

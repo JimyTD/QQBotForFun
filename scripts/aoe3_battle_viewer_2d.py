@@ -47,6 +47,7 @@ from plugins.games.aoe3_battle.simulator2d.config import (  # noqa: E402
 from scripts.aoe3_pathing_scenarios import SCENARIOS, PathingDemo  # noqa: E402
 
 VIEWER_DIR = _ROOT / "tools" / "aoe3_battle_viewer_2d"
+VISUAL_EVENT_BUFFER_SECONDS = 2.0
 
 
 class SimulationSupersededError(RuntimeError):
@@ -62,6 +63,7 @@ class BattleRunner:
         self._thread: threading.Thread | None = None
         self._cancelled = threading.Event()
         self._generation = 0
+        self._visual_events: list[dict[str, Any]] = []
 
     def start(self, request: dict[str, Any]) -> None:
         with self._lock:
@@ -69,6 +71,7 @@ class BattleRunner:
             generation = self._generation
             self._cancelled.set()
             self._cancelled = threading.Event()
+            self._visual_events = []
             self.store.reset()
             thread = threading.Thread(
                 target=self._run,
@@ -129,7 +132,44 @@ class BattleRunner:
         with self._lock:
             if generation != self._generation or cancelled.is_set():
                 raise SimulationSupersededError("simulation superseded")
+            frame = _attach_visual_events(
+                frame,
+                self.store.latest(),
+                self._visual_events,
+            )
             self.store.publish(frame)
+
+
+def _attach_visual_events(
+    frame: dict[str, Any],
+    _previous_frame: dict[str, Any] | None,
+    event_buffer: list[dict[str, Any]],
+) -> dict[str, Any]:
+    """Attach real-time visual events with explicit lifetimes."""
+    now = float(frame.get("time") or 0.0)
+    events: list[dict[str, Any]] = [
+        event
+        for event in event_buffer
+        if now <= float(event.get("expires_at") or 0.0)
+    ]
+    event_buffer[:] = events
+    events.extend(
+        dict(event)
+        for event in frame.get("visual_events") or []
+        if isinstance(event, dict)
+    )
+    event_buffer[:] = [
+        event
+        for event in event_buffer
+        if now - float(event.get("time") or 0.0) <= VISUAL_EVENT_BUFFER_SECONDS
+    ] + [
+        event
+        for event in events
+        if event not in event_buffer
+    ]
+    if events:
+        frame = {**frame, "visual_events": events}
+    return frame
 
 
 class FrameStore:
@@ -261,13 +301,16 @@ class ViewerHandler(BaseHTTPRequestHandler):
         if path == "/api/catalog":
             self._serve_catalog()
             return
+        if path.startswith("/api/icon/"):
+            self._serve_icon(path.removeprefix("/api/icon/"))
+            return
         if path in ("/", "/index.html"):
             self._serve_file(VIEWER_DIR / "index.html", "text/html; charset=utf-8")
             return
-        if path in ("/styles.css", "/styles.css?v=20260923-2"):
+        if path in ("/styles.css", "/styles.css?v=20260923-6"):
             self._serve_file(VIEWER_DIR / "styles.css", "text/css; charset=utf-8")
             return
-        if path in ("/app.js", "/app.js?v=20260923-2"):
+        if path in ("/app.js", "/app.js?v=20260923-6"):
             self._serve_file(
                 VIEWER_DIR / "app.js",
                 "application/javascript; charset=utf-8",
@@ -312,6 +355,18 @@ class ViewerHandler(BaseHTTPRequestHandler):
             )
 
     def _serve_catalog(self) -> None:
+        repo = UnitRepo.get()
+        units = [
+            {
+                "id": unit.id,
+                "name": unit.name or unit.name_en,
+                "name_en": unit.name_en,
+                "icon_url": f"/api/icon/{unit.id}",
+            }
+            for unit in repo.all_units
+            if repo.get_icon_path(unit) is not None
+        ]
+        units.sort(key=lambda unit: unit["id"])
         civs = [
             {
                 "id": profile.id,
@@ -321,13 +376,42 @@ class ViewerHandler(BaseHTTPRequestHandler):
             for profile in CIV_PROFILES
         ]
         payload = json.dumps(
-            {"units": [], "civs": civs},
+            {"units": units, "civs": civs},
             ensure_ascii=False,
         ).encode("utf-8")
         self._send_bytes(
             payload,
             content_type="application/json; charset=utf-8",
         )
+
+    def _serve_icon(self, unit_id: str) -> None:
+        repo = UnitRepo.get()
+        unit = repo.get_by_id(unit_id)
+        path = repo.get_icon_path(unit) if unit is not None else None
+        if path is None:
+            self._send_bytes(
+                b"icon not found",
+                content_type="text/plain; charset=utf-8",
+                status=HTTPStatus.NOT_FOUND,
+            )
+            return
+        try:
+            import io
+
+            from PIL import Image
+
+            with Image.open(path) as source:
+                image = source.convert("RGBA")
+            image.thumbnail((96, 96), Image.Resampling.LANCZOS)
+            output = io.BytesIO()
+            image.save(output, format="PNG")
+            self._send_bytes(output.getvalue(), content_type="image/png")
+        except OSError:
+            self._send_bytes(
+                b"icon unreadable",
+                content_type="text/plain; charset=utf-8",
+                status=HTTPStatus.NOT_FOUND,
+            )
 
     def _serve_file(self, path: Path, content_type: str) -> None:
         try:

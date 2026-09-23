@@ -423,6 +423,9 @@ class CombatSystem:
                     "distance": round(hit.distance, 3),
                     "distance_factor": round(hit.distance_factor, 4),
                     "area_sort_mode": stats.area_sort_mode,
+                    "radius": stats.aoe_radius,
+                    "impact_x": round(main_target.x, 3),
+                    "impact_y": round(main_target.y, 3),
                     "engine": "2d",
                 },
             )

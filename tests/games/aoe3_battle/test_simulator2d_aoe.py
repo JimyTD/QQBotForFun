@@ -184,3 +184,6 @@ def test_combat_system_applies_multiplier_after_cap_allocation() -> None:
     assert len(splash) == 1
     assert splash[0]["splash_target_id"] == nearby.id
     assert splash[0]["splash_damage"] == pytest.approx(100.0)
+    assert splash[0]["radius"] == 3
+    assert splash[0]["impact_x"] == main.x
+    assert splash[0]["impact_y"] == main.y

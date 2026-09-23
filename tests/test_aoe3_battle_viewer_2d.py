@@ -8,7 +8,12 @@ from unittest.mock import patch
 import pytest
 
 from plugins.games.aoe3_battle.simulator2d import Simulation2DConfig
-from scripts.aoe3_battle_viewer_2d import BattleRunner, FrameStore, SimulationSupersededError
+from scripts.aoe3_battle_viewer_2d import (
+    BattleRunner,
+    FrameStore,
+    SimulationSupersededError,
+    _attach_visual_events,
+)
 from scripts.aoe3_pathing_scenarios import SCENARIOS, PathingDemo
 
 
@@ -51,3 +56,46 @@ def test_same_seed_reproduces_the_same_motion_frames():
     PathingDemo("crowd", 42, Simulation2DConfig(), first.append).run()
     PathingDemo("crowd", 42, Simulation2DConfig(), second.append).run()
     assert first == second
+
+
+def test_visual_events_keep_real_events_alive_until_expiry():
+    current = {
+        "time": 0.1,
+        "visual_events": [
+            {
+                "type": "attack",
+                "attacker_id": 1,
+                "target_id": 2,
+                "time": 0.1,
+                "expires_at": 0.35,
+            }
+        ]
+    }
+    event_buffer = []
+
+    decorated = _attach_visual_events(current, None, event_buffer)
+    with_history = _attach_visual_events(
+        {"time": 0.2, "visual_events": []},
+        None,
+        event_buffer,
+    )
+
+    assert decorated["visual_events"][0]["type"] == "attack"
+    assert with_history["visual_events"][0]["type"] == "attack"
+    assert len(event_buffer) == 1
+
+
+def test_visual_event_buffer_drops_expired_events():
+    event_buffer = [
+        {
+            "type": "attack",
+            "time": 0.0,
+            "expires_at": 0.25,
+        }
+    ]
+    current = {"time": 1.0, "units": []}
+
+    decorated = _attach_visual_events(current, None, event_buffer)
+
+    assert decorated == current
+    assert event_buffer == []
