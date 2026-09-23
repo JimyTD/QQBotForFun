@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import math
 import random
 
 import pytest
@@ -149,7 +150,7 @@ def test_larger_units_use_their_real_obstruction_radius() -> None:
     ) + second.radius(simulator.config.fallback_unit_radius)
 
 
-def test_ellipse_contact_respects_orientation() -> None:
+def test_ellipse_contact_uses_minimum_translation_not_deepest_axis() -> None:
     elephant = _unit(
         "elephant",
         obstruction_radius_x=1.49,
@@ -163,9 +164,12 @@ def test_ellipse_contact_respects_orientation() -> None:
     assert contact is not None
     assert first.extent(1.0, 0.0) == pytest.approx(1.49)
     assert second.extent(1.0, 0.0) == pytest.approx(1.49)
-    assert abs(contact.normal_x) > 0.99
-    assert abs(contact.normal_y) < 0.01
-    assert contact.depth == pytest.approx(1.98, abs=0.02)
+    # The Minkowski sum is an ellipse with axes 2.98 and 0.98. Its nearest
+    # boundary to (1, 0) is off the center line, not the 1.98-deep x axis.
+    expected = 0.98 * math.sqrt(1.0 - 1.0 / (2.98**2 - 0.98**2))
+    assert contact.normal_x > 0
+    assert abs(contact.normal_y) > 0.9
+    assert contact.depth == pytest.approx(expected, abs=1e-5)
 
 
 def test_rotated_ellipse_uses_long_axis_extent() -> None:

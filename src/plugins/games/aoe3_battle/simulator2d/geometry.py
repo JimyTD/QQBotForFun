@@ -194,15 +194,17 @@ def shape_contact(
     best_angle = initial_angle
     best_separation = _shape_separation(first, second, best_angle)
     step = math.tau / sample_count
+    # Any separating axis disproves overlap. For intersecting shapes the
+    # largest (least negative) separation gives the minimum translation.
     for offset in range(1, sample_count // 2 + 1):
         angle = initial_angle + offset * step
         separation = _shape_separation(first, second, angle)
-        if separation < best_separation:
+        if separation > best_separation:
             best_separation = separation
             best_angle = angle
         angle = initial_angle - offset * step
         separation = _shape_separation(first, second, angle)
-        if separation < best_separation:
+        if separation > best_separation:
             best_separation = separation
             best_angle = angle
 
@@ -213,16 +215,24 @@ def shape_contact(
         right = lower + (upper - lower) * 0.618
         left_separation = _shape_separation(first, second, left)
         right_separation = _shape_separation(first, second, right)
-        if left_separation <= right_separation:
+        if left_separation >= right_separation:
             upper = right
         else:
             lower = left
-    best_angle = (lower + upper) / 2.0
-    best_separation = _shape_separation(first, second, best_angle)
-    if best_separation > tolerance:
+    refined_angle = (lower + upper) / 2.0
+    refined_separation = _shape_separation(first, second, refined_angle)
+    if refined_separation > best_separation:
+        best_angle = refined_angle
+        best_separation = refined_separation
+    if best_separation >= -tolerance - _EPSILON:
         return None
+    nx, ny = math.cos(best_angle), math.sin(best_angle)
+    # Projection uses an absolute value; orient the response from first to
+    # second so the positional resolver pushes bodies apart, not together.
+    if nx * delta_x + ny * delta_y < 0.0:
+        nx, ny = -nx, -ny
     return ShapeContact(
         depth=-best_separation,
-        normal_x=math.cos(best_angle),
-        normal_y=math.sin(best_angle),
+        normal_x=nx,
+        normal_y=ny,
     )
