@@ -172,6 +172,10 @@ async def generate_report(
             max_tokens=512,
         )
         text = resp.content.strip()
+        if resp.truncated or not text:
+            reason = "truncated" if resp.truncated else "empty"
+            logger.warning(f"[finance] LLM returned {reason} output, falling back to raw")
+            text = _fallback_report(anomalies, macros, top_mover)
     except Exception as e:  # noqa: BLE001
         logger.warning(f"[finance] LLM failed, falling back to raw: {e}")
         text = _fallback_report(anomalies, macros, top_mover)
