@@ -251,8 +251,8 @@ def test_config_controls_formation_columns() -> None:
 def test_blocked_melee_slides_sideways_instead_of_waiting() -> None:
     config = Simulation2DConfig()
     unit = _unit("blocked", speed=5.0, attack_melee=10.0)
-    mover = Soldier2D(1, Side.BLUE, unit, 100.0, 1.0, 5.0, 0.0)
-    blocker = Soldier2D(2, Side.RED, unit, 100.0, 1.0, 5.5, 0.0)
+    mover = Soldier2D(1, Side.BLUE, unit, 100.0, 1.0, 5.0, 10.0)
+    blocker = Soldier2D(2, Side.RED, unit, 100.0, 1.0, 5.5, 10.0)
     blocker.stopped = True
     spatial = SpatialHash(config.spatial_cell_size)
     spatial.rebuild([mover, blocker])
@@ -268,7 +268,7 @@ def test_blocked_melee_slides_sideways_instead_of_waiting() -> None:
 
     assert result.velocity.x < 1.0
     assert abs(result.velocity.y) > 0.1
-    assert result.reason in ("free", "separate", "avoid", "detour", "fallback")
+    assert result.reason in ("free", "separate", "avoid", "detour", "fallback", "maneuver")
 
 
 def test_nearest_enemy_query_scales_to_large_distance() -> None:

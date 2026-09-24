@@ -6,7 +6,7 @@ from dataclasses import dataclass
 
 from .compat import ArmySlot, Side
 from .config import Simulation2DConfig
-from .geometry import unit_radius
+from .geometry import directional_extent
 from .model import Vec2
 
 
@@ -54,16 +54,16 @@ def build_deployment(
     red_columns, red_rows = _formation_shape(len(red_units), config)
     blue_columns, blue_rows = _formation_shape(len(blue_units), config)
     max_columns = max(red_columns, blue_columns, 1)
-    max_unit_diameter = max(
+    max_lateral_diameter = max(
         (
-            unit_radius(unit, config.fallback_unit_radius) * 2.0
+            directional_extent(unit, 0.0, 0.0, 1.0, config.fallback_unit_radius) * 2.0
             for unit in red_units + blue_units
         ),
         default=0.0,
     )
     lateral_spacing = max(
         config.formation_spacing,
-        max_unit_diameter + config.separation_slop * 2.0,
+        max_lateral_diameter + config.separation_slop * 2.0,
     )
     lateral_span = (max_columns - 1) * lateral_spacing
     field_height = max(
@@ -72,15 +72,19 @@ def build_deployment(
     )
     row_spacing = max(
         config.row_spacing,
-        max_unit_diameter + config.separation_slop * 2.0,
+        max(
+            (
+                directional_extent(unit, 0.0, 1.0, 0.0, config.fallback_unit_radius) * 2.0
+                for unit in red_units + blue_units
+            ),
+            default=0.0,
+        )
+        + config.separation_slop * 2.0,
     )
     red_depth_span = (red_rows - 1) * row_spacing
     blue_depth_span = (blue_rows - 1) * row_spacing
     field_width = (
-        config.formation_depth_margin * 2
-        + config.field_length
-        + red_depth_span
-        + blue_depth_span
+        config.formation_depth_margin * 2 + config.field_length + red_depth_span + blue_depth_span
     )
     mid_y = field_height / 2.0
     red_front_x = config.formation_depth_margin + red_depth_span

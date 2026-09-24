@@ -114,6 +114,10 @@ class Soldier2D:
     detour_remaining: list[Vec2] = field(default_factory=list)
     detour_target_id: int | None = None
     detour_retry_tick: int = 0
+    navigation_status: str = "unplanned"
+    navigation_expanded: int = 0
+    navigation_retry_level: int = 0
+    navigation_target_id: int | None = None
     progress_goal: tuple | None = None
     progress_best_distance: float = float("inf")
     motion_samples: list[Vec2] = field(default_factory=list)

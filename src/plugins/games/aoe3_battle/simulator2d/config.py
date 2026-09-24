@@ -56,6 +56,7 @@ class Simulation2DConfig:
     avoidance_margin: float = 0.12
     max_neighbors: int = 8
     movement_substeps: int = 2
+    movement_turn_rate: float = 6.283185307179586
     separation_iterations: int = 4
     separation_slop: float = 0.002
     max_overlap_for_log: float = 0.08
