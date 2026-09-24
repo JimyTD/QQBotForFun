@@ -1,7 +1,7 @@
 {
   "_meta": {
     "status": "approved_v1",
-    "doc": "docs/games/aoe3-civ-war-wip.md",
+    "doc": "docs/games/aoe3-battle.md",
     "note": "优势策略第一版已确认，参与正式国战随机；本地编辑器可继续维护后续版本。",
     "budget": 10000,
     "extra_unit_ids": {

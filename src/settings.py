@@ -44,7 +44,7 @@ class Settings(BaseSettings):
     # 腾讯云 TokenHub（OpenAI 兼容，单 Key 多模型）。
     # 本项目**只消费免费额度**，额度按模型各自独立、不刷新、用完/下线即失效，
     # 因此 scene 配成「阶梯链」：前档耗尽自动降下一档。详见
-    # docs/plans/2026-09-17-llm-tokenhub-model-ladder.md。
+    # docs/08-llm-integration.md §2、§4.2。
     # 注意：广州站与新加坡站的 Key 不互通（本项对应广州站的 base_url）。
     tokenhub_api_key: str = ""
 

@@ -2,7 +2,7 @@
 
 32 关 + Epilogue 的关卡数据与查询，纯数据模块（不 import NoneBot / session / game 逻辑），
 可被 game.py 与 CLI adapter 复用。数据来源见
-``docs/games/deep-sea-mission-campaign.md`` §四（已三方核对定稿）。
+``docs/games/deep-sea-mission.md``（已三方核对定稿）。
 """
 
 from __future__ import annotations

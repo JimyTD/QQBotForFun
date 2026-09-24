@@ -195,7 +195,6 @@ uv run pytest
 - [`games/trivia-bank.md`](./docs/games/trivia-bank.md) — 趣味问答题库子系统
 - [`games/aoe3-battle.md`](./docs/games/aoe3-battle.md) — 帝国3斗蛐蛐
 - [`games/deep-sea-mission.md`](./docs/games/deep-sea-mission.md) — 深海任务
-- [`games/deep-sea-mission-campaign.md`](./docs/games/deep-sea-mission-campaign.md) — 深海任务 · 战役模式
 - [`games/terra-survival.md`](./docs/games/terra-survival.md) — 群峦求生（设计中）
 
 ### 工具设计

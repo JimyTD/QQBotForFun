@@ -1,7 +1,7 @@
 """阶梯链：配置解析、错误分类、冷却与降档行为。
 
 全部离线 —— 不触网、不打真实 API。
-设计文档：docs/plans/2026-09-17-llm-tokenhub-model-ladder.md
+设计文档：docs/08-llm-integration.md
 """
 
 from __future__ import annotations

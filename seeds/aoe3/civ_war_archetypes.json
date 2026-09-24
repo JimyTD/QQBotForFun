@@ -1,6 +1,6 @@
 {
   "_meta": {
-    "doc": "docs/games/aoe3-civ-war-wip.md",
+    "doc": "docs/games/aoe3-battle.md",
     "status": "WIP",
     "notes": [
       "generic_archetypes 的 values 是资源占比，不是单位数量占比",

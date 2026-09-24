@@ -155,6 +155,8 @@ seeds/
     idiom.json
 ```
 
+当前实际数量：country 80 / city 172 / food 121 / person 99 / animal 85 / idiom 93。
+
 ### 4.3 运行时出题流程
 
 ```python
@@ -272,6 +274,16 @@ uv run python scripts/generate_trivia_bank.py --all
 ```
 
 被拒的题写入 `seeds/trivia_bank/country_rejected.json` 方便回看。
+
+### 5.9 续写与校验约束
+
+继续扩充题库时，必须先满足以下约束，再运行仓库测试：
+
+- 每类为 JSON 数组；每题包含 `answer`、`aliases`、恰好 2 套 `clue_sets`（每套 5 条）、`explanation`、`difficulty`、`source`。
+- `answer` 与 `aliases` 的名称片段不得出现在任何线索中；成语按“任意 2 个连续字”检查。
+- 同类型内答案不得重复；线索必须使用中文，事实必须可核实，并从难到易排列。
+- `difficulty` 仅用 `easy` / `medium`，整体约 70% / 30%。
+- 生成脚本为 `scripts/generate_trivia_bank.py`；写入 seed 后运行 `tests/games/trivia/`。
 
 ---
 

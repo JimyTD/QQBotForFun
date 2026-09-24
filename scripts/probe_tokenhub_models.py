@@ -1,7 +1,7 @@
 """TokenHub 模型探针 —— 一次跑出各档的「脾气」，用于回填 `core.llm._MODEL_QUIRKS`。
 
 背景：不同模型对 `temperature` / `thinking` / `response_format` 的接受度不一样，
-不迁就就是整档 400、白白降级（见 docs/plans/2026-09-17-llm-tokenhub-model-ladder.md §2.3）。
+不迁就就是整档 400、白白降级（见 docs/08-llm-integration.md §2、§4.2）。
 凭猜测填 quirks 会引入更多错误，所以这里实测。
 
 用法：

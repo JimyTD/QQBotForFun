@@ -1,7 +1,7 @@
 # 08 · LLM 网关详解
 
 - **Status**: v2
-- **Last Updated**: 2026-05-26
+- **Last Updated**: 2026-09-24
 - **Owner**: @owner
 
 > 配合 [`adr/0003-llm-gateway.md`](./adr/0003-llm-gateway.md) 和 [`06-configuration.md`](./06-configuration.md) 一起看。
@@ -57,8 +57,8 @@ vec = await llm.embedding("文本", scene="default")
 串起来总可用量更大，且保证「链路全挂时也不比改造前差」。
 
 **为什么链头是 `qwen3.5-*`**：TokenHub 免费额度**按模型各自独立、不刷新、用完/下线即失效**，
-所以**快过期的档必须先用**（标称 2026-09-08 下线，随时可能失效）。
-完整取舍见 [`plans/2026-09-17-llm-tokenhub-model-ladder.md`](./plans/2026-09-17-llm-tokenhub-model-ladder.md)。
+所以只接入旧 / 临期档，并按「剩余寿命升序 + 组内质量降序」排列；快过期的档先用。
+A 类档全部耗尽或下线后，链路直接落到智谱等独立额度池，届时有新资源再更新配置。
 
 > ✅ **参数层面已实测**（2026-09-18，`scripts/probe_tokenhub_models.py`，A 类 13 档）：
 > 全部可调用、全部支持 `response_format`、响应均在 5s 内。**只有 `kimi-k2.5` 需要 quirk**
@@ -66,7 +66,7 @@ vec = await llm.embedding("文本", scene="default")
 >
 > ⚠️ **质量层面未验证，且已决定不再验证**（2026-09-18）：
 > 链序是「剩余寿命升序 + 组内质量降序」的人工初判，没有 golden eval 数据支撑 ——
-> 因为**验证成本 ≈ 被验证的资源本身**（详见规划 §5.5.0.2）。
+> 因为**验证成本 ≈ 被验证的资源本身**。
 > 若日后觉得判定变怪，翻日志的 `slot=` / `chain_index=` 定位到具体档，
 > 再**只对那一档**跑几条 golden 定点验证（几千 token，而非全量十几万）。
 >
