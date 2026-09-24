@@ -12,6 +12,7 @@ import asyncio
 import json
 import logging
 import random
+import time
 from pathlib import Path
 from typing import Any
 
@@ -73,7 +74,63 @@ AGE_MIN = 2                  # 时代下限（2 时代无军改）
 AGE_MAX = 5                  # 时代上限（帝王）
 AGE_DEFAULT = 3              # 默认时代（§3.10.6：693 兵，默认即有改良）
 BATTLE_LOG_DIR = Path(__file__).resolve().parents[4] / "logs" / "aoe3_battle"
+BATTLE_PERF_LOG = BATTLE_LOG_DIR / "perf.jsonl"
 BATTLE_LOG_KEEP = 5          # 保留最近 N 局（精简+完整各算一个文件）
+
+
+class _StageTimer:
+    """采集一次对局各阶段的墙钟耗时，最终输出一条可聚合的 JSON 日志。"""
+
+    def __init__(self, session_id: str, mode: str) -> None:
+        self.session_id = session_id
+        self.mode = mode
+        self._started = time.perf_counter()
+        self._started_unix = time.time()
+        self._stages: dict[str, float] = {}
+        self._open: dict[str, float] = {}
+        self._finished = False
+
+    def start(self, stage: str) -> None:
+        if stage in self._open:
+            return
+        self._open[stage] = time.perf_counter()
+
+    def stop(self, stage: str) -> None:
+        started = self._open.pop(stage, None)
+        if started is None:
+            return
+        self._stages[stage] = self._stages.get(stage, 0.0) + (
+            time.perf_counter() - started
+        )
+
+    def finish(self, **extra: Any) -> None:
+        if self._finished:
+            return
+        self._finished = True
+        for stage in list(self._open):
+            self.stop(stage)
+        total_seconds = time.perf_counter() - self._started
+        payload = {
+            "event": "battle_perf",
+            "session_id": self.session_id,
+            "mode": self.mode,
+            "started_unix": round(self._started_unix, 3),
+            "finished_unix": round(time.time(), 3),
+            "total_seconds": round(total_seconds, 3),
+            **{f"{k}_seconds": round(v, 3) for k, v in self._stages.items()},
+            **extra,
+        }
+        try:
+            BATTLE_LOG_DIR.mkdir(parents=True, exist_ok=True)
+            with BATTLE_PERF_LOG.open("a", encoding="utf-8") as fh:
+                fh.write(json.dumps(payload, ensure_ascii=False) + "\n")
+        except OSError:
+            logger.warning(
+                "[aoe3_battle][perf] 写入 %s 失败",
+                BATTLE_PERF_LOG,
+                exc_info=True,
+            )
+        logger.info("[aoe3_battle][perf] %s", json.dumps(payload, ensure_ascii=False))
 
 
 def _replay_side_label(match: MatchLineup, side: str) -> str:
@@ -355,6 +412,14 @@ class AoE3BattleGame(GameBase):
 
     async def on_create(self, ctx: GameContext) -> None:
         """开局：生成阵容，初始化状态。"""
+        perf = _StageTimer(
+            ctx.session_id,
+            str((ctx.config or {}).get("mode", "bet")),
+        )
+        self._perf_timer = perf
+        self._perf_metrics: dict[str, Any] = {}
+        perf.start("setup")
+
         mode_id = (ctx.config or {}).get("mode", "bet")
         budget = (ctx.config or {}).get("budget", BUDGET_DEFAULT)
         budget = max(BUDGET_MIN, min(BUDGET_MAX, int(budget)))
@@ -437,6 +502,7 @@ class AoE3BattleGame(GameBase):
             )
             self._tournament = tournament
             self._battle_task = None
+            perf.stop("setup")
             return  # 提前返回，不走普通 match 的 state 序列化
         else:
             match = generate_bet_lineup(
@@ -482,6 +548,7 @@ class AoE3BattleGame(GameBase):
         # 运行时缓存（不进 state）
         self._match: MatchLineup = match
         self._battle_task: asyncio.Task[Any] | None = None
+        perf.stop("setup")
 
     async def on_start(self, ctx: GameContext) -> None:
         """广播单张开局图，进入押注阶段。"""
@@ -489,11 +556,15 @@ class AoE3BattleGame(GameBase):
 
         from nonebot.adapters.onebot.v11 import Message, MessageSegment
 
+        perf = self._perf_timer
+        perf.start("opening")
         mode = ctx.state["mode"]
 
         # ── 锦标赛模式：发送赛前对阵图 + 押注提示 ──
         if mode == "rival_tournament":
             await self._tournament_on_start(ctx)
+            perf.stop("opening")
+            perf.start("betting_wait")
             return
 
         match = self._match
@@ -534,6 +605,8 @@ class AoE3BattleGame(GameBase):
                     f"{s['unit_name']}×{s['count']}" for s in ctx.state["blue_army"]
                 ),
             )
+            perf.stop("opening")
+            perf.start("betting_wait")
             return
 
         red_side = MatchOpeningSide(
@@ -582,6 +655,8 @@ class AoE3BattleGame(GameBase):
             " + ".join(f"{s['unit_name']}×{s['count']}" for s in ctx.state.get("red_army", [])),
             " + ".join(f"{s['unit_name']}×{s['count']}" for s in ctx.state.get("blue_army", [])),
         )
+        perf.stop("opening")
+        perf.start("betting_wait")
 
     async def on_player_action(
         self, ctx: GameContext, player_id: int, message: str
@@ -632,6 +707,11 @@ class AoE3BattleGame(GameBase):
         # 注意：不在这里 cancel _battle_task —— 如果 _run_battle 内部
         # 调用了 runner.end()，cancel 自己会导致 runner.end() 的 finally
         # 块里的 await 被 CancelledError 打断，_runner_by_group.pop 被跳过。
+        perf = getattr(self, "_perf_timer", None)
+        if perf is not None:
+            metrics = self._perf_metrics
+            metrics.setdefault("outcome", reason.value)
+            perf.finish(**metrics)
         logger.info(
             "[aoe3_battle] 对局 %s 结束，reason=%s",
             ctx.session_id, reason.value,
@@ -729,8 +809,12 @@ class AoE3BattleGame(GameBase):
         """切换到战斗阶段，跑模拟 + 回放 + 结算。"""
         if ctx.state.get("phase") != "betting":
             return
+        perf = self._perf_timer
+        perf.stop("betting_wait")
         ctx.state["phase"] = "fighting"
+        perf.start("cleanup")
         cleanup_replay_files()
+        perf.stop("cleanup")
 
         # 异步执行战斗（避免阻塞消息处理）
         self._battle_task = asyncio.create_task(
@@ -739,8 +823,16 @@ class AoE3BattleGame(GameBase):
 
     async def _run_battle(self, ctx: GameContext) -> None:
         """执行战斗模拟 + 播报 + 结算。"""
+        perf = self._perf_timer
+        metrics = self._perf_metrics
+        perf.start("prepare")
         try:
             match = self._match
+            metrics.update(
+                red_count=match.red.total_count,
+                blue_count=match.blue.total_count,
+                total_count=match.red.total_count + match.blue.total_count,
+            )
 
             # 1. 跑模拟
             is_duel = ctx.state.get("mode") == "duel"
@@ -764,38 +856,68 @@ class AoE3BattleGame(GameBase):
                 match_label=replay_session.recorder.match_label,
                 frame_callback=replay_session.frame_callback,
             )
+            perf.stop("prepare")
+            perf.start("simulation")
             result = sim.run()
+            perf.stop("simulation")
+            metrics.update(
+                ticks=result.ticks,
+                battle_duration=round(result.duration, 3),
+                timeout=result.timeout,
+                winner=result.winner.value if result.winner else None,
+            )
+
+            perf.start("replay_record")
             replay = replay_session.finish(result)
+            perf.stop("replay_record")
 
             # dump 战斗日志
+            perf.start("log_dump")
             _dump_battle_log(ctx.session_id, match, result)
+            perf.stop("log_dump")
 
             # 视频编码与文字播报并行，避免阻塞战斗收尾。
+            perf.start("replay_dispatch")
             replay_task = asyncio.create_task(generate_replay_video(replay))
+            perf.stop("replay_dispatch")
 
             # 2. 最终战报（过程由视频承载）
+            perf.start("report_build")
             report = format_battle_report(result)
             if match.mode == "civ_war":
                 report = (
                     f"🌍 国战 · {match.red_civ_name}（{match.red_strategy}）"
                     f" vs {match.blue_civ_name}（{match.blue_strategy}）\n\n{report}"
                 )
+            perf.stop("report_build")
 
+            perf.start("replay_encode")
             try:
                 video = await replay_task
             except Exception as exc:  # noqa: BLE001
+                perf.stop("replay_encode")
                 logger.warning(
                     "[aoe3_battle] %s 回放编码失败: %s",
                     ctx.session_id,
                     exc,
                     exc_info=True,
                 )
+                metrics["replay_encode_ok"] = False
                 await session.broadcast(
                     ctx.group_id,
                     f"⚠️ 战场回放生成失败：{exc}",
                 )
             else:
+                perf.stop("replay_encode")
+                metrics.update(
+                    replay_encode_ok=True,
+                    replay_video_bytes=len(video),
+                    replay_output_seconds=round(replay.duration, 3),
+                )
+                perf.start("replay_send")
                 delivery = await broadcast_replay_video(ctx.group_id, video)
+                perf.stop("replay_send")
+                metrics["replay_send_ok"] = delivery.sent
                 if not delivery.sent:
                     logger.warning(
                         "[aoe3_battle] %s 回放发送失败，文字战报已保留",
@@ -806,23 +928,33 @@ class AoE3BattleGame(GameBase):
                         "⚠️ 战场回放发送失败，下面发送完整文字战报",
                     )
 
+            perf.start("report_send")
             await session.broadcast(ctx.group_id, report)
+            perf.stop("report_send")
 
             # 3. 押注结算单独发送；没有押注则不发。
+            perf.start("settlement")
             settlement = await self._settle_bets(ctx, result)
             if settlement:
                 await session.broadcast(ctx.group_id, settlement)
+            perf.stop("settlement")
 
             # 4. 结束对局
+            perf.start("cleanup")
             ctx.state["phase"] = "ended"
             from core import game_base as gb
             runner = gb.get_runner(ctx.session_id)
             if runner is not None:
                 await runner.end(EndReason.COMPLETED)
+            perf.stop("cleanup")
+            metrics["outcome"] = "completed"
 
         except asyncio.CancelledError:
+            metrics["outcome"] = "cancelled"
             logger.info("[aoe3_battle] %s 战斗任务被取消", ctx.session_id)
         except Exception as e:
+            metrics["outcome"] = "error"
+            metrics["error"] = str(e)
             logger.exception("[aoe3_battle] %s 战斗执行出错: %s", ctx.session_id, e)
             try:
                 await session.broadcast(ctx.group_id, f"⚠️ 战斗模拟出错：{e}")
@@ -833,6 +965,8 @@ class AoE3BattleGame(GameBase):
             runner = gb.get_runner(ctx.session_id)
             if runner is not None:
                 await runner.end(EndReason.ERROR)
+        finally:
+            perf.finish(**metrics)
 
     # ================================================================
     # 押注结算
@@ -1087,6 +1221,7 @@ class AoE3BattleGame(GameBase):
             # 推进到八强战
             self._tournament.try_advance()  # DRAW → QF
             ctx.state["phase"] = "tournament_fighting"
+            self._perf_timer.stop("betting_wait")
             self._battle_task = asyncio.create_task(
                 self._run_tournament_round(ctx)
             )
@@ -1096,6 +1231,11 @@ class AoE3BattleGame(GameBase):
 
     async def _run_tournament_round(self, ctx: GameContext) -> None:
         """执行当前轮次的所有比赛 → 播报 → 出图 → 等待「开战」或结束。"""
+        perf = self._perf_timer
+        metrics = self._perf_metrics
+        perf.stop("betting_wait")
+        perf.stop("tournament_wait")
+        perf.start("tournament_round")
         try:
             t = self._tournament
             pending = t.get_current_round_matches()
@@ -1152,7 +1292,17 @@ class AoE3BattleGame(GameBase):
                         else None
                     ),
                 )
+                perf.start("simulation")
                 result = sim.run()
+                perf.stop("simulation")
+                metrics["tournament_matches"] = (
+                    metrics.get("tournament_matches", 0) + 1
+                )
+                metrics["ticks"] = metrics.get("ticks", 0) + result.ticks
+                metrics["battle_duration"] = round(
+                    metrics.get("battle_duration", 0.0) + result.duration,
+                    3,
+                )
                 final_replay = (
                     final_replay_session.finish(result)
                     if final_replay_session is not None
@@ -1225,7 +1375,10 @@ class AoE3BattleGame(GameBase):
                 ]
                 report = "\n".join(report_lines)
                 if final_replay is not None:
+                    perf.start("final_replay")
                     delivery = await broadcast_replay(ctx.group_id, final_replay)
+                    perf.stop("final_replay")
+                    metrics["final_replay_sent"] = delivery.sent
                     if not delivery.sent:
                         await session.broadcast(
                             ctx.group_id,
@@ -1239,15 +1392,19 @@ class AoE3BattleGame(GameBase):
             # （必须在第二次 try_advance 前检查，否则 QF_DONE/SF_DONE 会被跳过）
             if t.stage == TournamentStage.FINISHED:
                 # 决赛结束 → 出最终对阵图 + 排名图 + 结算
+                perf.start("result_render_send")
                 await self._tournament_send_bracket(ctx)
                 await asyncio.sleep(1.0)
                 await self._tournament_send_ranking(ctx)
                 await asyncio.sleep(0.5)
+                perf.stop("result_render_send")
 
                 # 押注结算
+                perf.start("settlement")
                 settlement = await self._settle_tournament_bets(ctx)
                 if settlement:
                     await session.broadcast(ctx.group_id, settlement)
+                perf.stop("settlement")
 
                 ctx.state["phase"] = "ended"
                 from core import game_base as gb
@@ -1272,14 +1429,18 @@ class AoE3BattleGame(GameBase):
 
                 if t.stage == TournamentStage.FINISHED:
                     # 推进后进入结束状态
+                    perf.start("result_render_send")
                     await self._tournament_send_bracket(ctx)
                     await asyncio.sleep(1.0)
                     await self._tournament_send_ranking(ctx)
                     await asyncio.sleep(0.5)
+                    perf.stop("result_render_send")
 
+                    perf.start("settlement")
                     settlement = await self._settle_tournament_bets(ctx)
                     if settlement:
                         await session.broadcast(ctx.group_id, settlement)
+                    perf.stop("settlement")
 
                     ctx.state["phase"] = "ended"
                     from core import game_base as gb
@@ -1307,8 +1468,11 @@ class AoE3BattleGame(GameBase):
                     ctx.state["phase"] = "tournament_waiting"
 
         except asyncio.CancelledError:
+            metrics["outcome"] = "cancelled"
             logger.info("[aoe3_battle] %s 锦标赛任务被取消", ctx.session_id)
         except Exception as e:
+            metrics["outcome"] = "error"
+            metrics["error"] = str(e)
             logger.exception("[aoe3_battle] %s 锦标赛执行出错: %s", ctx.session_id, e)
             try:
                 await session.broadcast(ctx.group_id, f"⚠️ 锦标赛执行出错：{e}")
@@ -1319,12 +1483,19 @@ class AoE3BattleGame(GameBase):
             runner = gb.get_runner(ctx.session_id)
             if runner is not None:
                 await runner.end(EndReason.ERROR)
+        finally:
+            perf.stop("tournament_round")
+            if metrics.get("outcome") == "cancelled":
+                perf.finish(**metrics)
+            elif ctx.state.get("phase") == "tournament_waiting":
+                perf.start("tournament_wait")
 
     async def _run_tournament_next_stage(self, ctx: GameContext) -> None:
         """「开战」后推进到下一轮并执行。"""
         t = self._tournament
         t.try_advance()
         ctx.state["phase"] = "tournament_fighting"
+        self._perf_timer.stop("tournament_wait")
         self._battle_task = asyncio.create_task(
             self._run_tournament_round(ctx)
         )
