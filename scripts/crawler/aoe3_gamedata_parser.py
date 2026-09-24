@@ -76,6 +76,7 @@ TIER_VOLLEY = 20
 TIER_STAGGER = 21
 TIER_NAMED_RANGED = 22   # + 在 NAMED_RANGED_ATTACK_ORDER 中的下标
 TIER_DEFEND_RANGED = 32
+TIER_GUARDIAN = 100      # 宝藏守卫专用动作，仅在无常规动作时兜底
 # 具名远程：无 Volley/Stagger 后缀的常态主武器（弓骑 Bow、火枪 Rifle、船 Ranged 等）
 NAMED_RANGED_ATTACK_ORDER = [
     "BowAttack",
@@ -127,12 +128,19 @@ TRAMPLE_ONLY_ATTACK_UNITS = frozenset({
 })
 
 
+def _is_guardian_attack(name: str) -> bool:
+    """Return whether an action belongs to the Treasure Guardian-only set."""
+    return "Guardian" in name
+
+
 def _primary_ranged_stances(unit_types: set[str]) -> tuple[str, str]:
     """返回 (第一优先姿态, 第二优先姿态)。全员齐射 > 交错。"""
     return ("VolleyRangedAttack", "StaggerRangedAttack")
 
 
 def _ranged_attack_priority(name: str, unit_types: set[str]) -> int:
+    if _is_guardian_attack(name):
+        return TIER_GUARDIAN
     if name in ARTILLERY_RANGED_PRIORITY:
         return ARTILLERY_RANGED_PRIORITY[name]
     volley, stagger = _primary_ranged_stances(unit_types)
@@ -148,6 +156,8 @@ def _ranged_attack_priority(name: str, unit_types: set[str]) -> int:
 
 
 def _melee_hand_priority(name: str) -> int:
+    if _is_guardian_attack(name):
+        return TIER_GUARDIAN
     if name == "VolleyHandAttack":
         return TIER_VOLLEY_HAND
     if name == "StaggerHandAttack":
@@ -163,6 +173,12 @@ def _melee_hand_priority(name: str) -> int:
 ATTACK_PRIORITY = {
     "BuildingAttack": 10,
 }
+
+
+def _siege_attack_priority(name: str) -> int:
+    if _is_guardian_attack(name):
+        return TIER_GUARDIAN
+    return ATTACK_PRIORITY.get(name, 99)
 
 
 # ============================================================
@@ -840,7 +856,7 @@ def _parse_attacks(
         result["melee"] = melee_candidates[0]
     if siege_candidates:
         for c in siege_candidates:
-            c["priority"] = ATTACK_PRIORITY.get(c["name"], 99)
+            c["priority"] = _siege_attack_priority(c["name"])
         siege_candidates.sort(key=lambda x: x["priority"])
         result["siege"] = siege_candidates[0]
     return result

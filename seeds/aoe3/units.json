@@ -6462,18 +6462,38 @@
     "obstruction_radius_equiv": 0.49,
     "description_en": "Light Infantry that attacks with incendiary weapons which inflict burning damage. Counters Heavy Infantry and Light Cavalry.",
     "description": "用燃烧型武器攻击敌人的轻型步兵，会造成燃烧伤害。反制重装步兵和轻型骑兵。",
-    "protoaction_ranged": "GrenadeAttackGuardian",
+    "protoaction_ranged": "GrenadeAttack",
     "attack_ranged": 16.0,
     "range": 16.0,
-    "range_min": 2.0,
+    "range_min": 4.0,
     "rof_ranged": 3.0,
     "damage_type_ranged": "Siege",
-    "protoaction_melee": "HandAttack",
-    "attack_melee": 12.0,
-    "range_melee": 2.0,
-    "rof_melee": 1.5,
-    "damage_type_melee": "Hand",
+    "aoe_radius_ranged": 2,
+    "damage_cap_ranged": 32.0,
+    "area_sort_mode_ranged": "Radial",
     "multipliers": {
+      "ranged": [
+        {
+          "vs": "AbstractHeavyInfantry",
+          "value": 1.75
+        },
+        {
+          "vs": "AbstractLightCavalry",
+          "value": 1.25
+        },
+        {
+          "vs": "AbstractHeavyCavalry",
+          "value": 0.4
+        },
+        {
+          "vs": "AbstractCoyoteMan",
+          "value": 0.4
+        },
+        {
+          "vs": "AbstractArtillery",
+          "value": 0.5
+        }
+      ],
       "melee": [
         {
           "vs": "AbstractHeavyCavalry",
@@ -6485,6 +6505,11 @@
         }
       ]
     },
+    "protoaction_melee": "HandAttack",
+    "attack_melee": 12.0,
+    "range_melee": 2.0,
+    "rof_melee": 1.5,
+    "damage_type_melee": "Hand",
     "attack_siege": 25.0,
     "range_siege": 16.0,
     "rof_siege": 3.0,
@@ -6502,7 +6527,8 @@
       "RocketBuildingAttack": 0.45
     },
     "windup_ranged": 0.32,
-    "windup_melee": 0.64
+    "windup_melee": 0.64,
+    "aoe_radius": 2
   },
   {
     "id": "dehospitaller",
@@ -32590,17 +32616,35 @@
     "obstruction_radius_equiv": 0.49,
     "description_en": "Quechua ranged infantry that hurls bolas for a wide area of effect.",
     "description": "克丘亚远程步兵，会猛力投出掷石绳，攻击范围较广。",
-    "protoaction_ranged": "GuardianAttack",
+    "protoaction_ranged": "VolleyAttack",
     "attack_ranged": 8.0,
     "range": 12.0,
     "range_min": 2.0,
     "rof_ranged": 3.0,
     "damage_type_ranged": "Ranged",
+    "aoe_radius_ranged": 3,
+    "damage_cap_ranged": 16.0,
     "multipliers": {
       "ranged": [
         {
           "vs": "AbstractHeavyInfantry",
           "value": 2.0
+        },
+        {
+          "vs": "AbstractLightCavalry",
+          "value": 2.5
+        },
+        {
+          "vs": "AbstractRangedShockInfantry",
+          "value": 2.5
+        },
+        {
+          "vs": "AbstractCavalry",
+          "value": 0.6
+        },
+        {
+          "vs": "AbstractLightInfantry",
+          "value": 0.6
         }
       ],
       "melee": [
@@ -32641,7 +32685,8 @@
       "VolleyAttack": 0.15
     },
     "windup_ranged": 0.15,
-    "windup_melee": 0.32
+    "windup_melee": 0.32,
+    "aoe_radius": 3
   },
   {
     "id": "natcheyennerider",
