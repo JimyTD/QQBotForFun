@@ -18,7 +18,6 @@
 | [aoe3-data-refresh.md](aoe3-data-refresh.md) | aoe3_battle | 帝国3 数据刷新 SOP（游戏更新后重建兵种数据） |
 | [aoe3-balance-review.md](aoe3-balance-review.md) | aoe3_battle | 帝国3 单位平衡变更审查工具与口径边界 |
 | [aoe3-civ-war-wip.md](aoe3-civ-war-wip.md) | aoe3_battle | 帝国3国战设计 WIP |
-| [silent-mark-wip.md](silent-mark-wip.md) | silent_mark | 静夜标记未实现扩展 |
 
 ## 设计中（Shelved）
 
