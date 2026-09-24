@@ -94,10 +94,11 @@ class PlaybackPlan:
         if self.output_duration <= 0:
             yield 0.0, 0.0
             return
-        frame_count = max(1, math.ceil(self.output_duration * fps))
+        frame_count = max(1, math.floor(self.output_duration * fps + 1e-9))
         for index in range(frame_count):
-            output_time = min(self.output_duration, index / fps)
+            output_time = index / fps
             yield output_time, self.source_at(output_time)
+        yield self.output_duration, self.source_duration
 
 
 def build_playback_plan(

@@ -40,7 +40,7 @@ from .lineup import (
     generate_rival_lineup,
     generate_tournament_lineup,
 )
-from .battle_contract import ArmySlot, BattleResult, Side
+from .battle_contract import BattleResult, Side
 from .opening_renderer import (
     MatchOpeningSide,
     OpeningSide,
@@ -790,12 +790,20 @@ class AoE3BattleGame(GameBase):
                     exc,
                     exc_info=True,
                 )
+                await session.broadcast(
+                    ctx.group_id,
+                    f"⚠️ 战场回放生成失败：{exc}",
+                )
             else:
-                sent = await broadcast_replay_video(ctx.group_id, video)
-                if not sent:
+                delivery = await broadcast_replay_video(ctx.group_id, video)
+                if not delivery.sent:
                     logger.warning(
                         "[aoe3_battle] %s 回放发送失败，文字战报已保留",
                         ctx.session_id,
+                    )
+                    await session.broadcast(
+                        ctx.group_id,
+                        "⚠️ 战场回放发送失败，下面发送完整文字战报",
                     )
 
             await session.broadcast(ctx.group_id, report)
@@ -1217,7 +1225,12 @@ class AoE3BattleGame(GameBase):
                 ]
                 await session.broadcast(ctx.group_id, "\n".join(report_lines))
                 if final_replay is not None:
-                    await broadcast_replay(ctx.group_id, final_replay)
+                    delivery = await broadcast_replay(ctx.group_id, final_replay)
+                    if not delivery.sent:
+                        await session.broadcast(
+                            ctx.group_id,
+                            f"⚠️ 决赛回放{delivery.failure or '发送失败'}，文字战报已在上方",
+                        )
                 await asyncio.sleep(2.0)
 
             # 先检查循环内 try_advance 后是否已进入出图阶段

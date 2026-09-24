@@ -117,4 +117,4 @@ def test_output_samples_cover_compressed_timeline() -> None:
         plan.output_duration * 10
     ) + 1
     assert samples[0] == (0.0, 0.0)
-    assert samples[-1][1] <= plan.source_duration
+    assert samples[-1] == (plan.output_duration, plan.source_duration)

@@ -524,7 +524,9 @@ function updateTimeline(frame) {
   timeline.value = String(Math.min(state.frameIndex, max));
   timeline.disabled = max === 0;
   if (frame) {
-    timeLabel.textContent = `t = ${Number(frame.time || 0).toFixed(1)}s`;
+    timeLabel.textContent =
+      `第 ${state.frameIndex + 1} / ${state.frames.length} 帧 · `
+      + `t = ${Number(frame.time || 0).toFixed(1)}s`;
   }
 }
 

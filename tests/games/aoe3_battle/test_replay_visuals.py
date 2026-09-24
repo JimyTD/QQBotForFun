@@ -10,6 +10,7 @@ from src.plugins.games.aoe3_battle.replay.model import (
     ReplayFrame,
 )
 from src.plugins.games.aoe3_battle.replay.renderer import ReplayRenderer
+from src.plugins.games.aoe3_battle.replay.timeline import build_playback_plan
 
 
 def _frame(time: float) -> ReplayFrame:
@@ -108,8 +109,19 @@ def test_projectile_effect_expires_quickly() -> None:
         ]
     )
     renderer = ReplayRenderer()
-    active = renderer._render_frame(replay, replay.frames[2])
-    expired = renderer._render_frame(replay, replay.frames[4])
+    plan = build_playback_plan(replay)
+    active = renderer._render_frame(
+        replay,
+        replay.frames[2],
+        plan=plan,
+        output_time=0.1,
+    )
+    expired = renderer._render_frame(
+        replay,
+        replay.frames[4],
+        plan=plan,
+        output_time=1.0,
+    )
 
     assert active.tobytes() != expired.tobytes()
 
@@ -134,10 +146,53 @@ def test_aoe_and_death_effects_are_short_lived() -> None:
         ]
     )
     renderer = ReplayRenderer()
-    active = renderer._render_frame(replay, replay.frames[2])
-    expired = renderer._render_frame(replay, replay.frames[4])
+    plan = build_playback_plan(replay)
+    active = renderer._render_frame(
+        replay,
+        replay.frames[2],
+        plan=plan,
+        output_time=0.1,
+    )
+    expired = renderer._render_frame(
+        replay,
+        replay.frames[4],
+        plan=plan,
+        output_time=1.0,
+    )
 
     assert active.tobytes() != expired.tobytes()
+
+
+def test_lethal_projectile_uses_recorded_event_positions() -> None:
+    replay = _replay(
+        [
+            _event(
+                0.1,
+                "ATTACK",
+                data={
+                    "attacker_id": 1,
+                    "target_id": 2,
+                    "mode": "ranged",
+                    "visual_attacker_x": 10.0,
+                    "visual_attacker_y": 10.0,
+                    "visual_target_x": 20.0,
+                    "visual_target_y": 10.0,
+                },
+            )
+        ]
+    )
+    frame = replay.frames[2]
+    frame.units = [unit for unit in frame.units if unit["id"] != 2]
+    renderer = ReplayRenderer()
+
+    image = renderer._render_frame(
+        replay,
+        frame,
+        plan=build_playback_plan(replay),
+        output_time=0.1,
+    )
+
+    assert image.size == (960, 540)
 
 
 def test_hud_contains_composition_and_speed() -> None:
@@ -145,9 +200,43 @@ def test_hud_contains_composition_and_speed() -> None:
     renderer = ReplayRenderer()
     frame = replay.frames[1]
 
-    image = renderer._render_frame(replay, frame)
+    image = renderer._render_frame(
+        replay,
+        frame,
+        plan=build_playback_plan(replay),
+        output_time=0.1,
+    )
 
     assert image.size == (960, 540)
+
+
+def test_hud_speed_uses_mapped_source_time(monkeypatch) -> None:
+    replay = _replay([])
+    renderer = ReplayRenderer()
+    captured: dict[str, float] = {}
+    original_draw_hud = renderer._draw_hud
+
+    def record_speed(draw, replay, frame, *, plan=None, source_time=None):
+        captured["speed"] = plan.speed_at(source_time)
+        return original_draw_hud(
+            draw,
+            replay,
+            frame,
+            plan=plan,
+            source_time=source_time,
+        )
+
+    monkeypatch.setattr(renderer, "_draw_hud", record_speed)
+    plan = build_playback_plan(replay)
+
+    renderer._render_frame(
+        replay,
+        replay.frames[1],
+        plan=plan,
+        source_time=0.25,
+    )
+
+    assert captured["speed"] == plan.speed_at(0.25)
 
 
 def test_replay_icon_is_scaled_to_collision_diameter(monkeypatch) -> None:

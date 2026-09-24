@@ -19,6 +19,7 @@ from src.plugins.games.aoe3_battle.replay.recorder import ReplaySession
 from src.plugins.games.aoe3_battle.replay.renderer import ReplayRenderer
 from src.plugins.games.aoe3_battle.replay.service import (
     REPLAY_DIR,
+    ReplayDelivery,
     broadcast_replay_video,
     cleanup_replay_files,
 )
@@ -122,7 +123,12 @@ def _replay() -> Replay:
                 1,
                 0.1,
                 EventType.ATTACK,
-                {"target_id": 2, "attacker_name": "火枪手", "target_name": "长枪兵"},
+                {
+                    "attacker_id": 1,
+                    "target_id": 2,
+                    "attacker_name": "火枪手",
+                    "target_name": "长枪兵",
+                },
             ),
             _Event(
                 2,
@@ -158,6 +164,10 @@ def test_recorder_keeps_only_public_replay_fields() -> None:
     assert replay.frames[1].summary == {}
     death = next(event for event in replay.events if event.event_type == "DEATH")
     assert (death.x, death.y) == (15.0, 12.0)
+    assert death.data["visual_attacker_x"] == 10.0
+    assert death.data["visual_attacker_y"] == 12.0
+    assert death.data["visual_target_x"] == 15.0
+    assert death.data["visual_target_y"] == 12.0
 
 
 def test_recorder_backfills_radius_for_legacy_frames() -> None:
@@ -180,7 +190,7 @@ def test_renderer_produces_expected_frame_sequence() -> None:
     replay = _replay()
     frames = list(ReplayRenderer().iter_images(replay))
 
-    assert len(frames) == 2 * 10 + 2 + 3 * 10
+    assert len(frames) == 2 * 10 + 2 + 1 + 3 * 10
     assert all(frame.size == (960, 540) for frame in frames)
     assert frames[20].getpixel((480, 270)) != (13, 20, 17)
 
@@ -228,7 +238,8 @@ async def test_broadcast_replay_video_retries_then_succeeds(monkeypatch) -> None
         lambda: asyncio.sleep(0),
     )
 
-    assert await broadcast_replay_video(1, b"video") is True
+    result = await broadcast_replay_video(1, b"video")
+    assert result.sent is True
     assert attempts == 2
 
 
@@ -244,11 +255,29 @@ async def test_broadcast_replay_video_uses_base64_for_napcat(monkeypatch) -> Non
         fake_broadcast,
     )
 
-    assert await broadcast_replay_video(1, b"video") is True
+    result = await broadcast_replay_video(1, b"video")
+    assert result.sent is True
     assert sent[0].extract_plain_text() == ""
     video_segment = sent[0][0]
     assert video_segment.type == "video"
     assert video_segment.data["file"] == "base64://dmlkZW8="
+
+
+@pytest.mark.asyncio
+async def test_broadcast_replay_reports_generation_failure(monkeypatch) -> None:
+    async def fail_render(_replay):
+        raise RuntimeError("render failed")
+
+    monkeypatch.setattr(
+        "src.plugins.games.aoe3_battle.replay.service.generate_replay_video",
+        fail_render,
+    )
+    from src.plugins.games.aoe3_battle.replay.service import broadcast_replay
+
+    result = await broadcast_replay(1, _replay())
+
+    assert result.sent is False
+    assert result.failure == "生成失败：render failed"
 
 
 def test_renderer_rejects_empty_replay() -> None:
@@ -672,7 +701,7 @@ async def test_run_battle_sends_video_report_then_settlement(monkeypatch) -> Non
 
     async def fake_send_video(_group_id, video):
         messages.append("video")
-        return True
+        return ReplayDelivery(sent=True)
 
     async def fake_broadcast(_group_id, message, **kwargs):
         messages.append(str(message))
@@ -733,3 +762,92 @@ async def test_run_battle_sends_video_report_then_settlement(monkeypatch) -> Non
     assert messages[0] == "video"
     assert "战斗结果" in messages[1]
     assert messages[2] == "押注结算"
+
+
+@pytest.mark.asyncio
+async def test_run_battle_sends_full_report_after_video_failure(monkeypatch) -> None:
+    messages: list[str] = []
+
+    class FakeSimulator:
+        def __init__(self, **kwargs):
+            self.frame_callback = kwargs["frame_callback"]
+
+        def run(self):
+            self.frame_callback(_frame(0, target_id=2))
+            return _Result(
+                winner=None,
+                events=[],
+                ticks=1,
+                duration=0.1,
+                red_alive=[],
+                blue_alive=[],
+                red_dead=[],
+                blue_dead=[],
+                red_army=[
+                    ArmySlot(SimpleNamespace(id="musketeer", name="火枪手"), 1)
+                ],
+                blue_army=[
+                    ArmySlot(SimpleNamespace(id="pikeman", name="长枪兵"), 1)
+                ],
+                red_count=1,
+                blue_count=1,
+            )
+
+    async def fake_video(_replay):
+        raise RuntimeError("render failed")
+
+    async def fake_broadcast(_group_id, message, **kwargs):
+        messages.append(str(message))
+
+    game = AoE3BattleGame()
+    game._match = SimpleNamespace(
+        mode="bet",
+        rival_theme=None,
+        red=SimpleNamespace(
+            slots=[SimpleNamespace(unit=SimpleNamespace(name="火枪手"), count=1)],
+            total_count=1,
+            unit=SimpleNamespace(name="火枪手"),
+        ),
+        blue=SimpleNamespace(
+            slots=[SimpleNamespace(unit=SimpleNamespace(name="长枪兵"), count=1)],
+            total_count=1,
+            unit=SimpleNamespace(name="长枪兵"),
+        ),
+        red_civ_name=None,
+        blue_civ_name=None,
+        red_strategy=None,
+        blue_strategy=None,
+    )
+    ctx = GameContext(
+        session_id="replay-failure",
+        game_id="aoe3_battle",
+        group_id=1,
+        host_id=2,
+        players=[],
+        started_at=__import__("datetime").datetime.utcnow(),
+        config={},
+    )
+    ctx.state.update(mode="bet", phase="fighting", bets={})
+    monkeypatch.setattr(
+        "src.plugins.games.aoe3_battle.game.BattleSimulator2D",
+        FakeSimulator,
+    )
+    monkeypatch.setattr(
+        "src.plugins.games.aoe3_battle.game.generate_replay_video",
+        fake_video,
+    )
+    monkeypatch.setattr(
+        "src.plugins.games.aoe3_battle.game.session.broadcast",
+        fake_broadcast,
+    )
+    monkeypatch.setattr(
+        "src.plugins.games.aoe3_battle.game._dump_battle_log",
+        lambda *args, **kwargs: None,
+    )
+    monkeypatch.setattr(game, "_settle_bets", AsyncMock(return_value=""))
+
+    await game._run_battle(ctx)
+
+    assert "回放生成失败" in messages[0]
+    assert "战斗结果" in messages[1]
+    assert len(messages) == 2

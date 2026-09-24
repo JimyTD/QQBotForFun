@@ -6,6 +6,7 @@ import asyncio
 import base64
 import logging
 import time
+from dataclasses import dataclass
 from pathlib import Path
 
 from nonebot.adapters.onebot.v11 import Message, MessageSegment
@@ -21,6 +22,14 @@ REPLAY_DIR = Path(__file__).resolve().parents[5] / "logs" / "aoe3_battle" / "rep
 REPLAY_MAX_AGE_SECONDS = 24 * 60 * 60
 REPLAY_MAX_FILES = 50
 REPLAY_MAX_BYTES = 500 * 1024 * 1024
+
+
+@dataclass(frozen=True)
+class ReplayDelivery:
+    """Outcome of delivering one rendered replay."""
+
+    sent: bool
+    failure: str | None = None
 
 
 async def _retry_delay() -> None:
@@ -102,7 +111,7 @@ async def generate_replays_video(replays: list[Replay]) -> bytes:
     return await asyncio.to_thread(render_replays, replays)
 
 
-async def broadcast_replay_video(group_id: int, video: bytes) -> bool:
+async def broadcast_replay_video(group_id: int, video: bytes) -> ReplayDelivery:
     """Send a rendered replay to a group."""
     b64 = base64.b64encode(video).decode()
     message = Message(MessageSegment.video(f"base64://{b64}"))
@@ -110,7 +119,7 @@ async def broadcast_replay_video(group_id: int, video: bytes) -> bool:
     for attempt in range(1, 3):
         try:
             await session.broadcast(group_id, message)
-            return True
+            return ReplayDelivery(sent=True)
         except Exception as exc:
             last_exc = exc
             logger.warning(
@@ -126,32 +135,24 @@ async def broadcast_replay_video(group_id: int, video: bytes) -> bool:
         logger.info("failed replay retained for diagnostics: %s", path)
     except OSError:
         logger.debug("failed to retain replay after upload failure", exc_info=True)
-    return False
+    return ReplayDelivery(sent=False, failure="发送失败")
 
 
-async def broadcast_replay(group_id: int, replay: Replay) -> bool:
+async def broadcast_replay(group_id: int, replay: Replay) -> ReplayDelivery:
     """Render and send one replay video to a group."""
     try:
         video = await generate_replay_video(replay)
     except Exception as exc:
         logger.warning("battle replay generation failed: %s", exc, exc_info=True)
-        return await _broadcast_replay_failure(group_id)
+        return ReplayDelivery(sent=False, failure=f"生成失败：{exc}")
     return await broadcast_replay_video(group_id, video)
 
 
-async def broadcast_replays(group_id: int, replays: list[Replay]) -> bool:
+async def broadcast_replays(group_id: int, replays: list[Replay]) -> ReplayDelivery:
     """Render and send one combined video for a set of replays."""
     try:
         video = await generate_replays_video(replays)
     except Exception as exc:
         logger.warning("battle replay generation failed: %s", exc, exc_info=True)
-        return await _broadcast_replay_failure(group_id)
+        return ReplayDelivery(sent=False, failure=f"生成失败：{exc}")
     return await broadcast_replay_video(group_id, video)
-
-
-async def _broadcast_replay_failure(group_id: int) -> bool:
-    try:
-        await session.broadcast(group_id, "⚠️ 战场回放生成失败，文字战报如下")
-    except Exception:
-        logger.debug("failed to broadcast replay fallback notice", exc_info=True)
-    return False

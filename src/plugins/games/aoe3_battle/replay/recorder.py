@@ -86,11 +86,35 @@ class ReplayRecorder:
     def capture_result(self, result: BattleResult) -> None:
         """Attach the final result after the simulator finishes."""
         self.events = []
-        last_attack_target: dict[int, tuple[float, float]] = {}
+        last_attack_position: dict[int, tuple[float, float, float, float]] = {}
+        unit_positions: dict[int, tuple[float, float]] = {}
+        previous_unit_positions: dict[int, tuple[float, float]] = {}
         frame_index = 0
         for event in result.events:
             position = None
             event_type = event.event_type.value
+            while (
+                frame_index + 1 < len(self.frames)
+                and self.frames[frame_index + 1].time <= event.time
+            ):
+                previous_unit_positions = {
+                    int(unit["id"]): (
+                        float(unit.get("x", 0.0)),
+                        float(unit.get("y", 0.0)),
+                    )
+                    for unit in self.frames[frame_index].units
+                    if unit.get("id") is not None
+                }
+                frame_index += 1
+            event_frame = self.frames[frame_index] if self.frames else None
+            if event_frame is not None:
+                for unit in event_frame.units:
+                    unit_id = unit.get("id")
+                    if unit_id is not None:
+                        unit_positions[int(unit_id)] = (
+                            float(unit.get("x", 0.0)),
+                            float(unit.get("y", 0.0)),
+                        )
             position_target_id = (
                 event.data.get("target_id")
                 if event_type == "ATTACK"
@@ -99,16 +123,11 @@ class ReplayRecorder:
                 else None
             )
             if position_target_id is not None:
-                while (
-                    frame_index + 1 < len(self.frames)
-                    and self.frames[frame_index + 1].time <= event.time
-                ):
-                    frame_index += 1
-                frame = self.frames[frame_index]
+                frame = self.frames[frame_index] if self.frames else None
                 target = next(
                     (
                         unit
-                        for unit in frame.units
+                        for unit in (frame.units if frame is not None else [])
                         if int(unit.get("id", -1)) == int(position_target_id)
                     ),
                     None,
@@ -118,8 +137,47 @@ class ReplayRecorder:
                         float(target.get("x", 0.0)),
                         float(target.get("y", 0.0)),
                     )
-                    if event_type == "ATTACK":
-                        last_attack_target[int(position_target_id)] = position
+            if event_type == "ATTACK":
+                attacker_id = event.data.get("attacker_id")
+                target_id = event.data.get("target_id")
+                if target_id is not None:
+                    attacker_position = None
+                    if attacker_id is not None:
+                        attacker_position = unit_positions.get(int(attacker_id))
+                        if attacker_position is None:
+                            attacker = next(
+                                (
+                                    unit
+                                    for unit in (
+                                        event_frame.units
+                                        if event_frame is not None
+                                        else []
+                                    )
+                                    if int(unit.get("id", -1)) == int(attacker_id)
+                                ),
+                                None,
+                            )
+                            if attacker is not None:
+                                attacker_position = (
+                                    float(attacker.get("x", 0.0)),
+                                    float(attacker.get("y", 0.0)),
+                                )
+                    target_position = (
+                        unit_positions.get(int(target_id))
+                        or previous_unit_positions.get(int(target_id))
+                        or position
+                        or attacker_position
+                    )
+                    if attacker_position is None and target_position is not None:
+                        attacker_position = target_position
+                    if attacker_position is not None and target_position is not None:
+                        position = target_position
+                        last_attack_position[int(target_id)] = (
+                            attacker_position[0],
+                            attacker_position[1],
+                            target_position[0],
+                            target_position[1],
+                        )
             if (
                 position is None
                 and event_type == "AOE_SPLASH"
@@ -133,7 +191,20 @@ class ReplayRecorder:
             elif event_type == "DEATH":
                 soldier_id = event.data.get("soldier_id")
                 if soldier_id is not None:
-                    position = last_attack_target.get(int(soldier_id))
+                    attack_position = last_attack_position.get(int(soldier_id))
+                    if attack_position is not None:
+                        position = (attack_position[2], attack_position[3])
+                        event.data["visual_attacker_x"] = attack_position[0]
+                        event.data["visual_attacker_y"] = attack_position[1]
+                        event.data["visual_target_x"] = attack_position[2]
+                        event.data["visual_target_y"] = attack_position[3]
+            if (
+                event_type in {"ATTACK", "AOE_SPLASH"}
+                and position is not None
+                and event.data.get("visual_target_x") is None
+            ):
+                event.data["visual_target_x"] = position[0]
+                event.data["visual_target_y"] = position[1]
             self.events.append(
                 ReplayEvent(
                     tick=event.tick,

@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import threading
+from pathlib import Path
 from unittest.mock import patch
 
 import pytest
@@ -58,6 +59,17 @@ def test_same_seed_reproduces_the_same_motion_frames():
     assert first == second
 
 
+def test_viewer_labels_timeline_as_frame_axis():
+    html = (
+        Path(__file__).resolve().parents[1]
+        / "tools"
+        / "aoe3_battle_viewer_2d"
+        / "index.html"
+    ).read_text(encoding="utf-8")
+
+    assert "帧轴" in html
+
+
 def test_visual_events_keep_real_events_alive_until_expiry():
     current = {
         "time": 0.1,
@@ -83,6 +95,48 @@ def test_visual_events_keep_real_events_alive_until_expiry():
     assert decorated["visual_events"][0]["type"] == "attack"
     assert with_history["visual_events"][0]["type"] == "attack"
     assert len(event_buffer) == 1
+    assert (
+        decorated["visual_events"][0]["event_id"]
+        == with_history["visual_events"][0]["event_id"]
+    )
+
+
+def test_visual_events_deduplicate_repeated_identity_without_merging_distinct_events():
+    event_buffer = []
+    first = {
+        "time": 0.1,
+        "visual_events": [
+            {
+                "type": "attack",
+                "attacker_id": 1,
+                "target_id": 2,
+                "time": 0.1,
+                "expires_at": 0.35,
+                "x": 15.0,
+                "y": 12.0,
+            },
+            {
+                "type": "attack",
+                "attacker_id": 3,
+                "target_id": 2,
+                "time": 0.1,
+                "expires_at": 0.35,
+                "x": 15.0,
+                "y": 12.0,
+            },
+        ],
+    }
+    repeated = {
+        "time": 0.2,
+        "visual_events": [dict(first["visual_events"][0])],
+    }
+
+    decorated = _attach_visual_events(first, None, event_buffer)
+    with_history = _attach_visual_events(repeated, None, event_buffer)
+
+    assert len(decorated["visual_events"]) == 2
+    assert len(with_history["visual_events"]) == 2
+    assert len(event_buffer) == 2
 
 
 def test_visual_event_buffer_drops_expired_events():

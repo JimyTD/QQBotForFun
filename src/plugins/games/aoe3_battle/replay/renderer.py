@@ -11,6 +11,7 @@ from typing import Any
 
 from PIL import Image, ImageDraw, ImageFont
 
+from .icons import ICON_SIZE, render_unit_icon
 from .model import Replay, ReplayFrame
 from .timeline import PlaybackPlan, build_playback_plan
 
@@ -36,7 +37,6 @@ PROJECTILE_RANGED = (235, 225, 190)
 PROJECTILE_MELEE = (216, 207, 186)
 AOE_RING = (196, 196, 170)
 DEATH_MARK = (226, 205, 160)
-ICON_SIZE = 64
 ICON_CACHE_LIMIT = 64
 PROJECTILE_LIFETIME = 0.25
 AOE_LIFETIME = 0.3
@@ -185,6 +185,8 @@ class ReplayRenderer:
                     replay,
                     self._frame_at(replay, source_time),
                     plan=plan,
+                    output_time=_output_time,
+                    source_time=source_time,
                 )
             for _ in range(outro_frames):
                 yield self._render_outro(replay, plan=plan)
@@ -265,11 +267,26 @@ class ReplayRenderer:
         frame: ReplayFrame,
         *,
         plan: PlaybackPlan | None = None,
+        output_time: float | None = None,
+        source_time: float | None = None,
     ) -> Image.Image:
         image = Image.new("RGB", (self.width, self.height), BACKGROUND)
         draw = ImageDraw.Draw(image)
-        self._draw_hud(draw, replay, frame, plan=plan)
-        self._draw_scene(image, draw, replay, frame)
+        self._draw_hud(
+            draw,
+            replay,
+            frame,
+            plan=plan,
+            source_time=source_time,
+        )
+        self._draw_scene(
+            image,
+            draw,
+            replay,
+            frame,
+            plan=plan,
+            output_time=output_time,
+        )
         self._draw_subtitle(draw, replay, frame)
         return image
 
@@ -280,6 +297,7 @@ class ReplayRenderer:
         frame: ReplayFrame,
         *,
         plan: PlaybackPlan | None = None,
+        source_time: float | None = None,
     ) -> None:
         red = frame.sides.get("red", {})
         blue = frame.sides.get("blue", {})
@@ -316,9 +334,10 @@ class ReplayRenderer:
             fill=MUTED,
         )
         if plan is not None and plan.max_speed > 1.01:
+            speed_time = frame.time if source_time is None else source_time
             draw.text(
                 (self.width // 2 + 58, 48),
-                f"×{plan.speed_at(frame.time):.1f}",
+                f"×{plan.speed_at(speed_time):.1f}",
                 font=self._font_small,
                 fill=(196, 205, 190),
             )
@@ -367,6 +386,9 @@ class ReplayRenderer:
         draw: ImageDraw.ImageDraw,
         replay: Replay,
         frame: ReplayFrame,
+        *,
+        plan: PlaybackPlan | None = None,
+        output_time: float | None = None,
     ) -> None:
         draw.rectangle(
             (20, SCENE_TOP, self.width - 20, SCENE_BOTTOM),
@@ -389,9 +411,34 @@ class ReplayRenderer:
 
         units = frame.units
         by_id = {int(unit.get("id", -1)): unit for unit in units}
-        self._draw_projectiles(draw, replay, frame, by_id, scale, offset_x, offset_y)
-        self._draw_aoe_rings(draw, replay, frame, scale, offset_x, offset_y)
-        self._draw_death_marks(draw, replay, frame, scale, offset_x, offset_y)
+        self._draw_projectiles(
+            draw,
+            replay,
+            by_id,
+            scale,
+            offset_x,
+            offset_y,
+            plan=plan,
+            output_time=output_time,
+        )
+        self._draw_aoe_rings(
+            draw,
+            replay,
+            scale,
+            offset_x,
+            offset_y,
+            plan=plan,
+            output_time=output_time,
+        )
+        self._draw_death_marks(
+            draw,
+            replay,
+            scale,
+            offset_x,
+            offset_y,
+            plan=plan,
+            output_time=output_time,
+        )
 
         for unit in units:
             x = offset_x + float(unit.get("x", 0)) * scale
@@ -441,27 +488,50 @@ class ReplayRenderer:
         self,
         draw: ImageDraw.ImageDraw,
         replay: Replay,
-        frame: ReplayFrame,
         by_id: dict[int, dict[str, Any]],
         scale: float,
         offset_x: float,
         offset_y: float,
+        *,
+        plan: PlaybackPlan | None,
+        output_time: float | None,
     ) -> None:
+        if plan is None or output_time is None:
+            return
         for event in replay.events:
             if event.event_type != "ATTACK" or event.data.get("is_splash"):
                 continue
-            age = frame.time - event.time
-            if age < 0 or age > PROJECTILE_LIFETIME:
+            output_start = plan.output_time_at(event.time)
+            output_end = plan.output_time_at(event.time + PROJECTILE_LIFETIME)
+            output_end = max(output_end, output_start + 1 / self.fps)
+            if output_time < output_start or output_time > output_end:
                 continue
-            attacker = by_id.get(int(event.data.get("attacker_id", -1)))
-            target = by_id.get(int(event.data.get("target_id", -1)))
-            if attacker is None or target is None:
-                continue
-            start_x = offset_x + float(attacker.get("x", 0)) * scale
-            start_y = offset_y + float(attacker.get("y", 0)) * scale
-            end_x = offset_x + float(target.get("x", 0)) * scale
-            end_y = offset_y + float(target.get("y", 0)) * scale
-            progress = min(1.0, age / PROJECTILE_LIFETIME)
+            progress = min(
+                1.0,
+                max(
+                    0.0,
+                    (output_time - output_start)
+                    / max(1e-9, output_end - output_start),
+                ),
+            )
+            if event.data.get("visual_attacker_x") is not None:
+                start_x = (
+                    offset_x + float(event.data["visual_attacker_x"]) * scale
+                )
+                start_y = (
+                    offset_y + float(event.data["visual_attacker_y"]) * scale
+                )
+                end_x = offset_x + float(event.data["visual_target_x"]) * scale
+                end_y = offset_y + float(event.data["visual_target_y"]) * scale
+            else:
+                attacker = by_id.get(int(event.data.get("attacker_id", -1)))
+                target = by_id.get(int(event.data.get("target_id", -1)))
+                if attacker is None or target is None:
+                    continue
+                start_x = offset_x + float(attacker.get("x", 0)) * scale
+                start_y = offset_y + float(attacker.get("y", 0)) * scale
+                end_x = offset_x + float(target.get("x", 0)) * scale
+                end_y = offset_y + float(target.get("y", 0)) * scale
             tip_x = start_x + (end_x - start_x) * progress
             tip_y = start_y + (end_y - start_y) * progress
             mode = str(event.data.get("mode") or "")
@@ -485,11 +555,15 @@ class ReplayRenderer:
         self,
         draw: ImageDraw.ImageDraw,
         replay: Replay,
-        frame: ReplayFrame,
         scale: float,
         offset_x: float,
         offset_y: float,
+        *,
+        plan: PlaybackPlan | None,
+        output_time: float | None,
     ) -> None:
+        if plan is None or output_time is None:
+            return
         seen: set[tuple[float, float, float, float]] = set()
         for event in replay.events:
             if event.event_type != "AOE_SPLASH" or event.x is None or event.y is None:
@@ -504,10 +578,19 @@ class ReplayRenderer:
             if key in seen:
                 continue
             seen.add(key)
-            age = frame.time - event.time
-            if age < 0 or age > AOE_LIFETIME:
+            output_start = plan.output_time_at(event.time)
+            output_end = plan.output_time_at(event.time + AOE_LIFETIME)
+            output_end = max(output_end, output_start + 1 / self.fps)
+            if output_time < output_start or output_time > output_end:
                 continue
-            progress = min(1.0, age / AOE_LIFETIME)
+            progress = min(
+                1.0,
+                max(
+                    0.0,
+                    (output_time - output_start)
+                    / max(1e-9, output_end - output_start),
+                ),
+            )
             current = radius * scale * (0.45 + 0.55 * progress)
             x = offset_x + event.x * scale
             y = offset_y + event.y * scale
@@ -525,18 +608,32 @@ class ReplayRenderer:
         self,
         draw: ImageDraw.ImageDraw,
         replay: Replay,
-        frame: ReplayFrame,
         scale: float,
         offset_x: float,
         offset_y: float,
+        *,
+        plan: PlaybackPlan | None,
+        output_time: float | None,
     ) -> None:
+        if plan is None or output_time is None:
+            return
         for event in replay.events:
             if event.event_type != "DEATH" or event.x is None or event.y is None:
                 continue
-            age = frame.time - event.time
-            if age < 0 or age > DEATH_MARK_LIFETIME:
+            output_start = plan.output_time_at(event.time)
+            output_end = plan.output_time_at(event.time + DEATH_MARK_LIFETIME)
+            output_end = max(output_end, output_start + 1 / self.fps)
+            if output_time < output_start or output_time > output_end:
                 continue
-            alpha = 1.0 - age / DEATH_MARK_LIFETIME
+            progress = min(
+                1.0,
+                max(
+                    0.0,
+                    (output_time - output_start)
+                    / max(1e-9, output_end - output_start),
+                ),
+            )
+            alpha = 1.0 - progress
             color = tuple(int(channel * alpha) for channel in DEATH_MARK)
             x = offset_x + event.x * scale
             y = offset_y + event.y * scale
@@ -565,20 +662,7 @@ class ReplayRenderer:
             path = UnitRepo.get().get_icon_path(unit_model) if unit_model else None
             if path is None:
                 return None
-            with Image.open(path) as source:
-                icon = source.convert("RGBA")
-            side_color = (36, 43, 47)
-            canvas = Image.new("RGBA", (ICON_SIZE, ICON_SIZE), (*side_color, 255))
-            fitted = icon.copy()
-            fitted.thumbnail((ICON_SIZE - 8, ICON_SIZE - 8), Image.Resampling.LANCZOS)
-            canvas.paste(
-                fitted,
-                ((ICON_SIZE - fitted.width) // 2, (ICON_SIZE - fitted.height) // 2),
-                fitted,
-            )
-            mask = Image.new("L", (ICON_SIZE, ICON_SIZE), 0)
-            ImageDraw.Draw(mask).ellipse((0, 0, ICON_SIZE - 1, ICON_SIZE - 1), fill=255)
-            canvas.putalpha(mask)
+            canvas = render_unit_icon(path)
             self._icon_cache[key] = canvas
             return canvas
         except Exception:

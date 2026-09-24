@@ -47,7 +47,6 @@ from plugins.games.aoe3_battle.simulator2d.config import (  # noqa: E402
 from scripts.aoe3_pathing_scenarios import SCENARIOS, PathingDemo  # noqa: E402
 
 VIEWER_DIR = _ROOT / "tools" / "aoe3_battle_viewer_2d"
-VISUAL_EVENT_BUFFER_SECONDS = 2.0
 
 
 class SimulationSupersededError(RuntimeError):
@@ -145,31 +144,47 @@ def _attach_visual_events(
     _previous_frame: dict[str, Any] | None,
     event_buffer: list[dict[str, Any]],
 ) -> dict[str, Any]:
-    """Attach real-time visual events with explicit lifetimes."""
+    """Attach real-time visual events with explicit lifetimes and identities."""
     now = float(frame.get("time") or 0.0)
-    events: list[dict[str, Any]] = [
-        event
+    active = {
+        _visual_event_identity(event): event
         for event in event_buffer
-        if now <= float(event.get("expires_at") or 0.0)
-    ]
+        if event.get("expires_at") is None
+        or now <= float(event["expires_at"])
+    }
+    for event in frame.get("visual_events") or []:
+        if not isinstance(event, dict):
+            continue
+        copied = dict(event)
+        event_id = _visual_event_identity(copied)
+        copied.setdefault("event_id", event_id)
+        active[event_id] = copied
+    events = list(active.values())
     event_buffer[:] = events
-    events.extend(
-        dict(event)
-        for event in frame.get("visual_events") or []
-        if isinstance(event, dict)
-    )
-    event_buffer[:] = [
-        event
-        for event in event_buffer
-        if now - float(event.get("time") or 0.0) <= VISUAL_EVENT_BUFFER_SECONDS
-    ] + [
-        event
-        for event in events
-        if event not in event_buffer
-    ]
     if events:
         frame = {**frame, "visual_events": events}
     return frame
+
+
+def _visual_event_identity(event: dict[str, Any]) -> str:
+    """Return a stable identity for a visual event across repeated frames."""
+    position = (
+        round(float(event.get("x") or 0.0), 3),
+        round(float(event.get("y") or 0.0), 3),
+    )
+    return ":".join(
+        str(part)
+        for part in (
+            event.get("type"),
+            round(float(event.get("time") or 0.0), 3),
+            event.get("attacker_id"),
+            event.get("target_id"),
+            event.get("unit_id"),
+            position[0],
+            position[1],
+            round(float(event.get("radius") or 0.0), 3),
+        )
+    )
 
 
 class FrameStore:
@@ -396,16 +411,11 @@ class ViewerHandler(BaseHTTPRequestHandler):
             )
             return
         try:
-            import io
+            from plugins.games.aoe3_battle.replay.icons import (
+                render_unit_icon_png,
+            )
 
-            from PIL import Image
-
-            with Image.open(path) as source:
-                image = source.convert("RGBA")
-            image.thumbnail((96, 96), Image.Resampling.LANCZOS)
-            output = io.BytesIO()
-            image.save(output, format="PNG")
-            self._send_bytes(output.getvalue(), content_type="image/png")
+            self._send_bytes(render_unit_icon_png(path), content_type="image/png")
         except OSError:
             self._send_bytes(
                 b"icon unreadable",
