@@ -1,6 +1,6 @@
 """AoE3 斗蛐蛐 CLI 适配器。
 
-MODES 定义在此（押注 / 国战 / 单挑 / 乱斗 / 王中王）。
+MODES 定义在此（押注 / 国战 / 单挑 / 乱斗 / 王中王 / 王中王锦标赛）。
 CLI 流程：
 - 开局 → 生成阵容 → 展示面板 → 模拟押注 → 跑模拟 → 播报 → 战报
 """
@@ -20,6 +20,8 @@ from plugins.games.aoe3_battle.civ_war_matchup import generate_civ_war_lineup
 from plugins.games.aoe3_battle.game import AGE_DEFAULT
 from plugins.games.aoe3_battle.lineup import (
     MatchLineup,
+    _unit_cost,
+    approx_lcm_budget,
     format_side_panel,
     format_vs_banner,
     generate_bet_lineup,
@@ -27,19 +29,18 @@ from plugins.games.aoe3_battle.lineup import (
     generate_custom_lineup,
     generate_duel_lineup,
     generate_rival_lineup,
+    generate_tournament_lineup,
 )
 from plugins.games.aoe3_battle.rival_themes import (
     pick_random_themes,
     resolve_theme,
 )
 from plugins.games.aoe3_battle.simulator2d import BattleSimulator2D
+from plugins.games.aoe3_battle.tournament import Tournament, TournamentStage
 
 # =====================================================================
 # 模式定义
 # =====================================================================
-# ⚠️ 本列表有意缺少本体 MODES 里的 `rival_tournament` (王中王锦标赛):
-#    CLI 尚未实现锦标赛流程, 若直接引用 AoE3BattleGame.MODES 会让玩家选到
-#    无法游玩的模式。已知差异留档见 docs/13-cli-bot-parity.md 的 "当前已知差异(允许)" 表。
 MODES = [
     GameMode(
         id="bet",
@@ -77,6 +78,12 @@ MODES = [
         description="职能主题对决 · 表情选主题或指定主题",
         aliases=("王中王",),
     ),
+    GameMode(
+        id="rival_tournament",
+        name="王中王锦标赛",
+        description="8 兵种单败淘汰锦标赛",
+        aliases=("锦标赛", "王中王锦标赛"),
+    ),
 ]
 
 
@@ -93,6 +100,8 @@ class AoE3BattleCLIAdapter:
         self._repo: UnitRepo | None = None
         self._match: MatchLineup | None = None
         self._result: BattleResult | None = None
+        self._tournament: Tournament | None = None
+        self._tournament_bets: dict[str, int] = {}
 
     async def start(self, mode_id: str) -> None:
         self._mode_id = mode_id
@@ -198,6 +207,40 @@ class AoE3BattleCLIAdapter:
             self._match = result
             return
 
+        if mode_id == "rival_tournament":
+            options = pick_random_themes(count=3)
+            info("王中王锦标赛 · 随机 3 主题，请选一个：")
+            for i, t in enumerate(options, start=1):
+                info(f"  {i}. {t.title}")
+            choice = prompt("输入 1/2/3（或主题名直接指定）> ").strip()
+            theme = resolve_theme(choice)
+            if theme is None and choice in ("1", "2", "3"):
+                idx = int(choice) - 1
+                if idx < len(options):
+                    theme = options[idx]
+            if theme is None:
+                info("未选择有效主题，退出")
+                return
+            budget_str = prompt("资源预算（直接回车默认 10000）> ").strip()
+            if budget_str.isdigit():
+                self._budget = max(1000, min(50000, int(budget_str)))
+            result = generate_tournament_lineup(
+                self._repo,
+                theme.id,
+                age=AGE_DEFAULT,
+                rng=random.Random(),
+            )
+            if isinstance(result, str):
+                info(f"生成失败：{result}")
+                return
+            self._tournament = Tournament.create(
+                result,
+                theme.title,
+                age=AGE_DEFAULT,
+                rng=random.Random(),
+            )
+            return
+
         # 生成阵容
         # 时代: 与线上默认一致 (game.AGE_DEFAULT, §3.10.6); 乱斗线上不启用时代
         rng = random.Random()
@@ -211,6 +254,10 @@ class AoE3BattleCLIAdapter:
             )
 
     async def play(self) -> None:
+        if self._mode_id == "rival_tournament":
+            await self._play_tournament()
+            return
+
         assert self._match is not None
 
         match = self._match
@@ -292,6 +339,139 @@ class AoE3BattleCLIAdapter:
                 else:
                     print(f"  {C.RED}{name}：押错了 😢{C.R}")
             print(f"{C.DIM}（CLI 模式不扣/发金币）{C.R}")
+
+    async def _play_tournament(self) -> None:
+        """在 CLI 中驱动真实锦标赛状态机。"""
+        assert self._tournament is not None
+        t = self._tournament
+
+        print(f"\n{C.YEL}━━━ 王中王锦标赛 · {t.theme_title} ━━━{C.R}")
+        print("参赛兵种：")
+        for tu in t.units:
+            print(f"  {tu.idx + 1}. {tu.display_name}")
+        print(f"{C.DIM}输入 1-8 押注夺冠，开战开始，quit 退出。{C.R}")
+
+        while True:
+            text = prompt("押注/开战> ").strip().lower()
+            if text in ("quit", "exit", "q", "退出"):
+                info("已退出")
+                return
+            if text == "开战":
+                break
+            if text in tuple(str(i) for i in range(1, 9)):
+                unit_idx = int(text) - 1
+                if "CLI玩家" in self._tournament_bets:
+                    print(f"{C.DIM}你已经押过了（锁死第一笔）{C.R}")
+                    continue
+                self._tournament_bets["CLI玩家"] = unit_idx
+                print(f"{C.GRN}✅ 你押了 {unit_idx + 1}号 {t.get_unit(unit_idx).display_name} 夺冠{C.R}")
+                continue
+            print(f"{C.DIM}无效输入。1-8 / 开战 / quit{C.R}")
+
+        # DRAW 是抽签完成后的等待态，第一轮开战需要显式推进。
+        t.try_advance()
+
+        while t.stage != TournamentStage.FINISHED:
+            pending = t.get_current_round_matches()
+            if not pending:
+                if not t.try_advance():
+                    raise RuntimeError(f"锦标赛在 {t.stage.value} 阶段无法推进")
+                pending = t.get_current_round_matches()
+            if not pending:
+                continue
+
+            print(f"\n{C.CYAN}━━━ {self._stage_label(t.stage)} ━━━{C.R}")
+            for match in pending:
+                self._run_tournament_match(t, match.match_id)
+                t.try_advance()
+
+            if t.stage in {
+                TournamentStage.QF_DONE,
+                TournamentStage.LOSERS_DONE,
+                TournamentStage.SF_DONE,
+                TournamentStage.THIRD_PLACE,
+            }:
+                if t.stage == TournamentStage.QF_DONE:
+                    info("八强结束。输入「开战」进入排位赛与半决赛。")
+                    self._wait_for_continue()
+                elif t.stage == TournamentStage.LOSERS_DONE:
+                    info("排位赛结束。输入「开战」进入半决赛。")
+                    self._wait_for_continue()
+                elif t.stage == TournamentStage.SF_DONE:
+                    info("半决赛结束。输入「开战」进入季军战与决赛。")
+                    self._wait_for_continue()
+                t.try_advance()
+
+        self._print_tournament_ranking(t)
+        self._print_tournament_settlement(t)
+
+    def _wait_for_continue(self) -> None:
+        while True:
+            text = prompt("开战> ").strip().lower()
+            if text in ("quit", "exit", "q", "退出"):
+                raise KeyboardInterrupt
+            if text == "开战":
+                return
+
+    def _run_tournament_match(self, t: Tournament, match_id: str) -> None:
+        """运行一场比赛并打印精简战报。"""
+        match = t.matches[match_id]
+        tu_a = t.get_unit(match.unit_a_idx)
+        tu_b = t.get_unit(match.unit_b_idx)
+        cost_a = max(1, _unit_cost(tu_a.unit))
+        cost_b = max(1, _unit_cost(tu_b.unit))
+        lcm_budget = approx_lcm_budget(cost_a, cost_b, self._budget)
+        count_a = max(1, lcm_budget // cost_a)
+        count_b = max(1, lcm_budget // cost_b)
+
+        sim = BattleSimulator2D(
+            red_army=[(tu_a.unit, count_a)],
+            blue_army=[(tu_b.unit, count_b)],
+            session_id=f"cli-tournament-{match_id}",
+        )
+        result = sim.run()
+        if result.winner is None:
+            winner_idx = random.choice([match.unit_a_idx, match.unit_b_idx])
+        elif result.winner.value == "red":
+            winner_idx = match.unit_a_idx
+        else:
+            winner_idx = match.unit_b_idx
+
+        t.record_result(match_id, winner_idx)
+        winner = t.get_unit(winner_idx)
+        print(f"\n{C.B}{match.label}：{tu_a.display_name} vs {tu_b.display_name}{C.R}")
+        print(f"  🔴 {tu_a.display_name} ×{count_a}  存活 {len(result.red_alive)}")
+        print(f"  🔵 {tu_b.display_name} ×{count_b}  存活 {len(result.blue_alive)}")
+        print(f"  {C.GRN}🏆 {winner.display_name} 胜{C.R}")
+
+    @staticmethod
+    def _stage_label(stage: TournamentStage) -> str:
+        return {
+            TournamentStage.QF: "八强战",
+            TournamentStage.LOSERS: "败者组排位",
+            TournamentStage.SF: "半决赛",
+            TournamentStage.THIRD_PLACE: "季军战",
+            TournamentStage.FINAL: "决赛",
+        }.get(stage, stage.value)
+
+    @staticmethod
+    def _print_tournament_ranking(t: Tournament) -> None:
+        print(f"\n{C.YEL}━━━ 最终排名 ━━━{C.R}")
+        for rank, unit_idx in enumerate(t.final_ranks, start=1):
+            print(f"  {rank}. {t.get_unit(unit_idx).display_name}")
+
+    def _print_tournament_settlement(self, t: Tournament) -> None:
+        if not self._tournament_bets:
+            return
+        champion_idx = t.final_ranks[0]
+        champion_name = t.get_unit(champion_idx).display_name
+        print(f"\n{C.YEL}━━━ 押注结算 ━━━{C.R}")
+        print(f"🏆 冠军：{champion_name}")
+        for name, unit_idx in self._tournament_bets.items():
+            if unit_idx == champion_idx:
+                print(f"  {C.GRN}{name}：押对了！🎉{C.R}")
+            else:
+                print(f"  {C.RED}{name}：押错了 😢{C.R}")
 
     async def post_game_prompt(self) -> None:
         pass
