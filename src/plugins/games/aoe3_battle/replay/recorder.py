@@ -215,6 +215,8 @@ class ReplayRecorder:
                     y=position[1] if position else None,
                 )
             )
+        red_all = result.red_alive + result.red_dead
+        blue_all = result.blue_alive + result.blue_dead
         self.result = {
             "winner": result.winner.value if result.winner else None,
             "duration": result.duration,
@@ -222,6 +224,31 @@ class ReplayRecorder:
             "timeout": result.timeout,
             "red_alive": len(result.red_alive),
             "blue_alive": len(result.blue_alive),
+            "red_dead": len(result.red_dead),
+            "blue_dead": len(result.blue_dead),
+            "red_damage": round(
+                sum(soldier.total_damage_dealt for soldier in red_all),
+                1,
+            ),
+            "blue_damage": round(
+                sum(soldier.total_damage_dealt for soldier in blue_all),
+                1,
+            ),
+            "red_kills": sum(soldier.kills for soldier in red_all),
+            "blue_kills": sum(soldier.kills for soldier in blue_all),
+            "red_loss": sum(
+                sum(soldier.unit.cost.values())
+                for soldier in result.red_dead
+            ),
+            "blue_loss": sum(
+                sum(soldier.unit.cost.values())
+                for soldier in result.blue_dead
+            ),
+            "unit_losses": {
+                "red": _unit_losses(result.red_dead),
+                "blue": _unit_losses(result.blue_dead),
+            },
+            "mvp": _mvp(result.red_alive + result.blue_alive),
         }
 
     def build(self) -> Replay:
@@ -238,6 +265,39 @@ class ReplayRecorder:
             events=self.events,
             result=self.result,
         )
+
+
+def _unit_losses(soldiers: list[Any]) -> list[dict[str, Any]]:
+    """Aggregate dead soldiers by unit id for the replay outro."""
+    counts: dict[str, dict[str, Any]] = {}
+    for soldier in soldiers:
+        unit = soldier.unit
+        item = counts.setdefault(
+            unit.id,
+            {
+                "unit_id": unit.id,
+                "name": unit.name or unit.name_en,
+                "count": 0,
+            },
+        )
+        item["count"] += 1
+    return sorted(counts.values(), key=lambda item: item["unit_id"])
+
+
+def _mvp(soldiers: list[Any]) -> dict[str, Any] | None:
+    """Return the highest combined damage/kill contribution."""
+    if not soldiers:
+        return None
+    soldier = max(
+        soldiers,
+        key=lambda item: item.total_damage_dealt * 0.5 + item.kills * 50,
+    )
+    return {
+        "name": soldier.unit.name or soldier.unit.name_en,
+        "side": soldier.side.value,
+        "damage": round(soldier.total_damage_dealt, 1),
+        "kills": soldier.kills,
+    }
 
 
 class ReplaySession:

@@ -62,9 +62,9 @@ def test_short_battle_stays_at_normal_speed() -> None:
 
     plan = build_playback_plan(replay)
 
-    assert plan.output_duration == 20.0
-    assert plan.max_speed == 1.0
-    assert {segment.category for segment in plan.segments} == {"normal"}
+    assert plan.speed_at(2.0) == 1.0
+    assert plan.speed_at(18.0) == 0.5
+    assert plan.output_duration > 20.0
 
 
 def test_long_idle_battle_is_compressed() -> None:
@@ -95,7 +95,42 @@ def test_key_moments_stay_near_normal_speed() -> None:
 
     assert plan.speed_at(10.0) == 1.0
     assert plan.speed_at(40.0) == 1.0
-    assert plan.speed_at(99.0) == 1.0
+    assert plan.speed_at(99.0) == 0.5
+
+
+def test_mass_death_and_last_kill_are_slowed() -> None:
+    events = [_event(10.0, "ATTACK")]
+    events.extend(_event(40.0 + index * 0.05, "DEATH") for index in range(8))
+    events.append(_event(80.0, "DEATH"))
+    replay = _replay(100.0, events)
+
+    plan = build_playback_plan(replay)
+
+    assert plan.speed_at(40.0) == 0.5
+    assert plan.speed_at(80.0) == 0.5
+
+
+def test_last_kill_is_slowed_in_short_battle() -> None:
+    replay = _replay(20.0, [_event(19.0, "DEATH")])
+
+    plan = build_playback_plan(replay)
+
+    assert plan.speed_at(19.0) == 0.5
+
+
+def test_slow_motion_does_not_cross_over_normal_windows() -> None:
+    events = [_event(40.0 + index * 0.05, "DEATH") for index in range(8)]
+    events.append(_event(99.0, "DEATH"))
+    replay = _replay(100.0, events)
+
+    plan = build_playback_plan(replay)
+
+    assert any(segment.category == "slow" for segment in plan.segments)
+    assert all(
+        segment.speed == 0.5
+        for segment in plan.segments
+        if segment.category == "slow"
+    )
 
 
 def test_output_and_source_time_round_trip() -> None:

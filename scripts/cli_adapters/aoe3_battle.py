@@ -8,13 +8,11 @@ CLI 流程：
 from __future__ import annotations
 
 import random
-import time
 
 from cli_adapters.base import C, GameMode, info, prompt
 from plugins.aoe3.repository import UnitRepo
+from plugins.games.aoe3_battle.battle_contract import BattleResult
 from plugins.games.aoe3_battle.broadcaster import (
-    MODE_BRIEF,
-    Broadcaster,
     format_battle_report,
 )
 from plugins.games.aoe3_battle.civ_war_civs import pick_random_civs, resolve_civ
@@ -34,7 +32,6 @@ from plugins.games.aoe3_battle.rival_themes import (
     pick_random_themes,
     resolve_theme,
 )
-from plugins.games.aoe3_battle.battle_contract import BattleResult
 from plugins.games.aoe3_battle.simulator2d import BattleSimulator2D
 
 # =====================================================================
@@ -279,27 +276,11 @@ class AoE3BattleCLIAdapter:
         result = sim.run()
         self._result = result
 
-        # 4. 播报
-        # 默认跟线上一致用 brief; --debug 时给详细播报 (docs/13 允许的调试差异)
-        bc = Broadcaster(result, mode="detailed" if self._debug else MODE_BRIEF)
-        segments = bc.generate()
-
-        print(f"\n{C.CYAN}{'━' * 50}{C.R}")
-        for seg in segments:
-            if seg.is_key_event:
-                print(f"\n{C.B}{seg.text}{C.R}")
-            else:
-                print(f"\n{seg.text}")
-
-            if seg.should_sleep:
-                # CLI 模式用较短的 sleep（真实群消息用 2s）
-                time.sleep(0.5 if not self._debug else 0.1)
-
-        # 5. 最终战报
+        # 4. 最终战报；正式逐窗口播报与 brief/detailed 开关已彻底删除
         report = format_battle_report(result)
         print(f"\n{C.B}{report}{C.R}")
 
-        # 6. 押注结算（CLI 简化版）
+        # 5. 押注结算（CLI 简化版）
         if bets:
             print(f"\n{C.YEL}━━━ 押注结算 ━━━{C.R}")
             winner_side = result.winner.value if result.winner else None

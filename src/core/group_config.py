@@ -5,8 +5,8 @@
 用法：
     from core.group_config import get_group_config, set_group_config
 
-    value = await get_group_config(group_id, "aoe3_battle.broadcast_mode", default="brief")
-    await set_group_config(group_id, "aoe3_battle.broadcast_mode", "detailed")
+    value = await get_group_config(group_id, "example.key", default="default")
+    await set_group_config(group_id, "example.key", "value")
 """
 
 from __future__ import annotations

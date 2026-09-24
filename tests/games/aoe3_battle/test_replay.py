@@ -170,6 +170,19 @@ def test_recorder_keeps_only_public_replay_fields() -> None:
     assert death.data["visual_target_y"] == 12.0
 
 
+def test_recorder_result_contains_replay_outro_summary() -> None:
+    replay = _replay()
+
+    assert replay.result["red_damage"] >= 0
+    assert replay.result["blue_damage"] >= 0
+    assert replay.result["red_kills"] >= 0
+    assert replay.result["blue_kills"] >= 0
+    assert "red_loss" in replay.result
+    assert "blue_loss" in replay.result
+    assert "unit_losses" in replay.result
+    assert "mvp" in replay.result
+
+
 def test_recorder_backfills_radius_for_legacy_frames() -> None:
     session = ReplaySession(
         session_id="legacy-frame",
@@ -190,7 +203,7 @@ def test_renderer_produces_expected_frame_sequence() -> None:
     replay = _replay()
     frames = list(ReplayRenderer().iter_images(replay))
 
-    assert len(frames) == 2 * 10 + 2 + 1 + 3 * 10
+    assert len(frames) == 55
     assert all(frame.size == (960, 540) for frame in frames)
     assert frames[20].getpixel((480, 270)) != (13, 20, 17)
 

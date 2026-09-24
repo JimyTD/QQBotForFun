@@ -257,9 +257,96 @@ class ReplayRenderer:
         duration = float(result.get("duration", replay.duration))
         draw.text((32, 164), f"战斗时长 {duration:.1f} 秒", font=self._font, fill=TEXT)
         draw.text((32, 202), f"剩余兵力  红 {result.get('red_alive', 0)}  /  蓝 {result.get('blue_alive', 0)}", font=self._font, fill=MUTED)
+        draw.text(
+            (32, 232),
+            (
+                f"伤害  红 {result.get('red_damage', 0):.0f} / "
+                f"蓝 {result.get('blue_damage', 0):.0f}"
+            ),
+            font=self._font,
+            fill=MUTED,
+        )
+        draw.text(
+            (32, 260),
+            (
+                f"击杀  红 {result.get('red_kills', 0)} / "
+                f"蓝 {result.get('blue_kills', 0)}"
+            ),
+            font=self._font,
+            fill=MUTED,
+        )
+        draw.text(
+            (32, 288),
+            (
+                f"战损资源  红 {result.get('red_loss', 0)} / "
+                f"蓝 {result.get('blue_loss', 0)}"
+            ),
+            font=self._font,
+            fill=MUTED,
+        )
+        losses = result.get("unit_losses") or {}
+        self._draw_loss_column(
+            draw,
+            32,
+            326,
+            "红方损失",
+            losses.get("red") or [],
+            RED,
+        )
+        self._draw_loss_column(
+            draw,
+            self.width // 2 + 12,
+            326,
+            "蓝方损失",
+            losses.get("blue") or [],
+            BLUE,
+        )
+        mvp = result.get("mvp") or {}
+        if mvp:
+            mvp_color = RED if mvp.get("side") == "red" else BLUE
+            draw.text(
+                (32, 432),
+                (
+                    f"MVP  {mvp.get('name', '?')}  "
+                    f"伤害 {float(mvp.get('damage', 0)):.0f}  "
+                    f"击杀 {mvp.get('kills', 0)}"
+                ),
+                font=self._font_bold,
+                fill=mvp_color,
+            )
         if result.get("timeout"):
-            draw.text((32, 240), "超时判定", font=self._font, fill=(225, 185, 75))
+            draw.text(
+                (32, 458),
+                "超时判定",
+                font=self._font,
+                fill=(225, 185, 75),
+            )
         return image
+
+    def _draw_loss_column(
+        self,
+        draw: ImageDraw.ImageDraw,
+        x: int,
+        y: int,
+        title: str,
+        losses: list[dict[str, Any]],
+        color: tuple[int, int, int],
+    ) -> None:
+        draw.text((x, y), title, font=self._font_small, fill=color)
+        for index, item in enumerate(losses[:4]):
+            draw.text(
+                (x + 12, y + 22 + index * 20),
+                f"{item.get('name', '?')} ×{item.get('count', 0)}",
+                font=self._font_small,
+                fill=MUTED,
+            )
+        if len(losses) > 4:
+            draw.text(
+                (x + 12, y + 102),
+                f"等 {len(losses) - 4} 种",
+                font=self._font_small,
+                fill=MUTED,
+            )
 
     def _render_frame(
         self,

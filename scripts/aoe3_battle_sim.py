@@ -55,7 +55,6 @@ from plugins.games.aoe3_battle.lineup import (  # noqa: E402
     format_matchup_panel,
 )
 from plugins.games.aoe3_battle.broadcaster import (  # noqa: E402
-    Broadcaster,
     format_battle_report,
 )
 
@@ -711,21 +710,11 @@ def main() -> None:
     # 输出事件流
     print_events(result, verbose=args.verbose)
 
-    # 播报话术
+    # 播报话术：正式逐窗口播报已删除，仅保留最终文字战报
     if args.broadcast:
         print(f"\n{C.B}{C.MAG}{'━' * 60}{C.R}")
-        print(f"{C.B}{C.MAG}  播报话术（模拟群消息）{C.R}")
+        print(f"{C.B}{C.MAG}  最终文字战报{C.R}")
         print(f"{C.MAG}{'━' * 60}{C.R}")
-        bc = Broadcaster(result, seed=args.seed)
-        segments = bc.generate()
-        for seg in segments:
-            if seg.is_key_event:
-                print(f"\n{C.B}{seg.text}{C.R}")
-            else:
-                print(f"\n{seg.text}")
-            if seg.should_sleep:
-                print(f"{C.DIM}  [sleep 2s]{C.R}")
-        # 最终战报
         print(f"\n{C.B}{format_battle_report(result)}{C.R}")
 
     # 详细战报

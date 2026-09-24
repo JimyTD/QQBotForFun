@@ -14,6 +14,10 @@ TARGET_TOTAL_SECONDS = 36.0
 INTRO_SECONDS = 2.0
 OUTRO_SECONDS = 3.0
 SPEED_STEP = 0.1
+SLOW_SPEED = 0.5
+SLOW_WINDOW_PADDING = 1
+SLOW_EXTRA_BUDGET_RATIO = 0.2
+LAST_DEATH_LEAD = 1
 
 
 @dataclass(frozen=True)
@@ -36,6 +40,7 @@ class _Window:
     speed_cap: float
     priority: int
     key: bool
+    slow: bool
     category: str
 
 
@@ -109,10 +114,19 @@ def build_playback_plan(
 ) -> PlaybackPlan:
     """Build an event-density-driven playback plan for one replay."""
     duration = max(0.0, replay.duration)
-    if duration <= short_battle_seconds:
-        return _single_speed_plan(duration, 1.0)
-
     windows = _build_windows(replay)
+    if duration <= short_battle_seconds:
+        for window in windows:
+            window.speed = 1.0
+            window.speed_cap = 1.0
+            window.priority = 0
+            window.key = False
+            window.slow = False
+            window.category = "normal"
+        _apply_slow_windows(windows, replay)
+        return _plan_from_windows(duration, windows)
+
+    _apply_slow_windows(windows, replay)
     _apply_transition_caps(windows)
     _smooth_speeds(windows)
     _apply_transition_caps(windows)
@@ -157,6 +171,7 @@ def _build_windows(replay: Replay) -> list[_Window]:
                 speed_cap=1.0,
                 priority=0,
                 key=False,
+                slow=False,
                 category="normal",
             )
         )
@@ -258,6 +273,104 @@ def _key_indices(
     return key_indices
 
 
+def _apply_slow_windows(windows: list[_Window], replay: Replay) -> None:
+    """Mark mass-death and final-kill windows for 0.5x playback."""
+    if not windows:
+        return
+    deaths: dict[int, int] = {}
+    death_times: list[float] = []
+    for event in replay.events:
+        if event.event_type != "DEATH":
+            continue
+        index = _window_index(event.time, len(windows))
+        deaths[index] = deaths.get(index, 0) + 1
+        death_times.append(event.time)
+    if not death_times:
+        return
+
+    total_units = max(1, replay.red_count + replay.blue_count)
+    mass_death_threshold = max(4, math.ceil(total_units * 0.08))
+    slow_indices: set[int] = set()
+    for index, count in deaths.items():
+        if count >= mass_death_threshold:
+            for offset in range(
+                -SLOW_WINDOW_PADDING,
+                SLOW_WINDOW_PADDING + 1,
+            ):
+                candidate = index + offset
+                if 0 <= candidate < len(windows):
+                    slow_indices.add(candidate)
+
+    last_window = _window_index(max(death_times), len(windows))
+    final_slow_indices = set(
+        range(max(0, last_window - LAST_DEATH_LEAD), last_window + 1)
+    )
+    for offset in range(-LAST_DEATH_LEAD, 1):
+        candidate = last_window + offset
+        if 0 <= candidate < len(windows):
+            slow_indices.add(candidate)
+
+    if replay.duration <= SHORT_BATTLE_SECONDS:
+        for index in slow_indices:
+            window = windows[index]
+            window.speed = SLOW_SPEED
+            window.speed_cap = SLOW_SPEED
+            window.priority = 100
+            window.key = True
+            window.slow = True
+            window.category = "slow"
+        return
+
+    # Keep slow-motion bounded relative to the rest of the battle.
+    # Budget slow motion by its expected output time (source / 0.5),
+    # while allowing at least the final-kill window pair.
+    max_slow_extra = max(
+        WINDOW_SECONDS / SLOW_SPEED,
+        replay.duration * SLOW_EXTRA_BUDGET_RATIO,
+    )
+    # Last-kill windows get first claim, then mass-death windows fill the
+    # remaining budget. The hard cap applies to all slow motion.
+    final_slow_indices = {last_window}
+    slow_output = 0.0
+    retained_slow: set[int] = set()
+    # Final-kill windows are always retained first; mass-death windows then
+    # fill whatever remains of the slow-motion budget.
+    for index in sorted(final_slow_indices):
+        retained_slow.add(index)
+        slow_output += (
+            windows[index].source_end - windows[index].source_start
+        ) / SLOW_SPEED
+    for index in sorted(slow_indices - final_slow_indices):
+        source_span = (
+            windows[index].source_end - windows[index].source_start
+        )
+        extra_span = source_span * (1 / SLOW_SPEED - 1)
+        if slow_output + extra_span > max_slow_extra:
+            continue
+        retained_slow.add(index)
+        slow_output += extra_span
+    slow_indices = retained_slow
+    for index in slow_indices:
+        window = windows[index]
+        window.speed = SLOW_SPEED
+        window.speed_cap = SLOW_SPEED
+        window.priority = 100
+        window.key = True
+        window.slow = True
+        window.category = "slow"
+
+    # Keep one transition window on each side from jumping directly to idle speed.
+    for index in slow_indices:
+        for neighbor in (index - 1, index + 1):
+            if (
+                0 <= neighbor < len(windows)
+                and not windows[neighbor].slow
+                and windows[neighbor].speed > 3.0
+            ):
+                windows[neighbor].speed = 3.0
+                windows[neighbor].speed_cap = min(3.0, windows[neighbor].speed_cap)
+
+
 def _mark_near(indices: set[int], center: int, count: int) -> None:
     for index in range(max(0, center - 1), min(count, center + 2)):
         indices.add(index)
@@ -284,6 +397,10 @@ def _apply_transition_caps(windows: list[_Window]) -> None:
     if not key_indices:
         return
     for index, window in enumerate(windows):
+        if window.slow:
+            window.speed = SLOW_SPEED
+            window.speed_cap = SLOW_SPEED
+            continue
         if window.key:
             window.speed = 1.0
             window.speed_cap = 1.0
@@ -302,6 +419,9 @@ def _smooth_speeds(windows: list[_Window]) -> None:
     for _ in range(2):
         previous = [window.speed for window in windows]
         for index, window in enumerate(windows):
+            if window.slow:
+                window.speed = SLOW_SPEED
+                continue
             if window.key:
                 window.speed = 1.0
                 continue
@@ -325,6 +445,7 @@ def _fit_to_target(windows: list[_Window], target_seconds: float) -> None:
                 window
                 for window in windows
                 if not window.key
+                and not window.slow
                 and window.priority == priority
                 and window.speed < window.speed_cap - 1e-9
             ]

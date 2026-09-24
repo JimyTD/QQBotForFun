@@ -1223,7 +1223,7 @@ class AoE3BattleGame(GameBase):
                     f"🔵 {tu_b.display_name} ×{count_b} → {blue_status}/击杀{blue_kills}/伤害{blue_dmg:.0f}",
                     f"✅ {winner_tu.display_name} 胜{promo}",
                 ]
-                await session.broadcast(ctx.group_id, "\n".join(report_lines))
+                report = "\n".join(report_lines)
                 if final_replay is not None:
                     delivery = await broadcast_replay(ctx.group_id, final_replay)
                     if not delivery.sent:
@@ -1232,6 +1232,7 @@ class AoE3BattleGame(GameBase):
                             "⚠️ 决赛回放"
                             f"{delivery.failure or '发送失败'}，完整文字战报已在上方",
                         )
+                await session.broadcast(ctx.group_id, report)
                 await asyncio.sleep(2.0)
 
             # 先检查循环内 try_advance 后是否已进入出图阶段
