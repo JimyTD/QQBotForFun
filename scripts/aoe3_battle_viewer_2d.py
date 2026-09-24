@@ -47,6 +47,7 @@ from plugins.games.aoe3_battle.simulator2d.config import (  # noqa: E402
 from scripts.aoe3_pathing_scenarios import SCENARIOS, PathingDemo  # noqa: E402
 
 VIEWER_DIR = _ROOT / "tools" / "aoe3_battle_viewer_2d"
+_ICON_PNG_CACHE: dict[str, bytes] = {}
 
 
 class SimulationSupersededError(RuntimeError):
@@ -400,6 +401,10 @@ class ViewerHandler(BaseHTTPRequestHandler):
         )
 
     def _serve_icon(self, unit_id: str) -> None:
+        cached = _ICON_PNG_CACHE.get(unit_id)
+        if cached is not None:
+            self._send_bytes(cached, content_type="image/png")
+            return
         repo = UnitRepo.get()
         unit = repo.get_by_id(unit_id)
         path = repo.get_icon_path(unit) if unit is not None else None
@@ -415,7 +420,9 @@ class ViewerHandler(BaseHTTPRequestHandler):
                 render_unit_icon_png,
             )
 
-            self._send_bytes(render_unit_icon_png(path), content_type="image/png")
+            payload = render_unit_icon_png(path)
+            _ICON_PNG_CACHE[unit_id] = payload
+            self._send_bytes(payload, content_type="image/png")
         except OSError:
             self._send_bytes(
                 b"icon unreadable",

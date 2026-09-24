@@ -1229,7 +1229,8 @@ class AoE3BattleGame(GameBase):
                     if not delivery.sent:
                         await session.broadcast(
                             ctx.group_id,
-                            f"⚠️ 决赛回放{delivery.failure or '发送失败'}，文字战报已在上方",
+                            "⚠️ 决赛回放"
+                            f"{delivery.failure or '发送失败'}，完整文字战报已在上方",
                         )
                 await asyncio.sleep(2.0)
 

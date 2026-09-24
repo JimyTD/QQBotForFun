@@ -346,7 +346,7 @@ function drawFrame(frame) {
   if (showTargets.checked) {
     ctx.lineWidth = 0.75;
     for (const unit of units) {
-      const targetId = unit.target_id || unit.move_target_id;
+      const targetId = unit.target_id;
       const target = targetId ? byId.get(targetId) : null;
       if (!target) continue;
       const from = toScreen(unit.x, unit.y);
