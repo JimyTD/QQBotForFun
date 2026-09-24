@@ -35,11 +35,11 @@ MUTED = (166, 180, 186)
 WHITE = (247, 251, 252)
 PROJECTILE_RANGED = (235, 225, 190)
 PROJECTILE_MELEE = (216, 207, 186)
-AOE_RING = (196, 196, 170)
+AOE_RING = (242, 184, 92)
 DEATH_MARK = (226, 205, 160)
 ICON_CACHE_LIMIT = 64
 PROJECTILE_LIFETIME = 0.25
-AOE_LIFETIME = 0.3
+AOE_LIFETIME = 0.5
 DEATH_MARK_LIFETIME = 0.6
 
 
@@ -651,20 +651,21 @@ class ReplayRenderer:
     ) -> None:
         if plan is None or output_time is None:
             return
-        seen: set[tuple[float, float, float, float]] = set()
+        seen: set[str] = set()
         for event in replay.events:
             if event.event_type != "AOE_SPLASH" or event.x is None or event.y is None:
                 continue
-            radius = float(event.data.get("radius") or event.data.get("aoe_radius") or 3.0)
-            key = (
-                round(event.time, 3),
-                round(float(event.x), 3),
-                round(float(event.y), 3),
-                radius,
-            )
-            if key in seen:
+            group_id = event.data.get("aoe_group_id")
+            if not group_id:
+                group_id = ":".join((
+                    str(event.tick),
+                    str(event.data.get("attacker_id")),
+                    str(event.data.get("main_target_id")),
+                ))
+            if group_id in seen:
                 continue
-            seen.add(key)
+            seen.add(group_id)
+            radius = float(event.data.get("radius") or event.data.get("aoe_radius") or 3.0)
             output_start = plan.output_time_at(event.time)
             output_end = plan.output_time_at(event.time + AOE_LIFETIME)
             output_end = max(output_end, output_start + 1 / self.fps)
@@ -682,13 +683,21 @@ class ReplayRenderer:
             x = offset_x + event.x * scale
             y = offset_y + event.y * scale
             color = tuple(
-                int(channel * (0.75 - 0.35 * progress))
+                int(channel * (0.95 - 0.35 * progress))
+                for channel in AOE_RING
+            )
+            fill = tuple(
+                int(channel * 0.18 * (1 - progress))
                 for channel in AOE_RING
             )
             draw.ellipse(
                 (x - current, y - current, x + current, y + current),
+                fill=fill,
+            )
+            draw.ellipse(
+                (x - current, y - current, x + current, y + current),
                 outline=color,
-                width=2,
+                width=3,
             )
 
     def _draw_death_marks(

@@ -43,7 +43,7 @@ const showRoutes = document.getElementById("show-routes");
 const showTargets = document.getElementById("show-targets");
 const iconCache = new Map();
 const PROJECTILE_LIFETIME = 0.25;
-const AOE_LIFETIME = 0.3;
+const AOE_LIFETIME = 0.5;
 const DEATH_MARK_LIFETIME = 0.6;
 
 const FALLBACK_CIVS = [
@@ -287,7 +287,11 @@ function drawAttackEffects(frame) {
 }
 
 function drawAoeEffects(frame) {
+  const drawnGroups = new Set();
   for (const effect of activeEffects(frame, "aoe")) {
+    const groupId = effect.aoe_group_id || effect.event_id;
+    if (drawnGroups.has(groupId)) continue;
+    drawnGroups.add(groupId);
     if (effect.x == null || effect.y == null) continue;
     const progress = Math.max(
       0,
@@ -299,8 +303,12 @@ function drawAoeEffects(frame) {
       Number(effect.radius || 2) * state.viewport.scale * (0.45 + progress * 0.55),
     );
     ctx.beginPath();
-    ctx.strokeStyle = "rgba(196,196,170,0.5)";
-    ctx.lineWidth = 2;
+    ctx.fillStyle = `rgba(235,176,88,${0.12 * (1 - progress)})`;
+    ctx.arc(point.x, point.y, radius, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.beginPath();
+    ctx.strokeStyle = `rgba(242,184,92,${0.95 - 0.35 * progress})`;
+    ctx.lineWidth = 3;
     ctx.arc(point.x, point.y, radius, 0, Math.PI * 2);
     ctx.stroke();
   }

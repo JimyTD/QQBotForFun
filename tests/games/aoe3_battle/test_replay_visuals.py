@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from PIL import Image
+from PIL import Image, ImageDraw
 
 from src.plugins.games.aoe3_battle.replay.model import (
     Replay,
@@ -161,6 +161,52 @@ def test_aoe_and_death_effects_are_short_lived() -> None:
     )
 
     assert active.tobytes() != expired.tobytes()
+
+
+def test_aoe_group_keeps_individual_hits_but_uses_one_visual_ring(monkeypatch) -> None:
+    replay = _replay(
+        [
+            _event(
+                0.1,
+                "AOE_SPLASH",
+                x=10.0,
+                y=10.0,
+                data={
+                    "attacker_id": 1,
+                    "main_target_id": 2,
+                    "splash_target_id": target_id,
+                    "aoe_group_id": "1:1:2",
+                    "radius": 2.0,
+                },
+            )
+            for target_id in (2, 3, 4)
+        ]
+    )
+    renderer = ReplayRenderer()
+    drawn: list[float] = []
+    original = ImageDraw.ImageDraw.ellipse
+
+    def record_ellipse(self, xy, *args, **kwargs):
+        if "fill" in kwargs:
+            drawn.append(float(xy[2] - xy[0]))
+        return original(self, xy, *args, **kwargs)
+
+    monkeypatch.setattr(ImageDraw.ImageDraw, "ellipse", record_ellipse)
+
+    image = Image.new("RGB", (100, 100))
+    draw = ImageDraw.Draw(image)
+    renderer._draw_aoe_rings(
+        draw,
+        replay,
+        2.0,
+        0.0,
+        0.0,
+        plan=build_playback_plan(replay),
+        output_time=0.1,
+    )
+
+    assert len(replay.events) == 3
+    assert len(drawn) == 1
 
 
 def test_lethal_projectile_uses_recorded_event_positions() -> None:

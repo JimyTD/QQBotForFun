@@ -153,3 +153,38 @@ def test_visual_event_buffer_drops_expired_events():
 
     assert decorated == current
     assert event_buffer == []
+
+
+def test_aoe_visual_event_continues_across_frames() -> None:
+    event_buffer = []
+    first = {
+        "time": 0.1,
+        "visual_events": [
+            {
+                "type": "aoe",
+                "aoe_group_id": "1:1:2",
+                "splash_target_id": 2,
+                "x": 10.0,
+                "y": 10.0,
+                "radius": 4.0,
+                "time": 0.1,
+                "expires_at": 0.6,
+            }
+        ],
+    }
+
+    decorated = _attach_visual_events(first, None, event_buffer)
+    later = _attach_visual_events(
+        {"time": 0.5, "visual_events": []},
+        None,
+        event_buffer,
+    )
+    expired = _attach_visual_events(
+        {"time": 0.7, "visual_events": []},
+        None,
+        event_buffer,
+    )
+
+    assert decorated["visual_events"][0]["aoe_group_id"] == "1:1:2"
+    assert later["visual_events"][0]["splash_target_id"] == 2
+    assert expired["visual_events"] == []

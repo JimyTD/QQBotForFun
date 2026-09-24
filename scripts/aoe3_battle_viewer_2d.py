@@ -177,6 +177,8 @@ def _visual_event_identity(event: dict[str, Any]) -> str:
         str(part)
         for part in (
             event.get("type"),
+            event.get("aoe_group_id"),
+            event.get("splash_target_id"),
             round(float(event.get("time") or 0.0), 3),
             event.get("attacker_id"),
             event.get("target_id"),
