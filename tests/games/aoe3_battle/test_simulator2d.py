@@ -337,3 +337,33 @@ def test_rigid_collision_correction_is_bounded() -> None:
     assert abs(first.x - 10.0) <= config.max_position_correction_per_tick + 1e-6
     assert abs(second.x - 10.1) <= config.max_position_correction_per_tick + 1e-6
     assert resolution.corrections >= 1
+
+
+def test_hp_ratio_uses_initial_total_hp_and_never_rebounds_on_death() -> None:
+    unit = _unit("hp-ratio", hp=100.0, attack_melee=10.0)
+    sim = BattleSimulator2D(
+        red_army=[(unit, 3)],
+        blue_army=[(unit, 1)],
+        seed=1,
+    )
+    frames: list[dict] = []
+    sim._frame_callback = frames.append
+    sim._init_soldiers()
+
+    sim._emit_visual_frame(status="running", winner=None, timeout=False)
+    assert frames[-1]["sides"]["red"]["hp_ratio"] == 1.0
+
+    sim._soldiers[0].hp = unit.hp * 0.5
+    sim._emit_visual_frame(status="running", winner=None, timeout=False)
+    assert frames[-1]["sides"]["red"]["hp_ratio"] == pytest.approx(
+        5 / 6,
+        abs=1e-4,
+    )
+
+    sim._soldiers[1].alive = False
+    sim._soldiers[1].hp = 0.0
+    sim._emit_visual_frame(status="running", winner=None, timeout=False)
+    assert frames[-1]["sides"]["red"]["hp_ratio"] == pytest.approx(
+        0.5,
+        abs=1e-4,
+    )

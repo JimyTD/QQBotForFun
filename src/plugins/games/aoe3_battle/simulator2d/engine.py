@@ -127,6 +127,10 @@ class BattleSimulator2D:
 
         self.red_count = sum(slot.count for slot in self.red_army)
         self.blue_count = sum(slot.count for slot in self.blue_army)
+        self.initial_total_hp = {
+            Side.RED: sum(slot.unit.hp * slot.count for slot in self.red_army),
+            Side.BLUE: sum(slot.unit.hp * slot.count for slot in self.blue_army),
+        }
         self.seed = seed
         self.session_id = session_id
         self.duel_mode = duel_mode
@@ -495,9 +499,9 @@ class BattleSimulator2D:
         stopped = sum(1 for soldier in alive if soldier.stopped)
         moving = len(alive) - stopped
         total_hp = sum(soldier.hp for soldier in alive)
-        total_max_hp = sum(soldier.max_hp for soldier in alive)
         total_damage = sum(soldier.total_damage_dealt for soldier in alive)
         kills = sum(soldier.kills for soldier in alive)
+        initial_hp = self.initial_total_hp[side]
         return {
             "side": side.value,
             "initial_count": (self.red_count if side == Side.RED else self.blue_count),
@@ -506,8 +510,8 @@ class BattleSimulator2D:
             "stopped": stopped,
             "moving": moving,
             "total_hp": round(total_hp, 1),
-            "total_max_hp": round(total_max_hp, 1),
-            "hp_ratio": round(total_hp / total_max_hp, 4) if total_max_hp > 0 else 0.0,
+            "total_max_hp": round(initial_hp, 1),
+            "hp_ratio": round(total_hp / initial_hp, 4) if initial_hp > 0 else 0.0,
             "total_damage": round(total_damage, 1),
             "kills": kills,
             "composition": self._army_visual_summary(side),
