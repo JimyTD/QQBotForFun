@@ -58,6 +58,24 @@ class _Result:
         return self.blue_army[0].unit
 
 
+class _NoopTimer:
+    def start(self, _stage: str) -> None:
+        return None
+
+    def stop(self, _stage: str) -> None:
+        return None
+
+    def finish(self, **_extra) -> None:
+        return None
+
+
+def _game() -> AoE3BattleGame:
+    game = AoE3BattleGame()
+    game._perf_timer = _NoopTimer()
+    game._perf_metrics = {}
+    return game
+
+
 def _frame(tick: int, *, target_id: int | None = None, extra: dict | None = None) -> dict:
     return {
         "tick": tick,
@@ -174,7 +192,11 @@ def test_recorder_result_contains_replay_outro_summary() -> None:
     replay = _replay()
 
     assert replay.result["red_damage"] >= 0
+    assert replay.result["red_raw_damage"] >= replay.result["red_damage"]
+    assert replay.result["red_overkill_damage"] >= 0
     assert replay.result["blue_damage"] >= 0
+    assert replay.result["blue_raw_damage"] >= replay.result["blue_damage"]
+    assert replay.result["blue_overkill_damage"] >= 0
     assert replay.result["red_kills"] >= 0
     assert replay.result["blue_kills"] >= 0
     assert "red_loss" in replay.result
@@ -415,7 +437,7 @@ async def test_generic_match_start_sends_one_opening_image(monkeypatch) -> None:
         lambda **_kwargs: b"png",
     )
 
-    game = AoE3BattleGame()
+    game = _game()
     game._match = SimpleNamespace(
         mode="bet",
         age=3,
@@ -560,7 +582,7 @@ async def test_tournament_only_records_final(monkeypatch) -> None:
         lambda _result: (0, 0),
     )
 
-    game = AoE3BattleGame()
+    game = _game()
     game._tournament = FakeTournament()
     ctx = GameContext(
         session_id="tournament",
@@ -623,7 +645,7 @@ async def test_run_battle_wires_recorder_and_sends_video(monkeypatch) -> None:
         sent_video = video == b"video"
         return True
 
-    game = AoE3BattleGame()
+    game = _game()
     game._match = SimpleNamespace(
         mode="bet",
         rival_theme=None,
@@ -719,7 +741,7 @@ async def test_run_battle_sends_video_report_then_settlement(monkeypatch) -> Non
     async def fake_broadcast(_group_id, message, **kwargs):
         messages.append(str(message))
 
-    game = AoE3BattleGame()
+    game = _game()
     game._match = SimpleNamespace(
         mode="bet",
         rival_theme=None,
@@ -812,7 +834,7 @@ async def test_run_battle_sends_full_report_after_video_failure(monkeypatch) -> 
     async def fake_broadcast(_group_id, message, **kwargs):
         messages.append(str(message))
 
-    game = AoE3BattleGame()
+    game = _game()
     game._match = SimpleNamespace(
         mode="bet",
         rival_theme=None,

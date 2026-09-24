@@ -230,8 +230,24 @@ class ReplayRecorder:
                 sum(soldier.total_damage_dealt for soldier in red_all),
                 1,
             ),
+            "red_raw_damage": round(
+                sum(soldier.raw_damage_dealt for soldier in red_all),
+                1,
+            ),
+            "red_overkill_damage": round(
+                sum(soldier.overkill_damage for soldier in red_all),
+                1,
+            ),
             "blue_damage": round(
                 sum(soldier.total_damage_dealt for soldier in blue_all),
+                1,
+            ),
+            "blue_raw_damage": round(
+                sum(soldier.raw_damage_dealt for soldier in blue_all),
+                1,
+            ),
+            "blue_overkill_damage": round(
+                sum(soldier.overkill_damage for soldier in blue_all),
                 1,
             ),
             "red_kills": sum(soldier.kills for soldier in red_all),
@@ -296,6 +312,8 @@ def _mvp(soldiers: list[Any]) -> dict[str, Any] | None:
         "name": soldier.unit.name or soldier.unit.name_en,
         "side": soldier.side.value,
         "damage": round(soldier.total_damage_dealt, 1),
+        "raw_damage": round(soldier.raw_damage_dealt, 1),
+        "overkill_damage": round(soldier.overkill_damage, 1),
         "kills": soldier.kills,
     }
 

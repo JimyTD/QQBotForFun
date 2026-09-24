@@ -238,6 +238,12 @@ def print_report(result: BattleResult) -> None:
         total_dmg = sum(s.total_damage_dealt for s in alive) + sum(
             s.total_damage_dealt for s in dead
         )
+        total_raw_dmg = sum(s.raw_damage_dealt for s in alive) + sum(
+            s.raw_damage_dealt for s in dead
+        )
+        total_overkill = sum(s.overkill_damage for s in alive) + sum(
+            s.overkill_damage for s in dead
+        )
         total_kills = sum(s.kills for s in alive) + sum(s.kills for s in dead)
 
         # 阵容描述
@@ -250,7 +256,9 @@ def print_report(result: BattleResult) -> None:
             f"  {color}{C.B}{emoji} [{army_desc}]{C.R}"
             f"  存活: {len(alive)}/{count}"
             f"  击杀: {total_kills}"
-            f"  总伤害: {total_dmg:.0f}"
+            f"  有效伤害: {total_dmg:.0f}"
+            f"  原始伤害: {total_raw_dmg:.0f}"
+            f"  过量伤害: {total_overkill:.0f}"
         )
 
         # 按兵种统计存活
@@ -294,7 +302,9 @@ def print_report(result: BattleResult) -> None:
         sc = _side_color(s.side.value)
         print(
             f"    {medal} {sc}{s.name}#{s.id}{C.R}"
-            f"  伤害={s.total_damage_dealt:.0f}"
+            f"  有效伤害={s.total_damage_dealt:.0f}"
+            f"  原始伤害={s.raw_damage_dealt:.0f}"
+            f"  过量伤害={s.overkill_damage:.0f}"
             f"  击杀={s.kills}"
             f"  综合分={s._mvp_score:.0f}"  # type: ignore[attr-defined]
             f"  {'💀' if not s.alive else '❤️'}"
@@ -528,7 +538,7 @@ def run_dummy_mode(repo: UnitRepo, args) -> None:
             first_attack_tick = tick
         if sid not in first_attack_per_soldier:
             first_attack_per_soldier[sid] = tick
-        total_damage += d.get("damage", 0)
+        total_damage += d.get("effective_damage", d.get("damage", 0))
         attack_count += 1
         last_attack_tick = tick
 

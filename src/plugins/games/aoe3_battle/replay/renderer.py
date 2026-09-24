@@ -260,7 +260,7 @@ class ReplayRenderer:
         draw.text(
             (32, 232),
             (
-                f"伤害  红 {result.get('red_damage', 0):.0f} / "
+                f"有效伤害  红 {result.get('red_damage', 0):.0f} / "
                 f"蓝 {result.get('blue_damage', 0):.0f}"
             ),
             font=self._font,
@@ -308,7 +308,7 @@ class ReplayRenderer:
                 (32, 432),
                 (
                     f"MVP  {mvp.get('name', '?')}  "
-                    f"伤害 {float(mvp.get('damage', 0)):.0f}  "
+                    f"有效伤害 {float(mvp.get('damage', 0)):.0f}  "
                     f"击杀 {mvp.get('kills', 0)}"
                 ),
                 font=self._font_bold,

@@ -210,7 +210,14 @@ def _dump_battle_log(
         # 按（side, unit_name）汇总统计
         from collections import defaultdict
         _agg: dict[tuple[str, str], dict] = defaultdict(
-            lambda: {"count": 0, "alive": 0, "total_dmg": 0.0, "total_kills": 0}
+            lambda: {
+                "count": 0,
+                "alive": 0,
+                "total_dmg": 0.0,
+                "raw_dmg": 0.0,
+                "overkill_dmg": 0.0,
+                "total_kills": 0,
+            }
         )
         for s in all_soldiers:
             key = (s.side.value, s.unit.name)
@@ -218,6 +225,8 @@ def _dump_battle_log(
             if s.alive:
                 _agg[key]["alive"] += 1
             _agg[key]["total_dmg"] += s.total_damage_dealt
+            _agg[key]["raw_dmg"] += s.raw_damage_dealt
+            _agg[key]["overkill_dmg"] += s.overkill_damage
             _agg[key]["total_kills"] += s.kills
 
         unit_summary = []
@@ -228,6 +237,8 @@ def _dump_battle_log(
                 "count": v["count"],
                 "alive": v["alive"],
                 "total_dmg": round(v["total_dmg"], 1),
+                "raw_dmg": round(v["raw_dmg"], 1),
+                "overkill_dmg": round(v["overkill_dmg"], 1),
                 "total_kills": v["total_kills"],
                 "avg_dmg": round(v["total_dmg"] / v["count"], 1),
             })
@@ -242,6 +253,8 @@ def _dump_battle_log(
             {
                 "id": s.id, "name": s.unit.name, "side": s.side.value,
                 "damage": round(s.total_damage_dealt, 1), "kills": s.kills,
+                "raw_damage": round(s.raw_damage_dealt, 1),
+                "overkill_damage": round(s.overkill_damage, 1),
                 "alive": s.alive,
             }
             for s in top3
@@ -271,6 +284,8 @@ def _dump_battle_log(
                 "name": mvp.unit.name,
                 "side": mvp.side.value,
                 "damage": round(mvp.total_damage_dealt, 1),
+                "raw_damage": round(mvp.raw_damage_dealt, 1),
+                "overkill_damage": round(mvp.overkill_damage, 1),
                 "kills": mvp.kills,
             }
 
@@ -1369,8 +1384,8 @@ class AoE3BattleGame(GameBase):
                     f"🔴 {_hp_bar(red_cur_hp, red_max_hp, '🟥')}  {_hp_summary(red_cur_hp, red_max_hp)}",
                     f"🔵 {_hp_bar(blue_cur_hp, blue_max_hp, '🟥')}  {_hp_summary(blue_cur_hp, blue_max_hp)}",
                     f"💸 战损资源：红方 {red_loss} ｜ 蓝方 {blue_loss}",
-                    f"🔴 {tu_a.display_name} ×{count_a} → {red_status}/击杀{red_kills}/伤害{red_dmg:.0f}",
-                    f"🔵 {tu_b.display_name} ×{count_b} → {blue_status}/击杀{blue_kills}/伤害{blue_dmg:.0f}",
+                    f"🔴 {tu_a.display_name} ×{count_a} → {red_status}/击杀{red_kills}/有效伤害{red_dmg:.0f}",
+                    f"🔵 {tu_b.display_name} ×{count_b} → {blue_status}/击杀{blue_kills}/有效伤害{blue_dmg:.0f}",
                     f"✅ {winner_tu.display_name} 胜{promo}",
                 ]
                 report = "\n".join(report_lines)

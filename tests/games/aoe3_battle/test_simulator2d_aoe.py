@@ -13,6 +13,8 @@ from plugins.games.aoe3_battle.simulator2d.combat import CombatSystem, SlotStats
 from plugins.games.aoe3_battle.simulator2d.config import Simulation2DConfig
 from plugins.games.aoe3_battle.simulator2d.model import Soldier2D
 from plugins.games.aoe3_battle.simulator2d.spatial import SpatialHash
+from plugins.games.aoe3_battle.simulator2d import BattleSimulator2D
+from plugins.games.aoe3_battle.simulator2d.model import AttackMode
 
 
 def _unit(unit_id: str) -> Unit:
@@ -187,3 +189,29 @@ def test_combat_system_applies_multiplier_after_cap_allocation() -> None:
     assert splash[0]["radius"] == 3
     assert splash[0]["impact_x"] == main.x
     assert splash[0]["impact_y"] == main.y
+
+
+def test_effective_damage_excludes_overkill_while_raw_damage_keeps_it() -> None:
+    sim = BattleSimulator2D(
+        _unit("attacker"),
+        1,
+        _unit("target"),
+        1,
+    )
+    sim._init_soldiers()
+    attacker, target = sim._soldiers
+    target.hp = 80.0
+
+    sim._apply_damage(attacker, target, 100.0, AttackMode.RANGED)
+
+    attack = next(
+        event.data
+        for event in sim._events
+        if event.event_type == EventType.ATTACK
+    )
+    assert attack["damage"] == pytest.approx(100.0)
+    assert attack["effective_damage"] == pytest.approx(80.0)
+    assert attack["overkill"] == pytest.approx(20.0)
+    assert attacker.total_damage_dealt == pytest.approx(80.0)
+    assert attacker.raw_damage_dealt == pytest.approx(100.0)
+    assert attacker.overkill_damage == pytest.approx(20.0)

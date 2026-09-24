@@ -467,6 +467,8 @@ class BattleSimulator2D:
                         ),
                         "kills": soldier.kills,
                         "damage": round(soldier.total_damage_dealt, 1),
+                        "raw_damage": round(soldier.raw_damage_dealt, 1),
+                        "overkill_damage": round(soldier.overkill_damage, 1),
                         "steer_reason": soldier.last_steer_reason,
                         "no_progress_ticks": soldier.no_progress_ticks,
                         "radius": unit_radius(soldier.unit, self.config.fallback_unit_radius),
@@ -496,11 +498,14 @@ class BattleSimulator2D:
 
     def _side_visual_summary(self, side: Side) -> dict[str, Any]:
         alive = self._alive(side)
+        side_all = [soldier for soldier in self._soldiers if soldier.side == side]
         stopped = sum(1 for soldier in alive if soldier.stopped)
         moving = len(alive) - stopped
         total_hp = sum(soldier.hp for soldier in alive)
-        total_damage = sum(soldier.total_damage_dealt for soldier in alive)
-        kills = sum(soldier.kills for soldier in alive)
+        total_damage = sum(soldier.total_damage_dealt for soldier in side_all)
+        total_raw_damage = sum(soldier.raw_damage_dealt for soldier in side_all)
+        total_overkill = sum(soldier.overkill_damage for soldier in side_all)
+        kills = sum(soldier.kills for soldier in side_all)
         initial_hp = self.initial_total_hp[side]
         return {
             "side": side.value,
@@ -513,6 +518,8 @@ class BattleSimulator2D:
             "total_max_hp": round(initial_hp, 1),
             "hp_ratio": round(total_hp / initial_hp, 4) if initial_hp > 0 else 0.0,
             "total_damage": round(total_damage, 1),
+            "total_raw_damage": round(total_raw_damage, 1),
+            "total_overkill_damage": round(total_overkill, 1),
             "kills": kills,
             "composition": self._army_visual_summary(side),
         }
@@ -1280,8 +1287,13 @@ class BattleSimulator2D:
         is_splash: bool = False,
     ) -> None:
         old_hp = target.hp
-        target.hp -= damage
-        attacker.total_damage_dealt += damage
+        raw_damage = max(0.0, damage)
+        effective_damage = min(old_hp, raw_damage)
+        overkill = max(0.0, raw_damage - old_hp)
+        target.hp -= raw_damage
+        attacker.total_damage_dealt += effective_damage
+        attacker.raw_damage_dealt += raw_damage
+        attacker.overkill_damage += overkill
         damage_type = (
             attacker.unit.damage_type_melee
             if mode == AttackMode.MELEE
@@ -1299,7 +1311,9 @@ class BattleSimulator2D:
                 "target_id": target.id,
                 "target_name": target.name,
                 "target_side": target.side.value,
-                "damage": round(damage, 1),
+                "damage": round(raw_damage, 1),
+                "effective_damage": round(effective_damage, 1),
+                "overkill": round(overkill, 1),
                 "mode": mode.value,
                 "damage_type": damage_type,
                 "target_hp_before": round(old_hp, 1),
@@ -1330,7 +1344,7 @@ class BattleSimulator2D:
                     "killer_damage_type": damage_type,
                     "remaining": side_alive,
                     "total": side_total,
-                    "overkill": round(-target.hp + damage - old_hp, 1),
+                    "overkill": round(overkill, 1),
                 },
             )
             logger.info(

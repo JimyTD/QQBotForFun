@@ -204,7 +204,7 @@ function renderArmyCard(side, data) {
   card.querySelector(".army-moving").textContent = `移动 ${data.moving ?? 0}`;
   card.querySelector(".army-stopped").textContent = `停止 ${data.stopped ?? 0}`;
   card.querySelector(".army-damage").textContent =
-    `伤害 ${Math.round(data.total_damage || 0)}`;
+    `有效伤害 ${Math.round(data.total_damage || 0)} · 原始 ${Math.round(data.total_raw_damage || 0)} · 过量 ${Math.round(data.total_overkill_damage || 0)}`;
   card.querySelector(".army-kills").textContent = `击杀 ${data.kills ?? 0}`;
 }
 
@@ -511,7 +511,9 @@ function renderUnitDetail(unit) {
       <dt>无进展</dt><dd>${unit.no_progress_ticks} tick</dd>
       <dt>绕行选择</dt><dd>${unit.detour_path?.length ? `${unit.detour_sign > 0 ? "正侧" : "负侧"} · ${unit.detour_path.length} 路点` : "无"}</dd>
       <dt>实际位置</dt><dd>${unit.x.toFixed(2)}, ${unit.y.toFixed(2)}</dd>
-      <dt>伤害</dt><dd>${unit.damage}</dd>
+      <dt>有效伤害</dt><dd>${unit.damage}</dd>
+      <dt>原始伤害</dt><dd>${unit.raw_damage ?? "—"}</dd>
+      <dt>过量伤害</dt><dd>${unit.overkill_damage ?? "—"}</dd>
       <dt>击杀</dt><dd>${unit.kills}</dd>
     </dl>
   `;

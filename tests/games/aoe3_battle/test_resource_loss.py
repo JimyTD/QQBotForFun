@@ -22,6 +22,8 @@ class _DeadSoldier:
         self.alive = alive
         self.kills = 0
         self.total_damage_dealt = 0.0
+        self.raw_damage_dealt = 0.0
+        self.overkill_damage = 0.0
         self.id = 1
         self.name = getattr(unit, "name", unit.id)
 

@@ -87,7 +87,7 @@ def format_battle_report(result: BattleResult) -> str:
         status = f"存活{len(alive_of_type)}"
         lines.append(
             f"🔴 {slot.unit.name} ×{slot.count}"
-            f" → {status}/击杀{kills}/伤害{dmg:.0f}"
+            f" → {status}/击杀{kills}/有效伤害{dmg:.0f}"
         )
     lines.append("──────────")
 
@@ -100,7 +100,7 @@ def format_battle_report(result: BattleResult) -> str:
         status = f"存活{len(alive_of_type)}"
         lines.append(
             f"🔵 {slot.unit.name} ×{slot.count}"
-            f" → {status}/击杀{kills}/伤害{dmg:.0f}"
+            f" → {status}/击杀{kills}/有效伤害{dmg:.0f}"
         )
 
     return "\n".join(lines)

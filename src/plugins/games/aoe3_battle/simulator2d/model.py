@@ -96,6 +96,8 @@ class Soldier2D:
     alive: bool = True
     stopped: bool = False
     total_damage_dealt: float = 0.0
+    raw_damage_dealt: float = 0.0
+    overkill_damage: float = 0.0
     kills: int = 0
 
     velocity_x: float = 0.0
