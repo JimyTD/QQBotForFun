@@ -593,12 +593,14 @@ class AoE3BattleGame(GameBase):
                 civ_id=ctx.state["civ_war"]["red_civ_id"],
                 strategy=match.red_strategy or "",
                 units=tuple((slot.unit, slot.count) for slot in match.red.slots),
+                tech_names=match.red_tech_names,
             )
             blue_side = OpeningSide(
                 civ_name=match.blue_civ_name or "",
                 civ_id=ctx.state["civ_war"]["blue_civ_id"],
                 strategy=match.blue_strategy or "",
                 units=tuple((slot.unit, slot.count) for slot in match.blue.slots),
+                tech_names=match.blue_tech_names,
             )
             png_bytes = render_civ_war_opening(
                 red=red_side,

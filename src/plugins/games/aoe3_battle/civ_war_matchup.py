@@ -11,11 +11,12 @@ from src.plugins.aoe3.repository import UnitRepo
 from src.plugins.games.aoe3_battle.civ_war_civs import get_civ_profile
 from src.plugins.games.aoe3_battle.civ_war_lineups import (
     CivWarCandidate,
-    allocate_candidate,
+    allocate_candidate_with_techs,
     choose_candidate,
     generate_civ_candidates,
     shortlist_candidates,
 )
+from src.plugins.games.aoe3_battle.civ_war_techs import MatchedTech
 from src.plugins.games.aoe3_battle.lineup import BUDGET, Lineup, MatchLineup
 
 _IDENTITY_TIER_PENALTY = 0.04
@@ -30,6 +31,8 @@ class MatchupEstimate:
     blue_candidate: CivWarCandidate
     red_lineup: Lineup
     blue_lineup: Lineup
+    red_techs: tuple[MatchedTech, ...]
+    blue_techs: tuple[MatchedTech, ...]
     red_pressure: float
     blue_pressure: float
     advantage_log: float
@@ -125,8 +128,12 @@ def estimate_matchup(
     budget: int = BUDGET,
     age: int = 3,
 ) -> MatchupEstimate:
-    red_lineup = allocate_candidate(red_candidate, budget=budget, age=age)
-    blue_lineup = allocate_candidate(blue_candidate, budget=budget, age=age)
+    red_lineup, red_techs = allocate_candidate_with_techs(
+        red_candidate, budget=budget, age=age
+    )
+    blue_lineup, blue_techs = allocate_candidate_with_techs(
+        blue_candidate, budget=budget, age=age
+    )
     red_pressure = lineup_pressure(red_lineup, blue_lineup)
     blue_pressure = lineup_pressure(blue_lineup, red_lineup)
     advantage_log = math.log(max(red_pressure, 1e-9) / max(blue_pressure, 1e-9))
@@ -146,6 +153,8 @@ def estimate_matchup(
         blue_candidate=blue_candidate,
         red_lineup=red_lineup,
         blue_lineup=blue_lineup,
+        red_techs=red_techs,
+        blue_techs=blue_techs,
         red_pressure=red_pressure,
         blue_pressure=blue_pressure,
         advantage_log=advantage_log,
@@ -238,5 +247,11 @@ def generate_civ_war_lineup(
         blue_strategy=estimate.blue_candidate.title,
         red_strategy_description=estimate.red_candidate.strategy_description,
         blue_strategy_description=estimate.blue_candidate.strategy_description,
+        red_tech_names=tuple(
+            tech.name_zh or tech.id for tech in estimate.red_techs
+        ),
+        blue_tech_names=tuple(
+            tech.name_zh or tech.id for tech in estimate.blue_techs
+        ),
     )
     return match, estimate

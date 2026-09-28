@@ -286,6 +286,8 @@ class MatchLineup:
     blue_strategy: str | None = None
     red_strategy_description: str | None = None
     blue_strategy_description: str | None = None
+    red_tech_names: tuple[str, ...] = ()
+    blue_tech_names: tuple[str, ...] = ()
 
 
 # =====================================================================
@@ -1308,6 +1310,14 @@ def format_vs_banner(lineup: MatchLineup) -> str:
         )
         lines.append(
             f"👥总人数 🔴 {r.total_count} vs 🔵 {b.total_count}"
+        )
+    if lineup.mode == "civ_war" and (
+        lineup.red_tech_names or lineup.blue_tech_names
+    ):
+        lines.append(
+            "🔬 国战科技："
+            f"🔴 {'、'.join(lineup.red_tech_names) if lineup.red_tech_names else '无'}"
+            f" ｜ 🔵 {'、'.join(lineup.blue_tech_names) if lineup.blue_tech_names else '无'}"
         )
     lines.extend([
         "━━━━━━━━━━━━━━━━━━━━━━━━",

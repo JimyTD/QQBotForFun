@@ -70,6 +70,7 @@ class NationalTactic:
     min_age: int
     unit_ids: tuple[str, ...]
     allocation: AllocationRule
+    required_tech_ids: tuple[str, ...] = ()
 
 
 @dataclass(frozen=True)
@@ -146,6 +147,7 @@ def _load_archetype_config() -> tuple[
                 min_age=int(raw["min_age"]),
                 unit_ids=unit_ids,
                 allocation=_parse_allocation(raw["allocation"], slot_count=len(unit_ids)),
+                required_tech_ids=tuple(raw.get("required_tech_ids", ())),
             ))
     preferred_data = json.loads(_PREFERRED_TACTICS_PATH.read_text(encoding="utf-8"))
     for civ_id, entries in preferred_data.get("civs", {}).items():
@@ -161,6 +163,7 @@ def _load_archetype_config() -> tuple[
                 min_age=int(raw.get("min_age", 3)),
                 unit_ids=unit_ids,
                 allocation=_parse_allocation(raw["allocation"], slot_count=len(unit_ids)),
+                required_tech_ids=tuple(raw.get("required_tech_ids", ())),
             ))
     raw_policy = data["source_policy"]
     policy = SourcePolicy(

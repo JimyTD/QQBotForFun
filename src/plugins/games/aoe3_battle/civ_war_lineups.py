@@ -7,6 +7,7 @@ from dataclasses import dataclass
 
 from src.plugins.aoe3.models import Unit
 from src.plugins.aoe3.repository import UnitRepo
+from src.plugins.aoe3.tech_effects import apply_techs
 from src.plugins.aoe3.upgrades import apply_upgrades
 from src.plugins.games.aoe3_battle.civ_war_roles import (
     NATIONAL_TACTICS,
@@ -18,6 +19,11 @@ from src.plugins.games.aoe3_battle.civ_war_roles import (
     is_regular_civ_war_unit,
     load_curated_civ_units,
     resolve_archetypes,
+)
+from src.plugins.games.aoe3_battle.civ_war_techs import (
+    MatchedTech,
+    resolve_required_techs,
+    select_candidate_techs,
 )
 from src.plugins.games.aoe3_battle.lineup import (
     BUDGET,
@@ -43,6 +49,7 @@ class CivWarCandidate:
     strategy_description: str = ""
     roles: tuple[str, ...] = ()
     distinctive_count: int = 0
+    required_tech_ids: tuple[str, ...] = ()
 
     @property
     def unit_ids(self) -> tuple[str, ...]:
@@ -124,6 +131,7 @@ def _national_candidate(tactic: NationalTactic, units: tuple[Unit, ...]) -> CivW
         strategy_id=tactic.id,
         strategy_description=tactic.description,
         distinctive_count=len(units),
+        required_tech_ids=tactic.required_tech_ids,
     )
 
 
@@ -347,12 +355,49 @@ def allocate_candidate(
     *,
     budget: int = BUDGET,
     age: int = 3,
+    techs: tuple[MatchedTech, ...] | None = None,
 ) -> Lineup:
+    lineup, _ = allocate_candidate_with_techs(
+        candidate,
+        budget=budget,
+        age=age,
+        techs=techs,
+    )
+    return lineup
+
+
+def allocate_candidate_with_techs(
+    candidate: CivWarCandidate,
+    *,
+    budget: int = BUDGET,
+    age: int = 3,
+    techs: tuple[MatchedTech, ...] | None = None,
+) -> tuple[Lineup, tuple[MatchedTech, ...]]:
     """Apply age upgrades and allocate quantities using the candidate's own policy."""
     upgraded = tuple(
         apply_upgrades(unit, age, civ_id=candidate.civ_id)
         for unit in candidate.units
     )
+    resolved_techs = (
+        techs
+        if techs is not None
+        else resolve_required_techs(candidate, age=age)
+        if candidate.required_tech_ids
+        else tuple(select_candidate_techs(candidate, age=age))
+    )
+    if resolved_techs:
+        upgraded = tuple(
+            apply_techs(
+                [unit],
+                [
+                    tech.runtime_tech()
+                    for tech in resolved_techs
+                    if unit.id in tech.matched_unit_ids
+                ],
+                base_units=[base],
+            )[0]
+            for unit, base in zip(upgraded, candidate.units, strict=True)
+        )
     if candidate.allocation.kind == "resource_shares":
         counts = _allocate_resource_shares(upgraded, budget, candidate.allocation.values)
     elif candidate.allocation.kind == "fixed_ratio":
@@ -362,4 +407,4 @@ def allocate_candidate(
     return Lineup([
         UnitSlot(unit, count)
         for unit, count in zip(upgraded, counts, strict=True)
-    ])
+    ]), resolved_techs

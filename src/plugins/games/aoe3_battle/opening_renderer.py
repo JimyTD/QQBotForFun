@@ -56,6 +56,7 @@ class OpeningSide:
     civ_id: str
     strategy: str
     units: tuple[tuple[Unit, int], ...]
+    tech_names: tuple[str, ...] = ()
 
 
 @dataclass(frozen=True)
@@ -427,6 +428,8 @@ def format_civ_war_fallback(red: OpeningSide, blue: OpeningSide, *, age: int) ->
     lines = [f"🌍 帝国3斗蛐蛐 · 国战 · {age} 时代"]
     for marker, side in (("🔴", red), ("🔵", blue)):
         lines.append(f"{marker} {side.civ_name} · {side.strategy}")
+        if side.tech_names:
+            lines.append(f"  🔬 {'、'.join(side.tech_names)}")
         lines.extend(f"  {unit.name} ×{count}" for unit, count in side.units)
     lines.append("@ 1 押红方 | @ 2 押蓝方 · @ 开战 直接开打")
     return "\n".join(lines)

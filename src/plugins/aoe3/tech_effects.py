@@ -180,11 +180,15 @@ def _apply_one_tech(unit: Unit, tech: dict, base: Unit) -> Unit:
                     changes.get("armor_ranged", unit.armor_ranged) + val, 3)
         elif stat == "cost" and kind == "mult":
             resource = op.get("resource", "")
-            if resource and resource in base.cost:
+            if resource:
                 cur_cost = dict(changes.get("cost", unit.cost))
-                cur_cost[resource] = max(0, round(
+                new_value = max(0, round(
                     cur_cost.get(resource, unit.cost.get(resource, 0))
-                    + base.cost[resource] * (val - 1.0)))
+                    + base.cost.get(resource, 0) * (val - 1.0)))
+                if new_value:
+                    cur_cost[resource] = new_value
+                else:
+                    cur_cost.pop(resource, None)
                 changes["cost"] = cur_cost
         elif stat == "mult" and kind == "add":
             vs = op.get("vs", "")

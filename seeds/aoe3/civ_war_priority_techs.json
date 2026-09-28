@@ -1,0 +1,120 @@
+{
+  "_meta": {
+    "doc": "docs/games/aoe3-civ-war-wip.md",
+    "status": "approved_v1",
+    "note": "人工挑选的质变/机制强化科技。国战人工组合绑定这些科技；自动组合优先从这里匹配，不足时再用通用战斗科技补足。",
+    "source": "AOE3 civ-war technology candidate review"
+  },
+  "techs": [
+    {
+      "id": "HCXPOnikare",
+      "tier": "core",
+      "note": "托卡拉对步兵的三种近战攻击方式均额外获得高额克制倍率。"
+    },
+    {
+      "id": "HCXPSiouxNakotaSupport",
+      "tier": "support",
+      "note": "强化托卡拉的机动能力；伴随送兵效果剥离。"
+    },
+    {
+      "id": "HCXPGreatTempleHuitzilopochtli",
+      "tier": "core",
+      "note": "骷髅武士多种近战攻击 AOE 与移速强化；伴随送兵效果剥离。"
+    },
+    {
+      "id": "YPHCOldHanArmyReforms",
+      "tier": "core",
+      "note": "旧汉军相关四种战斗单位整体血攻强化；成本副作用保留。"
+    },
+    {
+      "id": "YPHCMongolianScourge",
+      "tier": "core",
+      "note": "重写怯薛等中国骑兵的克制关系；负作用如实保留。"
+    },
+    {
+      "id": "YPHCHanAntiCavalryBonus",
+      "tier": "core",
+      "note": "强化中国旗军步兵对轻骑、重步和远程突击步兵的克制。"
+    },
+    {
+      "id": "YPHCAshigaruAntiCavalryDamage",
+      "tier": "core",
+      "note": "足轻获得生命和反骑/反轻步克制强化。"
+    },
+    {
+      "id": "YPHCYumiRange",
+      "tier": "core",
+      "note": "日本长弓增加射程与生命，改变接战距离。"
+    },
+    {
+      "id": "DEHCDurbarParade",
+      "tier": "core",
+      "note": "豪萨骑兵获得近战/践踏 AOE 与移速强化。"
+    },
+    {
+      "id": "DEHCKoncerz",
+      "tier": "core",
+      "note": "波兰翼骑兵获得攻击、冲锋 AOE 和冲锋射程强化。"
+    },
+    {
+      "id": "HCXPTempleTlaloc",
+      "tier": "core",
+      "note": "阿兹特克鹰游击武士获得大幅远程射程强化。"
+    },
+    {
+      "id": "HCXPTempleCenteotl",
+      "tier": "core",
+      "note": "阿兹特克投石绳兵获得生命与射程强化。"
+    },
+    {
+      "id": "HCImprovedLongbows",
+      "tier": "core",
+      "note": "英国长弓增加射程与反重步克制。"
+    },
+    {
+      "id": "HCXPGenitours",
+      "tier": "core",
+      "note": "葡萄牙龙骑兵获得显著射程强化。"
+    },
+    {
+      "id": "DEHCSnaplocks",
+      "tier": "core",
+      "note": "瑞典卡尔远征军获得远程射程强化。"
+    },
+    {
+      "id": "BigWarHutLacrosse",
+      "tier": "core",
+      "note": "豪德诺索尼步兵阵线获得远程射程强化。"
+    },
+    {
+      "id": "DEHCKozieniceRifles",
+      "tier": "core",
+      "note": "波兰库尔皮神射手获得射程和克制关系强化，负作用保留。"
+    },
+    {
+      "id": "DEHCSovnya",
+      "tier": "core",
+      "note": "俄罗斯骑兵冲锋 AOE 与步兵近战能力强化。"
+    },
+    {
+      "id": "DEHCCajamarcaSupport",
+      "tier": "core",
+      "note": "印加丛林弓兵获得明确的反重步克制强化；送兵效果剥离。"
+    },
+    {
+      "id": "ChurchThinRedLine",
+      "tier": "support",
+      "note": "火枪兵以速度换取生命，负作用保留。"
+    },
+    {
+      "id": "ChurchZweihander",
+      "tier": "support",
+      "note": "双酬剑士获得生命与近战射程强化；送兵效果剥离。"
+    },
+    {
+      "id": "DEChurchTeutonicKnights",
+      "tier": "support",
+      "note": "医院骑士以速度换取攻击强化，负作用保留。"
+    }
+  ]
+}

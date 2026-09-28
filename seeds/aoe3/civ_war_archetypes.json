@@ -72,21 +72,24 @@
         "title": "旧汉军",
         "min_age": 2,
         "unit_ids": ["ypchukonu", "ypqiangpikeman"],
-        "allocation": {"kind": "fixed_ratio", "values": [3, 3]}
+        "allocation": {"kind": "fixed_ratio", "values": [3, 3]},
+        "required_tech_ids": ["YPHCOldHanArmyReforms"]
       },
       {
         "id": "standard_army",
         "title": "正规军",
         "min_age": 2,
         "unit_ids": ["ypchukonu", "ypstepperider"],
-        "allocation": {"kind": "fixed_ratio", "values": [3, 2]}
+        "allocation": {"kind": "fixed_ratio", "values": [3, 2]},
+        "required_tech_ids": ["YPHCOldHanArmyReforms"]
       },
       {
         "id": "ming_army",
         "title": "明军",
         "min_age": 2,
         "unit_ids": ["ypqiangpikeman", "ypkeshik"],
-        "allocation": {"kind": "fixed_ratio", "values": [2, 3]}
+        "allocation": {"kind": "fixed_ratio", "values": [2, 3]},
+        "required_tech_ids": ["YPHCOldHanArmyReforms"]
       },
       {
         "id": "territorial_army",

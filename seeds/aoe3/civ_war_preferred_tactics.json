@@ -1344,6 +1344,9 @@
           "纯兵种",
           "范围近战"
         ],
+        "required_tech_ids": [
+          "HCXPGreatTempleHuitzilopochtli"
+        ],
         "reason": "骷髅武士拥有高生命、范围近战和强反骑能力，适合独立组成祭司军团。"
       },
       {
@@ -1529,6 +1532,9 @@
           "国家精锐",
           "纯兵种",
           "重骑"
+        ],
+        "required_tech_ids": [
+          "HCXPOnikare"
         ],
         "reason": "托卡拉士兵是拉科塔重骑精锐，允许以纯骑战团独立冲锋。"
       },
