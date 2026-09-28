@@ -7,6 +7,12 @@ import re
 _CUSTOM_UNIT_COUNT_MAX = 1000
 _BATTLE_BUDGET_MIN = 1000
 _BATTLE_BUDGET_MAX = 50000
+_FIELD_DISTANCE_ALIASES = {
+    "远": 36.0,
+    "远距": 36.0,
+    "近": 3.0,
+    "近距": 3.0,
+}
 _AGE_TOKEN_RE = re.compile(
     r"^(?:(\d)\s*时代|时代\s*(\d)|age\s*(\d))$",
     re.IGNORECASE,
@@ -42,6 +48,25 @@ def parse_default_budget(parts: list[str]) -> tuple[int | None, str | None]:
     if not _BATTLE_BUDGET_MIN <= budget <= _BATTLE_BUDGET_MAX:
         return None, f"⚠️ 资源预算需在 {_BATTLE_BUDGET_MIN}~{_BATTLE_BUDGET_MAX} 之间"
     return budget, None
+
+
+def parse_default_field_distance(
+    parts: list[str],
+) -> tuple[float | None, str | None]:
+    """Parse the persistent group form ``交火距离 远|近``.
+
+    The stored value is the numeric ``field_length`` used by the 2D engine.
+    A bare ``交火距离`` is intentionally invalid because this setting has no
+    separate query form.
+    """
+    if not parts or parts[0] != "交火距离":
+        return None, None
+    if len(parts) != 2:
+        return None, "⚠️ 用法: @我 斗蛐蛐 交火距离 远/近"
+    value = _FIELD_DISTANCE_ALIASES.get(parts[1])
+    if value is None:
+        return None, "⚠️ 交火距离只能选择「远」或「近」"
+    return value, None
 
 
 def parse_civ_war_args(

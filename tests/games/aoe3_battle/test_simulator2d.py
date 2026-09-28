@@ -248,6 +248,23 @@ def test_config_controls_formation_columns() -> None:
     assert config.columns_for(100) == 6
 
 
+def test_field_length_override_controls_middle_distance() -> None:
+    unit = _unit("distance", attack_melee=10.0)
+    far = BattleSimulator2D(
+        red_army=[(unit, 1)],
+        blue_army=[(unit, 1)],
+        field_length=36.0,
+    )
+    near = BattleSimulator2D(
+        red_army=[(unit, 1)],
+        blue_army=[(unit, 1)],
+        field_length=3.0,
+    )
+
+    assert far.config.field_length == 36.0
+    assert near.config.field_length == 3.0
+
+
 def test_blocked_melee_slides_sideways_instead_of_waiting() -> None:
     config = Simulation2DConfig()
     unit = _unit("blocked", speed=5.0, attack_melee=10.0)

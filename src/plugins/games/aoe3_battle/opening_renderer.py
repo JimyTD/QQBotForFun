@@ -326,10 +326,13 @@ def format_match_opening_fallback(
     *,
     age: int | None,
     mode_label: str = "普通对阵",
+    field_distance_label: str = "远距交火",
 ) -> str:
     """Build a concise fallback for a generic match opening card."""
     age_text = f" · {age} 时代" if age else ""
-    lines = [f"帝国3斗蛐蛐 · {mode_label}{age_text}"]
+    lines = [
+        f"帝国3斗蛐蛐 · {mode_label}{age_text} · {field_distance_label}"
+    ]
     for marker, side in (("🔴", red), ("🔵", blue)):
         lines.append(f"{marker} {side.label}")
         lines.extend(f"  {unit.name} ×{count}" for unit, count in side.units)
@@ -343,6 +346,7 @@ def render_match_opening(
     blue: MatchOpeningSide,
     age: int | None,
     mode_label: str = "普通对阵",
+    field_distance_label: str = "远距交火",
     bet_hint: str = "@ 1 押红方 | @ 2 押蓝方 · @ 开战 直接开打",
 ) -> bytes:
     """Return a PNG opening card for a non-civ match."""
@@ -369,7 +373,8 @@ def render_match_opening(
         font=font_title,
         fill=COLORS["title"],
     )
-    subtitle = "兵种对阵" if not age else f"{age} 时代 · 兵种对阵"
+    age_text = "兵种对阵" if not age else f"{age} 时代 · 兵种对阵"
+    subtitle = f"{age_text} · {field_distance_label}"
     draw.text(
         (CANVAS_W // 2, 62),
         subtitle,

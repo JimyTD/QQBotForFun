@@ -8,7 +8,10 @@ import pytest
 nonebot.init()
 
 from core.group_config import get_group_config  # noqa: E402
-from plugins.aoe3_battle_args import parse_default_budget  # noqa: E402
+from plugins.aoe3_battle_args import (  # noqa: E402
+    parse_default_budget,
+    parse_default_field_distance,
+)
 from src.plugins.game_launcher import handlers  # noqa: E402
 from src.plugins.games.aoe3_battle.rival_pick import _resolve_budget  # noqa: E402
 
@@ -35,6 +38,14 @@ def test_parse_default_budget() -> None:
     assert parse_default_budget(["15000"]) == (None, None)
 
 
+def test_parse_default_field_distance() -> None:
+    assert parse_default_field_distance(["交火距离", "远"]) == (36.0, None)
+    assert parse_default_field_distance(["交火距离", "近"]) == (3.0, None)
+    assert parse_default_field_distance(["交火距离"])[1] is not None
+    assert parse_default_field_distance(["交火距离", "中"])[1] is not None
+    assert parse_default_field_distance(["远"]) == (None, None)
+
+
 @pytest.mark.asyncio
 async def test_entry_sets_budget_and_stops_without_launching(monkeypatch) -> None:
     matcher = _Matcher()
@@ -58,6 +69,35 @@ async def test_set_and_read_default_budget_without_permission() -> None:
     assert matcher.finished == "✅ 本群斗蛐蛐默认预算已设为【15000】"
     assert await get_group_config(12345, handlers._BUDGET_CONFIG_KEY) == "15000"
     assert await handlers._get_default_budget(12345) == 15000
+
+
+@pytest.mark.asyncio
+async def test_entry_sets_field_distance_and_stops_without_launching(
+    monkeypatch,
+) -> None:
+    matcher = _Matcher()
+
+    async def fail_launch(*args, **kwargs):
+        raise AssertionError("persistent distance setup must not launch a game")
+
+    monkeypatch.setattr(handlers, "_launch_game", fail_launch)
+    consumed = await handlers._handle_default_field_distance(
+        matcher,
+        12345,
+        ["交火距离", "近"],
+    )
+
+    assert consumed is True
+    assert matcher.finished == "✅ 本群斗蛐蛐交火距离已设为【近（3）】"
+    assert await handlers._get_default_field_length(12345) == 3.0
+
+
+@pytest.mark.asyncio
+async def test_invalid_stored_field_distance_falls_back() -> None:
+    from core.group_config import set_group_config
+
+    await set_group_config(12345, handlers._FIELD_DISTANCE_CONFIG_KEY, "10")
+    assert await handlers._get_default_field_length(12345) is None
 
 
 @pytest.mark.asyncio

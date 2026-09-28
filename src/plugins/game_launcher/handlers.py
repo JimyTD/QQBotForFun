@@ -21,9 +21,10 @@ from core import game_base
 from core.errors import GameAlreadyRunningError
 from plugins.aoe3_battle_args import (
     extract_age,
-    parse_default_budget,
     parse_civ_war_args,
     parse_custom_battle_args,
+    parse_default_budget,
+    parse_default_field_distance,
 )
 
 # 北京时间（服务器容器是 UTC，展示给群里的时刻要换算）
@@ -158,9 +159,14 @@ def _extract_age(parts: list[str]) -> tuple[int | None, list[str]]:
 
 _AGE_CONFIG_KEY = "aoe3_battle.default_age"
 _BUDGET_CONFIG_KEY = "aoe3_battle.default_budget"
+_FIELD_DISTANCE_CONFIG_KEY = "aoe3_battle.default_field_length"
 _AGE_NAMES = {2: "商业时代", 3: "要塞时代", 4: "工业时代", 5: "帝王时代"}
 _BATTLE_BUDGET_MIN = 1000
 _BATTLE_BUDGET_MAX = 50000
+_FIELD_DISTANCE_LABELS = {
+    36.0: "远（36）",
+    3.0: "近（3）",
+}
 
 
 async def _get_default_age(group_id: int) -> int | None:
@@ -188,6 +194,37 @@ async def _get_default_budget(group_id: int) -> int | None:
     if value.isdigit() and _BATTLE_BUDGET_MIN <= int(value) <= _BATTLE_BUDGET_MAX:
         return int(value)
     return None
+
+
+async def _get_default_field_length(group_id: int) -> float | None:
+    """Read the persistent group engagement distance."""
+    from core.group_config import get_group_config
+
+    value = await get_group_config(group_id, _FIELD_DISTANCE_CONFIG_KEY)
+    try:
+        parsed = float(value)
+    except (TypeError, ValueError):
+        return None
+    if parsed in _FIELD_DISTANCE_LABELS:
+        return parsed
+    return None
+
+
+async def _set_default_field_length(
+    matcher: Matcher,
+    group_id: int,
+    field_length: float,
+) -> None:
+    """Set the persistent group engagement distance without opening a match."""
+    from core.group_config import set_group_config
+
+    await set_group_config(
+        group_id,
+        _FIELD_DISTANCE_CONFIG_KEY,
+        str(field_length),
+    )
+    label = _FIELD_DISTANCE_LABELS[field_length]
+    await matcher.finish(f"✅ 本群斗蛐蛐交火距离已设为【{label}】")
 
 
 async def _set_default_budget(
@@ -218,6 +255,22 @@ async def _handle_default_budget(
     return True
 
 
+async def _handle_default_field_distance(
+    matcher: Matcher,
+    group_id: int,
+    parts: list[str],
+) -> bool:
+    """Handle the persistent engagement-distance branch."""
+    field_length, error = parse_default_field_distance(parts)
+    if error:
+        await matcher.finish(error)
+        return True
+    if field_length is None:
+        return False
+    await _set_default_field_length(matcher, group_id, field_length)
+    return True
+
+
 # -------------------- 快捷开局：斗蛐蛐 --------------------
 _quick_battle = on_command(
     "斗蛐蛐",
@@ -236,6 +289,12 @@ async def _(matcher: Matcher, event: GroupMessageEvent, args: Message = CommandA
     raw_parts = arg_text.split()
     if await _handle_default_budget(matcher, int(event.group_id), raw_parts):
         return
+    if await _handle_default_field_distance(
+        matcher,
+        int(event.group_id),
+        raw_parts,
+    ):
+        return
 
     # ---- 时代参数（所有模式通用）："斗蛐蛐 5时代" / "斗蛐蛐 火枪 3时代" ----
     age, parts = _extract_age(raw_parts)
@@ -250,6 +309,7 @@ async def _(matcher: Matcher, event: GroupMessageEvent, args: Message = CommandA
     if age is None:
         age = await _get_default_age(int(event.group_id))
     group_budget = await _get_default_budget(int(event.group_id))
+    group_field_length = await _get_default_field_length(int(event.group_id))
 
     # ---- 国战：随机文明 / 明确两个文明 ----
     if parts and parts[0] == "国战":
@@ -260,13 +320,18 @@ async def _(matcher: Matcher, event: GroupMessageEvent, args: Message = CommandA
             age=age,
             explicit_age=explicit_age,
             group_budget=group_budget,
+            group_field_length=group_field_length,
         )
         return
 
     # ---- 锦标赛："斗蛐蛐 锦标赛" ----
     if parts and parts[0] == "锦标赛":
         await _handle_tournament_battle(
-            matcher, event, age=age, budget=group_budget
+            matcher,
+            event,
+            age=age,
+            budget=group_budget,
+            field_length=group_field_length,
         )
         return
 
@@ -278,6 +343,7 @@ async def _(matcher: Matcher, event: GroupMessageEvent, args: Message = CommandA
             " ".join(parts[1:]),
             age=age,
             group_budget=group_budget,
+            group_field_length=group_field_length,
         )
         return
 
@@ -294,6 +360,7 @@ async def _(matcher: Matcher, event: GroupMessageEvent, args: Message = CommandA
             " ".join(parts),
             age=age,
             group_budget=group_budget,
+            group_field_length=group_field_length,
         )
         return
 
@@ -316,6 +383,8 @@ async def _(matcher: Matcher, event: GroupMessageEvent, args: Message = CommandA
         config["budget"] = group_budget
     if age is not None:
         config["age"] = age
+    if group_field_length is not None:
+        config["field_length"] = group_field_length
     await _launch_game(
         matcher,
         group_id=int(event.group_id),
@@ -334,6 +403,7 @@ async def _handle_civ_war_battle(
     age: int | None,
     explicit_age: bool,
     group_budget: int | None,
+    group_field_length: float | None,
 ) -> None:
     """Handle ``斗蛐蛐 国战 [文明A 文明B] [预算]``."""
     civ_tokens, budget, error = parse_civ_war_args(parts)
@@ -372,6 +442,8 @@ async def _handle_civ_war_battle(
         config["budget"] = budget
     elif group_budget is not None:
         config["budget"] = group_budget
+    if group_field_length is not None:
+        config["field_length"] = group_field_length
     await _launch_game(
         matcher,
         group_id=int(event.group_id),
@@ -386,6 +458,7 @@ async def _handle_custom_battle(
     matcher: Matcher, event: GroupMessageEvent, arg_text: str,
     age: int | None = None,
     group_budget: int | None = None,
+    group_field_length: float | None = None,
 ) -> None:
     """处理 ``斗蛐蛐 <兵种A> [兵种B] [预算]`` 的指定兵种对决。"""
     if not arg_text:
@@ -426,6 +499,8 @@ async def _handle_custom_battle(
         config["budget"] = group_budget
     if age is not None:
         config["age"] = age
+    if group_field_length is not None:
+        config["field_length"] = group_field_length
     await _launch_game(
         matcher,
         group_id=int(event.group_id),
@@ -440,6 +515,7 @@ async def _handle_tournament_battle(
     matcher: Matcher, event: GroupMessageEvent,
     age: int | None = None,
     budget: int | None = None,
+    field_length: float | None = None,
 ) -> None:
     """王中王锦标赛：随机 3 主题 + 表情选（同王中王流程）。"""
     from src.plugins.games.aoe3_battle.rival_pick import start_tournament_pick
@@ -452,6 +528,7 @@ async def _handle_tournament_battle(
         initiator_id=initiator_id,
         budget=budget,
         age=age,
+        field_length=field_length,
     )
     if err:
         await matcher.finish(err)
@@ -461,6 +538,7 @@ async def _handle_rival_battle(
     matcher: Matcher, event: GroupMessageEvent, arg_text: str,
     age: int | None = None,
     group_budget: int | None = None,
+    group_field_length: float | None = None,
 ) -> None:
     """王中王：无参数 → 随机 3 主题 + 表情选；有主题名 → 直接开局。"""
     from src.plugins.games.aoe3_battle.rival_pick import (
@@ -492,6 +570,7 @@ async def _handle_rival_battle(
             theme_token=theme_token,
             budget=budget,
             age=age,
+            field_length=group_field_length,
         )
         if err:
             await matcher.finish(err)
@@ -502,6 +581,7 @@ async def _handle_rival_battle(
         initiator_id=initiator_id,
         budget=budget,
         age=age,
+        field_length=group_field_length,
     )
     if err:
         await matcher.finish(err)

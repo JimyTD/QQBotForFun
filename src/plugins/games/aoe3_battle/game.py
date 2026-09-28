@@ -22,6 +22,7 @@ from core.game_base import GameBase, GameMode, register_game
 from core.types import EndReason, GameContext
 from src.plugins.aoe3.repository import UnitRepo
 
+from .battle_contract import BattleResult, Side
 from .broadcaster import (
     battle_resource_loss,
     format_battle_report,
@@ -40,7 +41,6 @@ from .lineup import (
     generate_rival_lineup,
     generate_tournament_lineup,
 )
-from .battle_contract import BattleResult, Side
 from .opening_renderer import (
     MatchOpeningSide,
     OpeningSide,
@@ -56,6 +56,7 @@ from .replay.service import (
     generate_replay_video,
 )
 from .simulator2d import BattleSimulator2D
+from .simulator2d.constants import FIELD_LENGTH
 from .tournament import Tournament, TournamentStage
 
 logger = logging.getLogger("aoe3_battle.game")
@@ -441,6 +442,8 @@ class AoE3BattleGame(GameBase):
         # 时代（§3.10.6）：默认 3 时代；黑名单乱斗不启用（怪物互殴无改良意义）
         age = (ctx.config or {}).get("age", AGE_DEFAULT)
         age = max(AGE_MIN, min(AGE_MAX, int(age)))
+        field_length = (ctx.config or {}).get("field_length", FIELD_LENGTH)
+        field_length = 3.0 if float(field_length) == 3.0 else FIELD_LENGTH
         repo = UnitRepo.get()
         rng = random.Random()
 
@@ -509,6 +512,7 @@ class AoE3BattleGame(GameBase):
             ctx.state.update(
                 mode=mode_id,
                 age=age,
+                field_length=field_length,
                 phase="tournament_betting",
                 tournament=tournament.to_dict(),
                 tournament_bets={},  # {str(qq_id): int(unit_idx)}
@@ -528,6 +532,7 @@ class AoE3BattleGame(GameBase):
             mode=mode_id,
             budget=budget,
             age=match.age,
+            field_length=field_length,
             phase="betting",          # betting → fighting → ended
             # 阵容信息（序列化为可 JSON 的格式）
             red_army=[{"unit_id": s.unit.id, "unit_name": s.unit.name, "count": s.count}
@@ -643,11 +648,15 @@ class AoE3BattleGame(GameBase):
             "rival": "王中王",
         }
         mode_label = mode_labels.get(mode, "普通对阵")
+        field_distance_label = (
+            "近距交火" if ctx.state.get("field_length") == 3.0 else "远距交火"
+        )
         png_bytes = render_match_opening(
             red=red_side,
             blue=blue_side,
             age=match.age,
             mode_label=mode_label,
+            field_distance_label=field_distance_label,
         )
         b64 = base64.b64encode(png_bytes).decode()
         image_msg = Message()
@@ -660,6 +669,7 @@ class AoE3BattleGame(GameBase):
                 blue_side,
                 age=match.age,
                 mode_label=mode_label,
+                field_distance_label=field_distance_label,
             ),
         )
 
@@ -865,6 +875,7 @@ class AoE3BattleGame(GameBase):
             sim = BattleSimulator2D(
                 red_army=[(s.unit, s.count) for s in match.red.slots],
                 blue_army=[(s.unit, s.count) for s in match.blue.slots],
+                field_length=float(ctx.state.get("field_length", FIELD_LENGTH)),
                 duel_mode=is_duel,
                 session_id=ctx.session_id,
                 match_label=replay_session.recorder.match_label,
@@ -1294,6 +1305,9 @@ class AoE3BattleGame(GameBase):
                 sim = BattleSimulator2D(
                     red_army=[(tu_a.unit, count_a)],
                     blue_army=[(tu_b.unit, count_b)],
+                    field_length=float(
+                        ctx.state.get("field_length", FIELD_LENGTH)
+                    ),
                     session_id=ctx.session_id,
                     match_label=(
                         final_replay_session.recorder.match_label

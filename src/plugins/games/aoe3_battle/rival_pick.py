@@ -31,6 +31,7 @@ from .rival_themes import (
 _pending: dict[int, _PendingPick] = {}
 _pick_lock = asyncio.Lock()
 _DEFAULT_BUDGET_KEY = "aoe3_battle.default_budget"
+_DEFAULT_FIELD_LENGTH_KEY = "aoe3_battle.default_field_length"
 
 
 async def _resolve_budget(group_id: int, budget: int | None) -> int | None:
@@ -43,6 +44,23 @@ async def _resolve_budget(group_id: int, budget: int | None) -> int | None:
     return None
 
 
+async def _resolve_field_length(
+    group_id: int,
+    field_length: float | None,
+) -> float | None:
+    """Explicit per-match distance wins; otherwise use the group default."""
+    if field_length is not None:
+        return field_length
+    value = await get_group_config(group_id, _DEFAULT_FIELD_LENGTH_KEY)
+    try:
+        parsed = float(value)
+    except (TypeError, ValueError):
+        return None
+    if parsed in (3.0, 36.0):
+        return parsed
+    return None
+
+
 @dataclasses.dataclass
 class _PendingPick:
     group_id: int
@@ -52,6 +70,7 @@ class _PendingPick:
     emoji_to_index: dict[str, int]
     budget: int | None
     age: int | None = None
+    field_length: float | None = None
     tournament: bool = False           # 锦标赛模式
     resolved: bool = False
     picks_enabled: bool = False
@@ -122,9 +141,11 @@ async def start_theme_pick(
     initiator_id: int,
     budget: int | None = None,
     age: int | None = None,
+    field_length: float | None = None,
 ) -> str | None:
     """发起选主题。成功返回 None；失败返回错误提示文本。"""
     budget = await _resolve_budget(group_id, budget)
+    field_length = await _resolve_field_length(group_id, field_length)
     async with _pick_lock:
         if game_base.get_runner_by_group(group_id) is not None:
             return "⚠️ 本群已有进行中的斗蛐蛐，先 @我 结束 再开王中王"
@@ -155,6 +176,7 @@ async def start_theme_pick(
         emoji_to_index=emoji_to_index,
         budget=budget,
         age=age,
+        field_length=field_length,
         picks_enabled=False,
     )
     _pending[group_id] = pending
@@ -196,9 +218,11 @@ async def start_tournament_pick(
     initiator_id: int,
     budget: int | None = None,
     age: int | None = None,
+    field_length: float | None = None,
 ) -> str | None:
     """发起锦标赛选主题。流程与普通王中王一样（随机 3 主题 + 表情/数字选）。"""
     budget = await _resolve_budget(group_id, budget)
+    field_length = await _resolve_field_length(group_id, field_length)
     async with _pick_lock:
         if game_base.get_runner_by_group(group_id) is not None:
             return "⚠️ 本群已有进行中的斗蛐蛐，先 @我 结束 再开锦标赛"
@@ -229,6 +253,7 @@ async def start_tournament_pick(
         emoji_to_index=emoji_to_index,
         budget=budget,
         age=age,
+        field_length=field_length,
         tournament=True,
         picks_enabled=False,
     )
@@ -270,9 +295,11 @@ async def launch_rival_direct(
     theme_token: str,
     budget: int | None = None,
     age: int | None = None,
+    field_length: float | None = None,
 ) -> str | None:
     """指定主题直接开局。失败返回错误文本。"""
     budget = await _resolve_budget(group_id, budget)
+    field_length = await _resolve_field_length(group_id, field_length)
     theme = resolve_theme(theme_token)
     if theme is None:
         return f"⚠️ 未识别的王中王主题「{theme_token}」"
@@ -282,6 +309,7 @@ async def launch_rival_direct(
         theme=theme,
         budget=budget,
         age=age,
+        field_length=field_length,
     )
 
 
@@ -297,6 +325,7 @@ async def _consume_choice(group_id: int, index: int, picker_id: int) -> None:
         theme = p.options[index]
         budget = p.budget
         age = p.age
+        field_length = p.field_length
         tournament = p.tournament
         _pending.pop(group_id, None)
 
@@ -306,6 +335,7 @@ async def _consume_choice(group_id: int, index: int, picker_id: int) -> None:
         theme=theme,
         budget=budget,
         age=age,
+        field_length=field_length,
         tournament=tournament,
     )
     if err:
@@ -319,6 +349,7 @@ async def _launch_with_theme(
     theme: RivalTheme,
     budget: int | None,
     age: int | None = None,
+    field_length: float | None = None,
     tournament: bool = False,
 ) -> str | None:
     if game_base.get_runner_by_group(group_id) is not None:
@@ -329,6 +360,8 @@ async def _launch_with_theme(
         config["budget"] = budget
     if age is not None:
         config["age"] = age
+    if field_length is not None:
+        config["field_length"] = field_length
     try:
         await game_base.create_and_start(
             "aoe3_battle",
