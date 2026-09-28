@@ -317,7 +317,7 @@ class ReplayRenderer:
         if result.get("timeout"):
             draw.text(
                 (32, 458),
-                "超时判定",
+                "十秒无伤害",
                 font=self._font,
                 fill=(225, 185, 75),
             )

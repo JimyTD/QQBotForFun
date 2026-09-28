@@ -11,7 +11,7 @@ from plugins.aoe3.models import Unit
 from plugins.aoe3.repository import UnitRepo
 from plugins.games.aoe3_battle.simulator2d import BattleSimulator2D
 from plugins.games.aoe3_battle.simulator2d.model import Side, Soldier2D, Vec2
-from plugins.games.aoe3_battle.simulator2d.navigation import RouteSearch, RouteStatus, search_detour
+from plugins.games.aoe3_battle.simulator2d.navigation import RouteStatus, search_detour
 
 
 def _ranged_snapshot(mirror=False):
@@ -166,28 +166,23 @@ def test_search_distinguishes_clear_route_and_budget_exhaustion():
     assert direct.status == RouteStatus.DIRECT
 
 
-def test_search_budget_failure_keeps_the_target_and_schedules_a_bounded_retry(monkeypatch):
+def test_blocked_movement_keeps_its_target_without_a_detour(monkeypatch):
     sim, mover, target = _wall()
     mover.move_target_id = target.id
     mover.blocked_target_id = target.id
     mover.no_progress_ticks = 6
-    budgets = []
 
-    def exhausted(*args, **kwargs):
-        budgets.append(kwargs["expansion_budget"])
-        return RouteSearch(RouteStatus.BUDGET_EXHAUSTED, expanded=kwargs["expansion_budget"])
+    def forbidden_search(*args, **kwargs):
+        raise AssertionError("movement should not search a detour around soldiers")
 
-    monkeypatch.setattr("plugins.games.aoe3_battle.simulator2d.engine.search_detour", exhausted)
+    monkeypatch.setattr(
+        "plugins.games.aoe3_battle.simulator2d.engine.search_detour", forbidden_search
+    )
     sim._desired_velocity(mover)
     assert mover.move_target_id == target.id
-    assert mover.navigation_status == "budget_exhausted"
-    assert mover.detour_retry_tick >= 12
-    sim._tick = mover.detour_retry_tick
-    sim._desired_velocity(mover)
-    assert budgets == [
-        sim.config.navigation_max_expansions,
-        sim.config.navigation_max_expansions * 2,
-    ]
+    assert mover.navigation_status == "unplanned"
+    assert not mover.detour_remaining
+    assert mover.detour_retry_tick == sim.config.blocked_window_ticks
 
 
 def test_route_cost_limit_is_not_reported_as_a_proven_obstruction():
@@ -206,7 +201,7 @@ def test_exhausted_local_graph_is_not_confused_with_budget_exhaustion():
     assert result.expanded > 0
 
 
-def test_failed_alternative_targets_do_not_reset_the_recovery_window(monkeypatch):
+def test_failed_straight_line_still_sidesteps_without_a_search(monkeypatch):
     sim, mover, target = _wall()
     other = sim._create_soldier(100, Side.BLUE, target.unit, Vec2(16, 12))
     sim._soldiers.append(other)
@@ -215,16 +210,20 @@ def test_failed_alternative_targets_do_not_reset_the_recovery_window(monkeypatch
     mover.move_target_id = target.id
     mover.blocked_target_id = target.id
     mover.no_progress_ticks = 6
+    def forbidden_search(*args, **kwargs):
+        raise AssertionError("movement should not search a detour around soldiers")
+
     monkeypatch.setattr(
-        "plugins.games.aoe3_battle.simulator2d.engine.search_detour",
-        lambda *args, **kwargs: RouteSearch(RouteStatus.LOCAL_NO_ROUTE, expanded=10),
+        "plugins.games.aoe3_battle.simulator2d.engine.search_detour", forbidden_search
     )
     monkeypatch.setattr(
         "plugins.games.aoe3_battle.simulator2d.engine.route_clear", lambda *args, **kwargs: False
     )
     sim._desired_velocity(mover)
     assert mover.move_target_id == target.id
-    assert mover.no_progress_ticks >= 6
+    assert mover.navigation_status == "unplanned"
+    assert mover.detour_waypoint_x is not None
+    assert not mover.detour_remaining
 
 
 def test_ranged_route_can_end_at_a_local_firing_position():

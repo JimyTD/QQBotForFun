@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import heapq
 import math
+import time
 from dataclasses import dataclass
 from enum import StrEnum
 
@@ -18,6 +19,7 @@ from .geometry import (
     unit_bounding_radius,
 )
 from .model import Soldier2D, Vec2
+from .perf import perf_add_time, perf_enabled, perf_inc, perf_max
 from .spatial import SpatialHash
 
 
@@ -60,6 +62,38 @@ def _clear(
 
 
 def route_clear(
+    soldier: Soldier2D,
+    end: Vec2,
+    spatial: SpatialHash,
+    config: Simulation2DConfig,
+    *,
+    target_id: int | None = None,
+    field: tuple[float, float] | None = None,
+) -> bool:
+    if not perf_enabled():
+        return _route_clear_impl(
+            soldier,
+            end,
+            spatial,
+            config,
+            target_id=target_id,
+            field=field,
+        )
+    started = time.perf_counter()
+    result = _route_clear_impl(
+        soldier,
+        end,
+        spatial,
+        config,
+        target_id=target_id,
+        field=field,
+    )
+    perf_add_time("nav.route_clear", time.perf_counter() - started)
+    perf_inc("nav.route_clear_calls")
+    return result
+
+
+def _route_clear_impl(
     soldier: Soldier2D,
     end: Vec2,
     spatial: SpatialHash,
@@ -123,6 +157,47 @@ def search_detour(
     arrival_distance: float | None = None,
     expansion_budget: int | None = None,
 ) -> RouteSearch:
+    if not perf_enabled():
+        return _search_detour_impl(
+            soldier,
+            target,
+            spatial,
+            config,
+            field_width,
+            field_height,
+            arrival_distance=arrival_distance,
+            expansion_budget=expansion_budget,
+        )
+    started = time.perf_counter()
+    result = _search_detour_impl(
+        soldier,
+        target,
+        spatial,
+        config,
+        field_width,
+        field_height,
+        arrival_distance=arrival_distance,
+        expansion_budget=expansion_budget,
+    )
+    perf_add_time("nav.search", time.perf_counter() - started)
+    perf_inc("nav.search_calls")
+    perf_inc(f"nav.status.{result.status.value}")
+    perf_inc("nav.expanded", result.expanded)
+    perf_max("nav.expanded_max", result.expanded)
+    return result
+
+
+def _search_detour_impl(
+    soldier: Soldier2D,
+    target: Soldier2D,
+    spatial: SpatialHash,
+    config: Simulation2DConfig,
+    field_width: float,
+    field_height: float,
+    *,
+    arrival_distance: float | None = None,
+    expansion_budget: int | None = None,
+) -> RouteSearch:
     forward = (target.pos - soldier.pos).normalized()
     if forward.length_sq() < 1e-12:
         return RouteSearch(RouteStatus.DIRECT)
@@ -141,6 +216,7 @@ def search_detour(
         or other.velocity.length() < other.unit.speed * 0.25
         or other.no_progress_ticks >= config.blocked_window_ticks
     ]
+    perf_inc("nav.slow_bodies", len(bodies))
     shape = shape_for_unit(
         soldier.unit, soldier.x, soldier.y, soldier.facing, config.fallback_unit_radius
     )
@@ -242,6 +318,7 @@ def search_detour(
             or other.no_progress_ticks >= config.blocked_window_ticks
         )
     ]
+    perf_inc("nav.edge_obstacles", len(obstacles))
     preferred = soldier.detour_sign if soldier.detour_ticks else (1 if soldier.id % 2 == 0 else -1)
     initial = (0, soldier.facing)
     costs = {initial: 0.0}

@@ -81,6 +81,34 @@ def test_two_soldier_duel_runs_to_a_winner() -> None:
     assert any(event.event_type == EventType.BATTLE_END for event in result.events)
 
 
+def test_ten_seconds_without_damage_ends_the_battle() -> None:
+    unit = _unit("idle", hp=100, speed=0.0, attack_melee=10)
+    result = BattleSimulator2D(
+        red_army=[(unit, 1)],
+        blue_army=[(unit, 1)],
+        seed=1,
+        field_length=36,
+    ).run()
+
+    assert result.timeout
+    assert result.winner is None
+    assert result.ticks == 100
+    assert result.duration == pytest.approx(10.0)
+    assert "连续 10 秒没有造成伤害" in format_battle_report(result)
+
+
+def test_ongoing_damage_is_not_cut_off_at_ten_seconds() -> None:
+    unit = _unit("slug", hp=800, speed=6.0, attack_melee=8)
+    result = BattleSimulator2D(
+        red_army=[(unit, 1)],
+        blue_army=[(unit, 1)],
+        seed=2,
+    ).run()
+
+    assert result.duration > 10.0
+    assert not result.timeout
+
+
 def test_initial_formation_has_no_overlap() -> None:
     melee = _unit("melee", attack_melee=10)
     ranged = _unit("ranged", attack_ranged=10, range_=12)

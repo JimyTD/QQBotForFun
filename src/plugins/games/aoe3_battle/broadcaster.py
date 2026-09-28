@@ -72,7 +72,7 @@ def format_battle_report(result: BattleResult) -> str:
         lines.append("胜方：🔵 蓝方（2号）")
 
     if result.timeout:
-        lines.append("（超时判定 — 按剩余资源价值）")
+        lines.append("（连续 10 秒没有造成伤害 — 按剩余资源价值）")
 
     lines.append(f"战斗时长：{result.duration:.1f} 秒")
     lines.append("")

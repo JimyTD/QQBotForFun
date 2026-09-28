@@ -578,7 +578,7 @@ def run_dummy_mode(repo: UnitRepo, args) -> None:
         print(f"\n  ⚠️ 没有发生攻击事件！")
 
     print(f"\n  战斗时长: {result.duration}s ({result.ticks} ticks)")
-    print(f"  结果: {'超时' if result.ticks >= 1200 else '结束'}")
+    print(f"  结果: {'十秒无伤害' if result.timeout else '结束'}")
     print(f"\n{C.CYAN}{'═' * 60}{C.R}")
 
 

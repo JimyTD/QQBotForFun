@@ -6,10 +6,10 @@ from dataclasses import dataclass
 from enum import StrEnum
 
 from .constants import (
+    DAMAGE_TIMEOUT,
     DEFAULT_ROF_MELEE,
     DEFAULT_ROF_RANGED,
     FIELD_LENGTH,
-    MAX_TICKS,
     MELEE_RANGE,
     POP_HOUSE_COST,
     TICK_INTERVAL,
@@ -33,7 +33,9 @@ class Simulation2DConfig:
 
     tick_interval: float = TICK_INTERVAL
     collision_mode: CollisionMode = CollisionMode.RIGID
-    max_ticks: int = MAX_TICKS
+    # 0 means no tick cap. A stalled battle ends via damage_timeout instead.
+    max_ticks: int = 0
+    damage_timeout: float = DAMAGE_TIMEOUT
     field_length: float = FIELD_LENGTH
     melee_range: float = MELEE_RANGE
     default_rof_ranged: float = DEFAULT_ROF_RANGED

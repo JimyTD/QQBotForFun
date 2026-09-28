@@ -3,10 +3,12 @@
 from __future__ import annotations
 
 import math
+import time
 from collections import defaultdict
 from collections.abc import Callable, Iterable
 
 from .model import Soldier2D, Vec2
+from .perf import perf_add_time, perf_enabled, perf_inc
 
 
 class SpatialHash:
@@ -22,10 +24,15 @@ class SpatialHash:
         self._cells.clear()
 
     def rebuild(self, soldiers: Iterable[Soldier2D]) -> None:
+        recording = perf_enabled()
+        started = time.perf_counter() if recording else 0.0
         self.clear()
         for soldier in soldiers:
             if soldier.alive:
                 self._cells[self._key(soldier.x, soldier.y)].append(soldier)
+        if recording:
+            perf_add_time("spatial.rebuild", time.perf_counter() - started)
+            perf_inc("spatial.rebuild_calls")
 
     def update(self, soldier: Soldier2D, previous: Vec2) -> None:
         old_key = self._key(previous.x, previous.y)

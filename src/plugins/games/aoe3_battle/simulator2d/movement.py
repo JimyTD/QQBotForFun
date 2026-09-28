@@ -11,7 +11,6 @@ from .config import CollisionMode, Simulation2DConfig
 from .geometry import (
     CollisionShape,
     PoseMotion,
-    angle_delta,
     clamp_position,
     repose,
     shape_contact,
@@ -21,6 +20,7 @@ from .geometry import (
     unit_bounding_radius,
 )
 from .model import Soldier2D, Vec2
+from .perf import perf_enabled, perf_inc, perf_max
 from .spatial import SpatialHash
 
 logger = logging.getLogger("aoe3_battle.simulator2d.movement")
@@ -203,25 +203,218 @@ def _arrival_time(
     return _circle_entry_time(offset, velocity, radius, math.inf)
 
 
-def _motion_score(
-    preferred: Vec2,
-    candidate: Vec2,
-    *,
-    detour_sign: int,
-    previous: Vec2 = Vec2(0.0, 0.0),
-) -> float:
-    """Shape-independent preference for progress, speed and stable movement."""
-    preferred_dir = preferred.normalized()
-    candidate_dir = candidate.normalized()
-    forward_penalty = 1.0 - max(-1.0, min(1.0, preferred_dir.dot(candidate_dir)))
-    speed_penalty = max(0.0, preferred.length() - candidate.length()) * 0.8
-    cross = preferred_dir.x * candidate_dir.y - preferred_dir.y * candidate_dir.x
-    side_penalty = 0.005 if cross * detour_sign < 0 else 0.0
-    turn_penalty = 0.0
-    if previous.length() > 0.1 and candidate.length() > 0.1:
-        alignment = previous.normalized().dot(candidate_dir)
-        turn_penalty = max(0.0, -alignment) * 6.0
-    return forward_penalty * 4.0 + speed_penalty + side_penalty + turn_penalty
+_ORCA_EPSILON = 1e-5
+
+
+@dataclass(frozen=True)
+class _HalfPlane:
+    """A velocity constraint. The allowed side is to the left of ``direction``."""
+
+    point: Vec2
+    direction: Vec2
+
+
+def _det(first: Vec2, second: Vec2) -> float:
+    return first.x * second.y - first.y * second.x
+
+
+def _unit_or_x(vector: Vec2) -> Vec2:
+    length = vector.length()
+    if length <= _ORCA_EPSILON:
+        return Vec2(1.0, 0.0)
+    return vector / length
+
+
+def _orca_half_plane(
+    position: Vec2,
+    velocity: Vec2,
+    radius: float,
+    other_position: Vec2,
+    other_velocity: Vec2,
+    other_radius: float,
+    inv_time: float,
+    responsibility: float,
+) -> _HalfPlane | None:
+    """One ORCA line. ``responsibility`` is 0.5 when the neighbor also avoids."""
+    relative_position = other_position - position
+    relative_velocity = velocity - other_velocity
+    dist_sq = relative_position.length_sq()
+    combined_radius = radius + other_radius
+    combined_radius_sq = combined_radius * combined_radius
+    if combined_radius <= _ORCA_EPSILON and dist_sq > combined_radius_sq:
+        return None
+
+    if dist_sq > combined_radius_sq:
+        w = relative_velocity - relative_position * inv_time
+        w_length_sq = w.length_sq()
+        dot_product = w.dot(relative_position)
+        if dot_product < 0.0 and dot_product * dot_product > combined_radius_sq * w_length_sq:
+            unit_w = _unit_or_x(w)
+            direction = Vec2(unit_w.y, -unit_w.x)
+            u = unit_w * (combined_radius * inv_time - math.sqrt(w_length_sq))
+        else:
+            leg = math.sqrt(max(0.0, dist_sq - combined_radius_sq))
+            if _det(relative_position, w) > 0.0:
+                direction = (
+                    Vec2(
+                        relative_position.x * leg - relative_position.y * combined_radius,
+                        relative_position.x * combined_radius + relative_position.y * leg,
+                    )
+                    / dist_sq
+                )
+            else:
+                direction = (
+                    Vec2(
+                        relative_position.x * leg + relative_position.y * combined_radius,
+                        -relative_position.x * combined_radius + relative_position.y * leg,
+                    )
+                    / -dist_sq
+                )
+            u = direction * relative_velocity.dot(direction) - relative_velocity
+    else:
+        w = relative_velocity - relative_position * inv_time
+        unit_w = _unit_or_x(w)
+        direction = Vec2(unit_w.y, -unit_w.x)
+        u = unit_w * (combined_radius * inv_time - w.length())
+    if direction.length_sq() <= _ORCA_EPSILON:
+        return None
+    return _HalfPlane(velocity + u * responsibility, direction)
+
+
+def _linear_program1(
+    lines: list[_HalfPlane],
+    line_no: int,
+    radius: float,
+    opt_velocity: Vec2,
+    direction_opt: bool,
+) -> Vec2 | None:
+    """Project the optimum onto one half-plane, inside the max-speed disc."""
+    line = lines[line_no]
+    dot_product = line.point.dot(line.direction)
+    discriminant = dot_product * dot_product + radius * radius - line.point.length_sq()
+    if discriminant < 0.0:
+        return None
+    sqrt_discriminant = math.sqrt(discriminant)
+    t_left = -dot_product - sqrt_discriminant
+    t_right = -dot_product + sqrt_discriminant
+    for index in range(line_no):
+        earlier = lines[index]
+        denominator = _det(line.direction, earlier.direction)
+        numerator = _det(earlier.direction, line.point - earlier.point)
+        if abs(denominator) <= _ORCA_EPSILON:
+            if numerator < 0.0:
+                return None
+            continue
+        t_value = numerator / denominator
+        if denominator >= 0.0:
+            t_right = min(t_right, t_value)
+        else:
+            t_left = max(t_left, t_value)
+        if t_left > t_right:
+            return None
+    if direction_opt:
+        if opt_velocity.dot(line.direction) > 0.0:
+            t_value = t_right
+        else:
+            t_value = t_left
+    else:
+        t_value = line.direction.dot(opt_velocity - line.point)
+        if t_value < t_left:
+            t_value = t_left
+        elif t_value > t_right:
+            t_value = t_right
+    return line.point + line.direction * t_value
+
+
+def _linear_program2(
+    lines: list[_HalfPlane],
+    radius: float,
+    opt_velocity: Vec2,
+    direction_opt: bool,
+) -> tuple[Vec2, int]:
+    """Closest allowed velocity. The index is the first line that made it fail."""
+    if direction_opt:
+        result = opt_velocity * radius
+    elif opt_velocity.length_sq() > radius * radius:
+        result = opt_velocity.normalized() * radius
+    else:
+        result = opt_velocity
+    for index, line in enumerate(lines):
+        if _det(line.direction, line.point - result) > 0.0:
+            projected = _linear_program1(lines, index, radius, opt_velocity, direction_opt)
+            if projected is None:
+                return result, index
+            result = projected
+    return result, len(lines)
+
+
+def _field_half_planes(
+    shape: CollisionShape,
+    speed: float,
+    horizon: float,
+    field_width: float,
+    field_height: float,
+) -> list[_HalfPlane]:
+    """Hard velocity limits using the shape's support, not its bounding circle."""
+    if horizon <= 1e-6:
+        return []
+    planes: list[_HalfPlane] = []
+    left = (shape.extent(-1.0, 0.0) - shape.x) / horizon
+    right = (field_width - shape.extent(1.0, 0.0) - shape.x) / horizon
+    bottom = (shape.extent(0.0, -1.0) - shape.y) / horizon
+    top = (field_height - shape.extent(0.0, 1.0) - shape.y) / horizon
+    if left > -speed:
+        planes.append(_HalfPlane(Vec2(left, 0.0), Vec2(0.0, -1.0)))
+    if right < speed:
+        planes.append(_HalfPlane(Vec2(right, 0.0), Vec2(0.0, 1.0)))
+    if bottom > -speed:
+        planes.append(_HalfPlane(Vec2(0.0, bottom), Vec2(1.0, 0.0)))
+    if top < speed:
+        planes.append(_HalfPlane(Vec2(0.0, top), Vec2(-1.0, 0.0)))
+    return planes
+
+
+def _linear_program3(
+    lines: list[_HalfPlane],
+    radius: float,
+    num_obst_lines: int,
+    begin_line: int,
+    result: Vec2,
+) -> Vec2:
+    """Least-violating velocity when the half-planes have no common point."""
+    distance = 0.0
+    for index in range(begin_line, len(lines)):
+        line = lines[index]
+        if _det(line.direction, line.point - result) <= distance:
+            continue
+        projected_lines = list(lines[:num_obst_lines])
+        for earlier in lines[num_obst_lines:index]:
+            determinant = _det(line.direction, earlier.direction)
+            if abs(determinant) <= _ORCA_EPSILON:
+                if line.direction.dot(earlier.direction) > 0.0:
+                    continue
+                point = (line.point + earlier.point) * 0.5
+            else:
+                point = line.point + line.direction * (
+                    _det(earlier.direction, line.point - earlier.point) / determinant
+                )
+            direction = (earlier.direction - line.direction).normalized()
+            if direction.length_sq() <= _ORCA_EPSILON:
+                continue
+            projected_lines.append(_HalfPlane(point, direction))
+        temp = result
+        solved, failed_at = _linear_program2(
+            projected_lines,
+            radius,
+            Vec2(-line.direction.y, line.direction.x),
+            True,
+        )
+        if failed_at < len(projected_lines):
+            result = temp
+        else:
+            result = solved
+        distance = _det(line.direction, line.point - result)
+    return result
 
 
 class LocalAvoidance:
@@ -244,182 +437,197 @@ class LocalAvoidance:
         field_height: float,
         blocked_ticks: int,
         arrival_zone: tuple[Vec2, float] | None = None,
+        participants: set[int] | None = None,
     ) -> SteeringResult:
         desired = desired.clamped_length(soldier.effective_speed)
         if desired.length_sq() <= 1e-12:
+            if perf_enabled():
+                perf_inc("steer.desired_zero")
             return SteeringResult(Vec2(0.0, 0.0), "desired_zero")
 
+        other_speed = (
+            self.config.max_known_speed
+            if self.config.max_known_speed > 0.0
+            else soldier.effective_speed
+        )
+        horizon = self.config.avoidance_horizon
         neighbors = self.spatial_hash.query_circle(
             soldier.pos,
-            max(
-                self.config.avoidance_radius,
-                unit_bounding_radius(soldier.unit, self.config.fallback_unit_radius)
-                + self.config.max_known_unit_radius
-                + soldier.effective_speed * self.config.tick_interval,
-            ),
-            predicate=lambda other: other.id != soldier.id,
+            (soldier.effective_speed + other_speed) * horizon,
+            predicate=lambda other: other.id != soldier.id and other.alive,
         )
-        neighbors.sort(
-            key=lambda item: (
-                item.distance_sq_to(soldier)
-                - max(
-                    0.0,
-                    item.velocity.dot(Vec2(item.x - soldier.x, item.y - soldier.y).normalized()),
-                ),
-                item.id,
-            )
-        )
-        # The nearest bodies are never hidden behind the steering neighbor cap.
-        local_radius = (
-            unit_bounding_radius(soldier.unit, self.config.fallback_unit_radius)
-            + self.config.max_known_unit_radius
-            + soldier.effective_speed * self.config.tick_interval
-        )
-        neighbors = [
-            other
-            for index, other in enumerate(neighbors)
-            if index < self.config.max_neighbors or other.distance_sq_to(soldier) <= local_radius**2
-        ]
+        neighbors.sort(key=lambda other: (other.distance_sq_to(soldier), other.id))
+        cap = self.config.orca_max_neighbors
+        if perf_enabled():
+            perf_inc("steer.calls")
+            perf_inc("steer.neighbor_sum", min(len(neighbors), cap))
+            perf_max("steer.neighbor_max", len(neighbors))
+            if len(neighbors) > cap:
+                perf_inc("steer.over_cap")
+        neighbors = neighbors[:cap]
 
-        shape = shape_for_unit(
-            soldier.unit, soldier.x, soldier.y, soldier.facing, self.config.fallback_unit_radius
+        lines: list[_HalfPlane] = []
+        blocked_by: int | None = None
+        worst_violation = 0.0
+        inv_step = 1.0 / self.config.tick_interval
+        own_shape = shape_for_unit(
+            soldier.unit,
+            soldier.x,
+            soldier.y,
+            soldier.facing,
+            self.config.fallback_unit_radius,
         )
-        return self._choose_pose_velocity(
-            soldier,
-            shape,
-            desired,
-            neighbors,
+        own_radius = own_shape.bounding_radius
+        preferred_motion = steering_motion(
+            own_shape,
+            desired.x * self.config.tick_interval,
+            desired.y * self.config.tick_interval,
+            math.atan2(desired.y, desired.x),
+            self.config.tick_interval,
+            self.config.movement_turn_rate,
+        )
+        stop_time = _arrival_time(soldier.pos, desired, arrival_zone)
+        elliptical_shapes: list[CollisionShape] = []
+        for other in neighbors:
+            other_shape = shape_for_unit(
+                other.unit,
+                other.x,
+                other.y,
+                other.facing,
+                self.config.fallback_unit_radius,
+            )
+            discs = own_shape.is_circular and other_shape.is_circular
+            if not discs:
+                elliptical_shapes.append(other_shape)
+                if preferred_motion.clear((other_shape,), tolerance=self.config.separation_slop):
+                    continue
+            other_radius = other_shape.bounding_radius
+            other_velocity = Vec2(0.0, 0.0) if other.stopped else other.velocity
+            if discs:
+                overlapping = soldier.distance_sq_to(other) <= (own_radius + other_radius) ** 2
+            else:
+                overlapping = shape_contact(own_shape, other_shape) is not None
+            if participants is None:
+                reciprocal = other.alive and not other.stopped and other.effective_speed > 1e-8
+            else:
+                reciprocal = other.id in participants
+            inv_time = inv_step if overlapping else 1.0 / horizon
+            if not overlapping and not reciprocal and stop_time is not None and stop_time > 1e-6:
+                inv_time = 1.0 / min(horizon, stop_time)
+            plane = _orca_half_plane(
+                soldier.pos,
+                soldier.velocity,
+                own_radius,
+                other.pos,
+                other_velocity,
+                other_radius,
+                inv_time,
+                0.5 if reciprocal else 1.0,
+            )
+            if plane is None:
+                continue
+            violation = _det(plane.direction, plane.point - desired)
+            if violation > worst_violation:
+                worst_violation = violation
+                blocked_by = other.id
+            lines.append(plane)
+
+        bounds = _field_half_planes(
+            own_shape,
+            soldier.effective_speed,
+            horizon,
             field_width,
             field_height,
-            blocked_ticks,
-            arrival_zone,
         )
-
-    def _choose_pose_velocity(
-        self,
-        soldier: Soldier2D,
-        shape: CollisionShape,
-        desired: Vec2,
-        neighbors: list[Soldier2D],
-        field_width: float,
-        field_height: float,
-        blocked_ticks: int,
-        arrival_zone: tuple[Vec2, float] | None,
-    ) -> SteeringResult:
-        """Choose translation and turning together; do not force a pivot first."""
-        dt = self.config.tick_interval
-        field = (field_width, field_height)
-        obstacles = [
-            shape_for_unit(
-                other.unit, other.x, other.y, other.facing, self.config.fallback_unit_radius
-            )
-            for other in neighbors
-        ]
-        desired_heading = math.atan2(desired.y, desired.x)
-        best = None
-        best_moving = None
-        recovering = blocked_ticks >= self.config.blocked_window_ticks
-        angles = (
-            *self.config.candidate_angles_degrees,
-            *([135.0, -135.0, 180.0] if recovering else []),
-        )
-        for speed_scale in self.config.candidate_speed_scales:
-            for angle in angles if speed_scale else (0.0,):
-                candidate = desired.rotated(math.radians(angle)) * speed_scale
-                heading = math.atan2(candidate.y, candidate.x) if speed_scale else desired_heading
-                facings = (
-                    (heading,)
-                    if abs(angle_delta(heading, soldier.facing)) < 1e-9
-                    else (heading, soldier.facing)
-                )
-                for facing in facings:
-                    motion = steering_motion(
-                        shape,
-                        candidate.x * dt,
-                        candidate.y * dt,
-                        facing,
-                        dt,
-                        self.config.movement_turn_rate,
-                    )
-                    score = _motion_score(
-                        desired,
-                        candidate,
-                        detour_sign=soldier.detour_sign,
-                        previous=soldier.velocity,
-                    )
-                    score += abs(angle_delta(motion.at(1).angle, desired_heading)) * 0.15
-                    moving_candidate = candidate.length_sq() > 1e-6
-                    if (
-                        best is not None
-                        and score >= best[0]
-                        and (
-                            not recovering
-                            or not moving_candidate
-                            or (best_moving is not None and score >= best_moving[0])
-                        )
-                    ):
-                        continue
-                    if not motion.clear(
-                        obstacles, field=field, tolerance=self.config.separation_slop
-                    ):
-                        continue
-                    ttc = None
-                    blocked_by = None
-                    stop_time = _arrival_time(soldier.pos, candidate, arrival_zone)
-                    for other, other_shape in zip(neighbors, obstacles, strict=True):
-                        collision = _pose_collision_time(
-                            motion,
-                            dt,
-                            candidate,
-                            other_shape,
-                            Vec2(0, 0) if other.stopped else other.velocity,
-                            self.config.avoidance_horizon,
-                            stop_time,
-                            self.config.separation_slop,
-                        )
-                        if collision is not None and (ttc is None or collision < ttc):
-                            ttc, blocked_by = collision, other.id
-                    # A real collision in this tick is vetoed above. Beyond it,
-                    # risk is a cost, not an order to freeze indefinitely.
-                    if ttc is not None:
-                        score += 4.0 * (1.0 - ttc / self.config.avoidance_horizon)
-                    item = (score, candidate, motion, ttc, blocked_by, angle)
-                    if best is None or score < best[0]:
-                        best = item
-                    if candidate.length_sq() > 1e-6 and (
-                        best_moving is None or score < best_moving[0]
-                    ):
-                        best_moving = item
-                    if angle == 0 and speed_scale == 1 and ttc is None:
-                        return SteeringResult(
-                            candidate,
-                            "free",
-                            facing=motion.at(1).angle,
-                            turn_fraction=motion.turn_fraction,
-                        )
-                if best is not None and best[0] < 0.001:
-                    break
-            if best is not None and best[0] < 0.001:
-                break
+        lines = bounds + lines
+        num_obst = len(bounds)
+        max_speed = soldier.effective_speed
+        velocity, failed_at = _linear_program2(lines, max_speed, desired, False)
+        fallback = failed_at < len(lines)
+        if fallback:
+            velocity = _linear_program3(lines, max_speed, num_obst, failed_at, velocity)
         if (
-            recovering
-            and best is not None
-            and best[1].length_sq() < 1e-6
-            and best_moving is not None
+            desired.length_sq() > 1e-12
+            and velocity.length() < max_speed * 0.2
+            and blocked_ticks >= self.config.blocked_window_ticks
         ):
-            best = best_moving
-        if best is None:
-            return SteeringResult(Vec2(0, 0), "blocked", facing=soldier.facing)
-        _, velocity, motion, ttc, blocker, angle = best
-        reason = "free" if angle == 0 and ttc is None else "avoid"
-        if abs(angle_delta(motion.at(1).angle, math.atan2(velocity.y, velocity.x))) > 0.1:
-            reason = "maneuver"
+            base = desired.normalized()
+            options = [velocity] if velocity.length() >= max_speed * 0.2 else []
+            for angle in (math.pi / 2, -math.pi / 2, math.pi):
+                solved, failed = _linear_program2(
+                    lines, max_speed, base.rotated(angle) * max_speed, False
+                )
+                if failed < len(lines):
+                    solved = _linear_program3(lines, max_speed, num_obst, failed, solved)
+                    fallback = True
+                if solved.length() >= max_speed * 0.2:
+                    options.append(solved)
+            if options:
+                velocity = max(options, key=lambda item: (item.dot(base), item.length_sq()))
+        if elliptical_shapes:
+
+            def sweep_clear(candidate: Vec2) -> bool:
+                if candidate.length_sq() <= 1e-12:
+                    return True
+                solved = steering_motion(
+                    own_shape,
+                    candidate.x * self.config.tick_interval,
+                    candidate.y * self.config.tick_interval,
+                    math.atan2(candidate.y, candidate.x),
+                    self.config.tick_interval,
+                    self.config.movement_turn_rate,
+                )
+                return solved.clear(elliptical_shapes, tolerance=self.config.separation_slop)
+
+            if not sweep_clear(velocity):
+                velocity = Vec2(0.0, 0.0)
+                for angle in (math.pi, 2.5, -2.5, math.pi / 2, -math.pi / 2):
+                    direction = desired.rotated(angle).normalized()
+                    for scale in (1.0, 0.65, 0.35):
+                        candidate = direction * (max_speed * scale)
+                        if sweep_clear(candidate):
+                            velocity = candidate
+                            break
+                    if velocity.length_sq() > 1e-12:
+                        break
+
+        if perf_enabled():
+            perf_inc("steer.tested", len(lines))
+            if not fallback and (velocity - desired).length_sq() <= 1e-8:
+                perf_inc("steer.early_free")
+
+        if fallback:
+            reason = "fallback"
+        elif (velocity - desired).length_sq() <= 1e-8:
+            reason = "free"
+        else:
+            reason = "avoid"
+        if velocity.length_sq() <= 1e-12:
+            return SteeringResult(
+                Vec2(0.0, 0.0),
+                reason,
+                blocked_by=(blocked_by,) if blocked_by is not None else (),
+                facing=soldier.facing,
+            )
+        heading = math.atan2(velocity.y, velocity.x)
+        motion = steering_motion(
+            shape_for_unit(
+                soldier.unit,
+                soldier.x,
+                soldier.y,
+                soldier.facing,
+                self.config.fallback_unit_radius,
+            ),
+            velocity.x * self.config.tick_interval,
+            velocity.y * self.config.tick_interval,
+            heading,
+            self.config.tick_interval,
+            self.config.movement_turn_rate,
+        )
         return SteeringResult(
             velocity,
             reason,
-            blocked_by=(blocker,) if blocker is not None else (),
-            time_to_collision=ttc,
-            candidate_angle=angle,
+            blocked_by=(blocked_by,) if blocked_by is not None else (),
             facing=motion.at(1).angle,
             turn_fraction=motion.turn_fraction,
         )
@@ -462,13 +670,17 @@ class CollisionResolver:
             if self.config.collision_mode == CollisionMode.SOFT
             else self.config.separation_iterations
         )
+        iterations_run = 0
+        overlap_pairs = 0
         correction_budget: dict[int, float] = {}
         for iteration in range(iterations):
+            iterations_run += 1
             self.spatial_hash.rebuild(alive)
             moved = False
             iteration_max = 0.0
             iteration_pairs = 0
             pairs = self._overlap_pairs(alive)
+            overlap_pairs += len(pairs)
             pairs.sort(key=lambda item: item[0], reverse=True)
             if iteration == 0:
                 initial_max_overlap = pairs[0][0] if pairs else 0.0
@@ -574,6 +786,12 @@ class CollisionResolver:
         )
         if residual_details:
             details.extend(residual_details)
+        if perf_enabled():
+            perf_inc("resolve.calls")
+            perf_inc("resolve.iterations", iterations_run)
+            perf_inc("resolve.overlap_pairs", overlap_pairs)
+            perf_inc("resolve.corrections", total_pairs)
+            perf_max("resolve.residual_pairs", residual_pairs)
         return CollisionResolution(
             max_overlap=residual_max,
             corrections=total_pairs,

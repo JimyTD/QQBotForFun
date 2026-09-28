@@ -5,6 +5,7 @@ from __future__ import annotations
 import logging
 import math
 import random
+import time
 from collections.abc import Callable
 from dataclasses import asdict
 from datetime import datetime
@@ -27,7 +28,16 @@ from .geometry import (
 )
 from .model import ArtilleryState, AttackMode, Soldier2D, TickSummary, Vec2
 from .movement import CollisionResolver, LocalAvoidance, SteeringResult
-from .navigation import RouteStatus, route_clear, search_detour, segment_distance_sq
+from .navigation import RouteStatus, route_clear, search_detour
+from .perf import (
+    PerfSpan,
+    log_cumulative,
+    log_window,
+    mark_start,
+    perf_add_time,
+    perf_enabled,
+    perf_inc,
+)
 from .spatial import SpatialHash
 from .trace import FlightRecorder
 
@@ -91,7 +101,7 @@ class BattleSimulator2D:
                 }
             )
         self.config = base
-        if self.config.max_known_unit_radius <= 0:
+        if self.config.max_known_unit_radius <= 0 or self.config.max_known_speed <= 0:
             known_units = [
                 unit for unit, _count in (red_army or [(red_unit, red_count)]) if unit is not None
             ] + [
@@ -99,19 +109,22 @@ class BattleSimulator2D:
                 for unit, _count in (blue_army or [(blue_unit, blue_count)])
                 if unit is not None
             ]
-            max_radius = max(
-                (
-                    unit_bounding_radius(unit, self.config.fallback_unit_radius)
-                    for unit in known_units
-                ),
-                default=self.config.fallback_unit_radius,
-            )
-            self.config = Simulation2DConfig(
-                **{
-                    **asdict(self.config),
-                    "max_known_unit_radius": max_radius,
-                }
-            )
+            updates: dict[str, float] = {}
+            if self.config.max_known_unit_radius <= 0:
+                updates["max_known_unit_radius"] = max(
+                    (
+                        unit_bounding_radius(unit, self.config.fallback_unit_radius)
+                        for unit in known_units
+                    ),
+                    default=self.config.fallback_unit_radius,
+                )
+            if self.config.max_known_speed <= 0:
+                updates["max_known_speed"] = max(
+                    (unit.speed for unit in known_units),
+                    default=0.0,
+                )
+            if updates:
+                self.config = Simulation2DConfig(**{**asdict(self.config), **updates})
 
         if red_army is not None:
             self.red_army = [ArmySlot(unit, count) for unit, count in red_army]
@@ -138,6 +151,7 @@ class BattleSimulator2D:
         self.duel_mode = duel_mode
         self._rng = random.Random(seed)
         self._tick = 0
+        self._last_damage_tick: int | None = None
         self._events: list[BattleEvent] = []
         self._pending_visual_events: list[dict[str, Any]] = []
         self._soldiers: list[Soldier2D] = []
@@ -638,18 +652,16 @@ class BattleSimulator2D:
             and soldier.blocked_target_id == target.id
             and self._tick >= soldier.detour_retry_tick
         ):
-            route_status = self._set_detour_waypoint(soldier, target)
-            if soldier.detour_waypoint_x is not None:
-                waypoint = Vec2(soldier.detour_waypoint_x, soldier.detour_waypoint_y)
-                return (waypoint - soldier.pos).normalized() * soldier.unit.speed, target
+            # Dynamic bodies stay in local avoidance. A blocked unit may switch
+            # to a nearby enemy with a clear straight line, but it does not
+            # plan a waypoint around them.
+            soldier.detour_retry_tick = self._tick + self.config.blocked_window_ticks
             alternatives = self._spatial_hash.query_circle(
                 soldier.pos,
                 self.config.avoidance_radius * 2.0,
                 predicate=lambda other: other.alive and other.side != soldier.side,
             )
             alternatives = [candidate for candidate in alternatives if candidate.id != target.id]
-            if route_status in (RouteStatus.DIRECT, RouteStatus.BUDGET_EXHAUSTED):
-                alternatives = []
             alternatives.sort(key=lambda candidate: soldier.distance_sq_to(candidate))
             alternatives = [
                 candidate
@@ -686,6 +698,9 @@ class BattleSimulator2D:
                 soldier.move_target_id = target.id
                 soldier.blocked_target_id = None
                 soldier.no_progress_ticks = 0
+            elif self._sidestep(soldier, target):
+                waypoint = Vec2(soldier.detour_waypoint_x, soldier.detour_waypoint_y)
+                return (waypoint - soldier.pos).normalized() * soldier.unit.speed, target
         elif soldier.no_progress_ticks <= 1:
             soldier.blocked_target_id = target.id
 
@@ -704,29 +719,6 @@ class BattleSimulator2D:
         ):
             return Vec2(0.0, 0.0), target
         desired_distance = self._approach_range(soldier, target)
-
-        if self._tick >= soldier.detour_retry_tick:
-            lookahead = soldier.pos + direction.normalized() * min(
-                distance, self.config.avoidance_radius
-            )
-            blockers = self._spatial_hash.query_circle(
-                soldier.pos,
-                self.config.avoidance_radius,
-                predicate=lambda other: other.stopped and other.id not in (soldier.id, target.id),
-            )
-            if any(
-                segment_distance_sq(soldier.pos, lookahead, other.pos)
-                < (
-                    unit_bounding_radius(soldier.unit, self.config.fallback_unit_radius)
-                    + unit_bounding_radius(other.unit, self.config.fallback_unit_radius)
-                )
-                ** 2
-                for other in blockers
-            ):
-                self._set_detour_waypoint(soldier, target)
-                if soldier.detour_waypoint_x is not None:
-                    waypoint = Vec2(soldier.detour_waypoint_x, soldier.detour_waypoint_y)
-                    return (waypoint - soldier.pos).normalized() * soldier.unit.speed, target
         heading = direction.normalized()
         # Do not brake over the avoidance horizon. Clip only the last tick's
         # travel to the attack envelope; collision prediction models that stop.
@@ -736,6 +728,62 @@ class BattleSimulator2D:
             / self.config.tick_interval,
         )
         return heading * min(soldier.unit.speed, arrival_speed), target
+
+    def _sidestep(self, soldier: Soldier2D, target: Soldier2D) -> bool:
+        """Aim one step to the emptier side. Steering still refuses overlaps."""
+        forward = (target.pos - soldier.pos).normalized()
+        if forward.length_sq() < 1e-12:
+            return False
+        lateral = Vec2(-forward.y, forward.x)
+        radius = unit_bounding_radius(soldier.unit, self.config.fallback_unit_radius)
+        reach = max(self.config.avoidance_radius, radius * 4)
+        neighbors = self._spatial_hash.query_circle(
+            soldier.pos,
+            reach * 2,
+            predicate=lambda other: other.id != soldier.id and other.alive,
+        )
+
+        def crowd(sign: int) -> int:
+            return sum((other.pos - soldier.pos).dot(lateral) * sign > 0.15 for other in neighbors)
+
+        left, right = crowd(1), crowd(-1)
+        if left == right:
+            sign = 1 if soldier.id % 2 == 0 else -1
+        else:
+            sign = -1 if left > right else 1
+
+        def sidestep_point(step_sign: int) -> tuple[Vec2, Vec2]:
+            step = soldier.pos + lateral * (reach * step_sign) + forward * (radius * 2)
+            clamped = Vec2(
+                min(max(step.x, radius), self._field_width - radius),
+                min(max(step.y, radius), self._field_height - radius),
+            )
+            return step, clamped
+
+        def leaves_field(step: Vec2) -> bool:
+            return (
+                step.x < radius
+                or step.y < radius
+                or step.x > self._field_width - radius
+                or step.y > self._field_height - radius
+            )
+
+        raw, point = sidestep_point(sign)
+        if leaves_field(raw):
+            other_raw, other_point = sidestep_point(-sign)
+            if not leaves_field(other_raw):
+                sign, raw, point = -sign, other_raw, other_point
+        if (point - soldier.pos).length() < 0.2:
+            return False
+        soldier.detour_sign = sign
+        soldier.detour_waypoint_x = point.x
+        soldier.detour_waypoint_y = point.y
+        soldier.detour_remaining.clear()
+        soldier.detour_target_id = target.id
+        soldier.detour_active_ticks = 0
+        soldier.detour_ticks = self.config.detour_commit_ticks
+        soldier.no_progress_ticks = 0
+        return True
 
     def _approach_range(self, soldier: Soldier2D, target: Soldier2D) -> float:
         if soldier.has_ranged and soldier.distance_to(target) > soldier.effective_ranged_range:
@@ -824,6 +872,8 @@ class BattleSimulator2D:
         soldier.detour_ticks = self.config.detour_commit_ticks
         soldier.no_progress_ticks = 0
         soldier.detour_replans += 1
+        if perf_enabled():
+            perf_inc("nav.replans")
         direct = soldier.distance_to(target)
         if (
             plan.cost > direct * 3
@@ -861,6 +911,7 @@ class BattleSimulator2D:
         wall_contacts = 0
         solver_fallbacks = 0
         speed_total = 0.0
+        recording = perf_enabled()
 
         move_order = list(alive)
         self._rng.shuffle(move_order)
@@ -868,101 +919,115 @@ class BattleSimulator2D:
         arrival_zones: dict[int, tuple[Vec2, float]] = {}
         steering = {}
 
-        for soldier in alive:
-            if soldier.artillery_state == ArtilleryState.DEPLOYING:
-                desired_velocities[soldier.id] = Vec2(0.0, 0.0)
-                continue
-            if not soldier.stopped:
-                desired, target = self._desired_velocity(soldier)
-                desired_velocities[soldier.id] = desired
-                if target is not None and soldier.detour_waypoint_x is None:
-                    arrival_zones[soldier.id] = (
-                        target.pos,
-                        max(
+        with PerfSpan("phase.desired"):
+            for soldier in alive:
+                if soldier.artillery_state == ArtilleryState.DEPLOYING:
+                    desired_velocities[soldier.id] = Vec2(0.0, 0.0)
+                    continue
+                if not soldier.stopped:
+                    desired, target = self._desired_velocity(soldier)
+                    desired_velocities[soldier.id] = desired
+                    if target is not None and soldier.detour_waypoint_x is None:
+                        arrival_zones[soldier.id] = (
+                            target.pos,
+                            max(
+                                0.0,
+                                self._approach_range(soldier, target)
+                                - self.config.stop_check_slack,
+                            ),
+                        )
+                    elif soldier.detour_waypoint_x is not None:
+                        arrival_zones[soldier.id] = (
+                            Vec2(soldier.detour_waypoint_x, soldier.detour_waypoint_y),
                             0.0,
-                            self._approach_range(soldier, target) - self.config.stop_check_slack,
-                        ),
-                    )
-                elif soldier.detour_waypoint_x is not None:
-                    arrival_zones[soldier.id] = (
-                        Vec2(soldier.detour_waypoint_x, soldier.detour_waypoint_y),
-                        0.0,
-                    )
-                if desired_velocities[soldier.id].length_sq() > 1e-8:
-                    assert self._combat is not None
-                    self._combat.interrupt_preparation(soldier)
+                        )
+                    if desired_velocities[soldier.id].length_sq() > 1e-8:
+                        assert self._combat is not None
+                        self._combat.interrupt_preparation(soldier)
 
-        for soldier in move_order:
-            if not soldier.alive:
-                continue
-            if soldier.stopped:
-                soldier.velocity_x = 0.0
-                soldier.velocity_y = 0.0
-                soldier.motion_samples.clear()
-                soldier.oscillating = False
-                soldier.motion_stalled = False
-                soldier.progress_goal = None
-                continue
+        participants = {
+            soldier_id
+            for soldier_id, velocity in desired_velocities.items()
+            if velocity.length_sq() > 1e-12
+        }
+        with PerfSpan("phase.steer"):
+            for soldier in move_order:
+                if not soldier.alive:
+                    continue
+                if soldier.stopped:
+                    soldier.velocity_x = 0.0
+                    soldier.velocity_y = 0.0
+                    soldier.motion_samples.clear()
+                    soldier.oscillating = False
+                    soldier.motion_stalled = False
+                    soldier.progress_goal = None
+                    continue
 
-            desired = desired_velocities.get(soldier.id, Vec2(0.0, 0.0))
-            soldier.detour_ticks = max(0, soldier.detour_ticks - 1)
+                desired = desired_velocities.get(soldier.id, Vec2(0.0, 0.0))
+                soldier.detour_ticks = max(0, soldier.detour_ticks - 1)
 
-            steering[soldier.id] = self._movement.choose_velocity(
-                soldier,
-                desired,
-                field_width=self._field_width,
-                field_height=self._field_height,
-                blocked_ticks=soldier.no_progress_ticks,
-                arrival_zone=arrival_zones.get(soldier.id),
-            )
+                steering[soldier.id] = self._movement.choose_velocity(
+                    soldier,
+                    desired,
+                    field_width=self._field_width,
+                    field_height=self._field_height,
+                    blocked_ticks=soldier.no_progress_ticks,
+                    arrival_zone=arrival_zones.get(soldier.id),
+                    participants=participants,
+                )
 
-        for soldier in move_order:
-            if soldier.id not in steering:
-                continue
-            result = steering[soldier.id]
-            soldier.previous_velocity_x = soldier.velocity_x
-            soldier.previous_velocity_y = soldier.velocity_y
-            soldier.velocity_x = result.velocity.x
-            soldier.velocity_y = result.velocity.y
-            soldier.last_steer_reason = (
-                "detour" if soldier.detour_waypoint_x is not None else result.reason
-            )
-            if (
-                result.reason == "desired_zero"
-                and soldier.has_ranged
-                and not soldier.has_melee
-                and soldier.move_target_id in self._soldier_map
-                and soldier.distance_to(self._soldier_map[soldier.move_target_id])
-                < soldier.effective_ranged_range_min
-            ):
-                soldier.last_steer_reason = "minimum_range"
-            if result.reason.startswith(("avoid", "fallback", "detour")):
-                blocked += 1
-            if result.reason == "fallback" or result.reason == "solver_empty":
-                solver_fallbacks += 1
-            if result.wall_contact:
-                wall_contacts += 1
-            if result.velocity.length_sq() > 1e-8:
-                movers += 1
-                speed_total += result.velocity.length()
+        with PerfSpan("phase.steer_apply"):
+            for soldier in move_order:
+                if soldier.id not in steering:
+                    continue
+                result = steering[soldier.id]
+                if recording:
+                    perf_inc(f"steer.reason.{result.reason}")
+                soldier.previous_velocity_x = soldier.velocity_x
+                soldier.previous_velocity_y = soldier.velocity_y
+                soldier.velocity_x = result.velocity.x
+                soldier.velocity_y = result.velocity.y
+                soldier.last_steer_reason = (
+                    "detour" if soldier.detour_waypoint_x is not None else result.reason
+                )
+                if (
+                    result.reason == "desired_zero"
+                    and soldier.has_ranged
+                    and not soldier.has_melee
+                    and soldier.move_target_id in self._soldier_map
+                    and soldier.distance_to(self._soldier_map[soldier.move_target_id])
+                    < soldier.effective_ranged_range_min
+                ):
+                    soldier.last_steer_reason = "minimum_range"
+                if result.reason.startswith(("avoid", "fallback", "detour")):
+                    blocked += 1
+                if result.reason == "fallback" or result.reason == "solver_empty":
+                    solver_fallbacks += 1
+                if result.wall_contact:
+                    wall_contacts += 1
+                if result.velocity.length_sq() > 1e-8:
+                    movers += 1
+                    speed_total += result.velocity.length()
 
-            if logger.isEnabledFor(logging.DEBUG) and (
-                self._tick % self.config.trace_agent_sample_every_ticks == 0
-                or result.reason in ("fallback", "solver_empty")
-            ):
-                decisions.append(self._decision_record(soldier, result))
+                if logger.isEnabledFor(logging.DEBUG) and (
+                    self._tick % self.config.trace_agent_sample_every_ticks == 0
+                    or result.reason in ("fallback", "solver_empty")
+                ):
+                    decisions.append(self._decision_record(soldier, result))
 
-        self._integrate_movement(alive, move_order, steering)
+        with PerfSpan("phase.integrate"):
+            self._integrate_movement(alive, move_order, steering)
         # Movement integration changed coordinates, so the collision resolver
         # below needs a fresh index.  Stopped units are treated as fixed
         # obstacles by the resolver itself.
-        self._spatial_hash.rebuild(alive)
-        resolution = self._collisions.resolve(
-            alive,
-            field_width=self._field_width,
-            field_height=self._field_height,
-        )
-        self._spatial_hash.rebuild(alive)
+        with PerfSpan("phase.resolve"):
+            self._spatial_hash.rebuild(alive)
+            resolution = self._collisions.resolve(
+                alive,
+                field_width=self._field_width,
+                field_height=self._field_height,
+            )
+            self._spatial_hash.rebuild(alive)
 
         for soldier in alive:
             delta = soldier.pos - tick_starts[soldier.id]
@@ -1012,6 +1077,11 @@ class BattleSimulator2D:
                 "detour_shortcuts": sum(s.detour_shortcuts for s in alive),
             },
         )
+        if recording:
+            perf_inc("tick.samples")
+            perf_inc("tick.alive_sum", summary.alive_red + summary.alive_blue)
+            perf_inc("tick.no_progress_sum", int(summary.extra["no_progress_units"]))
+            perf_inc("tick.mover_sum", summary.movers)
         self._solver_fallbacks += solver_fallbacks
         self._current_summary = summary
         if logger.isEnabledFor(logging.DEBUG) and (
@@ -1199,6 +1269,8 @@ class BattleSimulator2D:
         self, soldier: Soldier2D, motion: PoseMotion, start: float, end: float
     ) -> float:
         """Execute the selected pose trajectory, clipping only if the scene changed."""
+        recording = perf_enabled()
+        started = time.perf_counter() if recording else 0.0
         destination = motion.at(end)
         nearby = self._spatial_hash.query_circle(
             soldier.pos,
@@ -1232,6 +1304,8 @@ class BattleSimulator2D:
             )
 
         if not clear(end):
+            if recording:
+                perf_inc("execute.clipped")
             low, high = start, end
             for _ in range(10):
                 middle = (low + high) * 0.5
@@ -1242,6 +1316,9 @@ class BattleSimulator2D:
             end = low
         pose = motion.at(end)
         soldier.x, soldier.y, soldier.facing = pose.x, pose.y, pose.angle
+        if recording:
+            perf_add_time("execute", time.perf_counter() - started)
+            perf_inc("execute.calls")
         return end
 
     def _refresh_stopped(self) -> None:
@@ -1292,6 +1369,8 @@ class BattleSimulator2D:
         raw_damage = max(0.0, damage)
         effective_damage = min(old_hp, raw_damage)
         overkill = max(0.0, raw_damage - old_hp)
+        if effective_damage > 1e-9:
+            self._last_damage_tick = self._tick
         target.hp -= raw_damage
         attacker.total_damage_dealt += effective_damage
         attacker.raw_damage_dealt += raw_damage
@@ -1396,7 +1475,8 @@ class BattleSimulator2D:
         red_desc = " + ".join(f"{slot.unit.name}x{slot.count}" for slot in self.red_army)
         blue_desc = " + ".join(f"{slot.unit.name}x{slot.count}" for slot in self.blue_army)
         logger.info(
-            "=== 2D battle start === session=%s seed=%s red=[%s](%d) blue=[%s](%d) max_ticks=%d",
+            "=== 2D battle start === session=%s seed=%s red=[%s](%d) blue=[%s](%d) "
+            "max_ticks=%d damage_timeout=%.1fs",
             self.session_id,
             self.seed,
             red_desc,
@@ -1404,6 +1484,7 @@ class BattleSimulator2D:
             blue_desc,
             self.blue_count,
             self.config.max_ticks,
+            self.config.damage_timeout,
         )
         started = datetime.now().strftime("%Y%m%d_%H%M%S")
         try:
@@ -1430,28 +1511,57 @@ class BattleSimulator2D:
 
             winner: Side | None = None
             timeout = False
-            for tick in range(self.config.max_ticks):
+            timeout_ticks = (
+                max(1, round(self.config.damage_timeout / self.config.tick_interval))
+                if self.config.damage_timeout > 0
+                else 0
+            )
+            mark_start()
+            tick = 0
+            while self.config.max_ticks <= 0 or tick < self.config.max_ticks:
                 self._tick = tick
-                self._process_artillery_states()
-                self._refresh_stopped()
-                summary = self._process_movement()
-                assert self._combat is not None
-                for soldier in self._alive():
-                    self._combat.acquire_target(soldier)
-                summary.attackers = self._combat.process_attacks(self._alive())
-                winner = self._check_winner()
-                self._emit_visual_frame(
-                    status="running",
-                    winner=winner,
-                    timeout=False,
-                )
+                with PerfSpan("phase.tick"):
+                    with PerfSpan("phase.artillery"):
+                        self._process_artillery_states()
+                    with PerfSpan("phase.refresh"):
+                        self._refresh_stopped()
+                    summary = self._process_movement()
+                    assert self._combat is not None
+                    with PerfSpan("phase.combat"):
+                        for soldier in self._alive():
+                            self._combat.acquire_target(soldier)
+                        summary.attackers = self._combat.process_attacks(self._alive())
+                    with PerfSpan("phase.bookkeeping"):
+                        winner = self._check_winner()
+                        self._emit_visual_frame(
+                            status="running",
+                            winner=winner,
+                            timeout=False,
+                        )
+                if perf_enabled() and (tick + 1) % 100 == 0:
+                    log_window(self.session_id, tick, 100)
                 if winner is not None or (
                     len(self._alive(Side.RED)) == 0 and len(self._alive(Side.BLUE)) == 0
                 ):
                     break
+                quiet_ticks = (
+                    tick + 1
+                    if self._last_damage_tick is None
+                    else tick - self._last_damage_tick
+                )
+                if timeout_ticks and quiet_ticks >= timeout_ticks:
+                    timeout = True
+                    winner = self._timeout_winner()
+                    break
+                tick += 1
             else:
                 timeout = True
                 winner = self._timeout_winner()
+
+            if perf_enabled() and (self._tick + 1) % 100 != 0:
+                log_window(self.session_id, self._tick, (self._tick + 1) % 100)
+            if perf_enabled():
+                log_cumulative(self.session_id, self._tick)
 
             self._emit_visual_frame(
                 status="finished",
