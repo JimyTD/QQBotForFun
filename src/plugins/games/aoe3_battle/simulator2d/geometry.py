@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import math
 from collections.abc import Iterable
-from dataclasses import dataclass, replace
+from dataclasses import dataclass, field, replace
 from functools import lru_cache
 from itertools import pairwise
 
@@ -59,14 +59,15 @@ class CollisionShape:
     radius_x: float
     radius_z: float
     angle: float
+    # Derived from the radii. Not part of equality: replace() rebuilds it in __post_init__.
+    is_circular: bool = field(init=False, compare=False)
+
+    def __post_init__(self) -> None:
+        object.__setattr__(self, "is_circular", abs(self.radius_x - self.radius_z) <= 1e-6)
 
     @property
     def bounding_radius(self) -> float:
         return max(self.radius_x, self.radius_z)
-
-    @property
-    def is_circular(self) -> bool:
-        return abs(self.radius_x - self.radius_z) <= 1e-6
 
     def _local_direction(self, nx: float, ny: float) -> tuple[float, float]:
         c = math.cos(self.angle)
