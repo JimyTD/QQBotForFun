@@ -15,7 +15,9 @@ from plugins.games.aoe3_battle.simulator2d import (
     Simulation2DConfig,
 )
 from plugins.games.aoe3_battle.simulator2d.combat import CombatSystem
+from plugins.games.aoe3_battle.simulator2d.compat import ArmySlot
 from plugins.games.aoe3_battle.simulator2d.config import CollisionMode
+from plugins.games.aoe3_battle.simulator2d.formation import build_deployment
 from plugins.games.aoe3_battle.simulator2d.geometry import (
     shape_contact,
     shape_for_unit,
@@ -121,6 +123,60 @@ def test_initial_formation_stays_inside_dynamic_field() -> None:
         - soldier.radius(simulator.config.fallback_unit_radius)
         for soldier in soldiers
     )
+
+
+def test_formation_keeps_unit_types_in_separate_blocks() -> None:
+    infantry = _unit(
+        "infantry",
+        range_=0.0,
+        obstruction_radius_x=0.49,
+        obstruction_radius_z=0.49,
+    )
+    cavalry = _unit(
+        "cavalry",
+        range_=0.0,
+        speed=8.0,
+        obstruction_radius_x=0.49,
+        obstruction_radius_z=0.99,
+    )
+    config = Simulation2DConfig()
+    deployment = build_deployment(
+        [ArmySlot(infantry, 7), ArmySlot(cavalry, 5)],
+        [],
+        config,
+    )
+
+    # Existing ordering puts faster same-range units first. The two blocks must
+    # still be physically separated rather than sharing rows.
+    cavalry_positions = deployment.positions[:5]
+    infantry_positions = deployment.positions[5:]
+    assert min(position.x for position in cavalry_positions) > max(
+        position.x for position in infantry_positions
+    )
+
+
+def test_formation_rows_use_each_units_own_footprint() -> None:
+    infantry = _unit(
+        "infantry",
+        range_=0.0,
+        obstruction_radius_x=0.49,
+        obstruction_radius_z=0.49,
+    )
+    artillery = _unit(
+        "artillery",
+        range_=20.0,
+        obstruction_radius_x=1.0,
+        obstruction_radius_z=0.5,
+    )
+    deployment = build_deployment(
+        [ArmySlot(infantry, 12), ArmySlot(artillery, 4)],
+        [],
+        Simulation2DConfig(),
+    )
+
+    rows = deployment.row_sizes[Side.RED]
+    assert rows[0] > rows[-1]
+    assert deployment.rows[Side.RED] > 2
 
 
 def test_larger_units_use_their_real_obstruction_radius() -> None:
@@ -265,7 +321,7 @@ def test_field_length_override_controls_middle_distance() -> None:
     assert near.config.field_length == 3.0
 
 
-def test_blocked_melee_slides_sideways_instead_of_waiting() -> None:
+def test_blocked_melee_separates_instead_of_waiting() -> None:
     config = Simulation2DConfig()
     unit = _unit("blocked", speed=5.0, attack_melee=10.0)
     mover = Soldier2D(1, Side.BLUE, unit, 100.0, 1.0, 5.0, 10.0)
@@ -283,8 +339,8 @@ def test_blocked_melee_slides_sideways_instead_of_waiting() -> None:
         blocked_ticks=config.blocked_window_ticks,
     )
 
-    assert result.velocity.x < 1.0
-    assert abs(result.velocity.y) > 0.1
+    assert result.velocity.x < 0.0
+    assert result.velocity.length() > 0.1
     assert result.reason in ("free", "separate", "avoid", "detour", "fallback", "maneuver")
 
 

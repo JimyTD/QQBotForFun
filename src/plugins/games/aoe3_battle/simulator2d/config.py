@@ -42,8 +42,10 @@ class Simulation2DConfig:
 
     fallback_unit_radius: float = 0.45
     max_known_unit_radius: float = 0.0
-    formation_spacing: float = 1.25
-    row_spacing: float = 2.0
+    max_known_speed: float = 0.0
+    formation_lateral_gap: float = 0.25
+    formation_row_gap: float = 0.75
+    formation_block_gap: float = 0.75
     max_columns: int = 40
     min_columns: int = 1
     formation_side_margin: float = 3.0
@@ -55,6 +57,7 @@ class Simulation2DConfig:
     avoidance_horizon: float = 0.85
     avoidance_margin: float = 0.12
     max_neighbors: int = 8
+    orca_max_neighbors: int = 10
     movement_substeps: int = 2
     movement_turn_rate: float = 6.283185307179586
     separation_iterations: int = 4

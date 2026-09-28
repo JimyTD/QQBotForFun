@@ -80,7 +80,9 @@ class BattleSimulator2D:
                     **asdict(base),
                     "field_length": (base.field_length if field_length is None else field_length),
                     "max_ticks": base.max_ticks if max_ticks is None else max_ticks,
-                    "row_spacing": (base.row_spacing if row_spacing is None else row_spacing),
+                    "formation_row_gap": (
+                        base.formation_row_gap if row_spacing is None else row_spacing
+                    ),
                     "max_columns": (
                         base.max_columns
                         if row_capacity is None

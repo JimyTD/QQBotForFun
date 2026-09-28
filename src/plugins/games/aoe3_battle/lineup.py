@@ -1405,23 +1405,23 @@ def format_formation_panel(lineup: MatchLineup) -> str:
             for slot in sim_army
             for _ in range(slot.count)
         ]
-        red_columns = deployment.columns[Side.RED]
         positions = deployment.positions[:len(units)]
         rows: list[FormationRow] = []
-        for index in range(0, len(positions), red_columns):
-            row_positions = positions[index:index + red_columns]
+        cursor = 0
+        for row_size in deployment.row_sizes[Side.RED]:
+            row_positions = positions[cursor:cursor + row_size]
             slots: list[tuple[Unit, int]] = []
-            cursor = index
-            while cursor < index + len(row_positions):
-                unit = units[cursor]
+            row_cursor = cursor
+            while row_cursor < cursor + len(row_positions):
+                unit = units[row_cursor]
                 count = 1
-                cursor += 1
+                row_cursor += 1
                 while (
-                    cursor < index + len(row_positions)
-                    and units[cursor] is unit
+                    row_cursor < cursor + len(row_positions)
+                    and units[row_cursor] is unit
                 ):
                     count += 1
-                    cursor += 1
+                    row_cursor += 1
                 slots.append((unit, count))
             rows.append(FormationRow(
                 row_index=len(rows),
@@ -1429,6 +1429,7 @@ def format_formation_panel(lineup: MatchLineup) -> str:
                 slots=slots,
                 total=len(row_positions),
             ))
+            cursor += row_size
         return rows
 
     def _format_row(row: FormationRow, num_rows: int) -> str:
