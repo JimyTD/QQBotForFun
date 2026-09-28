@@ -23,10 +23,9 @@ from core.types import EndReason, GameContext
 from src.plugins.aoe3.repository import UnitRepo
 
 from .broadcaster import (
-    _hp_bar,
-    _hp_summary,
     battle_resource_loss,
     format_battle_report,
+    format_hp_bar_line,
 )
 from .civ_war_civs import get_civ_profile, pick_random_civs
 from .civ_war_matchup import generate_civ_war_lineup
@@ -1381,8 +1380,8 @@ class AoE3BattleGame(GameBase):
                 # 组装一条消息
                 report_lines = [
                     f"━━━ {match_obj.label} {tu_a.display_name} vs {tu_b.display_name} ⏱{result.duration:.1f}s ━━━",
-                    f"🔴 {_hp_bar(red_cur_hp, red_max_hp, '🟥')}  {_hp_summary(red_cur_hp, red_max_hp)}",
-                    f"🔵 {_hp_bar(blue_cur_hp, blue_max_hp, '🟥')}  {_hp_summary(blue_cur_hp, blue_max_hp)}",
+                    format_hp_bar_line(Side.RED, red_cur_hp, red_max_hp),
+                    format_hp_bar_line(Side.BLUE, blue_cur_hp, blue_max_hp),
                     f"💸 战损资源：红方 {red_loss} ｜ 蓝方 {blue_loss}",
                     f"🔴 {tu_a.display_name} ×{count_a} → {red_status}/击杀{red_kills}/有效伤害{red_dmg:.0f}",
                     f"🔵 {tu_b.display_name} ×{count_b} → {blue_status}/击杀{blue_kills}/有效伤害{blue_dmg:.0f}",

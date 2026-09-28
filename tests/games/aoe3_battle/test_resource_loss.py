@@ -10,6 +10,7 @@ from plugins.games.aoe3_battle.battle_contract import (
 from plugins.games.aoe3_battle.broadcaster import (
     battle_resource_loss,
     format_battle_report,
+    format_hp_bar_line,
 )
 
 
@@ -113,3 +114,8 @@ def test_battle_resource_loss_zero_when_nobody_died():
     result = _result([], [])
 
     assert battle_resource_loss(result) == (0, 0)
+
+
+def test_hp_bars_use_side_colors():
+    assert format_hp_bar_line(Side.RED, 100, 100).startswith("🔴 🟥🟥🟥🟥🟥🟥🟥🟥🟥🟥")
+    assert format_hp_bar_line(Side.BLUE, 100, 100).startswith("🔵 🟦🟦🟦🟦🟦🟦🟦🟦🟦🟦")

@@ -12,6 +12,10 @@ from .battle_contract import BattleResult, Side
 # 血条渲染
 # =====================================================================
 _HP_BAR_LEN = 10
+_HP_BAR_FILLED = {
+    Side.RED: "🟥",
+    Side.BLUE: "🟦",
+}
 
 
 def _hp_bar(current: float, maximum: float, filled: str, empty: str = "⬛") -> str:
@@ -31,6 +35,15 @@ def _hp_summary(current: float, maximum: float) -> str:
     if current <= 0:
         return "0%"
     return f"{pct:.0f}%  ({current:.0f}/{maximum:.0f})"
+
+
+def format_hp_bar_line(side: Side, current: float, maximum: float) -> str:
+    """生成带阵营标识和颜色的血条行。"""
+    marker = "🔴" if side == Side.RED else "🔵"
+    return (
+        f"{marker} {_hp_bar(current, maximum, _HP_BAR_FILLED[side])}  "
+        f"{_hp_summary(current, maximum)}"
+    )
 
 
 # =====================================================================
@@ -72,8 +85,8 @@ def format_battle_report(result: BattleResult) -> str:
     blue_max_hp = sum(s.max_hp for s in blue_all)
     blue_cur_hp = sum(s.hp for s in result.blue_alive)
 
-    lines.append(f"🔴 {_hp_bar(red_cur_hp, red_max_hp, '🟥')}  {_hp_summary(red_cur_hp, red_max_hp)}")
-    lines.append(f"🔵 {_hp_bar(blue_cur_hp, blue_max_hp, '🟦')}  {_hp_summary(blue_cur_hp, blue_max_hp)}")
+    lines.append(format_hp_bar_line(Side.RED, red_cur_hp, red_max_hp))
+    lines.append(format_hp_bar_line(Side.BLUE, blue_cur_hp, blue_max_hp))
     red_loss, blue_loss = battle_resource_loss(result)
     lines.append(f"💸 战损资源：红方 {red_loss} ｜ 蓝方 {blue_loss}")
     lines.append("")
