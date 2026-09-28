@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import logging
 import math
-from dataclasses import dataclass, replace
+from dataclasses import dataclass
 from typing import Any
 
 from .config import CollisionMode, Simulation2DConfig
@@ -13,6 +13,7 @@ from .geometry import (
     PoseMotion,
     angle_delta,
     clamp_position,
+    repose,
     shape_contact,
     shape_for_unit,
     steering_motion,
@@ -46,7 +47,7 @@ def _pose_collision_time(
     if other_velocity.length_sq() > 1e-12 and not relative.clear([other], tolerance=tolerance):
         return 0.0
     own = motion.at(1)
-    other = replace(
+    other = repose(
         other, x=other.x + other_velocity.x * duration, y=other.y + other_velocity.y * duration
     )
     moving = max(0.0, (horizon if stop_time is None else min(horizon, stop_time)) - duration)
@@ -58,8 +59,8 @@ def _pose_collision_time(
     remaining = horizon - duration - moving
     if remaining <= 1e-9:
         return None
-    own = replace(own, x=own.x + velocity.x * moving, y=own.y + velocity.y * moving)
-    other = replace(
+    own = repose(own, x=own.x + velocity.x * moving, y=own.y + velocity.y * moving)
+    other = repose(
         other, x=other.x + other_velocity.x * moving, y=other.y + other_velocity.y * moving
     )
     ttc = translation_collision_time(own, other, -other_velocity.x, -other_velocity.y, remaining)
@@ -130,7 +131,7 @@ def _time_to_collision(
                 else:
                     high = mid
             collision = low * moving_horizon
-        own_shape = replace(own_shape, angle=motion.at(1).angle)
+        own_shape = repose(own_shape, angle=motion.at(1).angle)
     else:
         collision = translation_collision_time(
             own_shape, other_shape, relative_velocity.x, relative_velocity.y, moving_horizon
@@ -140,12 +141,12 @@ def _time_to_collision(
 
     # Arrival does not erase other moving bodies: predict the stationary
     # remainder too, rather than discarding all collisions after arrival.
-    own_shape = replace(
+    own_shape = repose(
         own_shape,
         x=own_shape.x + velocity.x * moving_horizon,
         y=own_shape.y + velocity.y * moving_horizon,
     )
-    other_shape = replace(
+    other_shape = repose(
         other_shape,
         x=other_shape.x + neighbor_velocity.x * moving_horizon,
         y=other_shape.y + neighbor_velocity.y * moving_horizon,

@@ -4,13 +4,14 @@ from __future__ import annotations
 
 import heapq
 import math
-from dataclasses import dataclass, replace
+from dataclasses import dataclass
 from enum import StrEnum
 
 from .config import Simulation2DConfig
 from .geometry import (
     CollisionShape,
     inside_field,
+    repose,
     shape_for_unit,
     steering_motion,
     swept_contact,
@@ -43,7 +44,7 @@ def _clear(
         else facing
     )
     motion = steering_motion(
-        replace(shape, x=start.x, y=start.y, angle=facing),
+        repose(shape, x=start.x, y=start.y, angle=facing),
         end.x - start.x,
         end.y - start.y,
         angle,
@@ -169,7 +170,7 @@ def search_detour(
 
     def available_node(point: Vec2) -> bool:
         for angle in orientations:
-            posed = replace(shape, x=point.x, y=point.y, angle=angle)
+            posed = repose(shape, x=point.x, y=point.y, angle=angle)
             if inside_field(posed, *field) and all(
                 swept_contact(posed, other, 0, 0, padding=config.avoidance_margin * 0.5) is None
                 for other in obstacles
@@ -192,7 +193,7 @@ def search_detour(
     obstacles.sort(key=lambda item: segment_distance_sq(soldier.pos, goal, Vec2(item.x, item.y)))
     for obstacle in obstacles[: config.navigation_max_obstacles]:
         for angle in orientations:
-            oriented = replace(shape, angle=angle)
+            oriented = repose(shape, angle=angle)
             for index in range(8):
                 normal = forward.rotated(index * math.pi / 4)
                 ax, ay = oriented.support(normal.x, normal.y)
@@ -306,7 +307,7 @@ def search_detour(
         for neighbor in candidates:
             dx, dy = nodes[neighbor].x - nodes[current].x, nodes[neighbor].y - nodes[current].y
             motion = steering_motion(
-                replace(shape, x=nodes[current].x, y=nodes[current].y, angle=facing),
+                repose(shape, x=nodes[current].x, y=nodes[current].y, angle=facing),
                 dx,
                 dy,
                 math.atan2(dy, dx),

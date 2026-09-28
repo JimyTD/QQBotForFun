@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import math
 from collections.abc import Iterable
-from dataclasses import dataclass, field, replace
+from dataclasses import dataclass, field
 from functools import lru_cache
 from itertools import pairwise
 
@@ -59,7 +59,7 @@ class CollisionShape:
     radius_x: float
     radius_z: float
     angle: float
-    # Derived from the radii. Not part of equality: replace() rebuilds it in __post_init__.
+    # Derived from the radii. Excluded from equality; __post_init__ fills it.
     is_circular: bool = field(init=False, compare=False)
 
     def __post_init__(self) -> None:
@@ -96,6 +96,23 @@ class CollisionShape:
             return 0.0, 0.0
         x, y = self.radius_x**2 * lx / length, self.radius_z**2 * ly / length
         return c * x - s * y, s * x + c * y
+
+
+def repose(
+    shape: CollisionShape,
+    *,
+    x: float | None = None,
+    y: float | None = None,
+    angle: float | None = None,
+) -> CollisionShape:
+    """Copy a shape onto a new pose. Radii stay on their original axes."""
+    return CollisionShape(
+        x=shape.x if x is None else x,
+        y=shape.y if y is None else y,
+        radius_x=shape.radius_x,
+        radius_z=shape.radius_z,
+        angle=shape.angle if angle is None else angle,
+    )
 
 
 def clamp_position(shape: CollisionShape, width: float, height: float) -> tuple[float, float]:
@@ -359,7 +376,7 @@ def translation_clear(
         return False
     # Existing overlap may escape but cannot be deepened or crossed through.
     final = swept_contact(
-        replace(first, x=first.x + dx, y=first.y + dy), second, 0, 0, padding=padding
+        repose(first, x=first.x + dx, y=first.y + dy), second, 0, 0, padding=padding
     )
     return final is None or final.depth < initial.depth - _EPSILON
 
@@ -385,7 +402,7 @@ def rotation_clear(
     ]
 
     def clear_interval(start: float, end: float, depth: int) -> bool:
-        mid = replace(shape, angle=(start + end) * 0.5)
+        mid = repose(shape, angle=(start + end) * 0.5)
         # The ellipse support function changes by at most |a-b| per radian.
         bound = abs(shape.radius_x - shape.radius_z) * abs(end - start) * 0.5
         if field is not None:
@@ -429,7 +446,7 @@ def motion_clear(
     if shape.is_circular or abs(delta) <= _EPSILON:
         if field is not None:
             if not inside_field(shape, *field, tolerance) or not inside_field(
-                replace(shape, x=end_x, y=end_y), *field, tolerance
+                repose(shape, x=end_x, y=end_y), *field, tolerance
             ):
                 return False
         return all(
@@ -457,10 +474,10 @@ def motion_clear(
             field = None
     if not obstacles and field is None:
         return True
-    end = replace(shape, x=end_x, y=end_y, angle=shape.angle + delta)
+    end = repose(shape, x=end_x, y=end_y, angle=shape.angle + delta)
 
     def clear_interval(start: CollisionShape, finish: CollisionShape, depth: int) -> bool:
-        mid = replace(
+        mid = repose(
             start,
             x=(start.x + finish.x) * 0.5,
             y=(start.y + finish.y) * 0.5,
@@ -472,7 +489,7 @@ def motion_clear(
         ):
             return False
         uncertain = field is not None and not all(
-            inside_field(replace(p, angle=mid.angle), *field, tolerance - angular_bound)
+            inside_field(repose(p, angle=mid.angle), *field, tolerance - angular_bound)
             for p in (start, finish)
         )
         for other in obstacles:
@@ -482,7 +499,7 @@ def motion_clear(
             # contains every intermediate pose; endpoints alone are not enough.
             if (
                 swept_contact(
-                    replace(start, angle=mid.angle),
+                    repose(start, angle=mid.angle),
                     other,
                     finish.x - start.x,
                     finish.y - start.y,
@@ -516,8 +533,10 @@ class PoseMotion:
     turn_fraction: float = 1.0
 
     def at(self, fraction: float) -> CollisionShape:
+        if fraction == 0.0:
+            return self.start
         progress = min(1.0, fraction / max(self.turn_fraction, _EPSILON))
-        return replace(
+        return repose(
             self.start,
             x=self.start.x + self.dx * fraction,
             y=self.start.y + self.dy * fraction,
