@@ -31,6 +31,7 @@ CIVS_PATH = ROOT / "seeds" / "aoe3" / "civs.json"
 HOMECITY_DIR = ROOT / "data" / "aoe3" / "raw" / "homecity"
 OUTPUT_PATH = ROOT / "seeds" / "aoe3" / "civ_war_tech_pool.json"
 GENERIC_PATH = ROOT / "seeds" / "aoe3" / "civ_war_generic_techs.json"
+AVAILABLE_TECH_PATH = ROOT / "seeds" / "aoe3" / "civ_available_techs.json"
 
 # Technologies that are intentionally excluded from the runtime pool because
 # they depend on mechanics the battle model does not implement. Excluding the
@@ -394,26 +395,19 @@ def _load_stringtable() -> dict[str, str]:
 
 def _load_civ_ownership() -> tuple[
     dict[str, set[str]],
-    dict[str, set[str]],
     dict[str, dict[str, int]],
 ]:
-    """Return curated-civ ownership for techs, units, and home-city cards."""
-    data = json.loads(CIVS_PATH.read_text(encoding="utf-8"))
-    curated = set(data["_meta"]["curated_civs"])
+    """Return explicit curated-civ tech ownership and home-city card ages."""
+    available = json.loads(
+        AVAILABLE_TECH_PATH.read_text(encoding="utf-8")
+    )["civs"]
     tech_owners: dict[str, set[str]] = {}
-    unit_owners: dict[str, set[str]] = {}
     card_ages: dict[str, dict[str, int]] = {}
-    for civ_id in curated:
-        civ = data["civs"][civ_id]
-        for tech in civ.get("unique_techs", ()):
+    for civ_id, tech_data in available.items():
+        for tech in tech_data.get("all", ()):
             tech_owners.setdefault(tech, set()).add(civ_id)
-        for unit_id in civ.get("units", ()):
-            unit_owners.setdefault(unit_id.lower(), set()).add(civ_id)
-    for unit_id, civ_ids in data.get("unit_civs", {}).items():
-        for civ_id in civ_ids:
-            if civ_id in curated:
-                unit_owners.setdefault(unit_id.lower(), set()).add(civ_id)
 
+    curated = set(available)
     for path in sorted(HOMECITY_DIR.glob("homecity*.xml")):
         try:
             root = ET.parse(path).getroot()
@@ -438,7 +432,7 @@ def _load_civ_ownership() -> tuple[
                     age,
                     civ_card_ages.get(civ_id, age),
                 )
-    return tech_owners, unit_owners, card_ages
+    return tech_owners, card_ages
 
 
 def _number(value: str | None) -> float | None:
@@ -543,7 +537,6 @@ def _parse_tech(
     *,
     stringtable: dict[str, str],
     tech_owners: dict[str, set[str]],
-    unit_owners: dict[str, set[str]],
     card_ages: dict[str, dict[str, int]],
     census: Counter[tuple[str, str]],
 ) -> dict[str, Any] | None:
@@ -584,20 +577,10 @@ def _parse_tech(
     rollover_id = (tech.findtext("rollovertextid") or "").strip()
     targets = _unit_targets([*combat_ops, *cost_ops])
     civ_ids = sorted(tech_owners.get(tech_id, set()))
-    if not civ_ids:
-        civ_ids = sorted(
-            {
-                civ_id
-                for target in targets
-                for civ_id in unit_owners.get(target, set())
-            }
-        )
     flags = [flag.text for flag in tech.findall("flag") if flag.text]
-    source_kind = "generic"
+    source_kind = "global"
     if tech_id in tech_owners:
         source_kind = "owned"
-    elif civ_ids:
-        source_kind = "unit-derived"
 
     return {
         "id": tech_id,
@@ -615,7 +598,7 @@ def _parse_tech(
 
 def build_pool() -> dict[str, Any]:
     stringtable = _load_stringtable()
-    tech_owners, unit_owners, card_ages = _load_civ_ownership()
+    tech_owners, card_ages = _load_civ_ownership()
     tech_root = ET.parse(TECHTREE_PATH).getroot()
     census: Counter[tuple[str, str]] = Counter()
     rows = [
@@ -625,7 +608,6 @@ def build_pool() -> dict[str, Any]:
             tech,
             stringtable=stringtable,
             tech_owners=tech_owners,
-            unit_owners=unit_owners,
             card_ages=card_ages,
             census=census,
         ))

@@ -504,8 +504,7 @@
           "散马"
         ],
         "required_tech_ids": [
-          "DEHCKoncerz",
-          "DEHCKozieniceRifles"
+          "DEHCKoncerz"
         ],
         "reason": "库尔皮神射手与翼骑兵体现波兰核心兵种。"
       },
@@ -528,9 +527,6 @@
         "basis": [
           "皇家护卫",
           "散龙炮"
-        ],
-        "required_tech_ids": [
-          "DEHCKozieniceRifles"
         ],
         "reason": "波兰步兵、装甲骑射与炮兵构成远程联合军。"
       },

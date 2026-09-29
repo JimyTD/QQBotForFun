@@ -221,6 +221,8 @@ def main() -> None:
             "revolution_techs": revolution.get(civ["id"], []),
             "starting_units": sorted({e.lower() for e in civ["starting_units"]}),
             "units": sorted(ids),
+            "active_techs": sorted(active),
+            "obtainable_techs": sorted(obtainable),
             "tech_counts": {"active": len(active), "obtainable": len(obtainable)},
         }
 

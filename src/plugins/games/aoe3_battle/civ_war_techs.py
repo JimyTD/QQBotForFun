@@ -158,7 +158,7 @@ def _matched_unit_ids(
 def _is_civ_allowed(row: dict[str, Any], civ_id: str) -> bool:
     owners = set(row.get("civ_ids", ()))
     if not owners:
-        return True
+        return False
     return civ_id in owners
 
 
