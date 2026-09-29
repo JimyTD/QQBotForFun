@@ -315,9 +315,12 @@ def select_candidate_techs(
     path: Path = POOL_PATH,
 ) -> list[MatchedTech]:
     """Select the fixed-priority compensation set for an auto candidate."""
-    if candidate.source != "generic":
+    if candidate.source == "generic":
+        budget = max(0, len(candidate.units) - 1)
+    elif candidate.source == "national":
+        budget = 1
+    else:
         return []
-    budget = max(0, len(candidate.units) - 1)
     if budget == 0:
         return []
     return match_candidate_techs(

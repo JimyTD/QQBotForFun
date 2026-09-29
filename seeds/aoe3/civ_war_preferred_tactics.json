@@ -85,6 +85,10 @@
           "特色兵",
           "三兵种"
         ],
+        "required_tech_ids": [
+          "DEHCBuffaloSoldiers",
+          "DEHCCoffeeMillGun"
+        ],
         "reason": "正规军顶线，卡宾枪骑兵反骑，加特林机枪压制步兵。"
       },
       {
@@ -107,6 +111,10 @@
         "basis": [
           "特色兵",
           "散龙炮"
+        ],
+        "required_tech_ids": [
+          "DEHCBuffaloSoldiers",
+          "DEHCCoffeeMillGun"
         ],
         "reason": "美国特色散兵、远程骑兵和加特林构成完整远程体系。"
       }
@@ -357,6 +365,11 @@
           "特色兵",
           "散龙炮"
         ],
+        "required_tech_ids": [
+          "DEHCImprovedCrossbowsItalians",
+          "DEChurchCarabinieri",
+          "DEHCREVHonorGuard"
+        ],
         "reason": "墙盾手作为国家特色远程核心，龙骑和鹰炮补足反骑与范围火力。"
       },
       {
@@ -375,6 +388,10 @@
           ]
         },
         "basis": [],
+        "required_tech_ids": [
+          "DEChurchCarabinieri",
+          "DEHCREVHonorGuard"
+        ],
         "reason": "强力龙骑散"
       }
     ],
@@ -442,6 +459,10 @@
           "特色兵",
           "火枪马"
         ],
+        "required_tech_ids": [
+          "HCCaballeros",
+          "DEHCPlanTuxtepec"
+        ],
         "reason": "墨西哥士兵与游击叛兵组成国家特色火枪马。"
       },
       {
@@ -461,6 +482,9 @@
         "basis": [
           "特色兵",
           "散马"
+        ],
+        "required_tech_ids": [
+          "DEHCPlanMiramare"
         ],
         "reason": "劫匪远程输出，游击叛兵切后排。"
       },
@@ -724,6 +748,10 @@
           "双皇家护卫",
           "经典散马"
         ],
+        "required_tech_ids": [
+          "DEHCREVTowarczys",
+          "DEHCREVFireDrills"
+        ],
         "reason": "德国散兵和德国骑兵均为皇家护卫。"
       },
       {
@@ -743,6 +771,9 @@
         "basis": [
           "特色兵",
           "龙骑散"
+        ],
+        "required_tech_ids": [
+          "DEHCREVFireDrills"
         ],
         "reason": "马战车承担远程反骑，散兵处理重步。"
       },
@@ -1282,6 +1313,9 @@
           "皇家护卫",
           "散马"
         ],
+        "required_tech_ids": [
+          "HCCaballeros"
+        ],
         "reason": "散兵远程输出，长矛骑兵利用反步兵优势冲击后排。"
       },
       {
@@ -1322,6 +1356,9 @@
           "皇家护卫",
           "火枪马"
         ],
+        "required_tech_ids": [
+          "HCCaballeros"
+        ],
         "reason": "火枪兵顶线，长矛骑兵发挥西班牙特色冲击能力。"
       },
       {
@@ -1342,6 +1379,9 @@
         "basis": [
           "双皇家护卫",
           "近战双核心"
+        ],
+        "required_tech_ids": [
+          "HCCaballeros"
         ],
         "reason": "剑盾手反骑、长矛骑兵反步兵，两种西班牙近战皇家护卫互相补盲。"
       }
@@ -1571,6 +1611,9 @@
           "多生态位",
           "龙骑散"
         ],
+        "required_tech_ids": [
+          "BigFirepitBattleAnger"
+        ],
         "reason": "步枪骑士兼具反骑、反重步与反炮，鹰神弓补充远程质量。"
       },
       {
@@ -1590,6 +1633,9 @@
         "basis": [
           "独特体系",
           "纯骑"
+        ],
+        "required_tech_ids": [
+          "BigFirepitBattleAnger"
         ],
         "reason": "斧骑冲击配步枪骑多生态位火力，体现拉科塔全骑特色。"
       },
@@ -1634,6 +1680,9 @@
           "多生态位强兵",
           "纯兵种"
         ],
+        "required_tech_ids": [
+          "BigFirepitBattleAnger"
+        ],
         "reason": "步枪骑士兼具反重骑、反重步与反炮倍率，纯量产能形成独特全能骑兵军。"
       },
       {
@@ -1652,6 +1701,9 @@
           ]
         },
         "basis": [],
+        "required_tech_ids": [
+          "BigFirepitBattleAnger"
+        ],
         "reason": "强力高速的龙骑组合 又弥补了龙骑的反重步能力"
       }
     ]

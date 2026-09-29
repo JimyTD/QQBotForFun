@@ -110,6 +110,71 @@
       "id": "DEChurchTeutonicKnights",
       "tier": "support",
       "note": "医院骑士以速度换取攻击强化，负作用保留。"
+    },
+    {
+      "id": "DEHCBuffaloSoldiers",
+      "tier": "core",
+      "note": "美国卡宾枪骑兵获得攻击、射程和护甲强化。"
+    },
+    {
+      "id": "DEHCCoffeeMillGun",
+      "tier": "core",
+      "note": "加特林机枪取消装填，改变持续射击机制。"
+    },
+    {
+      "id": "HeavyGatlingGun",
+      "tier": "core",
+      "note": "重型加特林获得攻击和生命强化。"
+    },
+    {
+      "id": "HCCaballeros",
+      "tier": "core",
+      "note": "长矛骑兵对步兵额外克制并增加近战射程，改变战术定位。"
+    },
+    {
+      "id": "DEHCPlanTuxtepec",
+      "tier": "core",
+      "note": "劫匪转型为墨西哥士兵，并强化墨西哥士兵射程。"
+    },
+    {
+      "id": "DEHCPlanMiramare",
+      "tier": "core",
+      "note": "劫匪转型为法国护卫长枪兵，并增加步枪步兵射程。"
+    },
+    {
+      "id": "DEHCImprovedCrossbowsItalians",
+      "tier": "core",
+      "note": "意大利弩手与墙盾手获得射程和反重步克制强化。"
+    },
+    {
+      "id": "DEChurchCarabinieri",
+      "tier": "core",
+      "note": "卡宾枪骑兵替换并强化远程骑兵，提升远程攻击速度。"
+    },
+    {
+      "id": "DEHCREVHonorGuard",
+      "tier": "core",
+      "note": "枪骑兵升级为独立枪骑兵，获得近距离强力长矛攻击。"
+    },
+    {
+      "id": "DEHCREVTowarczys",
+      "tier": "core",
+      "note": "马刀骑兵改用长矛并强化对步兵伤害，改变战斗方式。"
+    },
+    {
+      "id": "DEHCREVFireDrills",
+      "tier": "core",
+      "note": "普鲁士单位同时获得移动速度与射速强化。"
+    },
+    {
+      "id": "RGPrussianNeedleGun",
+      "tier": "core",
+      "note": "德国长枪兵获得攻击、生命与射速的大幅强化。"
+    },
+    {
+      "id": "BigFirepitBattleAnger",
+      "tier": "core",
+      "note": "拉科塔骑兵对炮兵获得大幅克制倍率强化。"
     }
   ]
 }

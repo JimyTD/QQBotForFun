@@ -97,7 +97,7 @@ def test_unknown_effect_rows_are_not_selected() -> None:
     assert all(tech.combat_ops or tech.cost_ops for tech in selected)
 
 
-def test_national_candidate_does_not_get_auto_compensation() -> None:
+def test_national_candidate_gets_one_generic_fallback() -> None:
     repo = UnitRepo.get()
     candidate = _Candidate(
         civ_id="Chinese",
@@ -107,7 +107,9 @@ def test_national_candidate_does_not_get_auto_compensation() -> None:
         ),
         source="national",
     )
-    assert select_candidate_techs(candidate, age=3) == []
+    selected = select_candidate_techs(candidate, age=3)
+    assert len(selected) == 1
+    assert all(tech.combat_ops or tech.cost_ops for tech in selected)
 
 
 def test_generic_pool_excludes_non_combat_targets() -> None:
