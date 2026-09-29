@@ -37,15 +37,6 @@ class Seat:
     def ready(self) -> bool:
         return self.army is not None
 
-    @property
-    def label(self) -> str:
-        if self.army is not None:
-            slots = "、".join(
-                f"{name}×{count}" for _unit_id, name, count in self.army.slots
-            )
-            return f"{self.army.label} {slots}"
-        return self.nickname
-
 
 @dataclass
 class LineupRoom:
@@ -83,14 +74,27 @@ def format_room(room: LineupRoom) -> str:
     title = "配兵锦标赛" if room.tournament else "配兵"
     lines = [f"⚔️ {title} · {room.age}时代 · 军费 {room.budget}"]
     for index, seat in enumerate(room.seats, start=1):
-        state = "已备好" if seat.ready else "配兵中"
-        lines.append(f"{index}. {seat.label} · {state}")
+        lines.append(f"{index}. {seat.nickname}")
     empty = room.capacity - len(room.seats)
     if empty:
         lines.append(f"空位 {empty}")
     lines.append("@我 加入 / @我 离开")
+    return "\n".join(lines)
+
+
+def format_all_ready(room: LineupRoom) -> str:
+    """群提示：已报名的玩家都配完了。空位留给开始时的 AI。"""
+    title = "配兵锦标赛" if room.tournament else "配兵"
+    lines = [f"⚔️ {title} · 全体玩家已配好"]
+    empty = room.capacity - len(room.seats)
+    if empty:
+        lines.append(f"空位 {empty}，开始时补 AI")
     lines.append("房主 @我 开始")
     return "\n".join(lines)
+
+
+def _humans_ready(room: LineupRoom) -> bool:
+    return bool(room.seats) and all(seat.ready for seat in room.seats)
 
 
 def _nickname(event: GroupMessageEvent) -> str:
@@ -177,6 +181,8 @@ async def _leave(event: GroupMessageEvent) -> str:
         return "房主已离开，配兵房间解散"
     room.seats.remove(seat)
     _player_group.pop(user_id, None)
+    if _humans_ready(room):
+        return f"{format_room(room)}\n\n{format_all_ready(room)}"
     return format_room(room)
 
 
@@ -249,13 +255,14 @@ async def _on_private(user_id: int, text: str) -> None:
         budget=room.budget,
         nickname=seat.nickname,
     )
+    was_ready = seat.ready
     seat.army = seat.wizard.army
     try:
         await session.whisper(user_id, reply)
     except WhisperFailedError:
         return
-    if seat.ready or text.strip() == "重来":
-        await session.broadcast(group_id, format_room(room))
+    if seat.ready and not was_ready and _humans_ready(room):
+        await session.broadcast(group_id, format_all_ready(room))
 
 
 def _room_rule(event: GroupMessageEvent) -> bool:
