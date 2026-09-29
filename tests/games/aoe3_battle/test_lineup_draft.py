@@ -14,8 +14,23 @@ from src.plugins.games.aoe3_battle.lineup_draft import (
     list_selectable_techs,
     materialize_army,
     tactics_for,
+    targets_fielded_unit,
 )
 from src.plugins.games.aoe3_battle.lineup_wizard import Wizard, WizardStep, advance
+
+
+def test_selectable_techs_follow_the_units_that_receive_them():
+    repo = UnitRepo.get()
+    units = {unit.id: unit for unit in draft_units(repo, "British", 3)}
+    chosen = (units["musketeer"], units["hussar"])
+    techs = list_selectable_techs("British", chosen, 3)
+    ids = [tech.id for tech in techs]
+    assert "HCImprovedLongbows" not in ids
+    assert "ChurchThinRedLine" in ids
+    specific_flags = [targets_fielded_unit(tech, chosen) for tech in techs]
+    assert specific_flags == sorted(specific_flags, reverse=True)
+    assert any(specific_flags)
+    assert not all(specific_flags)
 
 
 def test_selectable_techs_only_change_combat():

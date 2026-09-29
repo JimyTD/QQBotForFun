@@ -51,7 +51,7 @@ def test_match_candidate_techs_filters_by_civ_and_unit() -> None:
     dog = next(tech for tech in matched if tech.id == "HCXPOnikare")
 
     assert dog.civ_ids == ("XPSioux",)
-    assert dog.matched_unit_ids == ("xpwarbow", "xpdogsoldier")
+    assert dog.matched_unit_ids == ("xpdogsoldier",)
 
 
 def test_priority_tech_beats_generic_multi_match() -> None:

@@ -35,7 +35,6 @@ from src.plugins.games.aoe3_battle.civ_war_roles import (
 )
 from src.plugins.games.aoe3_battle.civ_war_techs import (
     MatchedTech,
-    _load_priority,
     match_candidate_techs,
     resolve_required_techs,
 )
@@ -110,11 +109,25 @@ def tactics_for(
     ]
 
 
-def list_selectable_techs(civ_id: str, units: tuple, age: int) -> list[MatchedTech]:
-    """Unit-specific techs first, then generic techs that hit these units.
+def targets_fielded_unit(tech: MatchedTech, units: tuple) -> bool:
+    """True when a combat effect names one of these units, not only a class."""
+    fielded = {unit.id.lower() for unit in units}
+    for op in tech.combat_ops:
+        for target in op.get("targets") or ():
+            if (
+                target.get("type") == "ProtoUnit"
+                and str(target.get("value") or "").lower() in fielded
+            ):
+                return True
+    return False
 
-    A row with no combat effect is not a selectable tech. Unit cost is never
-    part of this choice.
+
+def list_selectable_techs(civ_id: str, units: tuple, age: int) -> list[MatchedTech]:
+    """Unit-specific techs first, then class-wide techs that hit these units.
+
+    The list is whatever the civ-war pool matches for this civilization, age,
+    and these soldiers. The hand-authored priority shortlist does not decide
+    membership or the 专属 / 通用 label.
     """
     if not units:
         return []
@@ -125,13 +138,12 @@ def list_selectable_techs(civ_id: str, units: tuple, age: int) -> list[MatchedTe
         required_tech_ids=(),
         id="lineup-draft",
     )
-    priority = _load_priority()
     specific: list[MatchedTech] = []
     generic: list[MatchedTech] = []
     for tech in match_candidate_techs(candidate, age=age):
         if not tech.combat_ops:
             continue
-        if tech.id in priority:
+        if targets_fielded_unit(tech, units):
             specific.append(tech)
         else:
             generic.append(tech)

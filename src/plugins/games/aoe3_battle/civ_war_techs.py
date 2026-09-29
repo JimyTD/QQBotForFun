@@ -129,14 +129,17 @@ def _runtime_op(op: dict[str, Any]) -> dict[str, Any] | None:
 
 
 def _row_targets(row: dict[str, Any]) -> list[str]:
+    """Units that receive the tech.
+
+    ``unittype`` on an op is the counter, projectile, or attachment, not the
+    recipient. A longbow tech that bonuses damage against heavy infantry must
+    not be treated as a heavy-infantry tech.
+    """
     values: set[str] = set()
     for op in [*row.get("combat_ops", ()), *row.get("cost_ops", ())]:
         for target in op.get("targets", ()):
             if target.get("type") == "ProtoUnit" and target.get("value"):
                 values.add(str(target["value"]))
-        unittype = op.get("unittype")
-        if unittype:
-            values.add(str(unittype))
     return sorted(values)
 
 

@@ -21,6 +21,7 @@ from src.plugins.games.aoe3_battle.lineup_draft import (
     list_selectable_techs,
     parse_weights,
     tactics_for,
+    targets_fielded_unit,
 )
 
 
@@ -191,19 +192,12 @@ def _enter_techs(wizard, repo, age, budget, nickname, weights) -> tuple[Wizard, 
     wizard.pending_weights = tuple(weights)
     lines = ["选择 1 到 2 条科技：", ""]
     for index, tech in enumerate(techs, start=1):
-        kind = "专属" if index <= _specific_count(techs) else "通用"
+        kind = "专属" if targets_fielded_unit(tech, units) else "通用"
         name = tech.name_zh or tech.id
         lines.append(f"{index}. {name}（{kind}）")
     lines.append("")
     lines.append("回复 1 个或 2 个序号。")
     return wizard, "\n".join(lines)
-
-
-def _specific_count(techs) -> int:
-    from src.plugins.games.aoe3_battle.civ_war_techs import _load_priority
-
-    priority = _load_priority()
-    return sum(1 for tech in techs if tech.id in priority)
 
 
 def _pick_techs(wizard, message, repo, age, budget, nickname) -> tuple[Wizard, str]:
