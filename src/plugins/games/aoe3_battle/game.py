@@ -1423,7 +1423,6 @@ class AoE3BattleGame(GameBase):
                 pending = t.get_current_round_matches()
 
             budget = ctx.state.get("budget", BUDGET_DEFAULT)
-            final_replay_session: ReplaySession | None = None
 
             for match_obj in pending:
                 # 一场比赛：双方各 1 兵种，LCM 平衡数量
@@ -1454,11 +1453,25 @@ class AoE3BattleGame(GameBase):
                     red_army = [(tu_a.unit, count_a)]
                     blue_army = [(tu_b.unit, count_b)]
 
-                # 跑模拟
-                if match_obj.match_id == "FINAL":
-                    final_replay_session = ReplaySession(
+                # 跑模拟。普通锦标赛只录决赛。配兵锦标赛里有人类的场次都录。
+                from .lineup_draft import army_is_ai, tournament_match_needs_replay
+
+                mode = str(ctx.state.get("mode") or "")
+                armies_by_key = getattr(self, "_lineup_armies", {}) or {}
+                replay_session = None
+                if tournament_match_needs_replay(
+                    mode,
+                    match_obj.match_id,
+                    red_ai=army_is_ai(
+                        armies_by_key.get(tu_a.unit_id), tu_a.display_name,
+                    ),
+                    blue_ai=army_is_ai(
+                        armies_by_key.get(tu_b.unit_id), tu_b.display_name,
+                    ),
+                ):
+                    replay_session = ReplaySession(
                         session_id=f"{ctx.session_id}:{match_obj.match_id}",
-                        mode=str(ctx.state.get("mode") or "rival_tournament"),
+                        mode=mode or "rival_tournament",
                         match_label=(
                             f"{t.theme_title} · {match_obj.label} · "
                             f"{tu_a.display_name} vs {tu_b.display_name}"
@@ -1476,13 +1489,13 @@ class AoE3BattleGame(GameBase):
                     ),
                     session_id=ctx.session_id,
                     match_label=(
-                        final_replay_session.recorder.match_label
-                        if final_replay_session is not None
+                        replay_session.recorder.match_label
+                        if replay_session is not None
                         else ""
                     ),
                     frame_callback=(
-                        final_replay_session.frame_callback
-                        if final_replay_session is not None
+                        replay_session.frame_callback
+                        if replay_session is not None
                         else None
                     ),
                 )
@@ -1498,8 +1511,8 @@ class AoE3BattleGame(GameBase):
                     3,
                 )
                 final_replay = (
-                    final_replay_session.finish(result)
-                    if final_replay_session is not None
+                    replay_session.finish(result)
+                    if replay_session is not None
                     else None
                 )
 
@@ -1595,9 +1608,14 @@ class AoE3BattleGame(GameBase):
                     perf.stop("final_replay")
                     metrics["final_replay_sent"] = delivery.sent
                     if not delivery.sent:
+                        replay_name = (
+                            "决赛回放"
+                            if match_obj.match_id == "FINAL"
+                            else "战斗回放"
+                        )
                         await session.broadcast(
                             ctx.group_id,
-                            "⚠️ 决赛回放"
+                            f"⚠️ {replay_name}"
                             f"{delivery.failure or '发送失败'}，完整文字战报已在上方",
                         )
                 await session.broadcast(ctx.group_id, report)

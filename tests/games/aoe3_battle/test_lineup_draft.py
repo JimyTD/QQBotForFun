@@ -8,6 +8,7 @@ from types import SimpleNamespace
 from src.plugins.aoe3.repository import UnitRepo
 from src.plugins.games.aoe3_battle.civ_war_civs import resolve_civ
 from src.plugins.games.aoe3_battle.lineup_draft import (
+    army_is_ai,
     combat_runtime,
     compile_ai_army,
     compile_tactic,
@@ -17,6 +18,7 @@ from src.plugins.games.aoe3_battle.lineup_draft import (
     materialize_army,
     tactics_for,
     targets_fielded_unit,
+    tournament_match_needs_replay,
 )
 from src.plugins.games.aoe3_battle.lineup_wizard import Wizard, WizardStep, advance
 
@@ -166,3 +168,28 @@ def test_tournament_roster_lists_soldiers_and_techs():
     assert "2. AI·法国·1（火力）" in text
     assert "散兵×20" in text
     assert text.endswith("发送「开战」开始八强战")
+
+
+def test_lineup_tournament_films_human_matches_and_the_final():
+    assert tournament_match_needs_replay(
+        "lineup_tournament", "QF1", red_ai=False, blue_ai=True,
+    )
+    assert tournament_match_needs_replay(
+        "lineup_tournament", "SF2", red_ai=False, blue_ai=False,
+    )
+    assert not tournament_match_needs_replay(
+        "lineup_tournament", "QF3", red_ai=True, blue_ai=True,
+    )
+    assert tournament_match_needs_replay(
+        "lineup_tournament", "FINAL", red_ai=True, blue_ai=True,
+    )
+    assert not tournament_match_needs_replay(
+        "rival_tournament", "QF1", red_ai=False, blue_ai=False,
+    )
+    assert tournament_match_needs_replay(
+        "rival_tournament", "FINAL", red_ai=True, blue_ai=True,
+    )
+    assert army_is_ai({"ai": True, "label": "AI·法国"})
+    assert not army_is_ai({"ai": False, "label": "JimyTD·荷兰"})
+    assert army_is_ai({"label": "AI·印度"}, "AI·印度·1")
+    assert not army_is_ai(None, "JimyTD·荷兰")

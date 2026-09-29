@@ -58,6 +58,7 @@ class CompiledArmy:
     tech_ids: tuple[str, ...]
     tech_names: tuple[str, ...]
     slots: tuple[tuple[str, str, int], ...]
+    ai: bool = False
 
     def to_dict(self) -> dict:
         return {
@@ -67,6 +68,7 @@ class CompiledArmy:
             "strategy": self.strategy,
             "tech_ids": list(self.tech_ids),
             "tech_names": list(self.tech_names),
+            "ai": self.ai,
             "slots": [
                 {"unit_id": unit_id, "unit_name": name, "count": count}
                 for unit_id, name, count in self.slots
@@ -96,6 +98,27 @@ def format_lineup_tournament_roster(units, armies_by_key: dict[str, dict]) -> st
     lines.append("")
     lines.append("⚔️ 发送「开战」开始八强战")
     return "\n".join(lines)
+
+
+def army_is_ai(army: dict | None, display_name: str = "") -> bool:
+    """AI armies are marked at compile time. Older payloads use the AI· label."""
+    if army is not None and "ai" in army:
+        return bool(army["ai"])
+    label = str((army or {}).get("label") or display_name)
+    return label.startswith("AI·")
+
+
+def tournament_match_needs_replay(
+    mode: str,
+    match_id: str,
+    *,
+    red_ai: bool,
+    blue_ai: bool,
+) -> bool:
+    """Film the final, and any lineup-tournament match that includes a human."""
+    if match_id == "FINAL":
+        return True
+    return mode == "lineup_tournament" and not (red_ai and blue_ai)
 
 
 def draft_units(repo: UnitRepo, civ_id: str, age: int) -> list:
@@ -308,6 +331,7 @@ def compile_ai_army(
         age=age,
         budget=budget,
         label=f"AI·{civ.name}",
+        ai=True,
     )
 
 
@@ -393,6 +417,7 @@ def _compile(
     age: int,
     budget: int,
     label: str,
+    ai: bool = False,
 ) -> CompiledArmy:
     upgraded = _apply_combat(units, techs, age, civ.id)
     if sum(_unit_cost(unit) for unit in upgraded) > budget:
@@ -414,4 +439,5 @@ def _compile(
             (unit.id, unit.name, count)
             for unit, count in zip(upgraded, counts, strict=True)
         ),
+        ai=ai,
     )
