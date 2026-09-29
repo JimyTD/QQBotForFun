@@ -481,6 +481,17 @@ def _tech_age(
     return min(card_values) if card_values else None
 
 
+def _is_age_upgrade(tech: ET.Element) -> bool:
+    """Return true for explicit or implicit age-up technologies."""
+    flags = {flag.text for flag in tech.findall("flag") if flag.text}
+    if "Shadow" in flags:
+        return True
+    return any(
+        effect.get("type") == "SetAge"
+        for effect in tech.findall("./effects/effect")
+    )
+
+
 def _normalise_op(effect: ET.Element) -> dict[str, Any]:
     result = {
         key: value
@@ -589,6 +600,7 @@ def _parse_tech(
         "source_flags": flags,
         "source_kind": source_kind,
         "civ_ids": civ_ids,
+        "is_age_upgrade": _is_age_upgrade(tech),
         "min_age": _tech_age(tech, card_ages=card_ages),
         "targets": targets,
         "combat_ops": combat_ops,
@@ -651,18 +663,12 @@ def build_pool() -> dict[str, Any]:
 def build_generic_tech_pool() -> dict[str, Any]:
     """Build the explicit per-civ generic compensation pool."""
     pool = build_pool()
-    priority_path = ROOT / "seeds" / "aoe3" / "civ_war_priority_techs.json"
-    priority = {
-        row["id"]
-        for row in json.loads(priority_path.read_text(encoding="utf-8"))["techs"]
-    }
-    civ_data = json.loads(CIVS_PATH.read_text(encoding="utf-8"))
-    civs = civ_data["_meta"]["curated_civs"]
-    result: dict[str, list[str]] = {civ_id: [] for civ_id in civs}
+    available = json.loads(
+        AVAILABLE_TECH_PATH.read_text(encoding="utf-8")
+    )["civs"]
+    result: dict[str, list[str]] = {civ_id: [] for civ_id in available}
     for row in pool["techs"]:
-        if row["id"] in priority:
-            continue
-        if "Shadow" in row.get("source_flags", ()):
+        if row.get("is_age_upgrade"):
             continue
         if not row.get("combat_ops") and not row.get("cost_ops"):
             continue
@@ -674,7 +680,7 @@ def build_generic_tech_pool() -> dict[str, Any]:
             "doc": "docs/games/aoe3-civ-war-wip.md",
             "status": "generated_v1",
             "note": "自动组合只从对应文明的通用战斗科技池中选补偿科技。",
-            "rule": "属于该文明, 非 Shadow, 非人工特殊科技, 且含有效战斗或成本效果。",
+            "rule": "文明真源可获得且非时代升级的战斗/成本科技; 质变科技也允许入池。",
         },
         "civs": {
             civ_id: sorted(tech_ids)
