@@ -18,6 +18,7 @@ from __future__ import annotations
 
 import json
 import re
+import sys
 import xml.etree.ElementTree as ET
 from collections import Counter
 from datetime import UTC, datetime
@@ -33,11 +34,50 @@ OUTPUT_PATH = ROOT / "seeds" / "aoe3" / "civ_war_tech_pool.json"
 GENERIC_PATH = ROOT / "seeds" / "aoe3" / "civ_war_generic_techs.json"
 AVAILABLE_TECH_PATH = ROOT / "seeds" / "aoe3" / "civ_available_techs.json"
 
+sys.path.insert(0, str(ROOT / "src"))
+
+from plugins.aoe3.repository import UnitRepo  # noqa: E402
+from plugins.games.aoe3_battle.lineup import (  # noqa: E402
+    _is_building,
+    _is_pure_healer,
+    _is_ship,
+    _is_villager,
+)
+
 # Technologies that are intentionally excluded from the runtime pool because
 # they depend on mechanics the battle model does not implement. Excluding the
 # whole row keeps the pool schema free of audit-only effect buckets.
 EXCLUDED_TECH_IDS = {
     "DEHCMaguzawa",
+}
+
+NON_COMBAT_TARGET_TAGS = {
+    "AbstractVillager",
+    "AbstractBuilding",
+    "AbstractWagon",
+    "Building",
+    "Ship",
+    "AbstractWarShip",
+    "Hero",
+    "Guardian",
+    "AbstractPet",
+    "AbstractFindScout",
+    "LogicalTypeLandEconomy",
+}
+NON_COMBAT_TARGET_PREFIXES = (
+    "deSPC",
+    "SPC",
+)
+NON_COMBAT_ACTIONS = {
+    "AutoGatherFood",
+    "AutoGatherGold",
+    "AutoGatherInfluence",
+    "AutoGatherWood",
+    "Build",
+    "Gather",
+    "GatherField",
+    "Repair",
+    "TreeGatherRateBonus",
 }
 
 AGE_STATUS = {
@@ -660,17 +700,72 @@ def build_pool() -> dict[str, Any]:
     }
 
 
+def _generic_targets(row: dict[str, Any]) -> list[str]:
+    values: set[str] = set()
+    for op in [*row.get("combat_ops", ()), *row.get("cost_ops", ())]:
+        for target in op.get("targets", ()):
+            if target.get("type") == "ProtoUnit" and target.get("value"):
+                values.add(str(target["value"]))
+        unittype = op.get("unittype")
+        if unittype:
+            values.add(str(unittype))
+    return sorted(values)
+
+
+def _combat_unit_target_universe() -> tuple[set[str], set[str]]:
+    """Return (unit ids, tags) that can appear in a civ-war lineup."""
+    repo = UnitRepo.get()
+    unit_ids: set[str] = set()
+    unit_tags: set[str] = set()
+    for unit in repo.all_units:
+        if not unit.cost or not unit.has_attack or unit.hp <= 0:
+            continue
+        if (
+            _is_building(unit)
+            or _is_ship(unit)
+            or _is_villager(unit)
+            or _is_pure_healer(unit)
+        ):
+            continue
+        unit_ids.add(unit.id.lower())
+        unit_tags.update(unit.type)
+    return unit_ids, unit_tags
+
+
+def _has_eligible_generic_target(
+    row: dict[str, Any],
+    unit_ids: set[str],
+    unit_tags: set[str],
+) -> bool:
+    for target in _generic_targets(row):
+        if target.lower() in unit_ids or target in unit_tags:
+            return True
+    return False
+
+
+def _has_generic_combat_effect(row: dict[str, Any]) -> bool:
+    return any(
+        str(op.get("action") or "") not in NON_COMBAT_ACTIONS
+        for op in row.get("combat_ops", ())
+    )
+
+
 def build_generic_tech_pool() -> dict[str, Any]:
     """Build the explicit per-civ generic compensation pool."""
     pool = build_pool()
     available = json.loads(
         AVAILABLE_TECH_PATH.read_text(encoding="utf-8")
     )["civs"]
+    unit_ids, unit_tags = _combat_unit_target_universe()
     result: dict[str, list[str]] = {civ_id: [] for civ_id in available}
     for row in pool["techs"]:
         if row.get("is_age_upgrade"):
             continue
         if not row.get("combat_ops") and not row.get("cost_ops"):
+            continue
+        if not _has_eligible_generic_target(row, unit_ids, unit_tags):
+            continue
+        if not _has_generic_combat_effect(row):
             continue
         for civ_id in row.get("civ_ids", ()):
             if civ_id in result:
@@ -680,7 +775,10 @@ def build_generic_tech_pool() -> dict[str, Any]:
             "doc": "docs/games/aoe3-civ-war-wip.md",
             "status": "generated_v1",
             "note": "自动组合只从对应文明的通用战斗科技池中选补偿科技。",
-            "rule": "文明真源可获得且非时代升级的战斗/成本科技; 质变科技也允许入池。",
+            "rule": (
+                "文明真源可获得、非时代升级且能作用于国战参战单位类型的"
+                "战斗/成本科技; 质变科技也允许入池。"
+            ),
         },
         "civs": {
             civ_id: sorted(tech_ids)

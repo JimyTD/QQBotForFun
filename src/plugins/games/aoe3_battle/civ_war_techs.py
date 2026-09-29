@@ -28,7 +28,6 @@ GENERIC_PATH = (
     / "civ_war_generic_techs.json"
 )
 
-
 class _CandidateLike(Protocol):
     civ_id: str
     units: tuple[Unit, ...]

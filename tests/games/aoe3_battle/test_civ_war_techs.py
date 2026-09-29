@@ -2,7 +2,9 @@
 
 from __future__ import annotations
 
+import json
 from dataclasses import dataclass
+from pathlib import Path
 
 from plugins.aoe3.models import Unit
 from plugins.aoe3.repository import UnitRepo
@@ -106,6 +108,39 @@ def test_national_candidate_does_not_get_auto_compensation() -> None:
         source="national",
     )
     assert select_candidate_techs(candidate, age=3) == []
+
+
+def test_generic_pool_excludes_non_combat_targets() -> None:
+    generic_path = (
+        Path(__file__).resolve().parents[3]
+        / "seeds"
+        / "aoe3"
+        / "civ_war_generic_techs.json"
+    )
+    generic = json.loads(generic_path.read_text(encoding="utf-8"))["civs"]
+    ethiopian = set(generic["DEEthiopians"])
+    assert "DEAfricanVillagerDamage" not in ethiopian
+    assert "DEAfricanVillagerHitpoints" not in ethiopian
+    assert "DECityFortifications" not in ethiopian
+    assert "DELegendaryCanoes" not in ethiopian
+    assert "DEHCAfricanHeroCombat" not in ethiopian
+
+
+def test_specific_unit_tech_can_be_selected_when_it_matches() -> None:
+    repo = UnitRepo.get()
+    candidate = _Candidate(
+        civ_id="DEEthiopians",
+        units=(
+            _unit(repo, "degascenya"),
+            _unit(repo, "deshotelwarrior"),
+        ),
+    )
+    matched = match_candidate_techs(candidate, age=4)
+    assert any(
+        "degascenya" in tech.matched_unit_ids
+        or "deshotelwarrior" in tech.matched_unit_ids
+        for tech in matched
+    )
 
 
 def test_real_candidate_keeps_technology_identity() -> None:
