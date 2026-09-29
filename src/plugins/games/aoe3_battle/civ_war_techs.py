@@ -21,6 +21,12 @@ PRIORITY_PATH = (
     / "aoe3"
     / "civ_war_priority_techs.json"
 )
+GENERIC_PATH = (
+    Path(__file__).resolve().parents[4]
+    / "seeds"
+    / "aoe3"
+    / "civ_war_generic_techs.json"
+)
 
 
 class _CandidateLike(Protocol):
@@ -42,13 +48,7 @@ class MatchedTech:
     matched_unit_ids: tuple[str, ...]
     combat_ops: tuple[dict[str, Any], ...]
     cost_ops: tuple[dict[str, Any], ...]
-    ignored_ops: tuple[dict[str, Any], ...]
-    unknown_ops: tuple[dict[str, Any], ...]
     priority: tuple[int, ...]
-
-    @property
-    def has_unknown(self) -> bool:
-        return bool(self.unknown_ops)
 
     @property
     def match_count(self) -> int:
@@ -201,24 +201,35 @@ def _load_pool(path: Path = POOL_PATH) -> list[dict[str, Any]]:
     return payload["techs"]
 
 
+def _load_generic_pool(path: Path = GENERIC_PATH) -> dict[str, set[str]]:
+    payload = json.loads(path.read_text(encoding="utf-8"))
+    return {
+        civ_id: set(tech_ids)
+        for civ_id, tech_ids in payload["civs"].items()
+    }
+
+
 def match_candidate_techs(
     candidate: _CandidateLike,
     *,
     age: int,
     pool: list[dict[str, Any]] | None = None,
     priority: dict[str, tuple[str, str]] | None = None,
+    generic_pool: dict[str, set[str]] | None = None,
     path: Path = POOL_PATH,
 ) -> list[MatchedTech]:
     """Return deterministic pool matches that hit the candidate's units."""
     rows = pool if pool is not None else _load_pool(path)
     priority = priority if priority is not None else _load_priority()
+    generic_pool = generic_pool if generic_pool is not None else _load_generic_pool()
+    allowed_generic = generic_pool.get(candidate.civ_id, set())
     matched: list[MatchedTech] = []
     for row in rows:
         if not _is_civ_allowed(row, candidate.civ_id):
             continue
         if not _within_age(row, age):
             continue
-        if row.get("unknown_ops"):
+        if row["id"] not in priority and row["id"] not in allowed_generic:
             continue
         unit_ids = _matched_unit_ids(row, list(candidate.units))
         if not unit_ids:
@@ -235,8 +246,6 @@ def match_candidate_techs(
                 matched_unit_ids=unit_ids,
                 combat_ops=tuple(row.get("combat_ops", ())),
                 cost_ops=tuple(row.get("cost_ops", ())),
-                ignored_ops=tuple(row.get("ignored_ops", ())),
-                unknown_ops=tuple(row.get("unknown_ops", ())),
                 priority=(
                     _priority_rank(row["id"], priority),
                     -len(unit_ids),
@@ -288,8 +297,6 @@ def resolve_required_techs(
                 matched_unit_ids=unit_ids,
                 combat_ops=tuple(row.get("combat_ops", ())),
                 cost_ops=tuple(row.get("cost_ops", ())),
-                ignored_ops=tuple(row.get("ignored_ops", ())),
-                unknown_ops=tuple(row.get("unknown_ops", ())),
                 priority=(0, -len(unit_ids), row["id"]),
             )
         )
@@ -302,6 +309,7 @@ def select_candidate_techs(
     age: int,
     pool: list[dict[str, Any]] | None = None,
     priority: dict[str, tuple[str, str]] | None = None,
+    generic_pool: dict[str, set[str]] | None = None,
     path: Path = POOL_PATH,
 ) -> list[MatchedTech]:
     """Select the fixed-priority compensation set for an auto candidate."""
@@ -315,5 +323,6 @@ def select_candidate_techs(
         age=age,
         pool=pool,
         priority=priority,
+        generic_pool=generic_pool,
         path=path,
     )[:budget]

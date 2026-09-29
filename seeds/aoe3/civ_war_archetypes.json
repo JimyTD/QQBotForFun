@@ -73,7 +73,7 @@
         "min_age": 2,
         "unit_ids": ["ypchukonu", "ypqiangpikeman"],
         "allocation": {"kind": "fixed_ratio", "values": [3, 3]},
-        "required_tech_ids": ["YPHCOldHanArmyReforms"]
+        "required_tech_ids": ["YPHCOldHanArmyReforms", "YPHCHanAntiCavalryBonus"]
       },
       {
         "id": "standard_army",
@@ -81,7 +81,7 @@
         "min_age": 2,
         "unit_ids": ["ypchukonu", "ypstepperider"],
         "allocation": {"kind": "fixed_ratio", "values": [3, 2]},
-        "required_tech_ids": ["YPHCOldHanArmyReforms"]
+        "required_tech_ids": ["YPHCOldHanArmyReforms", "YPHCHanAntiCavalryBonus"]
       },
       {
         "id": "ming_army",
@@ -89,28 +89,31 @@
         "min_age": 2,
         "unit_ids": ["ypqiangpikeman", "ypkeshik"],
         "allocation": {"kind": "fixed_ratio", "values": [2, 3]},
-        "required_tech_ids": ["YPHCOldHanArmyReforms"]
+        "required_tech_ids": ["YPHCOldHanArmyReforms", "YPHCMongolianScourge"]
       },
       {
         "id": "territorial_army",
         "title": "地方军",
         "min_age": 3,
         "unit_ids": ["ypchangdao", "yparquebusier"],
-        "allocation": {"kind": "fixed_ratio", "values": [3, 3]}
+        "allocation": {"kind": "fixed_ratio", "values": [3, 3]},
+        "required_tech_ids": ["YPHCHanAntiCavalryBonus"]
       },
       {
         "id": "imperial_army",
         "title": "帝国军",
         "min_age": 3,
         "unit_ids": ["yparquebusier", "ypironflail"],
-        "allocation": {"kind": "fixed_ratio", "values": [3, 2]}
+        "allocation": {"kind": "fixed_ratio", "values": [3, 2]},
+        "required_tech_ids": ["YPHCHanAntiCavalryBonus", "YPHCMongolianScourge"]
       },
       {
         "id": "forbidden_army",
         "title": "禁卫军",
         "min_age": 3,
         "unit_ids": ["ypironflail", "ypmeteorhammer"],
-        "allocation": {"kind": "fixed_ratio", "values": [2, 2]}
+        "allocation": {"kind": "fixed_ratio", "values": [2, 2]},
+        "required_tech_ids": ["YPHCMongolianScourge"]
       }
     ]
   }

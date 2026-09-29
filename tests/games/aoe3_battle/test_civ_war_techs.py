@@ -50,7 +50,6 @@ def test_match_candidate_techs_filters_by_civ_and_unit() -> None:
 
     assert dog.civ_ids == ("XPSioux",)
     assert dog.matched_unit_ids == ("xpwarbow", "xpdogsoldier")
-    assert not dog.has_unknown
 
 
 def test_priority_tech_beats_generic_multi_match() -> None:
@@ -93,7 +92,7 @@ def test_unknown_effect_rows_are_not_selected() -> None:
         ),
     )
     selected = select_candidate_techs(candidate, age=3)
-    assert all(not tech.has_unknown for tech in selected)
+    assert all(tech.combat_ops or tech.cost_ops for tech in selected)
 
 
 def test_national_candidate_does_not_get_auto_compensation() -> None:
@@ -179,8 +178,14 @@ def test_matchup_estimate_carries_selected_techs() -> None:
         if item.id == "national:old_han_army"
     )
     estimate = estimate_matchup(red, blue, age=3)
-    assert [tech.id for tech in estimate.red_techs] == ["HCXPOnikare"]
-    assert [tech.id for tech in estimate.blue_techs] == ["YPHCOldHanArmyReforms"]
+    assert [tech.id for tech in estimate.red_techs] == [
+        "HCXPOnikare",
+        "HCXPSiouxNakotaSupport",
+    ]
+    assert [tech.id for tech in estimate.blue_techs] == [
+        "YPHCOldHanArmyReforms",
+        "YPHCHanAntiCavalryBonus",
+    ]
 
 
 def test_civ_war_banner_lists_tech_names() -> None:

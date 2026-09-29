@@ -1,11 +1,14 @@
 """Generate the civ-war combat-tech pool from AoE3 game data.
 
-The pool keeps a technology whenever it changes the combat behavior or the
-resource cost of a playable unit. Non-combat effects are recorded separately
-and are ignored at runtime. A technology with both a combat effect and a
-shipment is preserved; only its shipment/economic effects are marked as
-ignored. Unknown effect subtypes are kept in ``unknown_ops`` instead of being
-silently treated as harmless, so future data refreshes stay auditable.
+The runtime pool keeps only effects that the battle model can consume:
+combat effects and unit-cost effects. Non-combat effects are not written into
+the runtime pool. Unclassified ``Data`` / ``Data2`` effects are reported as
+generation errors so a game-data refresh cannot silently change combat
+behavior.
+
+The generator also validates the explicit per-civilization generic-tech pools
+in ``seeds/aoe3/civ_war_generic_techs.json``. Auto-composed lineups are
+expected to draw compensation techs from those pools only.
 
 Usage:
     uv run python scripts/crawler/aoe3_civ_war_tech_pool.py
@@ -27,6 +30,14 @@ STRINGTABLE_PATH = ROOT / "data" / "aoe3" / "raw" / "stringtabley_zh.xml"
 CIVS_PATH = ROOT / "seeds" / "aoe3" / "civs.json"
 HOMECITY_DIR = ROOT / "data" / "aoe3" / "raw" / "homecity"
 OUTPUT_PATH = ROOT / "seeds" / "aoe3" / "civ_war_tech_pool.json"
+GENERIC_PATH = ROOT / "seeds" / "aoe3" / "civ_war_generic_techs.json"
+
+# Technologies that are intentionally excluded from the runtime pool because
+# they depend on mechanics the battle model does not implement. Excluding the
+# whole row keeps the pool schema free of audit-only effect buckets.
+EXCLUDED_TECH_IDS = {
+    "DEHCMaguzawa",
+}
 
 AGE_STATUS = {
     "Colonialize": 2,
@@ -103,7 +114,7 @@ COMBAT_SUBTYPES = {
     "UnitRegenIgnoreOnStealth",
 }
 COST_SUBTYPES = {"Cost"}
-IGNORED_SUBTYPES = {
+KNOWN_NON_COMBAT_SUBTYPES = {
     # Shipments / spawns / transforms that do not change the current lineup.
     "FreeHomeCityUnit",
     "FreeHomeCityUnitByKBQuery",
@@ -120,6 +131,12 @@ IGNORED_SUBTYPES = {
     "FreeHomeCityUnitShipped",
     "FreeHomeCityUnitTechActiveCycle",
     "FreeHomeCityUnitToGatherPoint",
+    "PartisanUnit",
+    "ResourceAsCratesByKBStat",
+    "ResourceAsCratesByShipmentCount",
+    "RevealEnemyLOS",
+    "RevealLOS",
+    "RevealMap",
     "AddTrain",
     "Enable",
     "RemoveUnits",
@@ -291,7 +308,45 @@ IGNORED_SUBTYPES = {
     "TrickleByUnitType",
 }
 
-IGNORED_EFFECT_TYPES = {
+UNSUPPORTED_COMBAT_SUBTYPES = {
+    # Recognized as potentially combat-relevant, but not implemented by the
+    # current simulator. Keeping these out of the runtime pool is deliberate.
+    "EmpowerArea",
+    "EmpowerModify",
+}
+
+KNOWN_NON_COMBAT_PROTO_UNIT_FLAGS = {
+    "AllowGatheringWhenFull",
+    "DisableRowWrapping",
+    "DontTrainInBatches",
+    "DrawnToCrates",
+    "EnableShipmentTax",
+    "EnterHotkeyContext",
+    "ForceFullTechUpdate",
+    "HasGatherPoint",
+    "HeroName2",
+    "MagnetDoesNotLockUnits",
+    "ShowTactics",
+    "ShowUnitResourceActionRates",
+    "TotalAutoGatherRates",
+    "UseSharedBuildLimit",
+    # Scenario and non-lineup units. These never enter the civ-war regular
+    # lineup, and their flags are scenario-control or non-combat metadata.
+    "flagid:12",
+    "flagid:42",
+    "flagid:103",
+    "flagid:173",
+    "flagid:182",
+    "flagid:197",
+    "flagid:206",
+    "flagid:230",
+    "flagid:233",
+    "flagid:235",
+    "flagid:241",
+    "ContainedHitPointBonusRate",
+}
+
+KNOWN_NON_COMBAT_EFFECT_TYPES = {
     "AddHomeCityCard",
     "AddTrickleByResource",
     "Blockade",
@@ -447,20 +502,29 @@ def _normalise_op(effect: ET.Element) -> dict[str, Any]:
 
 def _classify_op(
     op: dict[str, Any],
-) -> tuple[str, str | None]:
+) -> str | None:
     effect_type = op.get("effect_type") or ""
     subtype = op.get("subtype")
     if effect_type in {"Data", "Data2"}:
         if subtype in COMBAT_SUBTYPES:
-            return "combat_ops", None
+            return "combat_ops"
         if subtype in COST_SUBTYPES:
-            return "cost_ops", None
-        if subtype in IGNORED_SUBTYPES:
-            return "ignored_ops", None
-        return "unknown_ops", subtype or "<missing-subtype>"
-    if effect_type in IGNORED_EFFECT_TYPES:
-        return "ignored_ops", None
-    return "unknown_ops", subtype or effect_type or "<missing-type>"
+            return "cost_ops"
+        if subtype in KNOWN_NON_COMBAT_SUBTYPES:
+            return None
+        if subtype in UNSUPPORTED_COMBAT_SUBTYPES:
+            return "unsupported"
+        if subtype == "ProtoUnitFlag":
+            flagname = str(op.get("flagname") or "")
+            flagid = str(op.get("flagid") or "")
+            if flagname in KNOWN_NON_COMBAT_PROTO_UNIT_FLAGS:
+                return None
+            if flagid and f"flagid:{flagid}" in KNOWN_NON_COMBAT_PROTO_UNIT_FLAGS:
+                return None
+        return "unclassified"
+    if effect_type in KNOWN_NON_COMBAT_EFFECT_TYPES:
+        return None
+    return "unclassified"
 
 
 def _unit_targets(ops: list[dict[str, Any]]) -> list[str]:
@@ -486,33 +550,39 @@ def _parse_tech(
     tech_id = tech.get("name")
     if not tech_id:
         return None
+    if tech_id in EXCLUDED_TECH_IDS:
+        return None
 
     combat_ops: list[dict[str, Any]] = []
     cost_ops: list[dict[str, Any]] = []
-    ignored_ops: list[dict[str, Any]] = []
-    unknown_ops: list[dict[str, Any]] = []
+    unclassified: list[dict[str, Any]] = []
     for effect in tech.findall("./effects/effect"):
         op = _normalise_op(effect)
-        bucket, unknown = _classify_op(op)
+        bucket = _classify_op(op)
         census[(op.get("effect_type") or "", op.get("subtype") or "<none>")] += 1
-        if unknown is not None:
-            op["unknown_reason"] = unknown
         if bucket == "combat_ops":
             combat_ops.append(op)
         elif bucket == "cost_ops":
             cost_ops.append(op)
-        elif bucket == "ignored_ops":
-            ignored_ops.append(op)
-        else:
-            unknown_ops.append(op)
+        elif bucket == "unsupported":
+            unclassified.append(op)
+        elif bucket == "unclassified":
+            unclassified.append(op)
 
-    if not combat_ops and not cost_ops and not unknown_ops:
+    if unclassified:
+        tech_id = tech.get("name") or "<unnamed>"
+        details = ", ".join(
+            f"{op.get('effect_type')}/{op.get('subtype') or op.get('effect_type')}"
+            for op in unclassified
+        )
+        raise ValueError(f"{tech_id}: unsupported effects: {details}")
+
+    if not combat_ops and not cost_ops:
         return None
 
     display_id = (tech.findtext("displaynameid") or "").strip()
     rollover_id = (tech.findtext("rollovertextid") or "").strip()
-    effective_ops = [*combat_ops, *cost_ops, *unknown_ops]
-    targets = _unit_targets(effective_ops)
+    targets = _unit_targets([*combat_ops, *cost_ops])
     civ_ids = sorted(tech_owners.get(tech_id, set()))
     if not civ_ids:
         civ_ids = sorted(
@@ -538,11 +608,8 @@ def _parse_tech(
         "civ_ids": civ_ids,
         "min_age": _tech_age(tech, card_ages=card_ages),
         "targets": targets,
-        "review_status": "needs-review" if unknown_ops else "classified",
         "combat_ops": combat_ops,
         "cost_ops": cost_ops,
-        "ignored_ops": ignored_ops,
-        "unknown_ops": unknown_ops,
     }
 
 
@@ -586,15 +653,51 @@ def build_pool() -> dict[str, Any]:
                     if effect_type in {"Data", "Data2"}
                     and subtype not in COMBAT_SUBTYPES
                     and subtype not in COST_SUBTYPES
-                    and subtype not in IGNORED_SUBTYPES
+                    and subtype not in KNOWN_NON_COMBAT_SUBTYPES
+                    and subtype not in UNSUPPORTED_COMBAT_SUBTYPES
                 }
             ),
             "rule": (
-                "保留战斗、成本和未知待审效果; 送兵、经济、人口、训练、"
-                "建筑和解锁效果只记录在 ignored_ops"
+                "运行池只保留战斗和成本效果; 已知非战斗效果不写入; "
+                "未识别或未支持效果使生成失败"
             ),
         },
         "techs": rows,
+    }
+
+
+def build_generic_tech_pool() -> dict[str, Any]:
+    """Build the explicit per-civ generic compensation pool."""
+    pool = build_pool()
+    priority_path = ROOT / "seeds" / "aoe3" / "civ_war_priority_techs.json"
+    priority = {
+        row["id"]
+        for row in json.loads(priority_path.read_text(encoding="utf-8"))["techs"]
+    }
+    civ_data = json.loads(CIVS_PATH.read_text(encoding="utf-8"))
+    civs = civ_data["_meta"]["curated_civs"]
+    result: dict[str, list[str]] = {civ_id: [] for civ_id in civs}
+    for row in pool["techs"]:
+        if row["id"] in priority:
+            continue
+        if "Shadow" in row.get("source_flags", ()):
+            continue
+        if not row.get("combat_ops") and not row.get("cost_ops"):
+            continue
+        for civ_id in row.get("civ_ids", ()):
+            if civ_id in result:
+                result[civ_id].append(row["id"])
+    return {
+        "_meta": {
+            "doc": "docs/games/aoe3-civ-war-wip.md",
+            "status": "generated_v1",
+            "note": "自动组合只从对应文明的通用战斗科技池中选补偿科技。",
+            "rule": "属于该文明, 非 Shadow, 非人工特殊科技, 且含有效战斗或成本效果。",
+        },
+        "civs": {
+            civ_id: sorted(tech_ids)
+            for civ_id, tech_ids in result.items()
+        },
     }
 
 
@@ -606,6 +709,17 @@ def main() -> None:
     )
     print(f"techs={len(pool['techs'])}")
     print(f"wrote {OUTPUT_PATH}")
+
+    generic = build_generic_tech_pool()
+    GENERIC_PATH.write_text(
+        json.dumps(generic, ensure_ascii=False, indent=2) + "\n",
+        encoding="utf-8",
+    )
+    print(
+        "generic_techs="
+        f"{sum(len(ids) for ids in generic['civs'].values())}"
+    )
+    print(f"wrote {GENERIC_PATH}")
 
 
 if __name__ == "__main__":

@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import json
 import sys
 from pathlib import Path
 
@@ -41,18 +42,11 @@ def test_effect_subtypes_are_audited(pool: dict) -> None:
     assert ("Data", "Damage") in census
 
 
-def test_unknown_effects_are_not_silently_ignored(pool: dict) -> None:
-    unknown_rows = [
-        tech
-        for tech in pool["techs"]
-        if tech["review_status"] == "needs-review"
-    ]
-    assert unknown_rows
-    assert all(tech["unknown_ops"] for tech in unknown_rows)
-    assert any(
-        tech["id"] == "DEHCMaraboutNetwork"
-        for tech in unknown_rows
-    )
+def test_runtime_pool_contains_only_supported_ops(pool: dict) -> None:
+    for tech in pool["techs"]:
+        assert "ignored_ops" not in tech
+        assert "unknown_ops" not in tech
+        assert tech["combat_ops"] or tech["cost_ops"]
 
 
 def test_nation_tech_targets_keep_combat_effects(by_id: dict[str, dict]) -> None:
@@ -93,11 +87,7 @@ def test_shipment_side_effect_is_ignored(by_id: dict[str, dict]) -> None:
         op.get("subtype") == "MaximumVelocity"
         for op in tech["combat_ops"]
     )
-    assert any(
-        op.get("effect_type") == "Data"
-        and op.get("subtype") == "FreeHomeCityUnit"
-        for op in tech["ignored_ops"]
-    )
+    assert tech.get("combat_ops")
     assert not any(
         op.get("subtype") == "FreeHomeCityUnit"
         for op in tech["combat_ops"]
@@ -114,9 +104,8 @@ def test_census_covers_every_effect_subtype(pool: dict) -> None:
     assert ("TextOutput", "<none>") in census_keys
 
 
-def test_classified_unknown_subtype_is_never_ignored(pool: dict) -> None:
-    unknown_subtypes = set(pool["_meta"]["unknown_subtypes"])
-    assert unknown_subtypes
-    for tech in pool["techs"]:
-        for op in tech["ignored_ops"]:
-            assert op.get("subtype") not in unknown_subtypes
+def test_generic_pools_are_explicit_and_civ_scoped() -> None:
+    generic_path = DATA_ROOT / "seeds" / "aoe3" / "civ_war_generic_techs.json"
+    payload = json.loads(generic_path.read_text(encoding="utf-8"))
+    assert payload["civs"]
+    assert all(isinstance(ids, list) for ids in payload["civs"].values())

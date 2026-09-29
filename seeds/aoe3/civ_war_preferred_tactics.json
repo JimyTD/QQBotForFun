@@ -34,6 +34,9 @@
           "双皇家护卫",
           "经典火枪马"
         ],
+        "required_tech_ids": [
+          "ChurchThinRedLine"
+        ],
         "reason": "红衫军火枪兵与英国皇家轻骑兵构成标准火枪马。"
       },
       {
@@ -52,6 +55,10 @@
           ]
         },
         "basis": [],
+        "required_tech_ids": [
+          "HCImprovedLongbows",
+          "ChurchThinRedLine"
+        ],
         "reason": "纯步兵英国组合 不遇到炮战力还是很高的"
       }
     ],
@@ -213,6 +220,9 @@
           "特色兵",
           "散马"
         ],
+        "required_tech_ids": [
+          "DEHCDurbarParade"
+        ],
         "reason": "富拉尼远程输出配合利菲迪重骑冲阵。"
       },
       {
@@ -252,6 +262,9 @@
           ]
         },
         "basis": [],
+        "required_tech_ids": [
+          "DEHCDurbarParade"
+        ],
         "reason": "纯骑兵突击组合"
       }
     ],
@@ -276,6 +289,9 @@
           "特色兵",
           "无骑文明"
         ],
+        "required_tech_ids": [
+          "DEHCCajamarcaSupport"
+        ],
         "reason": "掷石绳反骑、丛林弓反重步、羽饰长矛保护后排。"
       },
       {
@@ -295,6 +311,9 @@
         "basis": [
           "特色兵",
           "散马等价"
+        ],
+        "required_tech_ids": [
+          "DEHCCajamarcaSupport"
         ],
         "reason": "奇穆游击兵替代骑兵承担高速切散位。"
       },
@@ -398,6 +417,9 @@
           "特色兵",
           "重步散"
         ],
+        "required_tech_ids": [
+          "DEChurchTeutonicKnights"
+        ],
         "reason": "医院骑士反骑护后排，火焰兵提供远程反步兵。"
       }
     ],
@@ -481,6 +503,10 @@
           "特色兵",
           "散马"
         ],
+        "required_tech_ids": [
+          "DEHCKoncerz",
+          "DEHCKozieniceRifles"
+        ],
         "reason": "库尔皮神射手与翼骑兵体现波兰核心兵种。"
       },
       {
@@ -503,6 +529,9 @@
           "皇家护卫",
           "散龙炮"
         ],
+        "required_tech_ids": [
+          "DEHCKozieniceRifles"
+        ],
         "reason": "波兰步兵、装甲骑射与炮兵构成远程联合军。"
       },
       {
@@ -521,6 +550,9 @@
         "basis": [
           "国家象征",
           "纯兵种"
+        ],
+        "required_tech_ids": [
+          "DEHCKoncerz"
         ],
         "reason": "波兰翼骑兵以重骑冲击和国家辨识度独立成军。"
       }
@@ -544,6 +576,9 @@
           "特色兵",
           "火枪炮"
         ],
+        "required_tech_ids": [
+          "DEHCSnaplocks"
+        ],
         "reason": "卡尔远征军保护瑞典特色皮革炮。"
       },
       {
@@ -564,6 +599,9 @@
           "特色兵",
           "火枪马"
         ],
+        "required_tech_ids": [
+          "DEHCSnaplocks"
+        ],
         "reason": "卡尔远征军与轻骑构成瑞典基础机动编制。"
       },
       {
@@ -582,6 +620,9 @@
         "basis": [
           "国家核心",
           "纯兵种"
+        ],
+        "required_tech_ids": [
+          "DEHCSnaplocks"
         ],
         "reason": "卡尔远征军拥有独特远近战反骑机制，纯量产本身就是瑞典特色打法。"
       }
@@ -712,7 +753,7 @@
       {
         "id": "draft_muc4a6ve",
         "title": "铁血武士",
-        "min_age": 3,
+        "min_age": 4,
         "unit_ids": [
           "dopplesoldner",
           "uhlan"
@@ -725,6 +766,9 @@
           ]
         },
         "basis": [],
+        "required_tech_ids": [
+          "ChurchZweihander"
+        ],
         "reason": "强力的近战大军"
       },
       {
@@ -852,6 +896,9 @@
           "特色兵",
           "经典火枪马"
         ],
+        "required_tech_ids": [
+          "YPHCAshigaruAntiCavalryDamage"
+        ],
         "reason": "足轻与薙刀骑兵构成日本标志性火枪马。"
       },
       {
@@ -871,6 +918,9 @@
         "basis": [
           "特色兵",
           "经典散马"
+        ],
+        "required_tech_ids": [
+          "YPHCYumiRange"
         ],
         "reason": "日本长弓负责远程反重步，薙刀骑兵切后排。"
       },
@@ -893,6 +943,10 @@
         "basis": [
           "玩家认知",
           "三兵种"
+        ],
+        "required_tech_ids": [
+          "YPHCAshigaruAntiCavalryDamage",
+          "YPHCYumiRange"
         ],
         "reason": "足轻、长弓、薙刀骑兵组成完整日本军。"
       },
@@ -1080,6 +1134,9 @@
           "皇家护卫",
           "特色兵"
         ],
+        "required_tech_ids": [
+          "HCXPGenitours"
+        ],
         "reason": "军团龙骑兵配葡萄牙长枪兵，体现葡萄牙远程体系。"
       },
       {
@@ -1164,6 +1221,9 @@
           "皇家护卫",
           "散龙炮"
         ],
+        "required_tech_ids": [
+          "DEHCSovnya"
+        ],
         "reason": "俄国散兵、皇家护卫骑射和炮兵构成远程联合军。"
       },
       {
@@ -1180,6 +1240,9 @@
           ]
         },
         "basis": [],
+        "required_tech_ids": [
+          "DEHCSovnya"
+        ],
         "reason": "就是多"
       },
       {
@@ -1198,6 +1261,9 @@
           ]
         },
         "basis": [],
+        "required_tech_ids": [
+          "DEHCSovnya"
+        ],
         "reason": "全方位的高性价比步兵"
       }
     ],
@@ -1304,6 +1370,9 @@
           "特色兵",
           "散马等价"
         ],
+        "required_tech_ids": [
+          "HCXPTempleCenteotl"
+        ],
         "reason": "投石绳兵负责远程反重步，郊狼游击兵承担骑兵冲击位。"
       },
       {
@@ -1323,6 +1392,10 @@
         "basis": [
           "特色兵",
           "龙骑散等价"
+        ],
+        "required_tech_ids": [
+          "HCXPTempleTlaloc",
+          "HCXPTempleCenteotl"
         ],
         "reason": "鹰游击反重骑，投石绳兵反重步。"
       },
@@ -1407,6 +1480,9 @@
           "特色兵",
           "火枪马"
         ],
+        "required_tech_ids": [
+          "BigWarHutLacrosse"
+        ],
         "reason": "战斧兵顶线反骑，坎亚骑兵冲击后排。"
       },
       {
@@ -1426,6 +1502,9 @@
         "basis": [
           "特色兵",
           "龙骑散"
+        ],
+        "required_tech_ids": [
+          "BigWarHutLacrosse"
         ],
         "reason": "火枪骑兵反重骑，艾那弓箭步兵反重步。"
       },
@@ -1448,6 +1527,9 @@
         "basis": [
           "特色兵",
           "三兵种"
+        ],
+        "required_tech_ids": [
+          "BigWarHutLacrosse"
         ],
         "reason": "战斧、艾那弓和坎亚骑兵形成完整本国三线军。"
       },
@@ -1534,7 +1616,8 @@
           "重骑"
         ],
         "required_tech_ids": [
-          "HCXPOnikare"
+          "HCXPOnikare",
+          "HCXPSiouxNakotaSupport"
         ],
         "reason": "托卡拉士兵是拉科塔重骑精锐，允许以纯骑战团独立冲锋。"
       },

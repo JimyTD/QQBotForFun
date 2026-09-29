@@ -84,6 +84,26 @@ def test_civ_war_opening_draws_civ_flag_and_tolerates_missing() -> None:
     assert diff_bbox[0] < 940 // 2
 
 
+def test_civ_war_opening_draws_tech_row() -> None:
+    red = replace(
+        _side("Chinese", "standard_army"),
+        tech_names=("旧朝改革", "驱逐齐发"),
+    )
+    blue = _side("British", "redcoat_hussar")
+    without = render_civ_war_opening(
+        red=replace(red, tech_names=()),
+        blue=blue,
+        age=3,
+    )
+    with_tech = render_civ_war_opening(red=red, blue=blue, age=3)
+
+    with Image.open(BytesIO(without)) as no_tech_image:
+        no_tech_height = no_tech_image.height
+    with Image.open(BytesIO(with_tech)) as tech_image:
+        tech_height = tech_image.height
+    assert tech_height > no_tech_height
+
+
 def test_every_playable_civ_has_a_flag_file() -> None:
     """可玩文明必须都有国旗文件：缺失时开屏会静默留空，需在此拦住。"""
     missing = [profile.id for profile in CIV_PROFILES if _load_flag(profile.id) is None]

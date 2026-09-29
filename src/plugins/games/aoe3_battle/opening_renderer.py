@@ -18,6 +18,7 @@ CANVAS_W = 940
 SIDE_GAP = 28
 SIDE_W = (CANVAS_W - 60 - SIDE_GAP) // 2
 HEADER_H = 112
+TECH_ROW_H = 28
 CARD_H = 126
 ROW_GAP = 10
 FOOTER_H = 72
@@ -140,9 +141,10 @@ def _unit_card_height(draw: ImageDraw.ImageDraw, unit: Unit) -> int:
 
 
 def _side_height(draw: ImageDraw.ImageDraw, side: OpeningSide) -> int:
+    header_h = HEADER_H + (TECH_ROW_H if side.tech_names else 0)
     if not side.units:
-        return HEADER_H + CARD_H + ROW_GAP
-    return HEADER_H + sum(
+        return header_h + CARD_H + ROW_GAP
+    return header_h + sum(
         _unit_card_height(draw, unit) + ROW_GAP for unit, _ in side.units
     )
 
@@ -163,9 +165,11 @@ def _draw_side(
     font_name = _get_font(20)
     font_count = _get_font(18)
     font_desc = _get_font(14)
+    font_tech = _get_font(14)
+    header_h = HEADER_H + (TECH_ROW_H if side.tech_names else 0)
 
     draw.rounded_rectangle(
-        (x, y, x + SIDE_W, y + HEADER_H - 12),
+        (x, y, x + SIDE_W, y + header_h - 12),
         radius=9,
         fill=(*color, 255),
     )
@@ -194,8 +198,24 @@ def _draw_side(
         font=font_strategy,
         fill=(245, 243, 238),
     )
-
-    cursor = y + HEADER_H
+    if side.tech_names:
+        visible = side.tech_names[:2]
+        tech_text = " / ".join(visible)
+        if len(side.tech_names) > len(visible):
+            tech_text += " ..."
+        draw.text(
+            (x + 18, y + 94),
+            _wrap_text(
+                draw,
+                f"科技: {tech_text}",
+                font_tech,
+                SIDE_W - 36,
+                max_lines=1,
+            )[0],
+            font=font_tech,
+            fill=(245, 243, 238),
+        )
+    cursor = y + header_h
 
     if not side.units:
         draw.text((x + 18, cursor + 22), "暂无可展示单位", font=font_desc, fill=COLORS["muted"])
@@ -259,9 +279,10 @@ def _draw_match_side(
     font_name = _get_font(20)
     font_count = _get_font(18)
     font_desc = _get_font(14)
+    header_h = HEADER_H
 
     draw.rounded_rectangle(
-        (x, y, x + SIDE_W, y + HEADER_H - 12),
+        (x, y, x + SIDE_W, y + header_h - 12),
         radius=9,
         fill=(*color, 255),
     )
@@ -273,7 +294,7 @@ def _draw_match_side(
         fill=(255, 255, 255),
     )
 
-    cursor = y + HEADER_H
+    cursor = y + header_h
     if not side.units:
         draw.text((x + 18, cursor + 22), "暂无单位", font=font_desc, fill=COLORS["muted"])
         return
