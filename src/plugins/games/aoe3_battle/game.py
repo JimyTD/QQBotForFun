@@ -588,6 +588,7 @@ class AoE3BattleGame(GameBase):
                 perf.stop("setup")
                 return
             by_key = {}
+            armies_by_key: dict[str, dict] = {}
             tuples: list[tuple[str, str, object]] = []
             label_total: dict[str, int] = {}
             for army in armies:
@@ -596,6 +597,7 @@ class AoE3BattleGame(GameBase):
             for index, (army, lineup) in enumerate(zip(armies, built, strict=True)):
                 key = f"lineup-{index}"
                 by_key[key] = lineup
+                armies_by_key[key] = army
                 label = army["label"]
                 if label_total[label] > 1:
                     label_used[label] = label_used.get(label, 0) + 1
@@ -615,6 +617,7 @@ class AoE3BattleGame(GameBase):
             )
             self._tournament = tournament
             self._lineup_by_key = by_key
+            self._lineup_armies = armies_by_key
             self._battle_task = None
             perf.stop("setup")
             return
@@ -1287,13 +1290,16 @@ class AoE3BattleGame(GameBase):
 
     async def _lineup_tournament_on_start(self, ctx: GameContext) -> None:
         """配兵锦标赛开局：公布 8 支军队，不开放押注。"""
+        from .lineup_draft import format_lineup_tournament_roster
+
         t = self._tournament
-        lines = ["🏆 配兵锦标赛", "", "参赛军队："]
-        for tu in t.units:
-            lines.append(f"  {tu.idx + 1}. {tu.display_name}")
-        lines.append("")
-        lines.append("⚔️ 发送「开战」开始八强战")
-        await session.broadcast(ctx.group_id, "\n".join(lines))
+        await session.broadcast(
+            ctx.group_id,
+            format_lineup_tournament_roster(
+                t.units,
+                getattr(self, "_lineup_armies", {}),
+            ),
+        )
         await self._tournament_send_bracket(
             ctx, hint="八强对阵已确定 · 发送「开战」开始八强战",
         )

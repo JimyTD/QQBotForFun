@@ -37,12 +37,13 @@ def test_room_card_lists_names_without_armies_or_host():
     assert "风云" not in text
 
 
-def test_all_human_players_ready_prompts_the_host():
+def test_all_human_players_ready_prompts_start():
     room = _room(Seat(user_id=7, nickname="JimyTD", is_host=True, army=object()))
     text = format_all_ready(room)
     assert "全体玩家已配好" in text
     assert "空位 1，开始时补 AI" in text
-    assert "房主 @我 开始" in text
+    assert text.endswith("@我 开始")
+    assert "房主" not in text
 
 
 def test_full_room_ready_prompt_has_no_empty_seats():
@@ -53,4 +54,5 @@ def test_full_room_ready_prompt_has_no_empty_seats():
     text = format_all_ready(room)
     assert "全体玩家已配好" in text
     assert "空位" not in text
-    assert text.endswith("房主 @我 开始")
+    assert text.endswith("@我 开始")
+    assert "房主" not in text

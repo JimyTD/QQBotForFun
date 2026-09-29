@@ -74,6 +74,30 @@ class CompiledArmy:
         }
 
 
+def format_lineup_tournament_roster(units, armies_by_key: dict[str, dict]) -> str:
+    """Reveal each tournament army: tactic, soldiers, and techs."""
+    lines = ["🏆 配兵锦标赛", "", "参赛军队："]
+    for unit in units:
+        army = armies_by_key.get(unit.unit_id) or {}
+        strategy = str(army.get("strategy") or "")
+        head = f"{unit.display_name}（{strategy}）" if strategy else unit.display_name
+        lines.append(f"  {unit.idx + 1}. {head}")
+        slots = army.get("slots") or ()
+        if slots:
+            lines.append(
+                "     "
+                + "、".join(
+                    f"{slot['unit_name']}×{slot['count']}" for slot in slots
+                )
+            )
+        techs = [str(name) for name in (army.get("tech_names") or ()) if name]
+        if techs:
+            lines.append("     科技：" + "、".join(techs))
+    lines.append("")
+    lines.append("⚔️ 发送「开战」开始八强战")
+    return "\n".join(lines)
+
+
 def draft_units(repo: UnitRepo, civ_id: str, age: int) -> list:
     """Regular units this civilization can field at ``age``, ordered by name."""
     if age not in {3, 4, 5}:

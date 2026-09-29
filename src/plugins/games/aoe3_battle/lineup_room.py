@@ -89,7 +89,7 @@ def format_all_ready(room: LineupRoom) -> str:
     empty = room.capacity - len(room.seats)
     if empty:
         lines.append(f"空位 {empty}，开始时补 AI")
-    lines.append("房主 @我 开始")
+    lines.append("@我 开始")
     return "\n".join(lines)
 
 

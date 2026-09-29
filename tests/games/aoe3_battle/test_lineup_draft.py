@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import random
+from types import SimpleNamespace
 
 from src.plugins.aoe3.repository import UnitRepo
 from src.plugins.games.aoe3_battle.civ_war_civs import resolve_civ
@@ -11,6 +12,7 @@ from src.plugins.games.aoe3_battle.lineup_draft import (
     compile_ai_army,
     compile_tactic,
     draft_units,
+    format_lineup_tournament_roster,
     list_selectable_techs,
     materialize_army,
     tactics_for,
@@ -133,3 +135,34 @@ def test_wizard_custom_picks_weights_and_one_tech():
     assert wizard.army is not None, text
     assert 1 <= len(wizard.army.tech_ids) <= 2
     assert all(count >= 1 for _unit_id, _name, count in wizard.army.slots)
+
+
+def test_tournament_roster_lists_soldiers_and_techs():
+    units = [
+        SimpleNamespace(idx=0, unit_id="lineup-0", display_name="JimyTD·荷兰"),
+        SimpleNamespace(idx=1, unit_id="lineup-1", display_name="AI·法国·1"),
+    ]
+    text = format_lineup_tournament_roster(
+        units,
+        {
+            "lineup-0": {
+                "strategy": "自选",
+                "tech_names": ["细细的红线"],
+                "slots": [
+                    {"unit_name": "火枪兵", "count": 18},
+                    {"unit_name": "长枪兵", "count": 12},
+                ],
+            },
+            "lineup-1": {
+                "strategy": "火力",
+                "tech_names": [],
+                "slots": [{"unit_name": "散兵", "count": 20}],
+            },
+        },
+    )
+    assert "1. JimyTD·荷兰（自选）" in text
+    assert "火枪兵×18、长枪兵×12" in text
+    assert "科技：细细的红线" in text
+    assert "2. AI·法国·1（火力）" in text
+    assert "散兵×20" in text
+    assert text.endswith("发送「开战」开始八强战")

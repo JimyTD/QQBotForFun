@@ -19,7 +19,11 @@ from plugins.games.aoe3_battle.broadcaster import (
 from plugins.games.aoe3_battle.civ_war_civs import pick_random_civs, resolve_civ
 from plugins.games.aoe3_battle.civ_war_matchup import generate_civ_war_lineup
 from plugins.games.aoe3_battle.game import AGE_DEFAULT, AoE3BattleGame
-from plugins.games.aoe3_battle.lineup_draft import compile_ai_army, materialize_army
+from plugins.games.aoe3_battle.lineup_draft import (
+    compile_ai_army,
+    format_lineup_tournament_roster,
+    materialize_army,
+)
 from plugins.games.aoe3_battle.lineup_wizard import (
     Wizard,
     WizardStep,
@@ -263,6 +267,7 @@ class AoE3BattleCLIAdapter:
             )
             return
         by_key = {}
+        armies_by_key = {}
         tuples = []
         label_total: dict[str, int] = {}
         for payload in armies:
@@ -271,12 +276,14 @@ class AoE3BattleCLIAdapter:
         for index, (payload, lineup) in enumerate(zip(armies, built, strict=True)):
             key = f"lineup-{index}"
             by_key[key] = lineup
+            armies_by_key[key] = payload
             label = payload["label"]
             if label_total[label] > 1:
                 label_used[label] = label_used.get(label, 0) + 1
                 label = f"{label}·{label_used[label]}"
             tuples.append((key, label, lineup.slots[0].unit))
         self._lineup_by_key = by_key
+        self._lineup_armies = armies_by_key
         self._tournament = Tournament.create(
             tuples, "配兵赛", age=age, rng=rng,
         )
@@ -414,11 +421,13 @@ class AoE3BattleCLIAdapter:
         t = self._tournament
 
         if self._mode_id == "lineup_tournament":
-            print(f"\n{C.YEL}━━━ 配兵锦标赛 ━━━{C.R}")
-            print("参赛军队：")
-            for tu in t.units:
-                print(f"  {tu.idx + 1}. {tu.display_name}")
-            info("发送「开战」开始八强战")
+            print(
+                f"\n{C.YEL}"
+                + format_lineup_tournament_roster(
+                    t.units, getattr(self, "_lineup_armies", {}),
+                )
+                + f"{C.R}"
+            )
             self._wait_for_continue()
         else:
             print(f"\n{C.YEL}━━━ 王中王锦标赛 · {t.theme_title} ━━━{C.R}")
