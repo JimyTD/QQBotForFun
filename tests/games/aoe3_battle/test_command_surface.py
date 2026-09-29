@@ -13,6 +13,8 @@ def test_mode_aliases_keep_only_short_public_names():
     assert aliases["custom"] == ()
     assert aliases["rival"] == ("王中王",)
     assert aliases["rival_tournament"] == ("锦标赛",)
+    assert aliases["lineup"] == ("配兵",)
+    assert aliases["lineup_tournament"] == ("配兵锦标赛",)
 
 
 def test_removed_mode_aliases_are_not_registered():

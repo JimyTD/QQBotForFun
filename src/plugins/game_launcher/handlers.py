@@ -311,6 +311,24 @@ async def _(matcher: Matcher, event: GroupMessageEvent, args: Message = CommandA
     group_budget = await _get_default_budget(int(event.group_id))
     group_field_length = await _get_default_field_length(int(event.group_id))
 
+    from src.plugins.games.aoe3_battle.lineup_room import has_lineup_room
+
+    if has_lineup_room(int(event.group_id)):
+        await matcher.finish("⚠️ 本群正在配兵，先 @我 结束")
+        return
+
+    # ---- 配兵 / 配兵锦标赛 ----
+    if parts and parts[0] in ("配兵", "配兵锦标赛"):
+        await _handle_lineup_room(
+            matcher,
+            event,
+            parts,
+            age=age,
+            group_budget=group_budget,
+            group_field_length=group_field_length,
+        )
+        return
+
     # ---- 国战：随机文明 / 明确两个文明 ----
     if parts and parts[0] == "国战":
         await _handle_civ_war_battle(
@@ -349,7 +367,7 @@ async def _(matcher: Matcher, event: GroupMessageEvent, args: Message = CommandA
 
     # ---- 指定兵种：参数中有非模式关键词且非纯数字 → 当作兵种名 ----
     _MODE_KEYWORDS = {
-        "单挑", "乱斗", "国战", "王中王", "锦标赛",
+        "单挑", "乱斗", "国战", "王中王", "锦标赛", "配兵", "配兵锦标赛",
     }
     unknown_words = [p for p in parts if p not in _MODE_KEYWORDS and not p.isdigit()]
     if unknown_words:
@@ -393,6 +411,54 @@ async def _(matcher: Matcher, event: GroupMessageEvent, args: Message = CommandA
         mode_id=mode_id,
         extra_config=config,
     )
+
+
+async def _handle_lineup_room(
+    matcher: Matcher,
+    event: GroupMessageEvent,
+    parts: list[str],
+    *,
+    age: int | None,
+    group_budget: int | None,
+    group_field_length: float | None,
+) -> None:
+    """Open a 配兵 signup room. Battle starts later, when the host says 开始."""
+    from src.plugins.games.aoe3_battle.game import BUDGET_DEFAULT
+    from src.plugins.games.aoe3_battle.lineup_room import open_lineup_room
+    from src.plugins.games.aoe3_battle.simulator2d.constants import FIELD_LENGTH
+
+    tournament = parts[0] == "配兵锦标赛" or (
+        len(parts) > 1 and parts[1] == "锦标赛"
+    )
+    extra = parts[1:]
+    if extra[:1] == ["锦标赛"]:
+        extra = extra[1:]
+    if extra:
+        await matcher.finish("⚠️ 配兵不用再写别的参数")
+        return
+    resolved_age = age if age is not None else 3
+    if resolved_age not in (3, 4, 5):
+        await matcher.finish("⚠️ 配兵只开放 3～5 时代。先 @我 斗蛐蛐 3时代 再开房")
+        return
+    sender = event.sender
+    nickname = (
+        getattr(sender, "card", "")
+        or getattr(sender, "nickname", "")
+        or str(event.user_id)
+    )
+    error = await open_lineup_room(
+        group_id=int(event.group_id),
+        host_id=int(event.user_id),
+        nickname=nickname,
+        tournament=tournament,
+        age=resolved_age,
+        budget=group_budget if group_budget is not None else BUDGET_DEFAULT,
+        field_length=(
+            group_field_length if group_field_length is not None else FIELD_LENGTH
+        ),
+    )
+    if error:
+        await matcher.finish(error)
 
 
 async def _handle_civ_war_battle(
@@ -604,6 +670,12 @@ async def _(matcher: Matcher, event: GroupMessageEvent) -> None:
 
     if cancel_pending(group_id):
         await matcher.finish("🏳 已取消王中王选主题。")
+        return
+
+    from src.plugins.games.aoe3_battle.lineup_room import cancel_lineup_room
+
+    if cancel_lineup_room(group_id):
+        await matcher.finish("🏳 已取消配兵房间。")
         return
 
     # 报名房间（还没开局）也要能收掉，否则房主挂机就没人能清场了

@@ -109,7 +109,7 @@ async def _(matcher: Matcher, event: GroupMessageEvent) -> None:
     if runner is None:
         return
     phase = runner.ctx.state.get("phase", "")
-    if phase in ("betting", "tournament_betting", "tournament_waiting"):
+    if phase in ("betting", "lineup_waiting", "tournament_betting", "tournament_waiting"):
         await runner.game.on_player_action(
             runner.ctx, int(event.user_id), "开战"
         )

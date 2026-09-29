@@ -10,10 +10,12 @@ import random
 import pytest
 
 from plugins.aoe3.repository import UnitRepo
+from plugins.games.aoe3_battle.battle_contract import Side
 from plugins.games.aoe3_battle.lineup import generate_tournament_lineup
 from plugins.games.aoe3_battle.tournament import (
     Tournament,
     TournamentStage,
+    resolve_tournament_draw,
 )
 
 
@@ -291,3 +293,27 @@ class TestGenerateTournamentLineup:
         assert isinstance(result, (list, str))
         if isinstance(result, str):
             assert "不足 8 个" in result
+
+
+class TestTournamentDraw:
+    """平局晋级：剩余血量高者留下，血量相同才随机。"""
+
+    def test_higher_remaining_hp_advances(self):
+        side, reason = resolve_tournament_draw(120, 40)
+        assert side == Side.RED
+        assert reason == "hp"
+
+        side, reason = resolve_tournament_draw(10, 80)
+        assert side == Side.BLUE
+        assert reason == "hp"
+
+    def test_equal_hp_is_random_and_repeatable(self):
+        rng = random.Random(7)
+        first_side, first_reason = resolve_tournament_draw(0, 0, rng=rng)
+        assert first_reason == "random"
+        assert first_side in (Side.RED, Side.BLUE)
+
+        again = random.Random(7)
+        second_side, second_reason = resolve_tournament_draw(0, 0, rng=again)
+        assert second_reason == "random"
+        assert second_side == first_side

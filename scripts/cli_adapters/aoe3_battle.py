@@ -1,23 +1,31 @@
 """AoE3 斗蛐蛐 CLI 适配器。
 
-MODES 定义在此（押注 / 国战 / 单挑 / 乱斗 / 王中王 / 王中王锦标赛）。
+开局模式与 ``AoE3BattleGame.MODES`` 同一份。
 CLI 流程：
 - 开局 → 生成阵容 → 展示面板 → 模拟押注 → 跑模拟 → 播报 → 战报
+- 配兵：本地走同一套私聊向导，再补 AI，不押注
 """
 
 from __future__ import annotations
 
 import random
 
-from cli_adapters.base import C, GameMode, info, prompt
+from cli_adapters.base import C, info, prompt
 from plugins.aoe3.repository import UnitRepo
-from plugins.games.aoe3_battle.battle_contract import BattleResult
+from plugins.games.aoe3_battle.battle_contract import BattleResult, Side
 from plugins.games.aoe3_battle.broadcaster import (
     format_battle_report,
 )
 from plugins.games.aoe3_battle.civ_war_civs import pick_random_civs, resolve_civ
 from plugins.games.aoe3_battle.civ_war_matchup import generate_civ_war_lineup
-from plugins.games.aoe3_battle.game import AGE_DEFAULT
+from plugins.games.aoe3_battle.game import AGE_DEFAULT, AoE3BattleGame
+from plugins.games.aoe3_battle.lineup_draft import compile_ai_army, materialize_army
+from plugins.games.aoe3_battle.lineup_wizard import (
+    Wizard,
+    WizardStep,
+    advance,
+    opening_prompt,
+)
 from plugins.games.aoe3_battle.lineup import (
     MatchLineup,
     _unit_cost,
@@ -36,62 +44,18 @@ from plugins.games.aoe3_battle.rival_themes import (
     resolve_theme,
 )
 from plugins.games.aoe3_battle.simulator2d import BattleSimulator2D
-from plugins.games.aoe3_battle.tournament import Tournament, TournamentStage
-
-# =====================================================================
-# 模式定义
-# =====================================================================
-MODES = [
-    GameMode(
-        id="bet",
-        name="押注模式",
-        description="随机双方阵容，群殴对决",
-        aliases=("押注", "斗蛐蛐", "默认"),
-    ),
-    GameMode(
-        id="duel",
-        name="单挑模式",
-        description="随机两个兵种，真 1v1",
-        aliases=("单挑",),
-    ),
-    GameMode(
-        id="blacklist",
-        name="乱斗模式",
-        description="怪物 / 战役英雄 / 作弊码兵互殴，战力分平衡",
-        aliases=("乱斗",),
-    ),
-    GameMode(
-        id="civ_war",
-        name="国战",
-        description="文明战术编制对决",
-        aliases=("国战",),
-    ),
-    GameMode(
-        id="custom",
-        name="指定兵种对决",
-        description="指定 1~2 种兵对决，相同资源",
-        aliases=(),
-    ),
-    GameMode(
-        id="rival",
-        name="王中王",
-        description="职能主题对决 · 表情选主题或指定主题",
-        aliases=("王中王",),
-    ),
-    GameMode(
-        id="rival_tournament",
-        name="王中王锦标赛",
-        description="8 兵种单败淘汰锦标赛",
-        aliases=("锦标赛", "王中王锦标赛"),
-    ),
-]
+from plugins.games.aoe3_battle.tournament import (
+    Tournament,
+    TournamentStage,
+    resolve_tournament_draw,
+)
 
 
 class AoE3BattleCLIAdapter:
     """帝国3斗蛐蛐 — CLI 适配器。"""
 
     game_name = "帝国3斗蛐蛐 ⚔️"
-    MODES = MODES
+    MODES = AoE3BattleGame.MODES
 
     def __init__(self, *, debug: bool = False) -> None:
         self._debug = debug
@@ -102,6 +66,8 @@ class AoE3BattleCLIAdapter:
         self._result: BattleResult | None = None
         self._tournament: Tournament | None = None
         self._tournament_bets: dict[str, int] = {}
+        self._lineup_by_key: dict | None = None
+        self._age = AGE_DEFAULT
 
     async def start(self, mode_id: str) -> None:
         self._mode_id = mode_id
@@ -241,6 +207,10 @@ class AoE3BattleCLIAdapter:
             )
             return
 
+        if mode_id in ("lineup", "lineup_tournament"):
+            self._start_lineup(mode_id == "lineup_tournament")
+            return
+
         # 生成阵容
         # 时代: 与线上默认一致 (game.AGE_DEFAULT, §3.10.6); 乱斗线上不启用时代
         rng = random.Random()
@@ -253,12 +223,94 @@ class AoE3BattleCLIAdapter:
                 self._repo, rng=rng, budget=self._budget, age=AGE_DEFAULT
             )
 
+    def _start_lineup(self, tournament: bool) -> None:
+        """Draft one army with the same wizard the group bot whispers."""
+        assert self._repo is not None
+        age_text = prompt("时代（3/4/5，直接回车默认 3）> ").strip()
+        age = int(age_text) if age_text.isdigit() else AGE_DEFAULT
+        if age not in (3, 4, 5):
+            info("配兵只开放 3～5 时代")
+            return
+        budget_text = prompt("资源预算（直接回车默认 10000）> ").strip()
+        if budget_text.isdigit():
+            self._budget = max(1000, min(50000, int(budget_text)))
+        self._age = age
+        info(f"{age} 时代 · 军费 {self._budget}")
+        army = self._draft_cli_army(age)
+        if army is None:
+            info("配兵未完成")
+            return
+        capacity = 8 if tournament else 2
+        rng = random.Random()
+        armies = [army.to_dict()]
+        while len(armies) < capacity:
+            armies.append(compile_ai_army(
+                self._repo, age=age, budget=self._budget, rng=rng,
+            ).to_dict())
+        built = [materialize_army(self._repo, payload, age) for payload in armies]
+        if not tournament:
+            self._match = MatchLineup(
+                red=built[0],
+                blue=built[1],
+                mode="lineup",
+                age=age,
+                red_civ_name=armies[0]["civ_name"],
+                blue_civ_name=armies[1]["civ_name"],
+                red_strategy=armies[0]["strategy"],
+                blue_strategy=armies[1]["strategy"],
+                red_tech_names=tuple(armies[0].get("tech_names") or ()),
+                blue_tech_names=tuple(armies[1].get("tech_names") or ()),
+            )
+            return
+        by_key = {}
+        tuples = []
+        label_total: dict[str, int] = {}
+        for payload in armies:
+            label_total[payload["label"]] = label_total.get(payload["label"], 0) + 1
+        label_used: dict[str, int] = {}
+        for index, (payload, lineup) in enumerate(zip(armies, built, strict=True)):
+            key = f"lineup-{index}"
+            by_key[key] = lineup
+            label = payload["label"]
+            if label_total[label] > 1:
+                label_used[label] = label_used.get(label, 0) + 1
+                label = f"{label}·{label_used[label]}"
+            tuples.append((key, label, lineup.slots[0].unit))
+        self._lineup_by_key = by_key
+        self._tournament = Tournament.create(
+            tuples, "配兵赛", age=age, rng=rng,
+        )
+
+    def _draft_cli_army(self, age: int):
+        assert self._repo is not None
+        wizard = Wizard()
+        print(opening_prompt())
+        while wizard.step != WizardStep.DONE:
+            text = prompt("配兵> ").strip()
+            if text.lower() in ("quit", "exit", "q", "退出"):
+                return None
+            wizard, reply = advance(
+                wizard,
+                text,
+                repo=self._repo,
+                age=age,
+                budget=self._budget,
+                nickname="CLI",
+            )
+            print(reply)
+        return wizard.army
+
     async def play(self) -> None:
-        if self._mode_id == "rival_tournament":
+        if self._mode_id in ("rival_tournament", "lineup_tournament"):
+            if self._tournament is None:
+                info("本局没有生成赛程")
+                return
             await self._play_tournament()
             return
 
-        assert self._match is not None
+        if self._match is None:
+            info("本局没有生成阵容")
+            return
 
         match = self._match
         mode = self._mode_id
@@ -279,37 +331,48 @@ class AoE3BattleCLIAdapter:
         print(f"{C.CYAN}{vs}{C.R}")
         print(f"{C.CYAN}{'━' * 40}{C.R}")
 
-        # 2. 模拟押注阶段
+        # 2. 模拟押注阶段。配兵没有押注，只等开战。
         bets: dict[str, str] = {}  # player_name -> "red" | "blue"
-        print(f"\n{C.YEL}━━━ 押注阶段 ━━━{C.R}")
-        print(f"{C.DIM}输入 1（红方）/ 2（蓝方）/ 开战（跳过押注）{C.R}")
+        if mode == "lineup":
+            print(f"\n{C.YEL}发送「开战」开始这一场{C.R}")
+            while True:
+                text = prompt("开战> ").strip().lower()
+                if text in ("开战", "start", "go"):
+                    break
+                if text in ("quit", "exit", "q", "退出"):
+                    info("已退出")
+                    return
+                print(f"{C.DIM}输入「开战」或 quit{C.R}")
+        else:
+            print(f"\n{C.YEL}━━━ 押注阶段 ━━━{C.R}")
+            print(f"{C.DIM}输入 1（红方）/ 2（蓝方）/ 开战（跳过押注）{C.R}")
 
-        while True:
-            text = prompt("押注> ").strip()
-            if not text:
-                continue
-            low = text.lower()
+            while True:
+                text = prompt("押注> ").strip()
+                if not text:
+                    continue
+                low = text.lower()
 
-            if low in ("开战", "start", "go"):
-                break
-            if low in ("quit", "exit", "q", "退出"):
-                info("已退出")
-                return
-            if low in ("1", "押1", "押注1"):
-                if "CLI玩家" in bets:
-                    print(f"{C.DIM}你已经押过了（锁死第一笔）{C.R}")
-                else:
-                    bets["CLI玩家"] = "red"
-                    print(f"{C.RED}✅ 你押了 🔴 红方{C.R}")
-                continue
-            if low in ("2", "押2", "押注2"):
-                if "CLI玩家" in bets:
-                    print(f"{C.DIM}你已经押过了（锁死第一笔）{C.R}")
-                else:
-                    bets["CLI玩家"] = "blue"
-                    print(f"{C.BLUE}✅ 你押了 🔵 蓝方{C.R}")
-                continue
-            print(f"{C.DIM}无效输入。1 / 2 / 开战{C.R}")
+                if low in ("开战", "start", "go"):
+                    break
+                if low in ("quit", "exit", "q", "退出"):
+                    info("已退出")
+                    return
+                if low in ("1", "押1", "押注1"):
+                    if "CLI玩家" in bets:
+                        print(f"{C.DIM}你已经押过了（锁死第一笔）{C.R}")
+                    else:
+                        bets["CLI玩家"] = "red"
+                        print(f"{C.RED}✅ 你押了 🔴 红方{C.R}")
+                    continue
+                if low in ("2", "押2", "押注2"):
+                    if "CLI玩家" in bets:
+                        print(f"{C.DIM}你已经押过了（锁死第一笔）{C.R}")
+                    else:
+                        bets["CLI玩家"] = "blue"
+                        print(f"{C.BLUE}✅ 你押了 🔵 蓝方{C.R}")
+                    continue
+                print(f"{C.DIM}无效输入。1 / 2 / 开战{C.R}")
 
         # 3. 跑模拟
         print(f"\n{C.DIM}战斗模拟中...{C.R}")
@@ -325,6 +388,11 @@ class AoE3BattleCLIAdapter:
 
         # 4. 最终战报；正式逐窗口播报与 brief/detailed 开关已彻底删除
         report = format_battle_report(result)
+        if match.mode == "lineup":
+            report = (
+                f"🌍 配兵 · {match.red_civ_name}（{match.red_strategy}）"
+                f" vs {match.blue_civ_name}（{match.blue_strategy}）\n\n{report}"
+            )
         print(f"\n{C.B}{report}{C.R}")
 
         # 5. 押注结算（CLI 简化版）
@@ -345,28 +413,40 @@ class AoE3BattleCLIAdapter:
         assert self._tournament is not None
         t = self._tournament
 
-        print(f"\n{C.YEL}━━━ 王中王锦标赛 · {t.theme_title} ━━━{C.R}")
-        print("参赛兵种：")
-        for tu in t.units:
-            print(f"  {tu.idx + 1}. {tu.display_name}")
-        print(f"{C.DIM}输入 1-8 押注夺冠，开战开始，quit 退出。{C.R}")
+        if self._mode_id == "lineup_tournament":
+            print(f"\n{C.YEL}━━━ 配兵锦标赛 ━━━{C.R}")
+            print("参赛军队：")
+            for tu in t.units:
+                print(f"  {tu.idx + 1}. {tu.display_name}")
+            info("发送「开战」开始八强战")
+            self._wait_for_continue()
+        else:
+            print(f"\n{C.YEL}━━━ 王中王锦标赛 · {t.theme_title} ━━━{C.R}")
+            print("参赛兵种：")
+            for tu in t.units:
+                print(f"  {tu.idx + 1}. {tu.display_name}")
+            print(f"{C.DIM}输入 1-8 押注夺冠，开战开始，quit 退出。{C.R}")
 
-        while True:
-            text = prompt("押注/开战> ").strip().lower()
-            if text in ("quit", "exit", "q", "退出"):
-                info("已退出")
-                return
-            if text == "开战":
-                break
-            if text in tuple(str(i) for i in range(1, 9)):
-                unit_idx = int(text) - 1
-                if "CLI玩家" in self._tournament_bets:
-                    print(f"{C.DIM}你已经押过了（锁死第一笔）{C.R}")
+        if self._mode_id != "lineup_tournament":
+            while True:
+                text = prompt("押注/开战> ").strip().lower()
+                if text in ("quit", "exit", "q", "退出"):
+                    info("已退出")
+                    return
+                if text == "开战":
+                    break
+                if text in tuple(str(i) for i in range(1, 9)):
+                    unit_idx = int(text) - 1
+                    if "CLI玩家" in self._tournament_bets:
+                        print(f"{C.DIM}你已经押过了（锁死第一笔）{C.R}")
+                        continue
+                    self._tournament_bets["CLI玩家"] = unit_idx
+                    print(
+                        f"{C.GRN}✅ 你押了 {unit_idx + 1}号 "
+                        f"{t.get_unit(unit_idx).display_name} 夺冠{C.R}"
+                    )
                     continue
-                self._tournament_bets["CLI玩家"] = unit_idx
-                print(f"{C.GRN}✅ 你押了 {unit_idx + 1}号 {t.get_unit(unit_idx).display_name} 夺冠{C.R}")
-                continue
-            print(f"{C.DIM}无效输入。1-8 / 开战 / quit{C.R}")
+                print(f"{C.DIM}无效输入。1-8 / 开战 / quit{C.R}")
 
         # DRAW 是抽签完成后的等待态，第一轮开战需要显式推进。
         t.try_advance()
@@ -418,20 +498,37 @@ class AoE3BattleCLIAdapter:
         match = t.matches[match_id]
         tu_a = t.get_unit(match.unit_a_idx)
         tu_b = t.get_unit(match.unit_b_idx)
-        cost_a = max(1, _unit_cost(tu_a.unit))
-        cost_b = max(1, _unit_cost(tu_b.unit))
-        lcm_budget = approx_lcm_budget(cost_a, cost_b, self._budget)
-        count_a = max(1, lcm_budget // cost_a)
-        count_b = max(1, lcm_budget // cost_b)
+        if self._lineup_by_key is not None:
+            red_lineup = self._lineup_by_key[tu_a.unit_id]
+            blue_lineup = self._lineup_by_key[tu_b.unit_id]
+            red_army = [(slot.unit, slot.count) for slot in red_lineup.slots]
+            blue_army = [(slot.unit, slot.count) for slot in blue_lineup.slots]
+            count_a = red_lineup.total_count
+            count_b = blue_lineup.total_count
+        else:
+            cost_a = max(1, _unit_cost(tu_a.unit))
+            cost_b = max(1, _unit_cost(tu_b.unit))
+            lcm_budget = approx_lcm_budget(cost_a, cost_b, self._budget)
+            count_a = max(1, lcm_budget // cost_a)
+            count_b = max(1, lcm_budget // cost_b)
+            red_army = [(tu_a.unit, count_a)]
+            blue_army = [(tu_b.unit, count_b)]
 
         sim = BattleSimulator2D(
-            red_army=[(tu_a.unit, count_a)],
-            blue_army=[(tu_b.unit, count_b)],
+            red_army=red_army,
+            blue_army=blue_army,
             session_id=f"cli-tournament-{match_id}",
         )
         result = sim.run()
+        verdict = "胜"
         if result.winner is None:
-            winner_idx = random.choice([match.unit_a_idx, match.unit_b_idx])
+            red_hp = sum(getattr(soldier, "hp", 0) for soldier in result.red_alive)
+            blue_hp = sum(getattr(soldier, "hp", 0) for soldier in result.blue_alive)
+            draw_side, draw_break = resolve_tournament_draw(red_hp, blue_hp)
+            winner_idx = (
+                match.unit_a_idx if draw_side == Side.RED else match.unit_b_idx
+            )
+            verdict = "剩余血量更高" if draw_break == "hp" else "剩余血量相同，随机晋级"
         elif result.winner.value == "red":
             winner_idx = match.unit_a_idx
         else:
@@ -442,7 +539,7 @@ class AoE3BattleCLIAdapter:
         print(f"\n{C.B}{match.label}：{tu_a.display_name} vs {tu_b.display_name}{C.R}")
         print(f"  🔴 {tu_a.display_name} ×{count_a}  存活 {len(result.red_alive)}")
         print(f"  🔵 {tu_b.display_name} ×{count_b}  存活 {len(result.blue_alive)}")
-        print(f"  {C.GRN}🏆 {winner.display_name} 胜{C.R}")
+        print(f"  {C.GRN}🏆 {winner.display_name} {verdict}{C.R}")
 
     @staticmethod
     def _stage_label(stage: TournamentStage) -> str:

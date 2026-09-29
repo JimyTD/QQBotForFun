@@ -62,6 +62,7 @@ _FALLBACK_HELP = (
     "🌊 @我 深海任务 8\n"
     "🌊 @我 深海战役\n"
     "⚔️ @我 斗蛐蛐\n"
+    "⚔️ @我 斗蛐蛐 配兵\n"
     "⚔️ @我 斗蛐蛐 锦标赛\n"
     "⚔️ @我 斗蛐蛐 王中王\n"
     "⚔️ @我 斗蛐蛐 5时代\n"
@@ -107,7 +108,19 @@ async def _route(event: MessageEvent, matcher: Matcher) -> None:
         matcher.stop_propagation()
         return
 
-    # 2) 王中王选主题中
+    # 2) 配兵报名中
+    if group_id is not None:
+        from src.plugins.games.aoe3_battle.lineup_room import has_lineup_room
+        if has_lineup_room(group_id):
+            await matcher.finish(
+                "⚔️ 配兵报名中\n"
+                "💡 @我 加入 / 离开 / 开始\n"
+                "💡 配兵在私聊里进行\n"
+                "💡 @我 结束 可取消"
+            )
+            return
+
+    # 3) 王中王选主题中
     if group_id is not None:
         from src.plugins.games.aoe3_battle.rival_pick import has_pending
         if has_pending(group_id):

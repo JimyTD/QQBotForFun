@@ -57,7 +57,7 @@ from .replay.service import (
 )
 from .simulator2d import BattleSimulator2D
 from .simulator2d.constants import FIELD_LENGTH
-from .tournament import Tournament, TournamentStage
+from .tournament import Tournament, TournamentStage, resolve_tournament_draw
 
 logger = logging.getLogger("aoe3_battle.game")
 
@@ -371,7 +371,7 @@ class AoE3BattleGame(GameBase):
 
     id = "aoe3_battle"
     name = "帝国3斗蛐蛐"
-    description = "兵种对战模拟 · 押注 / 国战 / 单挑 / 乱斗 / 王中王 / 锦标赛"
+    description = "兵种对战模拟 · 押注 / 国战 / 配兵 / 单挑 / 乱斗 / 王中王 / 锦标赛"
     min_players = 0            # 无人押注也能打
     max_players = 50
     version = "1.0"
@@ -420,6 +420,18 @@ class AoE3BattleGame(GameBase):
             name="王中王锦标赛",
             description="8 兵种单败淘汰锦标赛 · 表情选主题",
             aliases=("锦标赛",),
+        ),
+        GameMode(
+            id="lineup",
+            name="配兵",
+            description="报名后私聊配兵，1v1 自动对战",
+            aliases=("配兵",),
+        ),
+        GameMode(
+            id="lineup_tournament",
+            name="配兵锦标赛",
+            description="报名后私聊配兵，8 人单败淘汰",
+            aliases=("配兵锦标赛",),
         ),
     ]
 
@@ -522,6 +534,76 @@ class AoE3BattleGame(GameBase):
             self._battle_task = None
             perf.stop("setup")
             return  # 提前返回，不走普通 match 的 state 序列化
+        elif mode_id in ("lineup", "lineup_tournament"):
+            from .lineup_draft import materialize_army
+
+            armies = list((ctx.config or {}).get("armies") or [])
+            expected = 8 if mode_id == "lineup_tournament" else 2
+            if len(armies) != expected:
+                raise ValueError(f"配兵需要 {expected} 支军队，实际 {len(armies)}")
+            built = [materialize_army(repo, army, age) for army in armies]
+            if mode_id == "lineup":
+                match = MatchLineup(
+                    red=built[0],
+                    blue=built[1],
+                    mode="lineup",
+                    age=age,
+                    red_civ_name=armies[0]["civ_name"],
+                    blue_civ_name=armies[1]["civ_name"],
+                    red_strategy=armies[0]["strategy"],
+                    blue_strategy=armies[1]["strategy"],
+                    red_tech_names=tuple(armies[0].get("tech_names") or ()),
+                    blue_tech_names=tuple(armies[1].get("tech_names") or ()),
+                )
+                ctx.state.update(
+                    mode=mode_id,
+                    budget=budget,
+                    age=age,
+                    field_length=field_length,
+                    phase="lineup_waiting",
+                    bets={},
+                    red_army=armies[0]["slots"],
+                    blue_army=armies[1]["slots"],
+                    civ_war={
+                        "red_civ_id": armies[0]["civ_id"],
+                        "blue_civ_id": armies[1]["civ_id"],
+                    },
+                )
+                self._match = match
+                self._battle_task = None
+                perf.stop("setup")
+                return
+            by_key = {}
+            tuples: list[tuple[str, str, object]] = []
+            label_total: dict[str, int] = {}
+            for army in armies:
+                label_total[army["label"]] = label_total.get(army["label"], 0) + 1
+            label_used: dict[str, int] = {}
+            for index, (army, lineup) in enumerate(zip(armies, built, strict=True)):
+                key = f"lineup-{index}"
+                by_key[key] = lineup
+                label = army["label"]
+                if label_total[label] > 1:
+                    label_used[label] = label_used.get(label, 0) + 1
+                    label = f"{label}·{label_used[label]}"
+                tuples.append((key, label, lineup.slots[0].unit))
+            tournament = Tournament.create(
+                tuples, "配兵赛", age=age, rng=rng,
+            )
+            ctx.state.update(
+                mode=mode_id,
+                age=age,
+                field_length=field_length,
+                budget=budget,
+                phase="tournament_waiting",
+                tournament=tournament.to_dict(),
+                tournament_bets={},
+            )
+            self._tournament = tournament
+            self._lineup_by_key = by_key
+            self._battle_task = None
+            perf.stop("setup")
+            return
         else:
             match = generate_bet_lineup(
                 repo, rng=rng, budget=budget, age=age,
@@ -585,9 +667,14 @@ class AoE3BattleGame(GameBase):
             perf.stop("opening")
             perf.start("betting_wait")
             return
+        if mode == "lineup_tournament":
+            await self._lineup_tournament_on_start(ctx)
+            perf.stop("opening")
+            perf.start("tournament_wait")
+            return
 
         match = self._match
-        if mode == "civ_war":
+        if mode in ("civ_war", "lineup"):
             red_side = OpeningSide(
                 civ_name=match.red_civ_name or "",
                 civ_id=ctx.state["civ_war"]["red_civ_id"],
@@ -602,10 +689,18 @@ class AoE3BattleGame(GameBase):
                 units=tuple((slot.unit, slot.count) for slot in match.blue.slots),
                 tech_names=match.blue_tech_names,
             )
+            opening_title = "配兵" if mode == "lineup" else "国战"
+            opening_footer = (
+                "@ 开战 开始这一场"
+                if mode == "lineup"
+                else "@ 1 押红方 | @ 2 押蓝方 · @ 开战 直接开打"
+            )
             png_bytes = render_civ_war_opening(
                 red=red_side,
                 blue=blue_side,
                 age=match.age or 3,
+                title=f"帝国3斗蛐蛐 · {opening_title}",
+                bet_hint=opening_footer,
             )
             b64 = base64.b64encode(png_bytes).decode()
             image_msg = Message()
@@ -613,8 +708,16 @@ class AoE3BattleGame(GameBase):
             await session.broadcast_rich(
                 ctx.group_id,
                 image_msg,
-                format_civ_war_fallback(red_side, blue_side, age=match.age or 3),
+                format_civ_war_fallback(
+                    red_side,
+                    blue_side,
+                    age=match.age or 3,
+                    title=opening_title,
+                    footer=opening_footer,
+                ),
             )
+            if mode == "lineup":
+                await session.broadcast(ctx.group_id, "⚔️ 发送「开战」开始这一场")
             logger.info(
                 "[aoe3_battle] 对局 %s 开始，模式=%s 🔴 %s vs 🔵 %s",
                 ctx.session_id,
@@ -695,12 +798,26 @@ class AoE3BattleGame(GameBase):
         if phase.startswith("tournament_"):
             return await self._handle_tournament_action(ctx, player_id, text, phase)
 
+        if phase == "lineup_waiting":
+            if text == "开战":
+                ctx.state["phase"] = "fighting"
+                self._perf_timer.stop("betting_wait")
+                self._battle_task = asyncio.create_task(self._run_battle(ctx))
+                return True
+            return False
+
         if phase == "betting":
             return await self._handle_betting(ctx, player_id, text)
         return False
 
     def in_game_hint(self, ctx: GameContext) -> str:
         phase = ctx.state.get("phase", "ended")
+        if phase == "lineup_waiting":
+            return (
+                "⚔️ 配兵对阵已亮相\n"
+                "💡 发送「开战」开始战斗\n"
+                "💡 @我 结束 可终止本局"
+            )
         if phase == "fighting":
             return (
                 "⚔️ 斗蛐蛐战斗进行中，请稍候…\n"
@@ -911,9 +1028,10 @@ class AoE3BattleGame(GameBase):
             # 2. 最终战报（过程由视频承载）
             perf.start("report_build")
             report = format_battle_report(result)
-            if match.mode == "civ_war":
+            if match.mode in ("civ_war", "lineup"):
+                banner = "配兵" if match.mode == "lineup" else "国战"
                 report = (
-                    f"🌍 国战 · {match.red_civ_name}（{match.red_strategy}）"
+                    f"🌍 {banner} · {match.red_civ_name}（{match.red_strategy}）"
                     f" vs {match.blue_civ_name}（{match.blue_strategy}）\n\n{report}"
                 )
             perf.stop("report_build")
@@ -1110,7 +1228,7 @@ class AoE3BattleGame(GameBase):
         repo = UnitRepo.get()
         paths = []
         for tu in self._tournament.units:
-            unit = repo.get_by_id(tu.unit_id)
+            unit = tu.unit if getattr(self, "_lineup_by_key", None) else repo.get_by_id(tu.unit_id)
             if unit:
                 paths.append(repo.get_icon_path(unit))
             else:
@@ -1152,6 +1270,19 @@ class AoE3BattleGame(GameBase):
         msg = Message()
         msg.append(MessageSegment.image(f"base64://{b64}"))
         await session.broadcast_rich(ctx.group_id, msg, "[最终排名]")
+
+    async def _lineup_tournament_on_start(self, ctx: GameContext) -> None:
+        """配兵锦标赛开局：公布 8 支军队，不开放押注。"""
+        t = self._tournament
+        lines = ["🏆 配兵锦标赛", "", "参赛军队："]
+        for tu in t.units:
+            lines.append(f"  {tu.idx + 1}. {tu.display_name}")
+        lines.append("")
+        lines.append("⚔️ 发送「开战」开始八强战")
+        await session.broadcast(ctx.group_id, "\n".join(lines))
+        await self._tournament_send_bracket(
+            ctx, hint="八强对阵已确定 · 发送「开战」开始八强战",
+        )
 
     async def _tournament_on_start(self, ctx: GameContext) -> None:
         """锦标赛开局：发送赛前对阵图 + 参赛兵种列表 + 押注提示。"""
@@ -1279,22 +1410,35 @@ class AoE3BattleGame(GameBase):
                 tu_a = t.get_unit(match_obj.unit_a_idx)
                 tu_b = t.get_unit(match_obj.unit_b_idx)
 
-                # LCM 平衡（含人口折算）
-                cost_a = _unit_cost(tu_a.unit)
-                cost_b = _unit_cost(tu_b.unit)
-                if cost_a <= 0:
-                    cost_a = 1
-                if cost_b <= 0:
-                    cost_b = 1
-                lcm_budget = approx_lcm_budget(cost_a, cost_b, budget)
-                count_a = max(1, lcm_budget // cost_a)
-                count_b = max(1, lcm_budget // cost_b)
+                lineup_pair = None
+                if ctx.state.get("mode") == "lineup_tournament":
+                    lineup_pair = (
+                        self._lineup_by_key[tu_a.unit_id],
+                        self._lineup_by_key[tu_b.unit_id],
+                    )
+                    count_a = lineup_pair[0].total_count
+                    count_b = lineup_pair[1].total_count
+                    red_army = [(slot.unit, slot.count) for slot in lineup_pair[0].slots]
+                    blue_army = [(slot.unit, slot.count) for slot in lineup_pair[1].slots]
+                else:
+                    # LCM 平衡（含人口折算）
+                    cost_a = _unit_cost(tu_a.unit)
+                    cost_b = _unit_cost(tu_b.unit)
+                    if cost_a <= 0:
+                        cost_a = 1
+                    if cost_b <= 0:
+                        cost_b = 1
+                    lcm_budget = approx_lcm_budget(cost_a, cost_b, budget)
+                    count_a = max(1, lcm_budget // cost_a)
+                    count_b = max(1, lcm_budget // cost_b)
+                    red_army = [(tu_a.unit, count_a)]
+                    blue_army = [(tu_b.unit, count_b)]
 
                 # 跑模拟
                 if match_obj.match_id == "FINAL":
                     final_replay_session = ReplaySession(
                         session_id=f"{ctx.session_id}:{match_obj.match_id}",
-                        mode="rival_tournament",
+                        mode=str(ctx.state.get("mode") or "rival_tournament"),
                         match_label=(
                             f"{t.theme_title} · {match_obj.label} · "
                             f"{tu_a.display_name} vs {tu_b.display_name}"
@@ -1305,8 +1449,8 @@ class AoE3BattleGame(GameBase):
                         blue_count=count_b,
                     )
                 sim = BattleSimulator2D(
-                    red_army=[(tu_a.unit, count_a)],
-                    blue_army=[(tu_b.unit, count_b)],
+                    red_army=red_army,
+                    blue_army=blue_army,
                     field_length=float(
                         ctx.state.get("field_length", FIELD_LENGTH)
                     ),
@@ -1339,15 +1483,22 @@ class AoE3BattleGame(GameBase):
                     else None
                 )
 
-                # 确定胜者
+                # 确定胜者。平局比剩余血量，血量相同才随机。
+                red_cur_hp = sum(s.hp for s in result.red_alive)
+                blue_cur_hp = sum(s.hp for s in result.blue_alive)
+                draw_break = ""
                 if result.winner == Side.RED:
                     winner_idx = match_obj.unit_a_idx
                 elif result.winner == Side.BLUE:
                     winner_idx = match_obj.unit_b_idx
                 else:
-                    # 平局时随机决定（锦标赛不允许平局）
-                    winner_idx = random.choice(
-                        [match_obj.unit_a_idx, match_obj.unit_b_idx]
+                    draw_side, draw_break = resolve_tournament_draw(
+                        red_cur_hp, blue_cur_hp
+                    )
+                    winner_idx = (
+                        match_obj.unit_a_idx
+                        if draw_side == Side.RED
+                        else match_obj.unit_b_idx
                     )
 
                 t.record_result(match_obj.match_id, winner_idx)
@@ -1364,9 +1515,7 @@ class AoE3BattleGame(GameBase):
                 red_all = result.red_alive + result.red_dead
                 blue_all = result.blue_alive + result.blue_dead
                 red_max_hp = sum(s.max_hp for s in red_all)
-                red_cur_hp = sum(s.hp for s in result.red_alive)
                 blue_max_hp = sum(s.max_hp for s in blue_all)
-                blue_cur_hp = sum(s.hp for s in result.blue_alive)
                 red_loss, blue_loss = battle_resource_loss(result)
 
                 # 每方统计
@@ -1378,6 +1527,13 @@ class AoE3BattleGame(GameBase):
                 red_dmg = sum(s.total_damage_dealt for s in red_same)
                 blue_kills = sum(s.kills for s in blue_same)
                 blue_dmg = sum(s.total_damage_dealt for s in blue_same)
+                if lineup_pair is not None:
+                    red_alive_n = len(result.red_alive)
+                    blue_alive_n = len(result.blue_alive)
+                    red_kills = sum(s.kills for s in red_all)
+                    blue_kills = sum(s.kills for s in blue_all)
+                    red_dmg = sum(s.total_damage_dealt for s in red_all)
+                    blue_dmg = sum(s.total_damage_dealt for s in blue_all)
 
                 red_status = "全灭" if red_alive_n == 0 else f"存活{red_alive_n}"
                 blue_status = "全灭" if blue_alive_n == 0 else f"存活{blue_alive_n}"
@@ -1393,6 +1549,15 @@ class AoE3BattleGame(GameBase):
                 else:
                     promo = ""
 
+                if draw_break == "hp":
+                    verdict = f"✅ 平局，{winner_tu.display_name} 剩余血量更高{promo}"
+                elif draw_break == "random":
+                    verdict = (
+                        f"✅ 平局，剩余血量相同，{winner_tu.display_name} 随机晋级{promo}"
+                    )
+                else:
+                    verdict = f"✅ {winner_tu.display_name} 胜{promo}"
+
                 # 组装一条消息
                 report_lines = [
                     f"━━━ {match_obj.label} {tu_a.display_name} vs {tu_b.display_name} ⏱{result.duration:.1f}s ━━━",
@@ -1401,7 +1566,7 @@ class AoE3BattleGame(GameBase):
                     f"💸 战损资源：红方 {red_loss} ｜ 蓝方 {blue_loss}",
                     f"🔴 {tu_a.display_name} ×{count_a} → {red_status}/击杀{red_kills}/有效伤害{red_dmg:.0f}",
                     f"🔵 {tu_b.display_name} ×{count_b} → {blue_status}/击杀{blue_kills}/有效伤害{blue_dmg:.0f}",
-                    f"✅ {winner_tu.display_name} 胜{promo}",
+                    verdict,
                 ]
                 report = "\n".join(report_lines)
                 if final_replay is not None:

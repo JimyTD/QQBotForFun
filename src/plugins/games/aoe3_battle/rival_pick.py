@@ -149,6 +149,9 @@ async def start_theme_pick(
     async with _pick_lock:
         if game_base.get_runner_by_group(group_id) is not None:
             return "⚠️ 本群已有进行中的斗蛐蛐，先 @我 结束 再开王中王"
+        from .lineup_room import has_lineup_room
+        if has_lineup_room(group_id):
+            return "⚠️ 本群正在配兵，先 @我 结束"
         if has_pending(group_id):
             return "⚠️ 本群已在选王中王主题，请点选单消息上的表情或回复 1/2/3"
 

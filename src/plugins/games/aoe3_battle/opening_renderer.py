@@ -444,15 +444,22 @@ def render_match_opening(
     return buffer.getvalue()
 
 
-def format_civ_war_fallback(red: OpeningSide, blue: OpeningSide, *, age: int) -> str:
+def format_civ_war_fallback(
+    red: OpeningSide,
+    blue: OpeningSide,
+    *,
+    age: int,
+    title: str = "国战",
+    footer: str = "@ 1 押红方 | @ 2 押蓝方 · @ 开战 直接开打",
+) -> str:
     """Build a concise text fallback when the opening PNG cannot be delivered."""
-    lines = [f"🌍 帝国3斗蛐蛐 · 国战 · {age} 时代"]
+    lines = [f"🌍 帝国3斗蛐蛐 · {title} · {age} 时代"]
     for marker, side in (("🔴", red), ("🔵", blue)):
         lines.append(f"{marker} {side.civ_name} · {side.strategy}")
         if side.tech_names:
             lines.append(f"  🔬 {'、'.join(side.tech_names)}")
         lines.extend(f"  {unit.name} ×{count}" for unit, count in side.units)
-    lines.append("@ 1 押红方 | @ 2 押蓝方 · @ 开战 直接开打")
+    lines.append(footer)
     return "\n".join(lines)
 
 
@@ -461,6 +468,7 @@ def render_civ_war_opening(
     red: OpeningSide,
     blue: OpeningSide,
     age: int,
+    title: str = "帝国3斗蛐蛐 · 国战",
     bet_hint: str = "@ 1 押红方 | @ 2 押蓝方 · @ 开战 直接开打",
 ) -> bytes:
     """Return a PNG opening card for a civilization-war match."""
@@ -476,7 +484,7 @@ def render_civ_war_opening(
     font_footer = _get_font(17)
     draw.text(
         (CANVAS_W // 2, 23),
-        "帝国3斗蛐蛐 · 国战",
+        title,
         anchor="ma",
         font=font_title,
         fill=COLORS["title"],

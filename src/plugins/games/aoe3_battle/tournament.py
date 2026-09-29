@@ -17,7 +17,27 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from src.plugins.aoe3.models import Unit
 
+from .battle_contract import Side
 from .bracket_renderer import BracketData, RankingData
+
+
+def resolve_tournament_draw(
+    red_hp: float,
+    blue_hp: float,
+    *,
+    rng: random.Random | None = None,
+) -> tuple[Side, str]:
+    """Pick who advances from a drawn match.
+
+    The side with more remaining HP advances. Equal HP falls back to a
+    random side. The reason is ``hp`` or ``random``.
+    """
+    if red_hp > blue_hp:
+        return Side.RED, "hp"
+    if blue_hp > red_hp:
+        return Side.BLUE, "hp"
+    picker = rng if rng is not None else random
+    return picker.choice((Side.RED, Side.BLUE)), "random"
 
 
 # =====================================================================
