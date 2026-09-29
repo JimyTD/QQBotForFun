@@ -247,6 +247,8 @@ def generate_civ_war_lineup(
         blue_strategy=estimate.blue_candidate.title,
         red_strategy_description=estimate.red_candidate.strategy_description,
         blue_strategy_description=estimate.blue_candidate.strategy_description,
+        red_tech_ids=tuple(tech.id for tech in estimate.red_techs),
+        blue_tech_ids=tuple(tech.id for tech in estimate.blue_techs),
         red_tech_names=tuple(
             tech.name_zh or tech.id for tech in estimate.red_techs
         ),

@@ -9,6 +9,9 @@ import pytest
 
 from core.types import GameContext
 from plugins.games.aoe3_battle.game import AoE3BattleGame, session
+from plugins.games.aoe3_battle.civ_war_civs import resolve_civ
+from plugins.games.aoe3_battle.lineup_draft import compile_custom
+from plugins.aoe3.repository import UnitRepo
 from plugins.games.aoe3_battle.simulator2d import BattleSimulator2D
 
 
@@ -63,6 +66,49 @@ async def test_random_civ_war_ignores_age_two_group_default() -> None:
     await game.on_create(ctx)
     assert ctx.state["age"] == 3
     assert ctx.state["civ_war"]["red_civ_id"] != ctx.state["civ_war"]["blue_civ_id"]
+
+
+@pytest.mark.asyncio
+async def test_lineup_on_create_preserves_selected_tech_ids() -> None:
+    repo = UnitRepo.get()
+    red_civ = resolve_civ("XPAztec")
+    blue_civ = resolve_civ("DESwedish")
+    assert red_civ is not None and blue_civ is not None
+    red = compile_custom(
+        repo,
+        civ=red_civ,
+        unit_ids=("xpskullknight",),
+        weights=(1,),
+        tech_ids=("HCXPGreatTempleHuitzilopochtli",),
+        age=4,
+        budget=10000,
+        label="red",
+    ).to_dict()
+    blue = compile_custom(
+        repo,
+        civ=blue_civ,
+        unit_ids=("decarolean", "deleathercannon"),
+        weights=(8, 2),
+        tech_ids=("DEHCSnaplocks",),
+        age=4,
+        budget=10000,
+        label="blue",
+    ).to_dict()
+    game = AoE3BattleGame()
+    ctx = GameContext(
+        session_id="TESTLINEUP",
+        game_id="aoe3_battle",
+        group_id=1,
+        host_id=2,
+        players=[],
+        started_at=datetime.utcnow(),
+        config={"mode": "lineup", "age": 4, "budget": 10000, "armies": [red, blue]},
+    )
+
+    await game.on_create(ctx)
+
+    assert game._match.red_tech_ids == ("HCXPGreatTempleHuitzilopochtli",)
+    assert game._match.blue_tech_ids == ("DEHCSnaplocks",)
 
 
 @pytest.mark.asyncio

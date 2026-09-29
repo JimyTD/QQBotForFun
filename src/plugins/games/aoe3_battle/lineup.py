@@ -286,6 +286,8 @@ class MatchLineup:
     blue_strategy: str | None = None
     red_strategy_description: str | None = None
     blue_strategy_description: str | None = None
+    red_tech_ids: tuple[str, ...] = ()
+    blue_tech_ids: tuple[str, ...] = ()
     red_tech_names: tuple[str, ...] = ()
     blue_tech_names: tuple[str, ...] = ()
 

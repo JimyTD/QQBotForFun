@@ -201,6 +201,17 @@ def _dump_battle_log(
             "blue_alive": len(result.blue_alive),
         }
 
+        tech_data = {
+            "red": {
+                "ids": list(match.red_tech_ids),
+                "names": list(match.red_tech_names),
+            },
+            "blue": {
+                "ids": list(match.blue_tech_ids),
+                "names": list(match.blue_tech_names),
+            },
+        }
+
         # ── 精简版独有：按兵种汇总 & 击杀链 ──
         all_soldiers = (
             result.red_alive + result.red_dead
@@ -300,6 +311,7 @@ def _dump_battle_log(
             "mode": match.mode,
             "red": _serialize_side(match.red),
             "blue": _serialize_side(match.blue),
+            "techs": tech_data,
             "result": result_data,
             "mvp": mvp_data,
         }
@@ -552,6 +564,8 @@ class AoE3BattleGame(GameBase):
                     blue_civ_name=armies[1]["civ_name"],
                     red_strategy=armies[0]["strategy"],
                     blue_strategy=armies[1]["strategy"],
+                    red_tech_ids=tuple(armies[0].get("tech_ids") or ()),
+                    blue_tech_ids=tuple(armies[1].get("tech_ids") or ()),
                     red_tech_names=tuple(armies[0].get("tech_names") or ()),
                     blue_tech_names=tuple(armies[1].get("tech_names") or ()),
                 )

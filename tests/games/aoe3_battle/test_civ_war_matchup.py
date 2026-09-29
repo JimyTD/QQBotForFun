@@ -82,6 +82,8 @@ def test_generate_public_civ_war_lineup_has_identity(repo: UnitRepo) -> None:
     assert match.blue_civ_name == "日本"
     assert match.red_strategy == estimate.red_candidate.title
     assert match.blue_strategy == estimate.blue_candidate.title
+    assert match.red_tech_ids == tuple(tech.id for tech in estimate.red_techs)
+    assert match.blue_tech_ids == tuple(tech.id for tech in estimate.blue_techs)
     banner = format_vs_banner(match)
     assert "国战" in banner
     assert "英国" in banner and "日本" in banner
