@@ -163,10 +163,18 @@ docker compose logs -f bot
 ## 🧪 运行测试
 
 ```powershell
-uv run pytest
+uv run python scripts/run_tests.py fast
+uv run python scripts/run_tests.py module aoe3_battle
+uv run python scripts/run_tests.py module aoe3_battle --include-slow
+uv run python scripts/run_tests.py full
 ```
 
-应看到 core 模块与海龟汤流程全部通过。
+日常小改先跑 `fast`；模块逻辑改动跑 `module 模块名`（可指定多个模块）。
+涉及概率、批量配兵或大型实战时加 `--include-slow`；重大变更使用 `full`。
+每次显示选测范围、慢测试是否包含、最慢 10 项和总耗时。
+加 `--dry-run` 仅查看命令，`--collect-only` 仅收集用例。
+原来的 `uv run pytest` 仍执行全量测试，没有偷偷排除慢用例。
+选测规则与模块名见 [`docs/12-local-testing.md`](./docs/12-local-testing.md#01-自动化测试分级)。
 
 ---
 

@@ -15,6 +15,7 @@ from plugins.aoe3.repository import UnitRepo
 from plugins.games.aoe3_battle.simulator2d import BattleSimulator2D
 
 
+@pytest.mark.slow
 @pytest.mark.asyncio
 async def test_civ_war_on_create_builds_serializable_betting_state() -> None:
     game = AoE3BattleGame()

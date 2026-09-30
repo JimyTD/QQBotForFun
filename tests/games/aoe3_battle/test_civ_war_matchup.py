@@ -33,6 +33,7 @@ def test_identical_candidate_estimate_is_symmetric(repo: UnitRepo) -> None:
     assert estimate.balance_gap == pytest.approx(0.0, abs=1e-12)
 
 
+@pytest.mark.slow
 def test_ranked_matchups_are_bounded_and_sorted(repo: UnitRepo) -> None:
     red = generate_civ_candidates(repo, "Japanese", age=3)
     blue = generate_civ_candidates(repo, "Indians", age=3)

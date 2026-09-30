@@ -223,6 +223,16 @@ docs(roadmap): mark phase C completed
 - **不 sleep**：用 `asyncio.wait_for` 或时间注入
 - **每个测试独立**：不跨测试共享状态（用 fixture 重建）
 
+### 5.2.1 按风险选测
+- 文案、空行和展示格式：优先 `uv run python scripts/run_tests.py fast`，或直接运行对应格式化测试与 CLI/Bot 一致性测试。
+- 单个模块逻辑：`uv run python scripts/run_tests.py module 模块名`；可指定多个模块，默认排除 `slow`。
+- 公共会话、经济、存储、启动和跨模块契约：补齐受影响模块回归；重大变更跑 `full`，不能只凭快测通过发布。
+- 概率规则、阵容分配和大型战斗：相关模块必须加 `--include-slow`；没有改变这些逻辑时，不因文案改动顺带执行数千轮抽样。
+- `slow` 只用于确有大量抽样、穷举或大型模拟的用例，不用于掩盖失败。保留原样本数和断言；`full` 与裸 `pytest` 都包含慢测试。
+- 修改 NoneBot 插件注册时，在独立 Python 进程检查注册数量，避免其他测试留下的全局 matcher 状态污染断言。
+- 每次保留选测范围和耗时结果；只在改动、失败或影响面发生变化时扩大或重跑，不机械重复已经通过且未受后续改动影响的回归。
+- 入口用法与模块名见 [`12-local-testing.md §0.1`](./12-local-testing.md#01-自动化测试分级)。
+
 ### 5.3 命名
 - 文件：`test_<module>.py`
 - 函数：`test_<scenario>_<expected>`，例如 `test_ask_timeout_raises`

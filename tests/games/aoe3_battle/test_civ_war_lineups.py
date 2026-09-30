@@ -139,6 +139,7 @@ def test_mercenary_and_outlaw_units_share_external_bucket(repo: UnitRepo) -> Non
     )
 
 
+@pytest.mark.slow
 def test_source_pool_uses_approved_seventy_five_twenty_five_split(repo: UnitRepo) -> None:
     candidates = generate_civ_candidates(repo, "Japanese", age=3)
     rng = random.Random(17)
@@ -149,6 +150,7 @@ def test_source_pool_uses_approved_seventy_five_twenty_five_split(repo: UnitRepo
     assert mixed_draws / 4000 == pytest.approx(0.25, abs=0.025)
 
 
+@pytest.mark.slow
 def test_strategy_is_chosen_before_concrete_candidate_count(repo: UnitRepo) -> None:
     candidates = [
         candidate
@@ -166,6 +168,7 @@ def test_strategy_is_chosen_before_concrete_candidate_count(repo: UnitRepo) -> N
         assert count / 5000 == pytest.approx(expected, abs=0.025)
 
 
+@pytest.mark.slow
 def test_choose_candidate_never_returns_pure_external(repo: UnitRepo) -> None:
     candidates = generate_civ_candidates(repo, "Indians", age=3)
     rng = random.Random(5)
@@ -175,6 +178,7 @@ def test_choose_candidate_never_returns_pure_external(repo: UnitRepo) -> None:
     )
 
 
+@pytest.mark.slow
 def test_preferred_and_ordinary_strategy_tiers_are_even(repo: UnitRepo) -> None:
     candidates = generate_civ_candidates(repo, "Chinese", age=3)
     rng = random.Random(29)
@@ -185,6 +189,7 @@ def test_preferred_and_ordinary_strategy_tiers_are_even(repo: UnitRepo) -> None:
     assert preferred / 4000 == pytest.approx(0.5, abs=0.025)
 
 
+@pytest.mark.slow
 @pytest.mark.parametrize("age", [3, 4, 5])
 def test_all_curated_civs_keep_multiple_allocatable_strategies(
     repo: UnitRepo,

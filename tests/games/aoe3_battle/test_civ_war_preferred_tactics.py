@@ -5,6 +5,8 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
+import pytest
+
 from plugins.aoe3.repository import UnitRepo
 from plugins.games.aoe3_battle.civ_war_lineups import allocate_candidate, generate_civ_candidates
 from plugins.games.aoe3_battle.civ_war_roles import (
@@ -91,6 +93,7 @@ def test_preferred_extra_units_are_explicitly_whitelisted() -> None:
     assert PREFERRED_EXTRA_UNIT_IDS == expected
 
 
+@pytest.mark.slow
 def test_all_first_version_preferred_tactics_allocate() -> None:
     data = json.loads(_TACTICS_PATH.read_text(encoding="utf-8"))
     repo = UnitRepo.get()

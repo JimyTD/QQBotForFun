@@ -1,7 +1,7 @@
 # 本地端到端测试指南（Windows）
 
 - **Status**: Draft v1.1
-- **Last Updated**: 2026-04-30
+- **Last Updated**: 2026-09-30
 - **Owner**: @owner
 - **适用场景**: 本地 Windows 开发机测试完整 QQ 机器人流程，无需云服务器
 
@@ -10,14 +10,78 @@
 
 ---
 
-## 0. 测试方式的两种选择
+## 0. 测试方式
 
 | 方式 | 覆盖面 | 启动成本 | 什么时候用 |
 |---|---|---|---|
+| **分级 pytest**（§0.1） | 单元测试、格式化、规则和自动流程回归 | 一条命令，可只收集不执行 | 修改代码后的默认自动验证方式，按改动风险选择范围 |
 | **CLI 测试**（§0.5） | 游戏主流程（状态机、判定、奖励发放） | 一条命令，秒起 | **日常开发首选**：改了游戏逻辑想快速验证 |
 | **QQ 群完整闭环**（§1-§5） | 全链路（NapCat ↔ bot ↔ 玩家） | 要起 Docker + 扫码登录 + 反向 WebSocket | 验证消息路由、多玩家交互、真实群聊体验 |
 
 由于 CLI 和 Bot 遵循 **1:1 对齐铁律**（[`13-cli-bot-parity.md`](./13-cli-bot-parity.md)），**CLI 跑通 ≈ 群里就能跑通**。除非你在改 bot 层（消息路由/NapCat 对接），否则 CLI 就够用了。
+
+---
+
+## 0.1 自动化测试分级
+
+统一入口是 `scripts/run_tests.py`，使用当前 Python 环境启动 pytest，并固定在仓库根目录执行。
+它不安装依赖、不访问生产服务器、不自动分析 Git 依赖，也不改变裸 `pytest` 的默认选测行为。
+
+| 入口 | 选测范围 | 慢测试 |
+|---|---|---|
+| `uv run python scripts/run_tests.py fast` | 精选会话、文本展示、CLI/流程及测试入口回归 | 排除 |
+| `uv run python scripts/run_tests.py module aoe3_battle` | 指定模块全部非慢用例，可追加其他模块名 | 默认排除 |
+| `uv run python scripts/run_tests.py module aoe3_battle --include-slow` | 指定模块全部用例 | 包含 |
+| `uv run python scripts/run_tests.py full` | 整个 `tests/` | 包含 |
+
+### 选测原则
+
+- 单条文案等局部修改，可以直接运行对应测试文件；`fast` 是常用关键回归集合，不是所有非慢测试的别名。
+- `fast` 覆盖排版、会话路由、配兵名单/房间/开局、锦标赛 CLI、深海任务 CLI、静夜标记展示、问答匹配、海龟汤流程、查询与经济天气兜底，以及入口自身。
+- `fast` 不是完整测试。改动范围超出上述内容时，必须补相应模块；不能用快测代替经济、存储、启动或战斗规则回归。
+- 单个模块逻辑改动用 `module`；公共行为改动追加受影响模块，重大变更再用 `full`。
+- 改动随机抽样、阵容分配或大型模拟逻辑时，必须补该模块的 `--include-slow`，保留原样本数和断言。
+- 入口每次打印模式、路径和慢测试是否包含，pytest 输出最慢 10 项，执行结束打印总耗时与退出码。
+- 失败、用例未找到、未选中用例等非零退出码会原样返回；不会把失败转换为成功，也不会自动扩大范围重试。
+
+### 模块名
+
+`core`、`aoe3`、`aoe3_battle`、`deep_sea_mission`、`silent_mark`、`trivia`、
+`turtle_soup`、`tools`、`ask_ai`、`checkin`、`finance`、`food`、`reminder`、`crawler`、`scripts`。
+
+`tools` 包含全部工具测试和工作提醒；`scripts` 包含测试入口与本地浏览工具测试。
+重复模块以及父目录已经包含的子目录只运行一次；拼错模块名会报错。
+
+```powershell
+# 先看路径和命令，不启动 pytest
+uv run python scripts/run_tests.py module core aoe3_battle --dry-run
+
+# 核对全量覆盖，但不执行慢用例或任何测试正文
+uv run python scripts/run_tests.py full --collect-only
+
+# 只看哪些用例归为 slow
+uv run pytest tests/games/aoe3_battle -m slow --collect-only
+
+# 极小改动可继续直接指定文件
+uv run pytest tests/core/test_render.py --durations=10
+```
+
+### 慢测试与隔离
+
+`pytest.mark.slow` 登记在 `pyproject.toml`。目前用于国战的大量统计抽样、全文明/阵容遍历、批量对阵矩阵及大型实战集成测试。
+普通解析、断言、几何测试不因为属于斗蛐蛐就整目录标慢。后续根据 `--durations` 实测调整分类，不承诺固定的运行时长。
+
+插件注册测试使用独立 Python 进程：仍检查文明查询之后恰好注册 4 个 matcher，并包含开战指令。
+子进程有超时，失败时附带 stdout/stderr；不依赖其他测试是否初始化过 NoneBot，不使用 skip 或 xfail 绕过问题。
+
+原命令 `uv run pytest` 保持全量运行（包括 `slow`）。这保证完整覆盖始终可用，日常开发则明确选择较小范围。
+
+### 已知基线失败
+
+2026-09-30 核对基线 `12362cc`：`tests/games/aoe3_battle/test_replay.py::test_tournament_only_records_final`
+单独运行也失败。其 `FakeTournament.get_unit()` 返回值没有当前代码读取的 `unit_id`，导致回合提前结束，随后回调列表断言失败。
+本轮未修改该测试或游戏源码；此项未标慢、未跳过，模块入口仍会正常返回失败。
+遇到同一签名可先按这条记录定位，无须重复跑整套旧版基线；其他失败仍须单独分析。修复此替身后应删除本条记录。
 
 ---
 

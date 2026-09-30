@@ -96,6 +96,9 @@ asyncio_mode = "auto"
 testpaths = ["tests"]
 pythonpath = [".", "src"]
 addopts = "-ra -q"
+markers = [
+    "slow: large statistical samples, exhaustive data sweeps, or large battle simulations",
+]
 
 # ---------- Mypy ----------
 [tool.mypy]
