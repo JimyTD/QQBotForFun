@@ -194,8 +194,7 @@ def _enter_techs(wizard, repo, age, budget, nickname, weights) -> tuple[Wizard, 
     lines = ["选择 1 到 2 条科技：", ""]
     for index, tech in enumerate(techs, start=1):
         kind = "专属" if targets_fielded_unit(tech, units) else "通用"
-        name = tech.name_zh or tech.id
-        lines.append(f"{index}. {name}（{kind}）")
+        lines.append(f"{index}. {tech.summary}（{kind}）")
     lines.append("")
     lines.append("回复 1 个或 2 个序号。")
     return wizard, "\n".join(lines)

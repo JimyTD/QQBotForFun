@@ -266,6 +266,30 @@ def test_wizard_custom_rejects_duplicate_units():
     assert wizard.step == WizardStep.UNITS
 
 
+def test_wizard_tech_menu_shows_effect_summary():
+    repo = UnitRepo.get()
+    wizard = Wizard()
+    wizard, _text = advance(
+        wizard, "英国", repo=repo, age=3, budget=10000, nickname="阿伟",
+    )
+    wizard, _text = advance(
+        wizard, "0", repo=repo, age=3, budget=10000, nickname="阿伟",
+    )
+    units = draft_units(repo, wizard.civ_id, 3)
+    musk = next(index for index, unit in enumerate(units, start=1) if unit.id == "musketeer")
+    hussar = next(index for index, unit in enumerate(units, start=1) if unit.id == "hussar")
+    wizard, _text = advance(
+        wizard, f"{musk} {hussar}", repo=repo, age=3, budget=10000, nickname="阿伟",
+    )
+    assert wizard.step == WizardStep.WEIGHTS
+    wizard, text = advance(
+        wizard, "8 12", repo=repo, age=3, budget=10000, nickname="阿伟",
+    )
+    assert wizard.step == WizardStep.TECHS
+    assert "细细的红线：生命+20%，移速-10%（专属）" in text
+    assert "骑兵战斗力：生命+15%，攻击+15%（通用）" in text
+
+
 def test_wizard_custom_picks_weights_and_one_tech():
     repo = UnitRepo.get()
     wizard = Wizard()
