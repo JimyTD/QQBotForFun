@@ -241,6 +241,58 @@ def test_lethal_projectile_uses_recorded_event_positions() -> None:
     assert image.size == (960, 540)
 
 
+def test_intro_lists_roster_instead_of_army_size(monkeypatch) -> None:
+    replay = _replay([])
+    replay.red_count = 42
+    replay.blue_count = 18
+    replay.frames[0].sides["red"]["composition"] = [
+        {"name": "火枪兵", "count": 32, "unit_id": "musketeer"},
+        {"name": "散兵", "count": 10, "unit_id": "skirmisher"},
+    ]
+    replay.frames[0].sides["blue"]["composition"] = [
+        {"name": "龙骑兵", "count": 18, "unit_id": "dragoon"},
+    ]
+    texts: list[str] = []
+    original = ImageDraw.ImageDraw.text
+
+    def capture(self, xy, text, *args, **kwargs):
+        texts.append(str(text))
+        return original(self, xy, text, *args, **kwargs)
+
+    monkeypatch.setattr(ImageDraw.ImageDraw, "text", capture)
+    image = ReplayRenderer()._render_intro(replay)
+
+    assert image.size == (960, 540)
+    assert "火枪兵" in texts
+    assert "×32" in texts
+    assert "散兵" in texts
+    assert "×10" in texts
+    assert "龙骑兵" in texts
+    assert "×18" in texts
+    assert not any("单位" in text for text in texts)
+
+
+def test_intro_truncates_roster_past_the_card(monkeypatch) -> None:
+    replay = _replay([])
+    replay.frames[0].sides["red"]["composition"] = [
+        {"name": f"兵种{index}", "count": index + 1, "unit_id": f"u{index}"}
+        for index in range(12)
+    ]
+    texts: list[str] = []
+    original = ImageDraw.ImageDraw.text
+
+    def capture(self, xy, text, *args, **kwargs):
+        texts.append(str(text))
+        return original(self, xy, text, *args, **kwargs)
+
+    monkeypatch.setattr(ImageDraw.ImageDraw, "text", capture)
+    ReplayRenderer()._render_intro(replay)
+
+    assert "兵种0" in texts
+    assert "兵种11" not in texts
+    assert any(text.startswith("等 ") and text.endswith("种") for text in texts)
+
+
 def test_hud_contains_composition_and_speed() -> None:
     replay = _replay([])
     renderer = ReplayRenderer()

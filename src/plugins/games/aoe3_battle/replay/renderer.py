@@ -41,6 +41,10 @@ ICON_CACHE_LIMIT = 64
 PROJECTILE_LIFETIME = 0.25
 AOE_LIFETIME = 0.5
 DEATH_MARK_LIFETIME = 0.6
+INTRO_ROSTER_TOP = 168
+INTRO_ROSTER_BOTTOM_MARGIN = 78
+INTRO_ROW_H = 46
+INTRO_ICON = 36
 
 
 def _font(size: int, bold: bool = False) -> ImageFont.FreeTypeFont | ImageFont.ImageFont:
@@ -227,10 +231,81 @@ class ReplayRenderer:
             font=self._font_bold,
             fill=TEXT,
         )
-        draw.text((32, 150), f"{replay.red_count} 单位", font=self._font, fill=MUTED)
-        draw.text((self.width // 2 + 24, 150), f"{replay.blue_count} 单位", font=self._font, fill=MUTED)
+        self._draw_intro_roster(image, draw, replay, "red", 32, RED)
+        self._draw_intro_roster(image, draw, replay, "blue", self.width // 2 + 24, BLUE)
         draw.text((32, self.height - 54), "战场态势回放 · 无调试数据", font=self._font, fill=MUTED)
         return image
+
+    def _draw_intro_roster(
+        self,
+        image: Image.Image,
+        draw: ImageDraw.ImageDraw,
+        replay: Replay,
+        side: str,
+        x: int,
+        color: tuple[int, int, int],
+    ) -> None:
+        """Draw one side's starting roster: unit name and count, no army total."""
+        items = self._starting_composition(replay, side)
+        if not items:
+            return
+        column_right = x + self.width // 2 - 56
+        capacity = max(
+            1,
+            (self.height - INTRO_ROSTER_BOTTOM_MARGIN - INTRO_ROSTER_TOP) // INTRO_ROW_H,
+        )
+        overflow = 0
+        if len(items) > capacity:
+            overflow = len(items) - (capacity - 1)
+            items = items[: capacity - 1]
+        y = INTRO_ROSTER_TOP
+        for name, count, unit_id in items:
+            text_x = x
+            icon = self._unit_icon({"unit_id": unit_id, "side": side}, color)
+            if icon is not None:
+                rendered = icon.resize((INTRO_ICON, INTRO_ICON), Image.Resampling.LANCZOS)
+                image.paste(rendered, (x, y + (INTRO_ROW_H - INTRO_ICON) // 2), rendered)
+                text_x = x + INTRO_ICON + 12
+            count_text = f"×{count}"
+            count_width = int(draw.textlength(count_text, font=self._font_bold)) + 16
+            name_width = max(40, column_right - text_x - count_width)
+            text_y = y + (INTRO_ROW_H - 18) // 2
+            draw.text(
+                (text_x, text_y),
+                _fit_text(draw, name, self._font, name_width),
+                font=self._font,
+                fill=TEXT,
+            )
+            draw.text(
+                (column_right, text_y),
+                count_text,
+                anchor="rt",
+                font=self._font_bold,
+                fill=color,
+            )
+            y += INTRO_ROW_H
+        if overflow:
+            draw.text(
+                (x, y + 8),
+                f"等 {overflow} 种",
+                font=self._font_small,
+                fill=MUTED,
+            )
+
+    @staticmethod
+    def _starting_composition(replay: Replay, side: str) -> list[tuple[str, int, str]]:
+        """Initial roster from the first frame. Counts are per unit type, not army size."""
+        if not replay.frames:
+            return []
+        raw = replay.frames[0].sides.get(side, {}).get("composition") or []
+        items: list[tuple[str, int, str]] = []
+        for item in raw:
+            name = str(item.get("name") or item.get("unit_id") or "").strip()
+            count = int(item.get("count") or 0)
+            unit_id = str(item.get("unit_id") or "")
+            if name and count > 0:
+                items.append((name, count, unit_id))
+        return items
 
     def _render_outro(
         self,
