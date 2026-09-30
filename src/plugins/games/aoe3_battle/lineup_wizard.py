@@ -250,10 +250,11 @@ def _unit_menu(units) -> str:
 
 def _ready_text(army: CompiledArmy) -> str:
     slots = "、".join(f"{name}×{count}" for _unit_id, name, count in army.slots)
-    techs = "、".join(army.tech_names) if army.tech_names else "无"
+    tech_lines = "\n".join(f"· {summary}" for summary in army.tech_summaries)
+    techs = tech_lines if tech_lines else "无"
     return (
         f"已备好 {army.civ_name} · {army.strategy}\n"
         f"{slots}\n"
-        f"科技：{techs}\n"
+        f"科技：\n{techs}\n"
         "想重配回复「重来」。"
     )

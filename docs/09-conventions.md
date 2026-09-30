@@ -1,7 +1,7 @@
 # 09 · 编码与文档规范
 
 - **Status**: Draft v1
-- **Last Updated**: 2026-04-29
+- **Last Updated**: 2026-09-30
 - **Owner**: @owner
 
 ## 0. 核心铁律（最高优先级）
@@ -138,7 +138,7 @@ logger.error("LLM failed: {e}", e=e)
 ```markdown
 # XX · 标题
 
-- **Status**: Draft v1 | Accepted | Deprecated
+- **Status**: Draft v1 | Accepted | Deprecated | WIP
 - **Last Updated**: YYYY-MM-DD
 - **Owner**: @xxx
 ```
@@ -157,11 +157,10 @@ logger.error("LLM failed: {e}", e=e)
 
 ### 3.3 WIP 文档生命周期
 
-- `docs/plans/*-wip.md` 与 `docs/games/*-wip.md` 只用于尚未完成、仍在变更的方案。
-- WIP 被确认完成、废弃或被正式功能文档取代后，必须删除原 WIP 文件。
-- 删除前必须把仍有效的结论、实现边界和未完成事项合入对应的正式功能文档。
-- 已由正式功能文档和代码完整覆盖的临时盘点、修复过程和“已完成”列表不得复制保留。
-- WIP 文件确认完成后不得只改名为历史/归档文档继续留在 `plans/` 或功能目录。
+- 所有正在推进、尚未完成且仍在变更的方案统一放 `docs/wip/<topic>.md`；Shelved、Archive、Research 等非活跃资料不使用该目录。
+- `docs/wip/README.md` 是 WIP 元文档，负责存放规则、完成并入标准和当前索引。
+- 只有 Owner 或用户明确确认后，才能按元文档流程收口；代码已经实现不等于可以自动关闭 WIP。
+- 正式功能文档只描述已经实现的实际行为、边界和必要背景；开发历史、错误探索、过时内容、未实现设计和已完成清单不并入。
 
 ### 3.4 ADR 规则
 - 编号顺序：`0001`, `0002`, ...

@@ -568,6 +568,12 @@ class AoE3BattleGame(GameBase):
                     blue_tech_ids=tuple(armies[1].get("tech_ids") or ()),
                     red_tech_names=tuple(armies[0].get("tech_names") or ()),
                     blue_tech_names=tuple(armies[1].get("tech_names") or ()),
+                    red_tech_summaries=tuple(
+                        armies[0].get("tech_summaries") or ()
+                    ),
+                    blue_tech_summaries=tuple(
+                        armies[1].get("tech_summaries") or ()
+                    ),
                 )
                 ctx.state.update(
                     mode=mode_id,

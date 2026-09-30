@@ -9,6 +9,7 @@ from plugins.aoe3.tech_effects import (
     apply_techs,
     format_tech_lines,
 )
+from src.plugins.games.aoe3_battle.tech_summary import format_tech_summary
 
 
 @pytest.fixture(scope="module")
@@ -161,3 +162,44 @@ def test_format_tech_lines_content():
     lines = format_tech_lines([t], [])
     assert any("骑兵胸甲" in l for l in lines)
     assert any("🔴" in l for l in lines)
+
+
+def test_tech_summary_uses_player_facing_effect_names():
+    summary = format_tech_summary(
+        "细细的红线",
+        combat_ops=(
+            {"subtype": "Hitpoints", "amount": 1.2, "relativity": "BasePercent"},
+            {"subtype": "MaximumVelocity", "amount": 0.9, "relativity": "BasePercent"},
+        ),
+    )
+    assert summary == "细细的红线：生命+20%，移速-10%"
+
+
+def test_tech_summary_describes_cost_and_counter():
+    summary = format_tech_summary(
+        "旧朝改革",
+        combat_ops=(
+            {
+                "subtype": "DamageBonus",
+                "amount": 1.0,
+                "unittype": "AbstractInfantry",
+            },
+        ),
+        cost_ops=(
+            {
+                "subtype": "Cost",
+                "amount": 1.25,
+                "relativity": "BasePercent",
+                "resource": "food",
+            },
+        ),
+    )
+    assert "对步兵伤害+1" in summary
+    assert "食物造价+25%" in summary
+
+
+def test_tech_summary_falls_back_to_name_for_unknown_ops():
+    assert format_tech_summary(
+        "未知科技",
+        combat_ops=({"subtype": "SomethingNew", "amount": 1.0},),
+    ) == "未知科技"

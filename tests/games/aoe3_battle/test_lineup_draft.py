@@ -245,6 +245,8 @@ def test_wizard_predefined_finishes_without_tech_step():
     assert wizard.step == WizardStep.DONE
     assert wizard.army is not None
     assert "已备好" in text
+    assert wizard.army.tech_summaries
+    assert any(summary.split("：", 1)[0] in text for summary in wizard.army.tech_summaries)
 
 
 def test_wizard_custom_rejects_duplicate_units():
@@ -302,6 +304,7 @@ def test_tournament_roster_lists_soldiers_and_techs():
             "lineup-0": {
                 "strategy": "自选",
                 "tech_names": ["细细的红线"],
+                "tech_summaries": ["细细的红线：生命+20%，移速-10%"],
                 "slots": [
                     {"unit_name": "火枪兵", "count": 18},
                     {"unit_name": "长枪兵", "count": 12},
@@ -317,6 +320,7 @@ def test_tournament_roster_lists_soldiers_and_techs():
     assert "1. JimyTD·荷兰（自选）" in text
     assert "火枪兵×18、长枪兵×12" in text
     assert "科技：细细的红线" in text
+    assert "细细的红线：生命+20%，移速-10%" in text
     assert "2. AI·法国·1（火力）" in text
     assert "散兵×20" in text
     assert text.endswith("发送「开战」开始八强战")

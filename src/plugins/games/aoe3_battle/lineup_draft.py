@@ -61,6 +61,7 @@ class CompiledArmy:
     tech_ids: tuple[str, ...]
     tech_names: tuple[str, ...]
     slots: tuple[tuple[str, str, int], ...]
+    tech_summaries: tuple[str, ...] = ()
     ai: bool = False
 
     def to_dict(self) -> dict:
@@ -71,6 +72,7 @@ class CompiledArmy:
             "strategy": self.strategy,
             "tech_ids": list(self.tech_ids),
             "tech_names": list(self.tech_names),
+            "tech_summaries": list(self.tech_summaries),
             "ai": self.ai,
             "slots": [
                 {"unit_id": unit_id, "unit_name": name, "count": count}
@@ -95,9 +97,19 @@ def format_lineup_tournament_roster(units, armies_by_key: dict[str, dict]) -> st
                     f"{slot['unit_name']}×{slot['count']}" for slot in slots
                 )
             )
-        techs = [str(name) for name in (army.get("tech_names") or ()) if name]
-        if techs:
-            lines.append("     科技：" + "、".join(techs))
+        summaries = [
+            str(summary)
+            for summary in (army.get("tech_summaries") or ())
+            if summary
+        ]
+        if not summaries:
+            summaries = [
+                str(name)
+                for name in (army.get("tech_names") or ())
+                if name
+            ]
+        for summary in summaries:
+            lines.append(f"     科技：{summary}")
     lines.append("")
     lines.append("⚔️ 发送「开战」开始八强战")
     return "\n".join(lines)
@@ -313,6 +325,7 @@ def compile_ai_army(
         strategy=chosen.title,
         tech_ids=tuple(tech.id for tech in techs),
         tech_names=tuple(tech.name_zh or tech.id for tech in techs),
+        tech_summaries=tuple(tech.summary for tech in techs),
         slots=tuple(
             (slot.unit.id, slot.unit.name, slot.count)
             for slot in lineup.slots
@@ -421,6 +434,7 @@ def _compile(
         strategy=strategy,
         tech_ids=tuple(tech.id for tech in techs),
         tech_names=tuple(tech.name_zh or tech.id for tech in techs),
+        tech_summaries=tuple(tech.summary for tech in techs),
         slots=tuple(
             (unit.id, unit.name, count)
             for unit, count in zip(upgraded, counts, strict=True)

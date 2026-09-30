@@ -9,6 +9,7 @@ from typing import Any, Protocol
 
 from src.plugins.aoe3.models import Unit
 from src.plugins.aoe3.upgrades import age_upgrade_line
+from src.plugins.games.aoe3_battle.tech_summary import format_tech_summary
 
 POOL_PATH = (
     Path(__file__).resolve().parents[4]
@@ -53,6 +54,15 @@ class MatchedTech:
     @property
     def match_count(self) -> int:
         return len(self.matched_unit_ids)
+
+    @property
+    def summary(self) -> str:
+        """A short player-facing summary of the applied and ignored effects."""
+        return format_tech_summary(
+            self.name_zh or self.id,
+            combat_ops=self.combat_ops,
+            cost_ops=self.cost_ops,
+        )
 
     def runtime_tech(self) -> dict[str, Any]:
         """Translate pool ops into the runtime ``scope`` + ``ops`` contract."""

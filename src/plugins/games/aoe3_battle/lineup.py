@@ -290,6 +290,8 @@ class MatchLineup:
     blue_tech_ids: tuple[str, ...] = ()
     red_tech_names: tuple[str, ...] = ()
     blue_tech_names: tuple[str, ...] = ()
+    red_tech_summaries: tuple[str, ...] = ()
+    blue_tech_summaries: tuple[str, ...] = ()
 
 
 # =====================================================================
@@ -1313,14 +1315,15 @@ def format_vs_banner(lineup: MatchLineup) -> str:
         lines.append(
             f"👥总人数 🔴 {r.total_count} vs 🔵 {b.total_count}"
         )
-    if lineup.mode == "civ_war" and (
-        lineup.red_tech_names or lineup.blue_tech_names
-    ):
-        lines.append(
-            "🔬 国战科技："
-            f"🔴 {'、'.join(lineup.red_tech_names) if lineup.red_tech_names else '无'}"
-            f" ｜ 🔵 {'、'.join(lineup.blue_tech_names) if lineup.blue_tech_names else '无'}"
-        )
+    red_summaries = lineup.red_tech_summaries or lineup.red_tech_names
+    blue_summaries = lineup.blue_tech_summaries or lineup.blue_tech_names
+    if lineup.mode == "civ_war" and (red_summaries or blue_summaries):
+        for side, summaries in (
+            ("🔴", red_summaries),
+            ("🔵", blue_summaries),
+        ):
+            if summaries:
+                lines.append(f"🔬 国战科技 {side}：{'；'.join(summaries)}")
     lines.extend([
         "━━━━━━━━━━━━━━━━━━━━━━━━",
         "@ 1 押红方 | @ 2 押蓝方",
