@@ -6,8 +6,19 @@ from unittest.mock import AsyncMock, patch
 
 import pytest
 
-from src.plugins.tools.ask_ai.service import answer_question
+from src.plugins.tools.ask_ai.service import _snippet_fallback, answer_question
 from src.plugins.tools.web_search.searxng import SearchResult
+
+
+def test_snippet_fallback_separates_sources_and_keeps_limit() -> None:
+    results = [
+        SearchResult(title=f"Source {i}", url=f"https://example.com/{i}", snippet="Body")
+        for i in range(4)
+    ]
+    sections = _snippet_fallback(results).split("\n\n")
+    assert len(sections) == 3
+    assert all(f"Source {i}: Body" in section for i, section in enumerate(sections))
+    assert _snippet_fallback([]) == "搜到了结果，但没法整理成回答。"
 
 
 @pytest.mark.asyncio

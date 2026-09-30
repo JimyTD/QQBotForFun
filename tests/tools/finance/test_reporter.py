@@ -7,8 +7,8 @@ from typing import Any
 import pytest
 
 from core import llm
-from plugins.tools.finance.detector import TopMover
-from plugins.tools.finance.reporter import generate_report
+from plugins.tools.finance.detector import MacroAlert, TopMover
+from plugins.tools.finance.reporter import _fallback_report, generate_report
 
 
 def _top_mover() -> TopMover:
@@ -27,6 +27,20 @@ def _response(content: str, *, truncated: bool = False) -> llm.LLMResponse:
         model="test-model",
         truncated=truncated,
     )
+
+
+def test_fallback_separates_events_without_blank_edges() -> None:
+    macro = MacroAlert(
+        indicator_id="lpr", name="LPR", plain_name="贷款利率",
+        date_str="2026-09-30", value="3.0", prev_value="3.1",
+    )
+    text = _fallback_report([], [macro], _top_mover())
+    sections = text.split("\n\n")
+    assert len(sections) == 2
+    assert "A股·深成指" in sections[0]
+    assert sections[1].startswith("贷款利率（LPR）")
+    assert not text.startswith("\n") and not text.endswith("\n")
+    assert _fallback_report([], [], None) == ""
 
 
 @pytest.mark.asyncio

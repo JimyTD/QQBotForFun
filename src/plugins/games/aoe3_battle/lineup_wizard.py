@@ -6,6 +6,7 @@ import random
 from dataclasses import dataclass, field
 from enum import Enum
 
+from core.render import join_sections
 from src.plugins.aoe3.repository import UnitRepo
 from src.plugins.games.aoe3_battle.civ_war_civs import (
     CIV_PROFILES,
@@ -252,9 +253,9 @@ def _ready_text(army: CompiledArmy) -> str:
     slots = "、".join(f"{name}×{count}" for _unit_id, name, count in army.slots)
     tech_lines = "\n".join(f"· {summary}" for summary in army.tech_summaries)
     techs = tech_lines if tech_lines else "无"
-    return (
-        f"已备好 {army.civ_name} · {army.strategy}\n"
-        f"{slots}\n"
-        f"科技：\n{techs}\n"
-        "想重配回复「重来」。"
+    return join_sections(
+        f"已备好 {army.civ_name} · {army.strategy}",
+        slots,
+        f"科技：\n{techs}",
+        "想重配回复「重来」。",
     )

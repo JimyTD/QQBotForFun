@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import random
 
+from core.render import join_sections
 from src.plugins.games.deep_sea_mission.campaign import (
     ASG_ALL_ONE_CREW,
     ASG_CAPTAIN_ALL,
@@ -564,7 +565,7 @@ class DeepSeaMissionCLIAdapter(GameCLIAdapter):
                 return
 
     def _task_lines(self) -> list[str]:
-        lines: list[str] = []
+        items: list[str] = []
         for i, task in enumerate(self.tasks, 1):
             owner = task.get("assigned_to")
             owner_text = "未选" if owner is None else self.names[int(owner)]
@@ -574,12 +575,15 @@ class DeepSeaMissionCLIAdapter(GameCLIAdapter):
                 state = "✅"
             else:
                 state = "□"
-            lines.append(f"{i}. {state} [{task['difficulty']}] {task['text']}（{owner_text}）")
+            lines = [f"{i}. {state} [{task['difficulty']}] {task['text']}（{owner_text}）"]
             # 控制台是所有玩家共看，进度行用座位名而不是「你」（同群内面板口径）。
             progress = task_progress(self._eval_state(), task, owner_label=owner_text)
             if progress:
                 lines.append(f"   └ {progress}")
-        return lines
+            items.append("\n".join(lines))
+        if any("\n" in item for item in items):
+            return join_sections(*items).splitlines()
+        return items
 
     def _eval_state(self) -> dict:
         for i, task in enumerate(self.tasks, 1):

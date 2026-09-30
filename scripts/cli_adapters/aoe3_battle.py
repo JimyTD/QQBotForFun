@@ -546,9 +546,9 @@ class AoE3BattleCLIAdapter:
         t.record_result(match_id, winner_idx)
         winner = t.get_unit(winner_idx)
         print(f"\n{C.B}{match.label}：{tu_a.display_name} vs {tu_b.display_name}{C.R}")
-        print(f"  🔴 {tu_a.display_name} ×{count_a}  存活 {len(result.red_alive)}")
+        print(f"\n  🔴 {tu_a.display_name} ×{count_a}  存活 {len(result.red_alive)}")
         print(f"  🔵 {tu_b.display_name} ×{count_b}  存活 {len(result.blue_alive)}")
-        print(f"  {C.GRN}🏆 {winner.display_name} {verdict}{C.R}")
+        print(f"\n  {C.GRN}🏆 {winner.display_name} {verdict}{C.R}")
 
     @staticmethod
     def _stage_label(stage: TournamentStage) -> str:

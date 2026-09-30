@@ -17,6 +17,9 @@ from __future__ import annotations
 
 import sys
 from pathlib import Path
+from types import SimpleNamespace
+
+import pytest
 
 ROOT = Path(__file__).resolve().parents[3]
 _SCRIPTS = str(ROOT / "scripts")
@@ -53,6 +56,41 @@ def _adapter(
 
 def _task(task_id: str, *, owner: int | None = None) -> dict:
     return {"id": task_id, "text": f"任务{task_id}", "difficulty": 1, "assigned_to": owner}
+
+
+@pytest.mark.parametrize("progress", [None, "progress 1/3"])
+def test_task_paragraph_spacing_matches_bot(monkeypatch, progress):
+    from src.plugins.games.deep_sea_mission import game as bot_mod
+
+    a = _adapter(tasks=[_task("T001", owner=1), _task("T074", owner=2)])
+    game = bot_mod.DeepSeaMissionGame()
+    ctx = SimpleNamespace(state={"tasks": a.tasks})
+    monkeypatch.setattr(game, "_nickname", lambda _ctx, owner: a.names[owner])
+
+    def fake_progress(_state, task, **_kwargs):
+        return progress if task["id"] == "T001" else None
+
+    monkeypatch.setattr(bot_mod, "task_progress", fake_progress)
+    monkeypatch.setattr(cli_mod, "task_progress", fake_progress)
+    lines = game._task_lines(ctx)
+    assert lines == a._task_lines()
+    assert ("" in lines) == (progress is not None)
+    assert lines[0].startswith("1.")
+    assert lines[-1].startswith("2.")
+    assert "\n\n\n" not in "\n".join(lines)
+
+
+def test_task_list_skips_unassigned_without_empty_paragraphs(monkeypatch):
+    from src.plugins.games.deep_sea_mission.game import DeepSeaMissionGame
+
+    game = DeepSeaMissionGame()
+    ctx = SimpleNamespace(state={"tasks": [_task("T074"), _task("T074", owner=2)]})
+    monkeypatch.setattr(game, "_nickname", lambda _ctx, _owner: "P2")
+    lines = game._task_lines(ctx, assigned_only=True)
+    assert len(lines) == 1 and lines[0].startswith("2.")
+    ctx.state["tasks"] = []
+    assert game._task_lines(ctx) == []
+    assert _adapter()._task_lines() == []
 
 
 # ==================== 出牌结束条件 ====================

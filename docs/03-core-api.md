@@ -1,7 +1,7 @@
 # 03 · Core 层接口契约
 
 - **Status**: Draft v1
-- **Last Updated**: 2026-04-28
+- **Last Updated**: 2026-09-30
 - **Owner**: @owner
 - **Audience**: 游戏插件开发者
 
@@ -318,29 +318,32 @@ async def start_turn_timer(
 
 ---
 
-## 7. `core.render` — 图片渲染
+## 7. `core.render` — 文本排版
 
 ```python
-async def render_html(
-    template_name: str,            # 模板文件名（相对 templates/）
-    data: dict,
-    *,
-    width: int = 800,
-    height: int | None = None,     # None = 自动
-) -> bytes                         # PNG bytes
+def join_sections(*sections: str | list[str]) -> str:
+    """非空段落间空一行，去掉各段首尾空白行，保留段内换行与缩进。"""
 
-async def render_text_card(
-    title: str,
-    body: str,
+def text_card(
+    title_text: str,
+    body: str | list[str],
     *,
-    theme: str = "default",
-) -> bytes
-    """快速文字卡片，无需写模板"""
+    emoji: str = "",
+    footer: str | list[str] | None = None,
+) -> str: ...
 
-# 消息构造辅助
-def image(png_bytes: bytes) -> Message
-    """将 PNG bytes 包装成可发送的 Message"""
+def list_card(
+    title_text: str,
+    items: list[str],
+    *,
+    emoji: str = "",
+    footer: str | list[str] | None = None,
+) -> str: ...
 ```
+
+`text_card` / `list_card` 不自动改变正文的段落间隔。需要多行条目或独立操作提示时，
+由调用方使用 `join_sections` 组合；普通短列表仍用单换行。
+完整 API 与排版规则见 [`11-ui-style.md`](./11-ui-style.md)。
 
 ---
 
@@ -511,3 +514,4 @@ except PlayerQuitError:
 |---|---|---|
 | v0.1 | 2026-04-28 | 初版 |
 | v0.2 | 2026-04-30 | `economy` 新增 `top_balances` / `rank_of` / `count_in_leaderboard` 三个榜单 helper；`score` 加入默认已注册货币（供趣味问答等游戏跨局累计积分使用）。 |
+| v0.2 | 2026-09-30 | `render` 新增 `join_sections`，显式组合文本段落；更新文本卡片 API 说明。 |

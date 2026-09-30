@@ -8,6 +8,7 @@ from pathlib import Path
 
 from PIL import Image, ImageDraw, ImageFont
 
+from core.render import join_sections
 from src.plugins.aoe3.icons import BLUE_ICON_BACKGROUND, RED_ICON_BACKGROUND, composite_icon
 from src.plugins.aoe3.models import Unit
 
@@ -352,14 +353,14 @@ def format_match_opening_fallback(
 ) -> str:
     """Build a concise fallback for a generic match opening card."""
     age_text = f" · {age} 时代" if age else ""
-    lines = [
+    sections = [
         f"帝国3斗蛐蛐 · {mode_label}{age_text} · {field_distance_label}"
     ]
     for marker, side in (("🔴", red), ("🔵", blue)):
-        lines.append(f"{marker} {side.label}")
+        lines = [f"{marker} {side.label}"]
         lines.extend(f"  {unit.name} ×{count}" for unit, count in side.units)
-    lines.append("@ 1 押红方 | @ 2 押蓝方 · @ 开战 直接开打")
-    return "\n".join(lines)
+        sections.append("\n".join(lines))
+    return join_sections(*sections, "@ 1 押红方 | @ 2 押蓝方 · @ 开战 直接开打")
 
 
 def render_match_opening(
@@ -453,14 +454,14 @@ def format_civ_war_fallback(
     footer: str = "@ 1 押红方 | @ 2 押蓝方 · @ 开战 直接开打",
 ) -> str:
     """Build a concise text fallback when the opening PNG cannot be delivered."""
-    lines = [f"🌍 帝国3斗蛐蛐 · {title} · {age} 时代"]
+    sections = [f"🌍 帝国3斗蛐蛐 · {title} · {age} 时代"]
     for marker, side in (("🔴", red), ("🔵", blue)):
-        lines.append(f"{marker} {side.civ_name} · {side.strategy}")
+        lines = [f"{marker} {side.civ_name} · {side.strategy}"]
         if side.tech_names:
             lines.append(f"  🔬 {'、'.join(side.tech_names)}")
         lines.extend(f"  {unit.name} ×{count}" for unit, count in side.units)
-    lines.append(footer)
-    return "\n".join(lines)
+        sections.append("\n".join(lines))
+    return join_sections(*sections, footer)
 
 
 def render_civ_war_opening(

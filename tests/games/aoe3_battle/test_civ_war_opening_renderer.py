@@ -61,6 +61,13 @@ def test_civ_war_opening_renders_one_vs_three_unit_composition() -> None:
     assert "丹麦" in fallback
     assert "老练胸甲骑兵" in fallback
     assert "鹰炮" in fallback
+    sections = fallback.split("\n\n")
+    assert len(sections) == 4
+    assert sections[1].startswith("🔴 法国")
+    assert sections[2].startswith("🔵 丹麦")
+    assert sections[3].startswith("@ 1")
+    without_footer = format_civ_war_fallback(red, blue, age=3, footer="")
+    assert without_footer == "\n\n".join(sections[:3])
 
 
 def test_civ_war_opening_draws_civ_flag_and_tolerates_missing() -> None:
@@ -128,3 +135,8 @@ def test_generic_match_opening_renders_without_civ_fields() -> None:
     assert "普通对阵" in fallback
     assert "火枪手" in fallback
     assert "长枪兵" in fallback
+    sections = fallback.split("\n\n")
+    assert len(sections) == 4
+    assert sections[1].startswith("🔴 火枪手×8\n  ")
+    assert sections[2].startswith("🔵 长枪兵×8\n  ")
+    assert sections[3].startswith("@ 1")

@@ -2,7 +2,24 @@
 
 from __future__ import annotations
 
+import pytest
+
 from core import render
+
+
+@pytest.mark.parametrize(
+    ("sections", "expected"),
+    [
+        ((), ""),
+        (("", [], " \n\t"), ""),
+        (("Title", ["  Item", "    Detail"], "Action"), "Title\n\n  Item\n    Detail\n\nAction"),
+        (("\nTitle\n\n", [" ", "  Item", ""], "\nAction\n"), "Title\n\n  Item\n\nAction"),
+        (("Title", "", [], "Action"), "Title\n\nAction"),
+        ((["Item", "", "Detail"],), "Item\n\nDetail"),
+    ],
+)
+def test_join_sections(sections, expected) -> None:
+    assert render.join_sections(*sections) == expected
 
 
 def test_text_card_basic() -> None:
@@ -13,6 +30,7 @@ def test_text_card_basic() -> None:
     assert "尾注" in s
     assert render.SEP_HEAVY in s
     assert render.SEP_LIGHT in s
+    assert s == f"🎮 标题\n{render.SEP_HEAVY}\n第一行\n第二行\n{render.SEP_LIGHT}\n尾注"
 
 
 def test_menu() -> None:

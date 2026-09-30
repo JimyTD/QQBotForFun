@@ -2,8 +2,9 @@
 
 from __future__ import annotations
 
-import sys
 import random
+import re
+import sys
 from pathlib import Path
 from types import SimpleNamespace
 
@@ -34,7 +35,7 @@ class _FakeBattle:
         )
 
 
-def test_cli_tournament_completes_all_twelve_matches(monkeypatch) -> None:
+def test_cli_tournament_completes_all_twelve_matches(monkeypatch, capsys) -> None:
     repo = UnitRepo.get()
     result = generate_tournament_lineup(
         repo,
@@ -70,3 +71,6 @@ def test_cli_tournament_completes_all_twelve_matches(monkeypatch) -> None:
     assert adapter._tournament.stage.value == "finished"
     assert len(adapter._tournament.final_ranks) == 8
     assert len(set(adapter._tournament.final_ranks)) == 8
+    output = re.sub(r"\x1b\[[0-9;]*m", "", capsys.readouterr().out)
+    assert output.count("\n\n  🔴") == 12
+    assert output.count("\n\n  🏆") == 12

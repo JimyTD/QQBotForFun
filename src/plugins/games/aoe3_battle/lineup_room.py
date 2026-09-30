@@ -14,7 +14,7 @@ from nonebot.adapters.onebot.v11 import GroupMessageEvent, PrivateMessageEvent
 from nonebot.matcher import Matcher
 from nonebot.rule import Rule, to_me
 
-from core import game_base, session
+from core import game_base, render, session
 from core.errors import GameAlreadyRunningError, WhisperFailedError
 from core.types import User
 from src.plugins.aoe3.repository import UnitRepo
@@ -72,14 +72,17 @@ def cancel_lineup_room(group_id: int) -> bool:
 
 def format_room(room: LineupRoom) -> str:
     title = "配兵锦标赛" if room.tournament else "配兵"
-    lines = [f"⚔️ {title} · {room.age}时代 · 军费 {room.budget}"]
+    lines = []
     for index, seat in enumerate(room.seats, start=1):
         lines.append(f"{index}. {seat.nickname}")
     empty = room.capacity - len(room.seats)
     if empty:
         lines.append(f"空位 {empty}")
-    lines.append("@我 加入 / @我 离开")
-    return "\n".join(lines)
+    return render.join_sections(
+        f"⚔️ {title} · {room.age}时代 · 军费 {room.budget}",
+        lines,
+        "@我 加入 / @我 离开",
+    )
 
 
 def format_all_ready(room: LineupRoom) -> str:
@@ -89,8 +92,7 @@ def format_all_ready(room: LineupRoom) -> str:
     empty = room.capacity - len(room.seats)
     if empty:
         lines.append(f"空位 {empty}，开始时补 AI")
-    lines.append("@我 开始")
-    return "\n".join(lines)
+    return render.join_sections(lines, "@我 开始")
 
 
 def _humans_ready(room: LineupRoom) -> bool:

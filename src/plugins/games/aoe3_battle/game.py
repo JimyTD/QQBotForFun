@@ -1600,11 +1600,14 @@ class AoE3BattleGame(GameBase):
                 # 组装一条消息
                 report_lines = [
                     f"━━━ {match_obj.label} {tu_a.display_name} vs {tu_b.display_name} ⏱{result.duration:.1f}s ━━━",
+                    "",
                     format_hp_bar_line(Side.RED, red_cur_hp, red_max_hp),
                     format_hp_bar_line(Side.BLUE, blue_cur_hp, blue_max_hp),
                     f"💸 战损资源：红方 {red_loss} ｜ 蓝方 {blue_loss}",
+                    "",
                     f"🔴 {tu_a.display_name} ×{count_a} → {red_status}/击杀{red_kills}/有效伤害{red_dmg:.0f}",
                     f"🔵 {tu_b.display_name} ×{count_b} → {blue_status}/击杀{blue_kills}/有效伤害{blue_dmg:.0f}",
+                    "",
                     verdict,
                 ]
                 report = "\n".join(report_lines)

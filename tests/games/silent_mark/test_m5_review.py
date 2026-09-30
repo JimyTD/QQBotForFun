@@ -141,6 +141,39 @@ def test_replay_includes_marks_and_votes() -> None:
     assert "标记发言：" in body
     assert "声明平民" in body
     assert "投票：" in body and "→" in body
+    assert "\n\n标记发言：\n" in body
+    assert "\n\n投票：" in body
+    assert "\n\n\n" not in body
+
+
+def test_role_card_separates_identity_abilities_and_action() -> None:
+    state = _state(winner=None)
+    text = views.render_role_card(state, PLAYERS[0])
+    sections = text.split("\n\n")
+    assert len(sections) == 4
+    assert sections[0] == "🎭 你的身份牌"
+    assert sections[1].startswith("座位：") and "同伴：" in sections[1]
+    assert sections[2].startswith("能力：") and "随身物品：" in sections[2]
+    assert sections[3].startswith("💡")
+
+
+def test_multiple_deaths_keep_relics_with_each_player() -> None:
+    state = _state(winner=None)
+    sections = views.render_night_result(state, state["history"]["deaths"]).split("\n\n")
+    assert len(sections) == 3
+    assert "3号" in sections[1] and "月光石" in sections[1]
+    assert "4号" in sections[2] and "遗物：（无）" in sections[2]
+
+
+def test_vote_detail_separates_compact_votes_from_outcome() -> None:
+    state = _state(winner=None)
+    votes = state["history"]["votes"][0]
+    sections = views.render_vote_detail(state, votes, {"tie": True}).split("\n\n")
+    assert len(sections) == 3
+    assert len(sections[1].splitlines()) == 2
+    assert sections[2] == "结果：平票，无人出局"
+    empty = views.render_vote_detail(state, [], {}).split("\n\n")
+    assert empty[1:] == ["（没有有效投票）", "结果：无人出局"]
 
 
 # =====================================================================

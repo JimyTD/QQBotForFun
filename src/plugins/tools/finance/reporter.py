@@ -9,6 +9,8 @@ from datetime import date, datetime, timedelta, timezone
 
 from nonebot import logger
 
+from core.render import join_sections
+
 from .detector import AnomalyAlert, MacroAlert, TopMover
 from .prompts import FINANCE_REPORT_SYSTEM, FINANCE_REPORT_USER
 
@@ -217,4 +219,4 @@ def _fallback_report(
             line += interp + "。"
         lines.append(line)
 
-    return "\n".join(lines)
+    return join_sections(*lines)

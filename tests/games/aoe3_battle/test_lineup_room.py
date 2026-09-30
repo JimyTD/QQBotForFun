@@ -35,6 +35,11 @@ def test_room_card_lists_names_without_armies_or_host():
     assert "房主" not in text
     assert "已备好" not in text
     assert "风云" not in text
+    assert text.split("\n\n") == [
+        "⚔️ 配兵 · 4时代 · 军费 10000",
+        "1. JimyTD\n空位 1",
+        "@我 加入 / @我 离开",
+    ]
 
 
 def test_all_human_players_ready_prompts_start():
@@ -42,6 +47,7 @@ def test_all_human_players_ready_prompts_start():
     text = format_all_ready(room)
     assert "全体玩家已配好" in text
     assert "空位 1，开始时补 AI" in text
+    assert "空位 1，开始时补 AI\n\n@我 开始" in text
     assert text.endswith("@我 开始")
     assert "房主" not in text
 
@@ -54,5 +60,6 @@ def test_full_room_ready_prompt_has_no_empty_seats():
     text = format_all_ready(room)
     assert "全体玩家已配好" in text
     assert "空位" not in text
+    assert text.split("\n\n") == ["⚔️ 配兵 · 全体玩家已配好", "@我 开始"]
     assert text.endswith("@我 开始")
     assert "房主" not in text

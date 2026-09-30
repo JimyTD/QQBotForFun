@@ -39,6 +39,24 @@ def _lines(x: str | list[str]) -> list[str]:
     return [x] if isinstance(x, str) else list(x)
 
 
+def join_sections(*sections: str | list[str]) -> str:
+    """用一个空行连接非空段落，保留段内换行与缩进。
+
+    每个参数是一段文本或一组正文行。忽略空段落，并去掉各段首尾的
+    空白行，不改变段内内容。例：join_sections(["标题", "详情"], "操作")。
+    """
+    parts: list[str] = []
+    for section_lines in sections:
+        lines = "\n".join(_lines(section_lines)).splitlines()
+        while lines and not lines[0].strip():
+            lines.pop(0)
+        while lines and not lines[-1].strip():
+            lines.pop()
+        if lines:
+            parts.append("\n".join(lines))
+    return "\n\n".join(parts)
+
+
 def text_card(
     title_text: str,
     body: str | list[str],

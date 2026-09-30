@@ -11,6 +11,8 @@
 
 from __future__ import annotations
 
+from core.render import join_sections
+
 from .engine import constants as C  # noqa: N812
 from .engine import private_info
 from .engine.types import (
@@ -180,7 +182,6 @@ def render_role_card(state: GameStateDict, player: PlayerDict) -> str:
     """私聊身份牌。只包含该玩家有权知道的信息。"""
     role = player["role"]
     lines = [
-        "🎭 你的身份牌",
         f"座位：{player['seat']}号 {player['nickname']}",
         f"身份：{C.ROLE_LABELS.get(role, role)}（{FACTION_LABELS.get(player['faction'], player['faction'])}）",
     ]
@@ -193,7 +194,7 @@ def render_role_card(state: GameStateDict, player: PlayerDict) -> str:
         ]
         lines.append(f"同伴：{'、'.join(mates) if mates else '（无，你独自一人）'}")
 
-    lines.append(f"能力：{ROLE_HINTS.get(role, '（无特殊能力）')}")
+    lines.extend(["", f"能力：{ROLE_HINTS.get(role, '（无特殊能力）')}"])
 
     if player["items"]:
         lines.append(
@@ -205,9 +206,11 @@ def render_role_card(state: GameStateDict, player: PlayerDict) -> str:
 
     win_condition = state.get("win_condition", C.WIN_EDGE)
     lines.append(f"狼人胜利条件：{WIN_CONDITION_LABELS.get(win_condition, win_condition)}")
-    lines.append("")
-    lines.append("💡 夜里按私聊提示行动；白天在群里按提示标记发言（@我 记录 可随时查看你的记录）")
-    return "\n".join(lines)
+    return join_sections(
+        "🎭 你的身份牌",
+        lines,
+        "💡 夜里按私聊提示行动；白天在群里按提示标记发言（@我 记录 可随时查看你的记录）",
+    )
 
 
 # =====================================================================
@@ -229,11 +232,13 @@ def render_night_result(
     if not deaths:
         return f"{header}\n平安夜，无人出局。"
 
-    lines = [header]
+    sections = [header]
     for death in deaths:
-        lines.append(f"⚠️ {player_label(state, death['pid'])} 出局")
-        lines.append(_reliquary_line(death["relics"]))
-    return "\n".join(lines)
+        sections.append(
+            f"⚠️ {player_label(state, death['pid'])} 出局\n"
+            + _reliquary_line(death["relics"])
+        )
+    return join_sections(*sections)
 
 
 def render_exile(state: GameStateDict, record: DeathRecordDict) -> str:
@@ -262,7 +267,7 @@ def render_vote_detail(
     state: GameStateDict, votes: list[VoteRecordDict], result: dict
 ) -> str:
     """投票明细 + 结果（投票结束后一次性公开）。"""
-    lines = [f"🗳 第 {state['round']} 轮投票结果"]
+    lines = []
     if not votes:
         lines.append("（没有有效投票）")
     for vote in votes:
@@ -270,12 +275,12 @@ def render_vote_detail(
             f"　{player_label(state, vote['voter'])} → {player_label(state, vote['target'])}"
         )
     if result.get("tie"):
-        lines.append("结果：平票，无人出局")
+        outcome = "结果：平票，无人出局"
     elif result.get("exiled"):
-        lines.append(f"结果：{player_label(state, result['exiled'])} 得票最高，将被放逐")
+        outcome = f"结果：{player_label(state, result['exiled'])} 得票最高，将被放逐"
     else:
-        lines.append("结果：无人出局")
-    return "\n".join(lines)
+        outcome = "结果：无人出局"
+    return join_sections(f"🗳 第 {state['round']} 轮投票结果", lines, outcome)
 
 
 def render_fool_immunity(state: GameStateDict, pid: str) -> str:
@@ -335,7 +340,6 @@ def render_replay(
     votes = state["history"]["votes"]
 
     head = [
-        "🌙 静夜标记 · 复盘",
         f"板子：{_preset_line(settings)}",
         render_seat_list(state),
     ]
@@ -343,31 +347,36 @@ def render_replay(
     if winner:
         reason = WIN_REASON_LABELS.get(state.get("end_reason_code") or "", "对局结束")
         side = "好人" if winner == C.GOOD else "狼人"
-        head.append(f"🏆 {side}阵营胜利（{reason}）")
+        head.extend(["", f"🏆 {side}阵营胜利（{reason}）"])
         if reveal_all:
             head.append(_all_roles_line(state))
-    pages = ["\n".join(head)]
+    pages = [join_sections("🌙 静夜标记 · 复盘", head)]
 
     for round_no in range(1, max(1, state["round"]) + 1):
-        lines = [f"—— 第 {round_no} 轮 ——"]
+        sections = [f"—— 第 {round_no} 轮 ——"]
         night = [record for record in deaths if record["round"] == round_no]
         if night:
-            lines.extend(_death_line(state, record, reveal_all=reveal_all) for record in night)
+            sections.append(
+                "\n".join(
+                    _death_line(state, record, reveal_all=reveal_all) for record in night
+                )
+            )
         else:
-            lines.append("（无出局）")
+            sections.append("（无出局）")
 
         round_marks = [m for m in marks if m["round"] == round_no]
         if round_marks:
-            lines.append("标记发言：")
+            lines = ["标记发言："]
             lines.extend(f"　{compact_marks_line(state, m)}" for m in round_marks)
+            sections.append("\n".join(lines))
 
         if round_no - 1 < len(votes) and votes[round_no - 1]:
             pairs = "，".join(
                 f"{player_label(state, vote['voter'])}→{player_label(state, vote['target'])}"
                 for vote in votes[round_no - 1]
             )
-            lines.append(f"投票：{pairs}")
-        pages.append("\n".join(lines))
+            sections.append(f"投票：{pairs}")
+        pages.append(join_sections(*sections))
 
     return pages
 

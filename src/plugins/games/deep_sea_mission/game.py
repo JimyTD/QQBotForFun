@@ -1260,7 +1260,7 @@ class DeepSeaMissionGame(GameBase):
         return "任务：本关无任务卡（走特殊约束）"
 
     def _task_lines(self, ctx: GameContext, *, assigned_only: bool = False) -> list[str]:
-        lines: list[str] = []
+        items: list[str] = []
         for i, task in enumerate(ctx.state["tasks"], 1):
             owner = task.get("assigned_to")
             if assigned_only and owner is None:
@@ -1277,15 +1277,18 @@ class DeepSeaMissionGame(GameBase):
             prediction_text = ""
             if task_needs_prediction(task) and task.get("prediction") is not None:
                 prediction_text = "（已预测）" if task["id"] == "T091" else f"（预测 {task['prediction']} 墩）"
-            lines.append(
+            lines = [
                 f"{i}. {state} [{task['difficulty']}] {task['text']}{prediction_text}（{owner_text}）"
-            )
+            ]
             if state == "□":
                 # 进度行在群内公开面板与私聊面板里都会出现，用昵称而不是「你」。
                 progress = task_progress(ctx.state, task, owner_label=owner_text)
                 if progress:
                     lines.append(f"   └ {progress}")
-        return lines
+            items.append("\n".join(lines))
+        if any("\n" in item for item in items):
+            return render.join_sections(*items).splitlines()
+        return items
 
     def _next_prediction_task(self, ctx: GameContext) -> dict[str, Any] | None:
         for task in ctx.state.get("tasks", []):

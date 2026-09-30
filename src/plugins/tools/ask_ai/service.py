@@ -7,7 +7,7 @@ from dataclasses import dataclass, field
 
 from nonebot import logger
 
-from core import llm
+from core import llm, render
 from src.plugins.tools.ask_ai.prompts import (
     build_fallback_system_prompt,
     build_search_system_prompt,
@@ -107,7 +107,7 @@ def _snippet_fallback(results: list[SearchResult]) -> str:
             lines.append(f"• {r.title}: {bit[:120]}")
         else:
             lines.append(f"• {r.title}")
-    return "\n".join(lines) or "搜到了结果，但没法整理成回答。"
+    return render.join_sections(*lines) or "搜到了结果，但没法整理成回答。"
 
 
 async def _summarize(question: str, results: list[SearchResult]) -> tuple[str, bool]:

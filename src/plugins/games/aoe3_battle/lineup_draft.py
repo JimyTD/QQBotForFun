@@ -12,6 +12,7 @@ import random
 from dataclasses import dataclass
 from types import SimpleNamespace
 
+from core.render import join_sections
 from src.plugins.aoe3.repository import UnitRepo
 from src.plugins.aoe3.tech_effects import apply_techs
 from src.plugins.aoe3.upgrades import apply_upgrades
@@ -83,12 +84,12 @@ class CompiledArmy:
 
 def format_lineup_tournament_roster(units, armies_by_key: dict[str, dict]) -> str:
     """Reveal each tournament army: tactic, soldiers, and techs."""
-    lines = ["🏆 配兵锦标赛", "", "参赛军队："]
+    sections = ["🏆 配兵锦标赛", "参赛军队："]
     for unit in units:
         army = armies_by_key.get(unit.unit_id) or {}
         strategy = str(army.get("strategy") or "")
         head = f"{unit.display_name}（{strategy}）" if strategy else unit.display_name
-        lines.append(f"  {unit.idx + 1}. {head}")
+        lines = [f"  {unit.idx + 1}. {head}"]
         slots = army.get("slots") or ()
         if slots:
             lines.append(
@@ -110,9 +111,8 @@ def format_lineup_tournament_roster(units, armies_by_key: dict[str, dict]) -> st
             ]
         for summary in summaries:
             lines.append(f"     科技：{summary}")
-    lines.append("")
-    lines.append("⚔️ 发送「开战」开始八强战")
-    return "\n".join(lines)
+        sections.append("\n".join(lines))
+    return join_sections(*sections, "⚔️ 发送「开战」开始八强战")
 
 
 def army_is_ai(army: dict | None, display_name: str = "") -> bool:

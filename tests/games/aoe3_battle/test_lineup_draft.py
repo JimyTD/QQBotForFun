@@ -324,6 +324,52 @@ def test_tournament_roster_lists_soldiers_and_techs():
     assert "2. AI·法国·1（火力）" in text
     assert "散兵×20" in text
     assert text.endswith("发送「开战」开始八强战")
+    sections = text.split("\n\n")
+    assert len(sections) == 5
+    assert sections[1] == "参赛军队："
+    assert sections[2].startswith("  1. JimyTD·荷兰")
+    assert sections[3] == "  2. AI·法国·1（火力）\n     散兵×20"
+
+
+def test_tournament_roster_spaces_all_eight_armies_with_optional_details():
+    units = [
+        SimpleNamespace(idx=i, unit_id=f"army-{i}", display_name=f"Army {i}")
+        for i in range(8)
+    ]
+    text = format_lineup_tournament_roster(
+        units,
+        {
+            "army-0": {"tech_names": ["Tech A", "Tech B"]},
+            "army-1": {"tech_summaries": ["", "Tech C"], "slots": []},
+        },
+    )
+    sections = text.split("\n\n")
+    assert len(sections) == 11
+    for i, section in enumerate(sections[2:-1]):
+        assert section.startswith(f"  {i + 1}. Army {i}")
+    assert "科技：Tech A\n     科技：Tech B" in sections[2]
+    assert "科技：Tech C" in sections[3]
+    assert "\n\n\n" not in text
+    assert not text.endswith("\n")
+
+
+def test_ready_text_separates_army_techs_and_action():
+    from src.plugins.games.aoe3_battle.lineup_draft import CompiledArmy
+    from src.plugins.games.aoe3_battle.lineup_wizard import _ready_text
+
+    for summaries in ((), ("Tech A", "Tech B")):
+        army = CompiledArmy(
+            label="P1", civ_id="Japanese", civ_name="日本", strategy="自选",
+            tech_ids=(), tech_names=(), slots=(("unit", "Unit", 12),),
+            tech_summaries=summaries,
+        )
+        sections = _ready_text(army).split("\n\n")
+        assert sections == [
+            "已备好 日本 · 自选",
+            "Unit×12",
+            "科技：\n" + ("· Tech A\n· Tech B" if summaries else "无"),
+            "想重配回复「重来」。",
+        ]
 
 
 def test_lineup_tournament_films_human_matches_and_the_final():
