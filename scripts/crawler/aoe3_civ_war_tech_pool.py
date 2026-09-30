@@ -743,6 +743,22 @@ def _has_eligible_generic_target(
     return False
 
 
+_REVOLUTION_ID_PREFIXES = ("DEHCREV", "DEREV")
+
+
+def _is_revolution_tech(row: dict[str, Any]) -> bool:
+    """Match ``civ_war_techs.is_revolution_tech``.
+
+    Revolution cards live in the same home-city file as ordinary cards, so
+    ownership alone would let them into lineup selection and civ-war auto
+    compensation. Both modes read this generic pool.
+    """
+    tech_id = str(row.get("id") or "")
+    if tech_id.startswith(_REVOLUTION_ID_PREFIXES):
+        return True
+    return "RevoltTech" in set(row.get("source_flags") or ())
+
+
 def _has_generic_combat_effect(row: dict[str, Any]) -> bool:
     return any(
         str(op.get("action") or "") not in NON_COMBAT_ACTIONS
@@ -761,6 +777,8 @@ def build_generic_tech_pool() -> dict[str, Any]:
     for row in pool["techs"]:
         if row.get("is_age_upgrade"):
             continue
+        if _is_revolution_tech(row):
+            continue
         if not row.get("combat_ops") and not row.get("cost_ops"):
             continue
         if not _has_eligible_generic_target(row, unit_ids, unit_tags):
@@ -776,8 +794,8 @@ def build_generic_tech_pool() -> dict[str, Any]:
             "status": "generated_v1",
             "note": "自动组合只从对应文明的通用战斗科技池中选补偿科技。",
             "rule": (
-                "文明真源可获得、非时代升级且能作用于国战参战单位类型的"
-                "战斗/成本科技; 质变科技也允许入池。"
+                "文明真源可获得、非时代升级、非革命卡且能作用于国战参战单位类型的"
+                "战斗/成本科技; 质变科技也允许入池。配兵与国战共用此池。"
             ),
         },
         "civs": {

@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+from collections.abc import Iterable
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Protocol
@@ -51,6 +52,7 @@ class MatchedTech:
     combat_ops: tuple[dict[str, Any], ...]
     cost_ops: tuple[dict[str, Any], ...]
     priority: tuple[int, ...]
+    lineup_keys: tuple[str, ...] = ()
 
     @property
     def match_count(self) -> int:
@@ -58,11 +60,19 @@ class MatchedTech:
 
     @property
     def summary(self) -> str:
-        """A short player-facing summary of the applied and ignored effects."""
+        """A short player-facing summary of effects that hit this lineup."""
+        combat_ops = self.combat_ops
+        cost_ops = self.cost_ops
+        if self.lineup_keys:
+            keys = set(self.lineup_keys)
+            combat_ops = tuple(
+                op for op in combat_ops if _op_hits_lineup(op, keys)
+            )
+            cost_ops = tuple(op for op in cost_ops if _op_hits_lineup(op, keys))
         return format_tech_summary(
             self.name_zh or self.id,
-            combat_ops=self.combat_ops,
-            cost_ops=self.cost_ops,
+            combat_ops=combat_ops,
+            cost_ops=cost_ops,
             recipients=self.matched_unit_names,
         )
 
@@ -81,8 +91,39 @@ class MatchedTech:
         }
 
 
+_REVOLUTION_ID_PREFIXES = ("DEHCREV", "DEREV")
+
+
+def is_revolution_tech(tech_id: str, source_flags: Iterable[str] = ()) -> bool:
+    """Revolution cards stay out of civ-war and lineup selection."""
+    if tech_id.startswith(_REVOLUTION_ID_PREFIXES):
+        return True
+    return "RevoltTech" in set(source_flags)
+
+
 def _target_matches(target: str, unit: Unit) -> bool:
     return target.lower() == unit.id.lower() or target in unit.type
+
+
+def _lineup_keys(units: tuple[Unit, ...] | list[Unit]) -> tuple[str, ...]:
+    keys: set[str] = set()
+    for unit in units:
+        keys.add(unit.id.lower())
+        keys.update(unit.type)
+    return tuple(sorted(keys))
+
+
+def _op_hits_lineup(op: dict[str, Any], keys: set[str]) -> bool:
+    targets = [
+        str(target.get("value") or "")
+        for target in op.get("targets") or ()
+        if isinstance(target, dict)
+        and target.get("type") == "ProtoUnit"
+        and target.get("value")
+    ]
+    if not targets:
+        return True
+    return any(value.lower() in keys or value in keys for value in targets)
 
 
 def _runtime_op(op: dict[str, Any]) -> dict[str, Any] | None:
@@ -103,7 +144,14 @@ def _runtime_op(op: dict[str, Any]) -> dict[str, Any] | None:
         case "MaximumRange" | "MinimumRange":
             stat, kind = "range", "add"
         case "RateOfFire":
-            stat, kind = "rof", "set" if relation == "Assign" else "add"
+            stat = "rof"
+            kind = {
+                "Assign": "set",
+                "Absolute": "add",
+                "BasePercent": "mult",
+            }.get(relation)
+            if kind is None:
+                return None
         case "MaximumVelocity":
             stat = "speed"
             kind = {
@@ -260,6 +308,8 @@ def match_candidate_techs(
     for row in rows:
         if row["id"] in blocked_ids or row.get("name_zh") in blocked_names:
             continue
+        if is_revolution_tech(row["id"], row.get("source_flags") or ()):
+            continue
         if not _is_civ_allowed(row, candidate.civ_id):
             continue
         if not _within_age(row, age):
@@ -287,6 +337,7 @@ def match_candidate_techs(
                     -len(matched_units),
                     *_priority(row, len(matched_units))[1:],
                 ),
+                lineup_keys=_lineup_keys(matched_units),
             )
         )
     matched.sort(key=lambda tech: tech.priority)
@@ -311,6 +362,8 @@ def resolve_required_techs(
         row = rows_by_id.get(tech_id)
         if row is None:
             raise ValueError(f"required tech not found in pool: {tech_id}")
+        if is_revolution_tech(row["id"], row.get("source_flags") or ()):
+            raise ValueError(f"required tech {tech_id} is a revolution card")
         if not _is_civ_allowed(row, candidate.civ_id):
             raise ValueError(
                 f"required tech {tech_id} is not available to {candidate.civ_id}"
@@ -335,6 +388,7 @@ def resolve_required_techs(
                 combat_ops=tuple(row.get("combat_ops", ())),
                 cost_ops=tuple(row.get("cost_ops", ())),
                 priority=(0, -len(matched_units), row["id"]),
+                lineup_keys=_lineup_keys(matched_units),
             )
         )
     return resolved

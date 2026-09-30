@@ -114,7 +114,7 @@
 
 1. **原始游戏数据**：`data/aoe3/raw/` 下的 `civs.xml`、`techtreey.xml` 与该文明 `homecity*.xml`，只读。
 2. **文明可获得科技**：`scripts/crawler/aoe3_civ_available_techs.py` 从文明 `agetech` 递归展开 `TechStatus active/obtainable`，再合并该文明主城文件的 `cards/card/name`，输出 `seeds/aoe3/civ_available_techs.json`。文明归属不使用单位目标、单位标签或 `unique_techs` 反推。
-3. **文明通用池**：`scripts/crawler/aoe3_civ_war_tech_pool.py` 从文明可获得科技中排除时代升级，保留战斗或成本科技，并仅保留可能作用于国战参战单位类型的条目，输出 `seeds/aoe3/civ_war_generic_techs.json`。村民、建筑、船只、英雄、守卫、宠物、场景与经济单位科技不入池；佣兵、亡命徒和领事馆单位属于合法目标。
+3. **文明通用池**：`scripts/crawler/aoe3_civ_war_tech_pool.py` 从文明可获得科技中排除时代升级和革命卡，保留战斗或成本科技，并仅保留可能作用于国战参战单位类型的条目，输出 `seeds/aoe3/civ_war_generic_techs.json`。革命卡指 id 前缀 `DEHCREV` / `DEREV`，或带 `RevoltTech`。村民、建筑、船只、英雄、守卫、宠物、场景与经济单位科技不入池；佣兵、亡命徒和领事馆单位属于合法目标。配兵自选、配兵预定义、配兵空位 AI 与国战自动编制共用这套池、摘要和结算。
 4. **本局筛选与应用**：`src/plugins/games/aoe3_battle/civ_war_techs.py` 从该文明通用池中筛出能命中当前组合参战兵的科技，再按固定优先级选择，不随机。
 
 科技来源分为：

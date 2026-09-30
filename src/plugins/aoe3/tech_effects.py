@@ -94,6 +94,41 @@ def _deduplicate_ops(ops: list[dict], unit: Unit) -> list[dict]:
     return result
 
 
+_ROF_FLOOR = 0.1
+
+
+def _apply_rof(
+    changes: dict,
+    unit: Unit,
+    base: Unit,
+    op: dict,
+    kind: str,
+    val: float,
+) -> None:
+    """Apply one rate-of-fire op onto the representative attack slot.
+
+    Assign overwrites the interval. Absolute adds seconds. BasePercent adds
+    ``base_interval * (amount - 1)`` onto the current interval, the same way
+    hit points treat BasePercent. The interval stays at least 0.1 seconds.
+    """
+    for slot in _slots_for_op(op, unit):
+        field = {"ranged": "rof_ranged", "melee": "rof_melee"}.get(slot)
+        if field is None:
+            continue
+        current = float(changes.get(field, getattr(unit, field)))
+        if kind == "set":
+            new = val
+        elif current <= 0:
+            continue
+        elif kind == "add":
+            new = current + val
+        elif kind == "mult":
+            new = current + float(getattr(base, field)) * (val - 1.0)
+        else:
+            continue
+        changes[field] = round(max(_ROF_FLOOR, new), 3)
+
+
 def _apply_one_tech(unit: Unit, tech: dict, base: Unit) -> Unit:
     """把一条已选科技叠到单位上，返回新副本（无效不动）。
 
@@ -159,12 +194,8 @@ def _apply_one_tech(unit: Unit, tech: dict, base: Unit) -> Unit:
                 elif s == "melee":
                     changes["aoe_radius_melee"] = round(
                         changes.get("aoe_radius_melee", unit.aoe_radius_melee) + val, 2)
-        elif stat == "rof" and kind == "set":
-            for s in _slots_for_op(op, unit):
-                if s == "ranged":
-                    changes["rof_ranged"] = round(val, 3)
-                elif s == "melee":
-                    changes["rof_melee"] = round(val, 3)
+        elif stat == "rof":
+            _apply_rof(changes, unit, base, op, kind, val)
         elif stat == "speed":
             cur = changes.get("speed", unit.speed)
             if kind == "mult":
@@ -285,7 +316,12 @@ def _brief_desc(tech: dict) -> str:
         elif stat == "aoe" and kind == "add":
             parts.append(f"AOE+{val}")
         elif stat == "rof" and kind == "set":
-            parts.append(f"攻速→{val}s")
+            parts.append(f"射击间隔改为{val:g}秒")
+        elif stat == "rof" and kind == "add":
+            parts.append(f"射击间隔{'+' if val > 0 else ''}{val:g}秒")
+        elif stat == "rof" and kind == "mult":
+            pct = round((val - 1) * 100)
+            parts.append(f"射击间隔{'+' if pct > 0 else ''}{pct}%")
         elif stat == "armor" and kind == "add":
             ak = op.get("armor_kind", "")
             parts.append(f"{'近' if ak == 'melee' else '远'}防+{val}")

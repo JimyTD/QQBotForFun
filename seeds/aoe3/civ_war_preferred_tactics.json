@@ -367,8 +367,7 @@
         ],
         "required_tech_ids": [
           "DEHCImprovedCrossbowsItalians",
-          "DEChurchCarabinieri",
-          "DEHCREVHonorGuard"
+          "DEChurchCarabinieri"
         ],
         "reason": "墙盾手作为国家特色远程核心，龙骑和鹰炮补足反骑与范围火力。"
       },
@@ -389,8 +388,7 @@
         },
         "basis": [],
         "required_tech_ids": [
-          "DEChurchCarabinieri",
-          "DEHCREVHonorGuard"
+          "DEChurchCarabinieri"
         ],
         "reason": "强力龙骑散"
       }
@@ -748,10 +746,7 @@
           "双皇家护卫",
           "经典散马"
         ],
-        "required_tech_ids": [
-          "DEHCREVTowarczys",
-          "DEHCREVFireDrills"
-        ],
+        "required_tech_ids": [],
         "reason": "德国散兵和德国骑兵均为皇家护卫。"
       },
       {
@@ -772,9 +767,7 @@
           "特色兵",
           "龙骑散"
         ],
-        "required_tech_ids": [
-          "DEHCREVFireDrills"
-        ],
+        "required_tech_ids": [],
         "reason": "马战车承担远程反骑，散兵处理重步。"
       },
       {

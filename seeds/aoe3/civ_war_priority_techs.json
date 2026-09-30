@@ -152,21 +152,6 @@
       "note": "卡宾枪骑兵替换并强化远程骑兵，提升远程攻击速度。"
     },
     {
-      "id": "DEHCREVHonorGuard",
-      "tier": "core",
-      "note": "枪骑兵升级为独立枪骑兵，获得近距离强力长矛攻击。"
-    },
-    {
-      "id": "DEHCREVTowarczys",
-      "tier": "core",
-      "note": "马刀骑兵改用长矛并强化对步兵伤害，改变战斗方式。"
-    },
-    {
-      "id": "DEHCREVFireDrills",
-      "tier": "core",
-      "note": "普鲁士单位同时获得移动速度与射速强化。"
-    },
-    {
       "id": "RGPrussianNeedleGun",
       "tier": "core",
       "note": "德国长枪兵获得攻击、生命与射速的大幅强化。"

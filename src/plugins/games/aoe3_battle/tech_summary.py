@@ -31,6 +31,26 @@ def _signed(value: float) -> str:
     return f"{value:+g}"
 
 
+def _velocity_text(value: float, relation: str) -> str:
+    if relation == "BasePercent":
+        return f"移速{_percent(value)}"
+    if relation == "Absolute":
+        return f"移速{_signed(value)}"
+    if relation == "Assign":
+        return f"移速改为 {value:g}"
+    return ""
+
+
+def _rof_text(value: float, relation: str) -> str:
+    if relation == "BasePercent":
+        return f"射击间隔{_percent(value)}"
+    if relation == "Absolute":
+        return f"射击间隔{_signed(value)}秒"
+    if relation == "Assign":
+        return f"射击间隔改为 {value:g} 秒"
+    return ""
+
+
 def _resource_name(resource: object) -> str:
     key = str(resource or "").lower()
     return _RESOURCE_NAMES.get(key, str(resource or "资源"))
@@ -80,9 +100,9 @@ def _describe_op(op: Mapping[str, Any]) -> str:
     if subtype == "MinimumRange":
         return f"最小射程{_signed(value)}"
     if subtype == "RateOfFire":
-        return f"攻速调整为 {value:g} 秒"
+        return _rof_text(value, str(op.get("relativity") or ""))
     if subtype == "MaximumVelocity":
-        return f"移速{_percent(value)}"
+        return _velocity_text(value, str(op.get("relativity") or ""))
     if subtype in {"Armor", "ArmorSpecific"}:
         armor = "近战" if str(op.get("newtype") or "") in {"Hand", "Melee"} else "远程"
         return f"{armor}护甲{_signed(value)}"

@@ -218,6 +218,64 @@ def test_tech_summary_describes_cost_and_counter():
     assert "食物造价+25%" in summary
 
 
+def test_apply_rof_percent_and_absolute(repo):
+    """BasePercent 按基础间隔加算，Absolute 加减秒，下限 0.1 秒。"""
+    falconet = repo.get_by_id("falconet")
+    assert falconet is not None and falconet.rof_ranged == 4.0
+    faster = {
+        "scope": ["falconet"],
+        "ops": [{
+            "stat": "rof",
+            "kind": "mult",
+            "value": 0.9,
+            "action": "CannonAttack",
+        }],
+    }
+    percent = _apply_one_tech(falconet, faster, base=falconet)
+    assert percent.rof_ranged == 3.6
+
+    quicker = {
+        "scope": ["falconet"],
+        "ops": [{
+            "stat": "rof",
+            "kind": "add",
+            "value": -0.5,
+            "action": "CannonAttack",
+        }],
+    }
+    absolute = _apply_one_tech(falconet, quicker, base=falconet)
+    assert absolute.rof_ranged == 3.5
+
+
+def test_tech_summary_keeps_velocity_and_rof_relativity():
+    summary = format_tech_summary(
+        "飞炮",
+        combat_ops=(
+            {
+                "subtype": "MaximumVelocity",
+                "amount": 1.1,
+                "relativity": "Absolute",
+            },
+            {
+                "subtype": "RateOfFire",
+                "amount": 0.9,
+                "relativity": "BasePercent",
+            },
+            {
+                "subtype": "RateOfFire",
+                "amount": -0.5,
+                "relativity": "Absolute",
+            },
+            {
+                "subtype": "RateOfFire",
+                "amount": 2.75,
+                "relativity": "Assign",
+            },
+        ),
+    )
+    assert summary == "飞炮：移速+1.1，射击间隔-10%，射击间隔-0.5秒，射击间隔改为 2.75 秒"
+
+
 def test_tech_summary_falls_back_to_name_for_unknown_ops():
     assert format_tech_summary(
         "未知科技",

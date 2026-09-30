@@ -43,6 +43,15 @@ def test_selectable_techs_follow_the_units_that_receive_them():
     assert "VeteranHussars" not in ids
 
 
+def test_lineup_selection_excludes_revolution_cards():
+    repo = UnitRepo.get()
+    units = {unit.id: unit for unit in draft_units(repo, "French", 3)}
+    techs = list_selectable_techs("French", (units["falconet"],), 3)
+    ids = {tech.id for tech in techs}
+    assert "DEHCREVFlyingBattery" not in ids
+    assert all(not tech_id.startswith(("DEHCREV", "DEREV")) for tech_id in ids)
+
+
 def test_age_upgrade_line_is_not_a_choice():
     repo = UnitRepo.get()
     dutch = {unit.id: unit for unit in draft_units(repo, "Dutch", 5)}

@@ -17,6 +17,7 @@ from plugins.games.aoe3_battle.civ_war_matchup import estimate_matchup
 from plugins.games.aoe3_battle.civ_war_roles import AllocationRule
 from plugins.games.aoe3_battle.civ_war_techs import (
     MatchedTech,
+    _runtime_op,
     match_candidate_techs,
     resolve_required_techs,
     select_candidate_techs,
@@ -296,3 +297,102 @@ def test_civ_war_banner_lists_tech_names() -> None:
     )
     banner = format_vs_banner(match)
     assert "国战科技" in banner
+
+
+def test_rof_relativity_maps_to_runtime_kind() -> None:
+    assert _runtime_op({
+        "subtype": "RateOfFire",
+        "amount": 0.9,
+        "relativity": "BasePercent",
+        "action": "CannonAttack",
+    })["kind"] == "mult"
+    assert _runtime_op({
+        "subtype": "RateOfFire",
+        "amount": -0.5,
+        "relativity": "Absolute",
+    })["kind"] == "add"
+    assert _runtime_op({
+        "subtype": "RateOfFire",
+        "amount": 2.75,
+        "relativity": "Assign",
+    })["kind"] == "set"
+
+
+def test_summary_drops_effects_that_miss_the_lineup() -> None:
+    tech = MatchedTech(
+        id="DEHCREVFlyingBattery",
+        name_zh="飞炮",
+        civ_ids=("French",),
+        min_age=3,
+        source_flags=("HomeCity",),
+        matched_unit_ids=("falconet",),
+        matched_unit_names=("鹰炮",),
+        combat_ops=(
+            {
+                "subtype": "MaximumVelocity",
+                "amount": 1.1,
+                "relativity": "Absolute",
+                "targets": [{"type": "ProtoUnit", "value": "AbstractArtillery"}],
+            },
+            {
+                "subtype": "RateOfFire",
+                "amount": 0.9,
+                "relativity": "BasePercent",
+                "targets": [{"type": "ProtoUnit", "value": "Falconet"}],
+            },
+            {
+                "subtype": "MaximumVelocity",
+                "amount": 0.0,
+                "relativity": "Assign",
+                "targets": [{"type": "ProtoUnit", "value": "deMalteseGun"}],
+            },
+        ),
+        cost_ops=(),
+        priority=(2, 0),
+        lineup_keys=("AbstractArtillery", "falconet"),
+    )
+    assert tech.summary == "【鹰炮】飞炮：移速+1.1，射击间隔-10%"
+
+
+def test_revolution_card_stays_out_even_if_generic_pool_lists_it() -> None:
+    repo = UnitRepo.get()
+    row = {
+        "id": "DEHCREVFlyingBattery",
+        "name_zh": "飞炮",
+        "civ_ids": ["French"],
+        "min_age": 3,
+        "source_flags": ["HomeCity"],
+        "combat_ops": [{
+            "subtype": "MaximumVelocity",
+            "amount": 1.1,
+            "relativity": "Absolute",
+            "targets": [{"type": "ProtoUnit", "value": "Falconet"}],
+        }],
+        "cost_ops": [],
+    }
+    matched = match_candidate_techs(
+        _Candidate(civ_id="French", units=(_unit(repo, "falconet"),)),
+        age=3,
+        pool=[row],
+        priority={"DEHCREVFlyingBattery": ("core", "")},
+        generic_pool={"French": {"DEHCREVFlyingBattery"}},
+    )
+    assert matched == []
+
+
+def test_shared_selection_files_exclude_revolution_cards() -> None:
+    root = Path(__file__).resolve().parents[3] / "seeds" / "aoe3"
+    generic = json.loads((root / "civ_war_generic_techs.json").read_text(encoding="utf-8"))
+    priority = json.loads((root / "civ_war_priority_techs.json").read_text(encoding="utf-8"))
+    tactics = json.loads((root / "civ_war_preferred_tactics.json").read_text(encoding="utf-8"))
+    pool = json.loads((root / "civ_war_tech_pool.json").read_text(encoding="utf-8"))
+    by_id = {row["id"]: row for row in pool["techs"]}
+    chosen = {tech_id for ids in generic["civs"].values() for tech_id in ids}
+    chosen.update(row["id"] for row in priority["techs"])
+    for entries in tactics["civs"].values():
+        for entry in entries:
+            chosen.update(entry.get("required_tech_ids") or ())
+    for tech_id in chosen:
+        assert not str(tech_id).startswith(("DEHCREV", "DEREV"))
+        flags = set((by_id.get(tech_id) or {}).get("source_flags") or ())
+        assert "RevoltTech" not in flags
