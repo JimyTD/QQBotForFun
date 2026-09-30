@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import math
 import random
+from itertools import pairwise
 
 import pytest
 
@@ -126,6 +127,88 @@ def test_initial_formation_has_no_overlap() -> None:
                 simulator.config.fallback_unit_radius
             )
             assert first.distance_to(second) >= minimum * 0.99
+
+
+@pytest.mark.parametrize("side", [Side.RED, Side.BLUE])
+@pytest.mark.parametrize("radii", [(0.49, 0.49), (1.49, 0.49), (0.49, 1.49)])
+@pytest.mark.parametrize("count", [7, 9])
+def test_default_formation_has_no_gaps_or_overlap(side, radii, count) -> None:
+    unit = _unit(
+        "formation",
+        obstruction_radius_x=radii[0],
+        obstruction_radius_z=radii[1],
+    )
+    config = Simulation2DConfig(max_columns=3)
+    army = [ArmySlot(unit, count)]
+    deployment = build_deployment(
+        army if side == Side.RED else [],
+        army if side == Side.BLUE else [],
+        config,
+    )
+    facing = 0.0 if side == Side.RED else math.pi
+    shapes = [
+        shape_for_unit(unit, pos.x, pos.y, facing, config.fallback_unit_radius)
+        for pos in deployment.positions
+    ]
+    assert config.formation_lateral_gap == 0.0
+    assert config.formation_row_gap == 0.0
+    assert config.formation_block_gap == 0.0
+    cursor = 0
+    row_centers = []
+    for row_size in deployment.row_sizes[side]:
+        row = shapes[cursor:cursor + row_size]
+        row_centers.append(row[0].x)
+        for first, second in pairwise(row):
+            assert second.y - first.y == pytest.approx(
+                first.extent(0.0, 1.0) + second.extent(0.0, 1.0)
+            )
+        cursor += row_size
+    for first, second in pairwise(row_centers):
+        assert abs(second - first) == pytest.approx(
+            2.0 * shapes[0].extent(1.0, 0.0)
+        )
+    for index, first in enumerate(shapes):
+        for second in shapes[index + 1:]:
+            assert shape_contact(first, second, tolerance=1e-8) is None
+
+
+@pytest.mark.parametrize("side", [Side.RED, Side.BLUE])
+@pytest.mark.parametrize("radii", [(0.79, 0.79), (1.49, 0.49), (0.49, 1.49)])
+def test_default_formation_blocks_touch_without_overlap(side, radii) -> None:
+    infantry = _unit(
+        "infantry",
+        obstruction_radius_x=0.49,
+        obstruction_radius_z=0.49,
+    )
+    rear_unit = _unit(
+        "rear",
+        range_=20.0,
+        obstruction_radius_x=radii[0],
+        obstruction_radius_z=radii[1],
+    )
+    config = Simulation2DConfig(max_columns=1)
+    army = [ArmySlot(infantry, 2), ArmySlot(rear_unit, 2)]
+    deployment = build_deployment(
+        army if side == Side.RED else [],
+        army if side == Side.BLUE else [],
+        config,
+    )
+    facing = 0.0 if side == Side.RED else math.pi
+    shapes = [
+        shape_for_unit(unit, pos.x, pos.y, facing, config.fallback_unit_radius)
+        for unit, pos in zip(
+            [infantry, infantry, rear_unit, rear_unit],
+            deployment.positions,
+            strict=True,
+        )
+    ]
+    for first, second in pairwise(shapes):
+        assert abs(second.x - first.x) == pytest.approx(
+            first.extent(1.0, 0.0) + second.extent(1.0, 0.0)
+        )
+    for index, first in enumerate(shapes):
+        for second in shapes[index + 1:]:
+            assert shape_contact(first, second, tolerance=1e-8) is None
 
 
 def test_initial_formation_stays_inside_dynamic_field() -> None:

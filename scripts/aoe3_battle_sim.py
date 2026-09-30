@@ -371,7 +371,7 @@ def show_unit_brief(unit: Unit, label: str) -> None:
     if unit.armor_melee:
         lines.append(f"    近战抗性={unit.armor_melee:.0%}")
     if unit.aoe_radius:
-        lines.append(f"    AOE半径={unit.aoe_radius}")
+        lines.append(f"    AOE半径={unit.aoe_radius:g}")
     if unit.multipliers_ranged:
         mults = ", ".join(str(m) for m in unit.multipliers_ranged)
         lines.append(f"    远程倍率: {mults}")

@@ -1,9 +1,10 @@
 """2D area-of-effect resolution for AoE3 combat.
 
 The resolver is intentionally independent from target acquisition and damage
-application.  It filters candidates in world space, applies the configured
-distance falloff, and spends the action damage cap from the impact point
-outward.  The caller is responsible for armour, multipliers, and HP mutation.
+application.  AOE distance is the clearance between the main and secondary
+unit footprints, so touching bodies are distance zero.  The resolver then
+applies falloff and spends the action damage cap from the impact point outward.
+The caller is responsible for armour, multipliers, and HP mutation.
 """
 
 from __future__ import annotations
@@ -11,6 +12,7 @@ from __future__ import annotations
 import math
 from dataclasses import dataclass
 
+from .geometry import shape_for_unit, unit_bounding_radius
 from .model import Soldier2D
 from .spatial import SpatialHash
 
@@ -23,6 +25,39 @@ class AoeHit:
     damage: float
     distance: float
     distance_factor: float
+
+
+def footprint_gap(
+    first: Soldier2D,
+    second: Soldier2D,
+    fallback_unit_radius: float,
+) -> float:
+    """Return the clearance between two unit footprints."""
+    dx = second.x - first.x
+    dy = second.y - first.y
+    center_distance = math.hypot(dx, dy)
+    if center_distance <= 1e-12:
+        return 0.0
+    first_shape = shape_for_unit(
+        first.unit,
+        first.x,
+        first.y,
+        first.facing,
+        fallback_unit_radius,
+    )
+    second_shape = shape_for_unit(
+        second.unit,
+        second.x,
+        second.y,
+        second.facing,
+        fallback_unit_radius,
+    )
+    return max(
+        0.0,
+        center_distance
+        - first_shape.extent(dx, dy)
+        - second_shape.extent(-dx, -dy),
+    )
 
 
 def distance_factor(
@@ -77,6 +112,8 @@ def resolve_aoe(
     outer_distance: float = 0.0,
     outer_factor: float = 0.0,
     spatial_hash: SpatialHash,
+    fallback_unit_radius: float = 0.45,
+    max_known_unit_radius: float = 0.0,
 ) -> list[AoeHit]:
     """Resolve secondary targets for one AOE attack.
 
@@ -87,9 +124,14 @@ def resolve_aoe(
     if radius <= 0 or damage_cap <= 0:
         return []
 
+    main_radius = unit_bounding_radius(main_target.unit, fallback_unit_radius)
+    search_radius = radius + main_radius + max(
+        max_known_unit_radius,
+        fallback_unit_radius,
+    )
     candidates = spatial_hash.query_circle(
         main_target.pos,
-        radius,
+        search_radius,
         predicate=lambda other: (
             other.alive
             and other.id != main_target.id
@@ -100,10 +142,7 @@ def resolve_aoe(
     directional = area_sort_mode.strip().lower() == "directional"
     ranked: list[tuple[float, Soldier2D]] = []
     for target in candidates:
-        distance = math.hypot(
-            target.x - main_target.x,
-            target.y - main_target.y,
-        )
+        distance = footprint_gap(main_target, target, fallback_unit_radius)
         if distance > radius:
             continue
         if directional and not _is_directional_hit(attacker, main_target, target):

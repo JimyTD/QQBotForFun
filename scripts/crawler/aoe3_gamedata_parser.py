@@ -765,7 +765,7 @@ def _parse_attacks(
         if minrange <= 0 and tact.get("minrange", 0) > 0:
             minrange = round(float(tact["minrange"]), 2)
         damagearea = round(float(action.findtext("damagearea", "0") or "0"), 2)
-        aoe_radius = round(damagearea) if damagearea > 0 else 0
+        aoe_radius = damagearea if damagearea > 0 else 0.0
         damagecap = round(float(action.findtext("damagecap", "0") or "0"), 2)
         basedamagecap_raw = (action.findtext("basedamagecap", "") or "").strip()
         try:

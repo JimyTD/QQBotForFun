@@ -45,9 +45,9 @@ class Simulation2DConfig:
     fallback_unit_radius: float = 0.45
     max_known_unit_radius: float = 0.0
     max_known_speed: float = 0.0
-    formation_lateral_gap: float = 0.25
-    formation_row_gap: float = 0.75
-    formation_block_gap: float = 0.75
+    formation_lateral_gap: float = 0.0
+    formation_row_gap: float = 0.0
+    formation_block_gap: float = 0.0
     max_columns: int = 40
     min_columns: int = 1
     formation_side_margin: float = 3.0

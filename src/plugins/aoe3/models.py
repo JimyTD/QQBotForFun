@@ -73,10 +73,10 @@ class Unit:
     multipliers_siege: list[Multiplier] = field(default_factory=list)
 
     # AOE / 伤害类型（从 aoe3explorer 补充）
-    aoe_radius: int = 0              # 兼容：所有攻击中最大的 AOE
-    aoe_radius_ranged: int = 0       # 远程攻击 AOE 半径
-    aoe_radius_melee: int = 0        # 近战攻击 AOE 半径
-    aoe_radius_siege: int = 0        # 攻城攻击 AOE 半径
+    aoe_radius: float = 0.0          # 兼容：所有攻击中最大的 AOE
+    aoe_radius_ranged: float = 0.0   # 远程攻击 AOE 半径
+    aoe_radius_melee: float = 0.0    # 近战攻击 AOE 半径
+    aoe_radius_siege: float = 0.0    # 攻城攻击 AOE 半径
     damage_cap_ranged: float = 0.0   # 远程溅射总伤害池（protoy damagecap）
     damage_cap_melee: float = 0.0    # 近战溅射总伤害池
     area_sort_mode_ranged: str = ""  # tactics areasortmode

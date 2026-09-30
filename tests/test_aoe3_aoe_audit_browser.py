@@ -21,13 +21,13 @@ def test_snapshot_separates_units_slots_and_cap_sources():
     snapshot = _load_module().build_snapshot()
     summary = snapshot["summary"]
 
-    assert summary["aoe_units"] == 162
-    assert summary["aoe_slots"] == 168
-    assert summary["explicit_aoe_slots"] == 158
+    assert summary["aoe_units"] == 166
+    assert summary["aoe_slots"] == 172
+    assert summary["explicit_aoe_slots"] == 162
     assert summary["fallback_aoe_slots"] == 10
-    assert summary["cap_units"] == 176
-    assert summary["cap_slots"] == 181
-    assert summary["cap_without_aoe_slots"] == 23
+    assert summary["cap_units"] == 178
+    assert summary["cap_slots"] == 183
+    assert summary["cap_without_aoe_slots"] == 21
 
     assert summary["explicit_aoe_slots"] + summary["fallback_aoe_slots"] == summary["aoe_slots"]
     assert len(snapshot["fallback_aoe_slots"]) == summary["fallback_aoe_slots"]
@@ -58,10 +58,10 @@ def test_non_two_x_slots_only_include_explicit_aoe_caps():
     summary = snapshot["summary"]
     rows = snapshot["non_two_x_slots"]
 
-    assert len(rows) == 59
-    assert summary["explicit_two_x_aoe_slots"] == 99
-    assert summary["non_two_x_aoe_slots"] == 59
-    assert summary["non_two_x_below"] + summary["non_two_x_above"] == 59
+    assert len(rows) == 60
+    assert summary["explicit_two_x_aoe_slots"] == 102
+    assert summary["non_two_x_aoe_slots"] == 60
+    assert summary["non_two_x_below"] + summary["non_two_x_above"] == 60
 
     for slot in rows:
         assert slot["aoe_radius"] > 0
@@ -75,10 +75,10 @@ def test_geometry_and_outer_falloff_metadata_are_exposed():
     snapshot = _load_module().build_snapshot()
     summary = snapshot["summary"]
 
-    assert summary["geometric_aoe_slots"] == 83
-    assert summary["directional_aoe_slots"] == 52
-    assert summary["radial_aoe_slots"] == 31
-    assert summary["outer_falloff_aoe_slots"] == 31
+    assert summary["geometric_aoe_slots"] == 86
+    assert summary["directional_aoe_slots"] == 54
+    assert summary["radial_aoe_slots"] == 32
+    assert summary["outer_falloff_aoe_slots"] == 32
     assert len(snapshot["geometric_aoe_slots"]) == summary["geometric_aoe_slots"]
 
     falconet = next(

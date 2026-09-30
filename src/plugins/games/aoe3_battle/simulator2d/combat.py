@@ -21,7 +21,7 @@ class SlotStats:
     num_projectiles: int
     multipliers: list
     damage_type: str
-    aoe_radius: int
+    aoe_radius: float
     damage_cap_proto: float
     area_sort_mode: str
     outer_damage_area_distance: float
@@ -401,6 +401,8 @@ class CombatSystem:
             outer_distance=stats.outer_damage_area_distance,
             outer_factor=stats.outer_damage_area_factor,
             spatial_hash=self.spatial_hash,
+            fallback_unit_radius=self.config.fallback_unit_radius,
+            max_known_unit_radius=self.config.max_known_unit_radius,
         )
 
         for hit in hits:

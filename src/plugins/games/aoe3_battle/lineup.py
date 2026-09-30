@@ -1217,15 +1217,15 @@ def _append_extras(lines: list[str], u: Unit, indent: str = "") -> None:
         extras.append(f"🛡️{armor}")
     aoe_parts = []
     if u.aoe_radius_ranged:
-        aoe_parts.append(f"远程AOE{u.aoe_radius_ranged}")
+        aoe_parts.append(f"远程AOE{u.aoe_radius_ranged:g}")
     if u.aoe_radius_melee:
-        aoe_parts.append(f"近战AOE{u.aoe_radius_melee}")
+        aoe_parts.append(f"近战AOE{u.aoe_radius_melee:g}")
     if u.aoe_radius_siege:
-        aoe_parts.append(f"攻城AOE{u.aoe_radius_siege}")
+        aoe_parts.append(f"攻城AOE{u.aoe_radius_siege:g}")
     if aoe_parts:
         extras.append("💥" + " ".join(aoe_parts))
     elif u.aoe_radius:
-        extras.append(f"💥AOE{u.aoe_radius}")
+        extras.append(f"💥AOE{u.aoe_radius:g}")
     if extras:
         lines.append(f"{indent}{' '.join(extras)}")
     append_unit_tooltip(lines, u, indent=indent)

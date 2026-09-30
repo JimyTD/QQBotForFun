@@ -8,16 +8,24 @@ import pytest
 
 from plugins.aoe3.models import Unit
 from plugins.games.aoe3_battle.battle_contract import EventType, Side
-from plugins.games.aoe3_battle.simulator2d.aoe import distance_factor, resolve_aoe
+from plugins.games.aoe3_battle.simulator2d import BattleSimulator2D
+from plugins.games.aoe3_battle.simulator2d.aoe import (
+    distance_factor,
+    footprint_gap,
+    resolve_aoe,
+)
 from plugins.games.aoe3_battle.simulator2d.combat import CombatSystem, SlotStats
 from plugins.games.aoe3_battle.simulator2d.config import Simulation2DConfig
-from plugins.games.aoe3_battle.simulator2d.model import Soldier2D
+from plugins.games.aoe3_battle.simulator2d.model import AttackMode, Soldier2D
 from plugins.games.aoe3_battle.simulator2d.spatial import SpatialHash
-from plugins.games.aoe3_battle.simulator2d import BattleSimulator2D
-from plugins.games.aoe3_battle.simulator2d.model import AttackMode
 
 
-def _unit(unit_id: str) -> Unit:
+def _unit(
+    unit_id: str,
+    *,
+    radius_x: float = 0.0,
+    radius_z: float = 0.0,
+) -> Unit:
     return Unit(
         id=unit_id,
         name=unit_id,
@@ -26,6 +34,8 @@ def _unit(unit_id: str) -> Unit:
         attack_ranged=100.0,
         range=20.0,
         rof_ranged=1.0,
+        obstruction_radius_x=radius_x,
+        obstruction_radius_z=radius_z,
     )
 
 
@@ -34,11 +44,13 @@ def _soldier(
     side: Side,
     x: float,
     y: float,
+    *,
+    radius: float = 0.0,
 ) -> Soldier2D:
     return Soldier2D(
         id=soldier_id,
         side=side,
-        unit=_unit(f"unit-{soldier_id}"),
+        unit=_unit(f"unit-{soldier_id}", radius_x=radius, radius_z=radius),
         hp=1000.0,
         max_hp=1000.0,
         x=x,
@@ -51,6 +63,101 @@ def test_distance_factor_has_inner_and_outer_regions() -> None:
     assert distance_factor(0.25, 3.0, 0.5, 0.2) == pytest.approx(0.6)
     assert distance_factor(0.5, 3.0, 0.5, 0.2) == pytest.approx(0.2)
     assert distance_factor(2.5, 3.0, 0.5, 0.2) == pytest.approx(0.2)
+
+
+def test_aoe_distance_is_footprint_gap() -> None:
+    main = _soldier(1, Side.BLUE, 0.0, 0.0, radius=0.49)
+    touching = _soldier(2, Side.BLUE, 0.98, 0.0, radius=0.49)
+    spaced = _soldier(3, Side.BLUE, 1.23, 0.0, radius=0.49)
+
+    assert footprint_gap(main, touching, 0.45) == pytest.approx(0.0)
+    assert footprint_gap(main, spaced, 0.45) == pytest.approx(0.25)
+
+
+def test_aoe_one_hits_spaced_neighbor_by_footprint_gap() -> None:
+    attacker = _soldier(1, Side.RED, 0.0, 0.0, radius=0.49)
+    main = _soldier(2, Side.BLUE, 10.0, 0.0, radius=0.49)
+    neighbor = _soldier(3, Side.BLUE, 11.23, 0.0, radius=0.49)
+    spatial = SpatialHash(cell_size=2.0)
+    spatial.rebuild([attacker, main, neighbor])
+
+    hits = resolve_aoe(
+        attacker=attacker,
+        main_target=main,
+        radius=1.0,
+        base_damage=20.0,
+        damage_cap=40.0,
+        spatial_hash=spatial,
+        max_known_unit_radius=0.49,
+    )
+
+    assert [hit.target.id for hit in hits] == [3]
+    assert hits[0].distance == pytest.approx(0.25)
+
+
+def test_small_decimal_radius_hits_touching_neighbor() -> None:
+    attacker = _soldier(1, Side.RED, 0.0, 0.0, radius=0.49)
+    main = _soldier(2, Side.BLUE, 10.0, 0.0, radius=0.49)
+    touching = _soldier(3, Side.BLUE, 10.98, 0.0, radius=0.49)
+    outside = _soldier(4, Side.BLUE, 11.3, 1.0, radius=0.49)
+    spatial = SpatialHash(cell_size=2.0)
+    spatial.rebuild([attacker, main, touching, outside])
+
+    hits = resolve_aoe(
+        attacker=attacker,
+        main_target=main,
+        radius=0.25,
+        base_damage=20.0,
+        damage_cap=60.0,
+        outer_distance=0.25,
+        outer_factor=0.2,
+        spatial_hash=spatial,
+        max_known_unit_radius=0.49,
+    )
+
+    assert [hit.target.id for hit in hits] == [3]
+    assert hits[0].damage == pytest.approx(20.0)
+
+
+def test_rocket_touching_neighbors_match_full_damage_observation() -> None:
+    attacker = _soldier(1, Side.RED, 0.0, 0.0, radius=0.99)
+    main = _soldier(2, Side.BLUE, 10.0, 0.0, radius=0.49)
+    left = _soldier(3, Side.BLUE, 10.0, -0.98, radius=0.49)
+    right = _soldier(4, Side.BLUE, 10.0, 0.98, radius=0.49)
+    rear = _soldier(5, Side.BLUE, 10.98, 0.0, radius=0.49)
+    spatial = SpatialHash(cell_size=2.0)
+    spatial.rebuild([attacker, main, left, right, rear])
+
+    hits = resolve_aoe(
+        attacker=attacker,
+        main_target=main,
+        radius=4.0,
+        base_damage=300.0,
+        damage_cap=600.0,
+        area_sort_mode="Radial",
+        outer_distance=0.25,
+        outer_factor=0.2,
+        spatial_hash=spatial,
+        max_known_unit_radius=0.99,
+    )
+
+    assert [hit.damage for hit in hits] == pytest.approx([300.0, 300.0])
+
+
+def test_footprint_gap_uses_ellipse_orientation() -> None:
+    main = _soldier(1, Side.BLUE, 0.0, 0.0, radius=0.49)
+    long_unit = Unit(
+        id="long",
+        name="long",
+        name_en="long",
+        obstruction_radius_x=1.49,
+        obstruction_radius_z=0.49,
+    )
+    target = Soldier2D(2, Side.BLUE, long_unit, 100.0, 100.0, 3.0, 0.0)
+
+    assert footprint_gap(main, target, 0.45) == pytest.approx(1.02)
+    target.facing = 1.5707963267948966
+    assert footprint_gap(main, target, 0.45) == pytest.approx(2.02)
 
 
 def test_cap_is_spent_nearest_first() -> None:

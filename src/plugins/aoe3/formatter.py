@@ -108,7 +108,7 @@ def render_unit_card(unit: Unit) -> str:
         if unit.windup_ranged:
             atk_parts.append(f"前摇{unit.windup_ranged:g}s")
         if unit.aoe_radius_ranged:
-            atk_parts.append(f"AOE{unit.aoe_radius_ranged}")
+            atk_parts.append(f"AOE{unit.aoe_radius_ranged:g}")
         lines.append(" | ".join(atk_parts))
         mult_str = _fmt_mult(unit.multipliers_ranged)
         if mult_str:
@@ -124,7 +124,7 @@ def render_unit_card(unit: Unit) -> str:
         if unit.windup_melee:
             atk_parts.append(f"前摇{unit.windup_melee:g}s")
         if unit.aoe_radius_melee:
-            atk_parts.append(f"AOE{unit.aoe_radius_melee}")
+            atk_parts.append(f"AOE{unit.aoe_radius_melee:g}")
         lines.append(" | ".join(atk_parts))
         mult_str = _fmt_mult(unit.multipliers_melee)
         if mult_str:
@@ -140,7 +140,7 @@ def render_unit_card(unit: Unit) -> str:
         if unit.rof_siege:
             atk_parts.append(f"射速{unit.rof_siege:g}s")
         if unit.aoe_radius_siege:
-            atk_parts.append(f"AOE{unit.aoe_radius_siege}")
+            atk_parts.append(f"AOE{unit.aoe_radius_siege:g}")
         lines.append(" | ".join(atk_parts))
         mult_str = _fmt_mult(unit.multipliers_siege)
         if mult_str:
@@ -239,7 +239,7 @@ def render_compare(a: Unit, b: Unit) -> str:
         if a.windup_ranged or b.windup_ranged:
             lines.append(_row("  前摇", f"{a.windup_ranged:g}s", f"{b.windup_ranged:g}s"))
         if a.aoe_radius_ranged or b.aoe_radius_ranged:
-            lines.append(_row("  AOE", str(a.aoe_radius_ranged or "-"), str(b.aoe_radius_ranged or "-")))
+            lines.append(_row("  AOE", f"{a.aoe_radius_ranged:g}" if a.aoe_radius_ranged else "-", f"{b.aoe_radius_ranged:g}" if b.aoe_radius_ranged else "-"))
         mult_lines = _fmt_compare_mults(a.multipliers_ranged, b.multipliers_ranged)
         if mult_lines:
             lines.append("  克制倍率:")
@@ -255,7 +255,7 @@ def render_compare(a: Unit, b: Unit) -> str:
         if a.windup_melee or b.windup_melee:
             lines.append(_row("  前摇", f"{a.windup_melee:g}s", f"{b.windup_melee:g}s"))
         if a.aoe_radius_melee or b.aoe_radius_melee:
-            lines.append(_row("  AOE", str(a.aoe_radius_melee or "-"), str(b.aoe_radius_melee or "-")))
+            lines.append(_row("  AOE", f"{a.aoe_radius_melee:g}" if a.aoe_radius_melee else "-", f"{b.aoe_radius_melee:g}" if b.aoe_radius_melee else "-"))
         mult_lines = _fmt_compare_mults(a.multipliers_melee, b.multipliers_melee)
         if mult_lines:
             lines.append("  克制倍率:")
@@ -269,7 +269,7 @@ def render_compare(a: Unit, b: Unit) -> str:
         if a.range_siege or b.range_siege:
             lines.append(_row("  射程", f"{a.range_siege:g}", f"{b.range_siege:g}"))
         if a.aoe_radius_siege or b.aoe_radius_siege:
-            lines.append(_row("  AOE", str(a.aoe_radius_siege or "-"), str(b.aoe_radius_siege or "-")))
+            lines.append(_row("  AOE", f"{a.aoe_radius_siege:g}" if a.aoe_radius_siege else "-", f"{b.aoe_radius_siege:g}" if b.aoe_radius_siege else "-"))
         mult_lines = _fmt_compare_mults(a.multipliers_siege, b.multipliers_siege)
         if mult_lines:
             lines.append("  克制倍率:")
