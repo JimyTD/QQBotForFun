@@ -106,11 +106,16 @@ def format_tech_summary(
     *,
     combat_ops: Iterable[Mapping[str, Any]] = (),
     cost_ops: Iterable[Mapping[str, Any]] = (),
+    recipients: Iterable[str] = (),
 ) -> str:
-    """Return ``name: effects``, or only ``name`` when no safe wording exists."""
+    """Return ``【units】name: effects``, or only the name when no wording exists."""
     effects = _unique(
         part
         for op in (*tuple(combat_ops), *tuple(cost_ops))
         for part in (_describe_op(op),)
     )
-    return f"{name}：{'，'.join(effects)}" if effects else name
+    body = f"{name}：{'，'.join(effects)}" if effects else name
+    names = _unique(str(unit) for unit in recipients)
+    if not names:
+        return body
+    return f"【{'、'.join(names)}】{body}"

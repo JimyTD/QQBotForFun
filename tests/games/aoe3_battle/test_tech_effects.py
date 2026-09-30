@@ -176,6 +176,23 @@ def test_tech_summary_uses_player_facing_effect_names():
         ),
     )
     assert summary == "细细的红线：生命+20%，移速-10%"
+    labeled = format_tech_summary(
+        "细细的红线",
+        combat_ops=(
+            {"subtype": "Hitpoints", "amount": 1.2, "relativity": "BasePercent"},
+        ),
+        recipients=("火枪兵", "火枪兵"),
+    )
+    assert labeled == "【火枪兵】细细的红线：生命+20%"
+    pair = format_tech_summary(
+        "骑兵战斗力",
+        combat_ops=(
+            {"subtype": "Hitpoints", "amount": 1.15, "relativity": "BasePercent"},
+            {"subtype": "Damage", "amount": 1.15, "relativity": "BasePercent"},
+        ),
+        recipients=("诸葛弩", "轻骑兵"),
+    )
+    assert pair == "【诸葛弩、轻骑兵】骑兵战斗力：生命+15%，攻击+15%"
 
 
 def test_tech_summary_describes_cost_and_counter():

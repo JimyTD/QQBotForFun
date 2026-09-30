@@ -47,6 +47,7 @@ class MatchedTech:
     min_age: int | None
     source_flags: tuple[str, ...]
     matched_unit_ids: tuple[str, ...]
+    matched_unit_names: tuple[str, ...]
     combat_ops: tuple[dict[str, Any], ...]
     cost_ops: tuple[dict[str, Any], ...]
     priority: tuple[int, ...]
@@ -62,6 +63,7 @@ class MatchedTech:
             self.name_zh or self.id,
             combat_ops=self.combat_ops,
             cost_ops=self.cost_ops,
+            recipients=self.matched_unit_names,
         )
 
     def runtime_tech(self) -> dict[str, Any]:
@@ -154,18 +156,25 @@ def _row_targets(row: dict[str, Any]) -> list[str]:
     return sorted(values)
 
 
-def _matched_unit_ids(
+def _matched_units(
     row: dict[str, Any],
     units: list[Unit],
-) -> tuple[str, ...]:
+) -> tuple[Unit, ...]:
     targets = _row_targets(row)
     if not targets:
         return ()
     return tuple(
-        unit.id
+        unit
         for unit in units
         if any(_target_matches(target, unit) for target in targets)
     )
+
+
+def _matched_unit_ids(
+    row: dict[str, Any],
+    units: list[Unit],
+) -> tuple[str, ...]:
+    return tuple(unit.id for unit in _matched_units(row, units))
 
 
 def _is_civ_allowed(row: dict[str, Any], civ_id: str) -> bool:
@@ -257,8 +266,8 @@ def match_candidate_techs(
             continue
         if row["id"] not in priority and row["id"] not in allowed_generic:
             continue
-        unit_ids = _matched_unit_ids(row, list(candidate.units))
-        if not unit_ids:
+        matched_units = _matched_units(row, list(candidate.units))
+        if not matched_units:
             continue
         if not row.get("combat_ops") and not row.get("cost_ops"):
             continue
@@ -269,13 +278,14 @@ def match_candidate_techs(
                 civ_ids=tuple(row.get("civ_ids", ())),
                 min_age=row.get("min_age"),
                 source_flags=tuple(row.get("source_flags", ())),
-                matched_unit_ids=unit_ids,
+                matched_unit_ids=tuple(unit.id for unit in matched_units),
+                matched_unit_names=tuple(unit.name for unit in matched_units),
                 combat_ops=tuple(row.get("combat_ops", ())),
                 cost_ops=tuple(row.get("cost_ops", ())),
                 priority=(
                     _priority_rank(row["id"], priority),
-                    -len(unit_ids),
-                    *_priority(row, len(unit_ids))[1:],
+                    -len(matched_units),
+                    *_priority(row, len(matched_units))[1:],
                 ),
             )
         )
@@ -307,8 +317,8 @@ def resolve_required_techs(
             )
         if not _within_age(row, age):
             raise ValueError(f"required tech {tech_id} is not available at age {age}")
-        unit_ids = _matched_unit_ids(row, units)
-        if not unit_ids:
+        matched_units = _matched_units(row, units)
+        if not matched_units:
             raise ValueError(
                 f"required tech {tech_id} does not hit any unit in "
                 f"{candidate.id if hasattr(candidate, 'id') else candidate}"
@@ -320,10 +330,11 @@ def resolve_required_techs(
                 civ_ids=tuple(row.get("civ_ids", ())),
                 min_age=row.get("min_age"),
                 source_flags=tuple(row.get("source_flags", ())),
-                matched_unit_ids=unit_ids,
+                matched_unit_ids=tuple(unit.id for unit in matched_units),
+                matched_unit_names=tuple(unit.name for unit in matched_units),
                 combat_ops=tuple(row.get("combat_ops", ())),
                 cost_ops=tuple(row.get("cost_ops", ())),
-                priority=(0, -len(unit_ids), row["id"]),
+                priority=(0, -len(matched_units), row["id"]),
             )
         )
     return resolved
