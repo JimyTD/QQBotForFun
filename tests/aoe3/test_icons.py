@@ -6,6 +6,7 @@ import base64
 from datetime import UTC, datetime
 from io import BytesIO
 from pathlib import Path
+from types import SimpleNamespace
 from unittest.mock import AsyncMock
 
 import nonebot
@@ -116,6 +117,11 @@ async def test_battle_sends_single_opening_card(icon_path, monkeypatch, count):
     match = MatchLineup(red=lineup, blue=lineup, mode="bet", age=3)
     game = game_module.AoE3BattleGame()
     game._match = match
+    game._perf_timer = SimpleNamespace(
+        start=lambda _stage: None,
+        stop=lambda _stage: None,
+    )
+    game._perf_metrics = {}
     monkeypatch.setattr(game_module.UnitRepo, "get_icon_path", lambda self, unit: icon_path)
     rendered = Image.new("RGB", (4, 4), RED_ICON_BACKGROUND)
     output = BytesIO()

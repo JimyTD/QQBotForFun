@@ -534,6 +534,7 @@ async def test_tournament_only_records_final(monkeypatch) -> None:
             unit = SimpleNamespace(name="火枪手" if idx == 0 else "长枪兵")
             return SimpleNamespace(
                 unit=unit,
+                unit_id=unit.name,
                 display_name=unit.name,
             )
 
