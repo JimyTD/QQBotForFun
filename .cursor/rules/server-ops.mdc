@@ -1,0 +1,277 @@
+---
+description: QQBotForFun 服务器运维。部署、查状态、排障时必须遵守 docs/ops-guide.md。
+alwaysApply: true
+---
+
+# QQBotForFun 服务器运维指令
+
+> **同步方式：Git**（自 2026-08-28 起）。已废弃 `deploy_project_preparation` 上传 + `cp` 清单 + `.deploy_staging` 中转目录的旧流程。
+> 详见 `docs/ops-guide.md`。
+
+## ⚠️ 铁律：不要触发重新扫码
+
+- ❌ 禁止 `docker compose down`（会杀 NapCat，用户要扫码）
+- ❌ 禁止 `docker compose stop/rm napcat`（同上）
+- ✅ 日常部署只动 bot：`stop bot → rm bot → git reset --hard → up --build bot`
+- ✅ NapCat 只用 `restart`（不删容器）
+- ✅ **所有 git 操作都安全**——git 只改目录里的文件，碰不到 NapCat 容器和它的 volume
+
+## ⚠️ 铁律：Git 操作红线
+
+`/root/qqbot` 是 git 工作区，以下命令**绝对禁止**：
+
+| 禁令 | 原因 |
+|---|---|
+| ❌ `git clean -fdx` / `-fx` | `-x` 删 ignored 文件 → **会删掉 `.env`（本地无副本）和 `logs/`** |
+| ❌ `git pull` | 可能触发 merge/交互。统一用 `git fetch` + `git reset --hard` |
+| ❌ 在服务器编辑任何 tracked 文件 | 含 `config/llm.yaml`、`docker-compose.yml`、`Dockerfile`。会被下次 reset 覆盖并造成静默漂移。要改就改本地 + push |
+| ❌ 把 `.env` 提交进 git | 历史已发生过事故（commit `66e2df6`，密钥在 public 仓库泄露），不得重演 |
+| ❌ 仓库转 private 后继续用镜像 + PAT | 凭证会明文经过第三方镜像站。转 private 必须改用 SSH deploy key 或自建代理 |
+
+**安全的 git 操作**（只动 tracked 文件）：`git fetch` / `git reset --hard` / `git status` / `git log` / `git rev-parse` / `git checkout -- <file>`
+
+## ⚠️ 铁律：目录与删除
+
+- `/root/qqbot` 是**真实目录 + git 工作区**，生产唯一真身，**永久存在，永不删除、永不重命名、永不做 `ln -sfn`**。
+- 部署**不再需要任何中转目录**。git 直接在真身目录 fetch/reset。
+- 如果在 `/root/` 发现 `QQBotForFun_*` 或 `.deploy_staging` → 旧流程遗留或异常，**先报告用户询问，禁止直接删除**。
+- **本机是共用服务器**：`docker compose ls` 显示两个项目并存 —— `qqbot`（bot :8080 / napcat :6099 / postgres / redis）与 `silentwerewolf`（nginx :8081 / app）。**任何全局性 docker 操作都会波及另一个项目**（`docker system prune`、`docker compose down`、重启 docker daemon），只操作 `qqbot` 自己的容器。
+- **任何 `rm -rf` 目标位于 `/root/` 下、看起来像项目目录 → 先 `ls -la` 确认、向用户报告，禁止自行删除**。SilentWereWolf 的目录名形如 `/root/SilentWereWolf_<hash|时间戳>`（2026-09-20 实测 8 个，旧上传流程遗留），`silentwerewolf-secrets` 是其密钥目录 —— **全部不可动**。
+- ⚠️ **哪个 SilentWereWolf 目录"正在运行"一律以实测为准，禁止按目录名/时间戳猜**：`docker compose ls` 会直接给出 CONFIG FILES 路径（2026-09-20 实测 `/root/SilentWereWolf_0e801fa/docker-compose.yml`）。本条规则曾误记为 `SilentWereWolf_20260827145231` —— 该目录**仍然存在但不在运行**，"名字对不上就以为不是生产目录"是危险推理。
+
+## 固定参数（直接使用，不需要查询）
+
+- Region: `ap-guangzhou`
+- InstanceId: `lhins-hwnz7rcz`
+- IP: `106.55.228.236`
+- 项目路径: `/root/qqbot`（真实目录 + git 工作区）
+- Bot QQ: `3959381140`
+- NapCat WebUI: `http://106.55.228.236:6099`
+- GitHub: `https://github.com/JimyTD/QQBotForFun`
+
+## 执行通道（自 2026-09-20 起）
+
+## ⛔ 已禁用：CodeBuddy 内置的 Lighthouse 集成
+
+**永久不使用它的任何工具** —— `execute_command`、`deploy_project_preparation`、`describe_*_firewall_rules`、`analyze_lighthouse_instances` 等，一个都不用。两个**互相独立**的原因，任一都足以判死：
+
+1. **OAuth 授权会失效** —— 失效后所有调用返回 `Token verification failed. Please check your Token is correct.`，必须人工重新登录授权（2026-09-20 实测连续 3 次调用 3 次失败）。
+2. **锚点跨工作区共享** —— 它的绑定是**云端账号级单锚点**，工作区里的 `.codebuddy/integration/lighthouse.json` 只是"当时锚在哪"的镜像，不是 per-workspace 绑定。在 QQBot 工作区操作会把 SilentWereWolf 工作区的绑定一起改掉（历史上确实发生过）。
+
+替代品齐全，**没有任何场景需要它**：命令执行 → `qqbot-ssh`；新机器引导 → 腾讯云控制台 OrcaTerm；腾讯云 API → `tencent-lighthouse`。
+
+> 唯一已知能力缺口：**Lighthouse 防火墙规则的读写**没有对应 MCP 工具。走腾讯云控制台，或用 `d:/Fun/tencent-lighthouse-mcp/src/tencent-api.js` 的 `tcRequest` 直接调 `lighthouse:DescribeFirewallRules` / `ModifyFirewallRules`。
+
+以下是替代它的两个 MCP 通道：
+
+| 通道 | 定位 | 调用方式 |
+|---|---|---|
+| `qqbot-ssh` | **主力**：日常运维与部署 | 工具 `execute-command`：`connectionName="qqbot"`、`directory="/root/qqbot"`、`timeout`（毫秒，缺省走配置 600000） |
+| `tencent-lighthouse` | 后备：TAT agent 诊断、腾讯云 API 层操作（实例/监控）；OrcaTerm 不可用时的备用引导通道 | 工具 `run_command`：`region="ap-guangzhou"`、`instanceIds=["lhins-hwnz7rcz"]` |
+
+- `directory` 参数即工作目录，不必用 `cd X && ...` 拼接（拼了也能跑）。
+- `qqbot-ssh` 启用命令黑名单，命中**直接拒绝**：`git clean -f*`、`git pull`、`docker compose down`、`docker compose (rm|stop|kill) … napcat`、`docker volume rm`、`docker system prune -a`、`rm -rf /…`、`mkfs`、`dd of=/dev/*`、`reboot` 等。**`git reset --hard` 刻意未列入**——部署流程需要它。
+- 产物位置（**全部在仓库外且 agent 中立，永不入 git**）：连接配置 `~/.ssh-mcp/config.json`；MCP server `~/.ssh-mcp/server/`；私钥 `~/.ssh/qqbot_deploy`；MCP 注册在 `~/.codebuddy/mcp.json`。
+- ⚠️ **CodeBuddy 的 MCP 注册只认 `~/.codebuddy/mcp.json`** —— **不是** `%APPDATA%\CodeBuddy CN\...\globalStorage\tencent.planning-genie\settings\codebuddy_mcp_settings.json`。后者本版本不读，写进去**静默无效**（2026-09-20 实测踩过：注册后工具依然 `not found or not connected`）。
+- **引导通道**：安装/修复 SSH 公钥必须走非 SSH 通道（不能靠 SSH 装 SSH）。**首选腾讯云控制台的 OrcaTerm 网页终端** —— 它完全绕开 sshd（实测：`last` 里有 orcaterm 会话但同期 auth.log 里 0 条 sshd `Accepted`），不需要 22 端口、不需要 IP 白名单、不需要 AK/SK。需要脚本化时才用 `tencent-lighthouse` 的 `run_command`。
+- exec 模式下每次调用是**独立会话**，不要依赖 `cd` 跨调用保持；用 `directory` 参数或绝对路径。
+- **新开发机接入** → 见 `docs/dev-machine-setup.md`。一键脚本 `scripts/setup_dev_machine.ps1 -Target <agent>`（幂等，含命令黑名单的仓库内单一来源）。`-ListTargets` 列出支持的 agent（codebuddy / cursor / windsurf / claudecode / vscode / zed / opencode / codex），`-Target all` 全量注册。
+- **通道是 agent 中立的**：MCP server 是标准 stdio server，私钥是普通 OpenSSH key —— 任何 MCP 客户端都能接，任何能跑 shell 的 agent 也能直接 `ssh -i` 用。换 agent 只需把它自己的配置文件加一条，**不需要重建这套东西**。
+- ⚠️ 当前会话看不到刚注册的 MCP 是**正常现象**（工具清单是会话启动快照），开新会话即可；应急可用仓库里的 CLI 桥 `node scripts/mcp_call.mjs <server> <tool> <argsJson>`（`--list-servers` 可列出已注册的 server）。
+
+## 服务器安全基线（2026-09-20 起）
+
+**SSH 仅允许密钥登录。** 配置在 `/etc/ssh/sshd_config.d/10-hardening.conf`：
+
+```
+PasswordAuthentication no
+PermitRootLogin prohibit-password
+PubkeyAuthentication yes
+```
+
+- `10-` 前缀不是随便起的：`Include /etc/ssh/sshd_config.d/*.conf` 位于主文件**第 12 行**（早于主文件自己的指令），而 OpenSSH 对同一关键字取**首个**值 —— 所以 drop-in 先于主文件生效，`10-` 又先于 `50-cloud-init.conf`。这样命名**同时扛住 cloud-init 重写**。
+- **改 sshd 的通则**：先 `sshd -t` 校验，再 `systemctl reload ssh`（**不要用 restart** —— reload 失败时旧配置继续生效，restart 会把你锁在门外）。
+- **回滚**（自己进不去时）：`rm /etc/ssh/sshd_config.d/10-hardening.conf && systemctl reload ssh`。
+- **OrcaTerm 是最终兜底通道**：它**完全绕开 sshd**（实测：`last` 里有 orcaterm 会话，但同期 auth.log 里 0 条 sshd `Accepted`），因此不受任何 sshd 配置、端口、防火墙影响。**SSH 配坏了也能靠它进去救**。这也是新开发机装公钥的首选通道。
+- 2026-09-20 实测：`PasswordAuthentication no` 后强制密码登录返回 `Permission denied (publickey)`（报错里已不再列出 `password`）。
+
+**按约定（防君子与外行，非高密级）刻意未做的事**，后来者不必再提：
+
+- CAM 策略资源级收窄（该子账号的 TAT 权限覆盖账号下所有 Lighthouse 实例，可接受）
+- AK/SK 不常驻（`BioTrace/.cursor/mcp.json` + CodeBuddy 全局设置各一份副本，可接受）
+- NapCat WebUI（6099）收窄到固定 IP（用户 IP 不固定，代价大于收益）
+
+**Git remote：**
+
+| remote | URL | 用途 |
+|---|---|---|
+| `origin` | `https://github.com/JimyTD/QQBotForFun.git` | 记录真实地址。**直连不通**，不能 fetch |
+| `mirror` | `https://ghfast.top/https://github.com/JimyTD/QQBotForFun.git` | **实际拉取用这个** |
+
+⚠️ 服务器直连 GitHub 完全不通（TCP 443 被拒 + timeout），必须走镜像。
+备用镜像：`https://gh-proxy.com/https://github.com/JimyTD/QQBotForFun.git`
+
+## 权威副本规定（哪份是"真的"）
+
+| 文件/目录 | 唯一权威来源 | 说明 |
+|---|---|---|
+| 所有 tracked 文件（`src/` `seeds/` `scripts/` `docs/` `resources/` `data/` `config/llm.yaml` `Dockerfile` `docker-compose.yml` `pyproject.toml` `uv.lock` `migrations/` `alembic.ini`） | **git 仓库 `main` 分支** | 服务器由 `git reset --hard mirror/main` 全量对齐，服务器上不做任何手工编辑 |
+| `.env`（真实密钥） | **服务器 `/root/qqbot/.env`**，备份于 `/root/.env_qqbot_backup` | **永不入 git**，由运维助手手工写入。这是唯一权威来源，本地无副本 |
+| NapCat 登录态 / QQ 账号数据 | **named volume** `qqbot_napcat_data` | 与目录、git 均无关 |
+| Postgres / Redis 数据 | **named volume** `qqbot_pg_data` / `qqbot_redis_data` | 同上，git 操作不影响 |
+| `logs/` | 服务器本地，**无备份，可丢弃** | 在 `.gitignore` 里，`fetch`/`reset` 不会动它 |
+
+## 日常部署（唯一流程，不再区分是否改了根级文件）
+
+**前置：确认本地已 push**（否则服务器拉到旧代码）
+
+```
+git status --short          # 本地应为空
+git rev-parse HEAD          # 记下 hash
+git ls-remote origin HEAD   # 应与上面一致
+```
+
+**部署（经 `qqbot-ssh` 执行：`connectionName="qqbot"`、`directory="/root/qqbot"`、`timeout=900000`）：**
+```
+git fetch mirror main && docker compose stop bot && docker compose rm -f bot && git reset --hard mirror/main && docker compose up -d --build bot
+```
+
+**验证（同上通道）：**
+```
+git rev-parse --short HEAD && git status --short && docker compose logs bot --tail=15
+```
+应看到 `[bot] ready.` 和 `Bot 3959381140 connected`；`git status` 应为空。
+
+**清理：**
+```
+docker image prune -f
+```
+不需要清理中转目录——git 流程不产生中转目录。
+
+**禁止：**
+- ❌ `docker compose down`（杀 NapCat，需重新扫码）
+- ❌ `git clean -fdx`（删 `.env`）
+- ❌ `git pull`（用 fetch + reset）
+- ❌ `docker system prune -a` 或 `--volumes`（清掉所有镜像缓存，重建耗时数十分钟）
+- ❌ 对 `/root/qqbot` 做任何重命名/删除/`ln -sfn`
+
+**新依赖 / config 改动**：`pyproject.toml`、`uv.lock`、`config/llm.yaml` 都是 tracked 文件，`reset --hard` 自动同步，`--build` 自动装新依赖。**不再需要单独 cp `config/llm.yaml`**。较大的包（如 `akshare`）首次构建约 2-3 分钟。新 DB 表由 `init_db()` 的 `create_all` 幂等创建。
+
+**镜像站故障 fallback：**
+```
+cd /root/qqbot && git remote set-url mirror https://gh-proxy.com/https://github.com/JimyTD/QQBotForFun.git && git fetch mirror main
+```
+
+## 排查：机器人没反应
+
+```
+cd /root/qqbot && docker compose ps
+cd /root/qqbot && docker compose logs bot --tail=30
+cd /root/qqbot && docker compose logs bot 2>&1 | grep 'connected' | tail -1
+cd /root/qqbot && docker compose logs napcat 2>&1 | grep -iE 'KickedOffLine|账号状态变更|offline|二维码' | tail -5
+cd /root/qqbot && git rev-parse --short HEAD && git status --short
+```
+
+判定：
+
+| 现象 | 结论 |
+|---|---|
+| 容器不在 | `docker compose up -d` |
+| Bot 报错 | 修代码，走日常部署 |
+| 无 connected | Bot↔NapCat 链路问题，检查 ws 配置 |
+| 有 connected 但有 `KickedOffLine`/`账号状态变更为离线` | **QQ 账号本身离线**，需重新扫码，与部署无关 |
+| `git status` 有输出 | 有人在服务器手改了文件（违规漂移），`git reset --hard mirror/main` 恢复 |
+
+⚠️ **重要经验**：`Bot xxx connected` 只代表 **Bot ↔ NapCat** 的 WebSocket 通了，**不代表 QQ 账号在线**。QQ 被踢下线时 WebSocket 照样 connected 但收不到任何消息，必须单独查 NapCat 账号状态。
+
+## NapCat 重新登录（需要用户扫码）
+
+⚠️ 扫码前必须确认 WebSocket 配置不为空，否则登录了也收不到消息。
+
+```
+# 1. 检查配置
+cd /root/qqbot && docker compose exec -T napcat cat /app/napcat/config/onebot11_3959381140.json 2>/dev/null | python3 -c "import sys,json;d=json.load(sys.stdin);print('ws_clients:',len(d['network']['websocketClients']))"
+
+# 2. 如果 ws_clients: 0 → 写入配置
+cd /root/qqbot && docker compose exec napcat sh -c 'echo "{\"network\":{\"httpServers\":[],\"httpSseServers\":[],\"httpClients\":[],\"websocketServers\":[],\"websocketClients\":[{\"enable\":true,\"name\":\"qqbot\",\"url\":\"ws://bot:8080/onebot/v11/ws\",\"messagePostFormat\":\"array\",\"reconnectInterval\":3000,\"token\":\"qqbot_fun_token_2026\",\"heartInterval\":30000}],\"plugins\":[]},\"musicSignUrl\":\"\",\"enableLocalFile2Url\":false,\"parseMultMsg\":false,\"imageDownloadProxy\":\"\",\"timeout\":{\"baseTimeout\":10000,\"uploadSpeedKBps\":256,\"downloadSpeedKBps\":256,\"maxTimeout\":1800000}}" > /app/napcat/config/onebot11_3959381140.json'
+cd /root/qqbot && docker compose restart napcat
+
+# 3. 获取 Token 让用户扫码
+cd /root/qqbot && docker compose exec -T napcat cat /app/napcat/config/webui.json 2>/dev/null | python3 -c "import sys,json;d=json.load(sys.stdin);print('TOKEN:',d.get('token'))"
+```
+告知用户打开 http://106.55.228.236:6099 输入 Token 扫码。
+扫码后确认：`cd /root/qqbot && docker compose logs bot --tail=5`（应有 `Bot 3959381140 connected`）
+
+**坑：**
+- 报 "当前账号已登录,无法重复登录" 但实际离线 → NapCat 内部状态残留（被踢时未复位）。`docker compose restart napcat` 清残留，重启后出新码
+- 缓存的 `/app/napcat/cache/qrcode.png` 可能是很久以前的已过期码，必须 restart 后取新码
+- QQ 账号可能需要"更新网络身份验证"等账号层面操作，在 QQ 侧解决，与服务器无关
+
+## 版本管理
+
+**查服务器版本：**
+```
+cd /root/qqbot && git rev-parse --short HEAD && git log -1 --format='%h %s (%ci)' && git status --short
+```
+
+**回滚：**
+```
+cd /root/qqbot && git log --oneline -10
+cd /root/qqbot && docker compose stop bot && docker compose rm -f bot && git reset --hard <commit> && docker compose up -d --build bot
+```
+
+**检查是否落后远端：**
+```
+cd /root/qqbot && git fetch mirror main && git log --oneline HEAD..mirror/main
+```
+
+## 密钥维护（`.env`，不走 git）
+
+`.env` 永不入 git，由运维助手手工写入。修改后**必须**同步备份。
+
+```
+# 查看配置项指纹（不打印完整值）
+cd /root/qqbot && grep -E '^[A-Za-z_]+=' .env | while IFS='=' read -r k v; do if [ -n "$v" ]; then echo "$k len=${#v} starts=$(echo -n "$v"|cut -c1-4)"; else echo "$k (empty)"; fi; done
+
+# 精确替换单个变量
+cd /root/qqbot && sed -i 's|^ZHIPU_API_KEY=.*|ZHIPU_API_KEY=<新key>|' .env
+
+# 同步备份（必做）
+cp /root/qqbot/.env /root/.env_qqbot_backup
+
+# 生效（改 .env 只需 restart，不用 rebuild）
+cd /root/qqbot && docker compose restart bot && docker compose logs bot --tail=10
+```
+
+灾难恢复：`cp /root/.env_qqbot_backup /root/qqbot/.env && cd /root/qqbot && docker compose restart bot`
+
+注意：`config/llm.yaml` 里 `${ZHIPU_API_KEY}` 是占位符，真值从 `.env` 注入。轮换密钥只改 `.env`。
+
+## 数据备份
+
+```
+# 快照（重大变更前建议做，dump 约 730KB）
+cd /root/qqbot && docker compose exec -T postgres pg_dump -U qqbot qqbot > /root/pg_backup_$(date +%F).sql
+
+# 恢复
+cd /root/qqbot && cat /root/pg_backup_<date>.sql | docker compose exec -T postgres psql -U qqbot -d qqbot
+```
+
+数据基线参考（2026-08-28）：`economy_tx` 1412 / `game_session` 500 / `game_turtle_soup_question` 347 / `game_turtle_soup_session` 44 / `economy_balance` 12 / `group_config` 5 / alembic `0002_food` / DB 9687 kB
+
+## 查战斗日志
+
+```
+cd /root/qqbot && cat logs/aoe3_battle/$(ls -t logs/aoe3_battle/*.json | grep -v full | head -1)
+```
+
+## 关键规则
+
+- NapCat 只有「删容器重建」才需要重新扫码，`restart` 不需要；**git 操作永远不需要**
+- `docker compose up -d --build bot` 只重建 Bot，不影响其他服务
+- docker-compose.yml 中 `name: qqbot` 固定了项目名，与目录名无关
+- 数据卷使用 external volume（`qqbot_pg_data` 等），数据不会因目录内容变化或 git 操作丢失
+- Bot 容器里的文件 NapCat 读不到，图片用 base64 发送
+- `Bot xxx connected` ≠ QQ 账号在线，排查时必须分开确认
+- 服务器直连 GitHub 不通，git 必须走 `mirror` remote
+- **任何 `rm -rf` 目标路径，如果位于 `/root/` 下、看起来像项目相关目录 → 先 `ls -la` 确认、向用户报告，禁止直接删除**
