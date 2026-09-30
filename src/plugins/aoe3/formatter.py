@@ -67,7 +67,7 @@ def render_unit_card(unit: Unit) -> str:
     if unit.pop:
         info_parts.append(f"人口：{unit.pop}")
     if unit.train_time:
-        info_parts.append(f"训练：{unit.train_time}s")
+        info_parts.append(f"训练：{round(unit.train_time):g}s")
     if info_parts:
         lines.append(" | ".join(info_parts))
 
@@ -82,7 +82,7 @@ def render_unit_card(unit: Unit) -> str:
     lines.append("📊 基础属性")
     stat_parts = []
     if unit.hp:
-        stat_parts.append(f"HP：{unit.hp}")
+        stat_parts.append(f"HP：{round(unit.hp)}")
     if unit.speed:
         stat_parts.append(f"速度：{unit.speed:g}")
     if unit.los:
@@ -169,7 +169,7 @@ def render_unit_brief(unit: Unit) -> str:
     """渲染简短单行摘要（用于列表展示）。"""
     name = _unit_display_name(unit)
     atk = unit.attack_ranged or unit.attack_melee or unit.attack_siege or 0
-    return f"{name} | HP {unit.hp} | ATK {atk:g} | {unit.cost_str}"
+    return f"{name} | HP {round(unit.hp)} | ATK {atk:g} | {unit.cost_str}"
 
 
 def _fmt_compare_mults(mults_a: list[Multiplier], mults_b: list[Multiplier]) -> list[str]:
@@ -311,7 +311,7 @@ def render_civ_units(units: list[Unit], civ: str) -> str:
             else "本单位"
         )
         lines.append(
-            f"  {name:<16} │ {age_zh} │ {source} │ HP {u.hp} ATK {atk:g}"
+            f"  {name:<16} │ {age_zh} │ {source} │ HP {round(u.hp)} ATK {atk:g}"
         )
 
     return "\n".join(lines)

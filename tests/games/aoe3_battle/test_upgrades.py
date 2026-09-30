@@ -130,9 +130,9 @@ def test_british_redcoat_uses_guard_dependency_plus_rg_bonus(repo):
     musk = repo.get_by_id("musketeer")
     generic = apply_upgrades(musk, 4)
     redcoat = apply_upgrades(musk, 4, civ_id="British")
-    assert generic.hp == round(musk.hp * 1.5)
+    assert generic.hp == round(musk.hp * 1.5, 1)
     assert generic.attack_ranged == round(musk.attack_ranged * 1.5, 2)
-    assert redcoat.hp == round(musk.hp * 1.55)
+    assert redcoat.hp == round(musk.hp * 1.55, 1)
     assert redcoat.attack_ranged == round(musk.attack_ranged * 1.65, 2)
     assert redcoat.name == "红衫军火枪兵"
 
@@ -140,7 +140,7 @@ def test_british_redcoat_uses_guard_dependency_plus_rg_bonus(repo):
 def test_self_contained_ottoman_rg_is_not_double_counted(repo):
     humbaraci = repo.get_by_id("dehumbaraci")
     upgraded = apply_upgrades(humbaraci, 4, civ_id="Ottomans")
-    assert upgraded.hp == round(humbaraci.hp * 1.6)
+    assert upgraded.hp == round(humbaraci.hp * 1.6, 1)
     assert upgraded.attack_ranged == round(humbaraci.attack_ranged * 1.6, 2)
     assert upgraded.cost["gold"] == humbaraci.cost["gold"] - 5
 
@@ -149,10 +149,10 @@ def test_shared_artillery_gets_its_own_civilization_variant(repo):
     culverin = repo.get_by_id("culverin")
     italian = apply_upgrades(culverin, 4, civ_id="DEItalians")
     maltese = apply_upgrades(culverin, 4, civ_id="DEMaltese")
-    assert italian.hp == round(culverin.hp * 1.35)
+    assert italian.hp == round(culverin.hp * 1.35, 1)
     assert italian.attack_ranged == round(culverin.attack_ranged * 1.25, 2)
     assert italian.armor_ranged == pytest.approx(culverin.armor_ranged + 0.05)
-    assert maltese.hp == round(culverin.hp * 1.25)
+    assert maltese.hp == round(culverin.hp * 1.25, 1)
     assert maltese.attack_ranged == round(culverin.attack_ranged * 1.35, 2)
 
 

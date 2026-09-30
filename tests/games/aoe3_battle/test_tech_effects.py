@@ -31,7 +31,7 @@ def test_apply_hp_mult(repo):
         pytest.skip("hussar 不是重骑")
     up = _apply_one_tech(hussar, cuirass, base=hussar)
     # 加算：hp + base_hp × (1.1 - 1) = hp + base_hp × 0.1
-    assert up.hp == round(hussar.hp + hussar.hp * 0.1)
+    assert up.hp == round(hussar.hp + hussar.hp * 0.1, 1)
     assert up is not hussar
 
 
@@ -51,16 +51,19 @@ def test_apply_hp_additive_on_tier(repo):
     """tier 已乘 1.5 后，横向科技 +15% 应加算于 base 而非乘在 tier 上。"""
     import dataclasses
     musk_base = repo.get_by_id("musketeer")
-    musk_tier = dataclasses.replace(musk_base, hp=round(musk_base.hp * 1.5))
+    musk_tier = dataclasses.replace(
+        musk_base,
+        hp=round(musk_base.hp * 1.5, 1),
+    )
     tech = {"scope": ["AbstractInfantry"], "ops": [
         {"stat": "hp", "kind": "mult", "value": 1.15}
     ]}
     up = _apply_one_tech(musk_tier, tech, base=musk_base)
     # 正确：base × 1.5 + base × 0.15 = base × 1.65
-    expected = round(musk_base.hp * 1.5 + musk_base.hp * 0.15)
+    expected = round(musk_base.hp * 1.5 + musk_base.hp * 0.15, 1)
     assert up.hp == expected
     # 错误（旧连乘）：base × 1.5 × 1.15 = base × 1.725
-    wrong = round(musk_base.hp * 1.5 * 1.15)
+    wrong = round(musk_base.hp * 1.5 * 1.15, 1)
     assert up.hp != wrong or expected == wrong  # 若恰好数值相同也不误报
 
 
@@ -72,7 +75,7 @@ def test_apply_speed_debuff(repo):
         {"stat": "speed", "kind": "mult", "value": 0.9},
     ]}
     up = _apply_one_tech(musk, thin_red, base=musk)
-    assert up.hp == round(musk.hp + musk.hp * 0.2)
+    assert up.hp == round(musk.hp + musk.hp * 0.2, 1)
     assert up.speed == round(musk.speed * 0.9, 3)
 
 
@@ -101,7 +104,7 @@ def test_apply_techs_list(repo):
     assert len(result) == 1
     up = result[0]
     # 加算：hp + base_hp × 0.15
-    assert up.hp == round(musk.hp + musk.hp * 0.15)
+    assert up.hp == round(musk.hp + musk.hp * 0.15, 1)
     assert up.attack_ranged == round(musk.attack_ranged + musk.attack_ranged * 0.15, 2)
 
 

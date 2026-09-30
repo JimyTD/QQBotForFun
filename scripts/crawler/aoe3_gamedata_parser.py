@@ -279,12 +279,12 @@ def parse_unit(el: ET.Element, strings_en: dict, strings_zh: dict) -> dict | Non
     pop = round(float(el.findtext("populationcount", "0") or "0"))
 
     # --- Train time ---
-    train_time = round(float(el.findtext("trainpoints", "0") or "0"))
+    train_time = round(float(el.findtext("trainpoints", "0") or "0"), 1)
 
     # --- HP ---
-    hp = round(float(el.findtext("maxhitpoints", "0") or "0"))
+    hp = round(float(el.findtext("maxhitpoints", "0") or "0"), 1)
     if hp <= 0:
-        hp = round(float(el.findtext("initialhitpoints", "0") or "0"))
+        hp = round(float(el.findtext("initialhitpoints", "0") or "0"), 1)
 
     # --- Speed ---
     speed = round(float(el.findtext("maxvelocity", "0") or "0"), 2)

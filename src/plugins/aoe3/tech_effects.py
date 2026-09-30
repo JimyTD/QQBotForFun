@@ -119,9 +119,12 @@ def _apply_one_tech(unit: Unit, tech: dict, base: Unit) -> Unit:
         val = op["value"]
 
         if stat == "hp" and kind == "mult":
-            changes["hp"] = round(changes.get("hp", unit.hp) + base.hp * (val - 1.0))
+            changes["hp"] = round(
+                changes.get("hp", unit.hp) + base.hp * (val - 1.0),
+                1,
+            )
         elif stat == "hp" and kind == "add":
-            changes["hp"] = round(changes.get("hp", unit.hp) + val)
+            changes["hp"] = round(changes.get("hp", unit.hp) + val, 1)
         elif stat == "damage" and kind == "mult":
             inc = val - 1.0
             if unit.attack_ranged:
@@ -201,12 +204,17 @@ def _apply_one_tech(unit: Unit, tech: dict, base: Unit) -> Unit:
                 found = False
                 for m in cur_list:
                     if m.vs == vs:
-                        new_list.append(dataclasses.replace(m, value=round(m.value + val, 3)))
+                        new_list.append(
+                            dataclasses.replace(
+                                m,
+                                value=round(m.value + val, 4),
+                            )
+                        )
                         found = True
                     else:
                         new_list.append(m)
                 if not found:
-                    new_list.append(Multiplier(vs=vs, value=round(1.0 + val, 3)))
+                    new_list.append(Multiplier(vs=vs, value=round(1.0 + val, 4)))
                 changes[field_name] = new_list
 
     if not changes:

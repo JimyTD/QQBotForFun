@@ -145,9 +145,12 @@ def _apply_mult_add(mults: list, mult_add_vs: dict[str, float]) -> list | None:
     remaining = dict(mult_add_vs)
     for i, m in enumerate(out):
         if m.vs in remaining:
-            out[i] = dataclasses.replace(m, value=round(m.value + remaining.pop(m.vs), 3))
+            out[i] = dataclasses.replace(
+                m,
+                value=round(m.value + remaining.pop(m.vs), 4),
+            )
     for vs, delta in remaining.items():
-        out.append(Multiplier(vs=vs, value=round(1.0 + delta, 3)))
+        out.append(Multiplier(vs=vs, value=round(1.0 + delta, 4)))
     return out if out != list(mults) else None
 
 
@@ -197,7 +200,7 @@ def apply_upgrades(unit: Unit, age: int, *, civ_id: str | None = None) -> Unit:
     if upgraded_name:
         changes["name"] = upgraded_name
     if hp_mult != 1.0:
-        changes["hp"] = round(unit.hp * hp_mult)
+        changes["hp"] = round(unit.hp * hp_mult, 1)
     if dmg_mult != 1.0:
         if unit.attack_ranged:
             changes["attack_ranged"] = round(unit.attack_ranged * dmg_mult, 2)

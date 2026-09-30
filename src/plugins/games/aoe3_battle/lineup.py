@@ -1145,7 +1145,7 @@ def format_side_panel(
         lines.append(f"{emoji} {display_label} · {lineup.unit.name}")
         u = lineup.unit
         lines.append(f"类型：{_type_str_zh(u)}")
-        lines.append(f"❤️{u.hp} 🦶{u.speed}")
+        lines.append(f"❤️{round(u.hp)} 🦶{u.speed}")
         lines.append(f"⚔️ {_atk_summary(u)}")
         _append_extras(lines, u)
         if opponent:
@@ -1166,7 +1166,7 @@ def format_side_panel(
                 lines.append(f"💰总资源 {lineup.total_cost}（含人口 +{pop_part}）")
             else:
                 lines.append(f"💰总资源 {lineup.total_cost}")
-        lines.append(f"❤️{u.hp} 🦶{u.speed}")
+        lines.append(f"❤️{round(u.hp)} 🦶{u.speed}")
         lines.append(f"⚔️ {_atk_summary(u)}")
         _append_extras(lines, u)
         if opponent:
@@ -1200,7 +1200,7 @@ def format_side_panel(
             else:
                 lines.append(f"  {u.name} ×{slot.count}")
             lines.append(f"  类型：{_type_str_zh(u)}")
-            lines.append(f"  ❤️{u.hp} 🦶{u.speed}")
+            lines.append(f"  ❤️{round(u.hp)} 🦶{u.speed}")
             lines.append(f"  ⚔️ {_atk_summary(u)}")
             _append_extras(lines, u, indent="  ")
             if opponent:

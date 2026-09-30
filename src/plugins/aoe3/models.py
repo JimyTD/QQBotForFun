@@ -37,11 +37,11 @@ class Unit:
     # 训练
     cost: dict[str, int] = field(default_factory=dict)
     pop: int = 0
-    train_time: int = 0
+    train_time: float = 0.0
     trained_at: list[str] = field(default_factory=list)
 
     # 基础属性
-    hp: int = 0
+    hp: float = 0.0
     speed: float = 0.0
     los: float = 0.0
     armor_melee: float = 0.0
