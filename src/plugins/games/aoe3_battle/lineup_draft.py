@@ -1,8 +1,9 @@
 """Player army drafts for the civ-war lineup mode.
 
-The selectable technology list is whatever the civ-war pool currently
-classifies as unit-specific or generic. Swapping that pool does not change
-the draft steps.
+The selectable technology list is the civ-war matcher. An age-upgrade line
+is not a choice. A picked technology keeps its unit-price change, and that
+price is what the budget buys. Research cost and card-send cost are not
+part of this budget.
 """
 
 from __future__ import annotations
@@ -23,6 +24,7 @@ from src.plugins.games.aoe3_battle.civ_war_civs import (
 from src.plugins.games.aoe3_battle.civ_war_lineups import (
     _allocate_fixed_ratio,
     _allocate_resource_shares,
+    allocate_candidate_with_techs,
     choose_candidate,
     generate_civ_candidates,
 )
@@ -37,6 +39,7 @@ from src.plugins.games.aoe3_battle.civ_war_techs import (
     MatchedTech,
     match_candidate_techs,
     resolve_required_techs,
+    select_candidate_techs,
 )
 from src.plugins.games.aoe3_battle.lineup import (
     Lineup,
@@ -157,9 +160,9 @@ def tactics_for(
 
 
 def targets_fielded_unit(tech: MatchedTech, units: tuple) -> bool:
-    """True when a combat effect names one of these units, not only a class."""
+    """True when an effect names one of these units, not only a class."""
     fielded = {unit.id.lower() for unit in units}
-    for op in tech.combat_ops:
+    for op in (*tech.combat_ops, *tech.cost_ops):
         for target in op.get("targets") or ():
             if (
                 target.get("type") == "ProtoUnit"
@@ -172,9 +175,11 @@ def targets_fielded_unit(tech: MatchedTech, units: tuple) -> bool:
 def list_selectable_techs(civ_id: str, units: tuple, age: int) -> list[MatchedTech]:
     """Unit-specific techs first, then class-wide techs that hit these units.
 
-    The list is whatever the civ-war pool matches for this civilization, age,
-    and these soldiers. The hand-authored priority shortlist does not decide
-    membership or the 专属 / 通用 label.
+    The list is whatever the civ-war matcher returns for this civilization,
+    age, and these soldiers. That matcher already drops the age-upgrade line.
+    A technology that only changes a unit's price stays on the list. The
+    hand-authored priority shortlist does not decide membership or the
+    专属 / 通用 label.
     """
     if not units:
         return []
@@ -188,22 +193,11 @@ def list_selectable_techs(civ_id: str, units: tuple, age: int) -> list[MatchedTe
     specific: list[MatchedTech] = []
     generic: list[MatchedTech] = []
     for tech in match_candidate_techs(candidate, age=age):
-        if not tech.combat_ops:
-            continue
         if targets_fielded_unit(tech, units):
             specific.append(tech)
         else:
             generic.append(tech)
     return specific + generic
-
-
-def combat_runtime(tech: MatchedTech) -> dict:
-    """Combat-only runtime payload. Tech selection does not change unit cost."""
-    payload = tech.runtime_tech()
-    payload["ops"] = [
-        op for op in payload["ops"] if op.get("stat") != "cost"
-    ]
-    return payload
 
 
 def parse_weights(text: str, slot_count: int) -> tuple[int, ...] | str:
@@ -267,18 +261,18 @@ def compile_tactic(
 ) -> CompiledArmy:
     by_id = {unit.id: unit for unit in draft_units(repo, civ.id, age)}
     units = tuple(by_id[unit_id] for unit_id in tactic.unit_ids)
+    candidate = SimpleNamespace(
+        civ_id=civ.id,
+        units=units,
+        source="national",
+        required_tech_ids=tactic.required_tech_ids,
+        id=tactic.id,
+    )
     techs = tuple(
-        resolve_required_techs(
-            SimpleNamespace(
-                civ_id=civ.id,
-                units=units,
-                source="national",
-                required_tech_ids=tactic.required_tech_ids,
-                id=tactic.id,
-            ),
-            age=age,
-        )
-    ) if tactic.required_tech_ids else ()
+        resolve_required_techs(candidate, age=age)
+        if tactic.required_tech_ids
+        else select_candidate_techs(candidate, age=age)
+    )
     return _compile(
         civ=civ,
         units=units,
@@ -309,28 +303,20 @@ def compile_ai_army(
     if not candidates:
         raise ValueError(f"{civ.name} 没有可用的国战编制")
     chosen = choose_candidate(candidates, rng=rng)
-    techs = tuple(
-        resolve_required_techs(chosen, age=age)
-        if chosen.required_tech_ids
-        else ()
+    lineup, techs = allocate_candidate_with_techs(
+        chosen, budget=budget, age=age,
     )
-    if not techs and chosen.source != "national":
-        slot_count = max(0, len(chosen.units) - 1)
-        techs = tuple(
-            tech
-            for tech in match_candidate_techs(chosen, age=age)
-            if tech.combat_ops
-        )[:slot_count]
-    return _compile(
-        civ=civ,
-        units=chosen.units,
-        techs=techs,
-        allocation_kind=chosen.allocation.kind,
-        allocation_values=chosen.allocation.values,
-        strategy=chosen.title,
-        age=age,
-        budget=budget,
+    return CompiledArmy(
         label=f"AI·{civ.name}",
+        civ_id=civ.id,
+        civ_name=civ.name,
+        strategy=chosen.title,
+        tech_ids=tuple(tech.id for tech in techs),
+        tech_names=tuple(tech.name_zh or tech.id for tech in techs),
+        slots=tuple(
+            (slot.unit.id, slot.unit.name, slot.count)
+            for slot in lineup.slots
+        ),
         ai=True,
     )
 
@@ -394,7 +380,7 @@ def _apply_combat(units: tuple, techs: tuple[MatchedTech, ...], age: int, civ_id
     applied = []
     for unit, base in zip(upgraded, bases, strict=True):
         payloads = [
-            combat_runtime(tech)
+            tech.runtime_tech()
             for tech in techs
             if unit.id in tech.matched_unit_ids
         ]

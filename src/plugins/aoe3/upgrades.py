@@ -151,6 +151,28 @@ def _apply_mult_add(mults: list, mult_add_vs: dict[str, float]) -> list | None:
     return out if out != list(mults) else None
 
 
+def age_upgrade_line(unit: Unit, civ_id: str | None = None) -> tuple[set[str], set[str]]:
+    """The unit's age-upgrade line. None of these tiers is a composition choice.
+
+    Civ overrides record the tech ids on that line. The shared table records
+    each tier's display name.
+    """
+    table = _unit_upgrade_table(unit, civ_id)
+    tech_ids: set[str] = set()
+    names: set[str] = set()
+    for key, entry in table.items():
+        try:
+            int(key)
+        except ValueError:
+            continue
+        for tech_id in entry.get("techs") or ():
+            tech_ids.add(str(tech_id))
+        name = entry.get("name")
+        if name:
+            names.add(str(name))
+    return tech_ids, names
+
+
 def _unit_age_name(unit: Unit, age: int, civ_id: str | None = None) -> str | None:
     """取该单位在指定时代的升级名（SetName），无则 None。"""
     per_id = _unit_upgrade_table(unit, civ_id)

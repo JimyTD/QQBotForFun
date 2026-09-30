@@ -190,6 +190,50 @@ def test_runtime_tech_translation_applies_bonus() -> None:
     assert any(op["stat"] == "mult" for op in tech["ops"])
 
 
+def test_age_upgrade_line_is_not_a_candidate_tech() -> None:
+    repo = UnitRepo.get()
+    candidate = _Candidate(
+        civ_id="Dutch",
+        units=(
+            _unit(repo, "grenadier"),
+            _unit(repo, "falconet"),
+            _unit(repo, "ruyter"),
+        ),
+    )
+    matched = match_candidate_techs(candidate, age=3)
+    ids = {tech.id for tech in matched}
+    names = {tech.name_zh for tech in matched}
+    assert ids.isdisjoint({
+        "VeteranGrenadiers",
+        "GuardGrenadiers",
+        "FieldGun",
+        "ImperialFieldGun",
+        "RGCarabineer",
+    })
+    assert names.isdisjoint({
+        "老练掷弹兵",
+        "护卫掷弹兵",
+        "野战炮",
+        "帝国野战炮",
+        "护卫荷兰枪骑兵",
+    })
+    selected = select_candidate_techs(
+        _Candidate(
+            civ_id="Dutch",
+            units=candidate.units,
+            source="national",
+        ),
+        age=3,
+    )
+    assert {tech.id for tech in selected}.isdisjoint({
+        "VeteranGrenadiers",
+        "GuardGrenadiers",
+        "FieldGun",
+        "ImperialFieldGun",
+        "RGCarabineer",
+    })
+
+
 def test_cost_tech_changes_allocated_counts() -> None:
     repo = UnitRepo.get()
     candidate = next(

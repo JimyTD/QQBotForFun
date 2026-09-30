@@ -8,6 +8,7 @@ from pathlib import Path
 from typing import Any, Protocol
 
 from src.plugins.aoe3.models import Unit
+from src.plugins.aoe3.upgrades import age_upgrade_line
 
 POOL_PATH = (
     Path(__file__).resolve().parents[4]
@@ -220,13 +221,26 @@ def match_candidate_techs(
     generic_pool: dict[str, set[str]] | None = None,
     path: Path = POOL_PATH,
 ) -> list[MatchedTech]:
-    """Return deterministic pool matches that hit the candidate's units."""
+    """Return deterministic pool matches that hit the candidate's units.
+
+    An age-upgrade line is not a composition choice, at any tier. This uses
+    the upgrade tables. The generator's ``is_age_upgrade`` flag only marks
+    Shadow and SetAge rows, so it does not cover Veteran, Guard, or Imperial.
+    """
     rows = pool if pool is not None else _load_pool(path)
     priority = priority if priority is not None else _load_priority()
     generic_pool = generic_pool if generic_pool is not None else _load_generic_pool()
     allowed_generic = generic_pool.get(candidate.civ_id, set())
+    blocked_ids: set[str] = set()
+    blocked_names: set[str] = set()
+    for unit in candidate.units:
+        tech_ids, names = age_upgrade_line(unit, candidate.civ_id)
+        blocked_ids.update(tech_ids)
+        blocked_names.update(names)
     matched: list[MatchedTech] = []
     for row in rows:
+        if row["id"] in blocked_ids or row.get("name_zh") in blocked_names:
+            continue
         if not _is_civ_allowed(row, candidate.civ_id):
             continue
         if not _within_age(row, age):

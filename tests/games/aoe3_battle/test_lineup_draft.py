@@ -1,4 +1,4 @@
-"""配兵编制：预定义阵容、自选权重、科技只改战斗。"""
+"""配兵编制：预定义阵容、自选权重、兵种改价计入人数。"""
 
 from __future__ import annotations
 
@@ -7,10 +7,14 @@ from types import SimpleNamespace
 
 from src.plugins.aoe3.repository import UnitRepo
 from src.plugins.games.aoe3_battle.civ_war_civs import resolve_civ
+from src.plugins.games.aoe3_battle.civ_war_lineups import (
+    allocate_candidate_with_techs,
+    generate_civ_candidates,
+)
 from src.plugins.games.aoe3_battle.lineup_draft import (
     army_is_ai,
-    combat_runtime,
     compile_ai_army,
+    compile_custom,
     compile_tactic,
     draft_units,
     format_lineup_tournament_roster,
@@ -35,16 +39,117 @@ def test_selectable_techs_follow_the_units_that_receive_them():
     assert specific_flags == sorted(specific_flags, reverse=True)
     assert any(specific_flags)
     assert not all(specific_flags)
+    assert "VeteranMusketeers" not in ids
+    assert "VeteranHussars" not in ids
 
 
-def test_selectable_techs_only_change_combat():
+def test_age_upgrade_line_is_not_a_choice():
     repo = UnitRepo.get()
-    units = tuple(draft_units(repo, "British", 5)[:3])
-    techs = list_selectable_techs("British", units, 5)
-    assert techs
-    for tech in techs:
-        assert tech.combat_ops
-        assert all(op.get("stat") != "cost" for op in combat_runtime(tech)["ops"])
+    dutch = {unit.id: unit for unit in draft_units(repo, "Dutch", 5)}
+    techs = list_selectable_techs(
+        "Dutch",
+        (dutch["grenadier"], dutch["falconet"], dutch["ruyter"]),
+        3,
+    )
+    ids = {tech.id for tech in techs}
+    names = {tech.name_zh for tech in techs}
+    assert {
+        "VeteranGrenadiers",
+        "GuardGrenadiers",
+        "FieldGun",
+        "ImperialFieldGun",
+        "RGCarabineer",
+    }.isdisjoint(ids)
+    assert {
+        "老练掷弹兵",
+        "护卫掷弹兵",
+        "野战炮",
+        "帝国野战炮",
+        "护卫荷兰枪骑兵",
+    }.isdisjoint(names)
+
+
+def test_unit_price_change_changes_headcount_and_research_cost_does_not():
+    repo = UnitRepo.get()
+    civ = resolve_civ("中国")
+    assert civ is not None
+    by_id = {unit.id: unit for unit in draft_units(repo, civ.id, 3)}
+    ordered = (by_id["ypchukonu"], by_id["ypqiangpikeman"])
+    bare = compile_custom(
+        repo,
+        civ=civ,
+        unit_ids=tuple(unit.id for unit in ordered),
+        weights=(1, 1),
+        tech_ids=(),
+        age=3,
+        budget=10000,
+        label="自选",
+    )
+    priced = compile_custom(
+        repo,
+        civ=civ,
+        unit_ids=tuple(unit.id for unit in ordered),
+        weights=(1, 1),
+        tech_ids=("YPHCOldHanArmyReforms",),
+        age=3,
+        budget=10000,
+        label="自选",
+    )
+    bare_counts = [count for _unit_id, _name, count in bare.slots]
+    priced_counts = [count for _unit_id, _name, count in priced.slots]
+    assert sum(priced_counts) < sum(bare_counts)
+    reforms = next(
+        tech
+        for tech in list_selectable_techs(civ.id, ordered, 3)
+        if tech.id == "YPHCOldHanArmyReforms"
+    )
+    cost_ops = [op for op in reforms.runtime_tech()["ops"] if op.get("stat") == "cost"]
+    assert cost_ops
+    assert {op.get("kind") for op in cost_ops} == {"mult"}
+
+
+def test_predefined_tactic_matches_civ_war_allocation():
+    repo = UnitRepo.get()
+    civ = resolve_civ("中国")
+    assert civ is not None
+    tactic = next(item for item in tactics_for(
+        civ.id, 3, {unit.id: unit for unit in draft_units(repo, civ.id, 3)},
+    ) if item.id == "old_han_army")
+    army = compile_tactic(repo, civ=civ, tactic=tactic, age=3, budget=10000, label="中国")
+    candidate = next(
+        item
+        for item in generate_civ_candidates(repo, "Chinese", age=3)
+        if item.id == "national:old_han_army"
+    )
+    lineup, techs = allocate_candidate_with_techs(candidate, budget=10000, age=3)
+    assert army.tech_ids == tuple(tech.id for tech in techs)
+    assert [count for _unit_id, _name, count in army.slots] == [
+        slot.count for slot in lineup.slots
+    ]
+    assert army.slots[0][2] == 51
+
+    dutch = resolve_civ("荷兰")
+    assert dutch is not None
+    lowlands = next(item for item in tactics_for(
+        dutch.id, 3, {unit.id: unit for unit in draft_units(repo, dutch.id, 3)},
+    ) if item.id == "ruyter_skirm")
+    assert not lowlands.required_tech_ids
+    dutch_army = compile_tactic(
+        repo, civ=dutch, tactic=lowlands, age=3, budget=10000, label="荷兰",
+    )
+    dutch_candidate = next(
+        item
+        for item in generate_civ_candidates(repo, "Dutch", age=3)
+        if item.id == "national:ruyter_skirm"
+    )
+    dutch_lineup, dutch_techs = allocate_candidate_with_techs(
+        dutch_candidate, budget=10000, age=3,
+    )
+    assert dutch_techs
+    assert dutch_army.tech_ids == tuple(tech.id for tech in dutch_techs)
+    assert [count for _unit_id, _name, count in dutch_army.slots] == [
+        slot.count for slot in dutch_lineup.slots
+    ]
 
 
 def test_predefined_tactic_allocates_and_materializes():
@@ -67,6 +172,53 @@ def test_predefined_tactic_allocates_and_materializes():
     assert [slot.count for slot in lineup.slots] == [
         count for _unit_id, _name, count in army.slots
     ]
+
+
+def test_ai_filler_matches_civ_war_allocation(monkeypatch):
+    from src.plugins.games.aoe3_battle import lineup_draft
+    from src.plugins.games.aoe3_battle.civ_war_lineups import (
+        allocate_candidate_with_techs,
+        generate_civ_candidates,
+    )
+
+    repo = UnitRepo.get()
+    candidate = next(
+        item
+        for item in generate_civ_candidates(repo, "Dutch", age=4)
+        if item.title == "低地机动军"
+    )
+    assert not candidate.required_tech_ids
+
+    def choice(seq):
+        for item in seq:
+            if getattr(item, "id", None) == "Dutch":
+                return item
+        return list(seq)[0]
+
+    monkeypatch.setattr(
+        lineup_draft,
+        "generate_civ_candidates",
+        lambda _repo, _civ_id, age: [candidate],
+    )
+    monkeypatch.setattr(
+        lineup_draft,
+        "choose_candidate",
+        lambda candidates, rng: candidates[0],
+    )
+    army = compile_ai_army(
+        repo,
+        age=4,
+        budget=10000,
+        rng=type("Rng", (), {"choice": staticmethod(choice)})(),
+    )
+    lineup, techs = allocate_candidate_with_techs(
+        candidate, budget=10000, age=4,
+    )
+    assert techs
+    assert army.tech_ids == tuple(tech.id for tech in techs)
+    assert [
+        (unit_id, count) for unit_id, _name, count in army.slots
+    ] == [(slot.unit.id, slot.count) for slot in lineup.slots]
 
 
 def test_ai_army_is_labeled_and_allocated():
