@@ -31,6 +31,7 @@
       "HitPercentType",
       "HitPoints",
       "Hitpoints",
+      "InitialTactic",
       "MaximumRange",
       "MaximumVelocity",
       "MinimumRange",
@@ -39844,6 +39845,20 @@
               "value": "OrganGun"
             }
           ]
+        },
+        {
+          "amount": 1.0,
+          "tactic": "Bombard",
+          "subtype": "InitialTactic",
+          "forceapply": "true",
+          "relativity": "Assign",
+          "effect_type": "Data",
+          "targets": [
+            {
+              "type": "ProtoUnit",
+              "value": "OrganGun"
+            }
+          ]
         }
       ],
       "cost_ops": []
@@ -55033,6 +55048,20 @@
               "value": "Capitol"
             }
           ]
+        },
+        {
+          "amount": 1.0,
+          "tactic": "PolicyFood",
+          "subtype": "InitialTactic",
+          "forceapply": "true",
+          "relativity": "Assign",
+          "effect_type": "Data",
+          "targets": [
+            {
+              "type": "ProtoUnit",
+              "value": "Capitol"
+            }
+          ]
         }
       ],
       "cost_ops": []
@@ -57832,6 +57861,20 @@
               "value": "xpSpy"
             }
           ]
+        },
+        {
+          "amount": 1.0,
+          "tactic": "Volley",
+          "subtype": "InitialTactic",
+          "forceapply": "true",
+          "relativity": "Assign",
+          "effect_type": "Data",
+          "targets": [
+            {
+              "type": "ProtoUnit",
+              "value": "xpSpy"
+            }
+          ]
         }
       ],
       "cost_ops": []
@@ -58526,6 +58569,20 @@
           "amount": 1.0,
           "subtype": "ActionEnable",
           "relativity": "Absolute",
+          "effect_type": "Data",
+          "targets": [
+            {
+              "type": "ProtoUnit",
+              "value": "SaloonPirate"
+            }
+          ]
+        },
+        {
+          "amount": 1.0,
+          "tactic": "Volley",
+          "subtype": "InitialTactic",
+          "forceapply": "true",
+          "relativity": "Assign",
           "effect_type": "Data",
           "targets": [
             {
@@ -64929,6 +64986,20 @@
           "amount": 1.0,
           "subtype": "SetUnitType",
           "unittype": "AbstractMusketeer",
+          "relativity": "Assign",
+          "effect_type": "Data",
+          "targets": [
+            {
+              "type": "ProtoUnit",
+              "value": "deInsurgente"
+            }
+          ]
+        },
+        {
+          "amount": 1.0,
+          "tactic": "Volley",
+          "subtype": "InitialTactic",
+          "forceapply": "true",
           "relativity": "Assign",
           "effect_type": "Data",
           "targets": [
@@ -77681,6 +77752,20 @@
               "value": "CommunityPlaza"
             }
           ]
+        },
+        {
+          "amount": 1.0,
+          "tactic": "FertilityDance",
+          "subtype": "InitialTactic",
+          "forceapply": "true",
+          "relativity": "Assign",
+          "effect_type": "Data",
+          "targets": [
+            {
+              "type": "ProtoUnit",
+              "value": "CommunityPlaza"
+            }
+          ]
         }
       ],
       "cost_ops": []
@@ -78594,6 +78679,20 @@
             {
               "type": "ProtoUnit",
               "value": "deLegionGrenadier"
+            }
+          ]
+        },
+        {
+          "amount": 1.0,
+          "tactic": "Volley",
+          "subtype": "InitialTactic",
+          "forceapply": "true",
+          "relativity": "Assign",
+          "effect_type": "Data",
+          "targets": [
+            {
+              "type": "ProtoUnit",
+              "value": "xpSpy"
             }
           ]
         }
@@ -91934,6 +92033,19 @@
               "value": "deREVFilibuster"
             }
           ]
+        },
+        {
+          "amount": 1.0,
+          "tactic": "QuakerGunFalconet",
+          "subtype": "InitialTactic",
+          "relativity": "Assign",
+          "effect_type": "Data",
+          "targets": [
+            {
+              "type": "ProtoUnit",
+              "value": "deQuakerGun"
+            }
+          ]
         }
       ],
       "cost_ops": [
@@ -101605,6 +101717,20 @@
               "value": "deMountainMonastery"
             }
           ]
+        },
+        {
+          "amount": 1.0,
+          "tactic": "MonasteryGold",
+          "subtype": "InitialTactic",
+          "forceapply": "true",
+          "relativity": "Assign",
+          "effect_type": "Data",
+          "targets": [
+            {
+              "type": "ProtoUnit",
+              "value": "deMountainMonastery"
+            }
+          ]
         }
       ],
       "cost_ops": [
@@ -102383,6 +102509,20 @@
           "tactic": "UniversityInfluence",
           "subtype": "TacticEnable",
           "relativity": "Absolute",
+          "effect_type": "Data",
+          "targets": [
+            {
+              "type": "ProtoUnit",
+              "value": "deUniversity"
+            }
+          ]
+        },
+        {
+          "amount": 1.0,
+          "tactic": "UniversityXP",
+          "subtype": "InitialTactic",
+          "forceapply": "true",
+          "relativity": "Assign",
           "effect_type": "Data",
           "targets": [
             {

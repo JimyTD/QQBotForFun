@@ -163,6 +163,19 @@ def _runtime_op(op: dict[str, Any]) -> dict[str, Any] | None:
             stat, kind = "armor", "add"
         case "Cost":
             stat, kind = "cost", "mult" if relation == "BasePercent" else "add"
+        case "ActionEnable":
+            stat, kind = "action_enable", "set"
+        case "InitialTactic":
+            stat, kind = "initial_tactic", "set"
+        case "RechargeTime":
+            stat = "recharge"
+            kind = {
+                "Assign": "set",
+                "Absolute": "add",
+                "BasePercent": "mult",
+            }.get(relation)
+            if kind is None:
+                return None
         case _:
             return None
     result: dict[str, Any] = {
@@ -171,7 +184,7 @@ def _runtime_op(op: dict[str, Any]) -> dict[str, Any] | None:
         "value": amount,
         "subtype": subtype,
     }
-    for key in ("action", "allactions", "unittype", "resource", "newtype"):
+    for key in ("action", "allactions", "unittype", "resource", "newtype", "tactic"):
         if op.get(key):
             result[key] = (
                 str(op[key]).lower()
@@ -186,6 +199,8 @@ def _runtime_op(op: dict[str, Any]) -> dict[str, Any] | None:
         }.get(op.get("newtype"), "")
     if subtype == "DamageBonus":
         result["vs"] = op.get("unittype", "")
+    if subtype == "RechargeTime":
+        result["targets"] = list(op.get("targets") or ())
     return result
 
 

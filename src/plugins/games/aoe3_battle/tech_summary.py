@@ -108,6 +108,18 @@ def _describe_op(op: Mapping[str, Any]) -> str:
         return f"{armor}护甲{_signed(value)}"
     if subtype == "Cost":
         return f"{_resource_name(op.get('resource'))}造价{_percent(value)}"
+    if subtype == "InitialTactic":
+        return "换成阵型"
+    if subtype == "ActionEnable":
+        return "解锁攻击" if value != 0 else "关闭攻击"
+    if subtype == "RechargeTime":
+        relation = str(op.get("relativity") or "")
+        if relation == "BasePercent":
+            return f"蓄力冷却{_percent(value)}"
+        if relation == "Absolute":
+            return f"蓄力冷却{_signed(value)}秒"
+        if relation == "Assign":
+            return f"蓄力冷却改为 {value:g} 秒"
     return ""
 
 

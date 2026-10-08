@@ -44,6 +44,7 @@
 | WIP | 主题 | 正式文档落点 |
 |---|---|---|
 | [aoe3-civ-war.md](aoe3-civ-war.md) | 帝国3国战未实现扩展 | [../games/aoe3-battle.md](../games/aoe3-battle.md) |
+| [aoe3-attack-actions.md](aoe3-attack-actions.md) | 帝国3默认阵型动作列表与蓄力 | [../games/aoe3-battle.md](../games/aoe3-battle.md) |
 
 ## 相关规范
 

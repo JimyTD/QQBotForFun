@@ -424,6 +424,16 @@ def parse_unit(el: ET.Element, strings_en: dict, strings_zh: dict) -> dict | Non
     if artillery_stance:
         result.update(artillery_stance)
 
+    attack_actions, actions_by_tactic = _parse_attack_actions(
+        el, tactics_filename, windups
+    )
+    if _inflicts_no_damage(el):
+        result["inflicts_no_damage"] = True
+    if attack_actions:
+        result["attack_actions"] = attack_actions
+    if actions_by_tactic:
+        result["attack_actions_by_tactic"] = actions_by_tactic
+
     # AOE radius (max across attacks)
     aoe_vals = [result.get("aoe_radius_ranged", 0), result.get("aoe_radius_melee", 0)]
     max_aoe = max(aoe_vals)
@@ -551,6 +561,294 @@ def _load_tactics_actions(tactics_filename: str) -> dict[str, dict[str, Any]]:
 
     _tactics_cache[tactics_filename] = result
     return result
+
+
+_FIGHT_TACTIC_SKIP = {"Limber", "Stealth", "Cover", "Defend"}
+
+
+def _inflicts_no_damage(el: ET.Element) -> bool:
+    return any((flag.text or "").strip() == "InflictsNoDamage" for flag in el.findall("flag"))
+
+
+def _tactic_name(tactic: ET.Element) -> str:
+    text = (tactic.text or "").strip()
+    return text.split()[0] if text else ""
+
+
+def _parse_attack_actions(
+    el: ET.Element,
+    tactics_filename: str,
+    windups: dict[str, float],
+) -> tuple[list[dict[str, Any]], dict[str, list[dict[str, Any]]]]:
+    """出生阵型的攻击列表，以及每个阵型名对应的列表。
+
+    打不中人的攻击也留下。没有 protoy 伤害包的不收。
+    ``InflictsNoDamage`` 的单位两份都空。
+    冷却缺省的蓄力会写进列表，但 recharge 为 0，运行时不自动打出。
+    """
+    if _inflicts_no_damage(el):
+        return [], {}
+    if not tactics_filename:
+        return [], {}
+    tactics_path = TACTICS_DIR / tactics_filename
+    if not tactics_path.is_file():
+        return [], {}
+    try:
+        root = ET.parse(tactics_path).getroot()
+    except ET.ParseError:
+        return [], {}
+
+    definitions: dict[str, dict[str, Any]] = {}
+    for action in root.findall("action"):
+        name = (action.findtext("name") or "").strip()
+        if not name:
+            continue
+        attack_type = (action.findtext("type") or "").strip()
+        attack_flag = (action.findtext("attackaction") or "").strip() == "1"
+        if attack_type not in ("", "Attack") and not attack_flag:
+            continue
+        definitions[name] = {
+            "active": (action.findtext("active") or "1").strip() != "0",
+            "charge": (action.findtext("chargeaction") or "").strip() == "1"
+            or (action.findtext("auxchargeaction") or "").strip() == "1",
+            "aux": (action.findtext("auxchargeaction") or "").strip() == "1"
+            and (action.findtext("chargeaction") or "").strip() != "1",
+            "projectiles": _positive_int(action.findtext("displayednumberprojectiles")),
+            "minrange": _positive_float(action.findtext("minrange")),
+            "maxrange": _positive_float(action.findtext("maxrange")),
+            "area_sort_mode": (action.findtext("areasortmode") or "").strip(),
+            "outer_distance": _positive_float(action.findtext("outerdamageareadistance")),
+            "outer_factor": _positive_float(action.findtext("outerdamageareafactor")),
+            "soldier": _hits_soldiers(action),
+            "rates": [
+                rate.get("type")
+                for rate in action.findall("rate")
+                if rate.get("type")
+            ],
+            "handlogic": (action.findtext("handlogic") or "").strip() == "1",
+            "rangedlogic": (action.findtext("rangedlogic") or "").strip() == "1",
+        }
+
+    packages = {
+        (pa.findtext("name") or "").strip(): pa
+        for pa in el.findall("protoaction")
+        if (pa.findtext("name") or "").strip()
+    }
+    try:
+        recharge = float((el.findtext("rechargetime") or "").strip() or "0")
+    except ValueError:
+        recharge = 0.0
+    try:
+        aux_recharge = float((el.findtext("auxrechargetime") or "").strip() or "0")
+    except ValueError:
+        aux_recharge = 0.0
+
+    by_tactic: dict[str, list[dict[str, Any]]] = {}
+    for tactic in root.findall("tactic"):
+        name = _tactic_name(tactic)
+        if not name:
+            continue
+        listed = _actions_in_tactic(
+            tactic, definitions, packages, windups, recharge, aux_recharge
+        )
+        if listed:
+            by_tactic[name] = listed
+
+    initial = (el.findtext("initialtactic") or "").strip()
+    if initial and initial in by_tactic:
+        birth_name = initial
+    else:
+        picked = _pick_fight_tactic(root)
+        birth_name = _tactic_name(picked) if picked is not None else ""
+    return by_tactic.get(birth_name, []), by_tactic
+
+
+def _actions_in_tactic(
+    tactic: ET.Element,
+    definitions: dict[str, dict[str, Any]],
+    packages: dict[str, ET.Element],
+    windups: dict[str, float],
+    recharge: float,
+    aux_recharge: float,
+) -> list[dict[str, Any]]:
+    listed: list[dict[str, Any]] = []
+    seen: set[str] = set()
+    for child in tactic.findall("action"):
+        name = (child.text or "").strip()
+        if not name or name in seen:
+            continue
+        meta = definitions.get(name)
+        if meta is None:
+            continue
+        package = packages.get(name)
+        if package is None:
+            continue
+        try:
+            damage = round(float(package.findtext("damage") or "0"), 2)
+        except ValueError:
+            continue
+        if damage <= 0:
+            continue
+        seen.add(name)
+        try:
+            priority = int(float(child.get("priority") or "0"))
+        except ValueError:
+            priority = 0
+        try:
+            rof = round(float(package.findtext("rof") or "0"), 4)
+        except ValueError:
+            rof = 0.0
+        minrange = _positive_float(package.findtext("minrange")) or meta["minrange"]
+        maxrange = _positive_float(package.findtext("maxrange")) or meta["maxrange"]
+        aoe = _positive_float(package.findtext("damagearea"))
+        cap = _positive_float(package.findtext("damagecap"))
+        entry: dict[str, Any] = {
+            "name": name,
+            "priority": priority,
+            "damage": damage,
+            "damage_type": (package.findtext("damagetype") or "").strip(),
+            "range_min": round(minrange, 2),
+            "range_max": round(maxrange, 2),
+            "rof": rof,
+        }
+        active, charge, aux = _package_attack_flags(package, meta)
+        if not active:
+            entry["enabled"] = False
+        if not meta["soldier"]:
+            entry["hits_soldiers"] = False
+        if meta["rates"]:
+            entry["rates"] = meta["rates"]
+        if meta["handlogic"]:
+            entry["handlogic"] = True
+        if meta["rangedlogic"]:
+            entry["rangedlogic"] = True
+        if charge:
+            entry["charge"] = True
+            cooldown = aux_recharge if aux and aux_recharge > 0 else recharge
+            if cooldown > 0:
+                entry["recharge"] = round(cooldown, 4)
+        if meta["projectiles"] > 1:
+            entry["num_projectiles"] = meta["projectiles"]
+        if aoe > 0:
+            entry["aoe_radius"] = round(aoe, 2)
+        if cap > 0:
+            entry["damage_cap"] = round(cap, 2)
+        if meta["area_sort_mode"]:
+            entry["area_sort_mode"] = meta["area_sort_mode"]
+        if meta["outer_distance"] > 0:
+            entry["outer_damage_area_distance"] = meta["outer_distance"]
+        if meta["outer_factor"] > 0:
+            entry["outer_damage_area_factor"] = meta["outer_factor"]
+        if name in windups and windups[name] > 0:
+            entry["windup"] = windups[name]
+        multipliers = []
+        for bonus in package.findall("damagebonus"):
+            vs_type = bonus.get("type", "")
+            try:
+                mult_val = round(float(bonus.text or "1"), 4)
+            except ValueError:
+                continue
+            if mult_val != 1.0 and vs_type:
+                multipliers.append({"vs": vs_type, "value": mult_val})
+        if multipliers:
+            entry["multipliers"] = multipliers
+        listed.append(entry)
+    listed.sort(key=lambda item: (-item["priority"], item["name"]))
+    return listed
+
+
+def _pick_fight_tactic(root: ET.Element) -> ET.Element | None:
+    tactics = []
+    for tactic in root.findall("tactic"):
+        text = (tactic.text or "").strip()
+        name = text.split()[0] if text else ""
+        tactics.append((name, tactic))
+    if not tactics:
+        return None
+    names = [name for name, _ in tactics]
+    if "Limber" in names and "Bombard" in names:
+        chosen = "Bombard"
+    elif "Volley" in names:
+        chosen = "Volley"
+    elif "Stagger" in names:
+        chosen = "Stagger"
+    elif "Melee" in names:
+        chosen = "Melee"
+    else:
+        chosen = next(
+            (name for name in names if name not in _FIGHT_TACTIC_SKIP),
+            names[0],
+        )
+    for name, tactic in tactics:
+        if name == chosen:
+            return tactic
+    return None
+
+
+def _hits_soldiers(action: ET.Element) -> bool:
+    """这条攻击能不能打到普通单位。只砸箱子、砍树、打建筑的不算。"""
+    if (action.findtext("type") or "").strip() not in ("", "Attack"):
+        if (action.findtext("attackaction") or "").strip() != "1":
+            return False
+    rates = action.findall("rate")
+    if not rates:
+        return (action.findtext("type") or "").strip() == "Attack"
+    for rate in rates:
+        label = rate.get("type") or ""
+        if "Guardian" in label or "Building" in label or "Ship" in label:
+            continue
+        if "Crate" in label:
+            continue
+        if label in {"Herdable", "Tree", "Huntable", "Resource", "Fish", "BerryBush"}:
+            continue
+        return True
+    return False
+
+
+def _package_flag(package: ET.Element, tag: str) -> bool | None:
+    """伤害包写了这个字段就以它为准。没写则返回 None，沿用战术文件。"""
+    node = package.find(tag)
+    if node is None:
+        return None
+    text = (node.text or "").strip()
+    if not text:
+        return False
+    try:
+        return float(text) != 0.0
+    except ValueError:
+        return text == "1"
+
+
+def _package_attack_flags(
+    package: ET.Element,
+    meta: dict[str, Any],
+) -> tuple[bool, bool, bool]:
+    """单位伤害包上的 active / 蓄力标记改写共享战术文件。"""
+    proto_active = _package_flag(package, "active")
+    active = meta["active"] if proto_active is None else proto_active
+    proto_charge = _package_flag(package, "chargeaction")
+    proto_aux = _package_flag(package, "auxchargeaction")
+    if proto_charge is None and proto_aux is None:
+        return active, meta["charge"], meta["aux"]
+    charge_on = bool(proto_charge)
+    aux_on = bool(proto_aux)
+    return active, charge_on or aux_on, aux_on and not charge_on
+
+
+def _positive_float(raw: str | None) -> float:
+    try:
+        value = float((raw or "").strip() or "0")
+    except ValueError:
+        return 0.0
+    return value if value > 0 else 0.0
+
+
+def _positive_int(raw: str | None) -> int:
+    try:
+        value = int(float((raw or "").strip() or "0"))
+    except ValueError:
+        return 0
+    return value if value > 1 else 0
 
 
 def _load_tactics(tactics_filename: str) -> dict[str, int]:

@@ -13,6 +13,7 @@ import random
 from dataclasses import dataclass
 from typing import Sequence
 
+from src.plugins.aoe3.attack_actions import card_shots, shot_kind
 from src.plugins.aoe3.formatter import append_unit_tooltip
 from src.plugins.aoe3.models import Unit
 from src.plugins.aoe3.repository import UnitRepo, is_excluded_unit
@@ -71,9 +72,6 @@ BLACKLIST: set[str] = {
     "mediocrebombard",           # 中型火炮，攻击力 5000，cost 16
     "learicorn",                 # 利尔厉（独角兽），近战 800
 
-    # 假炮 — InflictsNoDamage 单位，attack_ranged=500 是假数据，实际不打伤害
-    "dequakergun",               # 木制假炮
-
     # 翻译缺失 + 不认识的奇怪单位
     "yppeasantindians",          # ypPeasantIndians，无中文名
     "ypirregularindians",        # ypIrregularIndians，无中文名
@@ -107,6 +105,7 @@ BATTLE_BLACKLIST: dict[str, str] = {
     "flyingpurpletapir":   "彩蛋·会飞的紫貘",        # hp 600 melee=800
     "deeggleonardostank":  "彩蛋·莱昂纳多的战车",    # hp 5000 ranged=800，DE 彩蛋 DLC
     "deeggarctictruck":    "彩蛋·极地掠夺者",        # hp 60000，2026-09 新版彩蛋（同怪兽卡车）
+    "deeggwoodcattle":     "彩蛋·木制牛",            # hp 20，BuildingAttack 20000、溅射 23、目标 All。攻击按数据打得到人；只是不进普通对战
 
     # —— 弃用 / 老版本兵种 ——
     "legacygatlingcamel":  "祖传·加特林骆驼",        # hp 9001，legacy 前缀
@@ -518,30 +517,47 @@ def power_score(unit: Unit) -> float:
 
     设计原则（与设计文档 §3.9 一致）：
 
-    - 只看模拟器实际会用的 ``attack_ranged`` / ``attack_melee``；
-      ``attack_siege`` 模拟器不读，不计入。
+    - 有攻击列表时只算打得中人、现在打得出来的模式。
+      没有列表时用远程槽和近战槽。只拆建筑的不算。
     - 倍率（multipliers）不计——克制由模拟器自然发挥。
     - 不计 speed / 射程，1v1 静态战力公式无法量化"接战阶段"的影响。
     """
     eff_armor = max(unit.armor_ranged or 0.0, unit.armor_melee or 0.0)
     hp_eff = unit.hp * (1.0 + eff_armor * ARMOR_WEIGHT)
 
-    rof_r = unit.rof_ranged or 3.0
-    rof_m = unit.rof_melee or 1.5
+    hits: list[tuple[float, float]] = []
+    if unit.attack_actions:
+        for action in unit.attack_actions:
+            if (
+                not action.enabled
+                or not action.hits_soldiers
+                or action.damage <= 0
+                or action.range_max <= 0
+            ):
+                continue
+            if action.charge and action.recharge <= 0:
+                continue
+            hit = action.damage * max(1, action.num_projectiles) * (
+                1.0 + (action.aoe_radius or 0) * BLACKLIST_AOE_DPS_MULT
+            )
+            interval = action.rof or 3.0
+            if action.charge and action.recharge > 0:
+                interval = max(interval, action.recharge)
+            hits.append((hit, interval))
+    else:
+        rof_r = unit.rof_ranged or 3.0
+        rof_m = unit.rof_melee or 1.5
+        hit_r = (unit.attack_ranged or 0.0) * (unit.num_projectiles_ranged or 1) * (
+            1.0 + (unit.aoe_radius_ranged or 0) * BLACKLIST_AOE_DPS_MULT
+        )
+        hit_m = (unit.attack_melee or 0.0) * (unit.num_projectiles_melee or 1) * (
+            1.0 + (unit.aoe_radius_melee or 0) * BLACKLIST_AOE_DPS_MULT
+        )
+        hits = [(hit_r, rof_r), (hit_m, rof_m)]
 
-    hit_r = (unit.attack_ranged or 0.0) * (unit.num_projectiles_ranged or 1) * (
-        1.0 + (unit.aoe_radius_ranged or 0) * BLACKLIST_AOE_DPS_MULT
-    )
-    hit_m = (unit.attack_melee or 0.0) * (unit.num_projectiles_melee or 1) * (
-        1.0 + (unit.aoe_radius_melee or 0) * BLACKLIST_AOE_DPS_MULT
-    )
-    eff_hit_r = _soft_diminish(hit_r, HIT_BASELINE)
-    eff_hit_m = _soft_diminish(hit_m, HIT_BASELINE)
-
-    dps_raw = max(
-        eff_hit_r / max(0.1, rof_r),
-        eff_hit_m / max(0.1, rof_m),
-    )
+    dps_raw = 0.0
+    for hit, interval in hits:
+        dps_raw = max(dps_raw, _soft_diminish(hit, HIT_BASELINE) / max(0.1, interval))
     dps_eff = _soft_diminish(dps_raw, DPS_BASELINE)
 
     return math.sqrt(hp_eff * dps_eff)
@@ -958,7 +974,20 @@ def generate_duel_lineup(
 # =====================================================================
 
 def _atk_summary(u: Unit) -> str:
-    """一行压缩攻击信息（仅显示模拟器实际使用的远程/近战攻击）。"""
+    """一行压缩攻击信息。有攻击列表时取最远一发和贴脸一发。"""
+    shots = card_shots(u.attack_actions)
+    if u.attack_actions or u.inflicts_no_damage:
+        parts = []
+        for action in shots:
+            rng = f"射程{action.range_max:g}"
+            if action.range_min:
+                rng = f"射程{action.range_min:g}-{action.range_max:g}"
+            damage = f"{action.damage:.0f}"
+            if action.num_projectiles > 1:
+                damage = f"{action.damage:.0f}×{action.num_projectiles}发"
+            parts.append(f"{shot_kind(action)}{damage}({rng}, {action.rof:g}s)")
+        return " | ".join(parts) if parts else "无攻击"
+
     parts = []
     _dtype_label = {"Siege": "攻城伤害", "Hand": "近战伤害"}
 

@@ -137,6 +137,7 @@ COMBAT_SUBTYPES = {
     "SpeedModifier",
     "TacticArmor",
     "TacticEnable",
+    "InitialTactic",
     # Unit type changes can alter matchups and combat behavior.
     "AddContainedBonusType",
     "AddContainedType",
@@ -301,7 +302,6 @@ KNOWN_NON_COMBAT_SUBTYPES = {
     "HomeCityCardMakeInfinite",
     "HomeCityShipmentModifier",
     "InitiateRevolution",
-    "InitialTactic",
     "Market",
     "MarketReset",
     "PlacementRulesOverride",

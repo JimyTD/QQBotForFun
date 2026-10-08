@@ -87,6 +87,8 @@ class Soldier2D:
     attack_ready_at: float = 0.0
     aim_ready_at: float | None = None
     prepared_mode: AttackMode | None = None
+    prepared_action_name: str | None = None
+    charge_ready_at: float = 0.0
     reconsider_attack_mode: bool = False
     artillery_state: ArtilleryState = ArtilleryState.LIMBER
     deploy_ready_at: float = 0.0

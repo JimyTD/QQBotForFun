@@ -9,6 +9,7 @@ from __future__ import annotations
 import dataclasses
 from typing import Sequence
 
+from .attack_actions import AttackAction
 from .models import Multiplier, Unit
 
 
@@ -56,6 +57,19 @@ def _op_dedup_key(op: dict, unit: Unit) -> tuple[str, ...]:
         vs = op.get("vs", "")
         slots = _slots_for_op(op, unit)
         return tuple(f"mult:{kind}:{s}:{vs}" for s in slots) if slots else (f"mult:{kind}::{vs}",)
+    if stat == "action_enable":
+        return (f"action_enable:{op.get('action', '')}",)
+    if stat == "initial_tactic":
+        return (f"initial_tactic:{op.get('tactic', '')}",)
+    if stat == "recharge":
+        targets = ",".join(
+            sorted(
+                str(target.get("value") or "")
+                for target in op.get("targets") or ()
+                if isinstance(target, dict)
+            )
+        )
+        return (f"recharge:{kind}:{op.get('action', '')}:{targets}",)
     if stat == "armor":
         return (f"armor:{kind}:{op.get('armor_kind', '')}",)
     if stat == "cost":
@@ -128,6 +142,63 @@ def _apply_rof(
             continue
         changes[field] = round(max(_ROF_FLOOR, new), 3)
 
+    def _next_rof(action: AttackAction, origin: AttackAction) -> AttackAction:
+        if kind == "set":
+            new = val
+        elif action.rof <= 0:
+            return action
+        elif kind == "add":
+            new = action.rof + val
+        elif kind == "mult":
+            new = action.rof + origin.rof * (val - 1.0)
+        else:
+            return action
+        return dataclasses.replace(action, rof=round(max(_ROF_FLOOR, new), 3))
+
+    _retarget_actions(changes, unit, base, op, _next_rof)
+
+
+def _recharge_targets_unit(op: dict, unit: Unit) -> bool:
+    """冷却效果只打到写明的原型。没写目标时，这名兵身上的蓄力都改。"""
+    targets = [
+        str(target.get("value") or "")
+        for target in op.get("targets") or ()
+        if isinstance(target, dict)
+        and target.get("type") == "ProtoUnit"
+        and target.get("value")
+    ]
+    if not targets:
+        return True
+    tags = {unit.id.lower(), *(item.lower() for item in unit.type)}
+    return any(target.lower() in tags for target in targets)
+
+
+def _action_names(op: dict, actions: list[AttackAction]) -> set[str] | None:
+    """None means every mode. A named mode that is not on this unit matches nothing."""
+    if op.get("allactions") or not op.get("action"):
+        return None
+    return {str(op["action"])}
+
+
+def _retarget_actions(changes: dict, unit: Unit, base: Unit, op: dict, mapper) -> None:
+    current = list(changes.get("attack_actions", unit.attack_actions))
+    if not current:
+        return
+    names = _action_names(op, current)
+    origin_actions = changes.get("_attack_origin", base.attack_actions)
+    base_by = {action.name: action for action in origin_actions}
+    updated: list[AttackAction] = []
+    changed = False
+    for action in current:
+        if names is not None and action.name not in names:
+            updated.append(action)
+            continue
+        nxt = mapper(action, base_by.get(action.name, action))
+        updated.append(nxt)
+        changed = changed or nxt != action
+    if changed:
+        changes["attack_actions"] = updated
+
 
 def _apply_one_tech(unit: Unit, tech: dict, base: Unit) -> Unit:
     """把一条已选科技叠到单位上，返回新副本（无效不动）。
@@ -146,6 +217,7 @@ def _apply_one_tech(unit: Unit, tech: dict, base: Unit) -> Unit:
 
     # 预处理：按 (stat, kind, 目标键) 分组，每组只保留最强的一条 op
     best_ops = _deduplicate_ops(tech["ops"], unit)
+    best_ops.sort(key=lambda op: op["stat"] != "initial_tactic")
 
     changes: dict = {}
     for op in best_ops:
@@ -178,6 +250,21 @@ def _apply_one_tech(unit: Unit, tech: dict, base: Unit) -> Unit:
                     changes["damage_cap_melee"] = round(
                         changes.get("damage_cap_melee", unit.damage_cap_melee)
                         + base.damage_cap_melee * inc, 2)
+            _retarget_actions(
+                changes,
+                unit,
+                base,
+                {**op, "action": "", "allactions": True},
+                lambda action, origin: dataclasses.replace(
+                    action,
+                    damage=round(action.damage + origin.damage * inc, 2),
+                    damage_cap=(
+                        round(action.damage_cap + origin.damage_cap * inc, 2)
+                        if origin.damage_cap
+                        else action.damage_cap
+                    ),
+                ),
+            )
         elif stat == "range" and kind == "add":
             for s in _slots_for_op(op, unit):
                 if s == "ranged" and unit.range:
@@ -186,6 +273,23 @@ def _apply_one_tech(unit: Unit, tech: dict, base: Unit) -> Unit:
                 elif s == "melee" and unit.range_melee:
                     changes["range_melee"] = round(
                         changes.get("range_melee", unit.range_melee) + val, 2)
+            field_name = (
+                "range_min" if op.get("subtype") == "MinimumRange" else "range_max"
+            )
+            _retarget_actions(
+                changes,
+                unit,
+                base,
+                op,
+                lambda action, _origin, field_name=field_name: (
+                    action
+                    if getattr(action, field_name) <= 0
+                    else dataclasses.replace(
+                        action,
+                        **{field_name: round(getattr(action, field_name) + val, 2)},
+                    )
+                ),
+            )
         elif stat == "aoe" and kind == "add":
             for s in _slots_for_op(op, unit):
                 if s == "ranged":
@@ -194,6 +298,53 @@ def _apply_one_tech(unit: Unit, tech: dict, base: Unit) -> Unit:
                 elif s == "melee":
                     changes["aoe_radius_melee"] = round(
                         changes.get("aoe_radius_melee", unit.aoe_radius_melee) + val, 2)
+            _retarget_actions(
+                changes,
+                unit,
+                base,
+                op,
+                lambda action, _origin: dataclasses.replace(
+                    action,
+                    aoe_radius=round(action.aoe_radius + val, 2),
+                ),
+            )
+        elif stat == "recharge" and _recharge_targets_unit(op, unit):
+            def _next_recharge(action: AttackAction, origin: AttackAction) -> AttackAction:
+                if not action.charge:
+                    return action
+                if kind == "set":
+                    new = val
+                elif kind == "add":
+                    new = action.recharge + val
+                elif kind == "mult":
+                    new = action.recharge + origin.recharge * (val - 1.0)
+                else:
+                    return action
+                return dataclasses.replace(action, recharge=round(max(0.0, new), 4))
+
+            _retarget_actions(changes, unit, base, op, _next_recharge)
+        elif stat == "initial_tactic":
+            tactic = str(op.get("tactic") or "")
+            template = unit.attack_actions_by_tactic.get(tactic)
+            if template is None:
+                continue
+            origin = base.attack_actions_by_tactic.get(tactic, template)
+            changes["attack_actions"] = [
+                dataclasses.replace(action) for action in template
+            ]
+            changes["_attack_origin"] = list(origin)
+        elif stat == "action_enable" and op.get("action"):
+            enabled = float(val) != 0.0
+            _retarget_actions(
+                changes,
+                unit,
+                base,
+                op,
+                lambda action, _origin, enabled=enabled: dataclasses.replace(
+                    action,
+                    enabled=enabled,
+                ),
+            )
         elif stat == "rof":
             _apply_rof(changes, unit, base, op, kind, val)
         elif stat == "speed":
@@ -248,8 +399,26 @@ def _apply_one_tech(unit: Unit, tech: dict, base: Unit) -> Unit:
                     new_list.append(Multiplier(vs=vs, value=round(1.0 + val, 4)))
                 changes[field_name] = new_list
 
+            def _next_multiplier(action: AttackAction, _origin: AttackAction) -> AttackAction:
+                found_bonus = False
+                updated_bonuses = []
+                for bonus in action.multipliers:
+                    if bonus.vs == vs:
+                        updated_bonuses.append(
+                            dataclasses.replace(bonus, value=round(bonus.value + val, 4))
+                        )
+                        found_bonus = True
+                    else:
+                        updated_bonuses.append(bonus)
+                if not found_bonus:
+                    updated_bonuses.append(Multiplier(vs=vs, value=round(1.0 + val, 4)))
+                return dataclasses.replace(action, multipliers=tuple(updated_bonuses))
+
+            _retarget_actions(changes, unit, base, op, _next_multiplier)
+
     if not changes:
         return unit
+    changes.pop("_attack_origin", None)
     return dataclasses.replace(unit, **changes)
 
 
@@ -332,5 +501,16 @@ def _brief_desc(tech: dict) -> str:
         elif stat == "mult" and kind == "add":
             vs_short = op.get("vs", "").replace("Abstract", "")
             parts.append(f"vs{vs_short}+{val}")
+        elif stat == "initial_tactic":
+            parts.append("换成阵型")
+        elif stat == "action_enable":
+            parts.append("解锁攻击" if val else "关闭攻击")
+        elif stat == "recharge" and kind == "mult":
+            pct = round((val - 1) * 100)
+            parts.append(f"蓄力冷却{'+' if pct > 0 else ''}{pct}%")
+        elif stat == "recharge" and kind == "add":
+            parts.append(f"蓄力冷却{'+' if val > 0 else ''}{val:g}秒")
+        elif stat == "recharge" and kind == "set":
+            parts.append(f"蓄力冷却改为{val:g}秒")
     scope = "/".join(s.replace("Abstract", "") for s in tech["scope"])
     return f"{scope}: {', '.join(parts)}" if parts else scope

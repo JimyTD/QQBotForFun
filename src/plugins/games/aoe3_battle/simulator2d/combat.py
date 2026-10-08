@@ -5,6 +5,12 @@ from __future__ import annotations
 import logging
 from dataclasses import dataclass
 
+from ....aoe3.attack_actions import (
+    AttackAction,
+    action_is_melee,
+    select_attack,
+    soldier_search_range,
+)
 from .aoe import resolve_aoe
 from .compat import EventType
 from .config import Simulation2DConfig
@@ -26,6 +32,22 @@ class SlotStats:
     area_sort_mode: str
     outer_damage_area_distance: float
     outer_damage_area_factor: float
+
+
+def stats_from_action(action: AttackAction) -> SlotStats:
+    """把选中的攻击模式整包映射成溅射和伤害共用的槽统计。"""
+    return SlotStats(
+        slot="melee" if action_is_melee(action) else "ranged",
+        base_damage=action.damage,
+        num_projectiles=max(1, action.num_projectiles),
+        multipliers=list(action.multipliers),
+        damage_type=action.damage_type,
+        aoe_radius=action.aoe_radius,
+        damage_cap_proto=action.damage_cap,
+        area_sort_mode=action.area_sort_mode,
+        outer_damage_area_distance=action.outer_damage_area_distance,
+        outer_damage_area_factor=action.outer_damage_area_factor,
+    )
 
 
 def combat_slot_stats(unit, mode: AttackMode) -> SlotStats | None:
@@ -115,6 +137,7 @@ class CombatSystem:
         """A movement command cancels preparation, never the weapon cooldown."""
         soldier.aim_ready_at = None
         soldier.prepared_mode = None
+        soldier.prepared_action_name = None
         soldier.reconsider_attack_mode = False
         soldier.target_id = None
 
@@ -136,7 +159,46 @@ class CombatSystem:
             and soldier.effective_ranged_range_min <= distance <= soldier.effective_ranged_range
         )
 
+    def _selected_action(
+        self,
+        soldier: Soldier2D,
+        target: Soldier2D,
+    ) -> AttackAction | None:
+        if not soldier.unit.attack_actions:
+            return None
+        if not target.alive or target.side == soldier.side:
+            return None
+        return select_attack(
+            soldier.unit.attack_actions,
+            soldier.distance_to(target),
+            now=self.now,
+            charge_ready_at=soldier.charge_ready_at,
+            target_types=target.unit.type,
+        )
+
+    def _prepared_action(self, soldier: Soldier2D) -> AttackAction | None:
+        name = soldier.prepared_action_name
+        if not name:
+            return None
+        for action in soldier.unit.attack_actions:
+            if action.name == name:
+                return action
+        return None
+
     def prepare_attack(self, soldier: Soldier2D, target: Soldier2D) -> AttackMode | None:
+        if soldier.unit.attack_actions:
+            if not soldier.can_attack:
+                return None
+            action = self._selected_action(soldier, target)
+            if action is None:
+                return None
+            mode = AttackMode.MELEE if action_is_melee(action) else AttackMode.RANGED
+            if soldier.prepared_action_name != action.name or soldier.aim_ready_at is None:
+                soldier.prepared_action_name = action.name
+                soldier.prepared_mode = mode
+                soldier.aim_ready_at = self.now + max(0.0, action.windup)
+            soldier.reconsider_attack_mode = False
+            return mode
         mode = soldier.prepared_mode
         # Keep the selected action through aiming and the ROF wait. Reconsider
         # after a shot or when that action is no longer legal, not on range jitter.
@@ -159,16 +221,21 @@ class CombatSystem:
         soldier.reconsider_attack_mode = False
         return mode
 
+    def _search_radius(self, soldier: Soldier2D) -> float:
+        if soldier.unit.attack_actions:
+            return soldier_search_range(soldier.unit.attack_actions)
+        return max(
+            soldier.effective_ranged_range if soldier.has_ranged else 0.0,
+            soldier.effective_melee_range if soldier.has_melee else 0.0,
+        )
+
     def attack_candidates(self, soldier: Soldier2D) -> list[Soldier2D]:
         """Return living enemies currently inside a legal attack envelope."""
         if not soldier.can_attack:
             return []
         if not soldier.has_ranged and not soldier.has_melee:
             return []
-        radius = max(
-            soldier.effective_ranged_range if soldier.has_ranged else 0.0,
-            soldier.effective_melee_range if soldier.has_melee else 0.0,
-        )
+        radius = self._search_radius(soldier)
         if radius <= 0:
             return []
 
@@ -188,10 +255,7 @@ class CombatSystem:
         """Return whether an enemy is inside a legal attack envelope."""
         if not soldier.has_ranged and not soldier.has_melee:
             return False
-        radius = max(
-            soldier.effective_ranged_range if soldier.has_ranged else 0.0,
-            soldier.effective_melee_range if soldier.has_melee else 0.0,
-        )
+        radius = self._search_radius(soldier)
         if radius <= 0:
             return False
         enemies = self.spatial_hash.query_circle(
@@ -200,6 +264,10 @@ class CombatSystem:
             predicate=lambda other: other.alive and other.side != soldier.side,
         )
         for enemy in enemies:
+            if soldier.unit.attack_actions:
+                if self._selected_action(soldier, enemy) is not None:
+                    return True
+                continue
             distance = soldier.distance_to(enemy)
             if soldier.has_melee and distance <= soldier.effective_melee_range:
                 return True
@@ -296,6 +364,13 @@ class CombatSystem:
         soldier: Soldier2D,
         target: Soldier2D,
     ) -> AttackMode | None:
+        if soldier.unit.attack_actions:
+            if not soldier.can_attack:
+                return None
+            action = self._selected_action(soldier, target)
+            if action is None:
+                return None
+            return AttackMode.MELEE if action_is_melee(action) else AttackMode.RANGED
         if self.is_mode_valid(soldier, target, AttackMode.MELEE):
             return AttackMode.MELEE
         if self.is_mode_valid(soldier, target, AttackMode.RANGED):
@@ -309,7 +384,12 @@ class CombatSystem:
         target: Soldier2D,
         mode: AttackMode,
     ) -> float:
-        stats = combat_slot_stats(attacker.unit, mode)
+        prepared = self._prepared_action(attacker)
+        stats = (
+            stats_from_action(prepared)
+            if prepared is not None
+            else combat_slot_stats(attacker.unit, mode)
+        )
         if stats is None:
             return 0.0
         multiplier = calc_multiplier(stats.multipliers, target)
@@ -342,7 +422,16 @@ class CombatSystem:
             if self.now + 1e-9 < max(soldier.attack_ready_at, soldier.aim_ready_at):
                 continue
             damage = self.calc_damage(soldier, target, mode)
-            if mode == AttackMode.MELEE:
+            prepared = self._prepared_action(soldier)
+            if prepared is not None:
+                rof = prepared.rof if prepared.rof > 0 else (
+                    self.config.default_rof_melee
+                    if mode == AttackMode.MELEE
+                    else self.config.default_rof_ranged
+                )
+                if prepared.charge:
+                    soldier.charge_ready_at = self.now + prepared.recharge
+            elif mode == AttackMode.MELEE:
                 rof = (
                     soldier.unit.rof_melee
                     if soldier.unit.rof_melee > 0
@@ -366,7 +455,12 @@ class CombatSystem:
             if not target.alive:
                 continue
             self.damage_callback(soldier, target, damage, mode, is_splash=False)
-            stats = combat_slot_stats(soldier.unit, mode)
+            prepared = self._prepared_action(soldier)
+            stats = (
+                stats_from_action(prepared)
+                if prepared is not None
+                else combat_slot_stats(soldier.unit, mode)
+            )
             if stats is not None and stats.aoe_radius > 0:
                 self.process_aoe(
                     soldier,

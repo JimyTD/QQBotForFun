@@ -12,6 +12,7 @@ from datetime import datetime
 from itertools import pairwise
 from typing import Any
 
+from src.plugins.aoe3.attack_actions import action_is_melee, approach_distance
 from src.plugins.aoe3.models import Unit
 
 from .combat import CombatSystem
@@ -206,6 +207,35 @@ class BattleSimulator2D:
             facing=0.0 if side == Side.RED else math.pi,
         )
         soldier.detour_sign = 1 if soldier_id % 2 == 0 else -1
+        if unit.attack_actions:
+            usable = [
+                action
+                for action in unit.attack_actions
+                if action.enabled
+                and action.hits_soldiers
+                and action.damage > 0
+                and action.range_max > 0
+                and (not action.charge or action.recharge > 0)
+            ]
+            melee = [action for action in usable if action_is_melee(action)]
+            ranged = [action for action in usable if not action_is_melee(action)]
+            soldier.has_melee = bool(melee)
+            soldier.has_ranged = bool(ranged)
+            if melee:
+                soldier.effective_melee_range = max(action.range_max for action in melee)
+            if ranged:
+                opening = max(
+                    ranged, key=lambda action: (action.priority, action.range_max)
+                )
+                soldier.effective_ranged_attack = opening.damage
+                soldier.effective_ranged_range = max(action.range_max for action in ranged)
+                soldier.effective_ranged_rof = (
+                    opening.rof if opening.rof > 0 else self.config.default_rof_ranged
+                )
+                soldier.effective_ranged_range_min = min(
+                    action.range_min for action in ranged
+                )
+            return soldier
         soldier.has_ranged = unit.attack_ranged > 0 and unit.range > 0
         soldier.has_melee = unit.attack_melee > 0
         soldier.effective_melee_range = (
@@ -786,6 +816,14 @@ class BattleSimulator2D:
         return True
 
     def _approach_range(self, soldier: Soldier2D, target: Soldier2D) -> float:
+        if soldier.unit.attack_actions:
+            return approach_distance(
+                soldier.unit.attack_actions,
+                soldier.distance_to(target),
+                now=self._tick * self.config.tick_interval,
+                charge_ready_at=soldier.charge_ready_at,
+                target_types=target.unit.type,
+            )
         if soldier.has_ranged and soldier.distance_to(target) > soldier.effective_ranged_range:
             return soldier.effective_ranged_range
         return soldier.effective_melee_range
@@ -1380,6 +1418,10 @@ class BattleSimulator2D:
             if mode == AttackMode.MELEE
             else attacker.unit.damage_type_ranged
         ) or ("Hand" if mode == AttackMode.MELEE else "Ranged")
+        if self._combat is not None and attacker.unit.attack_actions:
+            prepared = self._combat._prepared_action(attacker)
+            if prepared is not None and prepared.damage_type:
+                damage_type = prepared.damage_type
 
         self._emit(
             EventType.ATTACK,

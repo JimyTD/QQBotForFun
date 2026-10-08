@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from .attack_actions import card_shots, shot_kind
 from .i18n import t, t_age, t_list, t_mult_vs
 from .models import Multiplier, Unit
 
@@ -91,8 +92,34 @@ def render_unit_card(unit: Unit) -> str:
         lines.append(" | ".join(stat_parts))
     lines.append(f"抗性：{_fmt_resist(unit)}")
 
-    # 远程攻击
-    if unit.attack_ranged:
+    shots = card_shots(unit.attack_actions)
+    use_slots = not unit.attack_actions and not unit.inflicts_no_damage
+    if shots:
+        for action in shots:
+            kind = shot_kind(action)
+            lines.append("")
+            lines.append(f"{'⚔️' if kind == '近战' else '🏹'} {kind}攻击")
+            atk_parts = [f"  {action.damage:g}伤害"]
+            if action.range_max:
+                rng = (
+                    f"{action.range_min:g}-{action.range_max:g}"
+                    if action.range_min
+                    else f"{action.range_max:g}"
+                )
+                atk_parts.append(f"射程{rng}")
+            if action.rof:
+                atk_parts.append(f"射速{action.rof:g}s")
+            if action.windup:
+                atk_parts.append(f"前摇{action.windup:g}s")
+            if action.aoe_radius:
+                atk_parts.append(f"AOE{action.aoe_radius:g}")
+            if action.charge and action.recharge > 0:
+                atk_parts.append(f"蓄力{action.recharge:g}s")
+            lines.append(" | ".join(atk_parts))
+            mult_str = _fmt_mult(list(action.multipliers))
+            if mult_str:
+                lines.append(mult_str)
+    elif use_slots and unit.attack_ranged:
         dtype_tag = ""
         if unit.damage_type_ranged and unit.damage_type_ranged != "Ranged":
             dtype_zh = {"Siege": "攻城", "Hand": "近战"}.get(unit.damage_type_ranged, unit.damage_type_ranged)
@@ -115,7 +142,7 @@ def render_unit_card(unit: Unit) -> str:
             lines.append(mult_str)
 
     # 近战攻击
-    if unit.attack_melee:
+    if use_slots and unit.attack_melee:
         lines.append("")
         lines.append("⚔️ 近战攻击")
         atk_parts = [f"  {unit.attack_melee:g}伤害"]
@@ -131,7 +158,7 @@ def render_unit_card(unit: Unit) -> str:
             lines.append(mult_str)
 
     # 攻城攻击
-    if unit.attack_siege:
+    if use_slots and unit.attack_siege:
         lines.append("")
         lines.append("💣 攻城攻击")
         atk_parts = [f"  {unit.attack_siege:g}伤害"]

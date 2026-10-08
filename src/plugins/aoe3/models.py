@@ -92,6 +92,11 @@ class Unit:
     damage_type_ranged: str = ""     # "Ranged" / "Siege" / "Hand"
     damage_type_melee: str = ""      # "Hand" / 其他
 
+    # 默认阵型的攻击模式。空列表表示沿用下面的两槽。
+    attack_actions: list = field(default_factory=list)
+    attack_actions_by_tactic: dict = field(default_factory=dict)
+    inflicts_no_damage: bool = False
+
     # 抬手（秒）：逐动作名全量；windup_ranged/melee 为代表动作整包字段
     windups: dict[str, float] = field(default_factory=dict)
     windup_ranged: float = 0.0
@@ -111,17 +116,18 @@ class Unit:
 
     @property
     def has_attack(self) -> bool:
-        """是否有"对兵作战"的攻击能力。
+        """是否有打得到普通单位的攻击。
 
-        **只算 attack_ranged / attack_melee**，不算 attack_siege。
-
-        理由：``attack_siege`` 是拆建筑专用槽位（``BuildingAttack`` 系列），
-        斗蛐蛐一维场地上没有建筑可拆，模拟器也不读这个字段（详见
-        ``docs/games/aoe3-battle.md`` §3.9）。如果一个单位**只有** ``attack_siege``
-        没有 melee/ranged，它在斗蛐蛐里就是个站桩木桩，必须排除：
-          - 木制牛 ``deeggwoodcattle`` —— 彩蛋单位，attack_siege=20000
-          - 审判官 ``desalooninquisitor`` —— 治疗师，仅有拆建筑攻击
+        有攻击列表时只算打得中人的模式。``InflictsNoDamage`` 不算。
+        没有列表时沿用远程槽和近战槽。只拆建筑的单位不算。
         """
+        if self.inflicts_no_damage:
+            return False
+        if self.attack_actions:
+            return any(
+                action.hits_soldiers and action.damage > 0 and action.range_max > 0
+                for action in self.attack_actions
+            )
         return bool(self.attack_ranged or self.attack_melee)
 
     @property
@@ -171,6 +177,7 @@ class Unit:
         mults_ranged = mults.get("ranged") if isinstance(mults, dict) else None
         mults_melee = mults.get("melee") if isinstance(mults, dict) else None
         mults_siege = mults.get("siege") if isinstance(mults, dict) else None
+        from .attack_actions import attack_action_from_dict
 
         return cls(
             id=d.get("id", ""),
@@ -234,6 +241,21 @@ class Unit:
             basedamagecap_melee=bool(d.get("basedamagecap_melee", False)),
             protoaction_ranged=d.get("protoaction_ranged", ""),
             protoaction_melee=d.get("protoaction_melee", ""),
+            attack_actions=[
+                attack_action_from_dict(item)
+                for item in d.get("attack_actions") or []
+                if isinstance(item, dict) and item.get("name")
+            ],
+            attack_actions_by_tactic={
+                str(name): [
+                    attack_action_from_dict(item)
+                    for item in actions
+                    if isinstance(item, dict) and item.get("name")
+                ]
+                for name, actions in (d.get("attack_actions_by_tactic") or {}).items()
+                if isinstance(actions, list)
+            },
+            inflicts_no_damage=bool(d.get("inflicts_no_damage", False)),
             damage_type_ranged=d.get("damage_type_ranged", ""),
             damage_type_melee=d.get("damage_type_melee", ""),
             windups={k: float(v) for k, v in d.get("windups", {}).items()},

@@ -97,8 +97,45 @@ def _attack_dps(attacker: Unit, target: Unit, target_count: int, *, melee: bool)
     return max(1.0, hit) / max(0.1, rof) * engagement * aoe_factor
 
 
+def _action_dps(attacker: Unit, action, target: Unit, target_count: int) -> float:
+    if (
+        not action.enabled
+        or not action.hits_soldiers
+        or action.damage <= 0
+        or action.range_max <= 0
+    ):
+        return 0.0
+    if action.charge and action.recharge <= 0:
+        return 0.0
+    projectiles = action.num_projectiles or 1
+    rof = action.rof or 3.0
+    if action.charge and action.recharge > 0:
+        rof = max(rof, action.recharge)
+    if action.handlogic and not action.rangedlogic:
+        engagement = 0.75 + min(attacker.speed, 8.0) / 16.0
+    else:
+        engagement = 1.0 + min(action.range_max, 24.0) / 120.0
+    hit = (
+        action.damage
+        * projectiles
+        * _multiplier_product(action.multipliers, target)
+        * max(0.0, 1.0 - _armor(target, action.damage_type or "Ranged"))
+    )
+    crowd = min(1.0, max(0, target_count - 1) / 8.0)
+    aoe_factor = 1.0 + min(float(action.aoe_radius), 4.0) * 0.2 * crowd
+    return max(1.0, hit) / max(0.1, rof) * engagement * aoe_factor
+
+
 def unit_pressure(attacker: Unit, target: Unit, target_count: int) -> float:
     """Estimate one unit's best sustainable pressure against a target type."""
+    if attacker.attack_actions:
+        return max(
+            (
+                _action_dps(attacker, action, target, target_count)
+                for action in attacker.attack_actions
+            ),
+            default=0.0,
+        )
     return max(
         _attack_dps(attacker, target, target_count, melee=False),
         _attack_dps(attacker, target, target_count, melee=True),
