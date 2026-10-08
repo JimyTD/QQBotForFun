@@ -13,13 +13,17 @@ def _unit(unit_id: str) -> dict:
 
 def test_falconet_exposes_directional_outer_damage_metadata() -> None:
     falconet = _unit("falconet")
+    cannon = next(a for a in falconet["attack_actions"] if a["name"] == "CannonAttack")
 
-    assert falconet["area_sort_mode_ranged"] == "Directional"
-    assert falconet["outer_damage_area_distance_ranged"] == 0.25
-    assert falconet["outer_damage_area_factor_ranged"] == 0.2
+    assert cannon["area_sort_mode"] == "Directional"
+    assert cannon["outer_damage_area_distance"] == 0.25
+    assert cannon["outer_damage_area_factor"] == 0.2
 
 
 def test_mortar_uses_radial_area_sort_metadata() -> None:
     mortar = _unit("mortar")
+    action = next(
+        a for a in mortar["attack_actions"] if a.get("area_sort_mode") == "Radial"
+    )
 
-    assert mortar["area_sort_mode_ranged"] == "Radial"
+    assert action["area_sort_mode"] == "Radial"

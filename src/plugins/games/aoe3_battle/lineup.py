@@ -397,8 +397,8 @@ def get_blacklist_pool(repo: UnitRepo) -> list[Unit]:
     规则（详见设计文档 §2.6）：
 
     - 来源：``BATTLE_BLACKLIST``（彩蛋 / 作弊码 / 怪物级战役兵）
-    - 必须 ``has_attack``（即 ``attack_ranged`` 或 ``attack_melee`` 有值），
-      模拟器才打得动；只有 ``attack_siege`` 的会被自动剔除
+    - 必须 ``has_attack``（攻击列表里至少有一条打得中人、伤害大于 0 的模式），
+      只拆建筑或 ``InflictsNoDamage`` 的会被自动剔除
     - 必须 ``hp > 0``
     - 防御性地过一次 ``is_excluded_unit``，以防黑名单里混了被全局排除的 id
 
@@ -529,34 +529,23 @@ def power_score(unit: Unit) -> float:
     hp_eff = unit.hp * (1.0 + eff_armor * ARMOR_WEIGHT)
 
     hits: list[tuple[float, float]] = []
-    if unit.attack_actions:
-        for action in unit.attack_actions:
-            if (
-                not action.enabled
-                or not action.hits_soldiers
-                or action.damage <= 0
-                or action.range_max <= 0
-            ):
-                continue
-            if action.charge and action.recharge <= 0:
-                continue
-            hit = action.damage * max(1, action.num_projectiles) * (
-                1.0 + (action.aoe_radius or 0) * BLACKLIST_AOE_DPS_MULT
-            )
-            interval = action.rof or 3.0
-            if action.charge and action.recharge > 0:
-                interval = max(interval, action.recharge)
-            hits.append((hit, interval))
-    else:
-        rof_r = unit.rof_ranged or 3.0
-        rof_m = unit.rof_melee or 1.5
-        hit_r = (unit.attack_ranged or 0.0) * (unit.num_projectiles_ranged or 1) * (
-            1.0 + (unit.aoe_radius_ranged or 0) * BLACKLIST_AOE_DPS_MULT
+    for action in unit.attack_actions:
+        if (
+            not action.enabled
+            or not action.hits_soldiers
+            or action.damage <= 0
+            or action.range_max <= 0
+        ):
+            continue
+        if action.charge and action.recharge <= 0:
+            continue
+        hit = action.damage * max(1, action.num_projectiles) * (
+            1.0 + (action.aoe_radius or 0) * BLACKLIST_AOE_DPS_MULT
         )
-        hit_m = (unit.attack_melee or 0.0) * (unit.num_projectiles_melee or 1) * (
-            1.0 + (unit.aoe_radius_melee or 0) * BLACKLIST_AOE_DPS_MULT
-        )
-        hits = [(hit_r, rof_r), (hit_m, rof_m)]
+        interval = action.rof or 3.0
+        if action.charge and action.recharge > 0:
+            interval = max(interval, action.recharge)
+        hits.append((hit, interval))
 
     dps_raw = 0.0
     for hit, interval in hits:

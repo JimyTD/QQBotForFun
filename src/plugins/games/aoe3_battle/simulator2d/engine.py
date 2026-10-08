@@ -261,49 +261,33 @@ class BattleSimulator2D:
             facing=0.0 if side == Side.RED else math.pi,
         )
         soldier.detour_sign = 1 if soldier_id % 2 == 0 else -1
-        if unit.attack_actions:
-            usable = [
-                action
-                for action in unit.attack_actions
-                if action.enabled
-                and action.hits_soldiers
-                and action.damage > 0
-                and action.range_max > 0
-                and (not action.charge or action.recharge > 0)
-            ]
-            melee = [action for action in usable if action_is_melee(action)]
-            ranged = [action for action in usable if not action_is_melee(action)]
-            soldier.has_melee = bool(melee)
-            soldier.has_ranged = bool(ranged)
-            if melee:
-                soldier.effective_melee_range = max(action.range_max for action in melee)
-            if ranged:
-                opening = max(
-                    ranged, key=lambda action: (action.priority, action.range_max)
-                )
-                soldier.effective_ranged_attack = opening.damage
-                soldier.effective_ranged_range = max(action.range_max for action in ranged)
-                soldier.effective_ranged_rof = (
-                    opening.rof if opening.rof > 0 else self.config.default_rof_ranged
-                )
-                soldier.effective_ranged_range_min = min(
-                    action.range_min for action in ranged
-                )
-            return soldier
-        soldier.has_ranged = unit.attack_ranged > 0 and unit.range > 0
-        soldier.has_melee = unit.attack_melee > 0
-        soldier.effective_melee_range = (
-            unit.range_melee
-            if soldier.has_melee and unit.range_melee > 0
-            else self.config.melee_range
-        )
-        if soldier.has_ranged:
-            soldier.effective_ranged_attack = unit.attack_ranged
-            soldier.effective_ranged_range = unit.range
-            soldier.effective_ranged_rof = (
-                unit.rof_ranged if unit.rof_ranged > 0 else self.config.default_rof_ranged
+        usable = [
+            action
+            for action in unit.attack_actions
+            if action.enabled
+            and action.hits_soldiers
+            and action.damage > 0
+            and action.range_max > 0
+            and (not action.charge or action.recharge > 0)
+        ]
+        melee = [action for action in usable if action_is_melee(action)]
+        ranged = [action for action in usable if not action_is_melee(action)]
+        soldier.has_melee = bool(melee)
+        soldier.has_ranged = bool(ranged)
+        if melee:
+            soldier.effective_melee_range = max(action.range_max for action in melee)
+        if ranged:
+            opening = max(
+                ranged, key=lambda action: (action.priority, action.range_max)
             )
-            soldier.effective_ranged_range_min = unit.range_min
+            soldier.effective_ranged_attack = opening.damage
+            soldier.effective_ranged_range = max(action.range_max for action in ranged)
+            soldier.effective_ranged_rof = (
+                opening.rof if opening.rof > 0 else self.config.default_rof_ranged
+            )
+            soldier.effective_ranged_range_min = min(
+                action.range_min for action in ranged
+            )
         return soldier
 
     def _init_soldiers(self) -> None:
@@ -1485,12 +1469,8 @@ class BattleSimulator2D:
         attacker.total_damage_dealt += effective_damage
         attacker.raw_damage_dealt += raw_damage
         attacker.overkill_damage += overkill
-        damage_type = (
-            attacker.unit.damage_type_melee
-            if mode == AttackMode.MELEE
-            else attacker.unit.damage_type_ranged
-        ) or ("Hand" if mode == AttackMode.MELEE else "Ranged")
-        if self._combat is not None and attacker.unit.attack_actions:
+        damage_type = "Hand" if mode == AttackMode.MELEE else "Ranged"
+        if self._combat is not None:
             prepared = self._combat._prepared_action(attacker)
             if prepared is not None and prepared.damage_type:
                 damage_type = prepared.damage_type
@@ -1754,7 +1734,19 @@ def _ordered_formation_units(army: list[ArmySlot]) -> list[Unit]:
     units: list[Unit] = []
     for slot in sorted(
         army,
-        key=lambda item: (item.unit.range, -item.unit.speed, item.unit.id),
+        key=lambda item: (_unit_attack_range(item.unit), -item.unit.speed, item.unit.id),
     ):
         units.extend([slot.unit] * slot.count)
     return units
+
+
+def _unit_attack_range(unit: Unit) -> float:
+    """最远能打到人的攻击模式射程；没有则 0。阵型排序用。"""
+    return max(
+        (
+            action.range_max
+            for action in unit.attack_actions
+            if action.hits_soldiers and action.damage > 0
+        ),
+        default=0.0,
+    )

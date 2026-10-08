@@ -46,10 +46,22 @@ class _Block:
         return self.rows * self.longitudinal_pitch
 
 
+def _attack_range(unit: Unit) -> float:
+    """最远能打到人的攻击模式射程；阵型按它从远到近排。"""
+    return max(
+        (
+            action.range_max
+            for action in unit.attack_actions
+            if action.hits_soldiers and action.damage > 0
+        ),
+        default=0.0,
+    )
+
+
 def _ordered_slots(army: list[ArmySlot]) -> list[ArmySlot]:
     return sorted(
         army,
-        key=lambda item: (item.unit.range, -item.unit.speed, item.unit.id),
+        key=lambda item: (_attack_range(item.unit), -item.unit.speed, item.unit.id),
     )
 
 

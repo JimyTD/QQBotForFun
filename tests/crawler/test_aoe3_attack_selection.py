@@ -8,14 +8,6 @@ from pathlib import Path
 import pytest
 
 ROOT = Path(__file__).resolve().parent.parent.parent
-sys.path.insert(0, str(ROOT / "scripts" / "crawler"))
-
-from aoe3_gamedata_parser import (  # noqa: E402
-    TIER_GUARDIAN,
-    _melee_hand_priority,
-    _ranged_attack_priority,
-    _siege_attack_priority,
-)
 
 RAW_DIR = ROOT / "data" / "aoe3" / "raw"
 UNITS_PATH = ROOT / "seeds" / "aoe3" / "units.json"
@@ -33,8 +25,12 @@ def units_by_id() -> dict[str, dict]:
     return {u["id"]: u for u in units}
 
 
+def _actions(u: dict) -> dict[str, dict]:
+    return {a["name"]: a for a in u.get("attack_actions", [])}
+
+
 @pytest.mark.parametrize(
-    "unit_id,proto_ranged,range_val,windup_r",
+    "unit_id,action_name,range_val,windup_r",
     [
         ("musketeer", "VolleyRangedAttack", 12.0, 0.48),
         ("skirmisher", "VolleyRangedAttack", 20.0, 0.46),
@@ -48,66 +44,47 @@ def units_by_id() -> dict[str, dict]:
 def test_attack_selection(
     units_by_id: dict[str, dict],
     unit_id: str,
-    proto_ranged: str,
+    action_name: str,
     range_val: float,
     windup_r: float | None,
 ) -> None:
     u = units_by_id[unit_id]
-    assert u.get("protoaction_ranged") == proto_ranged, u
-    assert u.get("range") == range_val, u
+    action = _actions(u).get(action_name)
+    assert action is not None, u
+    assert action["range_max"] == range_val, u
     if windup_r is not None:
-        assert u.get("windup_ranged") == windup_r, u
+        assert action.get("windup", 0.0) == windup_r, u
 
 
 def test_irish_brigadier_has_ranged_attack(units_by_id: dict[str, dict]) -> None:
     u = units_by_id["demercirishbrigadier"]
-    assert u.get("attack_ranged") == 25.0
-    assert u.get("range") == 12.0
-    assert u.get("range") > 0
+    action = _actions(u)["VolleyRangedAttack"]
+    assert action["damage"] == 25.0
+    assert action["range_max"] == 12.0
 
 
 def test_explorer_uses_volley_not_sharpshooter(units_by_id: dict[str, dict]) -> None:
     u = units_by_id["explorer"]
-    assert u.get("protoaction_ranged") == "VolleyRangedAttack"
-    assert u.get("attack_ranged") == 12.0
+    action = _actions(u)["VolleyRangedAttack"]
+    assert action["damage"] == 12.0
 
 
 def test_inca_warchief_no_crackshot_ranged(units_by_id: dict[str, dict]) -> None:
-    """Crackshot 是英雄技，斗蛐蛐只用 HandAttack 近战槽。"""
+    """Crackshot 是英雄技，不进攻击列表；斗蛐蛐用 HandAttack。"""
     u = units_by_id["deincawarchief"]
-    assert u.get("protoaction_ranged") is None
-    assert not u.get("attack_ranged")
-    assert u.get("protoaction_melee") == "HandAttack"
-    assert u.get("attack_melee") == 6.0
-
-
-@pytest.mark.parametrize(
-    "action",
-    [
-        "GrenadeAttackGuardian",
-        "GuardianAttack",
-        "GuardianCoverAttack",
-        "GuardianHandAttack",
-        "GuardianRangedAttack",
-        "GuardianSweepAttack",
-        "HandAttackGuardian",
-        "RocketAttackGuardian",
-    ],
-)
-def test_guardian_actions_are_lowest_priority(action: str) -> None:
-    assert _ranged_attack_priority(action, set()) == TIER_GUARDIAN
-    assert _melee_hand_priority(action) == TIER_GUARDIAN
-    assert _siege_attack_priority(action) == TIER_GUARDIAN
+    actions = _actions(u)
+    assert "CrackshotAttack" not in actions
+    assert actions["HandAttack"]["damage"] == 6.0
 
 
 def test_fire_thrower_uses_real_grenade_not_guardian(
     units_by_id: dict[str, dict],
 ) -> None:
     u = units_by_id["dehoopthrower"]
-    assert u.get("protoaction_ranged") == "GrenadeAttack"
-    assert u.get("attack_ranged") == 16.0
-    assert u.get("aoe_radius_ranged") == 2
-    assert u.get("damage_cap_ranged") == 32.0
+    action = _actions(u)["GrenadeAttack"]
+    assert action["damage"] == 16.0
+    assert action["aoe_radius"] == 2
+    assert action["damage_cap"] == 32.0
 
 
 @pytest.mark.parametrize(

@@ -7,58 +7,42 @@ from __future__ import annotations
 
 import json
 import sys
-import xml.etree.ElementTree as ET
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT / "scripts" / "crawler"))
 
 from aoe3_gamedata_parser import (  # noqa: E402
-    NAMED_MELEE_ATTACK_ORDER,
-    NAMED_RANGED_ATTACK_ORDER,
     NON_DPS_RANGED_ATTACKS,
-    _is_combat_unit,
-    _parse_attacks,
 )
 
-PROTOY = ROOT / "data" / "aoe3" / "raw" / "protoy.xml"
 UNITS = ROOT / "seeds" / "aoe3" / "units.json"
 
 
 def main() -> None:
-    tree = ET.parse(PROTOY)
     units_json = {u["id"]: u for u in json.loads(UNITS.read_text(encoding="utf-8"))}
 
-    print("NON_DPS_RANGED_ATTACKS (excluded from斗蛐蛐代表动作):")
+    print("NON_DPS_RANGED_ATTACKS (excluded from the attack list):")
     for name in sorted(NON_DPS_RANGED_ATTACKS):
         print(f"  - {name}")
 
-    print("\nNAMED_RANGED_ATTACK_ORDER:")
-    for name in NAMED_RANGED_ATTACK_ORDER:
-        print(f"  - {name}")
-
     skill_selected = []
-    for el in tree.getroot().findall("unit"):
-        types = {ut.text.strip() for ut in el.findall("unittype") if ut.text}
-        if not _is_combat_unit(el, types):
-            continue
-        uid = el.get("name", "").lower()
-        tactics = el.findtext("tactics", "").strip()
-        atk = _parse_attacks(el, tactics, types)
-        r = atk.get("ranged", {}).get("name")
-        if r in NON_DPS_RANGED_ATTACKS:
-            skill_selected.append(uid)
+    for uid, u in units_json.items():
+        for action in u.get("attack_actions", []):
+            if action["name"] in NON_DPS_RANGED_ATTACKS:
+                skill_selected.append(uid)
+                break
 
     if skill_selected:
-        print("\nERROR: skill still selected as ranged:", skill_selected)
+        print("\nERROR: skill still in the attack list:", skill_selected)
         raise SystemExit(1)
 
-    print("\nOK: no NON_DPS skill selected as ranged rep")
+    print("\nOK: no NON_DPS skill in the attack list")
     for uid in ("explorer", "deincawarchief", "mercmanchu"):
         u = units_json[uid]
         print(
-            f"  {uid}: ranged={u.get('protoaction_ranged')} "
-            f"melee={u.get('protoaction_melee')}"
+            f"  {uid}: "
+            + ", ".join(a["name"] for a in u.get("attack_actions", []))
         )
 
 

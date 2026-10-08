@@ -83,25 +83,27 @@ def main() -> None:
                     action.findtext("rof", ""),
                     action.findtext("damagearea", "0"),
                     action.findtext("damagecap", "0"),
-                    P._ranged_attack_priority(name, types),
-                    P._melee_hand_priority(name),
                     skip_reason(name, uid),
                 )
             )
-        for name, dmg, rng, dtype, rof, area, cap, rs, ms, skip in sorted(rows):
+        for name, dmg, rng, dtype, rof, area, cap, skip in sorted(rows):
             print(
                 f"    {name:26s} dmg={float(dmg):<9g} range={rng:<5s} type={dtype:8s} "
                 f"rof={rof:<5s} area={area:<4s} cap={cap:<6s} "
-                f"| ranged={rs} melee={ms} | skip={skip or '-'}"
+                f"| skip={skip or '-'}"
             )
 
-        atk = P._parse_attacks(el, el.findtext("tactics", "").strip(), types)
-        picked = " | ".join(
-            f"{slot}={atk[slot]['name']} (dmg {atk[slot]['damage']:g})"
-            for slot in ("ranged", "melee", "siege")
-            if atk.get(slot)
+        actions, _by_tactic = P._parse_attack_actions(
+            el,
+            el.findtext("tactics", "").strip(),
+            P._parse_windups(el, el.findtext("tactics", "").strip()),
         )
-        print(f"    => parser 选择: {picked or '（无可用攻击动作）'}")
+        picked = " | ".join(
+            f"{a['name']} (dmg {a['damage']:g})"
+            for a in actions
+            if a.get("hits_soldiers", True)
+        )
+        print(f"    => attack_actions: {picked or '（无可用攻击动作）'}")
         print()
 
 

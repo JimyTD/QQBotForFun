@@ -34,6 +34,14 @@ CASES = (
 )
 
 
+def _attack_range(unit) -> float:
+    return max((a.range_max for a in unit.attack_actions if a.hits_soldiers), default=0.0)
+
+
+def _attack_range_min(unit) -> float:
+    return min((a.range_min for a in unit.attack_actions if a.hits_soldiers), default=0.0)
+
+
 def _setup_log(path: Path) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     logging.basicConfig(
@@ -65,24 +73,22 @@ def main() -> None:
         blue = apply_upgrades(repo.get_by_id(blue_id), AGE)
         assert red is not None and blue is not None
         log.info(
-            "CASE %s red=%s x%d speed=%.2f r=%.2f range=%.1f/%.1f melee=%.2f hp=%.0f "
-            "blue=%s x%d speed=%.2f r=%.2f range=%.1f/%.1f melee=%.2f hp=%.0f",
+            "CASE %s red=%s x%d speed=%.2f r=%.2f range=%.1f/%.1f hp=%.0f "
+            "blue=%s x%d speed=%.2f r=%.2f range=%.1f/%.1f hp=%.0f",
             name,
             red.name,
             red_count,
             red.speed,
             red.obstruction_radius_x,
-            red.range,
-            red.range_min,
-            red.range_melee,
+            _attack_range(red),
+            _attack_range_min(red),
             red.hp,
             blue.name,
             blue_count,
             blue.speed,
             blue.obstruction_radius_x,
-            blue.range,
-            blue.range_min,
-            blue.range_melee,
+            _attack_range(blue),
+            _attack_range_min(blue),
             blue.hp,
         )
         activate()

@@ -201,11 +201,6 @@
               "AbstractArtillery": 0.75
             }
           },
-          "mult_add": {
-            "ranged": {
-              "AbstractArtillery": 0.75
-            }
-          },
           "name": "光荣的怯薛"
         },
         "5": {
@@ -223,11 +218,6 @@
               "AbstractArtillery": 0.75
             },
             "ChargeAttack": {
-              "AbstractArtillery": 0.75
-            }
-          },
-          "mult_add": {
-            "ranged": {
               "AbstractArtillery": 0.75
             }
           },
@@ -260,9 +250,6 @@
           "techs": [
             "YPHonoredQiangPikeman"
           ],
-          "range_add": {
-            "melee": 1.0
-          },
           "action_range_add": {
             "MeleeHandAttack": 1.0,
             "DefendHandAttack": 1.0,
@@ -277,9 +264,6 @@
             "YPHonoredQiangPikeman",
             "YPExaltedQiangPikeman"
           ],
-          "range_add": {
-            "melee": 1.5
-          },
           "action_range_add": {
             "MeleeHandAttack": 1.5,
             "DefendHandAttack": 1.5,
@@ -354,9 +338,6 @@
           "techs": [
             "DEGuardRiflemen"
           ],
-          "range_add": {
-            "ranged": 2.0
-          },
           "action_range_add": {
             "VolleyRangedAttack": 2.0,
             "DefendRangedAttack": 2.0,
@@ -371,9 +352,6 @@
             "DEGuardRiflemen",
             "DEImperialRiflemen"
           ],
-          "range_add": {
-            "ranged": 2.0
-          },
           "action_range_add": {
             "VolleyRangedAttack": 2.0,
             "DefendRangedAttack": 2.0,
@@ -408,9 +386,6 @@
           "techs": [
             "DEGuardUSCavalry"
           ],
-          "range_add": {
-            "ranged": 1.0
-          },
           "action_range_add": {
             "StaggerRangedAttack": 1.0,
             "DefendRangedAttack": 1.0
@@ -424,9 +399,6 @@
             "DEGuardUSCavalry",
             "DEImperialUSCavalry"
           ],
-          "range_add": {
-            "ranged": 1.0
-          },
           "action_range_add": {
             "StaggerRangedAttack": 1.0,
             "DefendRangedAttack": 1.0
@@ -617,9 +589,6 @@
           "techs": [
             "RGFriskytter"
           ],
-          "range_add": {
-            "ranged": 2.0
-          },
           "action_range_add": {
             "VolleyRangedAttack": 2.0,
             "DefendRangedAttack": 2.0,
@@ -634,9 +603,6 @@
             "RGFriskytter",
             "ImperialFriskytter"
           ],
-          "range_add": {
-            "ranged": 4.0
-          },
           "action_range_add": {
             "VolleyRangedAttack": 4.0,
             "DefendRangedAttack": 4.0,
@@ -702,9 +668,6 @@
           "techs": [
             "RGDanishPikemen"
           ],
-          "range_add": {
-            "melee": 1.0
-          },
           "armor_add": {
             "melee": 0.05
           },
@@ -722,9 +685,6 @@
             "RGDanishPikemen",
             "ImperialDanishPikemen"
           ],
-          "range_add": {
-            "melee": 1.0
-          },
           "armor_add": {
             "melee": 0.05
           },
@@ -960,9 +920,6 @@
           "techs": [
             "DEChampionBolasWarriors"
           ],
-          "range_add": {
-            "ranged": 3.0
-          },
           "action_range_add": {
             "GuardianRangedAttack": 3.0,
             "VolleyRangedAttack": 3.0,
@@ -978,9 +935,6 @@
             "DEChampionBolasWarriors",
             "DEImpLegendaryBolasWarriors"
           ],
-          "range_add": {
-            "ranged": 3.0
-          },
           "action_range_add": {
             "GuardianRangedAttack": 3.0,
             "VolleyRangedAttack": 3.0,
@@ -1035,9 +989,6 @@
           "techs": [
             "DEChampionBowmen"
           ],
-          "range_add": {
-            "ranged": 3.0
-          },
           "action_range_add": {
             "VolleyRangedAttack": 3.0,
             "DefendRangedAttack": 3.0,
@@ -1052,9 +1003,6 @@
             "DEChampionBowmen",
             "DEImpLegendaryBowmen"
           ],
-          "range_add": {
-            "ranged": 3.0
-          },
           "action_range_add": {
             "VolleyRangedAttack": 3.0,
             "DefendRangedAttack": 3.0,
@@ -1089,9 +1037,6 @@
           "techs": [
             "DEChampionSlingers"
           ],
-          "range_add": {
-            "ranged": 1.0
-          },
           "action_range_add": {
             "VolleyRangedAttack": 1.0,
             "BuildingAttack": 1.0,
@@ -1121,14 +1066,6 @@
               "AbstractArtillery": 0.5
             }
           },
-          "mult_add": {
-            "ranged": {
-              "AbstractArtillery": 0.5
-            },
-            "melee": {
-              "AbstractArtillery": 0.5
-            }
-          },
           "name": "风云投石索兵"
         },
         "5": {
@@ -1138,9 +1075,6 @@
             "DEChampionSlingers",
             "DEImpLegendarySlingers"
           ],
-          "range_add": {
-            "ranged": 2.0
-          },
           "action_range_add": {
             "VolleyRangedAttack": 2.0,
             "BuildingAttack": 2.0,
@@ -1167,14 +1101,6 @@
               "AbstractArtillery": 0.5
             },
             "MeleeHandAttack": {
-              "AbstractArtillery": 0.5
-            }
-          },
-          "mult_add": {
-            "ranged": {
-              "AbstractArtillery": 0.5
-            },
-            "melee": {
               "AbstractArtillery": 0.5
             }
           },
@@ -1263,9 +1189,6 @@
           "techs": [
             "DERGArbalester"
           ],
-          "range_add": {
-            "ranged": 1.0
-          },
           "action_range_add": {
             "VolleyRangedAttack": 1.0,
             "RangedBuildingAttack": 1.0,
@@ -1281,9 +1204,6 @@
             "DERGArbalester",
             "DEImperialArbalester"
           ],
-          "range_add": {
-            "ranged": 1.0
-          },
           "action_range_add": {
             "VolleyRangedAttack": 1.0,
             "RangedBuildingAttack": 1.0,
@@ -1376,9 +1296,6 @@
           "techs": [
             "GuardPikemen"
           ],
-          "range_add": {
-            "melee": 1.0
-          },
           "action_range_add": {
             "MeleeHandAttack": 1.0,
             "DefendHandAttack": 1.0,
@@ -1393,9 +1310,6 @@
             "GuardPikemen",
             "ImperialPikemen"
           ],
-          "range_add": {
-            "melee": 1.5
-          },
           "action_range_add": {
             "MeleeHandAttack": 1.5,
             "DefendHandAttack": 1.5,
@@ -1432,9 +1346,6 @@
           "techs": [
             "DEVigilantes"
           ],
-          "range_add": {
-            "ranged": 2.0
-          },
           "action_range_add": {
             "VolleyRangedAttack": 2.0,
             "DefendRangedAttack": 2.0,
@@ -1453,9 +1364,6 @@
             "DEVigilantes",
             "DEImperialVigilantes"
           ],
-          "range_add": {
-            "ranged": 2.0
-          },
           "action_range_add": {
             "VolleyRangedAttack": 2.0,
             "DefendRangedAttack": 2.0,
@@ -1561,9 +1469,6 @@
           "techs": [
             "RGKurpie"
           ],
-          "range_add": {
-            "ranged": 4.0
-          },
           "action_range_add": {
             "VolleyRangedAttack": 4.0,
             "DefendRangedAttack": 4.0,
@@ -1578,9 +1483,6 @@
             "RGKurpie",
             "ImperialKurpie"
           ],
-          "range_add": {
-            "ranged": 5.0
-          },
           "action_range_add": {
             "VolleyRangedAttack": 5.0,
             "DefendRangedAttack": 5.0,
@@ -1615,12 +1517,6 @@
           "techs": [
             "RGScythemen"
           ],
-          "range_add": {
-            "melee": 1.0
-          },
-          "rof_add": {
-            "melee": -0.25
-          },
           "action_range_add": {
             "MeleeHandAttack": 1.0,
             "DefendHandAttack": 1.0,
@@ -1640,12 +1536,6 @@
             "RGScythemen",
             "ImperialScythemen"
           ],
-          "range_add": {
-            "melee": 1.5
-          },
-          "rof_add": {
-            "melee": -0.25
-          },
           "action_range_add": {
             "MeleeHandAttack": 1.5,
             "DefendHandAttack": 1.5,
@@ -1706,9 +1596,6 @@
           "techs": [
             "deInfantryGuns"
           ],
-          "range_add": {
-            "ranged": 1.0
-          },
           "action_range_add": {
             "CannonAttack": 1.0,
             "BombardAttack": 1.0,
@@ -1724,9 +1611,6 @@
             "deInfantryGuns",
             "deImperialInfantryGuns"
           ],
-          "range_add": {
-            "ranged": 2.0
-          },
           "action_range_add": {
             "CannonAttack": 2.0,
             "BombardAttack": 2.0,
@@ -1743,9 +1627,6 @@
           "techs": [
             "RGDalkarl"
           ],
-          "range_add": {
-            "melee": 1.0
-          },
           "action_range_add": {
             "MeleeHandAttack": 1.0,
             "DefendHandAttack": 1.0,
@@ -1764,9 +1645,6 @@
             "RGDalkarl",
             "ImperialDalkarl"
           ],
-          "range_add": {
-            "melee": 1.5
-          },
           "action_range_add": {
             "MeleeHandAttack": 1.5,
             "DefendHandAttack": 1.5,
@@ -1807,9 +1685,6 @@
           "techs": [
             "RGCarabineer"
           ],
-          "range_add": {
-            "ranged": 1.0
-          },
           "action_range_add": {
             "StaggerRangedAttack": 1.0,
             "DefendRangedAttack": 1.0
@@ -1823,9 +1698,6 @@
             "RGCarabineer",
             "ImperialCarabineer"
           ],
-          "range_add": {
-            "ranged": 1.0
-          },
           "action_range_add": {
             "StaggerRangedAttack": 1.0,
             "DefendRangedAttack": 1.0
@@ -1901,9 +1773,6 @@
           "techs": [
             "RGPrussianNeedleGun"
           ],
-          "rof_set": {
-            "ranged": 2.75
-          },
           "action_rof_set": {
             "VolleyRangedAttack": 2.75,
             "DefendRangedAttack": 2.75,
@@ -1918,9 +1787,6 @@
             "RGPrussianNeedleGun",
             "ImperialNeedleGun"
           ],
-          "rof_set": {
-            "ranged": 2.75
-          },
           "action_rof_set": {
             "VolleyRangedAttack": 2.75,
             "DefendRangedAttack": 2.75,
@@ -2090,9 +1956,6 @@
           "techs": [
             "YPHonoredGurkha"
           ],
-          "range_add": {
-            "ranged": 2.0
-          },
           "action_range_add": {
             "VolleyRangedAttack": 2.0,
             "DefendRangedAttack": 2.0,
@@ -2107,9 +1970,6 @@
             "YPHonoredGurkha",
             "YPExaltedGurkha"
           ],
-          "range_add": {
-            "ranged": 3.0
-          },
           "action_range_add": {
             "VolleyRangedAttack": 3.0,
             "DefendRangedAttack": 3.0,
@@ -2125,9 +1985,6 @@
           "techs": [
             "YPHonoredGurkha"
           ],
-          "range_add": {
-            "ranged": 2.0
-          },
           "action_range_add": {
             "VolleyRangedAttack": 2.0,
             "DefendRangedAttack": 2.0,
@@ -2141,9 +1998,6 @@
             "YPHonoredGurkha",
             "YPExaltedGurkha"
           ],
-          "range_add": {
-            "ranged": 3.0
-          },
           "action_range_add": {
             "VolleyRangedAttack": 3.0,
             "DefendRangedAttack": 3.0,
@@ -2239,9 +2093,6 @@
             "YPHonoredSiegeElephant",
             "YPExaltedSiegeElephant"
           ],
-          "range_add": {
-            "ranged": 2.0
-          },
           "action_range_add": {
             "CannonAttack": 2.0
           },
@@ -2263,9 +2114,6 @@
             "YPHonoredSiegeElephant",
             "YPExaltedSiegeElephant"
           ],
-          "range_add": {
-            "ranged": 2.0
-          },
           "action_range_add": {
             "CannonAttack": 2.0
           }
@@ -2328,14 +2176,6 @@
               "AbstractArtillery": 1.25
             }
           },
-          "mult_add": {
-            "ranged": {
-              "AbstractArtillery": 1.25
-            },
-            "melee": {
-              "AbstractArtillery": 1.25
-            }
-          },
           "name": "光荣的骆驼骑兵"
         },
         "5": {
@@ -2356,14 +2196,6 @@
               "AbstractArtillery": 1.25
             },
             "MeleeHandAttack": {
-              "AbstractArtillery": 1.25
-            }
-          },
-          "mult_add": {
-            "ranged": {
-              "AbstractArtillery": 1.25
-            },
-            "melee": {
               "AbstractArtillery": 1.25
             }
           },
@@ -2390,14 +2222,6 @@
             "MeleeHandAttack": {
               "AbstractArtillery": 1.25
             }
-          },
-          "mult_add": {
-            "ranged": {
-              "AbstractArtillery": 1.25
-            },
-            "melee": {
-              "AbstractArtillery": 1.25
-            }
           }
         },
         "5": {
@@ -2418,14 +2242,6 @@
               "AbstractArtillery": 1.25
             },
             "MeleeHandAttack": {
-              "AbstractArtillery": 1.25
-            }
-          },
-          "mult_add": {
-            "ranged": {
-              "AbstractArtillery": 1.25
-            },
-            "melee": {
               "AbstractArtillery": 1.25
             }
           }
@@ -2464,11 +2280,6 @@
               "AbstractArtillery": 0.5
             }
           },
-          "mult_add": {
-            "ranged": {
-              "AbstractArtillery": 0.5
-            }
-          },
           "name": "光荣的火焰之箭"
         },
         "5": {
@@ -2478,19 +2289,11 @@
             "YPHonoredFlamingArrow",
             "YPExaltedFlamingArrow"
           ],
-          "range_add": {
-            "ranged": 2.0
-          },
           "action_range_add": {
             "CannonAttack": 2.0
           },
           "action_mult_add": {
             "CannonAttack": {
-              "AbstractArtillery": 0.5
-            }
-          },
-          "mult_add": {
-            "ranged": {
               "AbstractArtillery": 0.5
             }
           },
@@ -2639,9 +2442,6 @@
           "techs": [
             "GuardAbusGuns"
           ],
-          "range_add": {
-            "ranged": 2.0
-          },
           "action_range_add": {
             "VolleyRangedAttack": 2.0,
             "DefendRangedAttack": 2.0,
@@ -2656,9 +2456,6 @@
             "GuardAbusGuns",
             "ImperialAbusGun"
           ],
-          "range_add": {
-            "ranged": 4.0
-          },
           "action_range_add": {
             "VolleyRangedAttack": 4.0,
             "DefendRangedAttack": 4.0,
@@ -2693,9 +2490,6 @@
           "techs": [
             "DEGuardAzaps"
           ],
-          "range_add": {
-            "ranged": 4.0
-          },
           "action_range_add": {
             "StaggerRangedAttack": 4.0,
             "VolleyRangedAttack": 4.0,
@@ -2710,9 +2504,6 @@
             "DEGuardAzaps",
             "DEImperialAzaps"
           ],
-          "range_add": {
-            "ranged": 6.0
-          },
           "action_range_add": {
             "StaggerRangedAttack": 6.0,
             "VolleyRangedAttack": 6.0,
@@ -2889,9 +2680,6 @@
           "techs": [
             "RGOrdinancePikemen"
           ],
-          "range_add": {
-            "melee": 1.0
-          },
           "action_range_add": {
             "MeleeHandAttack": 1.0,
             "DefendHandAttack": 1.0,
@@ -2910,9 +2698,6 @@
             "RGOrdinancePikemen",
             "ImperialOrdinancePikemen"
           ],
-          "range_add": {
-            "melee": 1.5
-          },
           "action_range_add": {
             "MeleeHandAttack": 1.5,
             "DefendHandAttack": 1.5,
@@ -3062,9 +2847,6 @@
           "techs": [
             "GuardStrelets"
           ],
-          "range_add": {
-            "ranged": 2.0
-          },
           "action_range_add": {
             "VolleyRangedAttack": 2.0,
             "DefendRangedAttack": 2.0,
@@ -3079,9 +2861,6 @@
             "GuardStrelets",
             "ImperialStrelets"
           ],
-          "range_add": {
-            "ranged": 3.0
-          },
           "action_range_add": {
             "VolleyRangedAttack": 3.0,
             "DefendRangedAttack": 3.0,
@@ -3120,9 +2899,6 @@
           "techs": [
             "RGTercio"
           ],
-          "range_add": {
-            "melee": 1.0
-          },
           "action_range_add": {
             "MeleeHandAttack": 1.0,
             "DefendHandAttack": 1.0,
@@ -3137,9 +2913,6 @@
             "RGTercio",
             "ImperialTercio"
           ],
-          "range_add": {
-            "melee": 1.5
-          },
           "action_range_add": {
             "MeleeHandAttack": 1.5,
             "DefendHandAttack": 1.5,
@@ -3261,9 +3034,6 @@
             "ChampionMacehualtins",
             "ImpLegendaryMacehualtins"
           ],
-          "range_add": {
-            "ranged": 1.0
-          },
           "action_range_add": {
             "VolleyRangedAttack": 1.0,
             "DefendRangedAttack": 1.0,
@@ -3503,11 +3273,6 @@
               "AbstractArtillery": 0.5
             }
           },
-          "mult_add": {
-            "ranged": {
-              "AbstractArtillery": 0.5
-            }
-          },
           "name": "风云弓骑士"
         },
         "5": {
@@ -3525,11 +3290,6 @@
               "AbstractArtillery": 0.5
             },
             "ChargeAttack": {
-              "AbstractArtillery": 0.5
-            }
-          },
-          "mult_add": {
-            "ranged": {
               "AbstractArtillery": 0.5
             }
           },
@@ -3609,9 +3369,6 @@
             "ChampionWarRifles",
             "ImpLegendaryWarRifles"
           ],
-          "range_add": {
-            "ranged": 1.0
-          },
           "action_range_add": {
             "VolleyRangedAttack": 1.0,
             "DefendRangedAttack": 1.0,

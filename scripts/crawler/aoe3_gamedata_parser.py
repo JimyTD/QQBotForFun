@@ -72,19 +72,6 @@ KEEP_TYPE_EXACT = {
 # 炮兵等另表（打兵模式优先于打建筑）
 # ============================================================
 
-TIER_VOLLEY = 20
-TIER_STAGGER = 21
-TIER_NAMED_RANGED = 22   # + 在 NAMED_RANGED_ATTACK_ORDER 中的下标
-TIER_DEFEND_RANGED = 32
-TIER_GUARDIAN = 100      # 宝藏守卫专用动作，仅在无常规动作时兜底
-# 具名远程：无 Volley/Stagger 后缀的常态主武器（弓骑 Bow、火枪 Rifle、船 Ranged 等）
-NAMED_RANGED_ATTACK_ORDER = [
-    "BowAttack",
-    "RifleAttack",
-    "BlunderbussAttack",
-    "LongRangeAttack",
-    "RangedAttack",
-]
 # 英雄技 / 一次性射击 / 召唤类 — 不进斗蛐蛐 DPS 循环
 NON_DPS_RANGED_ATTACKS = frozenset({
     "SharpshooterAttack",
@@ -94,91 +81,6 @@ NON_DPS_RANGED_ATTACKS = frozenset({
     "Stun",
     "Chaos",
 })
-
-ARTILLERY_RANGED_PRIORITY = {
-    "BarrageAttack": 40,
-    "RepeatingAttack": 41,
-    "CannonAttack": 42,
-    "BombardAttack": 43,
-    "CaseShotAttack": 44,
-    "MortarAttack": 45,
-}
-
-TIER_VOLLEY_HAND = 1
-TIER_STAGGER_HAND = 2
-TIER_NAMED_MELEE = 3     # + 在 NAMED_MELEE_ATTACK_ORDER 中的下标
-TIER_DEFEND_HAND = 13
-# 具名近战：同上，在齐射/交错之后、防御之前
-NAMED_MELEE_ATTACK_ORDER = [
-    "MeleeHandAttack",
-    "BayonetAttack",
-    "HandAttack",
-]
-
-# 「碾压型」彩蛋/怪物单位白名单：它们**唯一**的攻击动作名含 Trample，会被通用跳过规则
-# 剔除，导致 attack_melee 为空 → has_attack=False → 黑名单乱斗池永远抽不到它们。
-# 精确点名放行（2026-09-17 用户决议），而不是把 "Trample" 从跳过规则里移除：
-# 后者会让 denatqizilbash 之类"近战动作已改名为 Charge/Trample"的单位顶上一个
-# 非预期的代表动作，与「如实反映游戏数据」的既有结论冲突。
-TRAMPLE_ONLY_ATTACK_UNITS = frozenset({
-    "monstertrucka",
-    "monstertruckt",
-    "ypeggicecreamtruck",
-    "deeggarctictruck",
-})
-
-
-def _is_guardian_attack(name: str) -> bool:
-    """Return whether an action belongs to the Treasure Guardian-only set."""
-    return "Guardian" in name
-
-
-def _primary_ranged_stances(unit_types: set[str]) -> tuple[str, str]:
-    """返回 (第一优先姿态, 第二优先姿态)。全员齐射 > 交错。"""
-    return ("VolleyRangedAttack", "StaggerRangedAttack")
-
-
-def _ranged_attack_priority(name: str, unit_types: set[str]) -> int:
-    if _is_guardian_attack(name):
-        return TIER_GUARDIAN
-    if name in ARTILLERY_RANGED_PRIORITY:
-        return ARTILLERY_RANGED_PRIORITY[name]
-    volley, stagger = _primary_ranged_stances(unit_types)
-    if name == volley:
-        return TIER_VOLLEY
-    if name == stagger:
-        return TIER_STAGGER
-    if name in NAMED_RANGED_ATTACK_ORDER:
-        return TIER_NAMED_RANGED + NAMED_RANGED_ATTACK_ORDER.index(name)
-    if name == "DefendRangedAttack":
-        return TIER_DEFEND_RANGED
-    return 99
-
-
-def _melee_hand_priority(name: str) -> int:
-    if _is_guardian_attack(name):
-        return TIER_GUARDIAN
-    if name == "VolleyHandAttack":
-        return TIER_VOLLEY_HAND
-    if name == "StaggerHandAttack":
-        return TIER_STAGGER_HAND
-    if name in NAMED_MELEE_ATTACK_ORDER:
-        return TIER_NAMED_MELEE + NAMED_MELEE_ATTACK_ORDER.index(name)
-    if name == "DefendHandAttack":
-        return TIER_DEFEND_HAND
-    return 99
-
-
-# 兼容旧引用（siege 等）
-ATTACK_PRIORITY = {
-    "BuildingAttack": 10,
-}
-
-
-def _siege_attack_priority(name: str) -> int:
-    if _is_guardian_attack(name):
-        return TIER_GUARDIAN
-    return ATTACK_PRIORITY.get(name, 99)
 
 
 # ============================================================
@@ -312,10 +214,6 @@ def parse_unit(el: ET.Element, strings_en: dict, strings_zh: dict) -> dict | Non
 
     # --- Attacks ---
     tactics_filename = el.findtext("tactics", "").strip()
-    attacks = _parse_attacks(el, tactics_filename, all_types)
-    ranged = attacks.get("ranged")
-    melee = attacks.get("melee")
-    siege = attacks.get("siege")
 
     # --- Build result ---
     result: dict[str, Any] = {
@@ -349,76 +247,10 @@ def parse_unit(el: ET.Element, strings_en: dict, strings_zh: dict) -> dict | Non
     if description_zh:
         result["description"] = description_zh
 
-    if ranged:
-        result["protoaction_ranged"] = ranged["name"]
-        result["attack_ranged"] = ranged["damage"]
-        result["range"] = ranged["maxrange"]
-        result["range_min"] = ranged["minrange"]
-        result["rof_ranged"] = ranged["rof"]
-        result["damage_type_ranged"] = ranged["damagetype"]
-        if ranged.get("num_projectiles", 1) > 1:
-            result["num_projectiles_ranged"] = ranged["num_projectiles"]
-        if ranged["aoe_radius"] > 0:
-            result["aoe_radius_ranged"] = ranged["aoe_radius"]
-        if ranged.get("damage_cap", 0) > 0:
-            result["damage_cap_ranged"] = ranged["damage_cap"]
-        if ranged.get("area_sort_mode"):
-            result["area_sort_mode_ranged"] = ranged["area_sort_mode"]
-        if ranged.get("outer_damage_area_distance", 0) > 0:
-            result["outer_damage_area_distance_ranged"] = ranged[
-                "outer_damage_area_distance"
-            ]
-        if ranged.get("outer_damage_area_factor", 0) > 0:
-            result["outer_damage_area_factor_ranged"] = ranged[
-                "outer_damage_area_factor"
-            ]
-        if ranged.get("basedamagecap"):
-            result["basedamagecap_ranged"] = True
-        if ranged["multipliers"]:
-            result.setdefault("multipliers", {})["ranged"] = ranged["multipliers"]
-
-    if melee:
-        result["protoaction_melee"] = melee["name"]
-        result["attack_melee"] = melee["damage"]
-        result["range_melee"] = melee["maxrange"]
-        result["rof_melee"] = melee["rof"]
-        result["damage_type_melee"] = melee["damagetype"]
-        if melee.get("num_projectiles", 1) > 1:
-            result["num_projectiles_melee"] = melee["num_projectiles"]
-        if melee["aoe_radius"] > 0:
-            result["aoe_radius_melee"] = melee["aoe_radius"]
-        if melee.get("damage_cap", 0) > 0:
-            result["damage_cap_melee"] = melee["damage_cap"]
-        if melee.get("area_sort_mode"):
-            result["area_sort_mode_melee"] = melee["area_sort_mode"]
-        if melee.get("outer_damage_area_distance", 0) > 0:
-            result["outer_damage_area_distance_melee"] = melee[
-                "outer_damage_area_distance"
-            ]
-        if melee.get("outer_damage_area_factor", 0) > 0:
-            result["outer_damage_area_factor_melee"] = melee[
-                "outer_damage_area_factor"
-            ]
-        if melee.get("basedamagecap"):
-            result["basedamagecap_melee"] = True
-        if melee["multipliers"]:
-            result.setdefault("multipliers", {})["melee"] = melee["multipliers"]
-
-    if siege:
-        result["attack_siege"] = siege["damage"]
-        result["range_siege"] = siege["maxrange"]
-        result["rof_siege"] = siege["rof"]
-        if siege["multipliers"]:
-            result.setdefault("multipliers", {})["siege"] = siege["multipliers"]
-
     # --- Windup（逐动作名；不展示，供模拟器/数据用）---
     windups = _parse_windups(el, tactics_filename)
     if windups:
         result["windups"] = windups
-        if ranged and ranged["name"] in windups:
-            result["windup_ranged"] = windups[ranged["name"]]
-        if melee and melee["name"] in windups:
-            result["windup_melee"] = windups[melee["name"]]
 
     artillery_stance = _load_artillery_stance(tactics_filename)
     if artillery_stance:
@@ -433,12 +265,6 @@ def parse_unit(el: ET.Element, strings_en: dict, strings_zh: dict) -> dict | Non
         result["attack_actions"] = attack_actions
     if actions_by_tactic:
         result["attack_actions_by_tactic"] = actions_by_tactic
-
-    # AOE radius (max across attacks)
-    aoe_vals = [result.get("aoe_radius_ranged", 0), result.get("aoe_radius_melee", 0)]
-    max_aoe = max(aoe_vals)
-    if max_aoe > 0:
-        result["aoe_radius"] = max_aoe
 
     return result
 
@@ -602,6 +428,8 @@ def _parse_attack_actions(
     for action in root.findall("action"):
         name = (action.findtext("name") or "").strip()
         if not name:
+            continue
+        if name in NON_DPS_RANGED_ATTACKS:
             continue
         attack_type = (action.findtext("type") or "").strip()
         attack_flag = (action.findtext("attackaction") or "").strip() == "1"
@@ -1025,141 +853,6 @@ def _parse_windups(el: ET.Element, tactics_filename: str) -> dict[str, float]:
     return windups
 
 
-def _parse_attacks(
-    el: ET.Element, tactics_filename: str = "", unit_types: set[str] | None = None,
-) -> dict[str, dict]:
-    """Parse protoaction elements, categorize and select best per slot.
-
-    tactics_filename: 该单位引用的 tactics 文件名（如 "chukonu.tactics"），
-    用于读取 displayednumberprojectiles（每次攻击的弹丸数）。
-    unit_types: unittype 标签集合，用于远程姿态默认（步兵 Volley / 骑兵 Stagger）。
-    """
-    if unit_types is None:
-        unit_types = set()
-    tactics_actions = _load_tactics_actions(tactics_filename) if tactics_filename else {}
-    tactics_proj = {
-        name: meta["projectiles"]
-        for name, meta in tactics_actions.items()
-        if meta.get("projectiles")
-    }
-
-    ranged_candidates = []
-    melee_candidates = []
-    siege_candidates = []
-
-    for action in el.findall("protoaction"):
-        name = action.findtext("name", "").strip()
-        damage = round(float(action.findtext("damage", "0") or "0"), 2)
-        if damage <= 0:
-            continue
-
-        damagetype = action.findtext("damagetype", "").strip()
-        rof = round(float(action.findtext("rof", "3.0") or "3.0"), 4)
-        maxrange = round(float(action.findtext("maxrange", "0") or "0"), 2)
-        minrange = round(float(action.findtext("minrange", "0") or "0"), 2)
-        tact = tactics_actions.get(name, {})
-        if maxrange <= 0 and tact.get("maxrange", 0) > 0:
-            maxrange = round(float(tact["maxrange"]), 2)
-        if minrange <= 0 and tact.get("minrange", 0) > 0:
-            minrange = round(float(tact["minrange"]), 2)
-        damagearea = round(float(action.findtext("damagearea", "0") or "0"), 2)
-        aoe_radius = damagearea if damagearea > 0 else 0.0
-        damagecap = round(float(action.findtext("damagecap", "0") or "0"), 2)
-        basedamagecap_raw = (action.findtext("basedamagecap", "") or "").strip()
-        try:
-            basedamagecap = bool(float(basedamagecap_raw))
-        except ValueError:
-            basedamagecap = False
-
-        # Projectile count from tactics (displayednumberprojectiles)
-        num_projectiles = tactics_proj.get(name, 1)
-
-        # Damage bonuses — store raw type directly
-        multipliers = []
-        for bonus in action.findall("damagebonus"):
-            vs_type = bonus.get("type", "")
-            try:
-                mult_val = round(float(bonus.text or "1"), 4)
-            except ValueError:
-                continue
-            if mult_val != 1.0 and vs_type:
-                multipliers.append({"vs": vs_type, "value": mult_val})
-
-        # Skip non-combat actions and hero skills (斗蛐蛐只用常态 DPS 循环)
-        # 例外：TRAMPLE_ONLY_ATTACK_UNITS 里只有碾压动作的彩蛋单位（黑名单乱斗要用）
-        trample_whitelisted = (
-            "Trample" in name and el.get("name", "").lower() in TRAMPLE_ONLY_ATTACK_UNITS
-        )
-        if not trample_whitelisted and any(
-            kw in name for kw in ("Charge", "Trample", "Ability", "AutoGather", "Heal")
-        ):
-            continue
-        if name in NON_DPS_RANGED_ATTACKS:
-            continue
-        if "Build" in name and "Attack" not in name:
-            continue
-
-        info = {
-            "name": name,
-            "damage": damage,
-            "damagetype": damagetype,
-            "rof": rof,
-            "maxrange": maxrange,
-            "minrange": minrange,
-            "aoe_radius": aoe_radius,
-            "damage_cap": damagecap,
-            "area_sort_mode": tact.get("area_sort_mode", ""),
-            "outer_damage_area_distance": tact.get(
-                "outer_damage_area_distance", 0.0
-            ),
-            "outer_damage_area_factor": tact.get(
-                "outer_damage_area_factor", 0.0
-            ),
-            "basedamagecap": basedamagecap,
-            "num_projectiles": num_projectiles,
-            "multipliers": multipliers,
-        }
-
-        # Categorize — 只看动作名 + maxrange，不看 damagetype
-        # （攻击类型与伤害类型正交：近战骑兵可以打 Siege 伤害，远程炮可以打 Hand 伤害）
-        # 判定优先级：动作名 > 射程阈值
-        #   - 含 BuildingAttack → siege
-        #   - 含 HandAttack → melee（长矛/流星锤 range 可达 4~5 仍为近战）
-        #   - 含 RangedAttack → ranged（火绳枪骑兵 range=6 为远程射击）
-        #   - 其余按 maxrange < 6 → melee，>= 6 → ranged
-        if "BuildingAttack" in name:
-            siege_candidates.append(info)
-        elif "HandAttack" in name:
-            melee_candidates.append(info)
-        elif "RangedAttack" in name:
-            ranged_candidates.append(info)
-        elif maxrange < 6:
-            melee_candidates.append(info)
-        else:
-            ranged_candidates.append(info)
-
-    result = {}
-    if ranged_candidates:
-        # maxrange<=0 的 *RangedAttack 在 protoy 里是占位/继承，不能作远程槽代表。
-        valid_ranged = [c for c in ranged_candidates if c["maxrange"] > 0]
-        if valid_ranged:
-            for c in valid_ranged:
-                c["priority"] = _ranged_attack_priority(c["name"], unit_types)
-            valid_ranged.sort(key=lambda x: x["priority"])
-            result["ranged"] = valid_ranged[0]
-    if melee_candidates:
-        for c in melee_candidates:
-            c["priority"] = _melee_hand_priority(c["name"])
-        melee_candidates.sort(key=lambda x: x["priority"])
-        result["melee"] = melee_candidates[0]
-    if siege_candidates:
-        for c in siege_candidates:
-            c["priority"] = _siege_attack_priority(c["name"])
-        siege_candidates.sort(key=lambda x: x["priority"])
-        result["siege"] = siege_candidates[0]
-    return result
-
-
 # ============================================================
 # i18n_zh.json generation
 # ============================================================
@@ -1332,22 +1025,23 @@ def main():
     # Stats
     print(f"\n=== Stats ===")
     print(f"  Total: {len(units)}")
-    print(f"  Ranged: {sum(1 for u in units if u.get('attack_ranged'))}")
-    print(f"  Melee: {sum(1 for u in units if u.get('attack_melee'))}")
-    print(f"  AOE: {sum(1 for u in units if u.get('aoe_radius'))}")
-    print(f"  damage_cap: {sum(1 for u in units if u.get('damage_cap_ranged') or u.get('damage_cap_melee'))}")
+    print(f"  attack_actions: {sum(1 for u in units if u.get('attack_actions'))}")
+    print(
+        "  has_soldier_attack: "
+        f"{sum(1 for u in units if any(a.get('damage', 0) > 0 and a.get('range_max', 0) > 0 and a.get('hits_soldiers', True) for a in u.get('attack_actions', [])))}"
+    )
     print(f"  description: {sum(1 for u in units if u.get('description'))}")
     print(f"  windups: {sum(1 for u in units if u.get('windups'))}")
     windup_actions = sum(len(u.get('windups', {})) for u in units)
     print(f"  windup action entries: {windup_actions}")
 
-    # Verify multiplier matching
+    # Verify multiplier matching (attack-list multipliers)
     all_types = set()
     all_vs = set()
     for u in units:
         all_types.update(u.get("type", []))
-        for mtype in ("ranged", "melee", "siege"):
-            for m in u.get("multipliers", {}).get(mtype, []):
+        for action in u.get("attack_actions", []):
+            for m in action.get("multipliers", []):
                 all_vs.add(m["vs"])
 
     matchable_vs = {v for v in all_vs if v in all_types}

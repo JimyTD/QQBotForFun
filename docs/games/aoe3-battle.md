@@ -535,7 +535,7 @@ Step 3 — 贪心零头：最后的零头逐个加最便宜的兵
 
 进池要求（实现在 `get_blacklist_pool()`）：
 
-- 必须 `has_attack`。有攻击列表时，至少有一条打得中人、伤害大于 0、射程大于 0 的模式。没有列表时才看远程槽或近战槽。`InflictsNoDamage` 不算。只拆建筑的不算
+- 必须 `has_attack`：攻击列表里至少有一条打得中人、伤害大于 0、射程大于 0 的模式。`InflictsNoDamage` 不算。只拆建筑的不算
 - `hp > 0`
 - 防御性地再过一遍 `is_excluded_unit`（防黑名单里混了被全局排除的 id）
 
@@ -930,7 +930,7 @@ blue_count = max(1, lcm_budget // cost(blue))
 
 - 每 tick 使用空间哈希查询局部邻居，避免全战场两两扫描
 - 单位先朝最近可达敌人生成期望速度，再由局部避让选择实际速度
-- 进入有效攻击距离后停止。有攻击列表时，当前距离已经被某条打得到这个目标的模式盖住，就停。没有列表时仍按远程槽和近战槽各自的射程
+- 进入有效攻击距离后停止。当前距离已经被某条打得到这个目标的模式盖住，就停
 - 前线阻塞时先尝试改锁一个直线可达的附近敌人，再沿人少的一侧侧移；不包含战术包抄、绕后或编队命令
 - 椭圆碰撞约束负责分离、推挤和重叠修正；禁止异常弹飞
 - 长时间无进展、目标死亡或绕行失效时重新选择目标
@@ -969,8 +969,6 @@ blue_count = max(1, lcm_budget // cost(blue))
 5. 落在两段射程中间，向更近的那条走进去。已经贴进最小射程里面，不后退。
 
 搜敌半径只用打得中人、并且现在打得出来的最远射程。打建筑、打船、打守护者、砸箱子的更远射程不把搜索圈撑大。
-
-没有攻击列表的单位仍用远程槽和近战槽。解析器仍会写出这两槽和攻城槽，模拟器还在读。
 
 #### 纯远程与最小射程
 
@@ -1014,7 +1012,7 @@ attack_ready_at = 上次实际出手时间 + 那次攻击的 ROF
 
 例如抬手 0.4 秒、ROF 1.5 秒：第一次从 0 秒开始准备，则在 0.4 秒出手；保持同一攻击方式时后续为 1.9 秒、3.4 秒。若另一次在 0.8 秒重新停下，抬手到期为 1.2 秒，而原 ROF 到期为 2.0 秒，则最早在 2.0 秒出手。
 
-**数据边界**：有攻击列表时，抬手和攻速用选中那条模式自己的数值。没有列表时沿用 `windup_ranged` / `windup_melee`，缺失时为 0。不提取完整动画时长。实际伤害在出手 tick 立即结算，没有飞行时间。
+**数据边界**：抬手和攻速用选中那条模式自己的数值，缺失时为 0。不提取完整动画时长。实际伤害在出手 tick 立即结算，没有飞行时间。
 
 **开发查看器**：兼容字段 `attack_cd` 仅表示 ROF 剩余秒数；新增 `aim_cd` 表示抬手剩余秒数（`null` 为未准备），`prepared_mode` 表示所准备的攻击方式。它们由到期时刻推导，不再用一个可变倒计时混合两种含义。
 
@@ -1045,7 +1043,7 @@ with tags"*。正确公式应为 `windup_seconds = tag_fraction × GrannyAnim固
 
 #### ROF（攻击间隔）
 
-- ROF 用这一下选中的模式自己的攻速。没有列表时才用 `rof_ranged` / `rof_melee` / `rof_siege`
+- ROF 用这一下选中的模式自己的攻速
   - **攻速单位是秒（攻击间隔）**，不是攻击频率。`3.0` 表示每 3 秒攻击一次
 - 攻击当帧结算（不模拟弹道飞行时间），伤害立即生效
 
@@ -1110,7 +1108,7 @@ AOE3 有三种伤害类型，每种只被对应的抗性减免：
 
 #### 伤害类型
 
-有攻击列表时，这一下的伤害类型是选中那条模式自己的 `damagetype`，只决定吃哪种护甲，不决定它算远程还是近战。没有列表时才用槽上的 `damage_type_ranged` / `damage_type_melee`。
+这一下的伤害类型是选中那条模式自己的 `damagetype`，只决定吃哪种护甲，不决定它算远程还是近战。
 
 - `Ranged` 吃 `armor_ranged`
 - `Hand` 吃 `armor_melee`
@@ -1219,7 +1217,7 @@ AOE3 有三种伤害类型，每种只被对应的抗性减免：
 - 兵种实际有 AOE 但字段缺失 → **数据 bug**，列入 §四数据缺失清单修复
 - 模拟器**不做兜底猜测**（不能“看到是炮就猜 aoe=3”，数据是什么就是什么）
 
-### 3.9 攻击列表与槽字段
+### 3.9 攻击列表
 
 **数据源**：游戏文件 `protoy.xml` 中每个 `<unit>` 的 `<protoaction>` 元素，
 每个 protoaction 的 `damage / damagetype / maxrange / minrange / rof / damagearea / damagebonus*`
@@ -1236,7 +1234,7 @@ AOE3 有三种伤害类型，每种只被对应的抗性减免：
 
 **关键认知**：AoE3 引擎**不存在"远程/近战"的概念划分**。一个单位停在一份阵型里，引擎按动作名挑一条模式。
 
-有攻击列表的单位，出手、进池、战力、国战角色、单位卡、配兵摘要、兵种对比、一行简介，以及打到列表上的科技，都读这份列表。解析器仍另外写出远程、近战、攻城三个代表槽。没有列表的单位，以及模拟器里还在读槽的移动和回放分桶，继续用这三槽。三槽是留下的写法，不是出手规则。
+单位出生阵型里的攻击列表是唯一战斗口径：出手、进池、战力、国战角色、单位卡、配兵摘要、兵种对比、一行简介，以及打到列表上的科技，都读这份列表。2026-10-08 起，解析器不再写出远程、近战、攻城三个代表槽，`Unit` 也没有这些字段。
 
 **举例**（伤害类型属于具体 protoaction，与该 protoaction 是远程还是近战无关）：
 
@@ -1252,7 +1250,7 @@ AOE3 有三种伤害类型，每种只被对应的抗性减免：
 >
 > **绝对禁止**用 `damagetype` 来判断攻击归属哪个槽位。
 
-**实现位置**：列表在 `scripts/crawler/aoe3_gamedata_parser.py` 写出，运行时读 `src/plugins/aoe3/attack_actions.py`。三槽仍由同文件的 `_parse_attacks` 写出。
+**实现位置**：列表在 `scripts/crawler/aoe3_gamedata_parser.py` 写出，运行时读 `src/plugins/aoe3/attack_actions.py`。
 
 #### 攻击列表
 
@@ -1283,7 +1281,7 @@ AOE3 有三种伤害类型，每种只被对应的抗性减免：
 
 一份科技先换 `InitialTactic`，再处理同一份科技里的 `ActionEnable`。预备军的 XML 顺序相反，必须先换阵型，否则枪从关着的齐射重建出来，仍然关着。
 
-`InitialTactic` 把该阵型的动作整份换成当前列表。`ActionEnable` 和 `RechargeTime` 按动作名打到当前列表。射程、溅射、攻速、倍率也按动作名打到当前列表：同一条上，点名和 `allactions` 只留更大的数，不叠。这几项同时仍按旧的代表槽去重，写进槽字段。伤害倍率打到当前每一条的伤害和溅射池，也写槽。
+`InitialTactic` 把该阵型的动作整份换成当前列表。`ActionEnable` 和 `RechargeTime` 按动作名打到当前列表。射程、溅射、攻速、倍率也按动作名打到当前列表：同一条上，点名和 `allactions` 只留更大的数，不叠。伤害倍率打到当前每一条的伤害和溅射池。
 
 只应用已经在生效名单里的科技。不按文明名自动补一份出生科技。
 
@@ -1292,105 +1290,39 @@ AOE3 有三种伤害类型，每种只被对应的抗性减免：
 - **倍率天然匹配**：`damagebonus.type` 和 `unit.type` 来自同一份 XML 同一套字符串，倍率匹配 = 字符串相等比对，不需要映射表
 - **翻译只在展示层**：`i18n_zh.json` 负责 `AbstractXxx → 中文`，与数据/匹配逻辑解耦
 
-下面从分类到写入字段，只说明三个代表槽怎么写。出手和展示不读这套归类。
-
-#### 槽字段：分类 ranged / melee / siege
-
-每个 protoaction 按以下规则归入三个槽位之一（**只看动作名 + 射程兜底，不看 damagetype**）：
-
-1. 动作名含 `BuildingAttack` → **siege**（拆建筑专用）
-2. 动作名含 `HandAttack` → **melee**（引擎近战行为，不管 maxrange 和 damagetype）
-3. 动作名含 `RangedAttack` → **ranged**（引擎远程行为，不管 damagetype）
-4. 以上均不匹配时，按射程兜底：`maxrange < 6` → melee，`maxrange >= 6` → ranged
-
-> 为什么信任动作名？因为 AoE3 引擎通过动作名硬编码绑定行为（动画/弹道/停步等），
-> 这些名字是引擎代码里的字符串常量，不可能随意命名。射程只是参数，不驱动行为。
->
-> 兜底阈值 6 的依据：AoE3 近战武器最大 maxrange 约 4~5（流星锤兵 4.0、翼骑兵 3.75），
-> 最短远程射击从 6 开始（火绳枪骑兵 6.0）。
-
-#### 第二步：选代表攻击
-
-每个槽位可能有多个候选攻击（如鹰炮的 `CannonAttack` / `BombardAttack` / `CaseShotAttack`
-都属于 ranged）。按 `ATTACK_PRIORITY` 常量选**优先级最高的一条**作为该槽位的代表，
-该 protoaction 的所有字段（damage / range / rof / aoe / multipliers）整体写入对应字段族。
-
-优先级设计原则（**Volley/Stagger > 具名主攻击 > Defend**；Defend 为手动防御阵型）：
-
-- **远程**：`VolleyRanged` / `StaggerRanged`（统一齐射 > 交错；多数纯骑兵 protoy 仅有交错动作，自然落回）→ 具名主攻击（`BowAttack` 等，多数单位无齐射/交错后缀）→ `DefendRanged`（置底）
-- **近战**：`VolleyHand` / `StaggerHand` → 具名（`MeleeHandAttack` / `BayonetAttack` / `HandAttack`）→ `DefendHand`（置底）
-- **炮兵**：`BarrageAttack > RepeatingAttack > CannonAttack > …`（独立表）
-- 具名表已核实（2026-05-29）：`SharpshooterAttack` / `CrackshotAttack` / `SwashbucklerAttack` 为英雄技，parser 排除；`BowAttack` / `RifleAttack` 等常态主武器保留。审计脚本 `scripts/aoe3_named_attack_audit.py`
-
-**外部参考**（人工核对单位数值）：[AOE 3 Home City — 军事单位](https://aoe3homecity.com/zh-CN/units?type=military)（如[雇佣兵列表](https://aoe3homecity.com/zh-CN/units?type=military&tags=Mercenary)）
-
-> **铁律**：只能整体选用一个 protoaction，不能把 A 的 damage 和 B 的 multipliers 拼在一起。
-
 #### 写入 units.json 的字段
 
-```
-attack_ranged       = ranged 代表攻击的 damage
-range               = ranged 代表攻击的 maxrange
-range_min           = ranged 代表攻击的 minrange
-rof_ranged          = ranged 代表攻击的 rof
-damage_type_ranged  = ranged 代表攻击的 damagetype
-aoe_radius_ranged   = ranged 代表攻击的 damagearea
-damage_cap_ranged   = ranged 代表攻击的 damagecap（有 proto 值必须用该值；无字段才 fallback）
-num_projectiles_ranged = ranged 代表动作名的 displayednumberprojectiles（tactics 按动作名查）
-windup_ranged       = ranged 代表动作名的抬手时间（tactics[动作名].anim → Attack tag）
-multipliers.ranged  = ranged 代表攻击的 damagebonus 列表
+每个动作名各自一整包写入 `attack_actions`：伤害、伤害类型、最小/最大射程、攻速、溅射半径、
+溅射池、弹丸数、抬手、倍率、优先级、开关、是否蓄力与冷却。同一动作名的这些值一起从
+protoy 伤害包 + tactics 定义取出，不跨动作拼装。每个阵型各存一份（`attack_actions_by_tactic`）。
 
-attack_melee        = melee 代表攻击的 damage
-range_melee         = melee 代表攻击的 maxrange（近战射程，0 表示用默认 1.5）
-rof_melee           = melee 代表攻击的 rof
-damage_type_melee   = melee 代表攻击的 damagetype
-aoe_radius_melee    = melee 代表攻击的 damagearea
-damage_cap_melee    = melee 代表攻击的 damagecap
-num_projectiles_melee = melee 代表动作名的 displayednumberprojectiles
-windup_melee        = melee 代表动作名的抬手时间
-multipliers.melee   = melee 代表攻击的 damagebonus 列表
+> **damage_cap**：有 proto `damagecap` 时**必须用该值**；有溅射半径但动作没有正数
+> `damage_cap` 时，按用户确认的口径兜底为 `合并基础攻 × 2`。禁止砍掉 AOE 当作「无 cap」处理。
 
-attack_siege        = siege 代表攻击的 damage（拆建筑专用）
-range_siege         = siege 代表攻击的 maxrange
-rof_siege           = siege 代表攻击的 rof
-```
-
-> **windup / num_projectiles 同样是「整包」的一部分**：它们按**代表动作名**去
-> `tactics` / `anim` 解析（`tactics[动作名].anim` → `Attack` tag），每个动作名各自解，
-> 解不出则该动作无此字段。**禁止**为 windup、ROF、伤害类型单独做「选哪条」或 fallback
-> 逻辑，也禁止从 `<tactic>Volley` 另挑动作拼进槽——`ATTACK_PRIORITY` 选的是**动作**，
-> 不是另选了一套 windup。
-
-> **damage_cap 补充**：有 proto `damagecap` 时**必须用该值，不得用 2× 覆盖**；
-> 有溅射半径但 JSON 无正数 `damage_cap_*` 时，按用户确认的口径兜底为
-> `合并基础攻 × 2`；真实 cap 存在时必须优先使用，不得覆盖。
-> 禁止砍掉 AOE 当作「无 cap」处理。
-
-
-> 攻城槽仍会写。有攻击列表时，拆建筑攻击是列表里的一条，排进展示前两名就显示。没有列表时，模拟器不读攻城槽。
+> 2026-10-08 起不再写远程、近战、攻城三个代表槽。`Unit` 没有这些字段，出手只读
+> `attack_actions`。下列早先关于槽字段的段落是历史记录，保留供对照，不再是现行规则。
 
 #### 战斗池准入
 
-`has_attack`：`InflictsNoDamage` 为假。有攻击列表时，至少一条打得中人、伤害大于 0、射程大于 0 才为真，关着的也算。没有列表时才看远程槽或近战槽。只拆建筑、打不到人的为假。
+`has_attack`：`InflictsNoDamage` 为假，且攻击列表里至少一条打得中人、伤害大于 0、射程大于 0。只拆建筑、打不到人的为假。
 
 木制牛的拆建筑攻击目标类型是 `All`，打得到人，`has_attack` 为真。它不进普通池，是因为写在 `BATTLE_BLACKLIST` 里，攻击数据不改。
 
-没有列表、又被槽归类写空的单位，修法是改槽的代表动作，不要给 `has_attack` 加白名单。
+列表写空的单位，修法是补 protoy 伤害包或该动作的初始阵型，不要给 `has_attack` 加白名单。
 
 #### 模拟器读哪一份
 
-- 有攻击列表时，这一下的伤害、伤害类型、射程、攻速、溅射、抬手、倍率都用选中的那条。溅射和伤害必须来自同一条。
-- 没有列表时读远程槽或近战槽整包，不附加贴脸折扣。
-- 槽字段仍在写出。回放里的近战、远程标签仍用伤害类型是 `Hand` 且最大射程小于 6，不是阵型里的 handlogic。
+- 这一下的伤害、伤害类型、射程、攻速、溅射、抬手、倍率都用选中的那条。溅射和伤害必须来自同一条。
+- 回放里的近战、远程标签仍用伤害类型是 `Hand` 且最大射程小于 6，不是阵型里的 handlogic。
 
 #### 示例
 
-| 兵种 | 选中的 protoaction | 写入 units.json |
-|------|-------------------|----------------|
-| 鹰炮 falconet | `Cannon Attack`（damage=80, range=26, type=Siege, aoe=4） | attack_ranged=80, range=26, damage_type_ranged=Siege, aoe_radius_ranged=4 |
-| 火枪手 musketeer | `Ranged Attack`（damage=23, range=12, type=Ranged） + `Hand Attack`（damage=13, type=Hand） | attack_ranged=23, attack_melee=13 |
-| 胸甲骑兵 cuirassier | `Hand Cavalry Attack`（damage=35, type=Hand, aoe=2） | attack_melee=35, aoe_radius_melee=2 |
-| 缴获臼炮 captured_mortar | 仅有 BuildingAttack 系列 | 写入 attack_siege（模拟器不用） |
+| 兵种 | 写入 units.json 的 attack_actions |
+|------|-------------------------------------|
+| 鹰炮 falconet | `CannonAttack`（80 伤, 射程 0–26, 攻城, AOE 4）、`BombardAttack`、`CaseShotAttack`（关着） |
+| 火枪手 musketeer | `VolleyRangedAttack`（23 伤, 射程 2–12）、`BuildingAttack`、`VolleyHandAttack`（13 伤, 近战） |
+| 胸甲骑兵 cuirassier | 近战主攻击一条（35 伤, 近战, AOE 2） |
+| 缴获臼炮 captured_mortar | 只有拆建筑动作，`has_attack` 为假，进不了池 |
 
 
 ---
@@ -1455,7 +1387,7 @@ rof_siege           = siege 代表攻击的 rof
 - `Assign` / `Override` → **覆盖**，多档时最后一档生效，**不累加**（ROF、Cost）；
 - `Percent`（仅 3 例）→ 乘当前值（多档时连乘）。
 
-> **`DamageBonus`**：`subtype="DamageBonus"`，`unittype` 是被克制的类型，`amount` 是加上的数。槽字段只对已有的正倍率（>1）相加，不新建条目，不改小于 1 的惩罚。`allactions=1` 落代表槽，否则按 `action` 匹配代表动作落槽。列表按动作名另记，见 §3.10.3。
+> **`DamageBonus`**：`subtype="DamageBonus"`，`unittype` 是被克制的类型，`amount` 是加上的数。只对已有的正倍率（>1）相加，不新建条目，不改小于 1 的惩罚。按动作名打到列表里的每一条，见 §3.10.3。
 
 ##### 落地方式：「整包随代表科技」而非全局扫 stat（关键修正 v15）
 
@@ -1463,7 +1395,7 @@ range/aoe/rof/速度/护甲/倍率 **不单独全局扫描**，而是**每条已
 
 - 这些 effect 多为 `Absolute`(delta) / `Assign`(覆盖) / `BasePercent`(倍率)，**不是**血攻那种 BasePercent 累乘；按 relativity 分别处理：`Absolute`→沿链累加 delta、`Assign`→取 ≤age 最新覆盖、`BasePercent`→累乘。
 - **绝大多数 `DamageBonus`/`MaximumRange` 是兵工厂可研发科技（Rifling/HeatedShot/Paper Cartridge…）和土著舞蹈** —— 它们是玩家主动选择、无「N 时代自动生效」语义，属 §3.10.4 暂缓的「广谱兵工厂白名单」。**只纳入 tier 线/Shadow 自带的**，独立兵工厂研发科技仍暂缓。
-- 落地结果（有界）：`range_add` 命中 40 档（阿布枪 +1/2/4、azap +2/4/6、皮革炮…）、`speed_add` 2 档（皮革炮 +0.5/1.0）、`mult_add` 10 档（投石/弓骑 对火炮 +0.5）；`aoe/rof/armor` 因只来自兵工厂/文明 age-up 科技 → **0 命中**（符合暂缓约定）。
+- 落地结果（有界）：`action_range_add` 命中 40 档（阿布枪 +1/2/4、azap +2/4/6、皮革炮…）、`speed_add` 2 档（皮革炮 +0.5/1.0）、`action_mult_add` 10 档（投石/弓骑 对火炮 +0.5）；`aoe/rof/armor` 因只来自兵工厂/文明 age-up 科技 → **0 命中**（符合暂缓约定）。
 
 ##### 脏数据护栏（v15 复核结论）
 
@@ -1473,19 +1405,16 @@ DE 部分科技含**离谱占位值**，无法靠语义识别（6074 条）：
 - **处理方式：精确点名丢弃**（`aoe3_upgrades_parser.py :: DIRTY_EFFECTS`，键为 `(tech_name, subtype)`）。不用数值上限一刀切，以免误伤真实大改良。当前名单仅此 1 条。
   > 注：文档早期提到的 `SANE_CAP`（射程 ≤10 / AOE ≤4 / 速度 ≤12 / 护甲 ≤0.5 / 倍率 ≤5 的「合理上限」机制）**已随 v15 重构移除**，代码中不存在，现由 `DIRTY_EFFECTS` 取代（2026-09-17 核对）。
 - **削弱档复核**：血攻 `<1` 的增量是兵工厂护甲副作用/置换（如 azap 胸甲 −10%），**不是 tier 线**；tier 线（`DEVeteran/Guard/ImperialAzaps` +20/30/50）另被正确捕获 → azap = 100/120/150/200。丢弃负增量正确。
-- **槽字段去重**：同一 effect 常对 Volley/Defend/Stagger/BuildingAttack 各出一条；写进槽时只取等于代表动作的那一条，绝不四条相加。列表按动作名各记各的，见 §3.10.3。
+- **按动作名去重**：同一 effect 常对 Volley/Defend/Stagger/BuildingAttack 各出一条；每一条落到同名动作上，各记各的，不合并成一条，见 §3.10.3。
 - 全量扫描：对所有有攻击单位 ×age{3,4,5} apply 后，**升级造成的越界 = 0**（基础数据自带的海军 x10/间谍 x40 等不在升级范围内，未被触碰）。
 
 #### 3.10.3 与攻击数据铁律的关系（天生支持的原因）
 
 `Damage` / `MaximumRange` / `DamageArea` / `DamageBonus` 都带 `action=`，按动作名作用。
 
-时代档同时写两套：
+时代档按动作名写入 `action_range_add`、`action_aoe_add`、`action_rof_set`、`action_rof_add`、`action_mult_add`。点名打到同名模式。`allactions` 在解析时展开到这个单位列表和各阵型副本里的每一个动作名。同一条上，点名和 `allactions` 只留更大的数，再跨时代相加。`rof_set` 后一档覆盖同名。伤害百分比打到每一条的伤害和溅射池。
 
-- 槽字段仍只取等于该槽代表动作的那一条，`Volley`、`Defend`、`Stagger`、`BuildingAttack` 不相加。`allactions` 才落进这个代表槽。对不上代表动作的，槽不加。
-- 列表另按动作名写入 `action_range_add`、`action_aoe_add`、`action_rof_set`、`action_rof_add`、`action_mult_add`。点名打到同名模式。`allactions` 在解析时展开到这个单位列表和各阵型副本里的每一个动作名。同一条上，点名和 `allactions` 只留更大的数，再跨时代相加。`rof_set` 后一档覆盖同名。伤害百分比打到每一条的伤害和溅射池。
-
-阿布枪帝王档：远程槽射程 +4，同时 `VolleyRangedAttack`、`DefendRangedAttack`、`StaggerRangedAttack` 各 +4。`VolleyHandAttack` 不加。
+阿布枪帝王档：`VolleyRangedAttack`、`DefendRangedAttack`、`StaggerRangedAttack` 各 +4。`VolleyHandAttack` 不加。
 
 #### 3.10.4 匹配方式：按 id 精确匹配（兵种升级）vs 按标签（全局，不做）
 
@@ -1933,7 +1862,8 @@ DE 部分科技含**离谱占位值**，无法靠语义识别（6074 条）：
 
 ## 十、已决议（本轮讨论封板）
 
-下面是当时的决定。攻击列表、出手、展示和按动作名生效的科技以 §3.5、§3.9、§3.10 为准。其中「只留一个远程槽和一个近战槽」「角色卡不显示攻城」「鹰炮霰弹不做距离切换」只还适用于槽字段怎么写，不再是出手和展示的规则。
+下面是当时的决定。攻击列表、出手、展示和按动作名生效的科技以 §3.5、§3.9、§3.10 为准。
+2026-10-08 起远程、近战、攻城三个代表槽已从数据与运行时移除；下面提到槽的决定只作历史记录。
 
 - ✅ 首期阵容：单一兵种随机对决（验证模拟器核心玩法）
 - ✅ 押注模式与单挑模式同步实现

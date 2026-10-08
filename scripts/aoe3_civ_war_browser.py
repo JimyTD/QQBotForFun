@@ -129,12 +129,24 @@ def is_consulate_unit(unit: Unit) -> bool:
 
 
 def has_multiplier(unit: Unit, attack: str, targets: set[str]) -> list[str]:
-    multipliers = unit.multipliers_melee if attack == "melee" else unit.multipliers_ranged
-    return [
-        f"{entry.vs} x{entry.value:g}"
-        for entry in multipliers
-        if entry.vs in targets and entry.value > 1
+    melee = attack == "melee"
+    found: list[str] = []
+    for action in unit.attack_actions:
+        if (action.damage_type == "Hand") != melee:
+            continue
+        for entry in action.multipliers:
+            if entry.vs in targets and entry.value > 1:
+                found.append(f"{entry.vs} x{entry.value:g}")
+    return found
+
+
+def _best_attack(unit: Unit, *, melee: bool):
+    usable = [
+        a
+        for a in unit.attack_actions
+        if a.hits_soldiers and a.damage > 0 and (a.damage_type == "Hand") == melee
     ]
+    return max(usable, key=lambda a: (a.damage, a.range_max, a.name), default=None)
 
 
 def role_explanations(unit: Unit, roles: frozenset[str]) -> dict[str, str]:
@@ -210,9 +222,9 @@ def unit_payload(
         "pop": upgraded.pop,
         "hp": upgraded.hp,
         "speed": upgraded.speed,
-        "attack_ranged": upgraded.attack_ranged,
-        "range": upgraded.range,
-        "attack_melee": upgraded.attack_melee,
+        "ranged_damage": getattr(_best_attack(upgraded, melee=False), "damage", 0.0),
+        "ranged_range": getattr(_best_attack(upgraded, melee=False), "range_max", 0.0),
+        "melee_damage": getattr(_best_attack(upgraded, melee=True), "damage", 0.0),
         "ranged_counters": ranged_counters,
         "melee_counters": melee_counters,
     }
@@ -237,7 +249,11 @@ def normal_pool_exclusion_reason(unit: Unit) -> str | None:
         return "普通池：村民"
     if (
         "AbstractHealer" in tags
-        and max(unit.attack_ranged, unit.attack_melee) <= PURE_HEALER_ATTACK_THRESHOLD
+        and max(
+            getattr(_best_attack(unit, melee=False), "damage", 0.0),
+            getattr(_best_attack(unit, melee=True), "damage", 0.0),
+        )
+        <= PURE_HEALER_ATTACK_THRESHOLD
     ):
         return "普通池：纯治疗者"
     if unit.hp <= 0:

@@ -51,56 +51,13 @@ class Unit:
     obstruction_radius_z: float = 0.0  # 原版 protoy obstructionradiusz
     obstruction_radius_equiv: float = 0.0  # 等面积圆半径 sqrt(x*z)
 
-    # 远程攻击
-    attack_ranged: float = 0.0
-    range: float = 0.0
-    range_min: float = 0.0
-    rof_ranged: float = 0.0
-    num_projectiles_ranged: int = 1  # 弹丸数（来自 tactics displayednumberprojectiles）
-    multipliers_ranged: list[Multiplier] = field(default_factory=list)
-
-    # 近战攻击
-    attack_melee: float = 0.0
-    range_melee: float = 0.0            # 近战射程（0 表示使用模拟器默认值 1.5）
-    rof_melee: float = 0.0
-    num_projectiles_melee: int = 1   # 弹丸数（近战极少用到）
-    multipliers_melee: list[Multiplier] = field(default_factory=list)
-
-    # 攻城攻击
-    attack_siege: float = 0.0
-    range_siege: float = 0.0
-    rof_siege: float = 0.0
-    multipliers_siege: list[Multiplier] = field(default_factory=list)
-
-    # AOE / 伤害类型（从 aoe3explorer 补充）
-    aoe_radius: float = 0.0          # 兼容：所有攻击中最大的 AOE
-    aoe_radius_ranged: float = 0.0   # 远程攻击 AOE 半径
-    aoe_radius_melee: float = 0.0    # 近战攻击 AOE 半径
-    aoe_radius_siege: float = 0.0    # 攻城攻击 AOE 半径
-    damage_cap_ranged: float = 0.0   # 远程溅射总伤害池（protoy damagecap）
-    damage_cap_melee: float = 0.0    # 近战溅射总伤害池
-    area_sort_mode_ranged: str = ""  # tactics areasortmode
-    area_sort_mode_melee: str = ""   # tactics areasortmode
-    outer_damage_area_distance_ranged: float = 0.0
-    outer_damage_area_distance_melee: float = 0.0
-    outer_damage_area_factor_ranged: float = 0.0
-    outer_damage_area_factor_melee: float = 0.0
-    basedamagecap_ranged: bool = False
-    basedamagecap_melee: bool = False
-    protoaction_ranged: str = ""
-    protoaction_melee: str = ""
-    damage_type_ranged: str = ""     # "Ranged" / "Siege" / "Hand"
-    damage_type_melee: str = ""      # "Hand" / 其他
-
-    # 默认阵型的攻击模式。空列表表示沿用下面的两槽。
+    # 默认阵型的攻击模式。战斗、展示与科技都读这一份。
     attack_actions: list = field(default_factory=list)
     attack_actions_by_tactic: dict = field(default_factory=dict)
     inflicts_no_damage: bool = False
 
-    # 抬手（秒）：逐动作名全量；windup_ranged/melee 为代表动作整包字段
+    # 抬手（秒），按动作名。
     windups: dict[str, float] = field(default_factory=dict)
-    windup_ranged: float = 0.0
-    windup_melee: float = 0.0
 
     # 炮兵架设：开局移动，首次交火后永久部署。
     has_limber_stance: bool = False
@@ -118,17 +75,14 @@ class Unit:
     def has_attack(self) -> bool:
         """是否有打得到普通单位的攻击。
 
-        有攻击列表时只算打得中人的模式。``InflictsNoDamage`` 不算。
-        没有列表时沿用远程槽和近战槽。只拆建筑的单位不算。
+        只算打得中人的攻击模式。``InflictsNoDamage`` 不算。只拆建筑的不算。
         """
         if self.inflicts_no_damage:
             return False
-        if self.attack_actions:
-            return any(
-                action.hits_soldiers and action.damage > 0 and action.range_max > 0
-                for action in self.attack_actions
-            )
-        return bool(self.attack_ranged or self.attack_melee)
+        return any(
+            action.hits_soldiers and action.damage > 0 and action.range_max > 0
+            for action in self.attack_actions
+        )
 
     @property
     def is_trainable(self) -> bool:
@@ -167,16 +121,6 @@ class Unit:
     @classmethod
     def from_dict(cls, d: dict[str, Any]) -> Unit:
         """从 units.json 的字典构造。"""
-        mults = d.get("multipliers", {})
-
-        def _parse_mults(lst: list[dict] | None) -> list[Multiplier]:
-            if not lst:
-                return []
-            return [Multiplier(vs=m["vs"], value=m["value"]) for m in lst]
-
-        mults_ranged = mults.get("ranged") if isinstance(mults, dict) else None
-        mults_melee = mults.get("melee") if isinstance(mults, dict) else None
-        mults_siege = mults.get("siege") if isinstance(mults, dict) else None
         from .attack_actions import attack_action_from_dict
 
         return cls(
@@ -202,45 +146,6 @@ class Unit:
             obstruction_radius_x=d.get("obstruction_radius_x", 0.0),
             obstruction_radius_z=d.get("obstruction_radius_z", 0.0),
             obstruction_radius_equiv=d.get("obstruction_radius_equiv", 0.0),
-            attack_ranged=d.get("attack_ranged", 0.0),
-            range=d.get("range", 0.0),
-            range_min=d.get("range_min", 0.0),
-            rof_ranged=d.get("rof_ranged", 0.0),
-            num_projectiles_ranged=d.get("num_projectiles_ranged", 1),
-            multipliers_ranged=_parse_mults(mults_ranged),
-            attack_melee=d.get("attack_melee", 0.0),
-            range_melee=d.get("range_melee", 0.0),
-            rof_melee=d.get("rof_melee", 0.0),
-            num_projectiles_melee=d.get("num_projectiles_melee", 1),
-            multipliers_melee=_parse_mults(mults_melee),
-            attack_siege=d.get("attack_siege", 0.0),
-            range_siege=d.get("range_siege", 0.0),
-            rof_siege=d.get("rof_siege", 0.0),
-            multipliers_siege=_parse_mults(mults_siege),
-            aoe_radius=d.get("aoe_radius", 0),
-            aoe_radius_ranged=d.get("aoe_radius_ranged", 0),
-            aoe_radius_melee=d.get("aoe_radius_melee", 0),
-            aoe_radius_siege=d.get("aoe_radius_siege", 0),
-            damage_cap_ranged=d.get("damage_cap_ranged", 0.0),
-            damage_cap_melee=d.get("damage_cap_melee", 0.0),
-            area_sort_mode_ranged=d.get("area_sort_mode_ranged", ""),
-            area_sort_mode_melee=d.get("area_sort_mode_melee", ""),
-            outer_damage_area_distance_ranged=d.get(
-                "outer_damage_area_distance_ranged", 0.0
-            ),
-            outer_damage_area_distance_melee=d.get(
-                "outer_damage_area_distance_melee", 0.0
-            ),
-            outer_damage_area_factor_ranged=d.get(
-                "outer_damage_area_factor_ranged", 0.0
-            ),
-            outer_damage_area_factor_melee=d.get(
-                "outer_damage_area_factor_melee", 0.0
-            ),
-            basedamagecap_ranged=bool(d.get("basedamagecap_ranged", False)),
-            basedamagecap_melee=bool(d.get("basedamagecap_melee", False)),
-            protoaction_ranged=d.get("protoaction_ranged", ""),
-            protoaction_melee=d.get("protoaction_melee", ""),
             attack_actions=[
                 attack_action_from_dict(item)
                 for item in d.get("attack_actions") or []
@@ -256,11 +161,7 @@ class Unit:
                 if isinstance(actions, list)
             },
             inflicts_no_damage=bool(d.get("inflicts_no_damage", False)),
-            damage_type_ranged=d.get("damage_type_ranged", ""),
-            damage_type_melee=d.get("damage_type_melee", ""),
             windups={k: float(v) for k, v in d.get("windups", {}).items()},
-            windup_ranged=float(d.get("windup_ranged", 0) or 0),
-            windup_melee=float(d.get("windup_melee", 0) or 0),
             has_limber_stance=bool(d.get("has_limber_stance", False)),
             deploy_time=float(d.get("deploy_time", 0) or 0),
             deployed_speed_multiplier=float(

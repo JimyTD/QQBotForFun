@@ -18,6 +18,7 @@ from plugins.games.aoe3_battle.simulator2d.combat import CombatSystem, SlotStats
 from plugins.games.aoe3_battle.simulator2d.config import Simulation2DConfig
 from plugins.games.aoe3_battle.simulator2d.model import AttackMode, Soldier2D
 from plugins.games.aoe3_battle.simulator2d.spatial import SpatialHash
+from tests.games.aoe3_battle.unit_factory import build_attack_actions
 
 
 def _unit(
@@ -31,9 +32,9 @@ def _unit(
         name=unit_id,
         name_en=unit_id,
         hp=1000,
-        attack_ranged=100.0,
-        range=20.0,
-        rof_ranged=1.0,
+        attack_actions=build_attack_actions(
+            attack_melee=0.0, attack_ranged=100.0, range_=20.0, rof_ranged=1.0
+        ),
         obstruction_radius_x=radius_x,
         obstruction_radius_z=radius_z,
     )

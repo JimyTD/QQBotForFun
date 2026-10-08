@@ -12,6 +12,9 @@ from plugins.aoe3.repository import UnitRepo
 from plugins.games.aoe3_battle.simulator2d import BattleSimulator2D
 from plugins.games.aoe3_battle.simulator2d.model import Side, Soldier2D, Vec2
 from plugins.games.aoe3_battle.simulator2d.navigation import RouteStatus, search_detour
+from tests.games.aoe3_battle.unit_factory import build_attack_actions
+
+_MELEE_ACTIONS = build_attack_actions(attack_melee=10, melee_range=1.5, rof_melee=1.0)
 
 
 def _ranged_snapshot(mirror=False):
@@ -74,7 +77,7 @@ def test_every_shape_has_a_reverse_escape_action(radii):
         name_en="mover",
         hp=100,
         speed=4,
-        attack_melee=10,
+        attack_actions=list(_MELEE_ACTIONS),
         obstruction_radius_x=radii[0],
         obstruction_radius_z=radii[1],
     )
@@ -111,7 +114,7 @@ def test_shared_recovery_does_not_force_a_step_when_fully_enclosed(radii):
         name_en="enclosed",
         hp=100,
         speed=4,
-        attack_melee=10,
+        attack_actions=list(_MELEE_ACTIONS),
         obstruction_radius_x=radii[0],
         obstruction_radius_z=radii[1],
     )
@@ -134,7 +137,14 @@ def test_shared_recovery_does_not_force_a_step_when_fully_enclosed(radii):
 
 
 def _wall():
-    unit = Unit(id="wall", name="wall", name_en="wall", hp=100, speed=4, attack_melee=10)
+    unit = Unit(
+        id="wall",
+        name="wall",
+        name_en="wall",
+        hp=100,
+        speed=4,
+        attack_actions=list(_MELEE_ACTIONS),
+    )
     sim = BattleSimulator2D(unit, 1, unit, 1, seed=42)
     sim._init_soldiers()
     sim._field_width = sim._field_height = 30

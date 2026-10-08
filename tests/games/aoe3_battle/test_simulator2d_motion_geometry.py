@@ -21,6 +21,7 @@ from plugins.games.aoe3_battle.simulator2d.geometry import (
 from plugins.games.aoe3_battle.simulator2d.model import Side, Soldier2D, Vec2
 from plugins.games.aoe3_battle.simulator2d.movement import _time_to_collision
 from plugins.games.aoe3_battle.simulator2d.navigation import plan_detour, route_clear
+from tests.games.aoe3_battle.unit_factory import build_attack_actions
 
 
 def _unit(x=2.0, y=0.3):
@@ -30,8 +31,9 @@ def _unit(x=2.0, y=0.3):
         name_en="elongated",
         hp=10000,
         speed=4,
-        attack_melee=10,
-        range_melee=1.5,
+        attack_actions=build_attack_actions(
+            attack_melee=10, melee_range=1.5, rof_melee=1.0
+        ),
         obstruction_radius_x=x,
         obstruction_radius_z=y,
     )

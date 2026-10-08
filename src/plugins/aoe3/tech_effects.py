@@ -17,46 +17,24 @@ from .models import Multiplier, Unit
 # 应用
 # ------------------------------------------------------------------
 
-def _slots_for_op(op: dict, unit: Unit) -> list[str]:
-    """op 的 action 落 ranged/melee 哪些槽（与 upgrades_parser._slots_for_action 同源逻辑）。"""
-    allact = op.get("allactions", False)
-    action = op.get("action")
-    if allact or not action:
-        slots = []
-        if unit.attack_ranged:
-            slots.append("ranged")
-        if unit.attack_melee:
-            slots.append("melee")
-        return slots
-    if action == unit.protoaction_ranged:
-        return ["ranged"] if unit.attack_ranged else []
-    if action == unit.protoaction_melee:
-        return ["melee"] if unit.attack_melee else []
-    return []
-
-
 def _op_dedup_key(op: dict, unit: Unit) -> tuple[str, ...]:
     """为 op 生成去重键：同键的多条 op 只保留最强的一条。
 
     键的构成取决于 stat 类型：
-      - slot-routed (range/aoe/rof): (stat, kind, slot)
-      - mult: (stat, kind, slot, vs)
+      - range/aoe/rof/mult: 按动作名，不是按槽
       - 全局 (hp/damage/speed): (stat, kind)
       - armor: (stat, kind, armor_kind)
       - cost: (stat, kind, resource)
-
-    返回 tuple 列表（一条 op 可能命中多个 slot，则生成多个键）。
     """
     stat = op["stat"]
     kind = op["kind"]
 
     if stat in ("range", "aoe", "rof"):
-        slots = _slots_for_op(op, unit)
-        return tuple(f"{stat}:{kind}:{s}" for s in slots) if slots else (f"{stat}:{kind}:",)
+        return (f"{stat}:{kind}",)
     if stat == "mult":
         vs = op.get("vs", "")
-        slots = _slots_for_op(op, unit)
-        return tuple(f"mult:{kind}:{s}:{vs}" for s in slots) if slots else (f"mult:{kind}::{vs}",)
+        action = op.get("action", "")
+        return (f"mult:{kind}:{action}:{vs}",)
     if stat == "action_enable":
         return (f"action_enable:{op.get('action', '')}",)
     if stat == "initial_tactic":
@@ -109,38 +87,6 @@ def _deduplicate_ops(ops: list[dict], unit: Unit) -> list[dict]:
 
 
 _ROF_FLOOR = 0.1
-
-
-def _apply_rof(
-    changes: dict,
-    unit: Unit,
-    base: Unit,
-    op: dict,
-    kind: str,
-    val: float,
-) -> None:
-    """Apply one rate-of-fire op onto the representative attack slot.
-
-    Assign overwrites the interval. Absolute adds seconds. BasePercent adds
-    ``base_interval * (amount - 1)`` onto the current interval, the same way
-    hit points treat BasePercent. The interval stays at least 0.1 seconds.
-    """
-    for slot in _slots_for_op(op, unit):
-        field = {"ranged": "rof_ranged", "melee": "rof_melee"}.get(slot)
-        if field is None:
-            continue
-        current = float(changes.get(field, getattr(unit, field)))
-        if kind == "set":
-            new = val
-        elif current <= 0:
-            continue
-        elif kind == "add":
-            new = current + val
-        elif kind == "mult":
-            new = current + float(getattr(base, field)) * (val - 1.0)
-        else:
-            continue
-        changes[field] = round(max(_ROF_FLOOR, new), 3)
 
 
 def _recharge_targets_unit(op: dict, unit: Unit) -> bool:
@@ -312,22 +258,6 @@ def _apply_one_tech(unit: Unit, tech: dict, base: Unit) -> Unit:
             changes["hp"] = round(changes.get("hp", unit.hp) + val, 1)
         elif stat == "damage" and kind == "mult":
             inc = val - 1.0
-            if unit.attack_ranged:
-                changes["attack_ranged"] = round(
-                    changes.get("attack_ranged", unit.attack_ranged)
-                    + base.attack_ranged * inc, 2)
-                if unit.damage_cap_ranged:
-                    changes["damage_cap_ranged"] = round(
-                        changes.get("damage_cap_ranged", unit.damage_cap_ranged)
-                        + base.damage_cap_ranged * inc, 2)
-            if unit.attack_melee:
-                changes["attack_melee"] = round(
-                    changes.get("attack_melee", unit.attack_melee)
-                    + base.attack_melee * inc, 2)
-                if unit.damage_cap_melee:
-                    changes["damage_cap_melee"] = round(
-                        changes.get("damage_cap_melee", unit.damage_cap_melee)
-                        + base.damage_cap_melee * inc, 2)
             _retarget_actions(
                 changes,
                 unit,
@@ -343,22 +273,6 @@ def _apply_one_tech(unit: Unit, tech: dict, base: Unit) -> Unit:
                     ),
                 ),
             )
-        elif stat == "range" and kind == "add":
-            for s in _slots_for_op(op, unit):
-                if s == "ranged" and unit.range:
-                    changes["range"] = round(
-                        changes.get("range", unit.range) + val, 2)
-                elif s == "melee" and unit.range_melee:
-                    changes["range_melee"] = round(
-                        changes.get("range_melee", unit.range_melee) + val, 2)
-        elif stat == "aoe" and kind == "add":
-            for s in _slots_for_op(op, unit):
-                if s == "ranged":
-                    changes["aoe_radius_ranged"] = round(
-                        changes.get("aoe_radius_ranged", unit.aoe_radius_ranged) + val, 2)
-                elif s == "melee":
-                    changes["aoe_radius_melee"] = round(
-                        changes.get("aoe_radius_melee", unit.aoe_radius_melee) + val, 2)
         elif stat == "recharge" and _recharge_targets_unit(op, unit):
             def _next_recharge(action: AttackAction, origin: AttackAction) -> AttackAction:
                 if not action.charge:
@@ -396,8 +310,6 @@ def _apply_one_tech(unit: Unit, tech: dict, base: Unit) -> Unit:
                     enabled=enabled,
                 ),
             )
-        elif stat == "rof":
-            _apply_rof(changes, unit, base, op, kind, val)
         elif stat == "speed":
             cur = changes.get("speed", unit.speed)
             if kind == "mult":
@@ -426,29 +338,7 @@ def _apply_one_tech(unit: Unit, tech: dict, base: Unit) -> Unit:
                 else:
                     cur_cost.pop(resource, None)
                 changes["cost"] = cur_cost
-        elif stat == "mult" and kind == "add":
-            vs = op.get("vs", "")
-            if not vs:
-                continue
-            for s in _slots_for_op(op, unit):
-                field_name = f"multipliers_{s}"
-                cur_list = changes.get(field_name) or list(getattr(unit, field_name))
-                new_list = []
-                found = False
-                for m in cur_list:
-                    if m.vs == vs:
-                        new_list.append(
-                            dataclasses.replace(
-                                m,
-                                value=round(m.value + val, 4),
-                            )
-                        )
-                        found = True
-                    else:
-                        new_list.append(m)
-                if not found:
-                    new_list.append(Multiplier(vs=vs, value=round(1.0 + val, 4)))
-                changes[field_name] = new_list
+        # range / aoe / rof / mult 只经上面 _apply_named_action_stats 落到动作列表
 
     _apply_named_action_stats(changes, unit, base, tech["ops"])
 

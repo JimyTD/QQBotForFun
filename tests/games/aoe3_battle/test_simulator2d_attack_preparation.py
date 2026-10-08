@@ -11,6 +11,7 @@ from plugins.games.aoe3_battle.battle_contract import EventType
 from plugins.games.aoe3_battle.simulator2d import BattleSimulator2D
 from plugins.games.aoe3_battle.simulator2d.model import AttackMode, Vec2
 from plugins.games.aoe3_battle.simulator2d.movement import SteeringResult
+from tests.games.aoe3_battle.unit_factory import build_attack_actions
 
 
 def _scene(*, minimum=0.0, melee=0.0, ranged_windup=0.4, melee_windup=0.2):
@@ -20,17 +21,19 @@ def _scene(*, minimum=0.0, melee=0.0, ranged_windup=0.4, melee_windup=0.2):
         name_en="gun",
         hp=10000,
         speed=4.0,
-        attack_ranged=20.0,
-        range=12.0,
-        range_min=minimum,
-        rof_ranged=1.5,
-        attack_melee=melee,
-        range_melee=1.75,
-        rof_melee=1.0,
-        windup_ranged=ranged_windup,
-        windup_melee=melee_windup,
+        attack_actions=build_attack_actions(
+            attack_ranged=20.0,
+            range_=12.0,
+            range_min=minimum,
+            rof_ranged=1.5,
+            windup_ranged=ranged_windup,
+            attack_melee=melee,
+            melee_range=1.75,
+            rof_melee=1.0,
+            windup_melee=melee_windup,
+        ),
     )
-    dummy = replace(gun, id="dummy", speed=0.0, attack_ranged=0.0, attack_melee=0.0)
+    dummy = replace(gun, id="dummy", speed=0.0, attack_actions=[])
     sim = BattleSimulator2D(gun, 1, dummy, 2, seed=42)
     sim._init_soldiers()
     gunner, first, second = sim._soldiers

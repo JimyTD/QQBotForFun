@@ -20,24 +20,15 @@ if not PROTOY_PATH.is_file():
     PROTOY_PATH = Path(__import__("os").environ.get("AOE3_EXTRACTED_DIR", r"E:\aoe3_extracted")) / "protoy.xml"
 
 
-def _slot_cap_old_new(u: dict, slot: str) -> dict | None:
-    if slot == "ranged":
-        aoe = u.get("aoe_radius_ranged") or 0
-        if aoe <= 0:
-            return None
-        dmg = u.get("attack_ranged") or 0
-        np = u.get("num_projectiles_ranged", 1)
-        proto = u.get("damage_cap_ranged") or 0
-        name = u.get("name") or u.get("name_en")
-    else:
-        aoe = u.get("aoe_radius_melee") or 0
-        if aoe <= 0:
-            return None
-        dmg = u.get("attack_melee") or 0
-        np = u.get("num_projectiles_melee", 1)
-        proto = u.get("damage_cap_melee") or 0
-        name = u.get("name") or u.get("name_en")
-
+def _action_cap_old_new(u: dict, action: dict) -> dict | None:
+    aoe = action.get("aoe_radius") or 0
+    if aoe <= 0:
+        return None
+    dmg = action.get("damage") or 0
+    np = action.get("num_projectiles", 1)
+    proto = action.get("damage_cap") or 0
+    name = u.get("name") or u.get("name_en")
+    slot = action.get("name", "")
     base = dmg * np
     old_cap = base * 2
     new_cap = proto if proto > 0 else old_cap
@@ -66,8 +57,8 @@ def _slot_cap_old_new(u: dict, slot: str) -> dict | None:
 def audit_cap_changes(units: list[dict]) -> list[dict]:
     rows: list[dict] = []
     for u in units:
-        for slot in ("ranged", "melee"):
-            row = _slot_cap_old_new(u, slot)
+        for action in u.get("attack_actions", []):
+            row = _action_cap_old_new(u, action)
             if row and row["proto_differs_from_2x"]:
                 rows.append(row)
     rows.sort(key=lambda r: (-abs(r["cap_delta"]), r["id"], r["slot"]))
@@ -112,14 +103,14 @@ def format_report(changed: list[dict], bdc: dict, units: list[dict]) -> str:
     aoe_units = sum(
         1
         for u in units
-        if (u.get("aoe_radius_ranged") or 0) > 0 or (u.get("aoe_radius_melee") or 0) > 0
+        if any((a.get("aoe_radius") or 0) > 0 for a in u.get("attack_actions", []))
     )
     unchanged = aoe_units - len({(r["id"], r["slot"]) for r in changed})
     # units with aoe but no proto cap field still use 2x — count separately
     aoe_no_proto = 0
     for u in units:
-        for slot in ("ranged", "melee"):
-            row = _slot_cap_old_new(u, slot)
+        for action in u.get("attack_actions", []):
+            row = _action_cap_old_new(u, action)
             if row and not row["has_proto_cap"]:
                 aoe_no_proto += 1
 

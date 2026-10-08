@@ -44,7 +44,9 @@ def test_apply_damage_mult(repo):
     if "AbstractGunpowderTrooper" not in skirm.type:
         pytest.skip("skirmisher 不是火药步兵")
     up = _apply_one_tech(skirm, paper, base=skirm)
-    assert up.attack_ranged == round(skirm.attack_ranged + skirm.attack_ranged * 0.15, 2)
+    for action in up.attack_actions:
+        base_action = next(a for a in skirm.attack_actions if a.name == action.name)
+        assert action.damage == round(base_action.damage + base_action.damage * 0.15, 2)
 
 
 def test_apply_hp_additive_on_tier(repo):
@@ -105,7 +107,9 @@ def test_apply_techs_list(repo):
     up = result[0]
     # 加算：hp + base_hp × 0.15
     assert up.hp == round(musk.hp + musk.hp * 0.15, 1)
-    assert up.attack_ranged == round(musk.attack_ranged + musk.attack_ranged * 0.15, 2)
+    for action in up.attack_actions:
+        base_action = next(a for a in musk.attack_actions if a.name == action.name)
+        assert action.damage == round(base_action.damage + base_action.damage * 0.15, 2)
 
 
 # ------------------------------------------------------------------
@@ -221,7 +225,8 @@ def test_tech_summary_describes_cost_and_counter():
 def test_apply_rof_percent_and_absolute(repo):
     """BasePercent 按基础间隔加算，Absolute 加减秒，下限 0.1 秒。"""
     falconet = repo.get_by_id("falconet")
-    assert falconet is not None and falconet.rof_ranged == 4.0
+    cannon_base = next(a for a in falconet.attack_actions if a.name == "CannonAttack")
+    assert falconet is not None and cannon_base.rof == 4.0
     faster = {
         "scope": ["falconet"],
         "ops": [{
@@ -232,7 +237,8 @@ def test_apply_rof_percent_and_absolute(repo):
         }],
     }
     percent = _apply_one_tech(falconet, faster, base=falconet)
-    assert percent.rof_ranged == 3.6
+    cannon = next(action for action in percent.attack_actions if action.name == "CannonAttack")
+    assert cannon.rof == 3.6
 
     quicker = {
         "scope": ["falconet"],
@@ -244,7 +250,6 @@ def test_apply_rof_percent_and_absolute(repo):
         }],
     }
     absolute = _apply_one_tech(falconet, quicker, base=falconet)
-    assert absolute.rof_ranged == 3.5
     cannon = next(action for action in absolute.attack_actions if action.name == "CannonAttack")
     assert cannon.rof == 3.5
 
@@ -282,7 +287,6 @@ def test_named_and_allactions_range_do_not_stack_on_one_action(repo):
     assert by_name["VolleyRangedAttack"].range_max == 17
     assert by_name["VolleyHandAttack"].range_max == 6.75
     assert by_name["BuildingAttack"].range_max == 11
-    assert upgraded.range == round(musk.range + 5, 2)
 
 
 def test_tech_summary_keeps_velocity_and_rof_relativity():

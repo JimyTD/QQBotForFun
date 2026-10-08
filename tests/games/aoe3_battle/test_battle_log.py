@@ -29,21 +29,50 @@ class _Result:
     timeout: bool = False
 
 
+def _actions(*, melee=0.0, ranged=0.0, range_max=0.0, range_min=0.0, aoe=0.0):
+    from plugins.aoe3.attack_actions import AttackAction
+
+    actions = []
+    if ranged > 0 and range_max > 0:
+        actions.append(
+            AttackAction(
+                name="TestRangedAttack",
+                priority=50,
+                damage=ranged,
+                damage_type="Ranged",
+                range_min=range_min,
+                range_max=range_max,
+                rof=3.0,
+                aoe_radius=aoe,
+                rangedlogic=True,
+            )
+        )
+    if melee > 0:
+        actions.append(
+            AttackAction(
+                name="TestHandAttack",
+                priority=100,
+                damage=melee,
+                damage_type="Hand",
+                range_min=0.0,
+                range_max=1.5,
+                rof=1.5,
+                handlogic=True,
+            )
+        )
+    return actions
+
+
 def test_battle_log_records_selected_techs(monkeypatch, tmp_path) -> None:
     red_unit = SimpleNamespace(
         id="xpskullknight",
         name="风云骷髅武士",
         type=("AbstractInfantry",),
         hp=480,
-        attack_ranged=0.0,
-        attack_melee=30.0,
-        attack_siege=72.0,
+        attack_actions=_actions(melee=30.0),
         armor_ranged=0.0,
         armor_melee=0.2,
         speed=4.25,
-        range=0.0,
-        range_min=0.0,
-        aoe_radius=3,
         pop=2,
         name_en="Skull Knight",
         cost={"gold": 250},
@@ -53,15 +82,10 @@ def test_battle_log_records_selected_techs(monkeypatch, tmp_path) -> None:
         name="护卫卡尔远征军",
         type=("AbstractInfantry",),
         hp=225,
-        attack_ranged=28.5,
-        attack_melee=30.0,
-        attack_siege=20.0,
+        attack_actions=_actions(melee=30.0, ranged=28.5, range_max=15.0, range_min=3.0),
         armor_ranged=0.0,
         armor_melee=0.2,
         speed=4.25,
-        range=15.0,
-        range_min=3.0,
-        aoe_radius=0,
         pop=1,
         name_en="Carolean",
         cost={"food": 60, "gold": 40},

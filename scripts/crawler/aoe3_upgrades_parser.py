@@ -136,28 +136,6 @@ def hp_dmg_increments(block: str, want_target_lower: str):
     return hp_inc, dmg_inc
 
 
-def _slots_for_action(action: str | None, allactions: str | None, u: dict) -> list[str]:
-    """effect 的 action 命中哪些槽（仅 ranged/melee；siege 斗蛐蛐不用）。
-
-    按攻击数据铁律：**只认代表动作**（units.json 的 protoaction_ranged/melee）。
-    allactions=1 或无 action → 落该兵实际拥有的所有槽；
-    action 不等于任一代表动作（如 Defend/Stagger/BuildingAttack 变体）→ 不计，
-    避免把同一 effect 的多条动作变体重复相加。
-    """
-    if allactions == "1" or not action:
-        slots = []
-        if u.get("attack_ranged"):
-            slots.append("ranged")
-        if u.get("attack_melee"):
-            slots.append("melee")
-        return slots
-    if action == u.get("protoaction_ranged"):
-        return ["ranged"]
-    if action == u.get("protoaction_melee"):
-        return ["melee"]
-    return []
-
-
 def _attack_names(unit: dict) -> list[str]:
     """这个兵各阵型里出现过的动作名。"""
     names: list[str] = []
@@ -260,7 +238,7 @@ def tech_extra_effects(block: str, u: dict, tech_name: str = "") -> dict:
     types = set(u.get("type", []))
     names = _attack_names(u)
     out = {
-        "range_add": {}, "aoe_add": {}, "rof_set": {}, "armor_add": {}, "mult_add": {},
+        "armor_add": {},
         "speed_add": 0.0, "speed_mult": 1.0, "speed_set": None,
         "action_range_add": {}, "action_aoe_add": {}, "action_rof_set": {},
         "action_rof_add": {}, "action_mult_add": {},
@@ -307,16 +285,10 @@ def tech_extra_effects(block: str, u: dict, tech_name: str = "") -> dict:
         if (tech_name, sub) in DIRTY_EFFECTS:
             continue  # 已知占位/bug 值，精确点名丢弃（如投石手 +147 射程）
         if sub == "MaximumRange" and rel == "Absolute" and amt > 0:
-            for s in _slots_for_action(action, allact, u):
-                out["range_add"][s] = out["range_add"].get(s, 0.0) + amt
             _note(range_named, range_star_box, action, allact, amt)
         elif sub == "DamageArea" and rel == "Absolute" and amt > 0:
-            for s in _slots_for_action(action, allact, u):
-                out["aoe_add"][s] = out["aoe_add"].get(s, 0.0) + amt
             _note(aoe_named, aoe_star_box, action, allact, amt)
         elif sub == "RateOfFire" and rel == "Assign" and amt > 0:
-            for s in _slots_for_action(action, allact, u):
-                out["rof_set"][s] = amt  # 覆盖（攻速直接置值）
             if allact == "1" or not action:
                 rof_star = amt if rof_star is None else max(rof_star, amt)
             else:
@@ -339,9 +311,6 @@ def tech_extra_effects(block: str, u: dict, tech_name: str = "") -> dict:
             # 倍率：只对「已存在的正倍率 vs <unittype>」做加法（§3.10.2）
             vs = _attr(attrs, "unittype")
             if vs:
-                for s in _slots_for_action(action, allact, u):
-                    out["mult_add"].setdefault(s, {})
-                    out["mult_add"][s][vs] = out["mult_add"][s].get(vs, 0.0) + amt
                 if allact == "1" or not action:
                     mult_star[vs] = mult_star.get(vs, 0.0) + amt
                 else:
@@ -359,11 +328,7 @@ def _accumulate_extras(picked_tech: dict[int, str], blocks: dict, u: dict) -> di
     """沿选定科技链按时代累加 extras，返回 {age: {extra字段...}}（cumulative）。"""
     per_age = {age: tech_extra_effects(blocks[picked_tech[age]], u, picked_tech[age])
                for age in picked_tech}
-    range_add: dict[str, float] = {}
-    aoe_add: dict[str, float] = {}
     armor_add: dict[str, float] = {}
-    mult_add: dict[str, dict[str, float]] = {}
-    rof_set: dict[str, float] = {}
     action_range_add: dict[str, float] = {}
     action_aoe_add: dict[str, float] = {}
     action_rof_set: dict[str, float] = {}
@@ -375,18 +340,8 @@ def _accumulate_extras(picked_tech: dict[int, str], blocks: dict, u: dict) -> di
     out: dict[str, dict] = {}
     for age in sorted(per_age):
         ex = per_age[age]
-        for s, v in ex["range_add"].items():
-            range_add[s] = range_add.get(s, 0.0) + v
-        for s, v in ex["aoe_add"].items():
-            aoe_add[s] = aoe_add.get(s, 0.0) + v
         for k, v in ex["armor_add"].items():
             armor_add[k] = armor_add.get(k, 0.0) + v
-        for s, dd in ex["mult_add"].items():
-            mult_add.setdefault(s, {})
-            for vs, v in dd.items():
-                mult_add[s][vs] = mult_add[s].get(vs, 0.0) + v
-        for s, v in ex["rof_set"].items():
-            rof_set[s] = v  # 高档覆盖低档
         for name, value in ex["action_range_add"].items():
             action_range_add[name] = round(action_range_add.get(name, 0.0) + value, 3)
         for name, value in ex["action_aoe_add"].items():
@@ -404,17 +359,9 @@ def _accumulate_extras(picked_tech: dict[int, str], blocks: dict, u: dict) -> di
             speed_set = ex["speed_set"]
 
         entry: dict = {}
-        clean = {s: round(v, 3) for s, v in range_add.items() if abs(v) > 1e-9}
-        if clean:
-            entry["range_add"] = clean
-        clean = {s: round(v, 3) for s, v in aoe_add.items() if abs(v) > 1e-9}
-        if clean:
-            entry["aoe_add"] = clean
         clean = {k: round(v, 3) for k, v in armor_add.items() if abs(v) > 1e-9}
         if clean:
             entry["armor_add"] = clean
-        if rof_set:
-            entry["rof_set"] = dict(rof_set)
         if action_range_add:
             entry["action_range_add"] = dict(action_range_add)
         if action_aoe_add:
@@ -433,11 +380,6 @@ def _accumulate_extras(picked_tech: dict[int, str], blocks: dict, u: dict) -> di
             entry["speed_mult"] = round(speed_mult, 4)
         if speed_set is not None:
             entry["speed_set"] = round(speed_set, 3)
-        m_clean = {s: {vs: round(v, 3) for vs, v in dd.items() if abs(v) > 1e-9}
-                   for s, dd in mult_add.items()}
-        m_clean = {s: dd for s, dd in m_clean.items() if dd}
-        if m_clean:
-            entry["mult_add"] = m_clean
         if entry:
             out[str(age)] = entry
     return out
@@ -743,9 +685,9 @@ def main():
             "generated_at": datetime.now(timezone.utc).isoformat(),
             "source": "data/aoe3/raw/techtreey.xml",
             "doc": "docs/games/aoe3-battle.md §3.10",
-            "fields": ["hp_mult", "damage_mult", "name", "range_add", "aoe_add",
-                       "rof_set", "armor_add", "speed_add", "speed_mult", "speed_set",
-                       "mult_add", "action_range_add", "action_aoe_add",
+            "fields": ["hp_mult", "damage_mult", "name", "armor_add",
+                       "speed_add", "speed_mult", "speed_set",
+                       "action_range_add", "action_aoe_add",
                        "action_rof_set", "action_rof_add", "action_mult_add"],
             "age_status": AGE_STATUS,
         },

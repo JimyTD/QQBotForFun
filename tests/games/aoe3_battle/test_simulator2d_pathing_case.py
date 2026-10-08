@@ -11,6 +11,7 @@ from plugins.aoe3.models import Unit
 from plugins.games.aoe3_battle.simulator2d import BattleSimulator2D, Simulation2DConfig
 from plugins.games.aoe3_battle.simulator2d.model import Side, Soldier2D, Vec2
 from plugins.games.aoe3_battle.simulator2d.movement import _time_to_collision
+from tests.games.aoe3_battle.unit_factory import build_attack_actions
 
 
 def _scene(*, count=2, center=10.0, mirror=False, substeps=2, radius=0.45):
@@ -20,8 +21,9 @@ def _scene(*, count=2, center=10.0, mirror=False, substeps=2, radius=0.45):
         name_en="mover",
         hp=100,
         speed=4.0,
-        attack_melee=10.0,
-        rof_melee=1.0,
+        attack_actions=build_attack_actions(
+            attack_melee=10.0, rof_melee=1.0, melee_range=1.5
+        ),
         obstruction_radius_equiv=radius,
     )
     sim = BattleSimulator2D(

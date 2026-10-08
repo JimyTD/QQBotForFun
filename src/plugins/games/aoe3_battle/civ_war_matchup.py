@@ -64,39 +64,6 @@ def _armor(target: Unit, damage_type: str) -> float:
     return target.armor_ranged
 
 
-def _attack_dps(attacker: Unit, target: Unit, target_count: int, *, melee: bool) -> float:
-    if melee:
-        attack = attacker.attack_melee
-        if attack <= 0:
-            return 0.0
-        projectiles = attacker.num_projectiles_melee or 1
-        multipliers = attacker.multipliers_melee
-        damage_type = attacker.damage_type_melee or "Hand"
-        rof = attacker.rof_melee or 1.5
-        aoe = attacker.aoe_radius_melee
-        engagement = 0.75 + min(attacker.speed, 8.0) / 16.0
-    else:
-        attack = attacker.attack_ranged
-        if attack <= 0 or attacker.range <= 0:
-            return 0.0
-        projectiles = attacker.num_projectiles_ranged or 1
-        multipliers = attacker.multipliers_ranged
-        damage_type = attacker.damage_type_ranged or "Ranged"
-        rof = attacker.rof_ranged or 3.0
-        aoe = attacker.aoe_radius_ranged
-        engagement = 1.0 + min(attacker.range, 24.0) / 120.0
-
-    hit = (
-        attack
-        * projectiles
-        * _multiplier_product(multipliers, target)
-        * max(0.0, 1.0 - _armor(target, damage_type))
-    )
-    crowd = min(1.0, max(0, target_count - 1) / 8.0)
-    aoe_factor = 1.0 + min(float(aoe), 4.0) * 0.2 * crowd
-    return max(1.0, hit) / max(0.1, rof) * engagement * aoe_factor
-
-
 def _action_dps(attacker: Unit, action, target: Unit, target_count: int) -> float:
     if (
         not action.enabled
@@ -128,17 +95,12 @@ def _action_dps(attacker: Unit, action, target: Unit, target_count: int) -> floa
 
 def unit_pressure(attacker: Unit, target: Unit, target_count: int) -> float:
     """Estimate one unit's best sustainable pressure against a target type."""
-    if attacker.attack_actions:
-        return max(
-            (
-                _action_dps(attacker, action, target, target_count)
-                for action in attacker.attack_actions
-            ),
-            default=0.0,
-        )
     return max(
-        _attack_dps(attacker, target, target_count, melee=False),
-        _attack_dps(attacker, target, target_count, melee=True),
+        (
+            _action_dps(attacker, action, target, target_count)
+            for action in attacker.attack_actions
+        ),
+        default=0.0,
     )
 
 

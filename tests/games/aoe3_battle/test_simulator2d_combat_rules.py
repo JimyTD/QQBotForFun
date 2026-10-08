@@ -12,19 +12,67 @@ from plugins.aoe3.repository import UnitRepo
 from plugins.games.aoe3_battle.battle_contract import EventType
 from plugins.games.aoe3_battle.simulator2d import BattleSimulator2D
 from plugins.games.aoe3_battle.simulator2d.model import AttackMode
+from tests.games.aoe3_battle.unit_factory import (
+    build_attack_actions,
+    melee_action,
+    ranged_action,
+)
 
 
-def _unit(name="unit", **changes):
+def _unit(
+    name="unit",
+    *,
+    hp=10000,
+    speed=4.0,
+    armor_melee=0.0,
+    armor_ranged=0.0,
+    attack_melee=10.0,
+    attack_ranged=0.0,
+    range=0.0,
+    range_min=0.0,
+    range_melee=1.75,
+    rof_melee=1.2,
+    rof_ranged=1.0,
+    windup_melee=0.0,
+    windup_ranged=0.0,
+    aoe_radius_ranged=0.0,
+    damage_cap_ranged=0.0,
+    num_projectiles_ranged=1,
+    **changes,
+):
+    actions = []
+    if attack_ranged > 0 and range > 0:
+        actions.append(
+            ranged_action(
+                damage=attack_ranged,
+                range_min=range_min,
+                range_max=range,
+                rof=rof_ranged,
+                windup=windup_ranged,
+                aoe_radius=aoe_radius_ranged,
+                damage_cap=damage_cap_ranged,
+                num_projectiles=num_projectiles_ranged,
+            )
+        )
+    if attack_melee > 0:
+        actions.append(
+            melee_action(
+                damage=attack_melee,
+                range_max=range_melee,
+                rof=rof_melee,
+                windup=windup_melee,
+            )
+        )
     return replace(
         Unit(
             id=name,
             name=name,
             name_en=name,
-            hp=10000,
-            speed=4.0,
-            attack_melee=10.0,
-            range_melee=1.75,
-            rof_melee=1.2,
+            hp=hp,
+            speed=speed,
+            armor_melee=armor_melee,
+            armor_ranged=armor_ranged,
+            attack_actions=actions,
         ),
         **changes,
     )
@@ -57,7 +105,10 @@ def test_entire_shotel_front_row_attacks_in_range_without_overlap(count):
         if event.event_type == EventType.ATTACK and event.data["attacker_id"] <= count:
             first_hits.setdefault(event.data["attacker_id"], event.tick)
     assert set(first_hits) == {s.id for s in front}
-    assert max(first_hits.values()) <= math.ceil(shotel.windup_melee / sim.config.tick_interval)
+    melee_windup = next(
+        a.windup for a in shotel.attack_actions if a.damage_type == "Hand"
+    )
+    assert max(first_hits.values()) <= math.ceil(melee_windup / sim.config.tick_interval)
     assert all(s.total_damage_dealt > 0 for s in front)
 
 

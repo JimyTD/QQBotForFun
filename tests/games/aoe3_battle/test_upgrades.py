@@ -21,6 +21,25 @@ _DATA_PATH = (
 )
 
 
+def _action(unit, name):
+    return next(a for a in unit.attack_actions if a.name == name)
+
+
+def _max_ranged_damage(unit):
+    return max(
+        (
+            a.damage
+            for a in unit.attack_actions
+            if a.damage_type != "Hand" and a.hits_soldiers
+        ),
+        default=0.0,
+    )
+
+
+def _melee_action(unit):
+    return next(a for a in unit.attack_actions if a.damage_type == "Hand")
+
+
 @pytest.fixture(scope="module")
 def data():
     return json.loads(_DATA_PATH.read_text(encoding="utf-8"))
@@ -87,18 +106,19 @@ def test_apply_upgrades_returns_copy(repo):
     assert up is not musk
     assert up.hp == base_hp * 2
     assert musk.hp == base_hp  # 原对象不变
-    assert up.attack_ranged == round(musk.attack_ranged * 2, 2)
+    for action in up.attack_actions:
+        base = _action(musk, action.name)
+        assert action.damage == round(base.damage * 2, 2)
 
 
 def test_damage_upgrade_scales_aoe_cap_with_attack(repo):
     falconet = repo.get_by_id("falconet")
     upgraded = apply_upgrades(falconet, 5)
 
-    ratio = upgraded.attack_ranged / falconet.attack_ranged
-    assert upgraded.damage_cap_ranged == pytest.approx(
-        falconet.damage_cap_ranged * ratio,
-        abs=0.02,
-    )
+    base = _action(falconet, "CannonAttack")
+    after = _action(upgraded, "CannonAttack")
+    ratio = after.damage / base.damage
+    assert after.damage_cap == pytest.approx(base.damage_cap * ratio, abs=0.02)
 
 
 def test_apply_upgrades_renames_unit(repo):
@@ -131,9 +151,9 @@ def test_british_redcoat_uses_guard_dependency_plus_rg_bonus(repo):
     generic = apply_upgrades(musk, 4)
     redcoat = apply_upgrades(musk, 4, civ_id="British")
     assert generic.hp == round(musk.hp * 1.5, 1)
-    assert generic.attack_ranged == round(musk.attack_ranged * 1.5, 2)
+    assert _max_ranged_damage(generic) == round(_max_ranged_damage(musk) * 1.5, 2)
     assert redcoat.hp == round(musk.hp * 1.55, 1)
-    assert redcoat.attack_ranged == round(musk.attack_ranged * 1.65, 2)
+    assert _max_ranged_damage(redcoat) == round(_max_ranged_damage(musk) * 1.65, 2)
     assert redcoat.name == "红衫军火枪兵"
 
 
@@ -141,7 +161,7 @@ def test_self_contained_ottoman_rg_is_not_double_counted(repo):
     humbaraci = repo.get_by_id("dehumbaraci")
     upgraded = apply_upgrades(humbaraci, 4, civ_id="Ottomans")
     assert upgraded.hp == round(humbaraci.hp * 1.6, 1)
-    assert upgraded.attack_ranged == round(humbaraci.attack_ranged * 1.6, 2)
+    assert _max_ranged_damage(upgraded) == round(_max_ranged_damage(humbaraci) * 1.6, 2)
     assert upgraded.cost["gold"] == humbaraci.cost["gold"] - 5
 
 
@@ -150,10 +170,10 @@ def test_shared_artillery_gets_its_own_civilization_variant(repo):
     italian = apply_upgrades(culverin, 4, civ_id="DEItalians")
     maltese = apply_upgrades(culverin, 4, civ_id="DEMaltese")
     assert italian.hp == round(culverin.hp * 1.35, 1)
-    assert italian.attack_ranged == round(culverin.attack_ranged * 1.25, 2)
+    assert _max_ranged_damage(italian) == round(_max_ranged_damage(culverin) * 1.25, 2)
     assert italian.armor_ranged == pytest.approx(culverin.armor_ranged + 0.05)
     assert maltese.hp == round(culverin.hp * 1.25, 1)
-    assert maltese.attack_ranged == round(culverin.attack_ranged * 1.35, 2)
+    assert _max_ranged_damage(maltese) == round(_max_ranged_damage(culverin) * 1.35, 2)
 
 
 def test_portuguese_ordinance_pikeman_applies_cost_discount(repo):
@@ -165,7 +185,7 @@ def test_portuguese_ordinance_pikeman_applies_cost_discount(repo):
 def test_polish_scytheman_applies_rof_delta(repo):
     pikeman = repo.get_by_id("pikeman")
     upgraded = apply_upgrades(pikeman, 4, civ_id="DEPolish")
-    assert upgraded.rof_melee == pytest.approx(pikeman.rof_melee - 0.25)
+    assert _melee_action(upgraded).rof == pytest.approx(_melee_action(pikeman).rof - 0.25)
 
 
 def test_outlaw_via_category(repo):
@@ -200,16 +220,15 @@ def test_merc_category_not_suppressed_by_small_unit_tech(repo):
 def test_range_integral_package(data):
     """阿布枪兵射程随 tier 链整包累加：+1/+2/+4（Veteran/Guard/Imperial）。"""
     e = data["units"]["abusgun"]
-    assert e["3"]["range_add"]["ranged"] == 1.0
-    assert e["4"]["range_add"]["ranged"] == 2.0
-    assert e["5"]["range_add"]["ranged"] == 4.0
+    assert e["3"]["action_range_add"]["VolleyRangedAttack"] == 1.0
+    assert e["4"]["action_range_add"]["VolleyRangedAttack"] == 2.0
+    assert e["5"]["action_range_add"]["VolleyRangedAttack"] == 4.0
 
 
 def test_apply_range_and_only_representative_action(repo):
-    """槽上的射程仍按代表动作。列表只加到被点名的那一条。"""
+    """射程按动作名加到被点名的每一条；没点名的动作不变。"""
     abus = repo.get_by_id("abusgun")
     up = apply_upgrades(abus, 5)
-    assert up.range == round(abus.range + 4.0, 2)
     gun = next(action for action in abus.attack_actions if action.name == "VolleyRangedAttack")
     hand = next(action for action in abus.attack_actions if action.name == "VolleyHandAttack")
     up_gun = next(action for action in up.attack_actions if action.name == "VolleyRangedAttack")
@@ -232,10 +251,12 @@ def test_dirty_value_capped(data, repo):
     投石手 3 时代射程不变（只保留 Champion/Legendary 的 +1）。"""
     e = data["units"]["deslinger"]
     # age3 不应出现 +147 的射程
-    assert e.get("3", {}).get("range_add", {}).get("ranged", 0) < 10
+    assert e.get("3", {}).get("action_range_add", {}).get("VolleyRangedAttack", 0) < 10
     sl = repo.get_by_id("deslinger")
     up3 = apply_upgrades(sl, 3)
-    assert up3.range == sl.range  # 3 时代射程不变
+    for action in up3.attack_actions:
+        base = _action(sl, action.name)
+        assert action.range_max == base.range_max  # 3 时代射程不变
 
 
 def test_speed_integral(repo, data):
@@ -252,10 +273,11 @@ def test_mult_add_only_existing_positive(repo):
     """倍率加成只作用于已存在的正倍率；不新建、不碰惩罚倍率。"""
     sl = repo.get_by_id("deslinger")
     up = apply_upgrades(sl, 4)
-    art = next(m.value for m in up.multipliers_ranged if m.vs == "AbstractArtillery")
+    volley = _action(up, "VolleyRangedAttack")
+    art = next(m.value for m in volley.multipliers if m.vs == "AbstractArtillery")
     assert art == 2.5  # 基础 2.0 + 0.5
     # 惩罚倍率（<1）保持不变
-    for m in up.multipliers_ranged:
+    for m in volley.multipliers:
         if m.vs in ("AbstractCavalry", "AbstractLightInfantry"):
             assert m.value < 1.0
 
@@ -263,14 +285,24 @@ def test_mult_add_only_existing_positive(repo):
 def test_no_upgrade_induced_outliers(repo):
     """升级不应把任何攻击单位的数据推成离谱值（隔离基础脏数据，仅看增量）。"""
     for u in repo.all_units:
-        if not (u.attack_ranged or u.attack_melee):
+        if not any(
+            a.hits_soldiers and a.damage > 0 and a.range_max > 0
+            for a in u.attack_actions
+        ):
             continue
-        base_mr = {m.vs: m.value for m in u.multipliers_ranged}
+        base_action = {a.name: a for a in u.attack_actions}
         for age in (3, 4, 5):
             up = apply_upgrades(u, age)
-            assert (up.range - u.range) <= 8.5, f"{u.id} age{age} 射程暴涨"
             assert up.speed <= max(12, u.speed * 1.8 + 0.01), f"{u.id} age{age} 速度暴涨"
             assert up.armor_ranged <= 0.95 or up.armor_ranged == u.armor_ranged
-            for m in up.multipliers_ranged:
-                if abs(m.value - base_mr.get(m.vs, m.value)) > 1e-6:
-                    assert m.value <= 7, f"{u.id} age{age} 倍率 {m} 被升级推爆"
+            for action in up.attack_actions:
+                base = base_action.get(action.name)
+                if base is None:
+                    continue
+                if not action.hits_soldiers:
+                    continue
+                assert action.range_max - base.range_max <= 8.5, f"{u.id} age{age} 射程暴涨"
+                base_mr = {m.vs: m.value for m in base.multipliers}
+                for m in action.multipliers:
+                    if abs(m.value - base_mr.get(m.vs, m.value)) > 1e-6:
+                        assert m.value <= 7, f"{u.id} age{age} 倍率 {m} 被升级推爆"

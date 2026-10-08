@@ -1,7 +1,7 @@
 """单位数据体检 —— 扫描极端数值单位，供人工判断是否需要干预。
 
 每次数据刷新后跑一次，分组列出值得人工看一眼的单位：
-  1. 无远/近攻击槽（斗蛐蛐池会直接剔除）
+  1. 无可打人攻击（斗蛐蛐池会直接剔除）
   2. hp 达阈值
   3. 单次最大攻击达阈值
   4. 高血低攻（肉盾型：打不死也打不动，容易拖到超时按 HP 判胜）
@@ -46,6 +46,20 @@ def _load(path: Path) -> dict[str, Unit]:
     return {d["id"]: Unit.from_dict(d) for d in json.loads(path.read_text(encoding="utf-8"))}
 
 
+def _max_hit(unit: Unit) -> float:
+    """最大单次可打人伤害；只拆建筑或 InflictsNoDamage 记 0。"""
+    if unit.inflicts_no_damage:
+        return 0.0
+    return max(
+        (
+            a.damage * max(1, a.num_projectiles)
+            for a in unit.attack_actions
+            if a.hits_soldiers and a.damage > 0
+        ),
+        default=0.0,
+    )
+
+
 class _Repo:
     """满足 lineup 池函数所需的最小接口。"""
 
@@ -88,11 +102,11 @@ def main() -> None:
             if p.id != u.id and set(p.type) & set(u.type) and abs(p.hp - u.hp) <= max(200.0, u.hp * 0.5)
         ]
         cands.sort(key=lambda p: abs(p.hp - u.hp))
-        return ", ".join(f"{p.id}(hp{p.hp}/atk{max(p.attack_ranged, p.attack_melee):g})" for p in cands[:n]) or "-"
+        return ", ".join(f"{p.id}(hp{p.hp}/atk{_max_hit(p):g})" for p in cands[:n]) or "-"
 
     def row(u: Unit) -> str:
         return (
-            f"  {u.id:34s} hp={u.hp:<7g} 远={u.attack_ranged:<6g} 近={u.attack_melee:<6g} "
+            f"  {u.id:34s} hp={u.hp:<7g} atk={_max_hit(u):<6g} "
             f"pop={u.pop} cost={u.cost} pool={'Y' if u.id in pool else 'n'} "
             f"excluded={'Y' if excluded(u) else 'n'} like={alike(u)}"
         )
@@ -104,10 +118,10 @@ def main() -> None:
     groups = [
         ("无远/近攻击槽", [u for u in targets.values() if not u.has_attack]),
         ("hp 达阈值", [u for u in targets.values() if u.hp >= args.hp]),
-        ("攻击达阈值", [u for u in targets.values() if max(u.attack_ranged, u.attack_melee) >= args.atk]),
+        ("攻击达阈值", [u for u in targets.values() if _max_hit(u) >= args.atk]),
         (
             "高血低攻（肉盾型）",
-            [u for u in targets.values() if u.hp >= args.tank_hp and max(u.attack_ranged, u.attack_melee) <= args.tank_atk],
+            [u for u in targets.values() if u.hp >= args.tank_hp and _max_hit(u) <= args.tank_atk],
         ),
         ("不占人口且在池", [u for u in targets.values() if u.pop == 0 and u.id in pool]),
     ]

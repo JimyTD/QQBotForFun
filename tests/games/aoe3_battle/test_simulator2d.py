@@ -28,6 +28,7 @@ from plugins.games.aoe3_battle.simulator2d.movement import (
     LocalAvoidance,
 )
 from plugins.games.aoe3_battle.simulator2d.spatial import SpatialHash
+from tests.games.aoe3_battle.unit_factory import build_attack_actions
 
 
 def _unit(
@@ -50,19 +51,16 @@ def _unit(
         name_en=unit_id,
         hp=hp,
         speed=speed,
-        attack_melee=attack_melee,
-        attack_ranged=attack_ranged,
-        range=range_,
-        rof_melee=1.0,
-        rof_ranged=1.0,
-        aoe_radius_ranged=aoe_radius_ranged,
-        damage_cap_ranged=damage_cap_ranged,
+        attack_actions=build_attack_actions(
+            attack_melee=attack_melee,
+            attack_ranged=attack_ranged,
+            range_=range_,
+            aoe_radius_ranged=aoe_radius_ranged,
+            damage_cap_ranged=damage_cap_ranged,
+        ),
         obstruction_radius_x=obstruction_radius_x,
         obstruction_radius_z=obstruction_radius_z,
         obstruction_radius_equiv=obstruction_radius_equiv,
-        multipliers_ranged=[
-            Multiplier(vs="Infantry", value=1.0),
-        ],
     )
 
 
@@ -274,6 +272,8 @@ def test_formation_rows_use_each_units_own_footprint() -> None:
     )
     artillery = _unit(
         "artillery",
+        attack_melee=0.0,
+        attack_ranged=100.0,
         range_=20.0,
         obstruction_radius_x=1.0,
         obstruction_radius_z=0.5,

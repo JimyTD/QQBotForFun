@@ -7,7 +7,9 @@ from dataclasses import dataclass
 
 from ....aoe3.attack_actions import (
     AttackAction,
+    _usable,
     action_is_melee,
+    rate_matches,
     select_attack,
     soldier_search_range,
 )
@@ -50,35 +52,6 @@ def stats_from_action(action: AttackAction) -> SlotStats:
     )
 
 
-def combat_slot_stats(unit, mode: AttackMode) -> SlotStats | None:
-    """Map an attack mode to the unit's ranged/melee data slot."""
-    if mode == AttackMode.MELEE:
-        return SlotStats(
-            slot="melee",
-            base_damage=unit.attack_melee,
-            num_projectiles=unit.num_projectiles_melee,
-            multipliers=unit.multipliers_melee,
-            damage_type=unit.damage_type_melee,
-            aoe_radius=unit.aoe_radius_melee,
-            damage_cap_proto=unit.damage_cap_melee,
-            area_sort_mode=unit.area_sort_mode_melee,
-            outer_damage_area_distance=unit.outer_damage_area_distance_melee,
-            outer_damage_area_factor=unit.outer_damage_area_factor_melee,
-        )
-    if mode == AttackMode.RANGED:
-        return SlotStats(
-            slot="ranged",
-            base_damage=unit.attack_ranged,
-            num_projectiles=unit.num_projectiles_ranged,
-            multipliers=unit.multipliers_ranged,
-            damage_type=unit.damage_type_ranged,
-            aoe_radius=unit.aoe_radius_ranged,
-            damage_cap_proto=unit.damage_cap_ranged,
-            area_sort_mode=unit.area_sort_mode_ranged,
-            outer_damage_area_distance=unit.outer_damage_area_distance_ranged,
-            outer_damage_area_factor=unit.outer_damage_area_factor_ranged,
-        )
-    return None
 
 
 def armor_for_damage_type(damage_type: str, target: Soldier2D) -> float:
@@ -186,48 +159,48 @@ class CombatSystem:
         return None
 
     def prepare_attack(self, soldier: Soldier2D, target: Soldier2D) -> AttackMode | None:
-        if soldier.unit.attack_actions:
-            if not soldier.can_attack:
-                return None
-            action = self._selected_action(soldier, target)
-            if action is None:
-                return None
-            mode = AttackMode.MELEE if action_is_melee(action) else AttackMode.RANGED
-            if soldier.prepared_action_name != action.name or soldier.aim_ready_at is None:
-                soldier.prepared_action_name = action.name
-                soldier.prepared_mode = mode
-                soldier.aim_ready_at = self.now + max(0.0, action.windup)
-            soldier.reconsider_attack_mode = False
-            return mode
-        mode = soldier.prepared_mode
-        # Keep the selected action through aiming and the ROF wait. Reconsider
-        # after a shot or when that action is no longer legal, not on range jitter.
-        if (
-            mode is None
-            or soldier.reconsider_attack_mode
-            or not self.is_mode_valid(soldier, target, mode)
-        ):
-            mode = self.determine_attack_mode(soldier, target)
-        if mode is None:
+        if not soldier.can_attack:
             return None
-        if soldier.prepared_mode != mode or soldier.aim_ready_at is None:
-            windup = (
-                soldier.unit.windup_melee
-                if mode == AttackMode.MELEE
-                else soldier.unit.windup_ranged
-            )
+        action = self._reconsider_or_keep(soldier, target)
+        if action is None:
+            return None
+        mode = AttackMode.MELEE if action_is_melee(action) else AttackMode.RANGED
+        if soldier.prepared_action_name != action.name or soldier.aim_ready_at is None:
+            soldier.prepared_action_name = action.name
             soldier.prepared_mode = mode
-            soldier.aim_ready_at = self.now + max(0.0, windup)
+            soldier.aim_ready_at = self.now + max(0.0, action.windup)
         soldier.reconsider_attack_mode = False
         return mode
 
+    def _reconsider_or_keep(
+        self,
+        soldier: Soldier2D,
+        target: Soldier2D,
+    ) -> AttackAction | None:
+        """Keep the prepared action while legal; otherwise pick the best one.
+
+        After a shot the soldier is free to choose a new action for the next
+        cycle.  While a shot is still being prepared, a still-legal prepared
+        action is kept even if distance jitter would pick another one.
+        """
+        distance = soldier.distance_to(target)
+        if (
+            not soldier.reconsider_attack_mode
+            and soldier.prepared_action_name
+            and soldier.aim_ready_at is not None
+        ):
+            prepared = self._prepared_action(soldier)
+            if (
+                prepared is not None
+                and _usable(prepared, self.now, soldier.charge_ready_at)
+                and rate_matches(prepared, target.unit.type)
+                and prepared.range_min - 1e-6 <= distance <= prepared.range_max + 1e-6
+            ):
+                return prepared
+        return self._selected_action(soldier, target)
+
     def _search_radius(self, soldier: Soldier2D) -> float:
-        if soldier.unit.attack_actions:
-            return soldier_search_range(soldier.unit.attack_actions)
-        return max(
-            soldier.effective_ranged_range if soldier.has_ranged else 0.0,
-            soldier.effective_melee_range if soldier.has_melee else 0.0,
-        )
+        return soldier_search_range(soldier.unit.attack_actions)
 
     def attack_candidates(self, soldier: Soldier2D) -> list[Soldier2D]:
         """Return living enemies currently inside a legal attack envelope."""
@@ -264,19 +237,7 @@ class CombatSystem:
             predicate=lambda other: other.alive and other.side != soldier.side,
         )
         for enemy in enemies:
-            if soldier.unit.attack_actions:
-                if self._selected_action(soldier, enemy) is not None:
-                    return True
-                continue
-            distance = soldier.distance_to(enemy)
-            if soldier.has_melee and distance <= soldier.effective_melee_range:
-                return True
-            if (
-                soldier.has_ranged
-                and soldier.effective_ranged_range_min
-                <= distance
-                <= soldier.effective_ranged_range
-            ):
+            if self._selected_action(soldier, enemy) is not None:
                 return True
         return False
 
@@ -364,19 +325,12 @@ class CombatSystem:
         soldier: Soldier2D,
         target: Soldier2D,
     ) -> AttackMode | None:
-        if soldier.unit.attack_actions:
-            if not soldier.can_attack:
-                return None
-            action = self._selected_action(soldier, target)
-            if action is None:
-                return None
-            return AttackMode.MELEE if action_is_melee(action) else AttackMode.RANGED
-        if self.is_mode_valid(soldier, target, AttackMode.MELEE):
-            return AttackMode.MELEE
-        if self.is_mode_valid(soldier, target, AttackMode.RANGED):
-            return AttackMode.RANGED
-
-        return None
+        if not soldier.can_attack:
+            return None
+        action = self._selected_action(soldier, target)
+        if action is None:
+            return None
+        return AttackMode.MELEE if action_is_melee(action) else AttackMode.RANGED
 
     def calc_damage(
         self,
@@ -385,13 +339,11 @@ class CombatSystem:
         mode: AttackMode,
     ) -> float:
         prepared = self._prepared_action(attacker)
-        stats = (
-            stats_from_action(prepared)
-            if prepared is not None
-            else combat_slot_stats(attacker.unit, mode)
-        )
-        if stats is None:
+        if prepared is None:
+            prepared = self._selected_action(attacker, target)
+        if prepared is None:
             return 0.0
+        stats = stats_from_action(prepared)
         multiplier = calc_multiplier(stats.multipliers, target)
         armor = armor_for_damage_type(stats.damage_type, target)
         damage = stats.base_damage * stats.num_projectiles * multiplier * (1.0 - armor)
@@ -423,26 +375,14 @@ class CombatSystem:
                 continue
             damage = self.calc_damage(soldier, target, mode)
             prepared = self._prepared_action(soldier)
-            if prepared is not None:
-                rof = prepared.rof if prepared.rof > 0 else (
-                    self.config.default_rof_melee
-                    if mode == AttackMode.MELEE
-                    else self.config.default_rof_ranged
-                )
-                if prepared.charge:
-                    soldier.charge_ready_at = self.now + prepared.recharge
-            elif mode == AttackMode.MELEE:
-                rof = (
-                    soldier.unit.rof_melee
-                    if soldier.unit.rof_melee > 0
-                    else self.config.default_rof_melee
-                )
-            else:
-                rof = (
-                    soldier.effective_ranged_rof
-                    if soldier.effective_ranged_rof > 0
-                    else self.config.default_rof_ranged
-                )
+            assert prepared is not None
+            rof = prepared.rof if prepared.rof > 0 else (
+                self.config.default_rof_melee
+                if mode == AttackMode.MELEE
+                else self.config.default_rof_ranged
+            )
+            if prepared.charge:
+                soldier.charge_ready_at = self.now + prepared.recharge
             soldier.attack_ready_at = self.now + rof
             soldier.reconsider_attack_mode = True
             volley.append((soldier, target, mode, damage))
@@ -456,11 +396,7 @@ class CombatSystem:
                 continue
             self.damage_callback(soldier, target, damage, mode, is_splash=False)
             prepared = self._prepared_action(soldier)
-            stats = (
-                stats_from_action(prepared)
-                if prepared is not None
-                else combat_slot_stats(soldier.unit, mode)
-            )
+            stats = stats_from_action(prepared) if prepared is not None else None
             if stats is not None and stats.aoe_radius > 0:
                 self.process_aoe(
                     soldier,
@@ -478,7 +414,12 @@ class CombatSystem:
         *,
         slot_stats: SlotStats | None = None,
     ) -> int:
-        stats = slot_stats or combat_slot_stats(attacker.unit, mode)
+        if slot_stats is None:
+            prepared = self._prepared_action(attacker)
+            if prepared is None:
+                prepared = self._selected_action(attacker, main_target)
+            slot_stats = stats_from_action(prepared) if prepared is not None else None
+        stats = slot_stats
         if stats is None or stats.aoe_radius <= 0:
             return 0
 

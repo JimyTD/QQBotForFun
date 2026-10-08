@@ -59,11 +59,7 @@ REF_UNITS = ["musketeer", "hussar", "crossbowman", "falconet"]
 
 # 静态战力公式覆盖不到的字段（power_score 只看 hp / armor / atk / rof / aoe / 弹丸数）
 FORMULA_BLIND = {
-    "windups", "windup_ranged", "windup_melee",
-    "range", "range_min", "range_melee", "range_siege",
-    "multipliers", "damage_type_ranged", "damage_type_melee",
-    "protoaction_ranged", "protoaction_melee", "protoaction_siege",
-    "damage_cap_ranged", "damage_cap_melee",
+    "windups", "attack_actions",
     # type 标签决定倍率匹配（对手的 "+AbstractHandCavalry ×2" 之类），
     # 增减标签会静默改变克制关系，公式完全看不到。
     "type",
@@ -77,16 +73,8 @@ FORMULA_BLIND = {
 # 影响模拟器行为的字段（改动会真实改变战斗表现）
 COMBAT_FIELDS = {
     "hp",
-    "attack_ranged", "attack_melee", "attack_siege",
-    "rof_ranged", "rof_melee", "rof_siege",
-    "range", "range_min", "range_melee", "range_siege",
     "armor_melee", "armor_ranged", "armor_siege",
-    "aoe_radius", "aoe_radius_ranged", "aoe_radius_melee", "aoe_radius_siege",
-    "damage_cap_ranged", "damage_cap_melee",
-    "damage_type_ranged", "damage_type_melee",
-    "num_projectiles_ranged", "num_projectiles_melee",
-    "multipliers", "windups", "windup_ranged", "windup_melee",
-    "protoaction_ranged", "protoaction_melee", "protoaction_siege",
+    "attack_actions", "attack_actions_by_tactic", "windups",
 }
 # 成本侧（同样影响"值不值"）
 ECON_FIELDS = {"cost", "pop", "train_time"}
@@ -95,34 +83,12 @@ TEXT_FIELDS = {"name", "name_en", "description", "description_en"}
 
 CN_FIELD = {
     "hp": "生命值",
-    "attack_ranged": "远程攻击",
-    "attack_melee": "近战攻击",
-    "attack_siege": "攻城攻击",
-    "rof_ranged": "远程射速(ROF)",
-    "rof_melee": "近战射速(ROF)",
-    "rof_siege": "攻城射速(ROF)",
-    "range": "远程射程",
-    "range_min": "远程最小射程",
-    "range_melee": "近战射程",
+    "attack_actions": "攻击列表",
+    "attack_actions_by_tactic": "各阵型攻击列表",
     "armor_melee": "近战护甲",
     "armor_ranged": "远程护甲",
     "armor_siege": "攻城护甲",
-    "aoe_radius": "AOE 半径",
-    "aoe_radius_ranged": "远程 AOE 半径",
-    "aoe_radius_melee": "近战 AOE 半径",
-    "damage_cap_ranged": "远程溅射池",
-    "damage_cap_melee": "近战溅射池",
-    "damage_type_ranged": "远程伤害类型",
-    "damage_type_melee": "近战伤害类型",
-    "num_projectiles_ranged": "远程弹丸数",
-    "num_projectiles_melee": "近战弹丸数",
-    "multipliers": "克制倍率",
     "windups": "抬手表",
-    "windup_ranged": "远程抬手",
-    "windup_melee": "近战抬手",
-    "protoaction_ranged": "远程代表动作",
-    "protoaction_melee": "近战代表动作",
-    "protoaction_siege": "攻城代表动作",
     "cost": "造价",
     "pop": "人口",
     "train_time": "训练时间",
@@ -177,13 +143,36 @@ def _hit(atk: float, proj: float, aoe: float) -> float:
     return (atk or 0.0) * (proj or 1) * (1.0 + (aoe or 0) * AOE_HIT_MULT)
 
 
+def _best_action(u: Unit, *, melee: bool):
+    usable = [
+        a
+        for a in u.attack_actions
+        if a.enabled
+        and a.hits_soldiers
+        and a.damage > 0
+        and a.range_max > 0
+        and (a.damage_type == "Hand") == melee
+    ]
+    return max(usable, key=lambda a: (a.damage, a.range_max, a.name), default=None)
+
+
 def _parts(u: Unit) -> dict:
     """抽出战力公式的中间量。"""
     hp_eff = (u.hp or 0.0) * (1.0 + max(u.armor_ranged or 0.0, u.armor_melee or 0.0) * ARMOR_WEIGHT)
-    rof_r = u.rof_ranged or 3.0
-    rof_m = u.rof_melee or 1.5
-    hit_r = _hit(u.attack_ranged, u.num_projectiles_ranged, u.aoe_radius_ranged)
-    hit_m = _hit(u.attack_melee, u.num_projectiles_melee, u.aoe_radius_melee)
+    ranged = _best_action(u, melee=False)
+    melee = _best_action(u, melee=True)
+    rof_r = (ranged.rof if ranged and ranged.rof > 0 else 3.0)
+    rof_m = (melee.rof if melee and melee.rof > 0 else 1.5)
+    hit_r = _hit(
+        ranged.damage if ranged else 0.0,
+        ranged.num_projectiles if ranged else 1,
+        ranged.aoe_radius if ranged else 0.0,
+    )
+    hit_m = _hit(
+        melee.damage if melee else 0.0,
+        melee.num_projectiles if melee else 1,
+        melee.aoe_radius if melee else 0.0,
+    )
     return {"hp_eff": hp_eff, "hit_r": hit_r, "hit_m": hit_m, "rof_r": rof_r, "rof_m": rof_m}
 
 
@@ -235,17 +224,33 @@ def attribute(old_u: Unit, new_u: Unit) -> dict:
     def _dps_with(hit_r, hit_m):
         return _dps_eff(hit_r, hit_m, n["rof_r"], n["rof_m"])
 
-    hit_r_no_aoe = (new_u.attack_ranged or 0.0) * (new_u.num_projectiles_ranged or 1) * (
-        1.0 + (old_u.aoe_radius_ranged or 0) * AOE_HIT_MULT)
-    hit_m_no_aoe = (new_u.attack_melee or 0.0) * (new_u.num_projectiles_melee or 1) * (
-        1.0 + (old_u.aoe_radius_melee or 0) * AOE_HIT_MULT)
+    new_r = _best_action(new_u, melee=False)
+    new_m = _best_action(new_u, melee=True)
+    old_r = _best_action(old_u, melee=False)
+    old_m = _best_action(old_u, melee=True)
+    hit_r_no_aoe = _hit(
+        new_r.damage if new_r else 0.0,
+        new_r.num_projectiles if new_r else 1,
+        old_r.aoe_radius if old_r else 0.0,
+    )
+    hit_m_no_aoe = _hit(
+        new_m.damage if new_m else 0.0,
+        new_m.num_projectiles if new_m else 1,
+        old_m.aoe_radius if old_m else 0.0,
+    )
     dps_no_aoe = _dps_with(hit_r_no_aoe, hit_m_no_aoe)
     c_aoe = 0.5 * (math.log(max(1e-9, dps_new_eff)) - math.log(max(1e-9, dps_no_aoe)))
 
-    hit_r_no_proj = (new_u.attack_ranged or 0.0) * (old_u.num_projectiles_ranged or 1) * (
-        1.0 + (new_u.aoe_radius_ranged or 0) * AOE_HIT_MULT)
-    hit_m_no_proj = (new_u.attack_melee or 0.0) * (old_u.num_projectiles_melee or 1) * (
-        1.0 + (new_u.aoe_radius_melee or 0) * AOE_HIT_MULT)
+    hit_r_no_proj = _hit(
+        new_r.damage if new_r else 0.0,
+        old_r.num_projectiles if old_r else 1,
+        new_r.aoe_radius if new_r else 0.0,
+    )
+    hit_m_no_proj = _hit(
+        new_m.damage if new_m else 0.0,
+        old_m.num_projectiles if old_m else 1,
+        new_m.aoe_radius if new_m else 0.0,
+    )
     dps_no_proj = _dps_with(hit_r_no_proj, hit_m_no_proj)
     c_proj = 0.5 * (math.log(max(1e-9, dps_new_eff)) - math.log(max(1e-9, dps_no_proj)))
 
@@ -258,13 +263,18 @@ def attribute(old_u: Unit, new_u: Unit) -> dict:
 
 
 def _slot_dps(u: Unit) -> tuple[float, str]:
-    """主战槽（模拟器实际会用的 raw DPS + 槽名）。"""
-    r = (u.attack_ranged or 0.0) * (u.num_projectiles_ranged or 1) / max(0.1, u.rof_ranged or 3.0)
-    m = (u.attack_melee or 0.0) * (u.num_projectiles_melee or 1) / max(0.1, u.rof_melee or 1.5)
-    if r >= m and r > 0:
-        return r, "ranged"
-    if m > 0:
-        return m, "melee"
+    """攻击列表里 raw DPS 最高的一条（模拟器实际会用的那类打击）。"""
+    best_dps = 0.0
+    best_name = ""
+    for action in u.attack_actions:
+        if not action.enabled or not action.hits_soldiers or action.damage <= 0:
+            continue
+        dps = action.damage * max(1, action.num_projectiles) / max(0.1, action.rof or 3.0)
+        if dps > best_dps:
+            best_dps = dps
+            best_name = action.name
+    if best_dps > 0:
+        return best_dps, best_name
     return 0.0, ""
 
 
@@ -449,7 +459,16 @@ def build(old_rev: str, count: int, seeds: list[int], do_sim: bool) -> dict:
         add_rows.append({
             "id": uid, "name": u.name or u.name_en, "name_en": u.name_en, "age": u.age,
             "type": u.type, "hp": u.hp, "cost": dict(u.cost), "pop": u.pop,
-            "atk_r": u.attack_ranged, "atk_m": u.attack_melee, "atk_s": u.attack_siege,
+            "attacks": [
+                {
+                    "name": a.name,
+                    "damage": a.damage,
+                    "damage_type": a.damage_type,
+                    "range": [a.range_min, a.range_max],
+                    "rof": a.rof,
+                }
+                for a in u.attack_actions
+            ],
             "score": round(power_score(u), 2), "percentile": pctile(power_score(u)),
             "excluded": bool(
                 "AbstractBannerArmy" in u.type or "Guardian" in u.type

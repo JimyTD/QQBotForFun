@@ -260,47 +260,10 @@ def apply_upgrades(unit: Unit, age: int, *, civ_id: str | None = None) -> Unit:
         changes["name"] = upgraded_name
     if hp_mult != 1.0:
         changes["hp"] = round(unit.hp * hp_mult, 1)
-    if dmg_mult != 1.0:
-        if unit.attack_ranged:
-            changes["attack_ranged"] = round(unit.attack_ranged * dmg_mult, 2)
-        if unit.attack_melee:
-            changes["attack_melee"] = round(unit.attack_melee * dmg_mult, 2)
-        # DamageCap tracks damage growth. ``basedamagecap`` is not a switch
-        # for this: the game relies on cap being the same percentage above
-        # base damage, and only a handful of actions carry the legacy flag.
-        if unit.damage_cap_ranged:
-            changes["damage_cap_ranged"] = round(unit.damage_cap_ranged * dmg_mult, 2)
-        if unit.damage_cap_melee:
-            changes["damage_cap_melee"] = round(unit.damage_cap_melee * dmg_mult, 2)
     if extras.get("cost") is not None:
         changes["cost"] = dict(extras["cost"])
 
     # --- extras（整包，relativity 已在生成期换算）---
-    range_add = extras.get("range_add", {})
-    if range_add.get("ranged") and unit.range:
-        changes["range"] = round(unit.range + range_add["ranged"], 2)
-    if range_add.get("melee") and unit.range_melee:
-        changes["range_melee"] = round(unit.range_melee + range_add["melee"], 2)
-
-    aoe_add = extras.get("aoe_add", {})
-    if aoe_add.get("ranged"):
-        changes["aoe_radius_ranged"] = round(unit.aoe_radius_ranged + aoe_add["ranged"], 2)
-    if aoe_add.get("melee"):
-        changes["aoe_radius_melee"] = round(unit.aoe_radius_melee + aoe_add["melee"], 2)
-
-    rof_set = extras.get("rof_set", {})
-    if rof_set.get("ranged"):
-        changes["rof_ranged"] = round(float(rof_set["ranged"]), 3)
-    if rof_set.get("melee"):
-        changes["rof_melee"] = round(float(rof_set["melee"]), 3)
-    rof_add = extras.get("rof_add", {})
-    if rof_add.get("ranged") and unit.rof_ranged:
-        current = changes.get("rof_ranged", unit.rof_ranged)
-        changes["rof_ranged"] = round(max(0.1, current + rof_add["ranged"]), 3)
-    if rof_add.get("melee") and unit.rof_melee:
-        current = changes.get("rof_melee", unit.rof_melee)
-        changes["rof_melee"] = round(max(0.1, current + rof_add["melee"]), 3)
-
     armor_add = extras.get("armor_add", {})
     if armor_add.get("melee"):
         changes["armor_melee"] = round(unit.armor_melee + armor_add["melee"], 3)
@@ -313,16 +276,6 @@ def apply_upgrades(unit: Unit, age: int, *, civ_id: str | None = None) -> Unit:
     speed = speed * extras.get("speed_mult", 1.0) + extras.get("speed_add", 0.0)
     if abs(speed - unit.speed) > 1e-9:
         changes["speed"] = round(speed, 3)
-
-    mult_add = extras.get("mult_add", {})
-    if mult_add.get("ranged"):
-        new_m = _apply_mult_add(unit.multipliers_ranged, mult_add["ranged"])
-        if new_m is not None:
-            changes["multipliers_ranged"] = new_m
-    if mult_add.get("melee"):
-        new_m = _apply_mult_add(unit.multipliers_melee, mult_add["melee"])
-        if new_m is not None:
-            changes["multipliers_melee"] = new_m
 
     changes.update(_upgraded_action_lists(unit, dmg_mult, extras))
 

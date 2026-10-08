@@ -168,21 +168,36 @@ def _dump_battle_log(
             slots = []
             for s in lineup.slots:
                 u = s.unit
+                usable = [
+                    action
+                    for action in u.attack_actions
+                    if action.enabled
+                    and action.hits_soldiers
+                    and action.damage > 0
+                    and action.range_max > 0
+                ]
+                far = max(
+                    usable,
+                    key=lambda action: (action.range_max, action.priority, action.name),
+                    default=None,
+                )
                 slots.append({
                     "unit_id": u.id,
                     "unit_name": u.name,
                     "count": s.count,
                     "unit_cost": s.unit_cost,
                     "hp": u.hp,
-                    "attack_ranged": u.attack_ranged,
-                    "attack_melee": u.attack_melee,
-                    "attack_siege": u.attack_siege,
+                    "attack_action": far.name if far is not None else "",
+                    "attack_damage": far.damage if far is not None else 0.0,
+                    "attack_damage_type": far.damage_type if far is not None else "",
                     "armor_ranged": u.armor_ranged,
                     "armor_melee": u.armor_melee,
                     "speed": u.speed,
-                    "range": u.range,
-                    "range_min": u.range_min,
-                    "aoe_radius": u.aoe_radius,
+                    "range": far.range_max if far is not None else 0.0,
+                    "range_min": far.range_min if far is not None else 0.0,
+                    "aoe_radius": max(
+                        (action.aoe_radius for action in usable), default=0.0
+                    ),
                 })
             return {
                 "slots": slots,

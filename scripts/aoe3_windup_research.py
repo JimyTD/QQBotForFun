@@ -21,7 +21,11 @@ from pathlib import Path
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(PROJECT_ROOT / "scripts" / "crawler"))
 from aoe3_bar_extractor import decode_xmb_to_xml, extract_file_data, read_bar_entries  # noqa: E402
-from aoe3_gamedata_parser import _parse_attacks  # noqa: E402
+from aoe3_gamedata_parser import (  # noqa: E402
+    _load_tactics_actions,
+    _parse_attack_actions,
+    _parse_windups,
+)
 
 EXTRACTED_DIR = Path(os.environ.get("AOE3_EXTRACTED_DIR", str(PROJECT_ROOT / "data" / "aoe3" / "raw")))
 ART_UNITS_BAR = os.environ.get(
@@ -54,18 +58,19 @@ class WindupTrace:
     proto_action: str
     tactics_anim: str
     attack_tag_sec: float | None
-    rof_ranged: float | None
+    rof: float | None
     error: str = ""
 
 
 def _representative_ranged_action(el: ET.Element) -> tuple[str | None, float | None]:
-    """与 aoe3_gamedata_parser 相同：ATTACK_PRIORITY 选 ranged 槽代表 protoaction。"""
+    """最高优先级、打得中人的攻击动作（与运行时出手列表同源）。"""
     tactics = (el.findtext("tactics") or "").strip()
-    attacks = _parse_attacks(el, tactics)
-    ranged = attacks.get("ranged")
-    if not ranged:
+    attacks, _by_tactic = _parse_attack_actions(el, tactics, _parse_windups(el, tactics))
+    usable = [a for a in attacks if a.get("hits_soldiers", True) and a.get("range_max", 0) > 0]
+    if not usable:
         return None, None
-    return ranged["name"], ranged.get("rof")
+    best = max(usable, key=lambda a: (a.get("priority", 0), a.get("range_max", 0), a.get("name", "")))
+    return best["name"], best.get("rof")
 
 
 def _load_tactics_anims(tactics_file: str) -> dict[str, str]:
@@ -221,7 +226,7 @@ def main() -> None:
                 note = f"{other_name}={other_sec:.2f}s"
         print(
             f"{t.unit_id:<14} {t.proto_action:<22} {t.tactics_anim:<28} "
-            f"{t.attack_tag_sec:>6.2f}s {t.rof_ranged or 0:>5.2f}  {note}"
+            f"{t.attack_tag_sec:>6.2f}s {t.rof or 0:>5.2f}  {note}"
         )
         ok += 1
 

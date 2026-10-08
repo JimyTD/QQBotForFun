@@ -354,30 +354,22 @@ def show_unit_brief(unit: Unit, label: str) -> None:
     """显示兵种简要信息。"""
     lines = [f"  {label}: {unit.name} ({unit.name_en})"]
     lines.append(f"    HP={unit.hp} 速度={unit.speed} 费用={unit.cost_str}")
-    if unit.attack_ranged:
-        lines.append(
-            f"    远程: 攻击={unit.attack_ranged} 射程={unit.range}"
-            f" 最小射程={unit.range_min} ROF={unit.rof_ranged}s"
-        )
-    if unit.attack_melee:
-        lines.append(f"    近战: 攻击={unit.attack_melee} ROF={unit.rof_melee}s")
-    if unit.attack_siege:
-        lines.append(
-            f"    攻城: 攻击={unit.attack_siege} 射程={unit.range_siege}"
-            f" ROF={unit.rof_siege}s"
-        )
     if unit.armor_ranged:
         lines.append(f"    远程抗性={unit.armor_ranged:.0%}")
     if unit.armor_melee:
         lines.append(f"    近战抗性={unit.armor_melee:.0%}")
-    if unit.aoe_radius:
-        lines.append(f"    AOE半径={unit.aoe_radius:g}")
-    if unit.multipliers_ranged:
-        mults = ", ".join(str(m) for m in unit.multipliers_ranged)
-        lines.append(f"    远程倍率: {mults}")
-    if unit.multipliers_melee:
-        mults = ", ".join(str(m) for m in unit.multipliers_melee)
-        lines.append(f"    近战倍率: {mults}")
+    for action in unit.attack_actions:
+        if not action.enabled or not action.hits_soldiers:
+            continue
+        lines.append(
+            f"    {action.name}: 攻击={action.damage:g} 类型={action.damage_type}"
+            f" 射程={action.range_min:g}-{action.range_max:g} ROF={action.rof:g}s"
+            + (f" AOE={action.aoe_radius:g}" if action.aoe_radius else "")
+            + (f" 蓄力" if action.charge else "")
+        )
+        if action.multipliers:
+            mults = ", ".join(str(m) for m in action.multipliers)
+            lines.append(f"      倍率: {mults}")
     print("\n".join(lines))
 
 
@@ -489,19 +481,26 @@ def run_dummy_mode(repo: UnitRepo, args) -> None:
         name_en="TargetDummy",
         hp=args.dummy_hp,
         speed=0.0,
-        attack_ranged=0.0,
-        attack_melee=0.0,
-        attack_siege=0.0,
     )
 
     print(f"\n{C.B}{'═' * 60}{C.R}")
     print(f"{C.B}  🎯 靶机模式{C.R}")
     print(f"{C.B}{'═' * 60}{C.R}")
     print(f"\n  {C.RED}🔴 攻击方{C.R}: {atk_unit.name} ({atk_unit.name_en}) ×{atk_count}")
-    print(f"      攻击(远程)={atk_unit.attack_ranged}  射程={atk_unit.range}")
-    print(f"      攻击(近战)={atk_unit.attack_melee}")
-    print(f"      windup_ranged={atk_unit.windup_ranged}s  windup_melee={atk_unit.windup_melee}s")
-    print(f"      rof_ranged={atk_unit.rof_ranged}s  rof_melee={atk_unit.rof_melee}s")
+    best = max(
+        (
+            a
+            for a in atk_unit.attack_actions
+            if a.enabled and a.hits_soldiers and a.damage > 0
+        ),
+        key=lambda a: (a.priority, a.range_max, a.name),
+        default=None,
+    )
+    if best is not None:
+        print(
+            f"      动作={best.name} 攻击={best.damage:g} 射程={best.range_min:g}-{best.range_max:g}"
+        )
+        print(f"      windup={best.windup}s  rof={best.rof}s")
     print(f"      speed={atk_unit.speed}")
     print(f"\n  {C.BLUE}🔵 靶机{C.R}: HP={args.dummy_hp} ×{args.dummy_count}")
     print(f"      不攻击、不移动")
@@ -552,14 +551,16 @@ def run_dummy_mode(repo: UnitRepo, args) -> None:
         # 预期首发时间 = 移动时间 + windup
         # 场地长度 36，红方从 0 出发，蓝方在 36
         # 移动时间 ≈ (36 - range) / speed
-        if atk_unit.range > 0 and atk_unit.speed > 0:
-            move_time = max(0, (36.0 - atk_unit.range) / atk_unit.speed)
-            expected_first = move_time + atk_unit.windup_ranged
-            print(f"  预期首发: 移动{move_time:.2f}s + windup{atk_unit.windup_ranged}s = {expected_first:.2f}s")
+        best_range = best.range_max if best is not None else 0.0
+        best_windup = best.windup if best is not None else 0.0
+        if best_range > 0 and atk_unit.speed > 0:
+            move_time = max(0, (36.0 - best_range) / atk_unit.speed)
+            expected_first = move_time + best_windup
+            print(f"  预期首发: 移动{move_time:.2f}s + windup{best_windup}s = {expected_first:.2f}s")
         elif atk_unit.speed > 0:
             move_time = max(0, (36.0 - 1.5) / atk_unit.speed)
-            expected_first = move_time + atk_unit.windup_melee
-            print(f"  预期首发: 移动{move_time:.2f}s + windup{atk_unit.windup_melee}s = {expected_first:.2f}s")
+            expected_first = move_time + best_windup
+            print(f"  预期首发: 移动{move_time:.2f}s + windup{best_windup}s = {expected_first:.2f}s")
 
         print(f"\n  总攻击次数: {attack_count}")
         print(f"  总伤害: {total_damage:.1f}")

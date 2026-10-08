@@ -9,7 +9,7 @@
   - ``data/aoe3/diff_report.txt``             轻量摘要（取代历史手工报告）
 
 对比维度：
-  1. units.json            新增 / 消失 / 字段级变更（含代表动作 protoaction_* 结构性变更高亮）
+  1. units.json            新增 / 消失 / 字段级变更（含 attack_actions 结构性变更高亮）
   2. unit_upgrades.json    单位改良数据变化
   4. icon_manifest.json    icon 来源变化 / 新增 / 消失
   5. 人工干预清单核查       源码中的 BLACKLIST / BATTLE_BLACKLIST / _EXCLUDED_IDS / icon_overrides
@@ -41,30 +41,13 @@ from src.plugins.games.aoe3_battle import lineup as lineup_mod  # noqa: E402
 FIELD_GROUPS: list[tuple[str, list[str]]] = [
     ("基础", ["hp", "speed", "los", "armor_melee", "armor_ranged", "armor_siege"]),
     ("费用/时代", ["cost", "pop", "train_time", "age", "civs", "type", "trained_at"]),
-    (
-        "远程槽",
-        [
-            "protoaction_ranged", "attack_ranged", "range", "range_min", "rof_ranged",
-            "damage_type_ranged", "num_projectiles_ranged", "aoe_radius_ranged",
-            "aoe_radius", "damage_cap_ranged", "windup_ranged",
-        ],
-    ),
-    (
-        "近战槽",
-        [
-            "protoaction_melee", "attack_melee", "range_melee", "rof_melee",
-            "damage_type_melee", "num_projectiles_melee", "aoe_radius_melee",
-            "damage_cap_melee", "windup_melee",
-        ],
-    ),
-    ("攻城槽", ["protoaction_siege", "attack_siege", "range_siege", "rof_siege", "aoe_radius_siege"]),
-    ("倍率", ["multipliers"]),
+    ("攻击列表", ["attack_actions", "attack_actions_by_tactic"]),
     ("抬手", ["windups"]),
     ("文本", ["name", "name_en", "description", "description_en", "internal_name", "aliases"]),
 ]
 
-# 代表动作字段：变更 = 结构性变更（换了攻击包，比数值变动严重）
-STRUCTURAL_FIELDS = {"protoaction_ranged", "protoaction_melee", "protoaction_siege"}
+# 攻击列表变更 = 结构性变更（换了攻击包，比数值变动严重）
+STRUCTURAL_FIELDS = {"attack_actions", "attack_actions_by_tactic"}
 
 
 # ---------------------------------------------------------------- 工具函数
@@ -271,7 +254,7 @@ def build_report(prev: Path, cur: Path) -> tuple[str, str]:
         d = _diff_fields(old_u[uid], new_u[uid])
         if not d:
             continue
-        if STRUCTURAL_FIELDS & set(d) or (("attack_melee" in d) ^ ("attack_ranged" in d)):
+        if STRUCTURAL_FIELDS & set(d):
             structural.append((uid, d))
         else:
             changed.append((uid, d))
@@ -292,8 +275,8 @@ def build_report(prev: Path, cur: Path) -> tuple[str, str]:
                     d = _diff_fields(o, n)
                     state = f"变更 {len(d)} 项" if d else "无变化"
                 key = (
-                    f"hp {_fmt(n.get('hp'))} / 远 {_fmt(n.get('attack_ranged'))} / "
-                    f"近 {_fmt(n.get('attack_melee'))}"
+                    f"hp {_fmt(n.get('hp'))} / "
+                    f"攻击 {len(n.get('attack_actions', []))} 条"
                     if n
                     else "—"
                 )
@@ -347,12 +330,10 @@ def build_report(prev: Path, cur: Path) -> tuple[str, str]:
         delta = f"{n - o:+}" if isinstance(o, (int, float)) and isinstance(n, (int, float)) else "—"
         A(f"| {label} | {o} | {n} | {delta} |")
     for label, pred in [
-        ("有远程攻击", lambda u: bool(u.get("attack_ranged"))),
-        ("有近战攻击", lambda u: bool(u.get("attack_melee"))),
-        ("有 AOE", lambda u: bool(u.get("aoe_radius"))),
-        ("有 damage_cap", lambda u: bool(u.get("damage_cap_ranged") or u.get("damage_cap_melee"))),
+        ("有攻击列表", lambda u: bool(u.get("attack_actions"))),
+        ("有 AOE", lambda u: any((a.get("aoe_radius") or 0) > 0 for a in u.get("attack_actions", []))),
+        ("有 damage_cap", lambda u: any((a.get("damage_cap") or 0) > 0 for a in u.get("attack_actions", []))),
         ("有 windup", lambda u: bool(u.get("windups"))),
-        ("有三槽代表动作", lambda u: bool(u.get("protoaction_ranged") and u.get("protoaction_melee"))),
     ]:
         o = sum(1 for u in old_u.values() if pred(u))
         n = sum(1 for u in new_u.values() if pred(u))
@@ -366,15 +347,15 @@ def build_report(prev: Path, cur: Path) -> tuple[str, str]:
     A(f"## 2. 新增单位（{len(added)}）")
     A("")
     if added:
-        A("| id | 中文名 | 英文名 | type 摘要 | hp | 远/近/攻 | 代表动作 | 备注 |")
-        A("|---|---|---|---|---|---|---|---|")
+        A("| id | 中文名 | 英文名 | type 摘要 | hp | 攻击 | 备注 |")
+        A("|---|---|---|---|---|---|---|")
         for uid in added:
             u = new_u[uid]
             notes = []
             if not u.get("name") or u.get("name") == u.get("name_en"):
                 notes.append("缺中文名")
-            if not (u.get("attack_ranged") or u.get("attack_melee")):
-                notes.append("**无远/近攻击槽**")
+            if not any(a.get("hits_soldiers", True) and a.get("damage", 0) > 0 for a in u.get("attack_actions", [])):
+                notes.append("**无对兵攻击**")
             if not u.get("cost"):
                 notes.append("无费用")
             if not u.get("windups"):
@@ -382,8 +363,7 @@ def build_report(prev: Path, cur: Path) -> tuple[str, str]:
             A(
                 f"| `{uid}` | {u.get('name', '')} | {u.get('name_en', '')} | "
                 f"{'/'.join(u.get('type', [])[:3])} | {_fmt(u.get('hp'))} | "
-                f"{_fmt(u.get('attack_ranged'))}/{_fmt(u.get('attack_melee'))}/{_fmt(u.get('attack_siege'))} | "
-                f"{u.get('protoaction_ranged') or '—'} / {u.get('protoaction_melee') or '—'} | "
+                f"{', '.join(a['name'] for a in u.get('attack_actions', [])[:3]) or '—'} | "
                 f"{'、'.join(notes) or ''} |"
             )
     else:
@@ -570,7 +550,14 @@ def build_report(prev: Path, cur: Path) -> tuple[str, str]:
     no_zh = [i for i in added if not new_u[i].get("name") or new_u[i].get("name") == new_u[i].get("name_en")]
     if no_zh:
         todo.append(f"- [ ] {len(no_zh)} 个新单位缺中文名：{', '.join('`' + i + '`' for i in no_zh[:30])}")
-    no_atk = [i for i in added if not (new_u[i].get("attack_ranged") or new_u[i].get("attack_melee"))]
+    no_atk = [
+        i
+        for i in added
+        if not any(
+            a.get("hits_soldiers", True) and a.get("damage", 0) > 0
+            for a in new_u[i].get("attack_actions", [])
+        )
+    ]
     if no_atk:
         pending = [i for i in no_atk if i not in manual_ids]
         handled = [i for i in no_atk if i in manual_ids]

@@ -305,8 +305,6 @@ def test_damage_upgrade_reaches_every_mode():
         name_en="Musketeer",
         hp=100,
         speed=4,
-        attack_ranged=20,
-        attack_melee=10,
         type=["musketeer"],
         attack_actions=[gun, bayonet],
     )
@@ -319,7 +317,6 @@ def test_damage_upgrade_reaches_every_mode():
             "ops": [{"stat": "damage", "kind": "mult", "value": 1.2}],
         }],
     )[0]
-    assert upgraded.attack_ranged == 24
     assert upgraded.attack_actions[0].damage == 24
     assert upgraded.attack_actions[1].damage == 12
 
@@ -333,9 +330,6 @@ def test_named_range_upgrade_does_not_stretch_the_other_mode():
         name_en="Musketeer",
         hp=100,
         speed=4,
-        attack_ranged=20,
-        range=12,
-        protoaction_ranged="VolleyRangedAttack",
         type=["musketeer"],
         attack_actions=[gun, bayonet],
     )
@@ -383,9 +377,6 @@ def test_charge_shot_in_the_simulator_then_falls_back_to_the_gun():
         name_en="Cowboy",
         hp=10000,
         speed=4,
-        attack_ranged=20,
-        range=12,
-        rof_ranged=1.5,
         attack_actions=[charge, gun],
     )
     dummy = Unit(
