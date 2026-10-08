@@ -37,14 +37,22 @@ from plugins.games.aoe3_battle.civ_war_civs import (  # noqa: E402
 from plugins.games.aoe3_battle.civ_war_matchup import (  # noqa: E402
     generate_civ_war_lineup,
 )
+from plugins.games.aoe3_battle.civ_war_lineups import (  # noqa: E402
+    _allocate_resource_shares,
+)
+from plugins.games.aoe3_battle.civ_war_civs import resolve_civ  # noqa: E402
+from plugins.games.aoe3_battle.lineup_draft import (  # noqa: E402
+    _apply_combat,
+    _shares,
+    _techs_by_id,
+    draft_units,
+    list_selectable_techs,
+)
+from plugins.games.aoe3_battle.lineup import _unit_cost  # noqa: E402
 from plugins.games.aoe3_battle.simulator2d import (  # noqa: E402
     BattleSimulator2D,
     Simulation2DConfig,
 )
-from plugins.games.aoe3_battle.simulator2d.config import (  # noqa: E402
-    CollisionMode,
-)
-from scripts.aoe3_pathing_scenarios import SCENARIOS, PathingDemo  # noqa: E402
 
 VIEWER_DIR = _ROOT / "tools" / "aoe3_battle_viewer_2d"
 _ICON_PNG_CACHE: dict[str, bytes] = {}
@@ -319,6 +327,9 @@ class ViewerHandler(BaseHTTPRequestHandler):
         if path == "/api/catalog":
             self._serve_catalog()
             return
+        if path == "/api/loadout":
+            self._serve_loadout(query)
+            return
         if path.startswith("/api/icon/"):
             self._serve_icon(path.removeprefix("/api/icon/"))
             return
@@ -328,9 +339,9 @@ class ViewerHandler(BaseHTTPRequestHandler):
         if path in ("/styles.css", "/styles.css?v=20260923-6"):
             self._serve_file(VIEWER_DIR / "styles.css", "text/css; charset=utf-8")
             return
-        if path in ("/app.js", "/app.js?v=20260923-6"):
+        if path == "/viewer.js":
             self._serve_file(
-                VIEWER_DIR / "app.js",
+                VIEWER_DIR / "viewer.js",
                 "application/javascript; charset=utf-8",
             )
             return
@@ -402,6 +413,32 @@ class ViewerHandler(BaseHTTPRequestHandler):
             content_type="application/json; charset=utf-8",
         )
 
+    def _serve_loadout(self, query: str) -> None:
+        params = dict(item.split("=", 1) for item in query.split("&") if "=" in item)
+        civ_id = params.get("civ")
+        age = int(params.get("age", "3") or 3)
+        try:
+            payload = loadout_options(
+                civ_id=str(civ_id) if civ_id else None,
+                age=age,
+                unit_ids=[
+                    unit_id
+                    for unit_id in params.get("units", "").split(",")
+                    if unit_id
+                ],
+            )
+        except (ValueError, KeyError) as exc:
+            self._send_bytes(
+                json.dumps({"error": str(exc)}, ensure_ascii=False).encode("utf-8"),
+                content_type="application/json; charset=utf-8",
+                status=HTTPStatus.BAD_REQUEST,
+            )
+            return
+        self._send_bytes(
+            json.dumps(payload, ensure_ascii=False).encode("utf-8"),
+            content_type="application/json; charset=utf-8",
+        )
+
     def _serve_icon(self, unit_id: str) -> None:
         cached = _ICON_PNG_CACHE.get(unit_id)
         if cached is not None:
@@ -449,7 +486,6 @@ def _build_simulator(
     blue: str,
     seed: int | None,
     frame_callback,
-    collision_mode: str = CollisionMode.RIGID.value,
 ) -> BattleSimulator2D:
     repo = UnitRepo.get()
 
@@ -478,7 +514,147 @@ def _build_simulator(
         seed=seed,
         session_id="viewer2d",
         frame_callback=frame_callback,
-        config=Simulation2DConfig(collision_mode=CollisionMode(collision_mode)),
+        config=Simulation2DConfig(),
+    )
+
+
+def loadout_options(
+    *,
+    civ_id: str | None,
+    age: int,
+    unit_ids: list[str],
+) -> dict[str, Any]:
+    """Units and techs a civilization can field at ``age`` for this lineup."""
+    repo = UnitRepo.get()
+    if civ_id:
+        civ = resolve_civ(civ_id)
+        if civ is None:
+            raise ValueError(f"未知文明：{civ_id}")
+    else:
+        raise ValueError("缺少文明")
+    available = draft_units(repo, civ.id, age)
+    by_id = {unit.id: unit for unit in available}
+    chosen = tuple(by_id[unit_id] for unit_id in unit_ids if unit_id in by_id)
+    techs = list_selectable_techs(civ.id, chosen, age) if chosen else []
+    return {
+        "civ_id": civ.id,
+        "civ_name": civ.name,
+        "age": age,
+        "units": [
+            {
+                "id": unit.id,
+                "name": unit.name or unit.name_en,
+                "name_en": unit.name_en,
+                "cost": sum(unit.cost.values()),
+                "pop": unit.pop,
+            }
+            for unit in available
+        ],
+        "techs": [
+            {
+                "id": tech.id,
+                "name": tech.name_zh or tech.id,
+                "summary": tech.summary,
+                "matched_unit_ids": list(tech.matched_unit_ids),
+                "matched_unit_names": list(tech.matched_unit_names),
+                "specific": bool(tech.matched_unit_names),
+                "min_age": tech.min_age,
+                "mechanisms": _tech_mechanisms(tech),
+            }
+            for tech in techs
+        ],
+    }
+
+
+def _tech_mechanisms(tech) -> list[str]:
+    mechanisms: list[str] = []
+    for op in (*tech.combat_ops, *tech.cost_ops):
+        subtype = op.get("subtype")
+        action = op.get("action")
+        if subtype == "ActionEnable" and action:
+            mechanisms.append(f"开关动作 {action}")
+        elif subtype == "InitialTactic" and op.get("tactic"):
+            mechanisms.append(f"切换阵型 {op['tactic']}")
+        elif subtype == "RechargeTime":
+            mechanisms.append("调整蓄力冷却")
+    return mechanisms
+
+
+def _auto_balance_counts(
+    units: tuple[Unit, ...],
+    red_counts: list[int],
+    budget: int,
+) -> list[int]:
+    """Give blue the same army budget as red, keeping red's slot proportions."""
+    if not units:
+        return []
+    weights = [max(1, count) for count in red_counts[: len(units)]]
+    if len(weights) != len(units):
+        weights = [1] * len(units)
+    return _allocate_resource_shares(units, budget, _shares(tuple(weights)))
+
+
+def _build_custom_simulator(
+    request: dict[str, Any],
+    *,
+    frame_callback,
+    seed: int,
+) -> BattleSimulator2D:
+    repo = UnitRepo.get()
+    sides: dict[str, list[tuple[Unit, int]]] = {"red": [], "blue": []}
+    raw_counts: dict[str, list[int]] = {"red": [], "blue": []}
+    labels: list[str] = []
+    for side in ("red", "blue"):
+        raw = request.get(side) or {}
+        civ_id = str(raw.get("civ") or "")
+        civ = resolve_civ(civ_id)
+        if civ is None:
+            raise ValueError(f"未知文明：{civ_id}")
+        age = int(raw.get("age", 3))
+        unit_ids = tuple(str(item) for item in raw.get("units") or ())
+        counts = [int(item) for item in raw.get("counts") or ()]
+        unit_tech_ids = tuple(str(item) for item in raw.get("techs") or ())
+        available = draft_units(repo, civ.id, age)
+        by_id = {unit.id: unit for unit in available}
+        chosen = []
+        for unit_id in unit_ids:
+            unit = by_id.get(unit_id)
+            if unit is None:
+                raise ValueError(f"{civ.name} 在 {age} 时代没有 {unit_id}")
+            chosen.append(unit)
+        if not chosen:
+            raise ValueError("每方至少选择 1 个兵种")
+        if len(counts) != len(chosen):
+            raise ValueError("数量个数要和兵种数一致")
+        if any(count <= 0 for count in counts):
+            raise ValueError("数量必须是正整数")
+        techs = _techs_by_id(civ.id, tuple(chosen), age, unit_tech_ids)
+        upgraded = _apply_combat(tuple(chosen), techs, age, civ.id)
+        raw_counts[side] = counts
+        sides[side] = [
+            (unit, count) for unit, count in zip(upgraded, counts, strict=True)
+        ]
+        tech_names = "、".join(tech.name_zh or tech.id for tech in techs) or "无科技"
+        labels.append(f"{civ.name}·{tech_names}")
+    if bool(request.get("balance_blue")):
+        red_budget = sum(
+            _unit_cost(unit) * count
+            for unit, count in sides["red"]
+        )
+        blue_units = tuple(unit for unit, _count in sides["blue"])
+        balanced = _auto_balance_counts(blue_units, raw_counts["blue"], red_budget)
+        sides["blue"] = [
+            (unit, count) for (unit, _old), count in zip(sides["blue"], balanced, strict=True)
+        ]
+        labels[1] = f"{labels[1]}（军费≈{red_budget}）"
+    return BattleSimulator2D(
+        red_army=sides["red"],
+        blue_army=sides["blue"],
+        seed=seed,
+        session_id=f"viewer2d_custom_{seed}",
+        match_label=f"自选阵容 · {labels[0]} vs {labels[1]}",
+        frame_callback=frame_callback,
+        config=Simulation2DConfig(),
     )
 
 
@@ -486,17 +662,9 @@ def build_simulator_from_request(
     request: dict[str, Any],
     *,
     frame_callback,
-) -> BattleSimulator2D | PathingDemo:
+) -> BattleSimulator2D:
     mode = str(request.get("mode") or "units")
-    collision_mode = str(request.get("collision_mode") or CollisionMode.RIGID.value)
     seed = int(request.get("seed", 42))
-    if mode == "pathing":
-        return PathingDemo(
-            str(request.get("scenario") or "split"),
-            seed,
-            Simulation2DConfig(collision_mode=CollisionMode(collision_mode)),
-            frame_callback,
-        )
     if mode == "civ_war":
         repo = UnitRepo.get()
         match, _estimate = generate_civ_war_lineup(
@@ -516,16 +684,21 @@ def build_simulator_from_request(
                 f"vs {match.blue_civ_name}（{match.blue_strategy}）"
             ),
             frame_callback=frame_callback,
-            config=Simulation2DConfig(collision_mode=CollisionMode(collision_mode)),
+            config=Simulation2DConfig(),
         )
         return simulator
+    if mode == "custom":
+        return _build_custom_simulator(
+            request,
+            frame_callback=frame_callback,
+            seed=seed,
+        )
 
     return _build_simulator(
         red=str(request.get("red") or "musketeer:40"),
         blue=str(request.get("blue") or "pikeman:40"),
         seed=seed,
         frame_callback=frame_callback,
-        collision_mode=collision_mode,
     )
 
 
@@ -539,7 +712,6 @@ def main() -> None:
     parser.add_argument("--history", type=int, default=2400)
     parser.add_argument("--no-open", action="store_true")
     parser.add_argument("--debug", action="store_true")
-    parser.add_argument("--scenario", choices=tuple(SCENARIOS))
     args = parser.parse_args()
 
     logging.basicConfig(
@@ -572,8 +744,7 @@ def main() -> None:
     try:
         runner.start(
             {
-                "mode": "pathing" if args.scenario else "units",
-                "scenario": args.scenario,
+                "mode": "units",
                 "red": args.red,
                 "blue": args.blue,
                 "seed": args.seed,

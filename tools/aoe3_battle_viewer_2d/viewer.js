@@ -2,14 +2,6 @@ const canvas = document.getElementById("battlefield");
 const ctx = canvas.getContext("2d");
 const statusEl = document.getElementById("status");
 const timeLabel = document.getElementById("time-label");
-const metrics = {
-  tick: document.getElementById("metric-tick"),
-  alive: document.getElementById("metric-alive"),
-  movers: document.getElementById("metric-movers"),
-  blocked: document.getElementById("metric-blocked"),
-  noProgress: document.getElementById("metric-no-progress"),
-  overlap: document.getElementById("metric-overlap"),
-};
 const unitDetail = document.getElementById("unit-detail");
 const timeline = document.getElementById("timeline");
 const speedSelect = document.getElementById("speed");
@@ -32,19 +24,20 @@ const redCivSelect = document.getElementById("red-civ");
 const blueCivSelect = document.getElementById("blue-civ");
 const ageSelect = document.getElementById("age");
 const seedInput = document.getElementById("seed");
-const collisionModeSelect = document.getElementById("collision-mode");
 const unitsSetup = document.getElementById("units-setup");
+const customSetup = document.getElementById("custom-setup");
 const civWarSetup = document.getElementById("civ-war-setup");
-const setupRowMain = document.querySelector(".setup-row-main");
-const pathingSetup = document.getElementById("pathing-setup");
-const scenarioSelect = document.getElementById("pathing-scenario");
+const balanceBlue = document.getElementById("balance-blue");
 const showTrails = document.getElementById("show-trails");
-const showRoutes = document.getElementById("show-routes");
 const showTargets = document.getElementById("show-targets");
+const showCharge = document.getElementById("show-charge");
+const chargeOnly = document.getElementById("charge-only");
+const attackLog = document.getElementById("attack-log");
 const iconCache = new Map();
 const PROJECTILE_LIFETIME = 0.25;
 const AOE_LIFETIME = 0.5;
 const DEATH_MARK_LIFETIME = 0.6;
+const CHARGE_COLOR = "#f2c14e";
 
 const FALLBACK_CIVS = [
   ["British", "英国"],
@@ -73,6 +66,30 @@ const FALLBACK_CIVS = [
   ["XPSioux", "拉科塔"],
 ].map(([id, name]) => ({ id, name, name_en: id }));
 
+const state = {
+  frames: [],
+  remoteCount: 0,
+  frameIndex: 0,
+  fetchInFlight: false,
+  generation: 0,
+  playing: true,
+  speed: 1,
+  elapsedAccumulator: 0,
+  lastAnimationTime: performance.now(),
+  selectedUnitId: null,
+  viewport: { width: 0, height: 0, scale: 1, offsetX: 0, offsetY: 0 },
+  mode: "custom",
+  catalog: { units: [], civs: [] },
+  trails: new Map(),
+  unitIcons: new Map(),
+  custom: {
+    red: { civ: null, units: [], counts: [], techs: new Set(), available: null, age: 3 },
+    blue: { civ: null, units: [], counts: [], techs: new Set(), available: null, age: 3 },
+  },
+  attackEvents: [],
+  seenEvents: new Set(),
+};
+
 function populateCivSelects(civs) {
   const values = civs.length ? civs : FALLBACK_CIVS;
   for (const select of [redCivSelect, blueCivSelect]) {
@@ -86,14 +103,27 @@ function populateCivSelects(civs) {
   }
   redCivSelect.value = values[0].id;
   blueCivSelect.value = values[1].id;
+  state.custom.red.civ = values[0].id;
+  state.custom.blue.civ = values[1].id;
+  document.querySelectorAll(".civ-select").forEach((select) => {
+    select.innerHTML = "";
+    for (const civ of values) {
+      const option = document.createElement("option");
+      option.value = civ.id;
+      option.textContent = civ.name;
+      select.appendChild(option);
+    }
+  });
+  const redSelect = document.querySelector('.civ-select[data-side="red"]');
+  const blueSelect = document.querySelector('.civ-select[data-side="blue"]');
+  if (redSelect) redSelect.value = state.custom.red.civ;
+  if (blueSelect) blueSelect.value = state.custom.blue.civ;
 }
 
 async function bootstrapCatalog() {
   try {
     const response = await fetch("/api/catalog", { cache: "no-store" });
-    if (!response.ok) {
-      throw new Error(`catalog HTTP ${response.status}`);
-    }
+    if (!response.ok) throw new Error(`catalog HTTP ${response.status}`);
     const catalog = await response.json();
     state.catalog = catalog;
     unitOptions.innerHTML = "";
@@ -102,34 +132,16 @@ async function bootstrapCatalog() {
       option.value = unit.id;
       option.label = `${unit.name} · ${unit.name_en}`;
       unitOptions.appendChild(option);
-      if (unit.icon_url) {
-        state.unitIcons.set(unit.id, unit.icon_url);
-      }
+      if (unit.icon_url) state.unitIcons.set(unit.id, unit.icon_url);
     }
     populateCivSelects(catalog.civs || []);
+    await refreshLoadout("red");
+    await refreshLoadout("blue");
     setStatus("阵容选择已加载", "running");
   } catch (error) {
     setStatus(`目录加载失败：${error.message}`, "finished");
   }
 }
-
-const state = {
-  frames: [],
-  remoteCount: 0,
-  frameIndex: 0,
-  fetchInFlight: false,
-  generation: 0,
-  playing: true,
-  speed: 1,
-  elapsedAccumulator: 0,
-  lastAnimationTime: performance.now(),
-  selectedUnitId: null,
-  viewport: { width: 0, height: 0, scale: 1, offsetX: 0, offsetY: 0 },
-  mode: "units",
-  catalog: { units: [], civs: [] },
-  trails: new Map(),
-  unitIcons: new Map(),
-};
 
 function resizeCanvas() {
   const rect = canvas.getBoundingClientRect();
@@ -197,8 +209,7 @@ function renderArmyCard(side, data) {
   const ratio = Math.max(0, Math.min(1, Number(data.hp_ratio || 0)));
   card.querySelector(".army-alive").textContent =
     `${data.alive ?? 0} / ${data.initial_count ?? 0}`;
-  card.querySelector(".army-composition").textContent =
-    composition || "无单位";
+  card.querySelector(".army-composition").textContent = composition || "无单位";
   card.querySelector(".hp-track i").style.width = `${ratio * 100}%`;
   card.querySelector(".hp-ratio").textContent = `${Math.round(ratio * 100)}%`;
   card.querySelector(".army-moving").textContent = `移动 ${data.moving ?? 0}`;
@@ -219,13 +230,9 @@ function unitIcon(unit) {
     pending.decoding = "async";
     iconCache.set(unitId, pending);
     pending.onload = () => {
-      if (!pending.complete || pending.naturalWidth <= 0) {
-        iconCache.delete(unitId);
-      }
+      if (!pending.complete || pending.naturalWidth <= 0) iconCache.delete(unitId);
     };
-    pending.onerror = () => {
-      iconCache.delete(unitId);
-    };
+    pending.onerror = () => iconCache.delete(unitId);
     pending.src = url;
     return null;
   }
@@ -251,36 +258,40 @@ function drawAttackEffects(frame) {
     const target = byId.get(effect.target_id);
     const fromWorld = unit || { x: effect.attacker_x, y: effect.attacker_y };
     const toWorld = target || { x: effect.x, y: effect.y };
-    if (fromWorld.x == null || fromWorld.y == null || toWorld.x == null || toWorld.y == null) continue;
+    if (fromWorld.x == null || toWorld.x == null) continue;
     const from = toScreen(fromWorld.x, fromWorld.y);
     const to = toScreen(toWorld.x, toWorld.y);
     const mode = effect.mode || "ranged";
+    const isCharge = Boolean(effect.action_charge);
     const progress = Math.max(
       0,
       Math.min(1, (Number(frame.time || 0) - Number(effect.time || 0)) / PROJECTILE_LIFETIME),
     );
     if (mode === "melee") {
       ctx.beginPath();
-      ctx.strokeStyle = "rgba(216,207,186,0.8)";
-      ctx.lineWidth = 2;
+      ctx.strokeStyle = isCharge ? CHARGE_COLOR : "rgba(216,207,186,0.8)";
+      ctx.lineWidth = isCharge ? 3 : 2;
       const angle = Math.atan2(to.y - from.y, to.x - from.x);
-      ctx.arc(from.x, from.y, 13, angle - 0.8, angle + 0.8);
+      ctx.arc(from.x, from.y, isCharge ? 17 : 13, angle - 0.8, angle + 0.8);
       ctx.stroke();
     } else {
-      const tip = { x: from.x + (to.x - from.x) * progress, y: from.y + (to.y - from.y) * progress };
+      const tip = {
+        x: from.x + (to.x - from.x) * progress,
+        y: from.y + (to.y - from.y) * progress,
+      };
       const tail = {
         x: from.x + (to.x - from.x) * Math.max(0, progress - 0.2),
         y: from.y + (to.y - from.y) * Math.max(0, progress - 0.2),
       };
       ctx.beginPath();
-      ctx.strokeStyle = "rgba(235,225,190,0.9)";
-      ctx.lineWidth = 2;
+      ctx.strokeStyle = isCharge ? CHARGE_COLOR : "rgba(235,225,190,0.9)";
+      ctx.lineWidth = isCharge ? 3 : 2;
       ctx.moveTo(tail.x, tail.y);
       ctx.lineTo(tip.x, tip.y);
       ctx.stroke();
       ctx.beginPath();
-      ctx.fillStyle = "rgba(235,225,190,0.9)";
-      ctx.arc(tip.x, tip.y, 2, 0, Math.PI * 2);
+      ctx.fillStyle = isCharge ? CHARGE_COLOR : "rgba(235,225,190,0.9)";
+      ctx.arc(tip.x, tip.y, isCharge ? 3 : 2, 0, Math.PI * 2);
       ctx.fill();
     }
   }
@@ -333,6 +344,65 @@ function drawDeathMarks(frame) {
   }
 }
 
+function drawChargeRing(unit, point, radius) {
+  const charge = unit.charge;
+  if (!charge) return;
+  const ready = Boolean(charge.ready);
+  const ratio = Math.max(0, Math.min(1, Number(charge.ratio || 0)));
+  ctx.beginPath();
+  ctx.strokeStyle = ready ? CHARGE_COLOR : "rgba(242,193,78,0.35)";
+  ctx.lineWidth = ready ? 2.5 : 2;
+  ctx.arc(point.x, point.y, radius + 4, -Math.PI / 2, -Math.PI / 2 + Math.PI * 2 * ratio);
+  ctx.stroke();
+}
+
+function collectAttackEvents(frame) {
+  const units = frame.units || [];
+  const byId = new Map(units.map((unit) => [unit.id, unit]));
+  for (const effect of activeEffects(frame, "attack")) {
+    const key = [
+      effect.event_id,
+      effect.attacker_id,
+      effect.target_id,
+      effect.time,
+      effect.action_name,
+    ].join(":");
+    if (state.seenEvents.has(key)) continue;
+    state.seenEvents.add(key);
+    const attacker = byId.get(effect.attacker_id);
+    state.attackEvents.unshift({
+      time: Number(effect.time || 0),
+      side: attacker?.side || "red",
+      attacker: attacker?.name || `#${effect.attacker_id}`,
+      action: effect.action_name || (effect.mode === "melee" ? "近战" : "远程"),
+      charge: Boolean(effect.action_charge),
+    });
+    if (state.attackEvents.length > 60) state.attackEvents.pop();
+  }
+}
+
+function renderAttackLog() {
+  const rows = state.attackEvents.filter(
+    (event) => !chargeOnly.checked || event.charge,
+  );
+  if (!rows.length) {
+    attackLog.className = "attack-log empty";
+    attackLog.textContent = chargeOnly.checked ? "暂无蓄力攻击…" : "等待攻击…";
+    return;
+  }
+  attackLog.className = "attack-log";
+  attackLog.innerHTML = rows
+    .slice(0, 30)
+    .map(
+      (event) => `
+      <div class="attack-log-row ${event.side} ${event.charge ? "charge" : ""}">
+        <span class="who">${event.time.toFixed(1)}s</span>
+        <span class="what">${escapeHtml(event.attacker)} · ${escapeHtml(event.action)}${event.charge ? " · 蓄力" : ""}</span>
+      </div>`,
+    )
+    .join("");
+}
+
 function drawFrame(frame) {
   const { width, height, scale, offsetX, offsetY } = state.viewport;
   ctx.clearRect(0, 0, width, height);
@@ -354,8 +424,7 @@ function drawFrame(frame) {
   if (showTargets.checked) {
     ctx.lineWidth = 0.75;
     for (const unit of units) {
-      const targetId = unit.target_id;
-      const target = targetId ? byId.get(targetId) : null;
+      const target = unit.target_id ? byId.get(unit.target_id) : null;
       if (!target) continue;
       const from = toScreen(unit.x, unit.y);
       const to = toScreen(target.x, target.y);
@@ -370,9 +439,10 @@ function drawFrame(frame) {
   drawAoeEffects(frame);
   drawDeathMarks(frame);
 
-  for (const unit of units) {
-    const selected = unit.id === state.selectedUnitId;
-    if (showTrails.checked && (selected || frame.diagnostic)) {
+  if (showTrails.checked) {
+    for (const unit of units) {
+      const selected = unit.id === state.selectedUnitId;
+      if (!selected && !frame.diagnostic) continue;
       const samples = (state.trails.get(unit.id) || []).filter(
         (p) => p.index <= state.frameIndex && p.index >= state.frameIndex - 160,
       );
@@ -386,34 +456,15 @@ function drawFrame(frame) {
       });
       ctx.stroke();
     }
-    if (showRoutes.checked && unit.detour_path?.length) {
-      const start = toScreen(unit.x, unit.y);
-      ctx.strokeStyle = selected ? "#62d68b" : "#e8b95b";
-      ctx.lineWidth = selected ? 2 : 1;
-      ctx.setLineDash([5, 4]);
-      ctx.beginPath();
-      ctx.moveTo(start.x, start.y);
-      for (const [x, y] of unit.detour_path) {
-        const p = toScreen(x, y);
-        ctx.lineTo(p.x, p.y);
-      }
-      ctx.stroke();
-      ctx.setLineDash([]);
-      for (const [x, y] of unit.detour_path) {
-        const p = toScreen(x, y);
-        ctx.strokeRect(p.x - 3, p.y - 3, 6, 6);
-      }
-    }
   }
 
   for (const unit of units) {
     const radius = Math.max(4, Math.min(32, Math.round((unit.radius || 0.46) * scale)));
     const point = toScreen(unit.x, unit.y);
     const hpRatio = unit.max_hp > 0 ? unit.hp / unit.max_hp : 0;
-    const color = unit.unit_id === "pathing_wall" ? "#899a90" : unit.side === "red" ? "#ef5350" : "#4c8dff";
+    const color = unit.side === "red" ? "#ef5350" : "#4c8dff";
     const icon = unitIcon(unit);
 
-    ctx.beginPath();
     if (icon) {
       ctx.save();
       ctx.beginPath();
@@ -423,6 +474,7 @@ function drawFrame(frame) {
       ctx.drawImage(icon, point.x - radius, point.y - radius, radius * 2, radius * 2);
       ctx.restore();
     } else {
+      ctx.beginPath();
       ctx.fillStyle = color;
       ctx.globalAlpha = 0.42 + hpRatio * 0.58;
       ctx.arc(point.x, point.y, radius, 0, Math.PI * 2);
@@ -436,19 +488,13 @@ function drawFrame(frame) {
     ctx.arc(point.x, point.y, radius + 1, 0, Math.PI * 2);
     ctx.stroke();
 
+    if (showCharge.checked) drawChargeRing(unit, point, radius);
+
     if (unit.id === state.selectedUnitId) {
       ctx.beginPath();
       ctx.strokeStyle = "#62d68b";
       ctx.lineWidth = 2;
       ctx.arc(point.x, point.y, radius + 4.5, 0, Math.PI * 2);
-      ctx.stroke();
-    }
-
-    if (unit.has_ranged && !unit.has_melee) {
-      ctx.beginPath();
-      ctx.strokeStyle = "rgba(255,255,255,0.62)";
-      ctx.lineWidth = 1;
-      ctx.arc(point.x, point.y, radius * 0.36, 0, Math.PI * 2);
       ctx.stroke();
     }
   }
@@ -458,17 +504,11 @@ function drawFrame(frame) {
   renderArmyCard("red", frame.sides?.red);
   renderArmyCard("blue", frame.sides?.blue);
   timeLabel.textContent = `t = ${Number(frame.time || 0).toFixed(1)}s`;
-  metrics.tick.textContent = frame.tick;
-  metrics.alive.textContent = `${summary.alive_red ?? 0} / ${summary.alive_blue ?? 0}`;
-  metrics.movers.textContent = summary.movers ?? "—";
-  metrics.blocked.textContent = summary.blocked ?? "—";
-  metrics.noProgress.textContent = summary.no_progress_units ?? "—";
-  metrics.overlap.textContent = Number(summary.max_overlap || 0).toFixed(3);
+  collectAttackEvents(frame);
+  renderAttackLog();
 
   if (frame.status === "error") {
     setStatus(`模拟失败：${frame.error || "未知错误"}`, "finished");
-  } else if (frame.diagnostic) {
-    setStatus(`${frame.status === "finished" ? "检验结束" : "检验中"} · 越过障碍 ${frame.diagnostic.reached}/${frame.diagnostic.total}`, frame.status);
   } else if (frame.status === "finished") {
     const winner = frame.winner === "red" ? "红方胜利" : frame.winner === "blue" ? "蓝方胜利" : "平局";
     setStatus(`已结束 · ${winner}`, "finished");
@@ -476,23 +516,47 @@ function drawFrame(frame) {
     setStatus(`模拟中 · ${summary.attackers || 0} 个单位正在攻击`, "running");
   }
 
-  if (state.selectedUnitId != null) {
-    renderUnitDetail(byId.get(state.selectedUnitId));
-  }
+  if (state.selectedUnitId != null) renderUnitDetail(byId.get(state.selectedUnitId), frame);
 }
 
-function renderUnitDetail(unit) {
+function renderUnitDetail(unit, frame) {
   if (!unit) {
     unitDetail.className = "empty";
     unitDetail.textContent = "选中单位已不在场上";
     return;
   }
   unitDetail.className = "";
-  const preparation = unit.prepared_mode === "melee" ? "近战" : unit.prepared_mode === "ranged" ? "远程" : "未准备";
+  const preparation = unit.prepared_mode === "melee"
+    ? "近战"
+    : unit.prepared_mode === "ranged" ? "远程" : "未准备";
   const actionState = unit.stopped
-    ? Number(unit.aim_cd || 0) > 0 ? "抬手准备" : Number(unit.attack_cd || 0) > 0 ? "等待 ROF" : "准备出手"
+    ? Number(unit.aim_cd || 0) > 0
+      ? "抬手准备"
+      : Number(unit.attack_cd || 0) > 0 ? "等待 ROF" : "准备出手"
     : unit.steer_reason === "minimum_range" ? "最小射程内待命"
       : unit.prepared_mode ? "保持准备姿态" : "移动中";
+  const template = frame?.unit_templates?.[unit.unit_id];
+  const charge = unit.charge;
+  const chargeLine = charge
+    ? `<div class="detail-sub">蓄力：${escapeHtml(charge.name)} · ${
+        charge.ready ? "就绪" : `冷却 ${Number(charge.remaining).toFixed(1)}s`
+      }</div>
+      <div class="charge-bar"><i style="width:${Math.round((charge.ratio || 0) * 100)}%"></i></div>`
+    : "";
+  const modes = (template?.attacks || [])
+    .filter((action) => action.enabled)
+    .map(
+      (action) => `
+      <div class="mode-row ${action.charge ? "charge" : ""}">
+        <span class="mode-name">${escapeHtml(action.name)}</span>
+        <span class="mode-tag ${action.charge ? "charge" : ""}">${
+          action.charge ? "蓄力" : action.damage_type || "—"
+        }</span>
+        <span class="mode-name">${action.damage} 伤 · ${action.range_min}–${action.range_max} · ${action.rof}s</span>
+        <span class="mode-tag">优先级 ${action.priority}</span>
+      </div>`,
+    )
+    .join("");
   unitDetail.innerHTML = `
     <dl class="detail-grid">
       <dt>编号</dt><dd>#${unit.id}</dd>
@@ -500,22 +564,17 @@ function renderUnitDetail(unit) {
       <dt>兵种</dt><dd>${escapeHtml(unit.name)}</dd>
       <dt>HP</dt><dd>${unit.hp} / ${unit.max_hp}</dd>
       <dt>状态</dt><dd>${actionState}</dd>
+      <dt>动作</dt><dd>${escapeHtml(unit.prepared_action_name || "—")}</dd>
+      <dt>准备方式</dt><dd>${preparation}</dd>
       <dt>ROF 剩余</dt><dd>${Number(unit.attack_cd || 0).toFixed(2)} s</dd>
       <dt>抬手剩余</dt><dd>${unit.aim_cd == null ? "未准备" : `${Number(unit.aim_cd).toFixed(2)} s`}</dd>
-      <dt>准备方式</dt><dd>${preparation}</dd>
-      <dt>近战射程</dt><dd>${unit.has_melee ? unit.melee_range ?? "—" : "无"}</dd>
-      <dt>远程射程</dt><dd>${unit.has_ranged ? `${unit.ranged_range_min ?? 0} – ${unit.ranged_range ?? "—"}` : "无"}</dd>
-      <dt>转向</dt><dd>${escapeHtml(unit.steer_reason || "—")}</dd>
       <dt>攻击目标</dt><dd>${unit.target_id ?? "—"}</dd>
-      <dt>移动目标</dt><dd>${unit.move_target_id ?? "—"}</dd>
-      <dt>无进展</dt><dd>${unit.no_progress_ticks} tick</dd>
-      <dt>绕行选择</dt><dd>${unit.detour_path?.length ? `${unit.detour_sign > 0 ? "正侧" : "负侧"} · ${unit.detour_path.length} 路点` : "无"}</dd>
-      <dt>实际位置</dt><dd>${unit.x.toFixed(2)}, ${unit.y.toFixed(2)}</dd>
       <dt>有效伤害</dt><dd>${unit.damage}</dd>
-      <dt>原始伤害</dt><dd>${unit.raw_damage ?? "—"}</dd>
-      <dt>过量伤害</dt><dd>${unit.overkill_damage ?? "—"}</dd>
       <dt>击杀</dt><dd>${unit.kills}</dd>
     </dl>
+    ${chargeLine}
+    <div class="detail-sub">可用攻击模式（${(template?.attacks || []).filter((a) => a.enabled).length}）</div>
+    <div class="mode-list">${modes || '<div class="tech-empty">无</div>'}</div>
   `;
 }
 
@@ -535,8 +594,7 @@ function updateTimeline(frame) {
   timeline.disabled = max === 0;
   if (frame) {
     timeLabel.textContent =
-      `第 ${state.frameIndex + 1} / ${state.frames.length} 帧 · `
-      + `t = ${Number(frame.time || 0).toFixed(1)}s`;
+      `第 ${state.frameIndex + 1} / ${state.frames.length} 帧 · t = ${Number(frame.time || 0).toFixed(1)}s`;
   }
 }
 
@@ -562,7 +620,7 @@ function selectAt(clientX, clientY) {
   }
   if (best && bestDistance <= 1.1) {
     state.selectedUnitId = best.id;
-    renderUnitDetail(best);
+    renderUnitDetail(best, frame);
   } else {
     state.selectedUnitId = null;
     unitDetail.className = "empty";
@@ -592,14 +650,6 @@ async function fillFrames(generation) {
     }
     state.frames.push(frame);
   }
-  if (state.playing) {
-    // Never seek ahead when new frames arrive.  A monotonic cursor prevents
-    // the timeline from jumping backwards or skipping death frames.
-    state.frameIndex = Math.min(
-      state.frameIndex,
-      state.frames.length - 1,
-    );
-  }
   state.frameIndex = Math.min(state.frameIndex, state.frames.length - 1);
   updateTimeline(currentFrame());
 }
@@ -617,9 +667,7 @@ async function refreshMeta() {
   } catch {
     setStatus("等待本地模拟服务…");
   } finally {
-    if (generation === state.generation) {
-      state.fetchInFlight = false;
-    }
+    if (generation === state.generation) state.fetchInFlight = false;
   }
 }
 
@@ -628,42 +676,149 @@ function setMode(mode) {
   document.querySelectorAll(".mode-tab").forEach((button) => {
     button.classList.toggle("active", button.dataset.mode === mode);
   });
+  customSetup.classList.toggle("hidden", mode !== "custom");
   unitsSetup.classList.toggle("hidden", mode !== "units");
   civWarSetup.classList.toggle("hidden", mode !== "civ_war");
-  pathingSetup.classList.toggle("hidden", mode !== "pathing");
-  setupRowMain.classList.toggle("civ-war-row", mode === "civ_war");
+}
+
+async function refreshLoadout(side) {
+  const entry = state.custom[side];
+  const civ = entry.civ;
+  if (!civ) return;
+  const units = entry.units.filter(Boolean).join(",");
+  try {
+    const response = await fetch(
+      `/api/loadout?civ=${encodeURIComponent(civ)}&age=${entry.age}&units=${encodeURIComponent(units)}`,
+      { cache: "no-store" },
+    );
+    if (!response.ok) throw new Error("loadout failed");
+    entry.available = await response.json();
+    const validIds = new Set((entry.available.units || []).map((unit) => unit.id));
+    entry.units = entry.units.filter((unitId) => validIds.has(unitId));
+    if (!entry.units.length && entry.available.units?.length) {
+      entry.units = [entry.available.units[0].id];
+    }
+    if (entry.counts.length !== entry.units.length) {
+      entry.counts = entry.units.map((_id, index) => entry.counts[index] || 20);
+    }
+    if (!units && entry.units.length) {
+      // The default unit was picked after this fetch; refetch with it so the
+      // technology list reflects the actual lineup.
+      await refreshLoadout(side);
+      return;
+    }
+    renderCustomSide(side);
+  } catch {
+    entry.available = { units: [], techs: [] };
+    renderCustomSide(side);
+  }
+}
+
+function renderCustomSide(side) {
+  const entry = state.custom[side];
+  const container = document.querySelector(`.custom-units[data-side="${side}"]`);
+  if (!container) return;
+  const available = entry.available?.units || [];
+  const maxUnits = 3;
+  if (entry.units.length > maxUnits) entry.units = entry.units.slice(0, maxUnits);
+  container.innerHTML = entry.units
+    .map(
+      (selectedId, index) => `
+      <div class="unit-row">
+        <select class="unit-pick" data-side="${side}" data-index="${index}">
+          ${available
+            .map(
+              (unit) =>
+                `<option value="${unit.id}" ${unit.id === selectedId ? "selected" : ""}>${escapeHtml(unit.name)}</option>`,
+            )
+            .join("")}
+        </select>
+        <input class="unit-count" type="number" min="1" max="1000" value="${entry.counts[index] || 20}" data-side="${side}" data-index="${index}" />
+        <button type="button" class="remove" data-side="${side}" data-index="${index}" title="移除">×</button>
+      </div>`,
+    )
+    .join("");
+  const addButton = document.querySelector(`.add-unit[data-side="${side}"]`);
+  if (addButton) addButton.disabled = entry.units.length >= maxUnits;
+
+  const techContainer = document.querySelector(`.tech-select[data-side="${side}"]`);
+  if (!techContainer) return;
+  const techs = entry.available?.techs || [];
+  if (!techs.length) {
+    techContainer.innerHTML = '<div class="tech-empty">先选择兵种以显示可用科技</div>';
+    return;
+  }
+  techContainer.innerHTML = `
+    <div class="tech-empty">可选科技（已选 ${entry.techs.size}，不限数量）</div>
+    ${techs
+      .map(
+        (tech) => `
+        <label class="tech-option ${entry.techs.has(tech.id) ? "selected" : ""}" data-side="${side}">
+          <input type="checkbox" class="tech-check" data-side="${side}" value="${tech.id}" ${entry.techs.has(tech.id) ? "checked" : ""} />
+          <span>
+            <span class="tech-name">${escapeHtml(tech.name)}${tech.specific ? " · 专属" : " · 通用"}</span>
+            <span class="tech-summary">${escapeHtml(tech.summary || "")}</span>
+            ${(tech.mechanisms || [])
+              .map((m) => `<span class="tech-mechanism">${escapeHtml(m)}</span>`)
+              .join("")}
+          </span>
+        </label>`,
+      )
+      .join("")}
+  `;
+}
+
+function customPayload() {
+  const build = (side) => {
+    const entry = state.custom[side];
+    const counts = entry.units.map((_id, index) => {
+      const input = document.querySelector(
+        `.unit-count[data-side="${side}"][data-index="${index}"]`,
+      );
+      return Math.max(1, Number(input?.value) || entry.counts[index] || 20);
+    });
+    return {
+      civ: entry.civ,
+      age: entry.age,
+      units: entry.units,
+      counts,
+      techs: Array.from(entry.techs),
+    };
+  };
+  return {
+    mode: "custom",
+    balance_blue: balanceBlue.checked,
+    red: build("red"),
+    blue: build("blue"),
+  };
 }
 
 async function restartSimulation() {
-  const collisionMode = collisionModeSelect.value;
-  const payload =
-    state.mode === "pathing"
-      ? { mode: "pathing", scenario: scenarioSelect.value, seed: Number(seedInput.value), collision_mode: collisionMode }
-      : state.mode === "civ_war"
-      ? {
-          mode: "civ_war",
-          red_civ: redCivSelect.value,
-          blue_civ: blueCivSelect.value,
-          age: Number(ageSelect.value),
-          seed: Number(seedInput.value),
-          collision_mode: collisionMode,
-        }
-      : {
-          mode: "units",
-          red: `${redUnitInput.value.trim()}:${Number(redCountInput.value)}`,
-          blue: `${blueUnitInput.value.trim()}:${Number(blueCountInput.value)}`,
-          seed: Number(seedInput.value),
-          collision_mode: collisionMode,
-        };
+  let payload;
+  if (state.mode === "custom") {
+    payload = { ...customPayload(), seed: Number(seedInput.value) };
+  } else if (state.mode === "civ_war") {
+    payload = {
+      mode: "civ_war",
+      red_civ: redCivSelect.value,
+      blue_civ: blueCivSelect.value,
+      age: Number(ageSelect.value),
+      seed: Number(seedInput.value),
+    };
+  } else {
+    payload = {
+      mode: "units",
+      red: `${redUnitInput.value.trim()}:${Number(redCountInput.value)}`,
+      blue: `${blueUnitInput.value.trim()}:${Number(blueCountInput.value)}`,
+      seed: Number(seedInput.value),
+    };
+  }
   restartButton.disabled = true;
   restartButton.textContent = "准备中…";
   state.generation += 1;
   state.fetchInFlight = true;
   try {
-    if (
-      state.mode === "civ_war"
-      && redCivSelect.value === blueCivSelect.value
-    ) {
+    if (state.mode === "civ_war" && redCivSelect.value === blueCivSelect.value) {
       throw new Error("红方和蓝方必须选择不同文明");
     }
     const response = await fetch("/api/start", {
@@ -672,13 +827,13 @@ async function restartSimulation() {
       body: JSON.stringify(payload),
     });
     const result = await response.json();
-    if (!response.ok || !result.ok) {
-      throw new Error(result.error || "start failed");
-    }
+    if (!response.ok || !result.ok) throw new Error(result.error || "start failed");
     state.frames = [];
     state.trails.clear();
     state.frameIndex = 0;
     state.remoteCount = 0;
+    state.attackEvents = [];
+    state.seenEvents.clear();
     state.generation += 1;
     state.fetchInFlight = false;
     state.elapsedAccumulator = 0;
@@ -690,7 +845,7 @@ async function restartSimulation() {
   } finally {
     state.fetchInFlight = false;
     restartButton.disabled = false;
-    restartButton.textContent = "重新模拟";
+    restartButton.textContent = "开始模拟";
   }
 }
 
@@ -703,10 +858,7 @@ function animationLoop(now) {
     state.elapsedAccumulator += delta * state.speed;
     while (state.elapsedAccumulator >= frameIntervalMs) {
       state.elapsedAccumulator -= frameIntervalMs;
-      state.frameIndex = Math.min(
-        state.frameIndex + 1,
-        state.frames.length - 1,
-      );
+      state.frameIndex = Math.min(state.frameIndex + 1, state.frames.length - 1);
     }
     updateTimeline(currentFrame());
   }
@@ -740,14 +892,78 @@ timeline.addEventListener("input", () => {
   state.frameIndex = Number(timeline.value);
   updateTimeline(state.frames[state.frameIndex]);
 });
-canvas.addEventListener("click", (event) => {
-  selectAt(event.clientX, event.clientY);
-});
+canvas.addEventListener("click", (event) => selectAt(event.clientX, event.clientY));
 window.addEventListener("resize", resizeCanvas);
+chargeOnly.addEventListener("change", renderAttackLog);
 document.querySelectorAll(".mode-tab").forEach((button) => {
   button.addEventListener("click", () => setMode(button.dataset.mode));
 });
 restartButton.addEventListener("click", restartSimulation);
+
+document.querySelectorAll(".civ-select").forEach((select) => {
+  select.addEventListener("change", () => {
+    const side = select.dataset.side;
+    state.custom[side].civ = select.value;
+    state.custom[side].units = [];
+    state.custom[side].counts = [];
+    state.custom[side].techs.clear();
+    refreshLoadout(side);
+  });
+});
+document.querySelectorAll(".side-age").forEach((select) => {
+  select.addEventListener("change", () => {
+    const side = select.dataset.side;
+    state.custom[side].age = Number(select.value) || 3;
+    state.custom[side].units = [];
+    state.custom[side].counts = [];
+    state.custom[side].techs.clear();
+    refreshLoadout(side);
+  });
+});
+document.querySelectorAll(".add-unit").forEach((button) => {
+  button.addEventListener("click", () => {
+    const side = button.dataset.side;
+    const entry = state.custom[side];
+    const available = entry.available?.units || [];
+    if (!available.length) return;
+    const used = new Set(entry.units);
+    const next = available.find((unit) => !used.has(unit.id));
+    if (next) {
+      entry.units.push(next.id);
+      entry.counts.push(20);
+    }
+    renderCustomSide(side);
+    refreshLoadout(side);
+  });
+});
+customSetup.addEventListener("change", (event) => {
+  const target = event.target;
+  const side = target.dataset.side;
+  if (!side) return;
+  const index = Number(target.dataset.index);
+  const entry = state.custom[side];
+  if (target.classList.contains("unit-pick")) {
+    entry.units[index] = target.value;
+    entry.techs.clear();
+    refreshLoadout(side);
+  } else if (target.classList.contains("unit-count")) {
+    entry.counts[index] = Math.max(1, Number(target.value) || 1);
+  } else if (target.classList.contains("tech-check")) {
+    if (target.checked) entry.techs.add(target.value);
+    else entry.techs.delete(target.value);
+    renderCustomSide(side);
+  }
+});
+customSetup.addEventListener("click", (event) => {
+  const remove = event.target.closest(".remove");
+  if (!remove) return;
+  const side = remove.dataset.side;
+  const index = Number(remove.dataset.index);
+  state.custom[side].units.splice(index, 1);
+  state.custom[side].counts.splice(index, 1);
+  state.custom[side].techs.clear();
+  refreshLoadout(side);
+});
 redCivSelect.addEventListener("change", () => {
   if (redCivSelect.value === blueCivSelect.value) {
     blueCivSelect.value =
@@ -762,16 +978,11 @@ blueCivSelect.addEventListener("change", () => {
 });
 
 let bootstrapped = false;
-
 function bootViewer() {
   if (bootstrapped) return;
   bootstrapped = true;
   populateCivSelects(FALLBACK_CIVS);
-  const scenario = new URLSearchParams(location.search).get("scenario");
-  if (Array.from(scenarioSelect.options).some(option => option.value === scenario)) {
-    setMode("pathing");
-    scenarioSelect.value = scenario;
-  }
+  setMode("custom");
   setInterval(refreshMeta, 180);
   bootstrapCatalog().then(() => {
     refreshMeta();

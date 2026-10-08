@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from enum import StrEnum
 
 from .constants import (
     DAMAGE_TIMEOUT,
@@ -16,13 +15,6 @@ from .constants import (
 )
 
 
-class CollisionMode(StrEnum):
-    """User-visible physical semantics for the 2D development viewer."""
-
-    RIGID = "rigid"
-    SOFT = "soft"
-
-
 @dataclass(frozen=True)
 class Simulation2DConfig:
     """All tunable values for the 2D movement and combat model.
@@ -32,7 +24,6 @@ class Simulation2DConfig:
     """
 
     tick_interval: float = TICK_INTERVAL
-    collision_mode: CollisionMode = CollisionMode.RIGID
     # 0 means no tick cap. A stalled battle ends via damage_timeout instead.
     max_ticks: int = 0
     damage_timeout: float = DAMAGE_TIMEOUT

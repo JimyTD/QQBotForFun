@@ -7,7 +7,8 @@
     <meta http-equiv="Pragma" content="no-cache" />
     <meta http-equiv="Expires" content="0" />
     <title>帝国3斗蛐蛐 · 二维实时战场</title>
-    <link rel="stylesheet" href="styles.css?v=20260923-6" />
+    <link rel="icon" href="data:," />
+    <link rel="stylesheet" href="styles.css?v=20261008-1" />
   </head>
   <body>
     <header class="topbar">
@@ -22,84 +23,98 @@
     </header>
 
     <main class="layout">
-      <section class="stage-panel">
-        <section class="setup-panel">
-          <div class="setup-row setup-row-top">
-            <div class="mode-tabs" role="tablist" aria-label="模拟模式">
-              <button type="button" class="mode-tab active" data-mode="units">普通阵容</button>
-              <button type="button" class="mode-tab" data-mode="civ_war">国战阵容</button>
-              <button type="button" class="mode-tab" data-mode="pathing">绕行检验</button>
-            </div>
-            <label class="physics-select">
-              <span>物理语义</span>
-              <select id="collision-mode">
-              <option value="rigid" selected>严格实体</option>
-              <option value="soft">软实体</option>
-              </select>
-            </label>
-          </div>
+      <aside class="setup-rail" aria-label="编成设置">
+        <div class="rail-head">
+          <span class="eyebrow">编成</span>
+        </div>
+        <div class="mode-tabs" role="tablist" aria-label="模拟模式">
+          <button type="button" class="mode-tab active" data-mode="custom">自选阵容</button>
+          <button type="button" class="mode-tab" data-mode="units">快速单挑</button>
+          <button type="button" class="mode-tab" data-mode="civ_war">国战随机</button>
+        </div>
 
-          <div class="setup-row setup-row-main">
-            <div class="setup-form" id="units-setup">
-              <label>
-                <span>红方兵种</span>
-                <input id="red-unit" list="unit-options" value="musketeer" autocomplete="off" />
-              </label>
-              <label class="count-field">
-                <span>数量</span>
-                <input id="red-count" type="number" min="1" max="1000" value="40" />
-              </label>
-              <label>
-                <span>蓝方兵种</span>
-                <input id="blue-unit" list="unit-options" value="pikeman" autocomplete="off" />
-              </label>
-              <label class="count-field">
-                <span>数量</span>
-                <input id="blue-count" type="number" min="1" max="1000" value="40" />
+        <section class="setup-panel hidden" id="custom-setup">
+          <div class="side-block" data-side="red">
+            <div class="side-block-head red"><span>🔴 红方</span></div>
+            <div class="side-inline">
+              <label><span>文明</span><select class="civ-select" data-side="red"></select></label>
+              <label><span>时代</span>
+                <select class="side-age" data-side="red">
+                  <option value="3" selected>3</option>
+                  <option value="4">4</option>
+                  <option value="5">5</option>
+                </select>
               </label>
             </div>
-            <div class="setup-form hidden" id="civ-war-setup">
-            <label>
-              <span>红方文明</span>
-              <select id="red-civ"></select>
-            </label>
-              <label>
-                <span>蓝方文明</span>
-                <select id="blue-civ"></select>
-              </label>
-              <label class="age-field">
-                <span>时代</span>
-                <select id="age">
-                  <option value="3" selected>3 时代</option>
-                  <option value="4">4 时代</option>
-                  <option value="5">5 时代</option>
-                </select>
-            </label>
+            <div class="custom-units" data-side="red"></div>
+            <button type="button" class="ghost-button add-unit" data-side="red">+ 添加兵种</button>
+            <div class="tech-select" data-side="red"></div>
           </div>
-            <div class="setup-actions">
-              <label class="hidden" id="pathing-setup">
-                <span>检验场景</span>
-                <select id="pathing-scenario">
-                  <option value="split">双侧绕墙</option>
-                  <option value="crowd">密集队列</option>
-                  <option value="border">贴边绕行</option>
-                  <option value="mirror">左右镜像</option>
-                  <option value="mixed">多排混合体积</option>
-                  <option value="staggered">错列通道</option>
-                  <option value="opening">阵亡后通道开放</option>
-                  <option value="moving">移动单位堵口</option>
+          <div class="side-block" data-side="blue">
+            <div class="side-block-head blue"><span>🔵 蓝方</span></div>
+            <div class="side-inline">
+              <label><span>文明</span><select class="civ-select" data-side="blue"></select></label>
+              <label><span>时代</span>
+                <select class="side-age" data-side="blue">
+                  <option value="3" selected>3</option>
+                  <option value="4">4</option>
+                  <option value="5">5</option>
                 </select>
               </label>
-              <label class="seed-field">
-                <span>Seed</span>
-                <input id="seed" type="number" value="42" />
-              </label>
-              <button id="restart" type="button" class="start-button">重新模拟</button>
             </div>
+            <div class="custom-units" data-side="blue"></div>
+            <button type="button" class="ghost-button add-unit" data-side="blue">+ 添加兵种</button>
+            <div class="tech-select" data-side="blue"></div>
           </div>
         </section>
 
-        <div class="match-label" id="match-label">普通阵容</div>
+        <section class="setup-panel hidden" id="units-setup">
+          <label>
+            <span>红方兵种</span>
+            <input id="red-unit" list="unit-options" value="musketeer" autocomplete="off" />
+          </label>
+          <label class="count-field">
+            <span>数量</span>
+            <input id="red-count" type="number" min="1" max="1000" value="40" />
+          </label>
+          <label>
+            <span>蓝方兵种</span>
+            <input id="blue-unit" list="unit-options" value="pikeman" autocomplete="off" />
+          </label>
+          <label class="count-field">
+            <span>数量</span>
+            <input id="blue-count" type="number" min="1" max="1000" value="40" />
+          </label>
+        </section>
+
+        <section class="setup-panel hidden" id="civ-war-setup">
+          <label><span>红方文明</span><select id="red-civ"></select></label>
+          <label><span>蓝方文明</span><select id="blue-civ"></select></label>
+          <label class="age-field">
+            <span>时代</span>
+            <select id="age">
+              <option value="3" selected>3 时代</option>
+              <option value="4">4 时代</option>
+              <option value="5">5 时代</option>
+            </select>
+          </label>
+        </section>
+
+        <details class="advanced">
+          <summary>高级设置</summary>
+          <label class="seed-field">
+            <span>Seed</span>
+            <input id="seed" type="number" value="42" />
+          </label>
+          <p class="hint">Seed 决定战斗内的随机数（出手/溅射结算顺序等）。同一阵容 + 同一 Seed = 可复现的同一局。</p>
+          <label class="toggle"><input type="checkbox" id="balance-blue" /><span>蓝方军费随红方自动平衡</span></label>
+        </details>
+
+        <button id="restart" type="button" class="start-button">开始模拟</button>
+      </aside>
+
+      <section class="stage-panel">
+        <div class="match-label" id="match-label">自选阵容</div>
         <div class="army-strip" id="army-strip">
           <article class="army-card red" id="army-red">
             <div class="army-heading">
@@ -144,8 +159,8 @@
           <div class="legend">
             <span><i class="dot red"></i>红方</span>
             <span><i class="dot blue"></i>蓝方</span>
+            <span><i class="ring charge"></i>蓄力就绪</span>
             <span><i class="ring stopped"></i>已停止攻击</span>
-            <span><i class="ring moving"></i>移动中</span>
           </div>
         </div>
         <div class="canvas-wrap">
@@ -153,39 +168,12 @@
         </div>
       </section>
 
-      <aside class="side-panel">
-        <section class="metrics">
-          <div class="metric">
-            <span>Tick</span>
-            <strong id="metric-tick">—</strong>
-          </div>
-          <div class="metric">
-            <span>存活</span>
-            <strong id="metric-alive">— / —</strong>
-          </div>
-          <div class="metric">
-            <span>移动单位</span>
-            <strong id="metric-movers">—</strong>
-          </div>
-          <div class="metric">
-            <span>受阻单位</span>
-            <strong id="metric-blocked">—</strong>
-          </div>
-          <div class="metric">
-            <span>无进展单位</span>
-            <strong id="metric-no-progress">—</strong>
-          </div>
-          <div class="metric">
-            <span>残留重叠</span>
-            <strong id="metric-overlap">—</strong>
-          </div>
-        </section>
-
+      <aside class="battle-rail" aria-label="战况与播放控制">
         <section class="controls">
           <div class="overlay-controls">
             <label><input type="checkbox" id="show-trails" checked />轨迹</label>
-            <label><input type="checkbox" id="show-routes" checked />绕行路点</label>
             <label><input type="checkbox" id="show-targets" />目标连线</label>
+            <label><input type="checkbox" id="show-charge" checked />蓄力环</label>
           </div>
           <div class="control-row">
             <button id="pause" type="button">暂停</button>
@@ -213,10 +201,18 @@
           <span class="eyebrow">选中单位</span>
           <div id="unit-detail" class="empty">点击战场单位查看详情</div>
         </section>
+
+        <section class="attack-log-panel">
+          <div class="panel-head">
+            <span class="eyebrow">攻击日志</span>
+            <label class="toggle small"><input type="checkbox" id="charge-only" /><span>仅蓄力</span></label>
+          </div>
+          <div id="attack-log" class="attack-log empty">等待攻击…</div>
+        </section>
       </aside>
     </main>
 
     <datalist id="unit-options"></datalist>
-    <script src="app.js?v=20260923-6"></script>
+    <script src="viewer.js?v=20261008-1"></script>
   </body>
 </html>

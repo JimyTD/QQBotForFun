@@ -7,7 +7,7 @@ import math
 from dataclasses import dataclass
 from typing import Any
 
-from .config import CollisionMode, Simulation2DConfig
+from .config import Simulation2DConfig
 from .geometry import (
     CollisionShape,
     PoseMotion,
@@ -665,11 +665,7 @@ class CollisionResolver:
         total_pairs = 0
         details: list[dict[str, Any]] = []
 
-        iterations = (
-            2
-            if self.config.collision_mode == CollisionMode.SOFT
-            else self.config.separation_iterations
-        )
+        iterations = self.config.separation_iterations
         iterations_run = 0
         overlap_pairs = 0
         correction_budget: dict[int, float] = {}
@@ -737,24 +733,7 @@ class CollisionResolver:
                     second,
                     nx,
                     ny,
-                    (
-                        min(
-                            overlap,
-                            min(
-                                unit_bounding_radius(
-                                    first.unit,
-                                    self.config.fallback_unit_radius,
-                                ),
-                                unit_bounding_radius(
-                                    second.unit,
-                                    self.config.fallback_unit_radius,
-                                ),
-                            )
-                            * 0.35,
-                        )
-                        if self.config.collision_mode == CollisionMode.SOFT
-                        else overlap
-                    ),
+                    overlap,
                     field_width=field_width,
                     field_height=field_height,
                     max_correction=allowed,

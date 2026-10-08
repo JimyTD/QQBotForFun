@@ -602,3 +602,444 @@ button.active {
     flex-direction: column;
   }
 }
+
+/* ------------------------------------------------------------------ */
+/* 2026-10-08 layout: 设置栏 · 战场 · 战况栏                            */
+/* ------------------------------------------------------------------ */
+
+.layout {
+  display: grid;
+  grid-template-columns: 340px minmax(0, 1fr) 330px;
+  height: calc(100vh - 70px);
+  min-height: 0;
+}
+
+.setup-rail,
+.battle-rail {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-height: 0;
+  padding: 16px;
+  overflow-y: auto;
+  background: var(--panel);
+}
+
+.setup-rail {
+  border-right: 1px solid var(--line);
+}
+
+.battle-rail {
+  border-left: 1px solid var(--line);
+}
+
+.rail-head {
+  padding-bottom: 2px;
+}
+
+.mode-tabs {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 6px;
+}
+
+.mode-tab {
+  min-width: 0;
+  padding: 0 6px;
+  white-space: nowrap;
+}
+
+.setup-panel {
+  display: grid;
+  gap: 12px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+}
+
+.setup-panel.hidden {
+  display: none;
+}
+
+.setup-panel label {
+  display: grid;
+  gap: 5px;
+  color: var(--muted);
+  font-size: 11px;
+}
+
+.setup-panel input,
+.setup-panel select {
+  width: 100%;
+  min-height: 34px;
+  padding: 0 9px;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: #1d2529;
+  color: var(--text);
+  font: inherit;
+  font-size: 12px;
+}
+
+.custom-units {
+  display: grid;
+  gap: 8px;
+}
+
+.unit-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 68px 28px;
+  gap: 6px;
+  align-items: center;
+}
+
+.unit-row select,
+.unit-row input {
+  min-height: 32px;
+}
+
+.unit-row .remove {
+  min-height: 32px;
+  padding: 0;
+  color: var(--muted);
+}
+
+.side-block {
+  display: grid;
+  gap: 9px;
+  padding: 11px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--panel-2);
+}
+
+.side-block-head {
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.side-block-head.red {
+  color: #f4a79d;
+}
+
+.side-block-head.blue {
+  color: #9dc0ff;
+}
+
+.side-inline {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 66px;
+  gap: 8px;
+}
+
+.ghost-button {
+  width: 100%;
+  min-height: 30px;
+  background: transparent;
+  color: var(--muted);
+  border-style: dashed;
+}
+
+.tech-select {
+  display: grid;
+  gap: 6px;
+}
+
+.tech-empty {
+  color: var(--muted);
+  font-size: 11px;
+}
+
+.tech-option {
+  display: grid;
+  grid-template-columns: 16px minmax(0, 1fr);
+  gap: 7px;
+  padding: 7px 8px;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: #1d2529;
+  cursor: pointer;
+}
+
+.tech-option.selected {
+  border-color: #7b8d94;
+  background: #33424a;
+}
+
+.tech-option input {
+  margin: 2px 0 0;
+  width: auto;
+  min-height: 0;
+}
+
+.tech-name {
+  font-size: 12px;
+  color: var(--text);
+  line-height: 1.3;
+}
+
+.tech-summary {
+  margin-top: 3px;
+  color: var(--muted);
+  font-size: 11px;
+  line-height: 1.35;
+  overflow-wrap: anywhere;
+}
+
+.tech-mechanism {
+  display: inline-block;
+  margin-top: 4px;
+  padding: 1px 6px;
+  border: 1px solid #6b7f86;
+  border-radius: 999px;
+  color: #bcd3da;
+  font-size: 10px;
+}
+
+.advanced {
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--panel-2);
+}
+
+.advanced > summary {
+  padding: 9px 11px;
+  color: var(--muted);
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.advanced > *:not(summary) {
+  margin: 0 11px 10px;
+}
+
+.advanced .physics-select {
+  display: grid;
+  gap: 5px;
+  color: var(--muted);
+  font-size: 11px;
+}
+
+.advanced input[type="number"],
+.advanced select {
+  width: 100%;
+  min-height: 32px;
+  padding: 0 9px;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: #1d2529;
+  color: var(--text);
+  font: inherit;
+}
+
+.toggle {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--muted);
+  font-size: 11px;
+}
+
+.toggle input {
+  width: auto;
+  min-height: 0;
+}
+
+.toggle.small {
+  font-size: 11px;
+}
+
+.hint {
+  color: #8b9aa0;
+  font-size: 10px;
+  line-height: 1.4;
+}
+
+.start-button {
+  width: 100%;
+}
+
+.stage-panel {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  min-height: 0;
+  padding: 16px;
+  overflow: hidden;
+}
+
+.army-strip {
+  flex: 0 0 auto;
+  margin-bottom: 12px;
+}
+
+.canvas-wrap {
+  flex: 1 1 auto;
+  min-height: 0;
+}
+
+#battlefield {
+  min-height: 0;
+  height: 100%;
+}
+
+.battle-rail .controls {
+  padding: 0 0 12px;
+  border: 0;
+}
+
+.battle-rail .detail {
+  padding: 12px 0;
+  overflow: visible;
+}
+
+.attack-log-panel {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.panel-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding-bottom: 8px;
+}
+
+.attack-log {
+  display: grid;
+  gap: 5px;
+  max-height: 260px;
+  overflow-y: auto;
+}
+
+.attack-log.empty {
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.attack-log-row {
+  display: flex;
+  align-items: baseline;
+  gap: 7px;
+  padding: 5px 7px;
+  border-left: 2px solid var(--line);
+  background: var(--panel-2);
+  font-size: 11px;
+}
+
+.attack-log-row.red {
+  border-left-color: var(--red);
+}
+
+.attack-log-row.blue {
+  border-left-color: var(--blue);
+}
+
+.attack-log-row.charge {
+  border-left-color: #f2c14e;
+  background: #3a3727;
+}
+
+.attack-log-row .who {
+  flex: 0 0 auto;
+  color: var(--muted);
+}
+
+.attack-log-row .what {
+  flex: 1 1 auto;
+  overflow-wrap: anywhere;
+}
+
+.attack-log-row .dmg {
+  flex: 0 0 auto;
+  color: var(--text);
+}
+
+.detail-sub {
+  margin-top: 10px;
+  color: var(--muted);
+  font-size: 11px;
+}
+
+.mode-list {
+  display: grid;
+  gap: 5px;
+  margin-top: 8px;
+}
+
+.mode-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 4px 8px;
+  padding: 6px 8px;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: var(--panel-2);
+  font-size: 11px;
+}
+
+.mode-row.disabled {
+  opacity: 0.5;
+}
+
+.mode-row .mode-name {
+  overflow-wrap: anywhere;
+}
+
+.mode-row .mode-tag {
+  color: var(--muted);
+}
+
+.mode-row .mode-tag.charge {
+  color: #f2c14e;
+}
+
+.charge-bar {
+  grid-column: 1 / -1;
+  height: 5px;
+  overflow: hidden;
+  border-radius: 3px;
+  background: #151c20;
+}
+
+.charge-bar i {
+  display: block;
+  height: 100%;
+  background: #f2c14e;
+}
+
+.ring.charge {
+  border-color: #f2c14e;
+}
+
+@media (max-width: 1180px) {
+  .layout {
+    grid-template-columns: 300px minmax(0, 1fr) 290px;
+  }
+}
+
+@media (max-width: 960px) {
+  .layout {
+    grid-template-columns: 1fr;
+    height: auto;
+  }
+
+  .setup-rail,
+  .battle-rail {
+    overflow: visible;
+    border-right: 0;
+    border-left: 0;
+    border-top: 1px solid var(--line);
+  }
+
+  .stage-panel {
+    overflow: visible;
+  }
+
+  .canvas-wrap {
+    height: 60vh;
+    min-height: 360px;
+  }
+}

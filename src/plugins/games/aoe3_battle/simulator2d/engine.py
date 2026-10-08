@@ -51,6 +51,60 @@ VISUAL_EVENT_LIFETIMES = {
 }
 
 
+def _primary_charge_snapshot(soldier: Soldier2D, *, now: float) -> dict[str, Any] | None:
+    """Cooldown summary for the soldier's most important charge action."""
+    charges = [
+        action
+        for action in soldier.unit.attack_actions
+        if action.charge and action.enabled and action.recharge > 0
+    ]
+    if not charges:
+        return None
+    action = max(charges, key=lambda item: (item.priority, item.recharge, item.name))
+    remaining = max(0.0, soldier.charge_ready_at - now)
+    ratio = min(1.0, max(0.0, 1.0 - remaining / action.recharge))
+    return {
+        "name": action.name,
+        "ready": remaining <= 1e-9,
+        "remaining": round(remaining, 2),
+        "recharge": action.recharge,
+        "ratio": round(ratio, 3),
+    }
+
+
+def _unit_templates(soldiers: list[Soldier2D]) -> dict[str, dict[str, Any]]:
+    """Deduplicated attack-mode summaries keyed by unit id for the viewer."""
+    templates: dict[str, dict[str, Any]] = {}
+    for soldier in soldiers:
+        unit = soldier.unit
+        if unit.id in templates:
+            continue
+        templates[unit.id] = {
+            "name": unit.name or unit.name_en,
+            "hp": unit.hp,
+            "attacks": [
+                {
+                    "name": action.name,
+                    "damage": action.damage,
+                    "damage_type": action.damage_type,
+                    "range_min": action.range_min,
+                    "range_max": action.range_max,
+                    "rof": action.rof,
+                    "priority": action.priority,
+                    "enabled": action.enabled,
+                    "charge": action.charge,
+                    "recharge": action.recharge,
+                    "aoe_radius": action.aoe_radius,
+                    "num_projectiles": action.num_projectiles,
+                    "windup": action.windup,
+                    "hits_soldiers": action.hits_soldiers,
+                }
+                for action in unit.attack_actions
+            ],
+        }
+    return templates
+
+
 class BattleSimulator2D:
     """Production 2D battle simulator.
 
@@ -368,11 +422,26 @@ class BattleSimulator2D:
             target = self._soldier_map.get(int(event_data.get("target_id", -1)))
             if attacker is None or target is None:
                 return None
+            prepared = (
+                self._combat._prepared_action(attacker)
+                if self._combat is not None
+                else None
+            )
             payload = {
                 "type": "attack",
                 "attacker_id": attacker.id,
                 "target_id": target.id,
                 "mode": event_data.get("mode"),
+                "action_name": prepared.name if prepared is not None else None,
+                "action_charge": bool(prepared.charge) if prepared is not None else False,
+                "action_damage_type": (
+                    prepared.damage_type
+                    if prepared is not None and prepared.damage_type
+                    else event_data.get("damage_type")
+                ),
+                "action_aoe_radius": (
+                    prepared.aoe_radius if prepared is not None else 0.0
+                ),
                 "attacker_x": round(attacker.x, 3),
                 "attacker_y": round(attacker.y, 3),
                 "x": round(target.x, 3),
@@ -426,10 +495,10 @@ class BattleSimulator2D:
         sides = {side.value: self._side_visual_summary(side) for side in (Side.RED, Side.BLUE)}
         visual_events = self._pending_visual_events
         self._pending_visual_events = []
+        now = self._tick * self.config.tick_interval
         self._frame_callback(
             {
                 "engine": "2d",
-                "collision_mode": self.config.collision_mode.value,
                 "match_label": self.match_label,
                 "status": status,
                 "tick": self._tick,
@@ -456,6 +525,7 @@ class BattleSimulator2D:
                     "max_no_progress_ticks": int(summary.extra.get("max_no_progress_ticks", 0)),
                 },
                 "sides": sides,
+                "unit_templates": _unit_templates(self._alive()),
                 "units": [
                     {
                         "id": soldier.id,
@@ -496,6 +566,8 @@ class BattleSimulator2D:
                         "prepared_mode": soldier.prepared_mode.value
                         if soldier.prepared_mode is not None
                         else None,
+                        "prepared_action_name": soldier.prepared_action_name,
+                        "charge": _primary_charge_snapshot(soldier, now=now),
                         "artillery_state": (
                             soldier.artillery_state.value if soldier.is_artillery else None
                         ),

@@ -17,7 +17,6 @@ from plugins.games.aoe3_battle.simulator2d import (
 )
 from plugins.games.aoe3_battle.simulator2d.combat import CombatSystem
 from plugins.games.aoe3_battle.simulator2d.compat import ArmySlot
-from plugins.games.aoe3_battle.simulator2d.config import CollisionMode
 from plugins.games.aoe3_battle.simulator2d.formation import build_deployment
 from plugins.games.aoe3_battle.simulator2d.geometry import (
     shape_contact,
@@ -504,7 +503,7 @@ def test_stall_flag_does_not_rotate_a_currently_clear_velocity() -> None:
 
 
 def test_rigid_collision_correction_is_bounded() -> None:
-    config = Simulation2DConfig(collision_mode=CollisionMode.RIGID)
+    config = Simulation2DConfig()
     unit = _unit("rigid")
     first = Soldier2D(1, Side.RED, unit, 100.0, 10.0, 10.0, 10.0)
     second = Soldier2D(2, Side.BLUE, unit, 100.0, 10.0, 10.1, 10.0)

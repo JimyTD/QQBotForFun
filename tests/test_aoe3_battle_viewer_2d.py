@@ -8,31 +8,14 @@ from unittest.mock import patch
 
 import pytest
 
-from plugins.games.aoe3_battle.simulator2d import Simulation2DConfig
 from scripts.aoe3_battle_viewer_2d import (
     BattleRunner,
     FrameStore,
     SimulationSupersededError,
     _attach_visual_events,
+    _build_custom_simulator,
+    loadout_options,
 )
-from scripts.aoe3_pathing_scenarios import SCENARIOS, PathingDemo
-
-
-@pytest.mark.parametrize("scenario", SCENARIOS)
-@pytest.mark.parametrize("seed", [1, 7, 42])
-def test_diagnostic_paths_reach_the_far_side_without_overlap(scenario, seed):
-    frames = []
-    PathingDemo(scenario, seed, Simulation2DConfig(), frames.append).run()
-    result = frames[-1]["diagnostic"]
-    assert result["reached"] == result["total"]
-    assert max(f["summary"]["max_overlap"] for f in frames) <= 0.002
-    assert [f["tick"] for f in frames] == list(range(len(frames)))
-    assert frames[-1]["status"] == "finished"
-    for frame in frames:
-        assert all("detour_path" in unit for unit in frame["units"])
-        assert all(
-            0.45 <= unit["x"] <= 23.55 and 0.45 <= unit["y"] <= 19.55 for unit in frame["units"]
-        )
 
 
 def test_superseded_run_cannot_publish_an_error_over_new_frames():
@@ -52,13 +35,6 @@ def test_superseded_run_cannot_publish_an_error_over_new_frames():
     assert store.history() == [frame]
 
 
-def test_same_seed_reproduces_the_same_motion_frames():
-    first, second = [], []
-    PathingDemo("crowd", 42, Simulation2DConfig(), first.append).run()
-    PathingDemo("crowd", 42, Simulation2DConfig(), second.append).run()
-    assert first == second
-
-
 def test_viewer_labels_timeline_as_frame_axis():
     html = (
         Path(__file__).resolve().parents[1]
@@ -68,6 +44,62 @@ def test_viewer_labels_timeline_as_frame_axis():
     ).read_text(encoding="utf-8")
 
     assert "帧轴" in html
+    assert "绕行检验" not in html
+    assert "自选阵容" in html
+
+
+def test_loadout_options_lists_units_and_techs_for_civ():
+    options = loadout_options(civ_id="British", age=3, unit_ids=["musketeer"])
+    unit_ids = {unit["id"] for unit in options["units"]}
+    assert "musketeer" in unit_ids
+    assert options["civ_id"] == "British"
+    assert all("summary" in tech and "id" in tech for tech in options["techs"])
+
+
+def test_custom_simulator_builds_requested_lineup():
+    frames: list[dict] = []
+    simulator = _build_custom_simulator(
+        {
+            "red": {"civ": "British", "age": 3, "units": ["musketeer"], "counts": [5], "techs": []},
+            "blue": {"civ": "French", "age": 3, "units": ["pikeman"], "counts": [5], "techs": []},
+        },
+        frame_callback=frames.append,
+        seed=1,
+    )
+    assert simulator.red_army[0].unit.id == "musketeer"
+    assert simulator.red_army[0].count == 5
+    assert simulator.blue_army[0].unit.id == "pikeman"
+
+
+def test_custom_simulator_balances_blue_to_red_budget():
+    frames: list[dict] = []
+    simulator = _build_custom_simulator(
+        {
+            "red": {
+                "civ": "British",
+                "age": 3,
+                "units": ["musketeer", "hussar"],
+                "counts": [20, 10],
+                "techs": [],
+            },
+            "blue": {
+                "civ": "French",
+                "age": 3,
+                "units": ["pikeman"],
+                "counts": [3],
+                "techs": [],
+            },
+            "balance_blue": True,
+        },
+        frame_callback=frames.append,
+        seed=1,
+    )
+    from plugins.games.aoe3_battle.lineup import _unit_cost
+
+    red_cost = sum(_unit_cost(slot.unit) * slot.count for slot in simulator.red_army)
+    blue_cost = sum(_unit_cost(slot.unit) * slot.count for slot in simulator.blue_army)
+    assert blue_cost <= red_cost
+    assert simulator.blue_army[0].count >= 1
 
 
 def test_visual_events_keep_real_events_alive_until_expiry():
