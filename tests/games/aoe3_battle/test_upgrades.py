@@ -206,10 +206,25 @@ def test_range_integral_package(data):
 
 
 def test_apply_range_and_only_representative_action(repo):
-    """apply 后阿布枪兵 5 时代射程 = 基础+4；近战不受远程动作影响。"""
+    """槽上的射程仍按代表动作。列表只加到被点名的那一条。"""
     abus = repo.get_by_id("abusgun")
     up = apply_upgrades(abus, 5)
     assert up.range == round(abus.range + 4.0, 2)
+    gun = next(action for action in abus.attack_actions if action.name == "VolleyRangedAttack")
+    hand = next(action for action in abus.attack_actions if action.name == "VolleyHandAttack")
+    up_gun = next(action for action in up.attack_actions if action.name == "VolleyRangedAttack")
+    up_hand = next(action for action in up.attack_actions if action.name == "VolleyHandAttack")
+    assert up_gun.range_max == round(gun.range_max + 4.0, 2)
+    assert up_hand.range_max == hand.range_max
+    base_defend = next(
+        action for action in abus.attack_actions_by_tactic["Defend"]
+        if action.name == "DefendRangedAttack"
+    )
+    defend = next(
+        action for action in up.attack_actions_by_tactic["Defend"]
+        if action.name == "DefendRangedAttack"
+    )
+    assert defend.range_max == round(base_defend.range_max + 4.0, 2)
 
 
 def test_dirty_value_capped(data, repo):

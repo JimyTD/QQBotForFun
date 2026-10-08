@@ -158,6 +158,96 @@ def _slots_for_action(action: str | None, allactions: str | None, u: dict) -> li
     return []
 
 
+def _attack_names(unit: dict) -> list[str]:
+    """这个兵各阵型里出现过的动作名。"""
+    names: list[str] = []
+    seen: set[str] = set()
+    groups = [unit.get("attack_actions") or []]
+    by_tactic = unit.get("attack_actions_by_tactic") or {}
+    if isinstance(by_tactic, dict):
+        groups.extend(by_tactic.values())
+    for group in groups:
+        for action in group or []:
+            if not isinstance(action, dict):
+                continue
+            name = action.get("name")
+            if name and name not in seen:
+                seen.add(name)
+                names.append(str(name))
+    return names
+
+
+def _resolve_action_amounts(
+    named: dict[str, float],
+    star: float,
+    names: list[str],
+) -> dict[str, float]:
+    """同一条科技里，点名和 allactions 打到同一动作时只留更大的数。"""
+    resolved: dict[str, float] = {}
+    for name in names:
+        has_named = name in named
+        if has_named and star:
+            value = max(named[name], star)
+        elif has_named:
+            value = named[name]
+        else:
+            value = star
+        if abs(value) > 1e-9:
+            resolved[name] = round(value, 3)
+    return resolved
+
+
+def _resolve_action_max(
+    named: dict[str, float],
+    star: float | None,
+    names: list[str],
+) -> dict[str, float]:
+    resolved: dict[str, float] = {}
+    for name in names:
+        has_named = name in named
+        if has_named and star is not None:
+            value = max(named[name], star)
+        elif has_named:
+            value = named[name]
+        elif star is not None:
+            value = star
+        else:
+            continue
+        if abs(value) > 1e-9:
+            resolved[name] = round(value, 3)
+    return resolved
+
+
+def _resolve_action_mults(
+    named: dict[str, dict[str, float]],
+    star: dict[str, float],
+    names: list[str],
+) -> dict[str, dict[str, float]]:
+    targets = set(star)
+    for bonuses in named.values():
+        targets.update(bonuses)
+    resolved: dict[str, dict[str, float]] = {}
+    for name in names:
+        source = named.get(name, {})
+        row: dict[str, float] = {}
+        for vs in targets:
+            has_named = vs in source
+            has_star = vs in star
+            if has_named and has_star:
+                value = max(source[vs], star[vs])
+            elif has_named:
+                value = source[vs]
+            elif has_star:
+                value = star[vs]
+            else:
+                continue
+            if abs(value) > 1e-9:
+                row[vs] = round(value, 3)
+        if row:
+            resolved[name] = row
+    return resolved
+
+
 def tech_extra_effects(block: str, u: dict, tech_name: str = "") -> dict:
     """从**单条**代表科技提取 range/aoe/rof/速度/护甲/倍率 的单档效果（未累加）。
 
@@ -168,10 +258,36 @@ def tech_extra_effects(block: str, u: dict, tech_name: str = "") -> dict:
     """
     uid = u["id"].lower()
     types = set(u.get("type", []))
+    names = _attack_names(u)
     out = {
         "range_add": {}, "aoe_add": {}, "rof_set": {}, "armor_add": {}, "mult_add": {},
         "speed_add": 0.0, "speed_mult": 1.0, "speed_set": None,
+        "action_range_add": {}, "action_aoe_add": {}, "action_rof_set": {},
+        "action_rof_add": {}, "action_mult_add": {},
     }
+    range_named: dict[str, float] = {}
+    aoe_named: dict[str, float] = {}
+    rof_named: dict[str, float] = {}
+    rof_star: float | None = None
+    rof_add_named: dict[str, float] = {}
+    mult_named: dict[str, dict[str, float]] = {}
+    mult_star: dict[str, float] = {}
+
+    def _note(
+        named: dict[str, float],
+        star: list[float],
+        action: str | None,
+        allact: str | None,
+        amt: float,
+    ) -> None:
+        if allact == "1" or not action:
+            star[0] += amt
+            return
+        named[action] = named.get(action, 0.0) + amt
+
+    range_star_box = [0.0]
+    aoe_star_box = [0.0]
+    rof_add_star_box = [0.0]
     for attrs, target in iter_effects(block):
         if target is None:
             continue
@@ -193,12 +309,20 @@ def tech_extra_effects(block: str, u: dict, tech_name: str = "") -> dict:
         if sub == "MaximumRange" and rel == "Absolute" and amt > 0:
             for s in _slots_for_action(action, allact, u):
                 out["range_add"][s] = out["range_add"].get(s, 0.0) + amt
+            _note(range_named, range_star_box, action, allact, amt)
         elif sub == "DamageArea" and rel == "Absolute" and amt > 0:
             for s in _slots_for_action(action, allact, u):
                 out["aoe_add"][s] = out["aoe_add"].get(s, 0.0) + amt
+            _note(aoe_named, aoe_star_box, action, allact, amt)
         elif sub == "RateOfFire" and rel == "Assign" and amt > 0:
             for s in _slots_for_action(action, allact, u):
                 out["rof_set"][s] = amt  # 覆盖（攻速直接置值）
+            if allact == "1" or not action:
+                rof_star = amt if rof_star is None else max(rof_star, amt)
+            else:
+                rof_named[action] = max(rof_named.get(action, amt), amt)
+        elif sub == "RateOfFire" and rel == "Absolute" and amt != 0:
+            _note(rof_add_named, rof_add_star_box, action, allact, amt)
         elif sub == "MaximumVelocity":
             # 如实计入副作用：细红线式「+血 −速」的减速必须照减，不只取好处
             if rel == "Absolute" and amt != 0:
@@ -218,6 +342,16 @@ def tech_extra_effects(block: str, u: dict, tech_name: str = "") -> dict:
                 for s in _slots_for_action(action, allact, u):
                     out["mult_add"].setdefault(s, {})
                     out["mult_add"][s][vs] = out["mult_add"][s].get(vs, 0.0) + amt
+                if allact == "1" or not action:
+                    mult_star[vs] = mult_star.get(vs, 0.0) + amt
+                else:
+                    mult_named.setdefault(action, {})
+                    mult_named[action][vs] = mult_named[action].get(vs, 0.0) + amt
+    out["action_range_add"] = _resolve_action_amounts(range_named, range_star_box[0], names)
+    out["action_aoe_add"] = _resolve_action_amounts(aoe_named, aoe_star_box[0], names)
+    out["action_rof_set"] = _resolve_action_max(rof_named, rof_star, names)
+    out["action_rof_add"] = _resolve_action_amounts(rof_add_named, rof_add_star_box[0], names)
+    out["action_mult_add"] = _resolve_action_mults(mult_named, mult_star, names)
     return out
 
 
@@ -230,6 +364,11 @@ def _accumulate_extras(picked_tech: dict[int, str], blocks: dict, u: dict) -> di
     armor_add: dict[str, float] = {}
     mult_add: dict[str, dict[str, float]] = {}
     rof_set: dict[str, float] = {}
+    action_range_add: dict[str, float] = {}
+    action_aoe_add: dict[str, float] = {}
+    action_rof_set: dict[str, float] = {}
+    action_rof_add: dict[str, float] = {}
+    action_mult_add: dict[str, dict[str, float]] = {}
     speed_add = 0.0
     speed_mult = 1.0
     speed_set = None
@@ -248,6 +387,17 @@ def _accumulate_extras(picked_tech: dict[int, str], blocks: dict, u: dict) -> di
                 mult_add[s][vs] = mult_add[s].get(vs, 0.0) + v
         for s, v in ex["rof_set"].items():
             rof_set[s] = v  # 高档覆盖低档
+        for name, value in ex["action_range_add"].items():
+            action_range_add[name] = round(action_range_add.get(name, 0.0) + value, 3)
+        for name, value in ex["action_aoe_add"].items():
+            action_aoe_add[name] = round(action_aoe_add.get(name, 0.0) + value, 3)
+        for name, value in ex["action_rof_add"].items():
+            action_rof_add[name] = round(action_rof_add.get(name, 0.0) + value, 3)
+        action_rof_set.update(ex["action_rof_set"])
+        for name, bonuses in ex["action_mult_add"].items():
+            bucket = action_mult_add.setdefault(name, {})
+            for vs, value in bonuses.items():
+                bucket[vs] = round(bucket.get(vs, 0.0) + value, 3)
         speed_add += ex["speed_add"]
         speed_mult *= ex["speed_mult"]
         if ex["speed_set"] is not None:
@@ -265,6 +415,18 @@ def _accumulate_extras(picked_tech: dict[int, str], blocks: dict, u: dict) -> di
             entry["armor_add"] = clean
         if rof_set:
             entry["rof_set"] = dict(rof_set)
+        if action_range_add:
+            entry["action_range_add"] = dict(action_range_add)
+        if action_aoe_add:
+            entry["action_aoe_add"] = dict(action_aoe_add)
+        if action_rof_set:
+            entry["action_rof_set"] = dict(action_rof_set)
+        if action_rof_add:
+            entry["action_rof_add"] = dict(action_rof_add)
+        if action_mult_add:
+            entry["action_mult_add"] = {
+                name: dict(bonuses) for name, bonuses in action_mult_add.items() if bonuses
+            }
         if abs(speed_add) > 1e-9:
             entry["speed_add"] = round(speed_add, 3)
         if abs(speed_mult - 1.0) > 1e-9:
@@ -583,7 +745,8 @@ def main():
             "doc": "docs/games/aoe3-battle.md §3.10",
             "fields": ["hp_mult", "damage_mult", "name", "range_add", "aoe_add",
                        "rof_set", "armor_add", "speed_add", "speed_mult", "speed_set",
-                       "mult_add"],
+                       "mult_add", "action_range_add", "action_aoe_add",
+                       "action_rof_set", "action_rof_add", "action_mult_add"],
             "age_status": AGE_STATUS,
         },
         "units": dict(sorted(unit_up.items())),

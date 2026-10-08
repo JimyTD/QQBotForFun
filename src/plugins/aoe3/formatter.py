@@ -2,9 +2,42 @@
 
 from __future__ import annotations
 
-from .attack_actions import card_shots, shot_kind
-from .i18n import t, t_age, t_list, t_mult_vs
+from .attack_actions import AttackAction, priority_shots, soldier_attacks
+from .i18n import t_age, t_list, t_mult_vs
 from .models import Multiplier, Unit
+
+_DAMAGE_TYPE_ZH = {"Siege": "攻城", "Hand": "近战", "Ranged": "远程"}
+
+
+def _damage_type_zh(damage_type: str) -> str:
+    return _DAMAGE_TYPE_ZH.get(damage_type, damage_type or "-")
+
+
+def _range_text(action: AttackAction) -> str:
+    if not action.range_max:
+        return ""
+    if action.range_min:
+        return f"{action.range_min:g}-{action.range_max:g}"
+    return f"{action.range_max:g}"
+
+
+def _compare_damage(action: AttackAction | None) -> str:
+    if action is None:
+        return "-"
+    damage = f"{action.damage:g}"
+    if action.num_projectiles > 1:
+        damage = f"{damage}×{action.num_projectiles}"
+    return damage
+
+
+def _brief_attacks(unit: Unit) -> str:
+    """一行摘要。没有开着且打得中人的模式时不写攻击。"""
+    if not soldier_attacks(unit.attack_actions):
+        return ""
+    return " / ".join(
+        f"{action.name} {action.damage:g}"
+        for action in priority_shots(unit.attack_actions)
+    )
 
 
 def _fmt_mult(mults: list[Multiplier]) -> str:
@@ -92,84 +125,27 @@ def render_unit_card(unit: Unit) -> str:
         lines.append(" | ".join(stat_parts))
     lines.append(f"抗性：{_fmt_resist(unit)}")
 
-    shots = card_shots(unit.attack_actions)
-    use_slots = not unit.attack_actions and not unit.inflicts_no_damage
-    if shots:
-        for action in shots:
-            kind = shot_kind(action)
-            lines.append("")
-            lines.append(f"{'⚔️' if kind == '近战' else '🏹'} {kind}攻击")
-            atk_parts = [f"  {action.damage:g}伤害"]
-            if action.range_max:
-                rng = (
-                    f"{action.range_min:g}-{action.range_max:g}"
-                    if action.range_min
-                    else f"{action.range_max:g}"
-                )
-                atk_parts.append(f"射程{rng}")
-            if action.rof:
-                atk_parts.append(f"射速{action.rof:g}s")
-            if action.windup:
-                atk_parts.append(f"前摇{action.windup:g}s")
-            if action.aoe_radius:
-                atk_parts.append(f"AOE{action.aoe_radius:g}")
-            if action.charge and action.recharge > 0:
-                atk_parts.append(f"蓄力{action.recharge:g}s")
-            lines.append(" | ".join(atk_parts))
-            mult_str = _fmt_mult(list(action.multipliers))
-            if mult_str:
-                lines.append(mult_str)
-    elif use_slots and unit.attack_ranged:
-        dtype_tag = ""
-        if unit.damage_type_ranged and unit.damage_type_ranged != "Ranged":
-            dtype_zh = {"Siege": "攻城", "Hand": "近战"}.get(unit.damage_type_ranged, unit.damage_type_ranged)
-            dtype_tag = f"({dtype_zh}伤害)"
+    for action in priority_shots(unit.attack_actions):
         lines.append("")
-        lines.append(f"🏹 远程攻击{dtype_tag}")
-        atk_parts = [f"  {unit.attack_ranged:g}伤害"]
-        if unit.range:
-            rng = f"{unit.range_min:g}-{unit.range:g}" if unit.range_min else f"{unit.range:g}"
+        title = action.name + ("（关）" if not action.enabled else "")
+        lines.append(title)
+        damage = f"{action.damage:g}"
+        if action.num_projectiles > 1:
+            damage = f"{damage}×{action.num_projectiles}发"
+        atk_parts = [f"  {damage}伤害", f"{_damage_type_zh(action.damage_type)}伤害"]
+        rng = _range_text(action)
+        if rng:
             atk_parts.append(f"射程{rng}")
-        if unit.rof_ranged:
-            atk_parts.append(f"射速{unit.rof_ranged:g}s")
-        if unit.windup_ranged:
-            atk_parts.append(f"前摇{unit.windup_ranged:g}s")
-        if unit.aoe_radius_ranged:
-            atk_parts.append(f"AOE{unit.aoe_radius_ranged:g}")
+        if action.rof:
+            atk_parts.append(f"射速{action.rof:g}s")
+        if action.windup:
+            atk_parts.append(f"前摇{action.windup:g}s")
+        if action.aoe_radius:
+            atk_parts.append(f"AOE{action.aoe_radius:g}")
+        if action.charge and action.recharge > 0:
+            atk_parts.append(f"蓄力{action.recharge:g}s")
         lines.append(" | ".join(atk_parts))
-        mult_str = _fmt_mult(unit.multipliers_ranged)
-        if mult_str:
-            lines.append(mult_str)
-
-    # 近战攻击
-    if use_slots and unit.attack_melee:
-        lines.append("")
-        lines.append("⚔️ 近战攻击")
-        atk_parts = [f"  {unit.attack_melee:g}伤害"]
-        if unit.rof_melee:
-            atk_parts.append(f"射速{unit.rof_melee:g}s")
-        if unit.windup_melee:
-            atk_parts.append(f"前摇{unit.windup_melee:g}s")
-        if unit.aoe_radius_melee:
-            atk_parts.append(f"AOE{unit.aoe_radius_melee:g}")
-        lines.append(" | ".join(atk_parts))
-        mult_str = _fmt_mult(unit.multipliers_melee)
-        if mult_str:
-            lines.append(mult_str)
-
-    # 攻城攻击
-    if use_slots and unit.attack_siege:
-        lines.append("")
-        lines.append("💣 攻城攻击")
-        atk_parts = [f"  {unit.attack_siege:g}伤害"]
-        if unit.range_siege:
-            atk_parts.append(f"射程{unit.range_siege:g}")
-        if unit.rof_siege:
-            atk_parts.append(f"射速{unit.rof_siege:g}s")
-        if unit.aoe_radius_siege:
-            atk_parts.append(f"AOE{unit.aoe_radius_siege:g}")
-        lines.append(" | ".join(atk_parts))
-        mult_str = _fmt_mult(unit.multipliers_siege)
+        mult_str = _fmt_mult(list(action.multipliers))
         if mult_str:
             lines.append(mult_str)
 
@@ -195,8 +171,9 @@ def render_unit_card(unit: Unit) -> str:
 def render_unit_brief(unit: Unit) -> str:
     """渲染简短单行摘要（用于列表展示）。"""
     name = _unit_display_name(unit)
-    atk = unit.attack_ranged or unit.attack_melee or unit.attack_siege or 0
-    return f"{name} | HP {round(unit.hp)} | ATK {atk:g} | {unit.cost_str}"
+    atk = _brief_attacks(unit)
+    atk_part = f" | {atk}" if atk else ""
+    return f"{name} | HP {round(unit.hp)}{atk_part} | {unit.cost_str}"
 
 
 def _fmt_compare_mults(mults_a: list[Multiplier], mults_b: list[Multiplier]) -> list[str]:
@@ -248,56 +225,68 @@ def render_compare(a: Unit, b: Unit) -> str:
     lines.append(_row("近战抗性", f"{a.armor_melee:.0%}", f"{b.armor_melee:.0%}"))
     lines.append(_row("远程抗性", f"{a.armor_ranged:.0%}", f"{b.armor_ranged:.0%}"))
 
-    # ── 远程攻击 ──
-    if a.attack_ranged or b.attack_ranged:
+    shots_a = priority_shots(a.attack_actions)
+    shots_b = priority_shots(b.attack_actions)
+    for index in range(max(len(shots_a), len(shots_b))):
+        left = shots_a[index] if index < len(shots_a) else None
+        right = shots_b[index] if index < len(shots_b) else None
         lines.append("")
-        lines.append("🏹 远程攻击")
-        lines.append(_row("  伤害", f"{a.attack_ranged:g}", f"{b.attack_ranged:g}"))
-        # 伤害类型（仅当非标准 Ranged 时标注）
-        def _dtype_tag(u: Unit) -> str:
-            d = u.damage_type_ranged
-            if d and d != "Ranged":
-                return {"Siege": "攻城", "Hand": "近战"}.get(d, d)
-            return "远程"
-        lines.append(_row("  伤害类型", _dtype_tag(a), _dtype_tag(b)))
-        lines.append(_row("  射程", f"{a.range:g}", f"{b.range:g}"))
-        if a.rof_ranged or b.rof_ranged:
-            lines.append(_row("  射速", f"{a.rof_ranged:g}s", f"{b.rof_ranged:g}s"))
-        if a.windup_ranged or b.windup_ranged:
-            lines.append(_row("  前摇", f"{a.windup_ranged:g}s", f"{b.windup_ranged:g}s"))
-        if a.aoe_radius_ranged or b.aoe_radius_ranged:
-            lines.append(_row("  AOE", f"{a.aoe_radius_ranged:g}" if a.aoe_radius_ranged else "-", f"{b.aoe_radius_ranged:g}" if b.aoe_radius_ranged else "-"))
-        mult_lines = _fmt_compare_mults(a.multipliers_ranged, b.multipliers_ranged)
-        if mult_lines:
-            lines.append("  克制倍率:")
-            lines.extend(mult_lines)
-
-    # ── 近战攻击 ──
-    if a.attack_melee or b.attack_melee:
-        lines.append("")
-        lines.append("⚔️ 近战攻击")
-        lines.append(_row("  伤害", f"{a.attack_melee:g}", f"{b.attack_melee:g}"))
-        if a.rof_melee or b.rof_melee:
-            lines.append(_row("  射速", f"{a.rof_melee:g}s", f"{b.rof_melee:g}s"))
-        if a.windup_melee or b.windup_melee:
-            lines.append(_row("  前摇", f"{a.windup_melee:g}s", f"{b.windup_melee:g}s"))
-        if a.aoe_radius_melee or b.aoe_radius_melee:
-            lines.append(_row("  AOE", f"{a.aoe_radius_melee:g}" if a.aoe_radius_melee else "-", f"{b.aoe_radius_melee:g}" if b.aoe_radius_melee else "-"))
-        mult_lines = _fmt_compare_mults(a.multipliers_melee, b.multipliers_melee)
-        if mult_lines:
-            lines.append("  克制倍率:")
-            lines.extend(mult_lines)
-
-    # ── 攻城攻击 ──
-    if a.attack_siege or b.attack_siege:
-        lines.append("")
-        lines.append("💣 攻城攻击")
-        lines.append(_row("  伤害", f"{a.attack_siege:g}", f"{b.attack_siege:g}"))
-        if a.range_siege or b.range_siege:
-            lines.append(_row("  射程", f"{a.range_siege:g}", f"{b.range_siege:g}"))
-        if a.aoe_radius_siege or b.aoe_radius_siege:
-            lines.append(_row("  AOE", f"{a.aoe_radius_siege:g}" if a.aoe_radius_siege else "-", f"{b.aoe_radius_siege:g}" if b.aoe_radius_siege else "-"))
-        mult_lines = _fmt_compare_mults(a.multipliers_siege, b.multipliers_siege)
+        lines.append(_row(
+            f"攻击{index + 1}",
+            left.name if left else "-",
+            right.name if right else "-",
+        ))
+        lines.append(_row(
+            "  伤害",
+            _compare_damage(left),
+            _compare_damage(right),
+        ))
+        lines.append(_row(
+            "  伤害类型",
+            _damage_type_zh(left.damage_type) if left else "-",
+            _damage_type_zh(right.damage_type) if right else "-",
+        ))
+        lines.append(_row(
+            "  射程",
+            (_range_text(left) or "-") if left else "-",
+            (_range_text(right) or "-") if right else "-",
+        ))
+        if (left and left.rof) or (right and right.rof):
+            lines.append(_row(
+                "  射速",
+                f"{left.rof:g}s" if left and left.rof else "-",
+                f"{right.rof:g}s" if right and right.rof else "-",
+            ))
+        if (left and left.windup) or (right and right.windup):
+            lines.append(_row(
+                "  前摇",
+                f"{left.windup:g}s" if left and left.windup else "-",
+                f"{right.windup:g}s" if right and right.windup else "-",
+            ))
+        if (left and left.aoe_radius) or (right and right.aoe_radius):
+            lines.append(_row(
+                "  AOE",
+                f"{left.aoe_radius:g}" if left and left.aoe_radius else "-",
+                f"{right.aoe_radius:g}" if right and right.aoe_radius else "-",
+            ))
+        if (left and left.charge and left.recharge > 0) or (
+            right and right.charge and right.recharge > 0
+        ):
+            lines.append(_row(
+                "  蓄力",
+                f"{left.recharge:g}s" if left and left.charge and left.recharge > 0 else "-",
+                f"{right.recharge:g}s" if right and right.charge and right.recharge > 0 else "-",
+            ))
+        if (left and not left.enabled) or (right and not right.enabled):
+            lines.append(_row(
+                "  状态",
+                "关" if left and not left.enabled else ("开" if left else "-"),
+                "关" if right and not right.enabled else ("开" if right else "-"),
+            ))
+        mult_lines = _fmt_compare_mults(
+            list(left.multipliers) if left else [],
+            list(right.multipliers) if right else [],
+        )
         if mult_lines:
             lines.append("  克制倍率:")
             lines.extend(mult_lines)
@@ -330,7 +319,8 @@ def render_civ_units(units: list[Unit], civ: str) -> str:
 
     for u in trainable:
         name = _unit_display_name(u)
-        atk = u.attack_ranged or u.attack_melee or u.attack_siege or 0
+        atk = _brief_attacks(u)
+        atk_part = f" │ {atk}" if atk else ""
         age_zh = t_age(u.age) if u.age else "?"
         source = (
             "领事馆"
@@ -338,7 +328,7 @@ def render_civ_units(units: list[Unit], civ: str) -> str:
             else "本单位"
         )
         lines.append(
-            f"  {name:<16} │ {age_zh} │ {source} │ HP {round(u.hp)} ATK {atk:g}"
+            f"  {name:<16} │ {age_zh} │ {source} │ HP {round(u.hp)}{atk_part}"
         )
 
     return "\n".join(lines)

@@ -115,6 +115,11 @@ def _stage_extras(tech_names: list[str], blocks: dict[str, str], unit: dict) -> 
         "rof_add": {},
         "armor_add": {},
         "mult_add": {},
+        "action_range_add": {},
+        "action_aoe_add": {},
+        "action_rof_set": {},
+        "action_rof_add": {},
+        "action_mult_add": {},
         "speed_add": 0.0,
         "speed_mult": 1.0,
         "speed_set": None,
@@ -126,6 +131,23 @@ def _stage_extras(tech_names: list[str], blocks: dict[str, str], unit: dict) -> 
             for slot, value in parsed[key].items():
                 out[key][slot] = out[key].get(slot, 0.0) + value
         _merge_nested_add(out["mult_add"], parsed["mult_add"])
+        for name, value in parsed["action_range_add"].items():
+            out["action_range_add"][name] = round(
+                out["action_range_add"].get(name, 0.0) + value, 3
+            )
+        for name, value in parsed["action_aoe_add"].items():
+            out["action_aoe_add"][name] = round(
+                out["action_aoe_add"].get(name, 0.0) + value, 3
+            )
+        for name, value in parsed["action_rof_add"].items():
+            out["action_rof_add"][name] = round(
+                out["action_rof_add"].get(name, 0.0) + value, 3
+            )
+        out["action_rof_set"].update(parsed["action_rof_set"])
+        for name, bonuses in parsed["action_mult_add"].items():
+            bucket = out["action_mult_add"].setdefault(name, {})
+            for vs, value in bonuses.items():
+                bucket[vs] = round(bucket.get(vs, 0.0) + value, 3)
         out["rof_set"].update(parsed["rof_set"])
         out["speed_add"] += parsed["speed_add"]
         out["speed_mult"] *= parsed["speed_mult"]
@@ -215,6 +237,14 @@ def _merge_stage(state: dict, stage: dict) -> None:
         for slot, value in stage[key].items():
             state[key][slot] = state[key].get(slot, 0.0) + value
     _merge_nested_add(state["mult_add"], stage["mult_add"])
+    for key in ("action_range_add", "action_aoe_add", "action_rof_add"):
+        for name, value in stage[key].items():
+            state[key][name] = round(state[key].get(name, 0.0) + value, 3)
+    state["action_rof_set"].update(stage["action_rof_set"])
+    for name, bonuses in stage["action_mult_add"].items():
+        bucket = state["action_mult_add"].setdefault(name, {})
+        for vs, value in bonuses.items():
+            bucket[vs] = round(bucket.get(vs, 0.0) + value, 3)
     state["rof_set"].update(stage["rof_set"])
     state["speed_add"] += stage["speed_add"]
     state["speed_mult"] *= stage["speed_mult"]
@@ -231,7 +261,9 @@ def _entry_from_state(state: dict) -> dict:
         "damage_mult": round(state["damage_mult"], 4),
         "techs": list(state["techs"]),
     }
-    for key in ("range_add", "aoe_add", "armor_add", "rof_add", "rof_set"):
+    for key in ("range_add", "aoe_add", "armor_add", "rof_add", "rof_set",
+                "action_range_add", "action_aoe_add", "action_rof_set",
+                "action_rof_add", "action_mult_add"):
         if state[key]:
             entry[key] = copy.deepcopy(state[key])
     if state["mult_add"]:
@@ -290,6 +322,8 @@ def main() -> None:
                     for key in (
                         "range_add", "aoe_add", "rof_set", "rof_add",
                         "armor_add", "mult_add",
+                        "action_range_add", "action_aoe_add", "action_rof_set",
+                        "action_rof_add", "action_mult_add",
                     )
                 ) or extras["speed_set"] is not None or extras["speed_add"] or (
                     extras["speed_mult"] != 1.0
@@ -329,6 +363,11 @@ def main() -> None:
                 "rof_add": copy.deepcopy(base_age3.get("rof_add", {})),
                 "armor_add": copy.deepcopy(base_age3.get("armor_add", {})),
                 "mult_add": copy.deepcopy(base_age3.get("mult_add", {})),
+                "action_range_add": copy.deepcopy(base_age3.get("action_range_add", {})),
+                "action_aoe_add": copy.deepcopy(base_age3.get("action_aoe_add", {})),
+                "action_rof_set": copy.deepcopy(base_age3.get("action_rof_set", {})),
+                "action_rof_add": copy.deepcopy(base_age3.get("action_rof_add", {})),
+                "action_mult_add": copy.deepcopy(base_age3.get("action_mult_add", {})),
                 "speed_add": float(base_age3.get("speed_add", 0.0)),
                 "speed_mult": float(base_age3.get("speed_mult", 1.0)),
                 "speed_set": base_age3.get("speed_set"),

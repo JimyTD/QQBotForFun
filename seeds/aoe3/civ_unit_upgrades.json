@@ -190,6 +190,17 @@
           "techs": [
             "YPHonoredKeshik"
           ],
+          "action_mult_add": {
+            "BowAttack": {
+              "AbstractArtillery": 0.75
+            },
+            "BuildingAttack": {
+              "AbstractArtillery": 0.75
+            },
+            "ChargeAttack": {
+              "AbstractArtillery": 0.75
+            }
+          },
           "mult_add": {
             "ranged": {
               "AbstractArtillery": 0.75
@@ -204,6 +215,17 @@
             "YPHonoredKeshik",
             "YPExaltedKeshik"
           ],
+          "action_mult_add": {
+            "BowAttack": {
+              "AbstractArtillery": 0.75
+            },
+            "BuildingAttack": {
+              "AbstractArtillery": 0.75
+            },
+            "ChargeAttack": {
+              "AbstractArtillery": 0.75
+            }
+          },
           "mult_add": {
             "ranged": {
               "AbstractArtillery": 0.75
@@ -241,6 +263,11 @@
           "range_add": {
             "melee": 1.0
           },
+          "action_range_add": {
+            "MeleeHandAttack": 1.0,
+            "DefendHandAttack": 1.0,
+            "CoverHandAttack": 1.0
+          },
           "name": "光荣的中国长矛兵"
         },
         "5": {
@@ -252,6 +279,11 @@
           ],
           "range_add": {
             "melee": 1.5
+          },
+          "action_range_add": {
+            "MeleeHandAttack": 1.5,
+            "DefendHandAttack": 1.5,
+            "CoverHandAttack": 1.5
           },
           "name": "高贵的中国长矛兵"
         }
@@ -325,6 +357,11 @@
           "range_add": {
             "ranged": 2.0
           },
+          "action_range_add": {
+            "VolleyRangedAttack": 2.0,
+            "DefendRangedAttack": 2.0,
+            "StaggerRangedAttack": 2.0
+          },
           "name": "护卫狙击手"
         },
         "5": {
@@ -336,6 +373,11 @@
           ],
           "range_add": {
             "ranged": 2.0
+          },
+          "action_range_add": {
+            "VolleyRangedAttack": 2.0,
+            "DefendRangedAttack": 2.0,
+            "StaggerRangedAttack": 2.0
           },
           "name": "帝国狙击手"
         }
@@ -369,6 +411,10 @@
           "range_add": {
             "ranged": 1.0
           },
+          "action_range_add": {
+            "StaggerRangedAttack": 1.0,
+            "DefendRangedAttack": 1.0
+          },
           "name": "护卫卡宾枪骑兵"
         },
         "5": {
@@ -380,6 +426,10 @@
           ],
           "range_add": {
             "ranged": 1.0
+          },
+          "action_range_add": {
+            "StaggerRangedAttack": 1.0,
+            "DefendRangedAttack": 1.0
           },
           "name": "帝国卡宾枪骑兵"
         }
@@ -570,6 +620,11 @@
           "range_add": {
             "ranged": 2.0
           },
+          "action_range_add": {
+            "VolleyRangedAttack": 2.0,
+            "DefendRangedAttack": 2.0,
+            "StaggerRangedAttack": 2.0
+          },
           "name": "自由枪手"
         },
         "5": {
@@ -582,6 +637,11 @@
           "range_add": {
             "ranged": 4.0
           },
+          "action_range_add": {
+            "VolleyRangedAttack": 4.0,
+            "DefendRangedAttack": 4.0,
+            "StaggerRangedAttack": 4.0
+          },
           "name": "帝国自由枪手"
         }
       },
@@ -592,6 +652,9 @@
           "techs": [
             "RGDanishMortars"
           ],
+          "action_rof_add": {
+            "CannonAttack": -0.5
+          },
           "name": "皇家迫击炮"
         },
         "5": {
@@ -601,6 +664,9 @@
             "RGDanishMortars",
             "ImperialDanishMortars"
           ],
+          "action_rof_add": {
+            "CannonAttack": -0.5
+          },
           "name": "帝国皇家迫击炮"
         }
       },
@@ -642,6 +708,11 @@
           "armor_add": {
             "melee": 0.05
           },
+          "action_range_add": {
+            "MeleeHandAttack": 1.0,
+            "DefendHandAttack": 1.0,
+            "CoverHandAttack": 1.0
+          },
           "name": "皇家长枪兵"
         },
         "5": {
@@ -656,6 +727,11 @@
           },
           "armor_add": {
             "melee": 0.05
+          },
+          "action_range_add": {
+            "MeleeHandAttack": 1.0,
+            "DefendHandAttack": 1.0,
+            "CoverHandAttack": 1.0
           },
           "name": "帝国皇家长枪兵"
         }
@@ -887,6 +963,12 @@
           "range_add": {
             "ranged": 3.0
           },
+          "action_range_add": {
+            "GuardianRangedAttack": 3.0,
+            "VolleyRangedAttack": 3.0,
+            "DefendRangedAttack": 3.0,
+            "StaggerRangedAttack": 3.0
+          },
           "name": "风云掷石绳战士"
         },
         "5": {
@@ -898,6 +980,12 @@
           ],
           "range_add": {
             "ranged": 3.0
+          },
+          "action_range_add": {
+            "GuardianRangedAttack": 3.0,
+            "VolleyRangedAttack": 3.0,
+            "DefendRangedAttack": 3.0,
+            "StaggerRangedAttack": 3.0
           },
           "name": "传奇掷石绳战士"
         }
@@ -950,6 +1038,11 @@
           "range_add": {
             "ranged": 3.0
           },
+          "action_range_add": {
+            "VolleyRangedAttack": 3.0,
+            "DefendRangedAttack": 3.0,
+            "StaggerRangedAttack": 3.0
+          },
           "name": "风云丛林弓箭手"
         },
         "5": {
@@ -961,6 +1054,11 @@
           ],
           "range_add": {
             "ranged": 3.0
+          },
+          "action_range_add": {
+            "VolleyRangedAttack": 3.0,
+            "DefendRangedAttack": 3.0,
+            "StaggerRangedAttack": 3.0
           },
           "name": "传奇丛林弓箭手"
         }
@@ -994,6 +1092,35 @@
           "range_add": {
             "ranged": 1.0
           },
+          "action_range_add": {
+            "VolleyRangedAttack": 1.0,
+            "BuildingAttack": 1.0,
+            "DefendRangedAttack": 1.0,
+            "StaggerRangedAttack": 1.0
+          },
+          "action_mult_add": {
+            "VolleyRangedAttack": {
+              "AbstractArtillery": 0.5
+            },
+            "VolleyHandAttack": {
+              "AbstractArtillery": 0.5
+            },
+            "DefendRangedAttack": {
+              "AbstractArtillery": 0.5
+            },
+            "DefendHandAttack": {
+              "AbstractArtillery": 0.5
+            },
+            "StaggerRangedAttack": {
+              "AbstractArtillery": 0.5
+            },
+            "StaggerHandAttack": {
+              "AbstractArtillery": 0.5
+            },
+            "MeleeHandAttack": {
+              "AbstractArtillery": 0.5
+            }
+          },
           "mult_add": {
             "ranged": {
               "AbstractArtillery": 0.5
@@ -1013,6 +1140,35 @@
           ],
           "range_add": {
             "ranged": 2.0
+          },
+          "action_range_add": {
+            "VolleyRangedAttack": 2.0,
+            "BuildingAttack": 2.0,
+            "DefendRangedAttack": 2.0,
+            "StaggerRangedAttack": 2.0
+          },
+          "action_mult_add": {
+            "VolleyRangedAttack": {
+              "AbstractArtillery": 0.5
+            },
+            "VolleyHandAttack": {
+              "AbstractArtillery": 0.5
+            },
+            "DefendRangedAttack": {
+              "AbstractArtillery": 0.5
+            },
+            "DefendHandAttack": {
+              "AbstractArtillery": 0.5
+            },
+            "StaggerRangedAttack": {
+              "AbstractArtillery": 0.5
+            },
+            "StaggerHandAttack": {
+              "AbstractArtillery": 0.5
+            },
+            "MeleeHandAttack": {
+              "AbstractArtillery": 0.5
+            }
           },
           "mult_add": {
             "ranged": {
@@ -1110,6 +1266,12 @@
           "range_add": {
             "ranged": 1.0
           },
+          "action_range_add": {
+            "VolleyRangedAttack": 1.0,
+            "RangedBuildingAttack": 1.0,
+            "DefendRangedAttack": 1.0,
+            "StaggerRangedAttack": 1.0
+          },
           "name": "劲弩手"
         },
         "5": {
@@ -1121,6 +1283,12 @@
           ],
           "range_add": {
             "ranged": 1.0
+          },
+          "action_range_add": {
+            "VolleyRangedAttack": 1.0,
+            "RangedBuildingAttack": 1.0,
+            "DefendRangedAttack": 1.0,
+            "StaggerRangedAttack": 1.0
           },
           "name": "帝国劲弩手"
         }
@@ -1211,6 +1379,11 @@
           "range_add": {
             "melee": 1.0
           },
+          "action_range_add": {
+            "MeleeHandAttack": 1.0,
+            "DefendHandAttack": 1.0,
+            "CoverHandAttack": 1.0
+          },
           "name": "护卫长矛兵"
         },
         "5": {
@@ -1222,6 +1395,11 @@
           ],
           "range_add": {
             "melee": 1.5
+          },
+          "action_range_add": {
+            "MeleeHandAttack": 1.5,
+            "DefendHandAttack": 1.5,
+            "CoverHandAttack": 1.5
           },
           "name": "帝国长矛兵"
         }
@@ -1257,6 +1435,11 @@
           "range_add": {
             "ranged": 2.0
           },
+          "action_range_add": {
+            "VolleyRangedAttack": 2.0,
+            "DefendRangedAttack": 2.0,
+            "StaggerRangedAttack": 2.0
+          },
           "cost": {
             "food": 60,
             "gold": 55
@@ -1272,6 +1455,11 @@
           ],
           "range_add": {
             "ranged": 2.0
+          },
+          "action_range_add": {
+            "VolleyRangedAttack": 2.0,
+            "DefendRangedAttack": 2.0,
+            "StaggerRangedAttack": 2.0
           },
           "cost": {
             "food": 60,
@@ -1376,6 +1564,11 @@
           "range_add": {
             "ranged": 4.0
           },
+          "action_range_add": {
+            "VolleyRangedAttack": 4.0,
+            "DefendRangedAttack": 4.0,
+            "StaggerRangedAttack": 4.0
+          },
           "name": "库尔皮神射手"
         },
         "5": {
@@ -1387,6 +1580,11 @@
           ],
           "range_add": {
             "ranged": 5.0
+          },
+          "action_range_add": {
+            "VolleyRangedAttack": 5.0,
+            "DefendRangedAttack": 5.0,
+            "StaggerRangedAttack": 5.0
           },
           "name": "帝国库尔皮神射手"
         }
@@ -1423,6 +1621,16 @@
           "rof_add": {
             "melee": -0.25
           },
+          "action_range_add": {
+            "MeleeHandAttack": 1.0,
+            "DefendHandAttack": 1.0,
+            "CoverHandAttack": 1.0
+          },
+          "action_rof_add": {
+            "MeleeHandAttack": -0.25,
+            "DefendHandAttack": -0.25,
+            "CoverHandAttack": -0.25
+          },
           "name": "镰刀手"
         },
         "5": {
@@ -1437,6 +1645,16 @@
           },
           "rof_add": {
             "melee": -0.25
+          },
+          "action_range_add": {
+            "MeleeHandAttack": 1.5,
+            "DefendHandAttack": 1.5,
+            "CoverHandAttack": 1.5
+          },
+          "action_rof_add": {
+            "MeleeHandAttack": -0.25,
+            "DefendHandAttack": -0.25,
+            "CoverHandAttack": -0.25
           },
           "name": "帝国镰刀兵"
         }
@@ -1491,6 +1709,11 @@
           "range_add": {
             "ranged": 1.0
           },
+          "action_range_add": {
+            "CannonAttack": 1.0,
+            "BombardAttack": 1.0,
+            "CaseShotAttack": 0.5
+          },
           "speed_add": 0.5,
           "name": "步兵炮"
         },
@@ -1503,6 +1726,11 @@
           ],
           "range_add": {
             "ranged": 2.0
+          },
+          "action_range_add": {
+            "CannonAttack": 2.0,
+            "BombardAttack": 2.0,
+            "CaseShotAttack": 1.0
           },
           "speed_add": 1.0,
           "name": "帝国步兵炮"
@@ -1517,6 +1745,11 @@
           ],
           "range_add": {
             "melee": 1.0
+          },
+          "action_range_add": {
+            "MeleeHandAttack": 1.0,
+            "DefendHandAttack": 1.0,
+            "CoverHandAttack": 1.0
           },
           "cost": {
             "food": 20,
@@ -1533,6 +1766,11 @@
           ],
           "range_add": {
             "melee": 1.5
+          },
+          "action_range_add": {
+            "MeleeHandAttack": 1.5,
+            "DefendHandAttack": 1.5,
+            "CoverHandAttack": 1.5
           },
           "cost": {
             "food": 20,
@@ -1572,6 +1810,10 @@
           "range_add": {
             "ranged": 1.0
           },
+          "action_range_add": {
+            "StaggerRangedAttack": 1.0,
+            "DefendRangedAttack": 1.0
+          },
           "name": "荷兰枪骑兵"
         },
         "5": {
@@ -1583,6 +1825,10 @@
           ],
           "range_add": {
             "ranged": 1.0
+          },
+          "action_range_add": {
+            "StaggerRangedAttack": 1.0,
+            "DefendRangedAttack": 1.0
           },
           "name": "帝国护卫荷兰枪骑兵"
         }
@@ -1658,6 +1904,11 @@
           "rof_set": {
             "ranged": 2.75
           },
+          "action_rof_set": {
+            "VolleyRangedAttack": 2.75,
+            "DefendRangedAttack": 2.75,
+            "StaggerRangedAttack": 2.75
+          },
           "name": "护卫德国长枪兵"
         },
         "5": {
@@ -1669,6 +1920,11 @@
           ],
           "rof_set": {
             "ranged": 2.75
+          },
+          "action_rof_set": {
+            "VolleyRangedAttack": 2.75,
+            "DefendRangedAttack": 2.75,
+            "StaggerRangedAttack": 2.75
           },
           "name": "帝国护卫德国长枪兵"
         }
@@ -1837,6 +2093,11 @@
           "range_add": {
             "ranged": 2.0
           },
+          "action_range_add": {
+            "VolleyRangedAttack": 2.0,
+            "DefendRangedAttack": 2.0,
+            "StaggerRangedAttack": 2.0
+          },
           "name": "光荣的廓尔喀兵"
         },
         "5": {
@@ -1848,6 +2109,11 @@
           ],
           "range_add": {
             "ranged": 3.0
+          },
+          "action_range_add": {
+            "VolleyRangedAttack": 3.0,
+            "DefendRangedAttack": 3.0,
+            "StaggerRangedAttack": 3.0
           },
           "name": "高贵的廓尔喀兵"
         }
@@ -1861,6 +2127,11 @@
           ],
           "range_add": {
             "ranged": 2.0
+          },
+          "action_range_add": {
+            "VolleyRangedAttack": 2.0,
+            "DefendRangedAttack": 2.0,
+            "StaggerRangedAttack": 2.0
           }
         },
         "5": {
@@ -1872,6 +2143,11 @@
           ],
           "range_add": {
             "ranged": 3.0
+          },
+          "action_range_add": {
+            "VolleyRangedAttack": 3.0,
+            "DefendRangedAttack": 3.0,
+            "StaggerRangedAttack": 3.0
           }
         }
       },
@@ -1966,6 +2242,9 @@
           "range_add": {
             "ranged": 2.0
           },
+          "action_range_add": {
+            "CannonAttack": 2.0
+          },
           "name": "高贵的攻城大象"
         }
       },
@@ -1986,6 +2265,9 @@
           ],
           "range_add": {
             "ranged": 2.0
+          },
+          "action_range_add": {
+            "CannonAttack": 2.0
           }
         }
       },
@@ -2032,6 +2314,20 @@
           "techs": [
             "YPHonoredCamelGun"
           ],
+          "action_mult_add": {
+            "StaggerRangedAttack": {
+              "AbstractArtillery": 1.25
+            },
+            "BuildingAttack": {
+              "AbstractArtillery": 1.25
+            },
+            "DefendRangedAttack": {
+              "AbstractArtillery": 1.25
+            },
+            "MeleeHandAttack": {
+              "AbstractArtillery": 1.25
+            }
+          },
           "mult_add": {
             "ranged": {
               "AbstractArtillery": 1.25
@@ -2049,6 +2345,20 @@
             "YPHonoredCamelGun",
             "YPExaltedCamelGun"
           ],
+          "action_mult_add": {
+            "StaggerRangedAttack": {
+              "AbstractArtillery": 1.25
+            },
+            "BuildingAttack": {
+              "AbstractArtillery": 1.25
+            },
+            "DefendRangedAttack": {
+              "AbstractArtillery": 1.25
+            },
+            "MeleeHandAttack": {
+              "AbstractArtillery": 1.25
+            }
+          },
           "mult_add": {
             "ranged": {
               "AbstractArtillery": 1.25
@@ -2067,6 +2377,20 @@
           "techs": [
             "YPHonoredCamelGun"
           ],
+          "action_mult_add": {
+            "StaggerRangedAttack": {
+              "AbstractArtillery": 1.25
+            },
+            "BuildingAttack": {
+              "AbstractArtillery": 1.25
+            },
+            "DefendRangedAttack": {
+              "AbstractArtillery": 1.25
+            },
+            "MeleeHandAttack": {
+              "AbstractArtillery": 1.25
+            }
+          },
           "mult_add": {
             "ranged": {
               "AbstractArtillery": 1.25
@@ -2083,6 +2407,20 @@
             "YPHonoredCamelGun",
             "YPExaltedCamelGun"
           ],
+          "action_mult_add": {
+            "StaggerRangedAttack": {
+              "AbstractArtillery": 1.25
+            },
+            "BuildingAttack": {
+              "AbstractArtillery": 1.25
+            },
+            "DefendRangedAttack": {
+              "AbstractArtillery": 1.25
+            },
+            "MeleeHandAttack": {
+              "AbstractArtillery": 1.25
+            }
+          },
           "mult_add": {
             "ranged": {
               "AbstractArtillery": 1.25
@@ -2121,6 +2459,11 @@
           "techs": [
             "YPHonoredFlamingArrow"
           ],
+          "action_mult_add": {
+            "CannonAttack": {
+              "AbstractArtillery": 0.5
+            }
+          },
           "mult_add": {
             "ranged": {
               "AbstractArtillery": 0.5
@@ -2137,6 +2480,14 @@
           ],
           "range_add": {
             "ranged": 2.0
+          },
+          "action_range_add": {
+            "CannonAttack": 2.0
+          },
+          "action_mult_add": {
+            "CannonAttack": {
+              "AbstractArtillery": 0.5
+            }
           },
           "mult_add": {
             "ranged": {
@@ -2291,6 +2642,11 @@
           "range_add": {
             "ranged": 2.0
           },
+          "action_range_add": {
+            "VolleyRangedAttack": 2.0,
+            "DefendRangedAttack": 2.0,
+            "StaggerRangedAttack": 2.0
+          },
           "name": "护卫奥斯曼枪手"
         },
         "5": {
@@ -2302,6 +2658,11 @@
           ],
           "range_add": {
             "ranged": 4.0
+          },
+          "action_range_add": {
+            "VolleyRangedAttack": 4.0,
+            "DefendRangedAttack": 4.0,
+            "StaggerRangedAttack": 4.0
           },
           "name": "帝国奥斯曼枪手"
         }
@@ -2335,6 +2696,11 @@
           "range_add": {
             "ranged": 4.0
           },
+          "action_range_add": {
+            "StaggerRangedAttack": 4.0,
+            "VolleyRangedAttack": 4.0,
+            "BuildingAttack": 4.0
+          },
           "name": "护卫奥斯曼步兵"
         },
         "5": {
@@ -2346,6 +2712,11 @@
           ],
           "range_add": {
             "ranged": 6.0
+          },
+          "action_range_add": {
+            "StaggerRangedAttack": 6.0,
+            "VolleyRangedAttack": 6.0,
+            "BuildingAttack": 6.0
           },
           "name": "帝国奥斯曼步兵"
         }
@@ -2521,6 +2892,11 @@
           "range_add": {
             "melee": 1.0
           },
+          "action_range_add": {
+            "MeleeHandAttack": 1.0,
+            "DefendHandAttack": 1.0,
+            "CoverHandAttack": 1.0
+          },
           "cost": {
             "food": 30,
             "wood": 30
@@ -2536,6 +2912,11 @@
           ],
           "range_add": {
             "melee": 1.5
+          },
+          "action_range_add": {
+            "MeleeHandAttack": 1.5,
+            "DefendHandAttack": 1.5,
+            "CoverHandAttack": 1.5
           },
           "cost": {
             "food": 30,
@@ -2684,6 +3065,11 @@
           "range_add": {
             "ranged": 2.0
           },
+          "action_range_add": {
+            "VolleyRangedAttack": 2.0,
+            "DefendRangedAttack": 2.0,
+            "StaggerRangedAttack": 2.0
+          },
           "name": "护卫俄国长枪兵"
         },
         "5": {
@@ -2695,6 +3081,11 @@
           ],
           "range_add": {
             "ranged": 3.0
+          },
+          "action_range_add": {
+            "VolleyRangedAttack": 3.0,
+            "DefendRangedAttack": 3.0,
+            "StaggerRangedAttack": 3.0
           },
           "name": "帝国俄国长枪兵"
         }
@@ -2732,6 +3123,11 @@
           "range_add": {
             "melee": 1.0
           },
+          "action_range_add": {
+            "MeleeHandAttack": 1.0,
+            "DefendHandAttack": 1.0,
+            "CoverHandAttack": 1.0
+          },
           "name": "西班牙长矛兵"
         },
         "5": {
@@ -2743,6 +3139,11 @@
           ],
           "range_add": {
             "melee": 1.5
+          },
+          "action_range_add": {
+            "MeleeHandAttack": 1.5,
+            "DefendHandAttack": 1.5,
+            "CoverHandAttack": 1.5
           },
           "name": "帝国西班牙长矛兵"
         }
@@ -2862,6 +3263,11 @@
           ],
           "range_add": {
             "ranged": 1.0
+          },
+          "action_range_add": {
+            "VolleyRangedAttack": 1.0,
+            "DefendRangedAttack": 1.0,
+            "StaggerRangedAttack": 1.0
           },
           "name": "传奇奥托米掷石绳兵"
         }
@@ -3086,6 +3492,17 @@
           "techs": [
             "ChampionBowRider"
           ],
+          "action_mult_add": {
+            "BowAttack": {
+              "AbstractArtillery": 0.5
+            },
+            "BuildingAttack": {
+              "AbstractArtillery": 0.5
+            },
+            "ChargeAttack": {
+              "AbstractArtillery": 0.5
+            }
+          },
           "mult_add": {
             "ranged": {
               "AbstractArtillery": 0.5
@@ -3100,6 +3517,17 @@
             "ChampionBowRider",
             "ImpLegendaryBowRider"
           ],
+          "action_mult_add": {
+            "BowAttack": {
+              "AbstractArtillery": 0.5
+            },
+            "BuildingAttack": {
+              "AbstractArtillery": 0.5
+            },
+            "ChargeAttack": {
+              "AbstractArtillery": 0.5
+            }
+          },
           "mult_add": {
             "ranged": {
               "AbstractArtillery": 0.5
@@ -3183,6 +3611,11 @@
           ],
           "range_add": {
             "ranged": 1.0
+          },
+          "action_range_add": {
+            "VolleyRangedAttack": 1.0,
+            "DefendRangedAttack": 1.0,
+            "StaggerRangedAttack": 1.0
           },
           "name": "传奇瓦其那步枪兵"
         }

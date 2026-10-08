@@ -88,34 +88,25 @@ def rate_matches(action: AttackAction, target_types: tuple[str, ...] | list[str]
     return False
 
 
-def shot_kind(action: AttackAction) -> str:
-    """卡片上的远/近，跟战术文件的 handlogic / rangedlogic 走。"""
-    if action.handlogic and not action.rangedlogic:
-        return "近战"
-    return "远程"
+def priority_shots(
+    actions: tuple[AttackAction, ...] | list[AttackAction],
+    *,
+    limit: int = 2,
+) -> list[AttackAction]:
+    """当前阵型里按优先级取最多两条。同优先级保持阵型里的先后。"""
+    ranked = sorted(enumerate(actions), key=lambda item: (-item[1].priority, item[0]))
+    return [action for _, action in ranked[:limit]]
 
 
-def card_shots(
+def soldier_attacks(
     actions: tuple[AttackAction, ...] | list[AttackAction],
 ) -> list[AttackAction]:
-    """已经打得出来、打得中人的模式里，取最远的一发和贴脸的一发。"""
-    usable = [
+    """现在开着、打得中人、伤害大于 0 的模式。"""
+    return [
         action
         for action in actions
-        if action.enabled
-        and action.hits_soldiers
-        and action.damage > 0
-        and action.range_max > 0
-        and (not action.charge or action.recharge > 0)
+        if action.enabled and action.hits_soldiers and action.damage > 0
     ]
-    if not usable:
-        return []
-    far = max(usable, key=lambda action: (action.range_max, action.priority, action.name))
-    near = select_attack(usable, 0.0)
-    shots = [far]
-    if near is not None and near.name != far.name:
-        shots.append(near)
-    return shots
 
 
 def soldier_search_range(actions: tuple[AttackAction, ...] | list[AttackAction]) -> float:

@@ -17,7 +17,7 @@ import json
 import logging
 from pathlib import Path
 
-from .attack_actions import AttackAction, action_is_melee
+from .attack_actions import AttackAction
 from .models import Unit
 
 logger = logging.getLogger("aoe3.upgrades")
@@ -186,8 +186,10 @@ def _unit_age_name(unit: Unit, age: int, civ_id: str | None = None) -> str | Non
     return e.get("name") if e else None
 
 
-def _slot_of(action: AttackAction) -> str:
-    return "melee" if action_is_melee(action) else "ranged"
+def _action_number(table: dict, name: str) -> float:
+    if not table:
+        return 0.0
+    return float(table.get(name) or 0.0)
 
 
 def _upgraded_action(
@@ -195,27 +197,26 @@ def _upgraded_action(
     dmg_mult: float,
     extras: dict,
 ) -> AttackAction:
-    slot = _slot_of(action)
     kwargs: dict = {}
     if dmg_mult != 1.0:
         kwargs["damage"] = round(action.damage * dmg_mult, 2)
         if action.damage_cap:
             kwargs["damage_cap"] = round(action.damage_cap * dmg_mult, 2)
-    range_add = extras.get("range_add", {})
-    if range_add.get(slot) and action.range_max > 0:
-        kwargs["range_max"] = round(action.range_max + range_add[slot], 2)
-    aoe_add = extras.get("aoe_add", {})
-    if aoe_add.get(slot):
-        kwargs["aoe_radius"] = round(action.aoe_radius + aoe_add[slot], 2)
-    rof_set = extras.get("rof_set", {})
-    rof_add = extras.get("rof_add", {})
-    if rof_set.get(slot):
-        kwargs["rof"] = round(float(rof_set[slot]), 3)
-    elif rof_add.get(slot) and action.rof:
-        kwargs["rof"] = round(max(0.1, action.rof + rof_add[slot]), 3)
-    mult_add = extras.get("mult_add", {})
-    if mult_add.get(slot):
-        new_m = _apply_mult_add(list(action.multipliers), mult_add[slot])
+    range_add = _action_number(extras.get("action_range_add") or {}, action.name)
+    if range_add and action.range_max > 0:
+        kwargs["range_max"] = round(action.range_max + range_add, 2)
+    aoe_add = _action_number(extras.get("action_aoe_add") or {}, action.name)
+    if aoe_add:
+        kwargs["aoe_radius"] = round(action.aoe_radius + aoe_add, 2)
+    rof_set = extras.get("action_rof_set") or {}
+    rof_add = extras.get("action_rof_add") or {}
+    if action.name in rof_set:
+        kwargs["rof"] = round(float(rof_set[action.name]), 3)
+    elif action.name in rof_add and action.rof:
+        kwargs["rof"] = round(max(0.1, action.rof + float(rof_add[action.name])), 3)
+    mult_add = (extras.get("action_mult_add") or {}).get(action.name)
+    if mult_add:
+        new_m = _apply_mult_add(list(action.multipliers), mult_add)
         if new_m is not None:
             kwargs["multipliers"] = tuple(new_m)
     if not kwargs:

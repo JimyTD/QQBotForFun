@@ -245,6 +245,44 @@ def test_apply_rof_percent_and_absolute(repo):
     }
     absolute = _apply_one_tech(falconet, quicker, base=falconet)
     assert absolute.rof_ranged == 3.5
+    cannon = next(action for action in absolute.attack_actions if action.name == "CannonAttack")
+    assert cannon.rof == 3.5
+
+
+def test_named_and_allactions_range_do_not_stack_on_one_action(repo):
+    musk = repo.get_by_id("musketeer")
+    tech = {
+        "scope": ["musketeer"],
+        "ops": [
+            {
+                "stat": "range",
+                "kind": "add",
+                "value": 2,
+                "action": "VolleyRangedAttack",
+                "subtype": "MaximumRange",
+            },
+            {
+                "stat": "range",
+                "kind": "add",
+                "value": 5,
+                "allactions": True,
+                "subtype": "MaximumRange",
+            },
+            {
+                "stat": "range",
+                "kind": "add",
+                "value": 1,
+                "action": "VolleyHandAttack",
+                "subtype": "MaximumRange",
+            },
+        ],
+    }
+    upgraded = _apply_one_tech(musk, tech, base=musk)
+    by_name = {action.name: action for action in upgraded.attack_actions}
+    assert by_name["VolleyRangedAttack"].range_max == 17
+    assert by_name["VolleyHandAttack"].range_max == 6.75
+    assert by_name["BuildingAttack"].range_max == 11
+    assert upgraded.range == round(musk.range + 5, 2)
 
 
 def test_tech_summary_keeps_velocity_and_rof_relativity():

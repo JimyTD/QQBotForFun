@@ -142,21 +142,6 @@ def _apply_rof(
             continue
         changes[field] = round(max(_ROF_FLOOR, new), 3)
 
-    def _next_rof(action: AttackAction, origin: AttackAction) -> AttackAction:
-        if kind == "set":
-            new = val
-        elif action.rof <= 0:
-            return action
-        elif kind == "add":
-            new = action.rof + val
-        elif kind == "mult":
-            new = action.rof + origin.rof * (val - 1.0)
-        else:
-            return action
-        return dataclasses.replace(action, rof=round(max(_ROF_FLOOR, new), 3))
-
-    _retarget_actions(changes, unit, base, op, _next_rof)
-
 
 def _recharge_targets_unit(op: dict, unit: Unit) -> bool:
     """冷却效果只打到写明的原型。没写目标时，这名兵身上的蓄力都改。"""
@@ -196,6 +181,99 @@ def _retarget_actions(changes: dict, unit: Unit, base: Unit, op: dict, mapper) -
         nxt = mapper(action, base_by.get(action.name, action))
         updated.append(nxt)
         changed = changed or nxt != action
+    if changed:
+        changes["attack_actions"] = updated
+
+
+def _stat_winners(ops: list[dict], action_names: set[str]) -> list[tuple[str, dict]]:
+    """同一动作、同一项效果只留数值最大的一条。allactions 覆盖当前列表里的每一条。"""
+    best: dict[tuple[str, str, str, str], dict] = {}
+    order: list[tuple[str, str, str, str]] = []
+    for op in ops:
+        if op.get("stat") not in {"range", "aoe", "rof", "mult"}:
+            continue
+        if op.get("allactions") or not op.get("action"):
+            names = action_names
+        else:
+            names = {str(op["action"])} & action_names
+        vs = str(op.get("vs") or "") if op.get("stat") == "mult" else ""
+        for name in names:
+            key = (str(op["stat"]), str(op["kind"]), vs, name)
+            if key not in best:
+                best[key] = op
+                order.append(key)
+            elif float(op["value"]) > float(best[key]["value"]):
+                best[key] = op
+    return [(key[3], best[key]) for key in order]
+
+
+def _apply_stat_to_action(
+    action: AttackAction,
+    origin: AttackAction,
+    op: dict,
+) -> AttackAction:
+    stat = op["stat"]
+    kind = op["kind"]
+    val = float(op["value"])
+    if stat == "range" and kind == "add":
+        field_name = "range_min" if op.get("subtype") == "MinimumRange" else "range_max"
+        current = float(getattr(action, field_name))
+        if current <= 0:
+            return action
+        return dataclasses.replace(action, **{field_name: round(current + val, 2)})
+    if stat == "aoe" and kind == "add":
+        return dataclasses.replace(action, aoe_radius=round(action.aoe_radius + val, 2))
+    if stat == "rof":
+        if kind == "set":
+            new = val
+        elif action.rof <= 0:
+            return action
+        elif kind == "add":
+            new = action.rof + val
+        elif kind == "mult":
+            new = action.rof + origin.rof * (val - 1.0)
+        else:
+            return action
+        return dataclasses.replace(action, rof=round(max(_ROF_FLOOR, new), 3))
+    if stat == "mult" and kind == "add":
+        vs = str(op.get("vs") or "")
+        if not vs:
+            return action
+        found = False
+        updated = []
+        for bonus in action.multipliers:
+            if bonus.vs == vs:
+                updated.append(dataclasses.replace(bonus, value=round(bonus.value + val, 4)))
+                found = True
+            else:
+                updated.append(bonus)
+        if not found:
+            updated.append(Multiplier(vs=vs, value=round(1.0 + val, 4)))
+        return dataclasses.replace(action, multipliers=tuple(updated))
+    return action
+
+
+def _apply_named_action_stats(changes: dict, unit: Unit, base: Unit, ops: list[dict]) -> None:
+    """射程、溅射、射速、倍率按动作名改当前列表。槽字段另走代表动作归桶。"""
+    current = list(changes.get("attack_actions", unit.attack_actions))
+    if not current:
+        return
+    origin_actions = changes.get("_attack_origin", base.attack_actions)
+    base_by = {action.name: action for action in origin_actions}
+    winners = _stat_winners(ops, {action.name for action in current})
+    if not winners:
+        return
+    updated = list(current)
+    changed = False
+    for name, op in winners:
+        origin = base_by.get(name)
+        for index, action in enumerate(updated):
+            if action.name != name:
+                continue
+            nxt = _apply_stat_to_action(action, origin or action, op)
+            if nxt != action:
+                updated[index] = nxt
+                changed = True
     if changed:
         changes["attack_actions"] = updated
 
@@ -273,23 +351,6 @@ def _apply_one_tech(unit: Unit, tech: dict, base: Unit) -> Unit:
                 elif s == "melee" and unit.range_melee:
                     changes["range_melee"] = round(
                         changes.get("range_melee", unit.range_melee) + val, 2)
-            field_name = (
-                "range_min" if op.get("subtype") == "MinimumRange" else "range_max"
-            )
-            _retarget_actions(
-                changes,
-                unit,
-                base,
-                op,
-                lambda action, _origin, field_name=field_name: (
-                    action
-                    if getattr(action, field_name) <= 0
-                    else dataclasses.replace(
-                        action,
-                        **{field_name: round(getattr(action, field_name) + val, 2)},
-                    )
-                ),
-            )
         elif stat == "aoe" and kind == "add":
             for s in _slots_for_op(op, unit):
                 if s == "ranged":
@@ -298,16 +359,6 @@ def _apply_one_tech(unit: Unit, tech: dict, base: Unit) -> Unit:
                 elif s == "melee":
                     changes["aoe_radius_melee"] = round(
                         changes.get("aoe_radius_melee", unit.aoe_radius_melee) + val, 2)
-            _retarget_actions(
-                changes,
-                unit,
-                base,
-                op,
-                lambda action, _origin: dataclasses.replace(
-                    action,
-                    aoe_radius=round(action.aoe_radius + val, 2),
-                ),
-            )
         elif stat == "recharge" and _recharge_targets_unit(op, unit):
             def _next_recharge(action: AttackAction, origin: AttackAction) -> AttackAction:
                 if not action.charge:
@@ -399,22 +450,7 @@ def _apply_one_tech(unit: Unit, tech: dict, base: Unit) -> Unit:
                     new_list.append(Multiplier(vs=vs, value=round(1.0 + val, 4)))
                 changes[field_name] = new_list
 
-            def _next_multiplier(action: AttackAction, _origin: AttackAction) -> AttackAction:
-                found_bonus = False
-                updated_bonuses = []
-                for bonus in action.multipliers:
-                    if bonus.vs == vs:
-                        updated_bonuses.append(
-                            dataclasses.replace(bonus, value=round(bonus.value + val, 4))
-                        )
-                        found_bonus = True
-                    else:
-                        updated_bonuses.append(bonus)
-                if not found_bonus:
-                    updated_bonuses.append(Multiplier(vs=vs, value=round(1.0 + val, 4)))
-                return dataclasses.replace(action, multipliers=tuple(updated_bonuses))
-
-            _retarget_actions(changes, unit, base, op, _next_multiplier)
+    _apply_named_action_stats(changes, unit, base, tech["ops"])
 
     if not changes:
         return unit

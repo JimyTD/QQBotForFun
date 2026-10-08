@@ -8,6 +8,7 @@ from dataclasses import dataclass
 from itertools import product
 from pathlib import Path
 
+from src.plugins.aoe3.attack_actions import soldier_attacks
 from src.plugins.aoe3.models import Unit
 
 ROLE_MUSK = "musk"
@@ -200,9 +201,12 @@ def _load_archetype_config() -> tuple[
 ) = _load_archetype_config()
 
 
-def _has_multiplier(unit: Unit, *, attack: str, targets: frozenset[str]) -> bool:
-    multipliers = unit.multipliers_melee if attack == "melee" else unit.multipliers_ranged
-    return any(mult.vs in targets and mult.value > 1.0 for mult in multipliers)
+def _has_multiplier(unit: Unit, *, targets: frozenset[str]) -> bool:
+    return any(
+        mult.vs in targets and mult.value > 1.0
+        for action in soldier_attacks(unit.attack_actions)
+        for mult in action.multipliers
+    )
 
 
 def _tooltip_marks_anti_infantry(unit: Unit) -> bool:
@@ -215,7 +219,6 @@ def _is_skirmisher(unit: Unit, tags: frozenset[str]) -> bool:
         return False
     if _has_multiplier(
         unit,
-        attack="ranged",
         targets=frozenset({"AbstractHeavyInfantry"}),
     ):
         return True
@@ -241,16 +244,15 @@ def unit_roles(unit: Unit) -> frozenset[str]:
         roles.add(ROLE_DRAGOON)
     if (
         {"AbstractHandInfantry", "AbstractHeavyInfantry"} <= tags
-        and _has_multiplier(unit, attack="melee", targets=frozenset({"AbstractCavalry"}))
+        and _has_multiplier(unit, targets=frozenset({"AbstractCavalry"}))
     ):
         roles.add(ROLE_ANTI_CAV_HEAVY)
     is_anti_artillery = _has_multiplier(
         unit,
-        attack="ranged",
         targets=frozenset({"AbstractArtillery"}),
     )
     if "AbstractArtillery" in tags and (
-        _has_multiplier(unit, attack="ranged", targets=_INFANTRY_TAGS)
+        _has_multiplier(unit, targets=_INFANTRY_TAGS)
         or (_tooltip_marks_anti_infantry(unit) and not is_anti_artillery)
     ):
         roles.add(ROLE_ANTI_INFANTRY_ARTILLERY)

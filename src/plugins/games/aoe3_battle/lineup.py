@@ -13,7 +13,7 @@ import random
 from dataclasses import dataclass
 from typing import Sequence
 
-from src.plugins.aoe3.attack_actions import card_shots, shot_kind
+from src.plugins.aoe3.attack_actions import priority_shots, soldier_attacks
 from src.plugins.aoe3.formatter import append_unit_tooltip
 from src.plugins.aoe3.models import Unit
 from src.plugins.aoe3.repository import UnitRepo, is_excluded_unit
@@ -332,7 +332,10 @@ def _is_pure_healer(unit: Unit) -> bool:
     """
     if "AbstractHealer" not in unit.type:
         return False
-    max_atk = max(unit.attack_ranged or 0, unit.attack_melee or 0)
+    soldier_damage = [
+        action.damage for action in soldier_attacks(unit.attack_actions)
+    ]
+    max_atk = max(soldier_damage, default=0.0)
     return max_atk <= PURE_HEALER_ATTACK_THRESHOLD
 
 
@@ -974,44 +977,37 @@ def generate_duel_lineup(
 # =====================================================================
 
 def _atk_summary(u: Unit) -> str:
-    """一行压缩攻击信息。有攻击列表时取最远一发和贴脸一发。"""
-    shots = card_shots(u.attack_actions)
-    if u.attack_actions or u.inflicts_no_damage:
-        parts = []
-        for action in shots:
-            rng = f"射程{action.range_max:g}"
-            if action.range_min:
-                rng = f"射程{action.range_min:g}-{action.range_max:g}"
-            damage = f"{action.damage:.0f}"
-            if action.num_projectiles > 1:
-                damage = f"{action.damage:.0f}×{action.num_projectiles}发"
-            parts.append(f"{shot_kind(action)}{damage}({rng}, {action.rof:g}s)")
-        return " | ".join(parts) if parts else "无攻击"
-
+    """一行压缩攻击信息。当前阵型里按优先级最多两条。"""
+    if not u.attack_actions and not u.inflicts_no_damage:
+        return "无攻击"
     parts = []
-    _dtype_label = {"Siege": "攻城伤害", "Hand": "近战伤害"}
-
-    if u.attack_ranged:
-        rng_str = f"射程{u.range}"
-        if u.range_min:
-            rng_str = f"射程{u.range_min}-{u.range}"
-        dtype_tag = ""
-        if u.damage_type_ranged and u.damage_type_ranged != "Ranged":
-            dtype_tag = f",{_dtype_label.get(u.damage_type_ranged, u.damage_type_ranged)}"
-        atk_str = f"{u.attack_ranged:.0f}"
-        if u.num_projectiles_ranged > 1:
-            atk_str = f"{u.attack_ranged:.0f}×{u.num_projectiles_ranged}发"
-        parts.append(f"远程{atk_str}({rng_str}, {u.rof_ranged}s{dtype_tag})")
-    if u.attack_melee:
-        dtype_tag = ""
-        if u.damage_type_melee and u.damage_type_melee != "Hand":
-            dtype_tag = f",{_dtype_label.get(u.damage_type_melee, u.damage_type_melee)}"
-        range_tag = ""
-        if u.range_melee and u.range_melee > 1.5:
-            range_tag = f",射程{u.range_melee}"
-        parts.append(f"近战{u.attack_melee:.0f}({u.rof_melee}s{dtype_tag}{range_tag})")
-    # 攻城攻击不在斗蛐蛐中使用，不显示
+    for action in priority_shots(u.attack_actions):
+        damage = f"{action.damage:.0f}"
+        if action.num_projectiles > 1:
+            damage = f"{damage}×{action.num_projectiles}发"
+        rng = _range_text_for_panel(action)
+        extra = f"{_panel_damage_type(action.damage_type)}, {rng}, {action.rof:g}s"
+        if action.aoe_radius:
+            extra += f", AOE{action.aoe_radius:g}"
+        if not action.enabled:
+            extra += ", 关"
+        parts.append(f"{action.name} {damage}({extra})")
     return " | ".join(parts) if parts else "无攻击"
+
+
+def _panel_damage_type(damage_type: str) -> str:
+    return {"Siege": "攻城伤害", "Hand": "近战伤害", "Ranged": "远程伤害"}.get(
+        damage_type,
+        damage_type or "伤害",
+    )
+
+
+def _range_text_for_panel(action) -> str:
+    if not action.range_max:
+        return "射程0"
+    if action.range_min:
+        return f"射程{action.range_min:g}-{action.range_max:g}"
+    return f"射程{action.range_max:g}"
 
 
 def _armor_str(u: Unit) -> str:
@@ -1100,51 +1096,29 @@ def _find_counter_relations(
         opp = slot.unit
         opp_type_set = set(opp.type)
 
-        ranged_matches = _matching_multipliers(unit.multipliers_ranged, opp_type_set)
-        if ranged_matches:
-            outgoing.append(
-                _format_counter_line(
-                    opp.name,
-                    ranged_matches,
-                    attack_mode="远程",
-                    incoming=False,
+        for action in soldier_attacks(unit.attack_actions):
+            matches = _matching_multipliers(list(action.multipliers), opp_type_set)
+            if matches:
+                outgoing.append(
+                    _format_counter_line(
+                        opp.name,
+                        matches,
+                        attack_mode=action.name,
+                        incoming=False,
+                    )
                 )
-            )
-        melee_matches = _matching_multipliers(unit.multipliers_melee, opp_type_set)
-        if melee_matches:
-            outgoing.append(
-                _format_counter_line(
-                    opp.name,
-                    melee_matches,
-                    attack_mode="近战",
-                    incoming=False,
-                )
-            )
 
-        opp_ranged_matches = _matching_multipliers(
-            opp.multipliers_ranged, my_type_set
-        )
-        if opp_ranged_matches:
-            incoming.append(
-                _format_counter_line(
-                    opp.name,
-                    opp_ranged_matches,
-                    attack_mode="远程",
-                    incoming=True,
+        for action in soldier_attacks(opp.attack_actions):
+            opp_matches = _matching_multipliers(list(action.multipliers), my_type_set)
+            if opp_matches:
+                incoming.append(
+                    _format_counter_line(
+                        opp.name,
+                        opp_matches,
+                        attack_mode=action.name,
+                        incoming=True,
+                    )
                 )
-            )
-        opp_melee_matches = _matching_multipliers(
-            opp.multipliers_melee, my_type_set
-        )
-        if opp_melee_matches:
-            incoming.append(
-                _format_counter_line(
-                    opp.name,
-                    opp_melee_matches,
-                    attack_mode="近战",
-                    incoming=True,
-                )
-            )
 
     return outgoing, incoming
 
@@ -1244,17 +1218,6 @@ def _append_extras(lines: list[str], u: Unit, indent: str = "") -> None:
     armor = _armor_str(u)
     if armor:
         extras.append(f"🛡️{armor}")
-    aoe_parts = []
-    if u.aoe_radius_ranged:
-        aoe_parts.append(f"远程AOE{u.aoe_radius_ranged:g}")
-    if u.aoe_radius_melee:
-        aoe_parts.append(f"近战AOE{u.aoe_radius_melee:g}")
-    if u.aoe_radius_siege:
-        aoe_parts.append(f"攻城AOE{u.aoe_radius_siege:g}")
-    if aoe_parts:
-        extras.append("💥" + " ".join(aoe_parts))
-    elif u.aoe_radius:
-        extras.append(f"💥AOE{u.aoe_radius:g}")
     if extras:
         lines.append(f"{indent}{' '.join(extras)}")
     append_unit_tooltip(lines, u, indent=indent)
