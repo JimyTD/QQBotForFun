@@ -834,7 +834,7 @@ blue_count = max(1, lcm_budget // cost(blue))
 入场券 5 金币 · @ 开战 直接开打
 ```
 
-- 攻击摘要取当前阵型里优先级最高的最多两条，标题是动作名。同优先级保持阵型里的先后。配兵面板写伤害、伤害类型、射程、射速；有溅射或这条关着才补上。单位卡和兵种对比另外写出前摇、弹丸、蓄力和倍率。克制按现在开着、打得中人的模式各自的倍率另起一行，不收进这两条。没有这种模式时，一行摘要不写攻击
+- 攻击摘要取当前阵型里优先级最高的最多两条，标题是动作名。同优先级保持阵型里的先后。配兵面板写伤害、伤害类型、射程、射速；有溅射或这条关着才补上。单位卡和兵种对比另外写出前摇、弹丸、蓄力和倍率。克制按现在开着、打得中人的模式各自的倍率另起一行，不收进这两条。没有这种模式时，一行摘要不写攻击。上面例子里火枪手是这个格式；其余「远 / 近 / 攻城」是旧槽摘要，不要当成现在的面板
 - 人口不参与平衡计算，但展示
 - **面板视觉**：🔴红 = 1号 / 🔵蓝 = 2号（颜色直观）
 - **押注口令**：仅接受 `押注1` / `押注2`（数字唯一，避免歧义）
@@ -930,7 +930,7 @@ blue_count = max(1, lcm_budget // cost(blue))
 
 - 每 tick 使用空间哈希查询局部邻居，避免全战场两两扫描
 - 单位先朝最近可达敌人生成期望速度，再由局部避让选择实际速度
-- 进入有效攻击距离后停止；纯远程与近战使用各自的有效射程
+- 进入有效攻击距离后停止。有攻击列表时，当前距离已经被某条打得到这个目标的模式盖住，就停。没有列表时仍按远程槽和近战槽各自的射程
 - 前线阻塞时先尝试改锁一个直线可达的附近敌人，再沿人少的一侧侧移；不包含战术包抄、绕后或编队命令
 - 椭圆碰撞约束负责分离、推挤和重叠修正；禁止异常弹飞
 - 长时间无进展、目标死亡或绕行失效时重新选择目标
@@ -1219,7 +1219,7 @@ AOE3 有三种伤害类型，每种只被对应的抗性减免：
 - 兵种实际有 AOE 但字段缺失 → **数据 bug**，列入 §四数据缺失清单修复
 - 模拟器**不做兜底猜测**（不能“看到是炮就猜 aoe=3”，数据是什么就是什么）
 
-### 3.9 攻击分类（解析脚本核心逻辑）
+### 3.9 攻击列表与槽字段
 
 **数据源**：游戏文件 `protoy.xml` 中每个 `<unit>` 的 `<protoaction>` 元素，
 每个 protoaction 的 `damage / damagetype / maxrange / minrange / rof / damagearea / damagebonus*`
@@ -1234,10 +1234,9 @@ AOE3 有三种伤害类型，每种只被对应的抗性减免：
 | **攻击模式（动作名）** | `HandAttack` / `RangedAttack` / `BuildingAttack` 等 | 引擎按动作名硬编码绑定行为 | 动画、弹道、是否停步、是否触发闪避 |
 | **伤害类型** | `Ranged` / `Hand` / `Siege` | protoaction 的 `damagetype` 字段 | 吃哪种护甲（armor_ranged / armor_melee / armor_siege）|
 
-**关键认知**：AoE3 引擎**不存在"远程/近战"的概念划分**。引擎只知道当前要执行哪个动作名
-（Defend/Stagger/Volley 姿态 × Hand/Ranged 距离 × Building/Rocket/Guardian 等特殊），
-每次激活一种攻击模式就行。我们斗蛐蛐模拟器的 ranged/melee/siege 三槽位划分是**人为简化**，
-不是游戏本身的机制。
+**关键认知**：AoE3 引擎**不存在"远程/近战"的概念划分**。一个单位停在一份阵型里，引擎按动作名挑一条模式。
+
+有攻击列表的单位，出手、进池、战力、国战角色、单位卡、配兵摘要、兵种对比、一行简介，以及打到列表上的科技，都读这份列表。解析器仍另外写出远程、近战、攻城三个代表槽。没有列表的单位，以及模拟器里还在读槽的移动和回放分桶，继续用这三槽。三槽是留下的写法，不是出手规则。
 
 **举例**（伤害类型属于具体 protoaction，与该 protoaction 是远程还是近战无关）：
 
@@ -1253,16 +1252,49 @@ AOE3 有三种伤害类型，每种只被对应的抗性减免：
 >
 > **绝对禁止**用 `damagetype` 来判断攻击归属哪个槽位。
 
-**实现位置**：`scripts/crawler/aoe3_gamedata_parser.py :: _parse_attacks`
+**实现位置**：列表在 `scripts/crawler/aoe3_gamedata_parser.py` 写出，运行时读 `src/plugins/aoe3/attack_actions.py`。三槽仍由同文件的 `_parse_attacks` 写出。
 
+#### 攻击列表
 
+出生阵型决定列表收哪些动作。单位写了 `<initialtactic>` 就用它。没写时：带 `Limber` 又带 `Bombard` 用 `Bombard`，否则 `Volley`，否则 `Stagger`，否则 `Melee`，否则用第一份不在 `Limber`、`Stealth`、`Cover`、`Defend` 里的阵型。船的阵型文件用 `Normal`、`Line`、`Wedge`，没有 `Volley` 时落到 `Normal`。
+
+只收这份阵型里的动作，再按下面去掉：
+
+- `type` 不是 `Attack`，并且没有 `attackaction=1`，不收。治疗、自动采集、施法因此不进。四辆彩蛋卡车的 `TruckAttack` 标了 `attackaction=1`，收。
+- 阵型里有这个动作，单位自己的 proto 包没有同名伤害，或伤害小于等于 0，不收。不拿阵型文件里的伤害来补。
+- `InflictsNoDamage` 的单位列表是空的。
+- 不按动作名整类删。没有标成蓄力的 `Charge` 就是普通攻击。骑兵碾压在另一份 `Trample` 阵型里，出生阵型范围已经把它留在外面。
+- 不按目标类型预先删。`<rate type>` 对不上当前目标时，出手那一步不用它。`All` 打得到人。
+- 单位 proto 包写了 `<active>`、`<chargeaction>`、`<auxchargeaction>` 时，以单位自己的为准，盖过共用阵型文件。没写就用阵型文件的。`active=0` 留在列表里，标成关着，直到一份真正打到这个单位的科技把它打开。
+
+共享阵型文件是模板。同名 proto 包只在写出上述开关时覆盖。
+
+打得中人：类型不是 `Attack` 且没有 `attackaction=1` 的不算。目标类型里带 `Guardian`、`Building`、`Ship`、`Crate`，或正好是 `Herdable`、`Tree`、`Huntable`、`Resource`、`Fish`、`BerryBush` 的不算。没写目标类型、类型是 `Attack` 的算。`Unit`、`All`、`Military` 算。
+
+#### 展示
+
+单位卡、配兵面板、兵种对比最多显示当前阵型里优先级最高的两条。同优先级保持阵型里的先后。标题是动作名。关着的也占这两条，标成关。拆建筑的如果排进前两名，照样显示。
+
+单位卡和兵种对比写伤害、伤害类型、射程、攻速、前摇、溅射、弹丸、蓄力和倍率。配兵面板写动作名、伤害、伤害类型、射程、攻速，有溅射或关着才补。一行简介在没有现在开着、打得中人、伤害大于 0 的模式时不写攻击，否则用同样的前两条，写成动作名加伤害。
+
+克制行和国战角色只看这些开着、打得中人、伤害大于 0 的模式自己的倍率。关着的蓄力和只拆建筑的不算。标签门槛不变。纯治疗看这些模式里的最大伤害。
+
+#### 运行时科技
+
+一份科技先换 `InitialTactic`，再处理同一份科技里的 `ActionEnable`。预备军的 XML 顺序相反，必须先换阵型，否则枪从关着的齐射重建出来，仍然关着。
+
+`InitialTactic` 把该阵型的动作整份换成当前列表。`ActionEnable` 和 `RechargeTime` 按动作名打到当前列表。射程、溅射、攻速、倍率也按动作名打到当前列表：同一条上，点名和 `allactions` 只留更大的数，不叠。这几项同时仍按旧的代表槽去重，写进槽字段。伤害倍率打到当前每一条的伤害和溅射池，也写槽。
+
+只应用已经在生效名单里的科技。不按文明名自动补一份出生科技。
 
 **设计原则**：
 - **type / multipliers.vs 直接存游戏原始标签**（`AbstractCavalry`、`AbstractHeavyInfantry` 等），不翻译
 - **倍率天然匹配**：`damagebonus.type` 和 `unit.type` 来自同一份 XML 同一套字符串，倍率匹配 = 字符串相等比对，不需要映射表
 - **翻译只在展示层**：`i18n_zh.json` 负责 `AbstractXxx → 中文`，与数据/匹配逻辑解耦
 
-#### 第一步：分类 ranged / melee / siege
+下面从分类到写入字段，只说明三个代表槽怎么写。出手和展示不读这套归类。
+
+#### 槽字段：分类 ranged / melee / siege
 
 每个 protoaction 按以下规则归入三个槽位之一（**只看动作名 + 射程兜底，不看 damagetype**）：
 
@@ -1335,45 +1367,21 @@ rof_siege           = siege 代表攻击的 rof
 > 禁止砍掉 AOE 当作「无 cap」处理。
 
 
-> **siege 槽位仅用于拆建筑展示，斗蛐蛐模拟器不使用**——本模式没有建筑可拆。
-> 角色卡（`_atk_summary`）也不显示 `attack_siege`，避免误导群友（详见 §8.5）。
+> 攻城槽仍会写。有攻击列表时，拆建筑攻击是列表里的一条，排进展示前两名就显示。没有列表时，模拟器不读攻城槽。
 
-#### 战斗池准入规则（重要）
+#### 战斗池准入
 
-`Unit.has_attack` 只看 `attack_ranged` / `attack_melee`，**不算 `attack_siege`**：
+`has_attack`：`InflictsNoDamage` 为假。有攻击列表时，至少一条打得中人、伤害大于 0、射程大于 0 才为真，关着的也算。没有列表时才看远程槽或近战槽。只拆建筑、打不到人的为假。
 
-```python
-def has_attack(self) -> bool:
-    return bool(self.attack_ranged or self.attack_melee)
-```
+木制牛的拆建筑攻击目标类型是 `All`，打得到人，`has_attack` 为真。它不进普通池，是因为写在 `BATTLE_BLACKLIST` 里，攻击数据不改。
 
-**含义**：一个单位如果**只有 attack_siege 没有 melee/ranged**，会被自动排除出战斗池
-（押注模式 `_build_*_pool` 和单挑模式都用 `has_attack` 过滤）。这是合理的——
-它在斗蛐蛐里没有可拆的建筑，等于站桩。典型代表：
-- 木制牛 `deeggwoodcattle`（彩蛋单位）
-- 审判官 `desalooninquisitor`（治疗师，只有拆建筑攻击）
+没有列表、又被槽归类写空的单位，修法是改槽的代表动作，不要给 `has_attack` 加白名单。
 
-> ⚠️ **副作用警告**：如果一个真正能打兵的单位被 parser 误归类（如近战攻击
-> 因为动作名不含 `HandAttack` 且 maxrange >= 6 被丢进 ranged 桶），它的 melee 槽位
-> 可能为空。修法是**在 `ATTACK_PRIORITY` 中加入该动作名**或调整兜底阈值，
-> **不要**在 `has_attack` 加例外白名单。
+#### 模拟器读哪一份
 
-
-
-#### simulator 侧
-
-- 战斗模拟只读 `attack_ranged` / `attack_melee` 及其对应字段族
-- 运行时 `AttackMode` 只表示「本 tick 用远程槽还是近战槽」，**不表示伤害类型**：
-  - `MELEE` → 近战槽整包
-  - `RANGED` → 远程槽整包，不附加无数据依据的贴脸折扣
-- 溅射与 `_calc_damage` 必须用**同一槽**字段（`CombatSlotStats` / `_combat_slot_stats`），
-  禁止一边用远程槽的 damage、一边用近战槽的 aoe/cap
-- `damage_type_ranged` / `damage_type_melee` 决定吃哪种护甲：
-  - `Siege` → `armor_siege`（极少见）
-  - `Hand` → `armor_melee`
-  - `Ranged` → `armor_ranged`
-
-- 例：鹰炮 `attack_ranged=80, damage_type_ranged=Siege` 打火枪手（无 siege 抗性）→ 全额伤害
+- 有攻击列表时，这一下的伤害、伤害类型、射程、攻速、溅射、抬手、倍率都用选中的那条。溅射和伤害必须来自同一条。
+- 没有列表时读远程槽或近战槽整包，不附加贴脸折扣。
+- 槽字段仍在写出。回放里的近战、远程标签仍用伤害类型是 `Hand` 且最大射程小于 6，不是阵型里的 handlogic。
 
 #### 示例
 
@@ -1437,7 +1445,8 @@ def has_attack(self) -> bool:
 | `ArmorSpecific` | `armor_*` | Absolute | 固定值相加 | ✅ |
 | `Cost`/`TrainPoints`/`BuildPoints`/`WorkRate`/`ResearchPoints` | 经济 | — | — | ❌ 无意义 |
 | `UpdateVisual` | 换模型 | Absolute | — | ❌ 纯美术 |
-| `Enable`/`ActionEnable`/`FreeHomeCityUnit`/`Lifespan` | 解锁 | — | — | ❌ 奇特效果不做 |
+| `Enable`/`FreeHomeCityUnit`/`Lifespan` | 解锁 | — | — | ❌ 时代档不收 |
+| `ActionEnable` | 打开某一条攻击 | — | — | ❌ 不写进时代档。已经打到单位身上的科技会按动作名打开，见 §3.9 |
 
 **relativity → 累加规则**（引擎核心，约一张表）：
 
@@ -1446,7 +1455,7 @@ def has_attack(self) -> bool:
 - `Assign` / `Override` → **覆盖**，多档时最后一档生效，**不累加**（ROF、Cost）；
 - `Percent`（仅 3 例）→ 乘当前值（多档时连乘）。
 
-> **`DamageBonus` 语义**：effect 形如 `subtype="DamageBonus" unittype="<vs>" amount="X"`——给「该兵对 `<vs>` 的倍率」加 X。规则=只对该兵**已存在的正倍率(>1)** += amount（不新建条目、不碰惩罚倍率<1）。`allactions=1` 落全槽，否则按 `action` 匹配代表动作落槽。
+> **`DamageBonus`**：`subtype="DamageBonus"`，`unittype` 是被克制的类型，`amount` 是加上的数。槽字段只对已有的正倍率（>1）相加，不新建条目，不改小于 1 的惩罚。`allactions=1` 落代表槽，否则按 `action` 匹配代表动作落槽。列表按动作名另记，见 §3.10.3。
 
 ##### 落地方式：「整包随代表科技」而非全局扫 stat（关键修正 v15）
 
@@ -1464,14 +1473,19 @@ DE 部分科技含**离谱占位值**，无法靠语义识别（6074 条）：
 - **处理方式：精确点名丢弃**（`aoe3_upgrades_parser.py :: DIRTY_EFFECTS`，键为 `(tech_name, subtype)`）。不用数值上限一刀切，以免误伤真实大改良。当前名单仅此 1 条。
   > 注：文档早期提到的 `SANE_CAP`（射程 ≤10 / AOE ≤4 / 速度 ≤12 / 护甲 ≤0.5 / 倍率 ≤5 的「合理上限」机制）**已随 v15 重构移除**，代码中不存在，现由 `DIRTY_EFFECTS` 取代（2026-09-17 核对）。
 - **削弱档复核**：血攻 `<1` 的增量是兵工厂护甲副作用/置换（如 azap 胸甲 −10%），**不是 tier 线**；tier 线（`DEVeteran/Guard/ImperialAzaps` +20/30/50）另被正确捕获 → azap = 100/120/150/200。丢弃负增量正确。
-- **action 去重**：同一 effect 常对 Volley/Defend/Stagger/BuildingAttack 各出一条；**只取等于 `protoaction_*` 的代表动作那一条**，绝不四条相加（铁律）。
+- **槽字段去重**：同一 effect 常对 Volley/Defend/Stagger/BuildingAttack 各出一条；写进槽时只取等于代表动作的那一条，绝不四条相加。列表按动作名各记各的，见 §3.10.3。
 - 全量扫描：对所有有攻击单位 ×age{3,4,5} apply 后，**升级造成的越界 = 0**（基础数据自带的海军 x10/间谍 x40 等不在升级范围内，未被触碰）。
 
 #### 3.10.3 与攻击数据铁律的关系（天生支持的原因）
 
-`Damage` / `MaximumRange` / `DamageArea` / `DamageBonus` 这些 effect **都带 `action="..."`**，按**动作名**作用——正好对齐 `.cursor/rules/aoe3-attack-data-design.mdc`：`units.json` 已按代表动作整包存了 `protoaction_ranged/melee`，所以「给某攻击类型加射程 / AOE / 倍率」只改对应槽位，不破坏 ranged/melee 正交。
+`Damage` / `MaximumRange` / `DamageArea` / `DamageBonus` 都带 `action=`，按动作名作用。
 
-**约束**：tech 的 `action` 必须等于 parser 为该槽选定的**代表动作**，否则该条改良**不命中**（静默跳过，符合铁律——不另选动作拼接）。
+时代档同时写两套：
+
+- 槽字段仍只取等于该槽代表动作的那一条，`Volley`、`Defend`、`Stagger`、`BuildingAttack` 不相加。`allactions` 才落进这个代表槽。对不上代表动作的，槽不加。
+- 列表另按动作名写入 `action_range_add`、`action_aoe_add`、`action_rof_set`、`action_rof_add`、`action_mult_add`。点名打到同名模式。`allactions` 在解析时展开到这个单位列表和各阵型副本里的每一个动作名。同一条上，点名和 `allactions` 只留更大的数，再跨时代相加。`rof_set` 后一档覆盖同名。伤害百分比打到每一条的伤害和溅射池。
+
+阿布枪帝王档：远程槽射程 +4，同时 `VolleyRangedAttack`、`DefendRangedAttack`、`StaggerRangedAttack` 各 +4。`VolleyHandAttack` 不加。
 
 #### 3.10.4 匹配方式：按 id 精确匹配（兵种升级）vs 按标签（全局，不做）
 
@@ -1834,7 +1848,7 @@ DE 部分科技含**离谱占位值**，无法靠语义识别（6074 条）：
 
 #### 战前角色卡
 
-`_atk_summary` 不再显示攻城攻击（`attack_siege`），因为斗蛐蛐模拟器不使用攻城攻击，展示会误导群友。
+配兵摘要按 §3.9 取当前阵型里优先级最高的最多两条。拆建筑攻击排进这两条就显示，不再因为攻城槽而整段藏掉。
 
 ### 8.6 最终战报 + 结算（一起发，W3）
 
@@ -1918,6 +1932,8 @@ DE 部分科技含**离谱占位值**，无法靠语义识别（6074 条）：
 > 黑名单乱斗模式已落地为正式设计（§2.4），相关决议见 §十 末尾的 2026-05-21 追加条目。
 
 ## 十、已决议（本轮讨论封板）
+
+下面是当时的决定。攻击列表、出手、展示和按动作名生效的科技以 §3.5、§3.9、§3.10 为准。其中「只留一个远程槽和一个近战槽」「角色卡不显示攻城」「鹰炮霰弹不做距离切换」只还适用于槽字段怎么写，不再是出手和展示的规则。
 
 - ✅ 首期阵容：单一兵种随机对决（验证模拟器核心玩法）
 - ✅ 押注模式与单挑模式同步实现

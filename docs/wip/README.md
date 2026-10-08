@@ -1,7 +1,7 @@
 # WIP 文档
 
 - **Status**: Accepted
-- **Last Updated**: 2026-09-30
+- **Last Updated**: 2026-10-08
 - **Owner**: @JimyTD
 
 `docs/wip/` 是本项目唯一存放**活跃**未完成方案的目录。这里的规则、设计和实现边界都在变化，不能当作正式功能说明。
@@ -44,7 +44,7 @@
 | WIP | 主题 | 正式文档落点 |
 |---|---|---|
 | [aoe3-civ-war.md](aoe3-civ-war.md) | 帝国3国战未实现扩展 | [../games/aoe3-battle.md](../games/aoe3-battle.md) |
-| [aoe3-attack-actions.md](aoe3-attack-actions.md) | 帝国3默认阵型动作列表与蓄力 | [../games/aoe3-battle.md](../games/aoe3-battle.md) |
+| [aoe3-attack-actions.md](aoe3-attack-actions.md) | 两槽仍给模拟器读；复查表未对完 | [../games/aoe3-battle.md](../games/aoe3-battle.md) |
 
 ## 相关规范
 
