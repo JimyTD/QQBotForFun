@@ -29,7 +29,6 @@ _player_group: dict[int, int] = {}
 class Seat:
     user_id: int
     nickname: str
-    is_host: bool
     wizard: Wizard = field(default_factory=Wizard)
     army: CompiledArmy | None = None
 
@@ -41,7 +40,6 @@ class Seat:
 @dataclass
 class LineupRoom:
     group_id: int
-    host_id: int
     tournament: bool
     age: int
     budget: int
@@ -109,14 +107,14 @@ def _nickname(event: GroupMessageEvent) -> str:
 async def open_lineup_room(
     *,
     group_id: int,
-    host_id: int,
+    user_id: int,
     nickname: str,
     tournament: bool,
     age: int,
     budget: int,
     field_length: float,
 ) -> str | None:
-    """Open a room and whisper the host. Returns an error string, or None."""
+    """Open a room and whisper the opener. Returns an error string, or None."""
     if age not in {3, 4, 5}:
         return "⚠️ 配兵只开放 3～5 时代。先 @我 斗蛐蛐 3时代 再开房"
     if game_base.get_runner_by_group(group_id) is not None or has_lineup_room(group_id):
@@ -125,23 +123,22 @@ async def open_lineup_room(
 
     if has_pending(group_id):
         return "⚠️ 本群正在选王中王主题，先 @我 结束"
-    if host_id in _player_group:
+    if user_id in _player_group:
         return "⚠️ 你已经在另一场配兵里"
     room = LineupRoom(
         group_id=group_id,
-        host_id=host_id,
         tournament=tournament,
         age=age,
         budget=budget,
         field_length=field_length,
-        seats=[Seat(user_id=host_id, nickname=nickname, is_host=True)],
+        seats=[Seat(user_id=user_id, nickname=nickname)],
     )
     try:
-        await session.whisper(host_id, opening_prompt())
+        await session.whisper(user_id, opening_prompt())
     except WhisperFailedError:
         return "⚠️ 请先加机器人为好友，配兵在私聊里进行"
     _rooms[group_id] = room
-    _player_group[host_id] = group_id
+    _player_group[user_id] = group_id
     await session.broadcast(group_id, format_room(room))
     return None
 
@@ -164,7 +161,6 @@ async def _join(event: GroupMessageEvent) -> str:
     room.seats.append(Seat(
         user_id=user_id,
         nickname=_nickname(event),
-        is_host=False,
     ))
     _player_group[user_id] = room.group_id
     return format_room(room)
@@ -178,11 +174,11 @@ async def _leave(event: GroupMessageEvent) -> str:
     seat = next((item for item in room.seats if item.user_id == user_id), None)
     if seat is None:
         return "你不在这个房间里"
-    if seat.is_host:
-        cancel_lineup_room(room.group_id)
-        return "房主已离开，配兵房间解散"
     room.seats.remove(seat)
     _player_group.pop(user_id, None)
+    if not room.seats:
+        cancel_lineup_room(room.group_id)
+        return "配兵房间已解散"
     if _humans_ready(room):
         return f"{format_room(room)}\n\n{format_all_ready(room)}"
     return format_room(room)
@@ -194,8 +190,6 @@ async def _start(event: GroupMessageEvent) -> str | None:
     if room is None:
         return "⚠️ 本群没有配兵房间"
     user_id = int(event.user_id)
-    if user_id != room.host_id:
-        return "只有房主可以开始"
     missing = [seat.nickname for seat in room.seats if not seat.ready]
     if missing:
         return "还没配完：" + "、".join(missing)
@@ -218,7 +212,8 @@ async def _start(event: GroupMessageEvent) -> str | None:
         await game_base.create_and_start(
             "aoe3_battle",
             group_id=room.group_id,
-            host_id=room.host_id,
+            # Core keeps host_id as a technical audit field; lineup rooms have no host role.
+            host_id=user_id,
             players=[
                 User(
                     qq_id=seat.user_id,

@@ -422,7 +422,7 @@ async def _handle_lineup_room(
     group_budget: int | None,
     group_field_length: float | None,
 ) -> None:
-    """Open a 配兵 signup room. Battle starts later, when the host says 开始."""
+    """Open a 配兵 signup room. Battle starts later when any member says 开始."""
     from src.plugins.games.aoe3_battle.game import BUDGET_DEFAULT
     from src.plugins.games.aoe3_battle.lineup_room import open_lineup_room
     from src.plugins.games.aoe3_battle.simulator2d.constants import FIELD_LENGTH
@@ -448,7 +448,7 @@ async def _handle_lineup_room(
     )
     error = await open_lineup_room(
         group_id=int(event.group_id),
-        host_id=int(event.user_id),
+        user_id=int(event.user_id),
         nickname=nickname,
         tournament=tournament,
         age=resolved_age,
