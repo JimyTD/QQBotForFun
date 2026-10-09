@@ -253,6 +253,7 @@ def main() -> None:
     base_data = json.loads(BASE_UPGRADES_PATH.read_text(encoding="utf-8"))["units"]
 
     output: dict[str, dict] = {}
+    revolution_only = base_parser._revolution_only_techs(blocks)
     for civ_id in civ_data["_meta"]["curated_civs"]:
         civ = civ_data["civs"][civ_id]
         available = set(civ.get("unique_techs", ()))
@@ -268,10 +269,15 @@ def main() -> None:
                     continue
                 if base_parser.is_excluded(tech_name, base_parser.tech_flags(block)):
                     continue
+                # 只有革命能开放的档不是时代升级。
+                if tech_name in revolution_only:
+                    continue
                 if not _is_unit_upgrade_candidate(tech_name, block):
                     continue
                 age = resolver.resolve(tech_name)
                 if age not in candidates:
+                    continue
+                if not resolver.age_reachable(tech_name):
                     continue
                 closure = _tech_closure(tech_name, blocks)
                 closure_blocks = [blocks[name] for name in closure]

@@ -1,6 +1,6 @@
 {
   "_meta": {
-    "generated_at": "2026-10-09T10:15:21.828146+00:00",
+    "generated_at": "2026-10-09T10:49:02.047882+00:00",
     "source": "data/aoe3/raw/techtreey.xml",
     "doc": "docs/games/aoe3-battle.md §3.10",
     "rule": "units[id][age].techs / category[tag][age] = 该时代已生效的累计科技 id；效果在运行时按统一算符结算，同一科技只生效一次",

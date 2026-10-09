@@ -98,6 +98,13 @@ def test_council_line_preferred_over_revolution_only_tier(repo):
     assert [apply_upgrades(hetman, age).hp for age in (3, 4, 5)] == [750, 1250, 2750]
 
 
+def test_revolution_only_tier_is_never_an_age_upgrade(data):
+    """迫击炮战船：哥伦比亚海军（革命卡）才开放的帝国档不进时代升级，4 时代只有舰载榴弹炮。"""
+    monitor = data["units"]["monitor"]
+    assert monitor["4"]["techs"] == ["ShipHowitzers"]
+    assert "DEImperialMonitors" not in monitor["5"]["techs"]
+
+
 def test_age_upgrade_is_settled_once_per_tech(repo):
     musk = repo.get_by_id("musketeer")
     ids = age_tech_ids(musk, 5)

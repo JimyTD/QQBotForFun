@@ -164,6 +164,23 @@ def test_runtime_ops_keep_their_own_targets():
     assert op["targets"] == [{"type": "ProtoUnit", "value": "deRanger"}]
 
 
+def test_unlocks_follow_techstatus_active_and_obtainable_shadows():
+    """active 直接给（含主城卡免费升级）；obtainable 只开放研究，不生效；
+    影子科技靠前置自动生效时，原始状态必须是可获得。"""
+    from plugins.aoe3.tech_links import expand
+
+    assert expand(["IncendiaryGrenades"], age=3) == ["IncendiaryGrenades", "IncendiaryGrenadesShadow"]
+    assert expand(["DEHCAkicita"], age=3) == ["DEHCAkicita", "DEHCAkicitaShadow"]
+    assert expand(["HCShipWingedHussars"], age=4) == [
+        "HCShipWingedHussars", "VeteranWingedHussars", "GuardWingedHussars",
+    ]
+    # 半兄弟（革命卡）开放研究的影子科技，原始不可获得：古老的士兵战斗力不会带出它。
+    assert expand(["DEHCArchaicCombat"], age=4) == ["DEHCArchaicCombat"]
+    # 时代前置：罗马战术的影子要帝王时代。
+    assert expand(["DEHCRomanTactics"], age=4) == ["DEHCRomanTactics"]
+    assert expand(["DEHCRomanTactics"], age=5) == ["DEHCRomanTactics", "DERomanTacticsShadow"]
+
+
 def test_untyped_armor_adds_all_three_armors(repo):
     """华卡纳：数据只写护甲 +0.05 作用步兵、轻步兵，三种伤害类型的护甲都加。"""
     tech, units = _resolve(repo, "deBigWarHutHualcana", "DEInca", ("deslinger",), age=3)

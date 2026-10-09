@@ -3,9 +3,10 @@
 数据：``seeds/aoe3/tech_links.json``（由 ``scripts/crawler/aoe3_civ_war_tech_pool.py``
 从 ``techtreey.xml`` 生成）。规则见 docs/wip/aoe3-tech-effects.md：
 
-- ``TechStatus active`` 激活的科技立即生效（影子或普通科技都算）。
-- 前置条件全部是已生效科技的影子科技自动生效。本局判定不了的前置
-  （单位数量、统计值等）视为不满足。
+- ``TechStatus active`` 激活的科技立即生效（影子或普通科技都算；主城卡的免费升级即此类）。
+  ``obtainable``（开放研究、开放造兵）不生效。
+- 影子科技在前置条件满足、且原始状态就是可获得（``OBTAINABLE``）时自动生效。原始不可获得、
+  只能靠别的科技开放的不生效。本局判定不了的前置（单位数量、统计值等）视为不满足。
 - 时代前置按本局时代判定。
 - 同一个科技只进一次。
 """
@@ -53,7 +54,7 @@ def _shadows_waiting_on() -> dict[str, list[str]]:
     if _shadow_by_prereq is None:
         index: dict[str, list[str]] = {}
         for name, row in _links().items():
-            if not row.get("shadow") or row.get("other_prereq"):
+            if not row.get("shadow") or row.get("other_prereq") or not row.get("obtainable"):
                 continue
             requires = row.get("requires") or ()
             if all(prereq in AGE_TECHS for prereq in requires):

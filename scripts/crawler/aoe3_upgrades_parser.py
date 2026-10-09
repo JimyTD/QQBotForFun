@@ -583,8 +583,11 @@ def build_unit_upgrades(
     for tid, by_age in per_id.items():
         picked_tech: dict[int, str] = {}
         for age, cands in by_age.items():
-            # 只能由革命科技开放的档排在普通档之后（大元帅：议会线优先于革命线）。
-            cands.sort(key=lambda c: (c[3] in revolution_only, c[0], -(c[1] + c[2])))
+            # 只能由革命科技开放的档不是时代升级（迫击炮战船的哥伦比亚海军档、大元帅的革命档）。
+            cands = [c for c in cands if c[3] not in revolution_only]
+            if not cands:
+                continue
+            cands.sort(key=lambda c: (c[0], -(c[1] + c[2])))
             picked_tech[age] = cands[0][3]
         base: dict[str, dict] = {}
         cumulative: list[str] = []
