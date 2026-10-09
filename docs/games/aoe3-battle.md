@@ -1403,7 +1403,7 @@ protoy 伤害包 + tactics 定义取出，不跨动作拼装。每个阵型各�
 
 ##### 落地方式：时代升级 = 科技 id 列表 + 统一结算（2026-10-09 起）
 
-生成器 `aoe3_upgrades_parser.py` / `aoe3_civ_upgrades_parser.py` 只记录每个兵、每个时代**已生效的科技 id**（累计），不预合并倍率。运行时 `apply_upgrades(unit, age, civ_id=None, tech_ids=())` 把这些科技、调用方给的科技（国战/配兵选中的），以及它们解锁的科技（`TechStatus active`、前置全部满足的影子科技，见 `src/plugins/aoe3/tech_links.py`）合并去重，再用 `src/plugins/aoe3/tech_effects.py` 一次结算：
+生成器 `aoe3_upgrades_parser.py` / `aoe3_civ_upgrades_parser.py` 只记录每个兵、每个时代**已生效的科技 id**（累计），不预合并倍率。运行时 `apply_upgrades(unit, age, civ_id=None, tech_ids=())` 把这些科技、调用方给的科技（国战/配兵选中的），以及它们解锁的科技（`TechStatus active`、前置全部满足且原始状态为可获得的影子科技；`obtainable` 开放研究/造兵不生效，见 `src/plugins/aoe3/tech_links.py`）合并去重，再用 `src/plugins/aoe3/tech_effects.py` 一次结算：
 
 - **同一个科技只生效一次；不同科技全部叠加，没有取大。**
 - 统一算符（所有同类数据一致）：`BasePercent` 按基础值、各项增量相加；`Percent` 按当前值累乘；`Absolute` 相加；`Assign`/`Override` 覆盖。
