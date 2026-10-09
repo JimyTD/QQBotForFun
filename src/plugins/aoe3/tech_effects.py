@@ -328,16 +328,11 @@ def settle_unit(unit: Unit, ops: Sequence[Mapping], base: Unit | None = None) ->
     changes: dict = {}
 
     unit_stacks: dict = {}
-    action_stacks: dict[str, dict] = {}
     actions, origin_actions = _switch_actions(unit, base, own)
+    action_ops = [op for op in own if op["stat"] in _ACTION_STATS]
     for op in own:
         stat = op["stat"]
-        if stat in {"action_enable", "initial_tactic"}:
-            continue
-        if stat in _ACTION_STATS:
-            key = ("mult", op["vs"]) if stat == "mult" else stat
-            for name in _op_action_names(op, actions):
-                action_stacks.setdefault(name, {}).setdefault(key, Stack()).push(op["kind"], op["value"])
+        if stat in {"action_enable", "initial_tactic"} or stat in _ACTION_STATS:
             continue
         if stat == "armor":
             kinds = _ARMOR_FIELDS if op["armor_kind"] == "all" else {op["armor_kind"]: None}
@@ -369,27 +364,40 @@ def settle_unit(unit: Unit, ops: Sequence[Mapping], base: Unit | None = None) ->
     if cost != unit.cost:
         changes["cost"] = cost
 
-    origin_by = {a.name: a for a in origin_actions}
-    settled = [
-        _settle_action(a, origin_by.get(a.name, a), action_stacks[a.name])
-        if a.name in action_stacks else a
-        for a in actions
-    ]
+    settled = _settle_actions(actions, origin_actions, action_ops)
     if settled != list(unit.attack_actions):
         changes["attack_actions"] = settled
     # 其余阵型的攻击列表同样吃到数值效果（开关与换阵型只作用于当前列表）。
-    if unit.attack_actions_by_tactic and action_stacks:
-        by_tactic = {}
-        for tactic, tactic_actions in unit.attack_actions_by_tactic.items():
-            base_by = {a.name: a for a in base.attack_actions_by_tactic.get(tactic, tactic_actions)}
-            by_tactic[tactic] = [
-                _settle_action(a, base_by.get(a.name, a), action_stacks[a.name])
-                if a.name in action_stacks else a
-                for a in tactic_actions
-            ]
+    if unit.attack_actions_by_tactic and action_ops:
+        by_tactic = {
+            tactic: _settle_actions(
+                tactic_actions,
+                base.attack_actions_by_tactic.get(tactic, tactic_actions),
+                action_ops,
+            )
+            for tactic, tactic_actions in unit.attack_actions_by_tactic.items()
+        }
         if by_tactic != unit.attack_actions_by_tactic:
             changes["attack_actions_by_tactic"] = by_tactic
     return dataclasses.replace(unit, **changes) if changes else unit
+
+
+def _settle_actions(
+    actions: Sequence[AttackAction],
+    origin_actions: Sequence[AttackAction],
+    ops: Sequence[Mapping],
+) -> list[AttackAction]:
+    """按攻击名把 op 合并到这一份攻击列表上，再逐条结算。"""
+    stacks: dict[str, dict] = {}
+    for op in ops:
+        key = ("mult", op["vs"]) if op["stat"] == "mult" else op["stat"]
+        for name in _op_action_names(op, actions):
+            stacks.setdefault(name, {}).setdefault(key, Stack()).push(op["kind"], op["value"])
+    origin_by = {a.name: a for a in origin_actions}
+    return [
+        _settle_action(a, origin_by.get(a.name, a), stacks[a.name]) if a.name in stacks else a
+        for a in actions
+    ]
 
 
 def _normalized(op: Mapping) -> Mapping:

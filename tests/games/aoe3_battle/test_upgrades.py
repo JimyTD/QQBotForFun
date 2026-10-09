@@ -1,10 +1,7 @@
-"""单位改良（科技加成）数据与运行时校验。
+"""时代升级：科技 id 列表 + 统一结算。
 
-对应 docs/games/aoe3-battle.md §3.10 的「正确性保证」：
-  - 标准/炮兵/类别曲线断言
-  - 外部 oracle：帝王火枪 HP = 基础 ×2 = 300
-  - 上界（抓重复计）
-  - 运行时 apply_upgrades 出副本、不改原对象
+对应 docs/games/aoe3-battle.md §3.10：同一科技只生效一次，不同科技按统一算符全部叠加，
+没有取大。
 """
 from __future__ import annotations
 
@@ -14,7 +11,7 @@ from pathlib import Path
 import pytest
 
 from plugins.aoe3.repository import UnitRepo
-from plugins.aoe3.upgrades import apply_upgrades, get_multipliers
+from plugins.aoe3.upgrades import age_tech_ids, apply_upgrades
 
 _DATA_PATH = (
     Path(__file__).resolve().parents[3] / "seeds" / "aoe3" / "unit_upgrades.json"
@@ -27,11 +24,7 @@ def _action(unit, name):
 
 def _max_ranged_damage(unit):
     return max(
-        (
-            a.damage
-            for a in unit.attack_actions
-            if a.damage_type != "Hand" and a.hits_soldiers
-        ),
+        (a.damage for a in unit.attack_actions if a.damage_type != "Hand" and a.hits_soldiers),
         default=0.0,
     )
 
@@ -50,71 +43,82 @@ def repo():
     return UnitRepo.get()
 
 
+def _hp_ratio(repo, uid, age, civ_id=None):
+    unit = repo.get_by_id(uid)
+    return round(apply_upgrades(unit, age, civ_id=civ_id).hp / unit.hp, 4)
+
+
 @pytest.mark.parametrize("uid", ["musketeer", "skirmisher", "pikeman", "hussar",
                                  "crossbowman", "longbowman"])
-def test_standard_curve(data, uid):
+def test_standard_curve(repo, uid):
     """标准步骑（含散兵）= 100/120/150/200。"""
-    e = data["units"][uid]
-    assert e["3"]["hp_mult"] == 1.2
-    assert e["4"]["hp_mult"] == 1.5
-    assert e["5"]["hp_mult"] == 2.0
-    assert e["5"]["damage_mult"] == 2.0
+    assert [_hp_ratio(repo, uid, age) for age in (2, 3, 4, 5)] == [1.0, 1.2, 1.5, 2.0]
 
 
-def test_artillery_curve(data):
+def test_artillery_curve(repo):
     """炮兵 = 100/100/125/175（无精锐/近卫）。"""
-    fal = data["units"]["falconet"]
-    assert "3" not in fal
-    assert fal["4"]["hp_mult"] == 1.25
-    assert fal["5"]["hp_mult"] == 1.75
+    assert [_hp_ratio(repo, "falconet", age) for age in (2, 3, 4, 5)] == [1.0, 1.0, 1.25, 1.75]
 
 
-def test_category_curves(data):
-    cat = data["category"]
-    assert cat["AbstractOutlaw"]["5"]["hp_mult"] == 2.0
-    assert cat["Mercenary"]["5"]["hp_mult"] == 1.5
-    assert cat["AbstractNativeWarrior"]["5"]["hp_mult"] == 1.5
+def test_seed_records_tech_ids_not_multipliers(data):
+    entry = data["units"]["musketeer"]["5"]
+    assert entry["techs"] == ["VeteranMusketeers", "GuardMusketeers", "ImperialMusketeers"]
+    assert "hp_mult" not in entry
+    assert data["category"]["AbstractNativeWarrior"]["5"]
 
 
-def test_imperial_musketeer_hp_oracle(repo, data):
+def test_imperial_musketeer_hp_oracle(repo):
     """外部 oracle（aoe3homecity）：帝王火枪 HP = 300。"""
+    assert apply_upgrades(repo.get_by_id("musketeer"), 5).hp == 300
+
+
+def test_native_unit_line_and_legendary_natives_both_apply(repo):
+    """阿坎安科比亚：精英 +25%、风云 +35%、传奇土著 +50% 全部叠加 = ×2.1（不取大）。"""
+    assert [_hp_ratio(repo, "denatakanmusketeer", age) for age in (3, 4, 5)] == [1.25, 1.6, 2.1]
+
+
+def test_merc_guard_tier_and_contractor_both_apply(repo):
+    """马穆鲁克：护卫 +30%（4 时代）+ 佣兵承包商 +50%（5 时代）= ×1.8。"""
+    assert [_hp_ratio(repo, "mercmameluke", age) for age in (4, 5)] == [1.3, 1.8]
+
+
+def test_home_city_card_shadow_is_not_an_age_upgrade(repo):
+    """瑞士长矛兵的 +20% 来自荷兰主城卡影子档，不随时代生效；5 时代只有佣兵承包商。"""
+    assert [_hp_ratio(repo, "mercswisspikeman", age) for age in (3, 4, 5)] == [1.0, 1.0, 1.5]
+
+
+def test_percent_relativity_age_upgrade_applies(repo):
+    """老练燧发枪手写的是 Percent 1.2（按当前值乘），旧版只认 BasePercent 而漏掉。"""
+    assert _hp_ratio(repo, "minuteman", 3) == 1.2
+
+
+def test_council_line_preferred_over_revolution_only_tier(repo):
+    """大元帅：议会线（+250/+500/+1500），不选只有革命能开放的 +1300 档。"""
+    hetman = repo.get_by_id("dehetman")
+    assert [apply_upgrades(hetman, age).hp for age in (3, 4, 5)] == [750, 1250, 2750]
+
+
+def test_age_upgrade_is_settled_once_per_tech(repo):
     musk = repo.get_by_id("musketeer")
-    assert round(musk.hp * data["units"]["musketeer"]["5"]["hp_mult"]) == 300
-
-
-def test_no_double_counting(data):
-    """逐兵 age5 mult 上界，抓重复计（RG 可略高，但不应 > 2.3）。"""
-    for uid, e in data["units"].items():
-        m5 = e.get("5", {}).get("hp_mult", 1.0)
-        assert m5 <= 2.3, f"{uid} age5 hp_mult={m5} 疑似重复计"
-
-
-def test_no_negative_increment(data):
-    """血/攻改良只取正向；不应出现 <1 的 mult（削弱/置换已被过滤）。"""
-    for uid, e in data["units"].items():
-        for age, entry in e.items():
-            for k in ("hp_mult", "damage_mult"):
-                if k in entry:
-                    assert entry[k] >= 1.0, f"{uid} age{age} {k}={entry[k]} 出现削弱"
+    ids = age_tech_ids(musk, 5)
+    assert len(ids) == len(set(ids))
+    assert apply_upgrades(musk, 5, tech_ids=ids) == apply_upgrades(musk, 5)
 
 
 def test_apply_upgrades_returns_copy(repo):
-    """apply_upgrades 出副本，不污染原对象。"""
     musk = repo.get_by_id("musketeer")
     base_hp = musk.hp
     up = apply_upgrades(musk, 5)
     assert up is not musk
     assert up.hp == base_hp * 2
-    assert musk.hp == base_hp  # 原对象不变
+    assert musk.hp == base_hp
     for action in up.attack_actions:
-        base = _action(musk, action.name)
-        assert action.damage == round(base.damage * 2, 2)
+        assert action.damage == round(_action(musk, action.name).damage * 2, 2)
 
 
 def test_damage_upgrade_scales_aoe_cap_with_attack(repo):
     falconet = repo.get_by_id("falconet")
     upgraded = apply_upgrades(falconet, 5)
-
     base = _action(falconet, "CannonAttack")
     after = _action(upgraded, "CannonAttack")
     ratio = after.damage / base.damage
@@ -122,19 +126,13 @@ def test_damage_upgrade_scales_aoe_cap_with_attack(repo):
 
 
 def test_apply_upgrades_renames_unit(repo):
-    """时代升级后兵种改名（SetName）。"""
     musk = repo.get_by_id("musketeer")
-    assert musk.name == "火枪兵"
-    up3 = apply_upgrades(musk, 3)
-    assert up3.name == "老练火枪兵"
-    up4 = apply_upgrades(musk, 4)
-    assert up4.name == "护卫火枪兵"
-    up5 = apply_upgrades(musk, 5)
-    assert up5.name == "帝国火枪兵"
+    assert [apply_upgrades(musk, age).name for age in (3, 4, 5)] == [
+        "老练火枪兵", "护卫火枪兵", "帝国火枪兵",
+    ]
 
 
 def test_apply_age2_noop(repo):
-    """2 时代标准兵无军改，原样返回。"""
     musk = repo.get_by_id("musketeer")
     assert apply_upgrades(musk, 2) is musk
 
@@ -178,8 +176,7 @@ def test_shared_artillery_gets_its_own_civilization_variant(repo):
 
 def test_portuguese_ordinance_pikeman_applies_cost_discount(repo):
     pikeman = repo.get_by_id("pikeman")
-    upgraded = apply_upgrades(pikeman, 4, civ_id="Portuguese")
-    assert upgraded.cost == {"food": 30, "wood": 30}
+    assert apply_upgrades(pikeman, 4, civ_id="Portuguese").cost == {"food": 30, "wood": 30}
 
 
 def test_polish_scytheman_applies_rof_delta(repo):
@@ -189,120 +186,41 @@ def test_polish_scytheman_applies_rof_delta(repo):
 
 
 def test_outlaw_via_category(repo):
-    """亡命徒走类别科技（无逐兵链）。"""
-    # 找一个带 AbstractOutlaw 标签的单位
-    outlaw = next(
-        (u for u in repo.all_units if "AbstractOutlaw" in u.type and u.hp > 0),
-        None,
-    )
-    assert outlaw is not None
-    hp_mult, dmg_mult, source = get_multipliers(outlaw, 5)
-    assert source == "AbstractOutlaw"
-    assert hp_mult == 2.0
+    assert [_hp_ratio(repo, "deallegiancebarbarymarksman", age) for age in (3, 4, 5)] == [
+        1.2, 1.5, 2.0,
+    ]
 
 
-# ---------------- 逐兵 / 类别 max 去重 ----------------
+# ---------------- 射程 / 速度 / 倍率 ----------------
 
-def test_merc_category_not_suppressed_by_small_unit_tech(repo):
-    """瑞士长枪有荷兰专属 +10% 逐兵小档，5 时代仍应吃到佣兵类别 +50%（max 去重）。"""
-    swiss = repo.get_by_id("mercswisspikeman")
-    if swiss is None:
-        pytest.skip("无 mercswisspikeman")
-    hp_mult, _, source = get_multipliers(swiss, 5)
-    assert hp_mult == 1.5 and source == "Mercenary"
-    # 低时代保留它自己更大的逐兵档（2026-09 游戏更新后该档为 +20%）
-    hp3, _, src3 = get_multipliers(swiss, 3)
-    assert hp3 == 1.2 and src3 == "unit"
-
-
-# ---------------- 整包扩展：range / aoe / rof / 速度 / 护甲 / 倍率 ----------------
-
-def test_range_integral_package(data):
-    """阿布枪兵射程随 tier 链整包累加：+1/+2/+4（Veteran/Guard/Imperial）。"""
-    e = data["units"]["abusgun"]
-    assert e["3"]["action_range_add"]["VolleyRangedAttack"] == 1.0
-    assert e["4"]["action_range_add"]["VolleyRangedAttack"] == 2.0
-    assert e["5"]["action_range_add"]["VolleyRangedAttack"] == 4.0
-
-
-def test_apply_range_and_only_representative_action(repo):
-    """射程按动作名加到被点名的每一条；没点名的动作不变。"""
+def test_range_by_action_name(repo):
+    """奥斯曼枪手射程随升级线 +1/+2/+4，打到三种远程攻击，近战不变。"""
     abus = repo.get_by_id("abusgun")
     up = apply_upgrades(abus, 5)
-    gun = next(action for action in abus.attack_actions if action.name == "VolleyRangedAttack")
-    hand = next(action for action in abus.attack_actions if action.name == "VolleyHandAttack")
-    up_gun = next(action for action in up.attack_actions if action.name == "VolleyRangedAttack")
-    up_hand = next(action for action in up.attack_actions if action.name == "VolleyHandAttack")
-    assert up_gun.range_max == round(gun.range_max + 4.0, 2)
-    assert up_hand.range_max == hand.range_max
+    gun = _action(abus, "VolleyRangedAttack")
+    assert _action(up, "VolleyRangedAttack").range_max == round(gun.range_max + 4.0, 2)
+    assert _action(up, "VolleyHandAttack").range_max == _action(abus, "VolleyHandAttack").range_max
+    defend = next(a for a in up.attack_actions_by_tactic["Defend"] if a.name == "DefendRangedAttack")
     base_defend = next(
-        action for action in abus.attack_actions_by_tactic["Defend"]
-        if action.name == "DefendRangedAttack"
-    )
-    defend = next(
-        action for action in up.attack_actions_by_tactic["Defend"]
-        if action.name == "DefendRangedAttack"
+        a for a in abus.attack_actions_by_tactic["Defend"] if a.name == "DefendRangedAttack"
     )
     assert defend.range_max == round(base_defend.range_max + 4.0, 2)
 
 
-def test_dirty_value_capped(data, repo):
-    """脏数据护栏：DEEliteSlingersShadow 给 Volley +147 射程被丢弃，
-    投石手 3 时代射程不变（只保留 Champion/Legendary 的 +1）。"""
-    e = data["units"]["deslinger"]
-    # age3 不应出现 +147 的射程
-    assert e.get("3", {}).get("action_range_add", {}).get("VolleyRangedAttack", 0) < 10
-    sl = repo.get_by_id("deslinger")
-    up3 = apply_upgrades(sl, 3)
-    for action in up3.attack_actions:
-        base = _action(sl, action.name)
-        assert action.range_max == base.range_max  # 3 时代射程不变
+def test_slinger_elite_range_follows_raw_data(repo):
+    """精锐投石索兵原始数据是射程 +8（旧版当成 +147 脏数据丢弃）。"""
+    slinger = repo.get_by_id("deslinger")
+    up = apply_upgrades(slinger, 3)
+    before = _action(slinger, "VolleyRangedAttack").range_max
+    assert _action(up, "VolleyRangedAttack").range_max == before + 8
 
 
-def test_speed_integral(repo, data):
-    """皮革炮速度随 tier 链整包提升（+0.5/+1.0）。"""
-    e = data["units"]["deleathercannon"]
-    assert e["4"]["speed_add"] == 0.5
-    assert e["5"]["speed_add"] == 1.0
+def test_speed_integral(repo):
     cannon = repo.get_by_id("deleathercannon")
-    up = apply_upgrades(cannon, 5)
-    assert up.speed == round(cannon.speed + 1.0, 3)
+    assert apply_upgrades(cannon, 5).speed == round(cannon.speed + 1.0, 3)
 
 
-def test_mult_add_only_existing_positive(repo):
-    """倍率加成只作用于已存在的正倍率；不新建、不碰惩罚倍率。"""
-    sl = repo.get_by_id("deslinger")
-    up = apply_upgrades(sl, 4)
-    volley = _action(up, "VolleyRangedAttack")
-    art = next(m.value for m in volley.multipliers if m.vs == "AbstractArtillery")
-    assert art == 2.5  # 基础 2.0 + 0.5
-    # 惩罚倍率（<1）保持不变
-    for m in volley.multipliers:
-        if m.vs in ("AbstractCavalry", "AbstractLightInfantry"):
-            assert m.value < 1.0
-
-
-def test_no_upgrade_induced_outliers(repo):
-    """升级不应把任何攻击单位的数据推成离谱值（隔离基础脏数据，仅看增量）。"""
-    for u in repo.all_units:
-        if not any(
-            a.hits_soldiers and a.damage > 0 and a.range_max > 0
-            for a in u.attack_actions
-        ):
-            continue
-        base_action = {a.name: a for a in u.attack_actions}
-        for age in (3, 4, 5):
-            up = apply_upgrades(u, age)
-            assert up.speed <= max(12, u.speed * 1.8 + 0.01), f"{u.id} age{age} 速度暴涨"
-            assert up.armor_ranged <= 0.95 or up.armor_ranged == u.armor_ranged
-            for action in up.attack_actions:
-                base = base_action.get(action.name)
-                if base is None:
-                    continue
-                if not action.hits_soldiers:
-                    continue
-                assert action.range_max - base.range_max <= 8.5, f"{u.id} age{age} 射程暴涨"
-                base_mr = {m.vs: m.value for m in base.multipliers}
-                for m in action.multipliers:
-                    if abs(m.value - base_mr.get(m.vs, m.value)) > 1e-6:
-                        assert m.value <= 7, f"{u.id} age{age} 倍率 {m} 被升级推爆"
+def test_mult_add_on_existing_bonus(repo):
+    slinger = repo.get_by_id("deslinger")
+    volley = _action(apply_upgrades(slinger, 4), "VolleyRangedAttack")
+    assert next(m.value for m in volley.multipliers if m.vs == "AbstractArtillery") == 2.5

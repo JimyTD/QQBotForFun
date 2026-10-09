@@ -416,6 +416,35 @@ class AgeResolver:
         self._memo[name] = max(sub) if sub else None
         return self._memo[name]
 
+    def age_reachable(self, name: str, _seen: frozenset[str] = frozenset()) -> bool:
+        """到了时代就能拿到：每个前置都是时代科技，或本身也是这样的升级档。
+
+        需要先研究某个别的科技才触发的（如波兰议会选项 ``DESejmHetman1``）不算时代升级。
+        """
+        block = self.blocks.get(name)
+        if block is None or name in _seen:
+            return False
+        prereqs = tech_prereq_status(block)
+        if not prereqs:
+            return True
+        results = [self._prereq_age_reachable(prereq, _seen | {name}) for prereq in prereqs]
+        # OrPrereqs：任一前置满足即可（如“工业时代 或 某革命”）。
+        if "OrPrereqs" in tech_flags(block):
+            return any(results)
+        return all(results)
+
+    def _prereq_age_reachable(self, prereq: str, seen: frozenset[str]) -> bool:
+        if prereq in AGE_STATUS:
+            return True
+        block = self.blocks.get(prereq)
+        if block is None:
+            return False
+        flags = tech_flags(block)
+        # 时代闸门影子（如 DEMilitaryIndustrialAgeEnable：工业时代 或 某革命）也算时代可达。
+        if not (is_candidate_flags(flags, allow_age_upgrade=False) or "Shadow" in flags):
+            return False
+        return self.age_reachable(prereq, seen)
+
 
 def is_excluded(name: str, flags: set[str]) -> bool:
     """排除主城卡、革命、文明专属。"""
@@ -442,6 +471,28 @@ def is_candidate_flags(flags: set[str], *, allow_age_upgrade: bool) -> bool:
     if allow_age_upgrade and "AgeUpgrade" in flags:
         return True
     return False
+
+
+def _is_revolution(name: str, flags: set[str]) -> bool:
+    low = name.lower()
+    return "RevoltTech" in flags or low.startswith(("rev", "derev", "dehcrev", "derevolution"))
+
+
+def _revolution_only_techs(blocks: dict[str, str]) -> set[str]:
+    """只有革命科技会让它变得可得的科技（TechStatus active/obtainable 的来源全是革命）。"""
+    sources: dict[str, set[str]] = {}
+    for name, block in blocks.items():
+        for match in re.finditer(
+            r'<effect\s+type="TechStatus"\s+status="(active|obtainable)"[^>]*>([^<]+)</effect>',
+            block,
+            re.IGNORECASE,
+        ):
+            sources.setdefault(match.group(2).strip(), set()).add(name)
+    return {
+        tech
+        for tech, makers in sources.items()
+        if makers and all(_is_revolution(m, tech_flags(blocks.get(m, ""))) for m in makers)
+    }
 
 
 # 逐时代选链优先级：通用线（Veteran/Guard/Imperial 前缀）优于 RG/其他
@@ -483,6 +534,7 @@ def build_unit_upgrades(
         stringtable = {}
     civ_specific_techs = civ_specific_techs or set()
     shared_unit_ids = shared_unit_ids or set()
+    revolution_only = _revolution_only_techs(blocks)
     # 收集：id -> age -> list[(line_priority, hp_inc, dmg_inc, tech_name, setname_proto)]
     # setname_proto: SetName 查找时需要用原始大小写 proto 名
     per_id: dict[str, dict[int, list]] = {}
@@ -497,6 +549,11 @@ def build_unit_upgrades(
         age = resolver.resolve(name)
         if age is None or age not in (2, 3, 4, 5):
             continue
+        if not resolver.age_reachable(name):
+            continue
+        # 前置里要求某个文明专属科技（如帝国红衫军要求红衫军），共享单位的通用线不能用它。
+        if any(prereq in civ_specific_techs for prereq in tech_prereq_status(block)):
+            civ_specific_techs = civ_specific_techs | {name}
         targets = {t for _, t in iter_effects(block) if t}
         for tgt in targets:
             tid = tgt.lower()
@@ -520,19 +577,20 @@ def build_unit_upgrades(
                         (_line_priority(name), hp_inc or 0.0, dmg_inc or 0.0, name, tgt)
                     )
 
-    # 逐时代选一条：通用线优先，其次增量大者
+    # 逐时代选一条：同一时代的多条候选是不同文明的替代升级线（通用护卫线、皇家卫队…），
+    # 无文明时选通用线。输出累计科技 id；效果由运行时按统一算符结算。
     result: dict[str, dict] = {}
     for tid, by_age in per_id.items():
-        picks: dict[int, tuple[float, float]] = {}
         picked_tech: dict[int, str] = {}
         for age, cands in by_age.items():
-            cands.sort(key=lambda c: (c[0], -(c[1] + c[2])))
-            picks[age] = (cands[0][1], cands[0][2])
+            # 只能由革命科技开放的档排在普通档之后（大元帅：议会线优先于革命线）。
+            cands.sort(key=lambda c: (c[3] in revolution_only, c[0], -(c[1] + c[2])))
             picked_tech[age] = cands[0][3]
-        base = _accumulate(picks)
-        extras = _accumulate_extras(picked_tech, blocks, units_by_id[tid])
-        for age_str, ex in extras.items():
-            base.setdefault(age_str, {}).update(ex)
+        base: dict[str, dict] = {}
+        cumulative: list[str] = []
+        for age in sorted(picked_tech):
+            cumulative.append(picked_tech[age])
+            base[str(age)] = {"techs": list(cumulative)}
         # SetName: 遍历该时代所有候选科技，取含基础名的最短名（通用线最短）
         base_zh = units_by_id[tid].get("name", "")
         for age in sorted(by_age):
@@ -558,7 +616,7 @@ def build_unit_upgrades(
 
 
 def build_category_upgrades(blocks, resolver):
-    """返回 {tag: {age: {hp_mult, damage_mult}}}（cumulative），按标签匹配。"""
+    """返回 {tag: {age: [累计科技 id]}}，按标签匹配。"""
     out: dict[str, dict] = {}
     for tag in CATEGORY_TAGS:
         tag_lower = tag.lower()
@@ -583,12 +641,17 @@ def build_category_upgrades(blocks, resolver):
             by_age.setdefault(age, []).append((hp_inc or 0.0, dmg_inc or 0.0, name))
         if not by_age:
             continue
-        picks: dict[int, tuple[float, float]] = {}
+        picked: dict[int, str] = {}
         for age, cands in by_age.items():
-            # 同档取增量最大（通用线/Shadow 近卫 > 和平者 +10）
+            # 同档是不同建筑/文明的替代科技，无文明时选增量最大的那条
+            # （通用线/Shadow 近卫 > 和平者 +10）。
             cands.sort(key=lambda c: -(c[0] + c[1]))
-            picks[age] = (cands[0][0], cands[0][1])
-        out[tag] = _accumulate(picks)
+            picked[age] = cands[0][2]
+        cumulative: list[str] = []
+        out[tag] = {}
+        for age in sorted(picked):
+            cumulative.append(picked[age])
+            out[tag][str(age)] = list(cumulative)
     return out
 
 
@@ -685,10 +748,10 @@ def main():
             "generated_at": datetime.now(timezone.utc).isoformat(),
             "source": "data/aoe3/raw/techtreey.xml",
             "doc": "docs/games/aoe3-battle.md §3.10",
-            "fields": ["hp_mult", "damage_mult", "name", "armor_add",
-                       "speed_add", "speed_mult", "speed_set",
-                       "action_range_add", "action_aoe_add",
-                       "action_rof_set", "action_rof_add", "action_mult_add"],
+            "rule": (
+                "units[id][age].techs / category[tag][age] = 该时代已生效的累计科技 id；"
+                "效果在运行时按统一算符结算，同一科技只生效一次"
+            ),
             "age_status": AGE_STATUS,
         },
         "units": dict(sorted(unit_up.items())),

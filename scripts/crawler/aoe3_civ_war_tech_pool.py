@@ -888,6 +888,8 @@ def build_tech_links() -> dict[str, Any]:
             row["requires"] = requires
         if other:
             row["other_prereq"] = True
+        if "OrPrereqs" in flags:
+            row["or_prereqs"] = True
         if shadow:
             row["shadow"] = True
         if (tech.findtext("status") or "").strip().upper() == "OBTAINABLE":

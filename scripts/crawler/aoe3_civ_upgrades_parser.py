@@ -314,50 +314,34 @@ def main() -> None:
                         ),
                     )
 
-            base_age3 = base_data.get(unit_id, {}).get("3", {})
-            state = {
-                "hp_mult": float(base_age3.get("hp_mult", 1.0)),
-                "damage_mult": float(base_age3.get("damage_mult", 1.0)),
-                "armor_add": copy.deepcopy(base_age3.get("armor_add", {})),
-                "action_range_add": copy.deepcopy(base_age3.get("action_range_add", {})),
-                "action_aoe_add": copy.deepcopy(base_age3.get("action_aoe_add", {})),
-                "action_rof_set": copy.deepcopy(base_age3.get("action_rof_set", {})),
-                "action_rof_add": copy.deepcopy(base_age3.get("action_rof_add", {})),
-                "action_mult_add": copy.deepcopy(base_age3.get("action_mult_add", {})),
-                "speed_add": float(base_age3.get("speed_add", 0.0)),
-                "speed_mult": float(base_age3.get("speed_mult", 1.0)),
-                "speed_set": base_age3.get("speed_set"),
-                "base_cost": dict(unit.get("cost", {})),
-                "cost": dict(unit.get("cost", {})),
-                "name": base_age3.get("name"),
-                "techs": [],
-            }
+            # 3 时代沿用通用线；4/5 时代用该文明选中的升级（含它经 TechStatus 激活的全部节点）。
+            # 只记累计科技 id，效果由运行时按统一算符结算，同一科技只算一次。
+            generic = base_data.get(unit_id, {})
+            techs: list[str] = list(generic.get("3", {}).get("techs", ()))
+            name = generic.get("3", {}).get("name")
             unit_result: dict[str, dict] = {}
             for age in (4, 5):
                 stage = selected.get(age)
                 if stage is not None:
-                    # Cost effects are cumulative from the previous stage.
-                    stage = dict(stage)
-                    stage["cost"] = _apply_cost_effects(
-                        state["cost"],
-                        stage["closure"],
-                        blocks,
-                        unit,
-                    )
-                    state["techs"].append(stage["tech"])
-                    _merge_stage(state, stage)
-                elif age == 5:
-                    generic_age5 = base_data.get(unit_id, {}).get("5")
-                    generic_age4 = base_data.get(unit_id, {}).get("4", {})
-                    if generic_age5:
-                        state["hp_mult"] += float(generic_age5.get("hp_mult", 1.0)) - float(
-                            generic_age4.get("hp_mult", 1.0)
-                        )
-                        state["damage_mult"] += float(
-                            generic_age5.get("damage_mult", 1.0)
-                        ) - float(generic_age4.get("damage_mult", 1.0))
-                        state["name"] = generic_age5.get("name", state["name"])
-                unit_result[str(age)] = _entry_from_state(state)
+                    stage_techs = stage["closure"]
+                    stage_name = stage["name"]
+                else:
+                    previous = set(generic.get(str(age - 1), {}).get("techs", ()))
+                    stage_techs = [
+                        tech for tech in generic.get(str(age), {}).get("techs", ())
+                        if tech not in previous
+                    ]
+                    stage_name = generic.get(str(age), {}).get("name")
+                for tech in stage_techs:
+                    if tech not in techs:
+                        techs.append(tech)
+                name = stage_name or name
+                entry: dict = {"techs": list(techs)}
+                if stage is not None:
+                    entry["selected"] = stage["tech"]
+                if name:
+                    entry["name"] = name
+                unit_result[str(age)] = entry
             civ_result[unit_id] = unit_result
         if civ_result:
             output[civ_id] = dict(sorted(civ_result.items()))

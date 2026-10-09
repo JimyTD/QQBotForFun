@@ -1,22 +1,9 @@
 {
   "_meta": {
-    "generated_at": "2026-10-08T12:07:59.091182+00:00",
+    "generated_at": "2026-10-09T10:15:21.828146+00:00",
     "source": "data/aoe3/raw/techtreey.xml",
     "doc": "docs/games/aoe3-battle.md §3.10",
-    "fields": [
-      "hp_mult",
-      "damage_mult",
-      "name",
-      "armor_add",
-      "speed_add",
-      "speed_mult",
-      "speed_set",
-      "action_range_add",
-      "action_aoe_add",
-      "action_rof_set",
-      "action_rof_add",
-      "action_mult_add"
-    ],
+    "rule": "units[id][age].techs / category[tag][age] = 该时代已生效的累计科技 id；效果在运行时按统一算符结算，同一科技只生效一次",
     "age_status": {
       "Colonialize": 2,
       "Fortressize": 3,
@@ -27,4994 +14,5873 @@
   "units": {
     "abusgun": {
       "3": {
-        "hp_mult": 1.2,
-        "damage_mult": 1.2,
-        "action_range_add": {
-          "VolleyRangedAttack": 1.0,
-          "DefendRangedAttack": 1.0,
-          "StaggerRangedAttack": 1.0
-        },
+        "techs": [
+          "VeteranAbusGuns"
+        ],
         "name": "老练奥斯曼枪手"
       },
       "4": {
-        "hp_mult": 1.5,
-        "damage_mult": 1.5,
-        "action_range_add": {
-          "VolleyRangedAttack": 2.0,
-          "DefendRangedAttack": 2.0,
-          "StaggerRangedAttack": 2.0
-        },
+        "techs": [
+          "VeteranAbusGuns",
+          "GuardAbusGuns"
+        ],
         "name": "护卫奥斯曼枪手"
       },
       "5": {
-        "hp_mult": 2.0,
-        "damage_mult": 2.0,
-        "action_range_add": {
-          "VolleyRangedAttack": 4.0,
-          "DefendRangedAttack": 4.0,
-          "StaggerRangedAttack": 4.0
-        },
+        "techs": [
+          "VeteranAbusGuns",
+          "GuardAbusGuns",
+          "ImperialAbusGun"
+        ],
         "name": "帝国奥斯曼枪手"
       }
     },
     "cacadore": {
       "3": {
-        "hp_mult": 1.2,
-        "damage_mult": 1.2,
+        "techs": [
+          "VeteranCacadoresShadow"
+        ],
         "name": "老练葡萄牙长枪兵"
       },
       "4": {
-        "hp_mult": 1.5,
-        "damage_mult": 1.5,
+        "techs": [
+          "VeteranCacadoresShadow",
+          "GuardCacadores"
+        ],
         "name": "护卫葡萄牙长枪兵"
       },
       "5": {
-        "hp_mult": 2.0,
-        "damage_mult": 2.0,
+        "techs": [
+          "VeteranCacadoresShadow",
+          "GuardCacadores",
+          "ImperialCacadores"
+        ],
         "name": "帝国葡萄牙长枪兵"
       }
     },
     "cannon": {
       "5": {
-        "hp_mult": 1.5,
-        "damage_mult": 1.5,
+        "techs": [
+          "ImperialCannon"
+        ],
         "name": "帝国加农炮"
       }
     },
     "canoe": {
       "5": {
-        "hp_mult": 1.25
+        "techs": [
+          "DEImperialMercCaptainsAfricanShadow"
+        ]
       }
     },
     "caravel": {
       "5": {
-        "hp_mult": 1.3,
-        "damage_mult": 1.3
+        "techs": [
+          "DEImperialMercCaptainsAfricanShadow"
+        ]
       }
     },
     "cavalryarcher": {
       "3": {
-        "hp_mult": 1.2,
-        "damage_mult": 1.2,
+        "techs": [
+          "VeteranCavalryArchersShadow"
+        ],
         "name": "老练骑射手"
       },
       "4": {
-        "hp_mult": 1.5,
-        "damage_mult": 1.5,
+        "techs": [
+          "VeteranCavalryArchersShadow",
+          "GuardCavalryArchers"
+        ],
         "name": "护卫骑射手"
       },
       "5": {
-        "hp_mult": 2.0,
-        "damage_mult": 2.0,
+        "techs": [
+          "VeteranCavalryArchersShadow",
+          "GuardCavalryArchers",
+          "ImperialCavalryArchers"
+        ],
         "name": "帝国骑射手"
       }
     },
     "cossack": {
       "3": {
-        "hp_mult": 1.2,
-        "damage_mult": 1.2,
+        "techs": [
+          "VeteranCossacks"
+        ],
         "name": "老练哥萨克骑兵"
       },
       "4": {
-        "hp_mult": 1.5,
-        "damage_mult": 1.5,
+        "techs": [
+          "VeteranCossacks",
+          "GuardCossacks"
+        ],
         "name": "护卫哥萨克骑兵"
       },
       "5": {
-        "hp_mult": 2.0,
-        "damage_mult": 2.0,
+        "techs": [
+          "VeteranCossacks",
+          "GuardCossacks",
+          "ImperialCossack"
+        ],
         "name": "帝国哥萨克骑兵"
       }
     },
     "crossbowman": {
       "3": {
-        "hp_mult": 1.2,
-        "damage_mult": 1.2,
+        "techs": [
+          "VeteranCrossbowmen"
+        ],
         "name": "老练弩手"
       },
       "4": {
-        "hp_mult": 1.5,
-        "damage_mult": 1.5,
+        "techs": [
+          "VeteranCrossbowmen",
+          "GuardCrossbowmen"
+        ],
         "name": "护卫弩手"
       },
       "5": {
-        "hp_mult": 2.0,
-        "damage_mult": 2.0,
+        "techs": [
+          "VeteranCrossbowmen",
+          "GuardCrossbowmen",
+          "ImperialCrossbowmen"
+        ],
         "name": "帝国弩手"
       }
     },
     "cuirassier": {
       "3": {
-        "hp_mult": 1.2,
-        "damage_mult": 1.2,
+        "techs": [
+          "VeteranCuirassierShadow"
+        ],
         "name": "老练胸甲骑兵"
       },
       "4": {
-        "hp_mult": 1.5,
-        "damage_mult": 1.5,
+        "techs": [
+          "VeteranCuirassierShadow",
+          "GuardCuirassiers"
+        ],
         "name": "护卫胸甲骑兵"
       },
       "5": {
-        "hp_mult": 2.0,
-        "damage_mult": 2.0,
+        "techs": [
+          "VeteranCuirassierShadow",
+          "GuardCuirassiers",
+          "ImperialGendarme"
+        ],
         "name": "帝国护卫胸甲骑兵"
       }
     },
     "culverin": {
       "4": {
-        "hp_mult": 1.25,
-        "damage_mult": 1.25,
+        "techs": [
+          "GrapeShot"
+        ],
         "name": "皇家长管炮"
       },
       "5": {
-        "hp_mult": 1.75,
-        "damage_mult": 1.75,
+        "techs": [
+          "GrapeShot",
+          "ImperialCulverin"
+        ],
         "name": "帝国长管炮"
       }
     },
     "deazap": {
       "3": {
-        "hp_mult": 1.2,
-        "damage_mult": 1.2,
-        "action_range_add": {
-          "StaggerRangedAttack": 2.0,
-          "VolleyRangedAttack": 2.0,
-          "BuildingAttack": 2.0
-        },
+        "techs": [
+          "DEVeteranAzaps"
+        ],
         "name": "老练奥斯曼阿札布步兵"
       },
       "4": {
-        "hp_mult": 1.5,
-        "damage_mult": 1.5,
-        "action_range_add": {
-          "StaggerRangedAttack": 4.0,
-          "VolleyRangedAttack": 4.0,
-          "BuildingAttack": 4.0
-        },
+        "techs": [
+          "DEVeteranAzaps",
+          "DEGuardAzaps"
+        ],
         "name": "护卫奥斯曼步兵"
       },
       "5": {
-        "hp_mult": 2.0,
-        "damage_mult": 2.0,
-        "action_range_add": {
-          "StaggerRangedAttack": 6.0,
-          "VolleyRangedAttack": 6.0,
-          "BuildingAttack": 6.0
-        },
+        "techs": [
+          "DEVeteranAzaps",
+          "DEGuardAzaps",
+          "DEImperialAzaps"
+        ],
         "name": "帝国奥斯曼步兵"
       }
     },
     "debarbaryarcher": {
       "3": {
-        "hp_mult": 1.2,
-        "damage_mult": 1.2,
+        "techs": [
+          "DEVeteranBarbaryArchers"
+        ],
         "name": "老练柏柏尔步弓手"
       }
     },
     "debarbarycavalry": {
       "3": {
-        "hp_mult": 1.2,
-        "damage_mult": 1.2,
+        "techs": [
+          "DEVeteranBarbaryCavalry"
+        ],
         "name": "老练部落骑兵"
       },
       "4": {
-        "hp_mult": 1.5,
-        "damage_mult": 1.5,
+        "techs": [
+          "DEVeteranBarbaryCavalry",
+          "DEGuardBarbaryCavalry"
+        ],
         "name": "护卫部落骑兵"
       }
     },
     "debarbaryskirmisher": {
       "3": {
-        "hp_mult": 1.2,
-        "damage_mult": 1.2
+        "techs": [
+          "DEUnknownWarriorSocietiesMoroccans"
+        ]
       },
       "4": {
-        "hp_mult": 1.5,
-        "damage_mult": 1.5,
+        "techs": [
+          "DEUnknownWarriorSocietiesMoroccans",
+          "DEGuardBarbarySkirmishers"
+        ],
         "name": "护卫柏柏尔火绳枪兵"
       }
     },
     "debarbaryspearman": {
       "3": {
-        "hp_mult": 1.2,
-        "damage_mult": 1.2,
+        "techs": [
+          "DEVeteranBarbarySpearmen"
+        ],
         "name": "老练柏柏尔长矛兵"
       }
     },
     "debattlecanoe": {
       "5": {
-        "hp_mult": 1.5,
-        "damage_mult": 1.5,
+        "techs": [
+          "DEImperialBattleCanoes"
+        ],
         "name": "传奇作战划艇"
       }
     },
     "debedouinhorsearcher": {
       "3": {
-        "hp_mult": 1.2,
-        "damage_mult": 1.2
+        "techs": [
+          "DEUnknownWarriorSocietiesMoroccans"
+        ]
       },
       "4": {
-        "hp_mult": 1.5,
-        "damage_mult": 1.5,
+        "techs": [
+          "DEUnknownWarriorSocietiesMoroccans",
+          "DEGuardBedouinHorseArcher"
+        ],
         "name": "护卫贝都因骑马弓兵"
       }
     },
     "debersagliere": {
       "3": {
-        "hp_mult": 1.2,
-        "damage_mult": 1.2,
+        "techs": [
+          "DEVeteranBersagliereShadow"
+        ],
         "name": "老练神射手"
       },
       "4": {
-        "hp_mult": 1.5,
-        "damage_mult": 1.5,
+        "techs": [
+          "DEVeteranBersagliereShadow",
+          "DEGuardBersaglieriShadow"
+        ],
         "name": "护卫神射手"
       },
       "5": {
-        "hp_mult": 2.0,
-        "damage_mult": 2.0,
+        "techs": [
+          "DEVeteranBersagliereShadow",
+          "DEGuardBersaglieriShadow",
+          "DEImperialBersaglieri"
+        ],
         "name": "帝国神射手"
       }
     },
     "debolaswarrior": {
       "3": {
-        "hp_mult": 1.25,
-        "damage_mult": 1.25,
-        "action_range_add": {
-          "GuardianRangedAttack": 1.0,
-          "VolleyRangedAttack": 1.0,
-          "DefendRangedAttack": 1.0,
-          "StaggerRangedAttack": 1.0
-        },
+        "techs": [
+          "DEEliteBolasWarriorsShadow"
+        ],
         "name": "精锐掷石绳战士"
       },
       "4": {
-        "hp_mult": 1.5,
-        "damage_mult": 1.5,
-        "action_range_add": {
-          "GuardianRangedAttack": 3.0,
-          "VolleyRangedAttack": 3.0,
-          "DefendRangedAttack": 3.0,
-          "StaggerRangedAttack": 3.0
-        },
+        "techs": [
+          "DEEliteBolasWarriorsShadow",
+          "DEChampionBolasWarriors"
+        ],
         "name": "风云掷石绳战士"
       },
       "5": {
-        "hp_mult": 2.0,
-        "damage_mult": 2.0,
-        "action_range_add": {
-          "GuardianRangedAttack": 3.0,
-          "VolleyRangedAttack": 3.0,
-          "DefendRangedAttack": 3.0,
-          "StaggerRangedAttack": 3.0
-        },
+        "techs": [
+          "DEEliteBolasWarriorsShadow",
+          "DEChampionBolasWarriors",
+          "DEImpLegendaryBolasWarriors"
+        ],
         "name": "传奇掷石绳战士"
       }
     },
     "debowmanlevy": {
       "3": {
-        "hp_mult": 1.25,
-        "damage_mult": 1.25,
+        "techs": [
+          "DEEliteLevyAfricanShadow"
+        ],
         "name": "精锐募集弓箭手"
       },
       "4": {
-        "hp_mult": 1.5,
-        "damage_mult": 1.5,
+        "techs": [
+          "DEEliteLevyAfricanShadow",
+          "DEChampionLevyAfricanShadow"
+        ],
         "name": "风云募集弓箭手"
       },
       "5": {
-        "hp_mult": 2.0,
-        "damage_mult": 2.0,
+        "techs": [
+          "DEEliteLevyAfricanShadow",
+          "DEChampionLevyAfricanShadow",
+          "DELegendaryLevyAfricanShadow"
+        ],
         "name": "传奇募集弓箭手"
       }
     },
     "decannonboat": {
       "5": {
-        "hp_mult": 1.5,
-        "damage_mult": 1.5,
+        "techs": [
+          "DEImperialCannonCanoes"
+        ],
         "name": "传奇加农炮船"
       }
     },
     "decarolean": {
       "3": {
-        "hp_mult": 1.2,
-        "damage_mult": 1.2,
+        "techs": [
+          "VeteranCaroleans"
+        ],
         "name": "老练卡尔远征军"
       },
       "4": {
-        "hp_mult": 1.5,
-        "damage_mult": 1.5,
+        "techs": [
+          "VeteranCaroleans",
+          "GuardCaroleans"
+        ],
         "name": "护卫卡尔远征军"
       },
       "5": {
-        "hp_mult": 2.0,
-        "damage_mult": 2.0,
+        "techs": [
+          "VeteranCaroleans",
+          "GuardCaroleans",
+          "ImperialCaroleans"
+        ],
         "name": "帝国卡尔远征军"
       }
     },
     "dechasqui": {
       "3": {
-        "hp_mult": 1.25
+        "techs": [
+          "DEEliteInca"
+        ]
       },
       "4": {
-        "hp_mult": 1.5
+        "techs": [
+          "DEEliteInca",
+          "DEChampionInca"
+        ]
       },
       "5": {
-        "hp_mult": 2.0
+        "techs": [
+          "DEEliteInca",
+          "DEChampionInca",
+          "DELegendaryInca"
+        ]
       }
     },
     "dechevauleger": {
       "4": {
-        "hp_mult": 1.3,
-        "damage_mult": 1.3,
+        "techs": [
+          "GuardWarWagons"
+        ],
         "name": "护卫普林茨近卫轻骑兵"
       },
       "5": {
-        "hp_mult": 1.8,
-        "damage_mult": 1.8,
+        "techs": [
+          "GuardWarWagons",
+          "ImperialWarWagons"
+        ],
         "name": "帝国普林茨近卫轻骑兵"
       }
     },
     "dechinaco": {
       "3": {
-        "hp_mult": 1.2,
-        "damage_mult": 1.2,
+        "techs": [
+          "DEVeteranChinacos"
+        ],
         "name": "老练游击叛兵"
       },
       "4": {
-        "hp_mult": 1.6,
-        "damage_mult": 1.6,
+        "techs": [
+          "DEVeteranChinacos",
+          "DECharros"
+        ],
         "name": "墨西哥牛仔"
       },
       "5": {
-        "hp_mult": 2.1,
-        "damage_mult": 2.1,
+        "techs": [
+          "DEVeteranChinacos",
+          "DECharros",
+          "DEImperialCharros"
+        ],
         "name": "帝国墨西哥牛仔"
       }
     },
     "dechincharaft": {
       "3": {
-        "damage_mult": 1.25
+        "techs": [
+          "DEWarCanoeDamage"
+        ]
       },
       "5": {
-        "hp_mult": 1.25,
-        "damage_mult": 1.5
+        "techs": [
+          "DEWarCanoeDamage",
+          "DELegendaryWarCanoes"
+        ]
       }
     },
     "dedeli": {
       "3": {
-        "hp_mult": 1.2,
-        "damage_mult": 1.2,
+        "techs": [
+          "VeteranDelis"
+        ],
         "name": "老练奥斯曼轻骑兵"
       },
       "4": {
-        "hp_mult": 1.6,
-        "damage_mult": 1.6,
+        "techs": [
+          "VeteranDelis",
+          "Rumeliots"
+        ],
         "name": "奥斯曼护卫"
       },
       "5": {
-        "hp_mult": 2.1,
-        "damage_mult": 2.1,
+        "techs": [
+          "VeteranDelis",
+          "Rumeliots",
+          "ImperialRumeliots"
+        ],
         "name": "帝国奥斯曼护卫"
       }
     },
     "deeaglescout": {
       "3": {
-        "hp_mult": 1.25,
-        "damage_mult": 1.25
+        "techs": [
+          "DEEliteEagleScouts"
+        ]
       },
       "4": {
-        "hp_mult": 1.5,
-        "damage_mult": 1.5
+        "techs": [
+          "DEEliteEagleScouts",
+          "DEChampionEagleScouts"
+        ]
       },
       "5": {
-        "hp_mult": 2.0,
-        "damage_mult": 2.0
+        "techs": [
+          "DEEliteEagleScouts",
+          "DEChampionEagleScouts",
+          "DELegendaryEagleScouts"
+        ]
       }
     },
     "deemboscador": {
       "3": {
-        "hp_mult": 1.2,
-        "damage_mult": 1.2,
+        "techs": [
+          "DEVeteranEmboscadors"
+        ],
         "name": "老练劫匪"
       },
       "4": {
-        "hp_mult": 1.5,
-        "damage_mult": 1.5,
+        "techs": [
+          "DEVeteranEmboscadors",
+          "DEGuardEmboscadors"
+        ],
         "name": "护卫劫匪"
       },
       "5": {
-        "hp_mult": 1.9,
-        "damage_mult": 1.9,
+        "techs": [
+          "DEVeteranEmboscadors",
+          "DEGuardEmboscadors",
+          "DEImperialEmboscadors"
+        ],
         "name": "帝国劫匪"
       }
     },
     "definnishrider": {
       "3": {
-        "hp_mult": 1.2,
-        "damage_mult": 1.2,
+        "techs": [
+          "VeteranFinnishRiders"
+        ],
         "name": "老练芬兰轻装骑兵"
       },
       "4": {
-        "hp_mult": 1.5,
-        "damage_mult": 1.5,
+        "techs": [
+          "VeteranFinnishRiders",
+          "GuardFinnishRiders"
+        ],
         "name": "近卫连队"
       },
       "5": {
-        "hp_mult": 2.0,
-        "damage_mult": 2.0,
+        "techs": [
+          "VeteranFinnishRiders",
+          "GuardFinnishRiders",
+          "ImperialDrabants"
+        ],
         "name": "帝国近卫连队"
       }
     },
     "defishingboatafrican": {
       "5": {
-        "hp_mult": 1.5,
-        "damage_mult": 1.5
+        "techs": [
+          "DELegendaryCanoes"
+        ]
       }
     },
     "defriskytterider": {
       "5": {
-        "hp_mult": 1.5,
-        "damage_mult": 1.5,
-        "action_range_add": {
-          "StaggerRangedAttack": 2.0,
-          "DefendRangedAttack": 2.0
-        },
+        "techs": [
+          "ImperialFriskytter"
+        ],
         "name": "帝国骑马自由枪手"
       }
     },
     "defulawarrior": {
       "3": {
-        "hp_mult": 1.25,
-        "damage_mult": 1.25,
+        "techs": [
+          "DEEliteFulaWarriors"
+        ],
         "name": "精锐富拉尼步弓手"
       },
       "4": {
-        "hp_mult": 1.5,
-        "damage_mult": 1.5,
+        "techs": [
+          "DEEliteFulaWarriors",
+          "DEChampionFulaWarriors"
+        ],
         "name": "风云富拉尼步弓手"
       },
       "5": {
-        "hp_mult": 2.0,
-        "damage_mult": 2.0,
+        "techs": [
+          "DEEliteFulaWarriors",
+          "DEChampionFulaWarriors",
+          "DELegendaryFulaWarriors"
+        ],
         "name": "传奇富拉尼步弓手"
       }
     },
     "degascenya": {
       "3": {
-        "hp_mult": 1.25,
-        "damage_mult": 1.25,
+        "techs": [
+          "DEEliteInfantryEthiopian"
+        ],
         "name": "精锐加塞尼亚步兵"
       },
       "4": {
-        "hp_mult": 1.5,
-        "damage_mult": 1.5,
+        "techs": [
+          "DEEliteInfantryEthiopian",
+          "DEChampionInfantryEthiopian"
+        ],
         "name": "风云加塞尼亚步兵"
       },
       "5": {
-        "hp_mult": 2.0,
-        "damage_mult": 2.0,
+        "techs": [
+          "DEEliteInfantryEthiopian",
+          "DEChampionInfantryEthiopian",
+          "DELegendaryInfantryEthiopian"
+        ],
         "name": "传奇加塞尼亚步兵"
       }
     },
     "degunnerlevy": {
       "3": {
-        "hp_mult": 1.25,
-        "damage_mult": 1.25,
+        "techs": [
+          "DEEliteLevyAfricanShadow"
+        ],
         "name": "精锐募集枪手"
       },
       "4": {
-        "hp_mult": 1.5,
-        "damage_mult": 1.5,
+        "techs": [
+          "DEEliteLevyAfricanShadow",
+          "DEChampionLevyAfricanShadow"
+        ],
         "name": "风云募集枪手"
       },
       "5": {
-        "hp_mult": 2.0,
-        "damage_mult": 2.0,
+        "techs": [
+          "DEEliteLevyAfricanShadow",
+          "DEChampionLevyAfricanShadow",
+          "DELegendaryLevyAfricanShadow"
+        ],
         "name": "传奇募集枪手"
       }
     },
     "dehetman": {
       "3": {
-        "damage_mult": 1.6
+        "techs": [
+          "DESejmHetman1"
+        ]
       },
       "4": {
-        "damage_mult": 1.8
+        "techs": [
+          "DESejmHetman1",
+          "DESejmHetman2"
+        ]
       },
       "5": {
-        "damage_mult": 2.3
+        "techs": [
+          "DESejmHetman1",
+          "DESejmHetman2",
+          "DESejmHetman3"
+        ]
       }
     },
     "dehoopthrower": {
       "3": {
-        "hp_mult": 1.2,
-        "damage_mult": 1.2,
+        "techs": [
+          "DEVeteranHoopThrowers"
+        ],
         "name": "老练火焰兵"
       },
       "4": {
-        "hp_mult": 1.5,
-        "damage_mult": 1.5,
+        "techs": [
+          "DEVeteranHoopThrowers",
+          "DEGuardHoopThrowers"
+        ],
         "name": "护卫火焰兵"
       },
       "5": {
-        "hp_mult": 2.0,
-        "damage_mult": 2.0,
+        "techs": [
+          "DEVeteranHoopThrowers",
+          "DEGuardHoopThrowers",
+          "DEImperialHoopThrowers"
+        ],
         "name": "帝国火焰兵"
       }
     },
     "dehospitaller": {
       "3": {
-        "hp_mult": 1.2,
-        "damage_mult": 1.2,
+        "techs": [
+          "DEVeteranHospitallers"
+        ],
         "name": "老练医院骑士团骑士"
       },
       "4": {
-        "hp_mult": 1.5,
-        "damage_mult": 1.5,
+        "techs": [
+          "DEVeteranHospitallers",
+          "DEGuardHospitallers"
+        ],
         "name": "护卫医院骑士团骑士"
       },
       "5": {
-        "hp_mult": 2.0,
-        "damage_mult": 2.0,
+        "techs": [
+          "DEVeteranHospitallers",
+          "DEGuardHospitallers",
+          "DEImperialHospitallers"
+        ],
         "name": "帝国医院骑士团骑士"
       }
     },
     "dehumbaraci": {
       "3": {
-        "hp_mult": 1.2,
-        "damage_mult": 1.2,
+        "techs": [
+          "VeteranHumbaracis"
+        ],
         "name": "老练铁帽炮兵"
       },
       "4": {
-        "hp_mult": 1.6,
-        "damage_mult": 1.6,
+        "techs": [
+          "VeteranHumbaracis",
+          "RGBaratcuCorps"
+        ],
         "name": "乌鲁菲利"
       },
       "5": {
-        "hp_mult": 2.1,
-        "damage_mult": 2.1,
+        "techs": [
+          "VeteranHumbaracis",
+          "RGBaratcuCorps",
+          "ImperialBaratcu"
+        ],
         "name": "帝国乌鲁菲利"
       }
     },
     "deincarunner": {
       "3": {
-        "hp_mult": 1.25,
-        "damage_mult": 1.25,
+        "techs": [
+          "DEEliteRunners"
+        ],
         "name": "精锐奇穆游击兵"
       },
       "4": {
-        "hp_mult": 1.5,
-        "damage_mult": 1.5,
+        "techs": [
+          "DEEliteRunners",
+          "DEChampionRunners"
+        ],
         "name": "风云奇穆游击兵"
       },
       "5": {
-        "hp_mult": 2.0,
-        "damage_mult": 2.0,
+        "techs": [
+          "DEEliteRunners",
+          "DEChampionRunners",
+          "DEImpLegendaryRunners"
+        ],
         "name": "传奇奇穆游击兵"
       }
     },
     "deincaspearman": {
       "3": {
-        "hp_mult": 1.25,
-        "damage_mult": 1.25,
+        "techs": [
+          "DEEliteSpearmen"
+        ],
         "name": "精锐羽饰长矛兵"
       },
       "4": {
-        "hp_mult": 1.5,
-        "damage_mult": 1.5,
+        "techs": [
+          "DEEliteSpearmen",
+          "DEChampionSpearmen"
+        ],
         "name": "风云羽饰长矛兵"
       },
       "5": {
-        "hp_mult": 2.0,
-        "damage_mult": 2.0,
+        "techs": [
+          "DEEliteSpearmen",
+          "DEChampionSpearmen",
+          "DEImpLegendarySpearmen"
+        ],
         "name": "传奇羽饰长矛兵"
       }
     },
     "deinsurgente": {
       "3": {
-        "hp_mult": 1.2,
-        "damage_mult": 1.2,
+        "techs": [
+          "DEVeteranInsurgentes"
+        ],
         "name": "老练叛乱者"
       },
       "4": {
-        "hp_mult": 1.5,
-        "damage_mult": 1.5,
+        "techs": [
+          "DEVeteranInsurgentes",
+          "DEGuardInsurgentes"
+        ],
         "name": "护卫叛乱者"
       },
       "5": {
-        "hp_mult": 2.0,
-        "damage_mult": 2.0,
+        "techs": [
+          "DEVeteranInsurgentes",
+          "DEGuardInsurgentes",
+          "DEImperialInsurgentes"
+        ],
         "name": "帝国叛乱者"
       }
     },
     "dejavelinrider": {
       "3": {
-        "hp_mult": 1.25,
-        "damage_mult": 1.25,
+        "techs": [
+          "DEEliteCavalryEthiopian"
+        ],
         "name": "精锐标枪骑兵"
       },
       "4": {
-        "hp_mult": 1.5,
-        "damage_mult": 1.5,
+        "techs": [
+          "DEEliteCavalryEthiopian",
+          "DEChampionCavalryEthiopian"
+        ],
         "name": "风云标枪骑兵"
       },
       "5": {
-        "hp_mult": 2.0,
-        "damage_mult": 2.0,
+        "techs": [
+          "DEEliteCavalryEthiopian",
+          "DEChampionCavalryEthiopian",
+          "DELegendaryCavalryEthiopian"
+        ],
         "name": "传奇标枪骑兵"
       }
     },
     "dejunglebowman": {
       "3": {
-        "hp_mult": 1.25,
-        "damage_mult": 1.25,
-        "action_range_add": {
-          "VolleyRangedAttack": 1.0,
-          "DefendRangedAttack": 1.0,
-          "StaggerRangedAttack": 1.0
-        },
+        "techs": [
+          "DEEliteBowmen"
+        ],
         "name": "精锐丛林弓箭手"
       },
       "4": {
-        "hp_mult": 1.5,
-        "damage_mult": 1.5,
-        "action_range_add": {
-          "VolleyRangedAttack": 3.0,
-          "DefendRangedAttack": 3.0,
-          "StaggerRangedAttack": 3.0
-        },
+        "techs": [
+          "DEEliteBowmen",
+          "DEChampionBowmen"
+        ],
         "name": "风云丛林弓箭手"
       },
       "5": {
-        "hp_mult": 2.0,
-        "damage_mult": 2.0,
-        "action_range_add": {
-          "VolleyRangedAttack": 3.0,
-          "DefendRangedAttack": 3.0,
-          "StaggerRangedAttack": 3.0
-        },
+        "techs": [
+          "DEEliteBowmen",
+          "DEChampionBowmen",
+          "DEImpLegendaryBowmen"
+        ],
         "name": "传奇丛林弓箭手"
       }
     },
     "delandwehr": {
       "3": {
-        "hp_mult": 1.2,
-        "damage_mult": 1.2,
+        "techs": [
+          "DEVeteranLandwehrsShadow"
+        ],
         "name": "老练后备兵"
       },
       "4": {
-        "hp_mult": 1.5,
-        "damage_mult": 1.5,
+        "techs": [
+          "DEVeteranLandwehrsShadow",
+          "DEGuardLandwehrsShadow"
+        ],
         "name": "护卫后备兵"
       },
       "5": {
-        "hp_mult": 2.0,
-        "damage_mult": 2.0,
+        "techs": [
+          "DEVeteranLandwehrsShadow",
+          "DEGuardLandwehrsShadow",
+          "DEImperialLandwehrsShadow"
+        ],
         "name": "帝国后备兵"
       }
     },
     "deleathercannon": {
       "4": {
-        "hp_mult": 1.25,
-        "damage_mult": 1.25,
-        "action_range_add": {
-          "CannonAttack": 1.0,
-          "BombardAttack": 1.0,
-          "CaseShotAttack": 0.5
-        },
-        "speed_add": 0.5,
+        "techs": [
+          "deInfantryGuns"
+        ],
         "name": "步兵炮"
       },
       "5": {
-        "hp_mult": 1.75,
-        "damage_mult": 1.75,
-        "action_range_add": {
-          "CannonAttack": 2.0,
-          "BombardAttack": 2.0,
-          "CaseShotAttack": 1.0
-        },
-        "speed_add": 1.0,
+        "techs": [
+          "deInfantryGuns",
+          "deImperialInfantryGuns"
+        ],
         "name": "帝国步兵炮"
       }
     },
     "delifidi": {
       "3": {
-        "hp_mult": 1.15,
-        "damage_mult": 1.15,
+        "techs": [
+          "DEEliteLifidiShadow"
+        ],
         "name": "精锐利菲迪骑士"
       },
       "4": {
-        "hp_mult": 1.4,
-        "damage_mult": 1.4,
+        "techs": [
+          "DEEliteLifidiShadow",
+          "DEChampionHeavyCavalryHausa"
+        ],
         "name": "风云利菲迪骑士"
       },
       "5": {
-        "hp_mult": 1.9,
-        "damage_mult": 1.9,
+        "techs": [
+          "DEEliteLifidiShadow",
+          "DEChampionHeavyCavalryHausa",
+          "DELegendaryHeavyCavalryHausa"
+        ],
         "name": "传奇利菲迪骑士"
       }
     },
     "delithuanianrider": {
       "3": {
-        "hp_mult": 1.2,
-        "damage_mult": 1.2,
+        "techs": [
+          "VeteranLithuanianRiders"
+        ],
         "name": "老练扈从骑兵"
       },
       "4": {
-        "hp_mult": 1.6,
-        "damage_mult": 1.6,
+        "techs": [
+          "VeteranLithuanianRiders",
+          "RGVanguards"
+        ],
         "name": "前锋部队"
       },
       "5": {
-        "hp_mult": 2.1,
-        "damage_mult": 2.1,
+        "techs": [
+          "VeteranLithuanianRiders",
+          "RGVanguards",
+          "ImperialVanguards"
+        ],
         "name": "帝国前锋部队"
       }
     },
     "demaceman": {
       "3": {
-        "hp_mult": 1.25,
-        "damage_mult": 1.25,
+        "techs": [
+          "DEEliteMacemenShadow"
+        ],
         "name": "精锐槌兵"
       },
       "4": {
-        "hp_mult": 1.5,
-        "damage_mult": 1.5,
+        "techs": [
+          "DEEliteMacemenShadow",
+          "DEChampionMacemen"
+        ],
         "name": "风云槌兵"
       },
       "5": {
-        "hp_mult": 2.0,
-        "damage_mult": 2.0,
+        "techs": [
+          "DEEliteMacemenShadow",
+          "DEChampionMacemen",
+          "DEImpLegendaryMacemen"
+        ],
         "name": "传奇槌兵"
       }
     },
     "demaigadi": {
       "3": {
-        "hp_mult": 1.2,
-        "damage_mult": 1.2,
+        "techs": [
+          "DEFortressMaigadi"
+        ],
         "name": "精锐迈加迪步兵"
       },
       "4": {
-        "hp_mult": 1.5,
-        "damage_mult": 1.5,
+        "techs": [
+          "DEFortressMaigadi",
+          "DEIndustrialMaigadi"
+        ],
         "name": "风云迈加迪步兵"
       },
       "5": {
-        "hp_mult": 2.0,
-        "damage_mult": 2.0,
+        "techs": [
+          "DEFortressMaigadi",
+          "DEIndustrialMaigadi",
+          "DEImperialMaigadi"
+        ],
         "name": "传奇迈加迪步兵"
       }
     },
     "demaltesegun": {
       "4": {
-        "hp_mult": 1.5,
-        "action_range_add": {
-          "GuardianAttack": 6.0,
-          "CannonAttack": 6.0,
-          "AntiShipAttack": 6.0
-        },
+        "techs": [
+          "DEHeavyFixedGun"
+        ],
         "name": "重型固定炮"
       },
       "5": {
-        "hp_mult": 2.0,
-        "damage_mult": 1.5,
-        "action_range_add": {
-          "GuardianAttack": 6.0,
-          "CannonAttack": 6.0,
-          "AntiShipAttack": 6.0
-        },
-        "action_aoe_add": {
-          "GuardianAttack": 1.0,
-          "CannonAttack": 1.0
-        },
+        "techs": [
+          "DEHeavyFixedGun",
+          "DEImperialFixedGun"
+        ],
         "name": "帝国固定炮"
       }
     },
     "demaltesemusketeer": {
       "3": {
-        "hp_mult": 1.2,
-        "damage_mult": 1.2,
+        "techs": [
+          "DEVeteranSentinels"
+        ],
         "name": "老练卫士"
       },
       "4": {
-        "hp_mult": 1.5,
-        "damage_mult": 1.5,
+        "techs": [
+          "DEVeteranSentinels",
+          "DEGuardSentinels"
+        ],
         "name": "护卫卫士"
       },
       "5": {
-        "hp_mult": 2.0,
-        "damage_mult": 2.0,
+        "techs": [
+          "DEVeteranSentinels",
+          "DEGuardSentinels",
+          "DEImperialSentinels"
+        ],
         "name": "帝国护卫卫士"
       }
     },
     "demerccapturedmortar": {
       "5": {
-        "hp_mult": 1.1,
-        "damage_mult": 1.1,
+        "techs": [
+          "DEImperialOutlawShadow"
+        ],
         "name": "被夺取的传奇榴弹炮"
       }
     },
     "demercdhow": {
       "5": {
-        "hp_mult": 1.3,
-        "damage_mult": 1.3
+        "techs": [
+          "DEImperialMercCaptainsAfricanShadow"
+        ]
       }
     },
     "demercxebec": {
       "5": {
-        "hp_mult": 1.3,
-        "damage_mult": 1.3
+        "techs": [
+          "DEImperialMercCaptainsAfricanShadow"
+        ]
       }
     },
     "deminuteman": {
       "4": {
-        "hp_mult": 1.3,
-        "damage_mult": 1.3,
+        "techs": [
+          "DEGuardUSMinutemen"
+        ],
         "name": "护卫后备民兵"
       },
       "5": {
-        "hp_mult": 1.8,
-        "damage_mult": 1.8,
+        "techs": [
+          "DEGuardUSMinutemen",
+          "DEImperialUSMinutemen"
+        ],
         "name": "帝国后备民兵"
       }
     },
     "denatakanmusketeer": {
       "3": {
-        "hp_mult": 1.25,
-        "damage_mult": 1.25,
+        "techs": [
+          "DEWarriorSocietyAkan"
+        ],
         "name": "精英阿坎安科比亚"
       },
       "4": {
-        "hp_mult": 1.6,
-        "damage_mult": 1.6,
+        "techs": [
+          "DEWarriorSocietyAkan",
+          "DEChampionAkan"
+        ],
         "name": "风云阿坎安科比亚"
       }
     },
     "denatbagpiper": {
       "3": {
-        "hp_mult": 1.2,
-        "damage_mult": 1.2,
+        "techs": [
+          "DEVeteranStuart"
+        ],
         "name": "老练风笛手"
       },
       "4": {
-        "hp_mult": 1.6,
-        "damage_mult": 1.6,
+        "techs": [
+          "DEVeteranStuart",
+          "DEGuardStuart"
+        ],
         "name": "护卫风笛手"
       }
     },
     "denatbolasrider": {
       "3": {
-        "hp_mult": 1.25,
-        "damage_mult": 1.25,
+        "techs": [
+          "WarriorSocietyMapuche"
+        ],
         "name": "精锐掷石绳骑兵"
       },
       "4": {
-        "hp_mult": 1.6,
-        "damage_mult": 1.6,
+        "techs": [
+          "WarriorSocietyMapuche",
+          "ChampionMapuche"
+        ],
         "name": "风云掷石绳骑兵"
       }
     },
     "denatboyar": {
       "3": {
-        "hp_mult": 1.2,
-        "damage_mult": 1.2,
+        "techs": [
+          "DEVeteranNativesShadow"
+        ],
         "name": "老练贵族铁骑"
       },
       "4": {
-        "hp_mult": 1.6,
-        "damage_mult": 1.6,
+        "techs": [
+          "DEVeteranNativesShadow",
+          "DEGuardPhanar"
+        ],
         "name": "护卫贵族铁骑"
       }
     },
     "denatbrunswicker": {
       "3": {
-        "hp_mult": 1.2,
-        "damage_mult": 1.2,
+        "techs": [
+          "DEVeteranNativesShadow"
+        ],
         "name": "布伦瑞克王朝老练黑衣士兵"
       },
       "4": {
-        "hp_mult": 1.6,
-        "damage_mult": 1.6,
+        "techs": [
+          "DEVeteranNativesShadow",
+          "DEGuardHanover"
+        ],
         "name": "布伦瑞克王朝黑衣护卫"
       }
     },
     "denatcamelrider": {
       "3": {
-        "hp_mult": 1.25,
-        "damage_mult": 1.25,
+        "techs": [
+          "DEWarriorSocietyBerbers"
+        ],
         "name": "精锐柏柏尔骆驼骑兵"
       },
       "4": {
-        "hp_mult": 1.6,
-        "damage_mult": 1.6,
+        "techs": [
+          "DEWarriorSocietyBerbers",
+          "DEChampionBerbers"
+        ],
         "name": "风云柏柏尔骆驼骑兵"
       }
     },
     "denatchevauleger": {
       "3": {
-        "hp_mult": 1.2,
-        "damage_mult": 1.2,
+        "techs": [
+          "DEVeteranNativesShadow"
+        ],
         "name": "老练近卫轻骑兵"
       },
       "4": {
-        "hp_mult": 1.6,
-        "damage_mult": 1.6,
+        "techs": [
+          "DEVeteranNativesShadow",
+          "DEGuardWittelsbach"
+        ],
         "name": "护卫近卫轻骑兵"
       }
     },
     "denatclansman": {
       "3": {
-        "hp_mult": 1.2,
-        "damage_mult": 1.2,
+        "techs": [
+          "DEVeteranStuart"
+        ],
         "name": "老练氏族战士"
       },
       "4": {
-        "hp_mult": 1.6,
-        "damage_mult": 1.6,
+        "techs": [
+          "DEVeteranStuart",
+          "DEGuardStuart"
+        ],
         "name": "护卫氏族战士"
       }
     },
     "denatcompanion": {
       "3": {
-        "hp_mult": 1.2,
-        "damage_mult": 1.2,
+        "techs": [
+          "DEVeteranVasa"
+        ],
         "name": "老练伙伴骑兵"
       },
       "4": {
-        "hp_mult": 1.6,
-        "damage_mult": 1.6,
+        "techs": [
+          "DEVeteranVasa",
+          "DEGuardVasa"
+        ],
         "name": "护卫伙伴骑兵"
       }
     },
     "denatdrummer": {
       "3": {
-        "hp_mult": 1.2,
-        "damage_mult": 1.2,
+        "techs": [
+          "DEVeteranHanover"
+        ],
         "name": "老练鼓手"
       },
       "4": {
-        "hp_mult": 1.6,
-        "damage_mult": 1.6,
+        "techs": [
+          "DEVeteranHanover",
+          "DEGuardHanover"
+        ],
         "name": "护卫鼓手"
       }
     },
     "denatevzone": {
       "3": {
-        "hp_mult": 1.2,
-        "damage_mult": 1.2,
+        "techs": [
+          "DEVeteranPhanar"
+        ],
         "name": "老练雅典卫兵"
       },
       "4": {
-        "hp_mult": 1.6,
-        "damage_mult": 1.6,
+        "techs": [
+          "DEVeteranPhanar",
+          "DEGuardPhanar"
+        ],
         "name": "护卫雅典卫兵"
       }
     },
     "denatholcanjavelineer": {
       "3": {
-        "hp_mult": 1.25,
-        "damage_mult": 1.25,
+        "techs": [
+          "WarriorSocietyMaya"
+        ],
         "name": "精锐霍尔坎标枪手"
       },
       "4": {
-        "hp_mult": 1.6,
-        "damage_mult": 1.6,
+        "techs": [
+          "WarriorSocietyMaya",
+          "ChampionMaya"
+        ],
         "name": "风云霍尔坎标枪手"
       }
     },
     "denatinuithunter": {
       "3": {
-        "hp_mult": 1.25,
-        "damage_mult": 1.25,
+        "techs": [
+          "DEWarriorSocietyInuit"
+        ],
         "name": "精锐因纽特猎人"
       },
       "4": {
-        "hp_mult": 1.6,
-        "damage_mult": 1.6,
+        "techs": [
+          "DEWarriorSocietyInuit",
+          "DEChampionInuit"
+        ],
         "name": "风云因纽特猎人"
       }
     },
     "denatinuitqamutik": {
       "3": {
-        "hp_mult": 1.25,
-        "damage_mult": 1.25,
+        "techs": [
+          "DEWarriorSocietyInuit"
+        ],
         "name": "精锐因纽特人雪橇"
       },
       "4": {
-        "hp_mult": 1.6,
-        "damage_mult": 1.6,
+        "techs": [
+          "DEWarriorSocietyInuit",
+          "DEChampionInuit"
+        ],
         "name": "风云因纽特人雪橇"
       }
     },
     "denatlineinfantry": {
       "3": {
-        "hp_mult": 1.2,
-        "damage_mult": 1.2,
+        "techs": [
+          "DEVeteranNativesShadow"
+        ],
         "name": "老练线列步兵"
       },
       "4": {
-        "hp_mult": 1.6,
-        "damage_mult": 1.6,
+        "techs": [
+          "DEVeteranNativesShadow",
+          "DEGuardHabsburg"
+        ],
         "name": "护卫线列步兵"
       }
     },
     "denatlipkatatar": {
       "3": {
-        "hp_mult": 1.2,
-        "damage_mult": 1.2,
+        "techs": [
+          "DEVeteranJagiellon"
+        ],
         "name": "利普卡鞑靼人老练士兵"
       },
       "4": {
-        "hp_mult": 1.6,
-        "damage_mult": 1.6,
+        "techs": [
+          "DEVeteranJagiellon",
+          "DEGuardJagiellon"
+        ],
         "name": "利普卡鞑靼人护卫"
       }
     },
     "denatlowlanderinfantry": {
       "3": {
-        "hp_mult": 1.2,
-        "damage_mult": 1.2,
+        "techs": [
+          "DEVeteranStuart"
+        ],
         "name": "老练低地人"
       },
       "4": {
-        "hp_mult": 1.6,
-        "damage_mult": 1.6,
+        "techs": [
+          "DEVeteranStuart",
+          "DEGuardStuart"
+        ],
         "name": "护卫低地人"
       }
     },
     "denatlowlanderrider": {
       "3": {
-        "hp_mult": 1.2,
-        "damage_mult": 1.2,
+        "techs": [
+          "DEVeteranStuart"
+        ],
         "name": "老练低地枪骑兵"
       },
       "4": {
-        "hp_mult": 1.6,
-        "damage_mult": 1.6,
+        "techs": [
+          "DEVeteranStuart",
+          "DEGuardStuart"
+        ],
         "name": "护卫低地枪骑兵"
       }
     },
     "denatmercakanmusketeer": {
       "3": {
-        "hp_mult": 1.25,
-        "damage_mult": 1.25,
+        "techs": [
+          "DEWarriorSocietyAkan"
+        ],
         "name": "精英阿坎安科比亚"
       },
       "4": {
-        "hp_mult": 1.6,
-        "damage_mult": 1.6,
+        "techs": [
+          "DEWarriorSocietyAkan",
+          "DEChampionAkan"
+        ],
         "name": "风云阿坎安科比亚"
       }
     },
     "denatmercapachecavalry": {
       "3": {
-        "hp_mult": 1.25,
-        "damage_mult": 1.25,
+        "techs": [
+          "WarriorSocietyApache"
+        ],
         "name": "精锐阿帕切骑兵"
       },
       "4": {
-        "hp_mult": 1.6,
-        "damage_mult": 1.6,
+        "techs": [
+          "WarriorSocietyApache",
+          "ChampionApache"
+        ],
         "name": "风云阿帕切骑兵"
       }
     },
     "denatmercbagpiper": {
       "3": {
-        "hp_mult": 1.2,
-        "damage_mult": 1.2,
+        "techs": [
+          "DEVeteranStuart"
+        ],
         "name": "老练风笛手"
       },
       "4": {
-        "hp_mult": 1.6,
-        "damage_mult": 1.6,
+        "techs": [
+          "DEVeteranStuart",
+          "DEGuardStuart"
+        ],
         "name": "护卫风笛手"
       }
     },
     "denatmercbolasrider": {
       "3": {
-        "hp_mult": 1.25,
-        "damage_mult": 1.25,
+        "techs": [
+          "WarriorSocietyMapuche"
+        ],
         "name": "精锐掷石绳骑兵"
       },
       "4": {
-        "hp_mult": 1.6,
-        "damage_mult": 1.6,
+        "techs": [
+          "WarriorSocietyMapuche",
+          "ChampionMapuche"
+        ],
         "name": "风云掷石绳骑兵"
       }
     },
     "denatmercboyar": {
       "3": {
-        "hp_mult": 1.2,
-        "damage_mult": 1.2,
+        "techs": [
+          "DEVeteranNativesShadow"
+        ],
         "name": "老练贵族铁骑"
       },
       "4": {
-        "hp_mult": 1.6,
-        "damage_mult": 1.6,
+        "techs": [
+          "DEVeteranNativesShadow",
+          "DEGuardPhanar"
+        ],
         "name": "护卫贵族铁骑"
       }
     },
     "denatmercbrunswicker": {
       "3": {
-        "hp_mult": 1.2,
-        "damage_mult": 1.2,
+        "techs": [
+          "DEVeteranNativesShadow"
+        ],
         "name": "布伦瑞克王朝老练黑衣士兵"
       },
       "4": {
-        "hp_mult": 1.6,
-        "damage_mult": 1.6,
+        "techs": [
+          "DEVeteranNativesShadow",
+          "DEGuardHanover"
+        ],
         "name": "布伦瑞克王朝黑衣护卫"
       }
     },
     "denatmerccamelrider": {
       "3": {
-        "hp_mult": 1.25,
-        "damage_mult": 1.25,
+        "techs": [
+          "DEWarriorSocietyBerbers"
+        ],
         "name": "精锐柏柏尔骆驼骑兵"
       },
       "4": {
-        "hp_mult": 1.6,
-        "damage_mult": 1.6,
+        "techs": [
+          "DEWarriorSocietyBerbers",
+          "DEChampionBerbers"
+        ],
         "name": "风云柏柏尔骆驼骑兵"
       }
     },
     "denatmercchevauleger": {
       "3": {
-        "hp_mult": 1.2,
-        "damage_mult": 1.2,
+        "techs": [
+          "DEVeteranNativesShadow"
+        ],
         "name": "老练近卫轻骑兵"
       },
       "4": {
-        "hp_mult": 1.6,
-        "damage_mult": 1.6,
+        "techs": [
+          "DEVeteranNativesShadow",
+          "DEGuardWittelsbach"
+        ],
         "name": "护卫近卫轻骑兵"
       }
     },
     "denatmercclansman": {
       "3": {
-        "hp_mult": 1.2,
-        "damage_mult": 1.2,
+        "techs": [
+          "DEVeteranStuart"
+        ],
         "name": "老练氏族战士"
       },
       "4": {
-        "hp_mult": 1.6,
-        "damage_mult": 1.6,
+        "techs": [
+          "DEVeteranStuart",
+          "DEGuardStuart"
+        ],
         "name": "护卫氏族战士"
       }
     },
     "denatmerccompanion": {
       "3": {
-        "hp_mult": 1.2,
-        "damage_mult": 1.2,
+        "techs": [
+          "DEVeteranVasa"
+        ],
         "name": "老练伙伴骑兵"
       },
       "4": {
-        "hp_mult": 1.6,
-        "damage_mult": 1.6,
+        "techs": [
+          "DEVeteranVasa",
+          "DEGuardVasa"
+        ],
         "name": "护卫伙伴骑兵"
       }
     },
     "denatmercdrummer": {
       "3": {
-        "hp_mult": 1.2,
-        "damage_mult": 1.2,
+        "techs": [
+          "DEVeteranHanover"
+        ],
         "name": "老练鼓手"
       },
       "4": {
-        "hp_mult": 1.6,
-        "damage_mult": 1.6,
+        "techs": [
+          "DEVeteranHanover",
+          "DEGuardHanover"
+        ],
         "name": "护卫鼓手"
       }
     },
     "denatmercevzone": {
       "3": {
-        "hp_mult": 1.2,
-        "damage_mult": 1.2,
+        "techs": [
+          "DEVeteranPhanar"
+        ],
         "name": "老练雅典卫兵"
       },
       "4": {
-        "hp_mult": 1.6,
-        "damage_mult": 1.6,
+        "techs": [
+          "DEVeteranPhanar",
+          "DEGuardPhanar"
+        ],
         "name": "护卫雅典卫兵"
       }
     },
     "denatmercholcanjavelineer": {
       "3": {
-        "hp_mult": 1.25,
-        "damage_mult": 1.25,
+        "techs": [
+          "WarriorSocietyMaya"
+        ],
         "name": "精锐霍尔坎标枪手"
       },
       "4": {
-        "hp_mult": 1.6,
-        "damage_mult": 1.6,
+        "techs": [
+          "WarriorSocietyMaya",
+          "ChampionMaya"
+        ],
         "name": "风云霍尔坎标枪手"
       }
     },
     "denatmercinuithunter": {
       "3": {
-        "hp_mult": 1.25,
-        "damage_mult": 1.25,
+        "techs": [
+          "DEWarriorSocietyInuit"
+        ],
         "name": "精锐因纽特猎人"
       },
       "4": {
-        "hp_mult": 1.6,
-        "damage_mult": 1.6,
+        "techs": [
+          "DEWarriorSocietyInuit",
+          "DEChampionInuit"
+        ],
         "name": "风云因纽特猎人"
       }
     },
     "denatmercinuitqamutik": {
       "3": {
-        "hp_mult": 1.25,
-        "damage_mult": 1.25,
+        "techs": [
+          "DEWarriorSocietyInuit"
+        ],
         "name": "精锐因纽特人雪橇"
       },
       "4": {
-        "hp_mult": 1.6,
-        "damage_mult": 1.6,
+        "techs": [
+          "DEWarriorSocietyInuit",
+          "DEChampionInuit"
+        ],
         "name": "风云因纽特人雪橇"
       }
     },
     "denatmercjaguarwarrior": {
       "3": {
-        "hp_mult": 1.25,
-        "damage_mult": 1.25,
+        "techs": [
+          "WarriorSocietyAztecs"
+        ],
         "name": "精锐豹勇士"
       },
       "4": {
-        "hp_mult": 1.6,
-        "damage_mult": 1.6,
+        "techs": [
+          "WarriorSocietyAztecs",
+          "ChampionAztecs"
+        ],
         "name": "风云豹勇士"
       }
     },
     "denatmerclenaperifleman": {
       "3": {
-        "hp_mult": 1.25,
-        "damage_mult": 1.25,
+        "techs": [
+          "DEWarriorSocietySPCLenape"
+        ],
         "name": "精锐战士"
       }
     },
     "denatmerclineinfantry": {
       "3": {
-        "hp_mult": 1.2,
-        "damage_mult": 1.2,
+        "techs": [
+          "DEVeteranNativesShadow"
+        ],
         "name": "老练线列步兵"
       },
       "4": {
-        "hp_mult": 1.6,
-        "damage_mult": 1.6,
+        "techs": [
+          "DEVeteranNativesShadow",
+          "DEGuardHabsburg"
+        ],
         "name": "护卫线列步兵"
       }
     },
     "denatmerclipkatatar": {
       "3": {
-        "hp_mult": 1.2,
-        "damage_mult": 1.2,
+        "techs": [
+          "DEVeteranJagiellon"
+        ],
         "name": "利普卡鞑靼人老练士兵"
       },
       "4": {
-        "hp_mult": 1.6,
-        "damage_mult": 1.6,
+        "techs": [
+          "DEVeteranJagiellon",
+          "DEGuardJagiellon"
+        ],
         "name": "利普卡鞑靼人护卫"
       }
     },
     "denatmerclowlanderinfantry": {
       "3": {
-        "hp_mult": 1.2,
-        "damage_mult": 1.2,
+        "techs": [
+          "DEVeteranStuart"
+        ],
         "name": "老练低地人"
       },
       "4": {
-        "hp_mult": 1.6,
-        "damage_mult": 1.6,
+        "techs": [
+          "DEVeteranStuart",
+          "DEGuardStuart"
+        ],
         "name": "护卫低地人"
       }
     },
     "denatmerclowlanderrider": {
       "3": {
-        "hp_mult": 1.2,
-        "damage_mult": 1.2,
+        "techs": [
+          "DEVeteranStuart"
+        ],
         "name": "老练低地枪骑兵"
       },
       "4": {
-        "hp_mult": 1.6,
-        "damage_mult": 1.6,
+        "techs": [
+          "DEVeteranStuart",
+          "DEGuardStuart"
+        ],
         "name": "护卫低地枪骑兵"
       }
     },
     "denatmercmapucheclubman": {
       "3": {
-        "hp_mult": 1.25,
-        "damage_mult": 1.25,
+        "techs": [
+          "WarriorSocietyMapuche"
+        ],
         "name": "精锐硬木持棍兵"
       },
       "4": {
-        "hp_mult": 1.6,
-        "damage_mult": 1.6,
+        "techs": [
+          "WarriorSocietyMapuche",
+          "ChampionMapuche"
+        ],
         "name": "风云硬木持棍兵"
       }
     },
     "denatmercmountaintrooper": {
       "3": {
-        "hp_mult": 1.2,
-        "damage_mult": 1.2,
+        "techs": [
+          "DEVeteranWittelsbach"
+        ],
         "name": "老练山地兵"
       },
       "4": {
-        "hp_mult": 1.6,
-        "damage_mult": 1.6,
+        "techs": [
+          "DEVeteranWittelsbach",
+          "DEGuardWittelsbach"
+        ],
         "name": "护卫山地兵"
       }
     },
     "denatmercmountedinfantry": {
       "3": {
-        "hp_mult": 1.2,
-        "damage_mult": 1.2,
+        "techs": [
+          "DEVeteranHabsburg"
+        ],
         "name": "老练徒步步兵"
       },
       "4": {
-        "hp_mult": 1.6,
-        "damage_mult": 1.6,
+        "techs": [
+          "DEVeteranHabsburg",
+          "DEGuardHabsburg"
+        ],
         "name": "护卫徒步步兵"
       }
     },
     "denatmercmountedinfantryrider": {
       "3": {
-        "hp_mult": 1.2,
-        "damage_mult": 1.2,
+        "techs": [
+          "DEVeteranHabsburg"
+        ],
         "name": "老练骑马步兵"
       },
       "4": {
-        "hp_mult": 1.6,
-        "damage_mult": 1.6,
+        "techs": [
+          "DEVeteranHabsburg",
+          "DEGuardHabsburg"
+        ],
         "name": "护卫骑马步兵"
       }
     },
     "denatmercnavajorifleman": {
       "3": {
-        "hp_mult": 1.25,
-        "damage_mult": 1.25,
+        "techs": [
+          "WarriorSocietyNavajo"
+        ],
         "name": "精锐纳瓦霍步枪兵"
       },
       "4": {
-        "hp_mult": 1.6,
-        "damage_mult": 1.6,
+        "techs": [
+          "WarriorSocietyNavajo",
+          "ChampionNavajo"
+        ],
         "name": "风云纳瓦霍步枪兵"
       }
     },
     "denatmercnoaidi": {
       "3": {
-        "hp_mult": 1.25,
-        "damage_mult": 1.25,
+        "techs": [
+          "DEWarriorSocietySami"
+        ],
         "name": "精锐萨米巫师"
       },
       "4": {
-        "hp_mult": 1.6,
-        "damage_mult": 1.6,
+        "techs": [
+          "DEWarriorSocietySami",
+          "DEChampionSami"
+        ],
         "name": "风云萨米巫师"
       }
     },
     "denatmercnorthernmusketeer": {
       "3": {
-        "hp_mult": 1.2,
-        "damage_mult": 1.2,
+        "techs": [
+          "DEVeteranNativesShadow"
+        ],
         "name": "北方老练火枪兵"
       },
       "4": {
-        "hp_mult": 1.6,
-        "damage_mult": 1.6,
+        "techs": [
+          "DEVeteranNativesShadow",
+          "DEGuardOldenburg"
+        ],
         "name": "北方护卫火枪兵"
       }
     },
     "denatmercqizilbash": {
       "3": {
-        "hp_mult": 1.25,
-        "damage_mult": 1.25,
+        "techs": [
+          "ypNatDisciplinedSufi"
+        ],
         "name": "纪律严明的基齐勒巴什兵"
       },
       "4": {
-        "hp_mult": 1.6,
-        "damage_mult": 1.6,
+        "techs": [
+          "ypNatDisciplinedSufi",
+          "ypNatHonoredSufi"
+        ],
         "name": "光荣的基齐勒巴什兵"
       }
     },
     "denatmercroyalarquebusier": {
       "3": {
-        "hp_mult": 1.2,
-        "damage_mult": 1.2,
+        "techs": [
+          "DEVeteranVasa"
+        ],
         "name": "老练皇家火绳枪兵"
       },
       "4": {
-        "hp_mult": 1.6,
-        "damage_mult": 1.6,
+        "techs": [
+          "DEVeteranVasa",
+          "DEGuardVasa"
+        ],
         "name": "皇家护卫火绳枪兵"
       }
     },
     "denatmercroyaldragoon": {
       "3": {
-        "hp_mult": 1.2,
-        "damage_mult": 1.2,
+        "techs": [
+          "DEVeteranNativesShadow"
+        ],
         "name": "老练皇家枪骑兵"
       },
       "4": {
-        "hp_mult": 1.6,
-        "damage_mult": 1.6,
+        "techs": [
+          "DEVeteranNativesShadow",
+          "DEGuardBourbon"
+        ],
         "name": "皇家护卫枪骑兵"
       }
     },
     "denatmercroyalhunter": {
       "3": {
-        "hp_mult": 1.2,
-        "damage_mult": 1.2,
+        "techs": [
+          "DEVeteranOldenburg"
+        ],
         "name": "老练皇家猎兵"
       },
       "4": {
-        "hp_mult": 1.6,
-        "damage_mult": 1.6,
+        "techs": [
+          "DEVeteranOldenburg",
+          "DEGuardOldenburg"
+        ],
         "name": "皇家护卫猎兵"
       }
     },
     "denatmercroyalhuntsman": {
       "3": {
-        "hp_mult": 1.2,
-        "damage_mult": 1.2,
+        "techs": [
+          "DEVeteranOldenburg"
+        ],
         "name": "老练皇家猎人"
       },
       "4": {
-        "hp_mult": 1.6,
-        "damage_mult": 1.6,
+        "techs": [
+          "DEVeteranOldenburg",
+          "DEGuardOldenburg"
+        ],
         "name": "皇家护卫猎人"
       }
     },
     "denatmercroyalmusketeer": {
       "3": {
-        "hp_mult": 1.2,
-        "damage_mult": 1.2,
+        "techs": [
+          "DEVeteranBourbon"
+        ],
         "name": "老练皇家火枪兵"
       },
       "4": {
-        "hp_mult": 1.6,
-        "damage_mult": 1.6,
+        "techs": [
+          "DEVeteranBourbon",
+          "DEGuardBourbon"
+        ],
         "name": "皇家护卫火枪兵"
       }
     },
     "denatmercsaxoncuirassier": {
       "3": {
-        "hp_mult": 1.2,
-        "damage_mult": 1.2,
+        "techs": [
+          "DEVeteranNativesShadow"
+        ],
         "name": "老练萨克森胸甲骑兵"
       },
       "4": {
-        "hp_mult": 1.6,
-        "damage_mult": 1.6,
+        "techs": [
+          "DEVeteranNativesShadow",
+          "DEGuardWettin"
+        ],
         "name": "护卫萨克森胸甲骑兵"
       }
     },
     "denatmercsharktoothbowman": {
       "3": {
-        "hp_mult": 1.25,
-        "damage_mult": 1.25,
+        "techs": [
+          "WarriorSocietySeminoles"
+        ],
         "name": "精锐鲨齿弓箭手"
       },
       "4": {
-        "hp_mult": 1.6,
-        "damage_mult": 1.6,
+        "techs": [
+          "WarriorSocietySeminoles",
+          "ChampionSeminoles"
+        ],
         "name": "风云鲨齿弓箭手"
       }
     },
     "denatmercshockrider": {
       "3": {
-        "hp_mult": 1.2,
-        "damage_mult": 1.2,
+        "techs": [
+          "DEVeteranJagiellon"
+        ],
         "name": "老练突击骑士"
       },
       "4": {
-        "hp_mult": 1.6,
-        "damage_mult": 1.6,
+        "techs": [
+          "DEVeteranJagiellon",
+          "DEGuardJagiellon"
+        ],
         "name": "护卫突击骑士"
       }
     },
     "denatmercsomalidarood": {
       "3": {
-        "hp_mult": 1.25,
-        "damage_mult": 1.25,
-        "action_range_add": {
-          "VolleyRangedAttack": 1.0,
-          "DefendRangedAttack": 1.0,
-          "StaggerRangedAttack": 1.0
-        },
+        "techs": [
+          "DEWarriorSocietySomali"
+        ],
         "name": "精英索马里达鲁德"
       },
       "4": {
-        "hp_mult": 1.6,
-        "damage_mult": 1.6,
-        "action_range_add": {
-          "VolleyRangedAttack": 2.0,
-          "DefendRangedAttack": 2.0,
-          "StaggerRangedAttack": 2.0
-        },
+        "techs": [
+          "DEWarriorSocietySomali",
+          "DEChampionSomali"
+        ],
         "name": "风云索马里达鲁德"
       }
     },
     "denatmercsomalijavelineer": {
       "3": {
-        "hp_mult": 1.25,
-        "damage_mult": 1.25,
+        "techs": [
+          "DEWarriorSocietySomali"
+        ],
         "name": "精锐索马里伊萨战士"
       },
       "4": {
-        "hp_mult": 1.6,
-        "damage_mult": 1.6,
+        "techs": [
+          "DEWarriorSocietySomali",
+          "DEChampionSomali"
+        ],
         "name": "风云索马里伊萨战士"
       }
     },
     "denatmercsudanesedervish": {
       "3": {
-        "hp_mult": 1.25,
-        "damage_mult": 1.25,
+        "techs": [
+          "DEWarriorSocietySudanese"
+        ],
         "name": "精英苏丹德尔维希"
       },
       "4": {
-        "hp_mult": 1.6,
-        "damage_mult": 1.6,
+        "techs": [
+          "DEWarriorSocietySudanese",
+          "DEChampionSudanese"
+        ],
         "name": "风云苏丹德尔维希"
       }
     },
     "denatmerctatararcher": {
       "3": {
-        "hp_mult": 1.25,
-        "damage_mult": 1.25,
+        "techs": [
+          "DENatDisciplinedTengri"
+        ],
         "name": "纪律严明的鞑靼弓手"
       },
       "4": {
-        "hp_mult": 1.6,
-        "damage_mult": 1.6,
+        "techs": [
+          "DENatDisciplinedTengri",
+          "DENatHonoredTengri"
+        ],
         "name": "光荣的鞑靼弓手"
       }
     },
     "denatmerctotenkopf": {
       "3": {
-        "hp_mult": 1.2,
-        "damage_mult": 1.2,
+        "techs": [
+          "DEVeteranHanover"
+        ],
         "name": "老练骷髅轻骑兵"
       },
       "4": {
-        "hp_mult": 1.6,
-        "damage_mult": 1.6,
+        "techs": [
+          "DEVeteranHanover",
+          "DEGuardHanover"
+        ],
         "name": "骷髅轻骑兵护卫"
       }
     },
     "denatmerctrabant": {
       "3": {
-        "hp_mult": 1.2,
-        "damage_mult": 1.2,
+        "techs": [
+          "DEVeteranWettin"
+        ],
         "name": "老练亲随"
       },
       "4": {
-        "hp_mult": 1.6,
-        "damage_mult": 1.6,
+        "techs": [
+          "DEVeteranWettin",
+          "DEGuardWettin"
+        ],
         "name": "护卫亲随"
       }
     },
     "denatmercyorubalegionary": {
       "3": {
-        "hp_mult": 1.25,
-        "damage_mult": 1.25,
+        "techs": [
+          "DEWarriorSocietyYoruba"
+        ],
         "name": "精锐约鲁巴奥约军团兵"
       },
       "4": {
-        "hp_mult": 1.6,
-        "damage_mult": 1.6,
+        "techs": [
+          "DEWarriorSocietyYoruba",
+          "DEChampionYoruba"
+        ],
         "name": "风云约鲁巴奥约军团兵"
       }
     },
     "denatmercyorubarider": {
       "3": {
-        "hp_mult": 1.25,
-        "damage_mult": 1.25,
+        "techs": [
+          "DEWarriorSocietyYoruba"
+        ],
         "name": "精锐约鲁巴埃索骑兵"
       },
       "4": {
-        "hp_mult": 1.6,
-        "damage_mult": 1.6,
+        "techs": [
+          "DEWarriorSocietyYoruba",
+          "DEChampionYoruba"
+        ],
         "name": "风云约鲁巴埃索骑兵"
       }
     },
     "denatmountaintrooper": {
       "3": {
-        "hp_mult": 1.2,
-        "damage_mult": 1.2,
+        "techs": [
+          "DEVeteranWittelsbach"
+        ],
         "name": "老练山地兵"
       },
       "4": {
-        "hp_mult": 1.6,
-        "damage_mult": 1.6,
+        "techs": [
+          "DEVeteranWittelsbach",
+          "DEGuardWittelsbach"
+        ],
         "name": "护卫山地兵"
       }
     },
     "denatmountedinfantry": {
       "3": {
-        "hp_mult": 1.2,
-        "damage_mult": 1.2,
+        "techs": [
+          "DEVeteranHabsburg"
+        ],
         "name": "老练徒步步兵"
       },
       "4": {
-        "hp_mult": 1.6,
-        "damage_mult": 1.6,
+        "techs": [
+          "DEVeteranHabsburg",
+          "DEGuardHabsburg"
+        ],
         "name": "护卫徒步步兵"
       }
     },
     "denatmountedinfantryrider": {
       "3": {
-        "hp_mult": 1.2,
-        "damage_mult": 1.2,
+        "techs": [
+          "DEVeteranHabsburg"
+        ],
         "name": "老练骑马步兵"
       },
       "4": {
-        "hp_mult": 1.6,
-        "damage_mult": 1.6,
+        "techs": [
+          "DEVeteranHabsburg",
+          "DEGuardHabsburg"
+        ],
         "name": "护卫骑马步兵"
       }
     },
     "denatnoaidi": {
       "3": {
-        "hp_mult": 1.25,
-        "damage_mult": 1.25,
+        "techs": [
+          "DEWarriorSocietySami"
+        ],
         "name": "精锐萨米巫师"
       },
       "4": {
-        "hp_mult": 1.6,
-        "damage_mult": 1.6,
+        "techs": [
+          "DEWarriorSocietySami",
+          "DEChampionSami"
+        ],
         "name": "风云萨米巫师"
       }
     },
     "denatnorthernmusketeer": {
       "3": {
-        "hp_mult": 1.2,
-        "damage_mult": 1.2,
+        "techs": [
+          "DEVeteranNativesShadow"
+        ],
         "name": "北方老练火枪兵"
       },
       "4": {
-        "hp_mult": 1.6,
-        "damage_mult": 1.6,
+        "techs": [
+          "DEVeteranNativesShadow",
+          "DEGuardOldenburg"
+        ],
         "name": "北方护卫火枪兵"
       }
     },
     "denatqizilbash": {
       "3": {
-        "hp_mult": 1.25,
-        "damage_mult": 1.25,
+        "techs": [
+          "ypNatDisciplinedSufi"
+        ],
         "name": "纪律严明的基齐勒巴什兵"
       },
       "4": {
-        "hp_mult": 1.6,
-        "damage_mult": 1.6,
+        "techs": [
+          "ypNatDisciplinedSufi",
+          "ypNatHonoredSufi"
+        ],
         "name": "光荣的基齐勒巴什兵"
       }
     },
     "denatroyalarquebusier": {
       "3": {
-        "hp_mult": 1.2,
-        "damage_mult": 1.2,
+        "techs": [
+          "DEVeteranVasa"
+        ],
         "name": "老练皇家火绳枪兵"
       },
       "4": {
-        "hp_mult": 1.6,
-        "damage_mult": 1.6,
+        "techs": [
+          "DEVeteranVasa",
+          "DEGuardVasa"
+        ],
         "name": "皇家护卫火绳枪兵"
       }
     },
     "denatroyaldragoon": {
       "3": {
-        "hp_mult": 1.2,
-        "damage_mult": 1.2,
+        "techs": [
+          "DEVeteranNativesShadow"
+        ],
         "name": "老练皇家枪骑兵"
       },
       "4": {
-        "hp_mult": 1.6,
-        "damage_mult": 1.6,
+        "techs": [
+          "DEVeteranNativesShadow",
+          "DEGuardBourbon"
+        ],
         "name": "皇家护卫枪骑兵"
       }
     },
     "denatroyalhunter": {
       "3": {
-        "hp_mult": 1.2,
-        "damage_mult": 1.2,
+        "techs": [
+          "DEVeteranOldenburg"
+        ],
         "name": "老练皇家猎兵"
       },
       "4": {
-        "hp_mult": 1.6,
-        "damage_mult": 1.6,
+        "techs": [
+          "DEVeteranOldenburg",
+          "DEGuardOldenburg"
+        ],
         "name": "皇家护卫猎兵"
       }
     },
     "denatroyalhuntsman": {
       "3": {
-        "hp_mult": 1.2,
-        "damage_mult": 1.2,
+        "techs": [
+          "DEVeteranOldenburg"
+        ],
         "name": "老练皇家猎人"
       },
       "4": {
-        "hp_mult": 1.6,
-        "damage_mult": 1.6,
+        "techs": [
+          "DEVeteranOldenburg",
+          "DEGuardOldenburg"
+        ],
         "name": "皇家护卫猎人"
       }
     },
     "denatroyalmusketeer": {
       "3": {
-        "hp_mult": 1.2,
-        "damage_mult": 1.2,
+        "techs": [
+          "DEVeteranBourbon"
+        ],
         "name": "老练皇家火枪兵"
       },
       "4": {
-        "hp_mult": 1.6,
-        "damage_mult": 1.6,
+        "techs": [
+          "DEVeteranBourbon",
+          "DEGuardBourbon"
+        ],
         "name": "皇家护卫火枪兵"
       }
     },
     "denatsaxoncuirassier": {
       "3": {
-        "hp_mult": 1.2,
-        "damage_mult": 1.2,
+        "techs": [
+          "DEVeteranNativesShadow"
+        ],
         "name": "老练萨克森胸甲骑兵"
       },
       "4": {
-        "hp_mult": 1.6,
-        "damage_mult": 1.6,
+        "techs": [
+          "DEVeteranNativesShadow",
+          "DEGuardWettin"
+        ],
         "name": "护卫萨克森胸甲骑兵"
       }
     },
     "denatshockrider": {
       "3": {
-        "hp_mult": 1.2,
-        "damage_mult": 1.2,
+        "techs": [
+          "DEVeteranJagiellon"
+        ],
         "name": "老练突击骑士"
       },
       "4": {
-        "hp_mult": 1.6,
-        "damage_mult": 1.6,
+        "techs": [
+          "DEVeteranJagiellon",
+          "DEGuardJagiellon"
+        ],
         "name": "护卫突击骑士"
       }
     },
     "denatsomalidarood": {
       "3": {
-        "hp_mult": 1.25,
-        "damage_mult": 1.25,
-        "action_range_add": {
-          "VolleyRangedAttack": 1.0,
-          "DefendRangedAttack": 1.0,
-          "StaggerRangedAttack": 1.0
-        },
+        "techs": [
+          "DEWarriorSocietySomali"
+        ],
         "name": "精英索马里达鲁德"
       },
       "4": {
-        "hp_mult": 1.6,
-        "damage_mult": 1.6,
-        "action_range_add": {
-          "VolleyRangedAttack": 2.0,
-          "DefendRangedAttack": 2.0,
-          "StaggerRangedAttack": 2.0
-        },
+        "techs": [
+          "DEWarriorSocietySomali",
+          "DEChampionSomali"
+        ],
         "name": "风云索马里达鲁德"
       }
     },
     "denatsomalijavelineer": {
       "3": {
-        "hp_mult": 1.25,
-        "damage_mult": 1.25,
+        "techs": [
+          "DEWarriorSocietySomali"
+        ],
         "name": "精锐索马里伊萨战士"
       },
       "4": {
-        "hp_mult": 1.6,
-        "damage_mult": 1.6,
+        "techs": [
+          "DEWarriorSocietySomali",
+          "DEChampionSomali"
+        ],
         "name": "风云索马里伊萨战士"
       }
     },
     "denatspclenaperifleman": {
       "3": {
-        "hp_mult": 1.25,
-        "damage_mult": 1.25,
+        "techs": [
+          "DEWarriorSocietySPCLenape"
+        ],
         "name": "精锐战士"
       },
       "4": {
-        "hp_mult": 1.6,
-        "damage_mult": 1.6,
+        "techs": [
+          "DEWarriorSocietySPCLenape",
+          "DEChampionSPCLenape"
+        ],
         "name": "风云战士"
       }
     },
     "denatsudanesedervish": {
       "3": {
-        "hp_mult": 1.25,
-        "damage_mult": 1.25,
+        "techs": [
+          "DEWarriorSocietySudanese"
+        ],
         "name": "精英苏丹德尔维希"
       },
       "4": {
-        "hp_mult": 1.6,
-        "damage_mult": 1.6,
+        "techs": [
+          "DEWarriorSocietySudanese",
+          "DEChampionSudanese"
+        ],
         "name": "风云苏丹德尔维希"
       }
     },
     "denattatararcher": {
       "3": {
-        "hp_mult": 1.25,
-        "damage_mult": 1.25,
+        "techs": [
+          "DENatDisciplinedTengri"
+        ],
         "name": "纪律严明的鞑靼弓手"
       },
       "4": {
-        "hp_mult": 1.6,
-        "damage_mult": 1.6,
+        "techs": [
+          "DENatDisciplinedTengri",
+          "DENatHonoredTengri"
+        ],
         "name": "光荣的鞑靼弓手"
       }
     },
     "denattotenkopf": {
       "3": {
-        "hp_mult": 1.2,
-        "damage_mult": 1.2,
+        "techs": [
+          "DEVeteranHanover"
+        ],
         "name": "老练骷髅轻骑兵"
       },
       "4": {
-        "hp_mult": 1.6,
-        "damage_mult": 1.6,
+        "techs": [
+          "DEVeteranHanover",
+          "DEGuardHanover"
+        ],
         "name": "骷髅轻骑兵护卫"
       }
     },
     "denattrabant": {
       "3": {
-        "hp_mult": 1.2,
-        "damage_mult": 1.2,
+        "techs": [
+          "DEVeteranWettin"
+        ],
         "name": "老练亲随"
       },
       "4": {
-        "hp_mult": 1.6,
-        "damage_mult": 1.6,
+        "techs": [
+          "DEVeteranWettin",
+          "DEGuardWettin"
+        ],
         "name": "护卫亲随"
       }
     },
     "denatyorubalegionary": {
       "3": {
-        "hp_mult": 1.25,
-        "damage_mult": 1.25
+        "techs": [
+          "DEWarriorSocietyYoruba"
+        ]
       },
       "4": {
-        "hp_mult": 1.6,
-        "damage_mult": 1.6,
+        "techs": [
+          "DEWarriorSocietyYoruba",
+          "DEChampionYoruba"
+        ],
         "name": "风云约鲁巴奥约军团兵"
       }
     },
     "denatyorubarider": {
       "3": {
-        "hp_mult": 1.25,
-        "damage_mult": 1.25
+        "techs": [
+          "DEWarriorSocietyYoruba"
+        ]
       },
       "4": {
-        "hp_mult": 1.6,
-        "damage_mult": 1.6,
+        "techs": [
+          "DEWarriorSocietyYoruba",
+          "DEChampionYoruba"
+        ],
         "name": "风云约鲁巴埃索骑兵"
       }
     },
     "deneftenya": {
       "3": {
-        "hp_mult": 1.15,
-        "damage_mult": 1.15,
+        "techs": [
+          "DEEliteNeftenyaShadow"
+        ],
         "name": "精锐内夫特尼亚步枪兵"
       },
       "4": {
-        "hp_mult": 1.4,
-        "damage_mult": 1.4,
+        "techs": [
+          "DEEliteNeftenyaShadow",
+          "DEChampionInfantryEthiopian"
+        ],
         "name": "风云内夫特尼亚步枪兵"
       },
       "5": {
-        "hp_mult": 1.9,
-        "damage_mult": 1.9,
+        "techs": [
+          "DEEliteNeftenyaShadow",
+          "DEChampionInfantryEthiopian",
+          "DELegendaryInfantryEthiopian"
+        ],
         "name": "传奇内夫特尼亚步枪兵"
       }
     },
     "denizam": {
       "3": {
-        "hp_mult": 1.2,
-        "damage_mult": 1.2,
+        "techs": [
+          "DEVeteranNizam"
+        ],
         "name": "老练新军燧枪兵"
       },
       "4": {
-        "hp_mult": 1.5,
-        "damage_mult": 1.5,
+        "techs": [
+          "DEVeteranNizam",
+          "DEGuardNizam"
+        ],
         "name": "护卫新军燧枪兵"
       },
       "5": {
-        "hp_mult": 2.0,
-        "damage_mult": 2.0,
+        "techs": [
+          "DEVeteranNizam",
+          "DEGuardNizam",
+          "DEImperialNizam"
+        ],
         "name": "帝国新军燧枪兵"
       }
     },
     "denmpapalbombard": {
       "5": {
-        "hp_mult": 1.5,
-        "damage_mult": 1.5,
+        "techs": [
+          "DEImperialPapalBombard"
+        ],
         "name": "帝国教宗火炮"
       }
     },
     "deordenanca": {
       "5": {
-        "hp_mult": 1.5,
-        "damage_mult": 1.5,
+        "techs": [
+          "ImperialOrdinanceBesteiro"
+        ],
         "name": "帝国法令步枪兵"
       }
     },
     "deoromowarrior": {
       "3": {
-        "hp_mult": 1.15,
-        "damage_mult": 1.15,
+        "techs": [
+          "DEEliteOromoWarriorShadow"
+        ],
         "name": "精锐奥罗莫战士"
       },
       "4": {
-        "hp_mult": 1.4,
-        "damage_mult": 1.4,
+        "techs": [
+          "DEEliteOromoWarriorShadow",
+          "DEChampionCavalryEthiopian"
+        ],
         "name": "风云奥罗莫勇士"
       },
       "5": {
-        "hp_mult": 1.9,
-        "damage_mult": 1.9,
+        "techs": [
+          "DEEliteOromoWarriorShadow",
+          "DEChampionCavalryEthiopian",
+          "DELegendaryCavalryEthiopian"
+        ],
         "name": "传奇奥罗莫战士"
       }
     },
     "depavisier": {
       "3": {
-        "hp_mult": 1.2,
-        "damage_mult": 1.2,
+        "techs": [
+          "DEVeteranPavisiers"
+        ],
         "name": "老练墙盾手"
       },
       "4": {
-        "hp_mult": 1.5,
-        "damage_mult": 1.5,
+        "techs": [
+          "DEVeteranPavisiers",
+          "DEGuardPavisiers"
+        ],
         "name": "护卫墙盾手"
       },
       "5": {
-        "hp_mult": 2.0,
-        "damage_mult": 2.0,
-        "action_range_add": {
-          "VolleyRangedAttack": 1.0,
-          "DefendRangedAttack": 1.0,
-          "StaggerRangedAttack": 1.0
-        },
+        "techs": [
+          "DEVeteranPavisiers",
+          "DEGuardPavisiers",
+          "DEImperialPavisiers"
+        ],
         "name": "帝国墙盾手"
       }
     },
     "depiechur": {
       "3": {
-        "hp_mult": 1.2,
-        "damage_mult": 1.2,
-        "action_range_add": {
-          "VolleyRangedAttack": 2.0,
-          "DefendRangedAttack": 2.0,
-          "StaggerRangedAttack": 2.0
-        },
+        "techs": [
+          "VeteranPiechurs"
+        ],
         "name": "老练波兰步兵"
       },
       "4": {
-        "hp_mult": 1.6,
-        "damage_mult": 1.6,
-        "action_range_add": {
-          "VolleyRangedAttack": 4.0,
-          "DefendRangedAttack": 4.0,
-          "StaggerRangedAttack": 4.0
-        },
+        "techs": [
+          "VeteranPiechurs",
+          "RGKurpie"
+        ],
         "name": "库尔皮神射手"
       },
       "5": {
-        "hp_mult": 2.1,
-        "damage_mult": 2.1,
-        "action_range_add": {
-          "VolleyRangedAttack": 5.0,
-          "DefendRangedAttack": 5.0,
-          "StaggerRangedAttack": 5.0
-        },
+        "techs": [
+          "VeteranPiechurs",
+          "RGKurpie",
+          "ImperialKurpie"
+        ],
         "name": "帝国库尔皮神射手"
       }
     },
     "depriestess": {
       "3": {
-        "hp_mult": 1.25
+        "techs": [
+          "DEEliteInca"
+        ]
       },
       "4": {
-        "hp_mult": 1.5
+        "techs": [
+          "DEEliteInca",
+          "DEChampionInca"
+        ]
       },
       "5": {
-        "hp_mult": 2.0
+        "techs": [
+          "DEEliteInca",
+          "DEChampionInca",
+          "DELegendaryInca"
+        ]
       }
     },
     "dequakergun": {
       "4": {
-        "hp_mult": 1.25
+        "techs": [
+          "DEGuardQuakerGunShadow"
+        ]
       },
       "5": {
-        "hp_mult": 1.75
+        "techs": [
+          "DEGuardQuakerGunShadow",
+          "DEImperialQuakerGunShadow"
+        ]
       }
     },
     "deraider": {
       "3": {
-        "hp_mult": 1.25,
-        "damage_mult": 1.25,
+        "techs": [
+          "DEEliteHeavyCavalryHausa"
+        ],
         "name": "精锐突袭者"
       },
       "4": {
-        "hp_mult": 1.5,
-        "damage_mult": 1.5,
+        "techs": [
+          "DEEliteHeavyCavalryHausa",
+          "DEChampionHeavyCavalryHausa"
+        ],
         "name": "风云突袭者"
       },
       "5": {
-        "hp_mult": 2.0,
-        "damage_mult": 2.0,
+        "techs": [
+          "DEEliteHeavyCavalryHausa",
+          "DEChampionHeavyCavalryHausa",
+          "DELegendaryHeavyCavalryHausa"
+        ],
         "name": "传奇突袭者"
       }
     },
     "deranger": {
       "3": {
-        "hp_mult": 1.2,
-        "damage_mult": 1.2,
+        "techs": [
+          "DEVeteranRangersShadow"
+        ],
         "name": "老练游骑兵"
       },
       "4": {
-        "hp_mult": 1.5,
-        "damage_mult": 1.5,
+        "techs": [
+          "DEVeteranRangersShadow",
+          "DEGuardRangersShadow"
+        ],
         "name": "护卫游骑兵"
       },
       "5": {
-        "hp_mult": 2.0,
-        "damage_mult": 2.0,
+        "techs": [
+          "DEVeteranRangersShadow",
+          "DEGuardRangersShadow",
+          "DEImperialRangersShadow"
+        ],
         "name": "帝国游骑兵"
       }
     },
     "deregenthorse": {
       "3": {
-        "hp_mult": 1.2,
-        "damage_mult": 1.2
+        "techs": [
+          "ypDisciplinedDaimyoShadow"
+        ]
       },
       "4": {
-        "hp_mult": 1.5,
-        "damage_mult": 1.5
+        "techs": [
+          "ypDisciplinedDaimyoShadow",
+          "ypHonoredDaimyoShadow"
+        ]
       },
       "5": {
-        "hp_mult": 2.0,
-        "damage_mult": 2.0
+        "techs": [
+          "ypDisciplinedDaimyoShadow",
+          "ypHonoredDaimyoShadow",
+          "ypExaltedDaimyoShadow"
+        ]
       }
     },
     "deregular": {
       "3": {
-        "hp_mult": 1.2,
-        "damage_mult": 1.2,
+        "techs": [
+          "DEVeteranUSRegulars"
+        ],
         "name": "老练正规军"
       },
       "4": {
-        "hp_mult": 1.5,
-        "damage_mult": 1.5,
+        "techs": [
+          "DEVeteranUSRegulars",
+          "DEGuardUSRegulars"
+        ],
         "name": "护卫正规军"
       },
       "5": {
-        "hp_mult": 2.0,
-        "damage_mult": 2.0,
+        "techs": [
+          "DEVeteranUSRegulars",
+          "DEGuardUSRegulars",
+          "DEImperialUSRegulars"
+        ],
         "name": "帝国正规军"
       }
     },
     "derifleman": {
       "3": {
-        "hp_mult": 1.2,
-        "damage_mult": 1.2,
-        "action_range_add": {
-          "VolleyRangedAttack": 1.0,
-          "DefendRangedAttack": 1.0,
-          "StaggerRangedAttack": 1.0
-        },
+        "techs": [
+          "DEVeteranRiflemenShadow"
+        ],
         "name": "老练狙击手"
       },
       "4": {
-        "hp_mult": 1.5,
-        "damage_mult": 1.5,
-        "action_range_add": {
-          "VolleyRangedAttack": 2.0,
-          "DefendRangedAttack": 2.0,
-          "StaggerRangedAttack": 2.0
-        },
+        "techs": [
+          "DEVeteranRiflemenShadow",
+          "DEGuardRiflemen"
+        ],
         "name": "护卫狙击手"
       },
       "5": {
-        "hp_mult": 2.0,
-        "damage_mult": 2.0,
-        "action_range_add": {
-          "VolleyRangedAttack": 2.0,
-          "DefendRangedAttack": 2.0,
-          "StaggerRangedAttack": 2.0
-        },
+        "techs": [
+          "DEVeteranRiflemenShadow",
+          "DEGuardRiflemen",
+          "DEImperialRiflemen"
+        ],
         "name": "帝国狙击手"
       }
     },
     "derussianhalberdier": {
       "3": {
-        "hp_mult": 1.2,
-        "damage_mult": 1.2,
+        "techs": [
+          "DEVeteranRussianHalberdiers"
+        ],
         "name": "老练尉官"
       },
       "4": {
-        "hp_mult": 1.5,
-        "damage_mult": 1.5,
+        "techs": [
+          "DEVeteranRussianHalberdiers",
+          "DEGuardRussianHalberdiers"
+        ],
         "name": "护卫尉官"
       },
       "5": {
-        "hp_mult": 2.0,
-        "damage_mult": 2.0,
+        "techs": [
+          "DEVeteranRussianHalberdiers",
+          "DEGuardRussianHalberdiers",
+          "DEImperialRussianHalberdiers"
+        ],
         "name": "帝国尉官"
       }
     },
     "derussianmusketeer": {
       "3": {
-        "hp_mult": 1.2,
-        "damage_mult": 1.2,
+        "techs": [
+          "DEVeteranRussianMusketeers"
+        ],
         "name": "老练俄国重装步兵"
       },
       "4": {
-        "hp_mult": 1.5,
-        "damage_mult": 1.5,
+        "techs": [
+          "DEVeteranRussianMusketeers",
+          "DEGuardRussianMusketeers"
+        ],
         "name": "护卫俄国重装步兵"
       },
       "5": {
-        "hp_mult": 2.0,
-        "damage_mult": 2.0,
+        "techs": [
+          "DEVeteranRussianMusketeers",
+          "DEGuardRussianMusketeers",
+          "DEImperialRussianMusketeers"
+        ],
         "name": "俄罗斯帝国重装步兵"
       }
     },
     "desebastopolmortar": {
       "4": {
-        "damage_mult": 1.25,
-        "action_range_add": {
-          "SolidAttack": 2.0,
-          "BuildingAttack": 6.0,
-          "ExplosiveAttack": 2.0
-        },
+        "techs": [
+          "DEIndustrialSebastopol"
+        ],
         "name": "风云塞巴斯托波"
       },
       "5": {
-        "hp_mult": 1.5,
-        "damage_mult": 1.75,
-        "action_range_add": {
-          "SolidAttack": 2.0,
-          "BuildingAttack": 12.0,
-          "ExplosiveAttack": 2.0
-        },
+        "techs": [
+          "DEIndustrialSebastopol",
+          "DEImperialSebastopol"
+        ],
         "name": "传奇塞巴斯托波"
       }
     },
     "deshotelwarrior": {
       "3": {
-        "hp_mult": 1.25,
-        "damage_mult": 1.25,
+        "techs": [
+          "DEEliteInfantryEthiopian"
+        ],
         "name": "精锐弯刀勇士"
       },
       "4": {
-        "hp_mult": 1.5,
-        "damage_mult": 1.5,
+        "techs": [
+          "DEEliteInfantryEthiopian",
+          "DEChampionInfantryEthiopian"
+        ],
         "name": "风云弯刀勇士"
       },
       "5": {
-        "hp_mult": 2.0,
-        "damage_mult": 2.0,
+        "techs": [
+          "DEEliteInfantryEthiopian",
+          "DEChampionInfantryEthiopian",
+          "DELegendaryInfantryEthiopian"
+        ],
         "name": "传奇弯刀勇士"
       }
     },
     "deslinger": {
       "3": {
-        "hp_mult": 1.25,
-        "damage_mult": 1.25,
+        "techs": [
+          "DEEliteSlingersShadow"
+        ],
         "name": "精锐投石索兵"
       },
       "4": {
-        "hp_mult": 1.5,
-        "damage_mult": 1.5,
-        "action_range_add": {
-          "VolleyRangedAttack": 1.0,
-          "BuildingAttack": 1.0,
-          "DefendRangedAttack": 1.0,
-          "StaggerRangedAttack": 1.0
-        },
-        "action_mult_add": {
-          "VolleyRangedAttack": {
-            "AbstractArtillery": 0.5
-          },
-          "VolleyHandAttack": {
-            "AbstractArtillery": 0.5
-          },
-          "DefendRangedAttack": {
-            "AbstractArtillery": 0.5
-          },
-          "DefendHandAttack": {
-            "AbstractArtillery": 0.5
-          },
-          "StaggerRangedAttack": {
-            "AbstractArtillery": 0.5
-          },
-          "StaggerHandAttack": {
-            "AbstractArtillery": 0.5
-          },
-          "MeleeHandAttack": {
-            "AbstractArtillery": 0.5
-          }
-        },
+        "techs": [
+          "DEEliteSlingersShadow",
+          "DEChampionSlingers"
+        ],
         "name": "风云投石索兵"
       },
       "5": {
-        "hp_mult": 2.0,
-        "damage_mult": 2.0,
-        "action_range_add": {
-          "VolleyRangedAttack": 2.0,
-          "BuildingAttack": 2.0,
-          "DefendRangedAttack": 2.0,
-          "StaggerRangedAttack": 2.0
-        },
-        "action_mult_add": {
-          "VolleyRangedAttack": {
-            "AbstractArtillery": 0.5
-          },
-          "VolleyHandAttack": {
-            "AbstractArtillery": 0.5
-          },
-          "DefendRangedAttack": {
-            "AbstractArtillery": 0.5
-          },
-          "DefendHandAttack": {
-            "AbstractArtillery": 0.5
-          },
-          "StaggerRangedAttack": {
-            "AbstractArtillery": 0.5
-          },
-          "StaggerHandAttack": {
-            "AbstractArtillery": 0.5
-          },
-          "MeleeHandAttack": {
-            "AbstractArtillery": 0.5
-          }
-        },
+        "techs": [
+          "DEEliteSlingersShadow",
+          "DEChampionSlingers",
+          "DEImpLegendarySlingers"
+        ],
         "name": "传奇投石索兵"
       }
     },
     "desoldado": {
       "3": {
-        "hp_mult": 1.2,
-        "damage_mult": 1.2,
+        "techs": [
+          "DEVeteranSoldados"
+        ],
         "name": "老练墨西哥士兵"
       },
       "4": {
-        "hp_mult": 1.5,
-        "damage_mult": 1.5,
+        "techs": [
+          "DEVeteranSoldados",
+          "DEGuardSoldados"
+        ],
         "name": "护卫墨西哥士兵"
       },
       "5": {
-        "hp_mult": 2.0,
-        "damage_mult": 2.0,
+        "techs": [
+          "DEVeteranSoldados",
+          "DEGuardSoldados",
+          "DEImperialSoldados"
+        ],
         "name": "帝国墨西哥士兵"
       }
     },
     "despccityguard": {
       "3": {
-        "hp_mult": 1.2,
-        "damage_mult": 1.2
+        "techs": [
+          "DESPCVeteranCityGuard"
+        ]
       },
       "4": {
-        "hp_mult": 1.5,
-        "damage_mult": 1.5
+        "techs": [
+          "DESPCVeteranCityGuard",
+          "DESPCGuardCityGuard"
+        ]
       },
       "5": {
-        "hp_mult": 2.0,
-        "damage_mult": 2.0
+        "techs": [
+          "DESPCVeteranCityGuard",
+          "DESPCGuardCityGuard",
+          "DESPCImperialCityGuard"
+        ]
       }
     },
     "despcdelugecossack": {
       "3": {
-        "hp_mult": 1.2,
-        "damage_mult": 1.2,
+        "techs": [
+          "DESPCVeteranCossackShadow"
+        ],
         "name": "老练哥萨克骑兵"
       },
       "4": {
-        "hp_mult": 1.5,
-        "damage_mult": 1.5,
+        "techs": [
+          "DESPCVeteranCossackShadow",
+          "DESPCGuardCossackShadow"
+        ],
         "name": "护卫哥萨克骑兵"
       },
       "5": {
-        "hp_mult": 2.0,
-        "damage_mult": 2.0,
+        "techs": [
+          "DESPCVeteranCossackShadow",
+          "DESPCGuardCossackShadow",
+          "DESPCImperialCossackShadow"
+        ],
         "name": "帝国哥萨克骑兵"
       }
     },
     "despchornspearman": {
       "3": {
-        "hp_mult": 1.25,
-        "damage_mult": 1.25
+        "techs": [
+          "DEUnknownWarriorSocietySomali"
+        ]
       },
       "4": {
-        "hp_mult": 1.6,
-        "damage_mult": 1.6
+        "techs": [
+          "DEUnknownWarriorSocietySomali",
+          "DEUnknownChampionSomali"
+        ]
       }
     },
     "despcneutralcityguard": {
       "4": {
-        "hp_mult": 1.3,
-        "damage_mult": 1.3
+        "techs": [
+          "DEGuardOutlawShadow"
+        ]
       },
       "5": {
-        "hp_mult": 1.8,
-        "damage_mult": 1.8
+        "techs": [
+          "DEGuardOutlawShadow",
+          "DEImperialOutlawShadow"
+        ]
       }
     },
     "despcoprichnikguardian": {
       "4": {
-        "hp_mult": 1.3,
-        "damage_mult": 1.3
+        "techs": [
+          "DEGuardOutlawShadow"
+        ]
       },
       "5": {
-        "hp_mult": 1.8,
-        "damage_mult": 1.8
+        "techs": [
+          "DEGuardOutlawShadow",
+          "DEImperialOutlawShadow"
+        ]
       }
     },
     "despcpikemanguardian": {
       "4": {
-        "hp_mult": 1.3,
-        "damage_mult": 1.3
+        "techs": [
+          "DEGuardOutlawShadow"
+        ]
       },
       "5": {
-        "hp_mult": 1.8,
-        "damage_mult": 1.8
+        "techs": [
+          "DEGuardOutlawShadow",
+          "DEImperialOutlawShadow"
+        ]
       }
     },
     "despcstreletguardian": {
       "4": {
-        "hp_mult": 1.3,
-        "damage_mult": 1.3
+        "techs": [
+          "DEGuardOutlawShadow"
+        ]
       },
       "5": {
-        "hp_mult": 1.8,
-        "damage_mult": 1.8
+        "techs": [
+          "DEGuardOutlawShadow",
+          "DEImperialOutlawShadow"
+        ]
       }
     },
     "despcusregular": {
       "5": {
-        "hp_mult": 1.5,
-        "damage_mult": 1.5,
+        "techs": [
+          "DEImperialSPCRegulars"
+        ],
         "name": "帝国正规军"
       }
     },
     "despcusvolunteer": {
       "5": {
-        "hp_mult": 1.5,
-        "damage_mult": 1.5,
+        "techs": [
+          "DEImperialSPCVolunteers"
+        ],
         "name": "帝国志愿军"
       }
     },
     "despearmanlevy": {
       "3": {
-        "hp_mult": 1.25,
-        "damage_mult": 1.25,
+        "techs": [
+          "DEEliteLevyAfricanShadow"
+        ],
         "name": "精锐募集长矛兵"
       },
       "4": {
-        "hp_mult": 1.5,
-        "damage_mult": 1.5,
+        "techs": [
+          "DEEliteLevyAfricanShadow",
+          "DEChampionLevyAfricanShadow"
+        ],
         "name": "风云募集长矛兵"
       },
       "5": {
-        "hp_mult": 2.0,
-        "damage_mult": 2.0,
+        "techs": [
+          "DEEliteLevyAfricanShadow",
+          "DEChampionLevyAfricanShadow",
+          "DELegendaryLevyAfricanShadow"
+        ],
         "name": "传奇募集长矛兵"
       }
     },
     "destatemilitia": {
       "3": {
-        "hp_mult": 1.2,
-        "damage_mult": 1.2,
+        "techs": [
+          "DEVeteranStateMilitia"
+        ],
         "name": "老练州民兵"
       },
       "4": {
-        "hp_mult": 1.5,
-        "damage_mult": 1.5,
+        "techs": [
+          "DEVeteranStateMilitia",
+          "DEVolunteers"
+        ],
         "name": "护卫州民兵"
       },
       "5": {
-        "hp_mult": 1.9,
-        "damage_mult": 1.9,
+        "techs": [
+          "DEVeteranStateMilitia",
+          "DEVolunteers",
+          "DEImperialVolunteers"
+        ],
         "name": "帝国志愿军"
       }
     },
     "deunknownnateaglewarrior": {
       "3": {
-        "hp_mult": 1.25,
-        "damage_mult": 1.25,
+        "techs": [
+          "DEUnknownWarriorSocietiesAztecs"
+        ],
         "name": "精锐鹰勇士"
       },
       "4": {
-        "hp_mult": 1.6,
-        "damage_mult": 1.6,
+        "techs": [
+          "DEUnknownWarriorSocietiesAztecs",
+          "DEUnknownChampionAztecs"
+        ],
         "name": "风云鹰勇士"
       }
     },
     "deunknownnatjaguarwarrior": {
       "3": {
-        "hp_mult": 1.25,
-        "damage_mult": 1.25,
+        "techs": [
+          "DEUnknownWarriorSocietiesAztecs"
+        ],
         "name": "精锐豹勇士"
       },
       "4": {
-        "hp_mult": 1.6,
-        "damage_mult": 1.6,
+        "techs": [
+          "DEUnknownWarriorSocietiesAztecs",
+          "DEUnknownChampionAztecs"
+        ],
         "name": "风云豹勇士"
       }
     },
     "deuscavalry": {
       "3": {
-        "hp_mult": 1.2,
-        "damage_mult": 1.2,
-        "action_range_add": {
-          "StaggerRangedAttack": 1.0,
-          "DefendRangedAttack": 1.0
-        },
+        "techs": [
+          "DEVeteranUSCavalryShadow"
+        ],
         "name": "老练卡宾枪骑兵"
       },
       "4": {
-        "hp_mult": 1.5,
-        "damage_mult": 1.5,
-        "action_range_add": {
-          "StaggerRangedAttack": 1.0,
-          "DefendRangedAttack": 1.0
-        },
+        "techs": [
+          "DEVeteranUSCavalryShadow",
+          "DEGuardUSCavalry"
+        ],
         "name": "护卫卡宾枪骑兵"
       },
       "5": {
-        "hp_mult": 2.0,
-        "damage_mult": 2.0,
-        "action_range_add": {
-          "StaggerRangedAttack": 1.0,
-          "DefendRangedAttack": 1.0
-        },
+        "techs": [
+          "DEVeteranUSCavalryShadow",
+          "DEGuardUSCavalry",
+          "DEImperialUSCavalry"
+        ],
         "name": "帝国卡宾枪骑兵"
       }
     },
     "dewingedhussar": {
       "3": {
-        "hp_mult": 1.2,
-        "damage_mult": 1.2,
+        "techs": [
+          "VeteranWingedHussars"
+        ],
         "name": "老练翼骑兵"
       },
       "4": {
-        "hp_mult": 1.6,
-        "damage_mult": 1.6,
+        "techs": [
+          "VeteranWingedHussars",
+          "GuardWingedHussars"
+        ],
         "name": "护卫翼骑兵"
       },
       "5": {
-        "hp_mult": 2.1,
-        "damage_mult": 2.1,
+        "techs": [
+          "VeteranWingedHussars",
+          "GuardWingedHussars",
+          "ImperialWingedHussars"
+        ],
         "name": "帝国翼骑兵"
       }
     },
     "dopplesoldner": {
       "3": {
-        "hp_mult": 1.2,
-        "damage_mult": 1.2,
+        "techs": [
+          "VeteranDopplesoldners"
+        ],
         "name": "老练双酬剑士"
       },
       "4": {
-        "hp_mult": 1.5,
-        "damage_mult": 1.5,
+        "techs": [
+          "VeteranDopplesoldners",
+          "GuardDopplesoldners"
+        ],
         "name": "护卫双酬剑士"
       },
       "5": {
-        "hp_mult": 2.0,
-        "damage_mult": 2.0,
+        "techs": [
+          "VeteranDopplesoldners",
+          "GuardDopplesoldners",
+          "ImperialDopplesoldner"
+        ],
         "name": "帝国双酬剑士"
       }
     },
     "dragoon": {
       "3": {
-        "hp_mult": 1.2,
-        "damage_mult": 1.2,
+        "techs": [
+          "VeteranDragoonsShadow"
+        ],
         "name": "老练枪骑兵"
       },
       "4": {
-        "hp_mult": 1.5,
-        "damage_mult": 1.5,
+        "techs": [
+          "VeteranDragoonsShadow",
+          "GuardDragoons"
+        ],
         "name": "护卫枪骑兵"
       },
       "5": {
-        "hp_mult": 2.0,
-        "damage_mult": 2.0,
+        "techs": [
+          "VeteranDragoonsShadow",
+          "GuardDragoons",
+          "ImperialDragoons"
+        ],
         "name": "帝国枪骑兵"
       }
     },
     "falconet": {
       "4": {
-        "hp_mult": 1.25,
-        "damage_mult": 1.25,
+        "techs": [
+          "FieldGun"
+        ],
         "name": "野战炮"
       },
       "5": {
-        "hp_mult": 1.75,
-        "damage_mult": 1.75,
+        "techs": [
+          "FieldGun",
+          "ImperialFieldGun"
+        ],
         "name": "帝国野战炮"
       }
     },
     "frigate": {
       "5": {
-        "hp_mult": 1.5,
-        "damage_mult": 1.5,
+        "techs": [
+          "ImperialManOWar"
+        ],
         "name": "帝国护卫舰"
       }
     },
     "greatbombard": {
       "5": {
-        "hp_mult": 1.5,
-        "damage_mult": 1.5,
+        "techs": [
+          "ImperialBombard"
+        ],
         "name": "帝国重型火炮"
       }
     },
     "grenadier": {
       "3": {
-        "hp_mult": 1.2,
-        "damage_mult": 1.2,
+        "techs": [
+          "VeteranGrenadiers"
+        ],
         "name": "老练掷弹兵"
       },
       "4": {
-        "hp_mult": 1.5,
-        "damage_mult": 1.5,
+        "techs": [
+          "VeteranGrenadiers",
+          "GuardGrenadiers"
+        ],
         "name": "护卫掷弹兵"
       },
       "5": {
-        "hp_mult": 2.0,
-        "damage_mult": 2.0,
+        "techs": [
+          "VeteranGrenadiers",
+          "GuardGrenadiers",
+          "ImperialGrenadiers"
+        ],
         "name": "帝国掷弹兵"
       }
     },
     "halberdier": {
       "4": {
-        "hp_mult": 1.3,
-        "damage_mult": 1.3,
+        "techs": [
+          "GuardHalberdiers"
+        ],
         "name": "护卫长戟兵"
       },
       "5": {
-        "hp_mult": 1.8,
-        "damage_mult": 1.8,
-        "name": "帝国城市卫队"
+        "techs": [
+          "GuardHalberdiers",
+          "ImperialHalberdiers"
+        ],
+        "name": "帝国长戟兵"
       }
     },
     "hussar": {
       "3": {
-        "hp_mult": 1.2,
-        "damage_mult": 1.2,
+        "techs": [
+          "VeteranHussars"
+        ],
         "name": "老练轻骑兵"
       },
       "4": {
-        "hp_mult": 1.5,
-        "damage_mult": 1.5,
+        "techs": [
+          "VeteranHussars",
+          "GuardHussars"
+        ],
         "name": "护卫轻骑兵"
       },
       "5": {
-        "hp_mult": 2.0,
-        "damage_mult": 2.0,
+        "techs": [
+          "VeteranHussars",
+          "GuardHussars",
+          "ImperialGardener"
+        ],
         "name": "帝国轻骑兵"
       }
     },
     "janissary": {
       "3": {
-        "hp_mult": 1.2,
-        "damage_mult": 1.2,
+        "techs": [
+          "VeteranJanissaries"
+        ],
         "name": "老练奥斯曼火枪兵"
       },
       "4": {
-        "hp_mult": 1.5,
-        "damage_mult": 1.5,
+        "techs": [
+          "VeteranJanissaries",
+          "GuardJanissaries"
+        ],
         "name": "护卫奥斯曼火枪兵"
       },
       "5": {
-        "hp_mult": 2.0,
-        "damage_mult": 2.0,
+        "techs": [
+          "VeteranJanissaries",
+          "GuardJanissaries",
+          "ImperialJanissaries"
+        ],
         "name": "帝国奥斯曼火枪兵"
       }
     },
     "lancer": {
       "4": {
-        "hp_mult": 1.3,
-        "damage_mult": 1.3,
+        "techs": [
+          "GuardLancers"
+        ],
         "name": "护卫长矛骑兵"
       },
       "5": {
-        "hp_mult": 1.8,
-        "damage_mult": 1.8,
+        "techs": [
+          "GuardLancers",
+          "ImperialGarrochistas"
+        ],
         "name": "帝国护卫长矛骑兵"
       }
     },
     "longbowman": {
       "3": {
-        "hp_mult": 1.2,
-        "damage_mult": 1.2,
+        "techs": [
+          "VeteranLongbowmen"
+        ],
         "name": "老练长弓兵"
       },
       "4": {
-        "hp_mult": 1.5,
-        "damage_mult": 1.5,
+        "techs": [
+          "VeteranLongbowmen",
+          "GuardLongbowmen"
+        ],
         "name": "护卫长弓兵"
       },
       "5": {
-        "hp_mult": 2.0,
-        "damage_mult": 2.0,
+        "techs": [
+          "VeteranLongbowmen",
+          "GuardLongbowmen",
+          "ImperialLongbowmen"
+        ],
         "name": "帝国长弓兵"
       }
     },
     "mercbarbarycorsair": {
       "3": {
-        "hp_mult": 1.2,
-        "damage_mult": 1.2,
+        "techs": [
+          "DEVeteranBarbaryCorsairs"
+        ],
         "name": "老练巴巴里海盗"
       },
       "4": {
-        "hp_mult": 1.5,
-        "damage_mult": 1.5,
+        "techs": [
+          "DEVeteranBarbaryCorsairs",
+          "DEGuardBarbaryCorsairs"
+        ],
         "name": "护卫巴巴里海盗"
       }
     },
     "mercmameluke": {
       "4": {
-        "hp_mult": 1.3,
-        "damage_mult": 1.3,
+        "techs": [
+          "DEGuardMameluke"
+        ],
         "name": "护卫马穆鲁克"
-      }
-    },
-    "mercswisspikeman": {
-      "3": {
-        "hp_mult": 1.2,
-        "damage_mult": 1.2,
-        "speed_add": 0.25
       }
     },
     "minuteman": {
       "3": {
-        "damage_mult": 1.2,
+        "techs": [
+          "VeteranSnaphaner"
+        ],
         "name": "老练燧发枪手"
       },
       "4": {
-        "hp_mult": 1.3,
-        "damage_mult": 1.5,
-        "action_range_add": {
-          "VolleyRangedAttack": 2.0,
-          "DefendRangedAttack": 2.0,
-          "StaggerRangedAttack": 2.0
-        },
+        "techs": [
+          "VeteranSnaphaner",
+          "RGFriskytter"
+        ],
         "name": "自由枪手"
       },
       "5": {
-        "hp_mult": 1.8,
-        "damage_mult": 2.0,
-        "action_range_add": {
-          "VolleyRangedAttack": 4.0,
-          "DefendRangedAttack": 4.0,
-          "StaggerRangedAttack": 4.0
-        },
+        "techs": [
+          "VeteranSnaphaner",
+          "RGFriskytter",
+          "ImperialFriskytter"
+        ],
         "name": "帝国自由枪手"
       }
     },
     "monitor": {
       "4": {
-        "hp_mult": 1.5,
-        "damage_mult": 1.5,
-        "name": "帝国迫击炮战船"
+        "techs": [
+          "ShipHowitzers"
+        ],
+        "name": "重型迫击炮战船"
       },
       "5": {
-        "hp_mult": 2.0,
-        "damage_mult": 2.0,
+        "techs": [
+          "ShipHowitzers",
+          "ImperialMonitors"
+        ],
         "name": "帝国迫击炮战船"
       }
     },
     "mortar": {
       "4": {
-        "hp_mult": 1.25,
-        "damage_mult": 1.25,
+        "techs": [
+          "Howitzer"
+        ],
         "name": "榴弹炮"
       },
       "5": {
-        "hp_mult": 1.75,
-        "damage_mult": 1.75,
-        "name": "帝国皇家迫击炮"
+        "techs": [
+          "Howitzer",
+          "ImperialHowitzer"
+        ],
+        "name": "帝国榴弹炮"
       }
     },
     "musketeer": {
       "3": {
-        "hp_mult": 1.2,
-        "damage_mult": 1.2,
+        "techs": [
+          "VeteranMusketeers"
+        ],
         "name": "老练火枪兵"
       },
       "4": {
-        "hp_mult": 1.5,
-        "damage_mult": 1.5,
+        "techs": [
+          "VeteranMusketeers",
+          "GuardMusketeers"
+        ],
         "name": "护卫火枪兵"
       },
       "5": {
-        "hp_mult": 2.0,
-        "damage_mult": 2.0,
+        "techs": [
+          "VeteranMusketeers",
+          "GuardMusketeers",
+          "ImperialMusketeers"
+        ],
         "name": "帝国火枪兵"
       }
     },
     "natapachecavalry": {
       "3": {
-        "hp_mult": 1.25,
-        "damage_mult": 1.25,
+        "techs": [
+          "WarriorSocietyApache"
+        ],
         "name": "精锐阿帕切骑兵"
       },
       "4": {
-        "hp_mult": 1.6,
-        "damage_mult": 1.6,
+        "techs": [
+          "WarriorSocietyApache",
+          "ChampionApache"
+        ],
         "name": "风云阿帕切骑兵"
       }
     },
     "nataxerider": {
       "3": {
-        "hp_mult": 1.25,
-        "damage_mult": 1.25,
+        "techs": [
+          "WarriorSocietyLakota"
+        ],
         "name": "精锐斧骑兵"
       },
       "4": {
-        "hp_mult": 1.6,
-        "damage_mult": 1.6,
+        "techs": [
+          "WarriorSocietyLakota",
+          "ChampionLakota"
+        ],
         "name": "风云斧骑兵"
       }
     },
     "nataxeriderdogsoldier": {
       "4": {
-        "hp_mult": 1.15,
-        "damage_mult": 1.15,
+        "techs": [
+          "DEUnknownChampionLakota"
+        ],
         "name": "风云托卡拉士兵"
       }
     },
     "natblackwoodarcher": {
       "3": {
-        "hp_mult": 1.25,
-        "damage_mult": 1.25,
+        "techs": [
+          "WarriorSocietyTupi"
+        ],
         "name": "精锐黑檀木步弓手"
       },
       "4": {
-        "hp_mult": 1.6,
-        "damage_mult": 1.6,
+        "techs": [
+          "WarriorSocietyTupi",
+          "ChampionTupi"
+        ],
         "name": "风云黑檀木步弓手"
       }
     },
     "natblowgunambusher": {
       "3": {
-        "hp_mult": 1.25,
-        "damage_mult": 1.25,
+        "techs": [
+          "WarriorSocietyCaribs"
+        ],
         "name": "精锐伏击战士"
       },
       "4": {
-        "hp_mult": 1.6,
-        "damage_mult": 1.6,
+        "techs": [
+          "WarriorSocietyCaribs",
+          "ChampionCaribs"
+        ],
         "name": "风云伏击兵"
       }
     },
     "natblowgunwarrior": {
       "3": {
-        "hp_mult": 1.25,
-        "damage_mult": 1.25,
+        "techs": [
+          "WarriorSocietyCaribs"
+        ],
         "name": "精锐吹箭手"
       },
       "4": {
-        "hp_mult": 1.6,
-        "damage_mult": 1.6,
+        "techs": [
+          "WarriorSocietyCaribs",
+          "ChampionCaribs"
+        ],
         "name": "风云吹箭战士"
       }
     },
     "natbolaswarrior": {
       "3": {
-        "hp_mult": 1.25,
-        "damage_mult": 1.25,
+        "techs": [
+          "WarriorSocietyInca"
+        ],
         "name": "精锐掷石绳战士"
       },
       "4": {
-        "hp_mult": 1.6,
-        "damage_mult": 1.6,
+        "techs": [
+          "WarriorSocietyInca",
+          "ChampionInca"
+        ],
         "name": "风云掷石绳战士"
       }
     },
     "natcheyennerider": {
       "3": {
-        "hp_mult": 1.25,
-        "damage_mult": 1.25,
+        "techs": [
+          "WarriorSocietyCheyenne"
+        ],
         "name": "精锐夏安骑兵"
       },
       "4": {
-        "hp_mult": 1.6,
-        "damage_mult": 1.6,
+        "techs": [
+          "WarriorSocietyCheyenne",
+          "ChampionCheyenne"
+        ],
         "name": "风云夏安骑兵"
       }
     },
     "natclubman": {
       "3": {
-        "hp_mult": 1.25,
-        "damage_mult": 1.25,
+        "techs": [
+          "WarriorSocietyNootka"
+        ],
         "name": "精锐持棍兵"
       },
       "4": {
-        "hp_mult": 1.6,
-        "damage_mult": 1.6,
+        "techs": [
+          "WarriorSocietyNootka",
+          "ChampionNootka"
+        ],
         "name": "风云持棍兵"
       }
     },
     "natclubmanloyal": {
       "3": {
-        "hp_mult": 1.25,
-        "damage_mult": 1.25,
+        "techs": [
+          "WarriorSocietyNootka"
+        ],
         "name": "精锐战斗酋长"
       },
       "4": {
-        "hp_mult": 1.6,
-        "damage_mult": 1.6,
+        "techs": [
+          "WarriorSocietyNootka",
+          "ChampionNootka"
+        ],
         "name": "风云努特卡酋长"
       }
     },
     "nateaglewarrior": {
       "3": {
-        "hp_mult": 1.25,
-        "damage_mult": 1.25,
+        "techs": [
+          "WarriorSocietyAztecs"
+        ],
         "name": "精锐鹰勇士"
       },
       "4": {
-        "hp_mult": 1.6,
-        "damage_mult": 1.6,
+        "techs": [
+          "WarriorSocietyAztecs",
+          "ChampionAztecs"
+        ],
         "name": "风云鹰勇士"
       }
     },
     "natholcanspearman": {
       "3": {
-        "hp_mult": 1.25,
-        "damage_mult": 1.25,
+        "techs": [
+          "WarriorSocietyMaya"
+        ],
         "name": "精锐蛇矛兵"
       },
       "4": {
-        "hp_mult": 1.6,
-        "damage_mult": 1.6,
+        "techs": [
+          "WarriorSocietyMaya",
+          "ChampionMaya"
+        ],
         "name": "风云蛇矛兵"
       }
     },
     "nathorsearcher": {
       "3": {
-        "hp_mult": 1.25,
-        "damage_mult": 1.25,
+        "techs": [
+          "WarriorSocietyComanche"
+        ],
         "name": "精锐骑马弓兵"
       },
       "4": {
-        "hp_mult": 1.6,
-        "damage_mult": 1.6,
+        "techs": [
+          "WarriorSocietyComanche",
+          "ChampionComanche"
+        ],
         "name": "风云骑马弓兵"
       }
     },
     "nathuaminca": {
       "3": {
-        "hp_mult": 1.25,
-        "damage_mult": 1.25,
+        "techs": [
+          "WarriorSocietyInca"
+        ],
         "name": "精锐标枪手"
       },
       "4": {
-        "hp_mult": 1.6,
-        "damage_mult": 1.6,
+        "techs": [
+          "WarriorSocietyInca",
+          "ChampionInca"
+        ],
         "name": "标枪手"
       }
     },
     "nathuronmantlet": {
       "3": {
-        "hp_mult": 1.25,
-        "damage_mult": 1.25,
+        "techs": [
+          "WarriorSocietyHuron"
+        ],
         "name": "精锐休伦防弹盾"
       },
       "4": {
-        "hp_mult": 1.6,
-        "damage_mult": 1.6,
+        "techs": [
+          "WarriorSocietyHuron",
+          "ChampionHuron"
+        ],
         "name": "风云休伦防弹盾"
       }
     },
     "natjaguarwarrior": {
       "3": {
-        "hp_mult": 1.25,
-        "damage_mult": 1.25,
+        "techs": [
+          "WarriorSocietyAztecs"
+        ],
         "name": "精锐豹勇士"
       },
       "4": {
-        "hp_mult": 1.6,
-        "damage_mult": 1.6,
+        "techs": [
+          "WarriorSocietyAztecs",
+          "ChampionAztecs"
+        ],
         "name": "风云豹勇士"
       }
     },
     "natklamathrifleman": {
       "3": {
-        "hp_mult": 1.25,
-        "damage_mult": 1.25,
+        "techs": [
+          "WarriorSocietyKlamath"
+        ],
         "name": "精锐克拉马斯步枪兵"
       },
       "4": {
-        "hp_mult": 1.6,
-        "damage_mult": 1.6,
+        "techs": [
+          "WarriorSocietyKlamath",
+          "ChampionKlamath"
+        ],
         "name": "风云克拉马斯步枪兵"
       }
     },
     "natlightningwarrior": {
       "3": {
-        "hp_mult": 1.25,
-        "damage_mult": 1.25,
+        "techs": [
+          "WarriorSocietyZapotec"
+        ],
         "name": "精锐闪电战士"
       },
       "4": {
-        "hp_mult": 1.6,
-        "damage_mult": 1.6,
+        "techs": [
+          "WarriorSocietyZapotec",
+          "ChampionZapotec"
+        ],
         "name": "风云闪电战士"
       }
     },
     "natmantlet": {
       "3": {
-        "hp_mult": 1.25,
-        "damage_mult": 1.25,
+        "techs": [
+          "WarriorSocietyIroquois"
+        ],
         "name": "精锐防弹盾"
       },
       "4": {
-        "hp_mult": 1.6,
-        "damage_mult": 1.6,
+        "techs": [
+          "WarriorSocietyIroquois",
+          "ChampionIroquois"
+        ],
         "name": "风云防弹盾"
       }
     },
     "natmapucheclubman": {
       "3": {
-        "hp_mult": 1.25,
-        "damage_mult": 1.25,
+        "techs": [
+          "WarriorSocietyMapuche"
+        ],
         "name": "精锐硬木持棍兵"
       },
       "4": {
-        "hp_mult": 1.6,
-        "damage_mult": 1.6,
+        "techs": [
+          "WarriorSocietyMapuche",
+          "ChampionMapuche"
+        ],
         "name": "风云硬木持棍兵"
       }
     },
     "natmercblackwoodarcher": {
       "3": {
-        "hp_mult": 1.25,
-        "damage_mult": 1.25,
+        "techs": [
+          "WarriorSocietyTupi"
+        ],
         "name": "精锐黑檀木步弓手"
       },
       "4": {
-        "hp_mult": 1.6,
-        "damage_mult": 1.6,
+        "techs": [
+          "WarriorSocietyTupi",
+          "ChampionTupi"
+        ],
         "name": "风云黑檀木步弓手"
       }
     },
     "natmercblowgunwarrior": {
       "3": {
-        "hp_mult": 1.25,
-        "damage_mult": 1.25,
+        "techs": [
+          "WarriorSocietyCaribs"
+        ],
         "name": "精锐吹箭手"
       },
       "4": {
-        "hp_mult": 1.6,
-        "damage_mult": 1.6,
+        "techs": [
+          "WarriorSocietyCaribs",
+          "ChampionCaribs"
+        ],
         "name": "风云吹箭战士"
       }
     },
     "natmerccheyennerider": {
       "3": {
-        "hp_mult": 1.25,
-        "damage_mult": 1.25,
+        "techs": [
+          "WarriorSocietyCheyenne"
+        ],
         "name": "精锐夏安骑兵"
       },
       "4": {
-        "hp_mult": 1.6,
-        "damage_mult": 1.6,
+        "techs": [
+          "WarriorSocietyCheyenne",
+          "ChampionCheyenne"
+        ],
         "name": "风云夏安骑兵"
       }
     },
     "natmercclubman": {
       "3": {
-        "hp_mult": 1.25,
-        "damage_mult": 1.25,
+        "techs": [
+          "WarriorSocietyNootka"
+        ],
         "name": "精锐持棍兵"
       },
       "4": {
-        "hp_mult": 1.6,
-        "damage_mult": 1.6,
+        "techs": [
+          "WarriorSocietyNootka",
+          "ChampionNootka"
+        ],
         "name": "风云持棍兵"
       }
     },
     "natmercholcanspearman": {
       "3": {
-        "hp_mult": 1.25,
-        "damage_mult": 1.25,
+        "techs": [
+          "WarriorSocietyMaya"
+        ],
         "name": "精锐蛇矛兵"
       },
       "4": {
-        "hp_mult": 1.6,
-        "damage_mult": 1.6,
+        "techs": [
+          "WarriorSocietyMaya",
+          "ChampionMaya"
+        ],
         "name": "风云蛇矛兵"
       }
     },
     "natmerchorsearcher": {
       "3": {
-        "hp_mult": 1.25,
-        "damage_mult": 1.25,
+        "techs": [
+          "WarriorSocietyComanche"
+        ],
         "name": "精锐骑马弓兵"
       },
       "4": {
-        "hp_mult": 1.6,
-        "damage_mult": 1.6,
+        "techs": [
+          "WarriorSocietyComanche",
+          "ChampionComanche"
+        ],
         "name": "风云骑马弓兵"
       }
     },
     "natmerchuronmantlet": {
       "3": {
-        "hp_mult": 1.25,
-        "damage_mult": 1.25,
+        "techs": [
+          "WarriorSocietyHuron"
+        ],
         "name": "精锐休伦防弹盾"
       },
       "4": {
-        "hp_mult": 1.6,
-        "damage_mult": 1.6,
+        "techs": [
+          "WarriorSocietyHuron",
+          "ChampionHuron"
+        ],
         "name": "风云休伦防弹盾"
       }
     },
     "natmerclightningwarrior": {
       "3": {
-        "hp_mult": 1.25,
-        "damage_mult": 1.25,
+        "techs": [
+          "WarriorSocietyZapotec"
+        ],
         "name": "精锐闪电战士"
       },
       "4": {
-        "hp_mult": 1.6,
-        "damage_mult": 1.6,
+        "techs": [
+          "WarriorSocietyZapotec",
+          "ChampionZapotec"
+        ],
         "name": "风云闪电战士"
       }
     },
     "natmercrifleman": {
       "3": {
-        "hp_mult": 1.25,
-        "damage_mult": 1.25,
+        "techs": [
+          "WarriorSocietyCherokee"
+        ],
         "name": "精锐切罗基步枪兵"
       },
       "4": {
-        "hp_mult": 1.6,
-        "damage_mult": 1.6,
+        "techs": [
+          "WarriorSocietyCherokee",
+          "ChampionCherokee"
+        ],
         "name": "风云步枪兵"
       }
     },
     "natmerctracker": {
       "3": {
-        "hp_mult": 1.25,
-        "damage_mult": 1.25,
+        "techs": [
+          "WarriorSocietyCree"
+        ],
         "name": "精锐追踪者"
       },
       "4": {
-        "hp_mult": 1.6,
-        "damage_mult": 1.6,
+        "techs": [
+          "WarriorSocietyCree",
+          "ChampionCree"
+        ],
         "name": "风云追踪者"
       }
     },
     "natnavajorifleman": {
       "3": {
-        "hp_mult": 1.25,
-        "damage_mult": 1.25,
+        "techs": [
+          "WarriorSocietyNavajo"
+        ],
         "name": "精锐纳瓦霍步枪兵"
       },
       "4": {
-        "hp_mult": 1.6,
-        "damage_mult": 1.6,
+        "techs": [
+          "WarriorSocietyNavajo",
+          "ChampionNavajo"
+        ],
         "name": "风云纳瓦霍步枪兵"
       }
     },
     "natrifleman": {
       "3": {
-        "hp_mult": 1.25,
-        "damage_mult": 1.25,
+        "techs": [
+          "WarriorSocietyCherokee"
+        ],
         "name": "精锐切罗基步枪兵"
       },
       "4": {
-        "hp_mult": 1.6,
-        "damage_mult": 1.6,
+        "techs": [
+          "WarriorSocietyCherokee",
+          "ChampionCherokee"
+        ],
         "name": "风云步枪兵"
       }
     },
     "natsharktoothbowman": {
       "3": {
-        "hp_mult": 1.25,
-        "damage_mult": 1.25,
+        "techs": [
+          "WarriorSocietySeminoles"
+        ],
         "name": "精锐鲨齿弓箭手"
       },
       "4": {
-        "hp_mult": 1.6,
-        "damage_mult": 1.6,
+        "techs": [
+          "WarriorSocietySeminoles",
+          "ChampionSeminoles"
+        ],
         "name": "风云鲨齿弓箭手"
       }
     },
     "nattomahawk": {
       "3": {
-        "hp_mult": 1.25,
-        "damage_mult": 1.25,
+        "techs": [
+          "WarriorSocietyIroquois"
+        ],
         "name": "精锐战斧兵"
       },
       "4": {
-        "hp_mult": 1.6,
-        "damage_mult": 1.6,
+        "techs": [
+          "WarriorSocietyIroquois",
+          "ChampionIroquois"
+        ],
         "name": "风云战斧兵"
       }
     },
     "nattracker": {
       "3": {
-        "hp_mult": 1.25,
-        "damage_mult": 1.25,
+        "techs": [
+          "WarriorSocietyCree"
+        ],
         "name": "精锐追踪者"
       },
       "4": {
-        "hp_mult": 1.6,
-        "damage_mult": 1.6,
+        "techs": [
+          "WarriorSocietyCree",
+          "ChampionCree"
+        ],
         "name": "风云追踪者"
       }
     },
     "oprichnik": {
       "4": {
-        "hp_mult": 1.3,
-        "damage_mult": 1.3,
+        "techs": [
+          "GuardOprichniks"
+        ],
         "name": "护卫俄国重骑兵"
       },
       "5": {
-        "hp_mult": 1.8,
-        "damage_mult": 1.8,
+        "techs": [
+          "GuardOprichniks",
+          "ImperialOprichniks"
+        ],
         "name": "帝国俄国重骑兵"
       }
     },
     "organgun": {
       "4": {
-        "hp_mult": 1.25,
-        "damage_mult": 1.25,
+        "techs": [
+          "Rabauld"
+        ],
         "name": "皇家管炮"
       },
       "5": {
-        "hp_mult": 1.75,
-        "damage_mult": 1.75,
+        "techs": [
+          "Rabauld",
+          "DEImperialCannonsAfricanShadow"
+        ],
         "name": "帝国皇家管炮"
       }
     },
     "pikeman": {
       "3": {
-        "hp_mult": 1.2,
-        "damage_mult": 1.2,
-        "action_range_add": {
-          "MeleeHandAttack": 0.5,
-          "DefendHandAttack": 0.5,
-          "CoverHandAttack": 0.5
-        },
+        "techs": [
+          "VeteranPikemen"
+        ],
         "name": "老练长矛兵"
       },
       "4": {
-        "hp_mult": 1.5,
-        "damage_mult": 1.5,
-        "action_range_add": {
-          "MeleeHandAttack": 1.0,
-          "DefendHandAttack": 1.0,
-          "CoverHandAttack": 1.0
-        },
+        "techs": [
+          "VeteranPikemen",
+          "GuardPikemen"
+        ],
         "name": "护卫长矛兵"
       },
       "5": {
-        "hp_mult": 2.0,
-        "damage_mult": 2.0,
-        "action_range_add": {
-          "MeleeHandAttack": 1.5,
-          "DefendHandAttack": 1.5,
-          "CoverHandAttack": 1.5
-        },
+        "techs": [
+          "VeteranPikemen",
+          "GuardPikemen",
+          "ImperialPikemen"
+        ],
         "name": "帝国长矛兵"
       }
     },
     "privateer": {
       "5": {
-        "hp_mult": 1.25
+        "techs": [
+          "DEImperialMercCaptainsAfricanShadow"
+        ]
       }
     },
     "rocket": {
       "5": {
-        "hp_mult": 1.5,
-        "damage_mult": 1.5,
+        "techs": [
+          "ImperialRocket"
+        ],
         "name": "帝国火箭炮"
       }
     },
     "rodelero": {
       "3": {
-        "hp_mult": 1.2,
-        "damage_mult": 1.2,
+        "techs": [
+          "VeteranRodeleros"
+        ],
         "name": "老练兰朵武士"
       },
       "4": {
-        "hp_mult": 1.5,
-        "damage_mult": 1.5,
+        "techs": [
+          "VeteranRodeleros",
+          "GuardRodeleros"
+        ],
         "name": "护卫兰朵武士"
       },
       "5": {
-        "hp_mult": 2.0,
-        "damage_mult": 2.0,
+        "techs": [
+          "VeteranRodeleros",
+          "GuardRodeleros",
+          "ImperialEspada"
+        ],
         "name": "帝国护卫兰朵武士"
       }
     },
     "ruyter": {
       "3": {
-        "hp_mult": 1.2,
-        "damage_mult": 1.2,
+        "techs": [
+          "VeteranRuytersShadow"
+        ],
         "name": "老练荷兰枪骑兵"
       },
       "4": {
-        "hp_mult": 1.5,
-        "damage_mult": 1.5,
+        "techs": [
+          "VeteranRuytersShadow",
+          "GuardRuyters"
+        ],
         "name": "荷兰枪骑兵"
       },
       "5": {
-        "hp_mult": 2.0,
-        "damage_mult": 2.0,
+        "techs": [
+          "VeteranRuytersShadow",
+          "GuardRuyters",
+          "ImperialCarabineer"
+        ],
         "name": "帝国护卫荷兰枪骑兵"
       }
     },
     "skirmisher": {
       "3": {
-        "hp_mult": 1.2,
-        "damage_mult": 1.2,
+        "techs": [
+          "VeteranSkirmishersShadow"
+        ],
         "name": "老练长枪兵"
       },
       "4": {
-        "hp_mult": 1.5,
-        "damage_mult": 1.5,
+        "techs": [
+          "VeteranSkirmishersShadow",
+          "GuardSkirmishers"
+        ],
         "name": "护卫长枪兵"
       },
       "5": {
-        "hp_mult": 2.0,
-        "damage_mult": 2.0,
+        "techs": [
+          "VeteranSkirmishersShadow",
+          "GuardSkirmishers",
+          "ImperialSkirmishers"
+        ],
         "name": "帝国长枪兵"
       }
     },
     "spahi": {
       "4": {
-        "hp_mult": 1.3,
-        "damage_mult": 1.3,
+        "techs": [
+          "GuardSpahi"
+        ],
         "name": "护卫西帕希"
       },
       "5": {
-        "hp_mult": 1.8,
-        "damage_mult": 1.8,
+        "techs": [
+          "GuardSpahi",
+          "ImperialSpahi"
+        ],
         "name": "帝国西帕希"
       }
     },
     "spccherokeearcher": {
       "3": {
-        "hp_mult": 1.25,
-        "damage_mult": 1.25
+        "techs": [
+          "DEUnknownWarriorSocietyCherokee"
+        ]
       },
       "4": {
-        "hp_mult": 1.6,
-        "damage_mult": 1.6
+        "techs": [
+          "DEUnknownWarriorSocietyCherokee",
+          "DEUnknownChampionCherokee"
+        ]
       }
     },
     "spccherokeehorsearcher": {
       "3": {
-        "hp_mult": 1.25,
-        "damage_mult": 1.25
+        "techs": [
+          "DEUnknownWarriorSocietyCherokee"
+        ]
       },
       "4": {
-        "hp_mult": 1.6,
-        "damage_mult": 1.6
+        "techs": [
+          "DEUnknownWarriorSocietyCherokee",
+          "DEUnknownChampionCherokee"
+        ]
       }
     },
     "strelet": {
       "3": {
-        "hp_mult": 1.2,
-        "damage_mult": 1.2,
-        "action_range_add": {
-          "VolleyRangedAttack": 1.0,
-          "DefendRangedAttack": 1.0,
-          "StaggerRangedAttack": 1.0
-        },
+        "techs": [
+          "VeteranStrelets"
+        ],
         "name": "老练俄国长枪兵"
       },
       "4": {
-        "hp_mult": 1.5,
-        "damage_mult": 1.5,
-        "action_range_add": {
-          "VolleyRangedAttack": 2.0,
-          "DefendRangedAttack": 2.0,
-          "StaggerRangedAttack": 2.0
-        },
+        "techs": [
+          "VeteranStrelets",
+          "GuardStrelets"
+        ],
         "name": "护卫俄国长枪兵"
       },
       "5": {
-        "hp_mult": 2.0,
-        "damage_mult": 2.0,
-        "action_range_add": {
-          "VolleyRangedAttack": 3.0,
-          "DefendRangedAttack": 3.0,
-          "StaggerRangedAttack": 3.0
-        },
+        "techs": [
+          "VeteranStrelets",
+          "GuardStrelets",
+          "ImperialStrelets"
+        ],
         "name": "帝国俄国长枪兵"
       }
     },
     "uhlan": {
       "3": {
-        "hp_mult": 1.2,
-        "damage_mult": 1.2,
+        "techs": [
+          "VeteranUhlans"
+        ],
         "name": "老练德国骑兵"
       },
       "4": {
-        "hp_mult": 1.5,
-        "damage_mult": 1.5,
+        "techs": [
+          "VeteranUhlans",
+          "GuardUhlans"
+        ],
         "name": "护卫德国骑兵"
       },
       "5": {
-        "hp_mult": 2.0,
-        "damage_mult": 2.0,
+        "techs": [
+          "VeteranUhlans",
+          "GuardUhlans",
+          "ImperialCzapkaUhlans"
+        ],
         "name": "帝国护卫德国骑兵"
       }
     },
     "warwagon": {
       "4": {
-        "hp_mult": 1.3,
-        "damage_mult": 1.3,
+        "techs": [
+          "GuardWarWagons"
+        ],
         "name": "护卫马战车"
       },
       "5": {
-        "hp_mult": 1.8,
-        "damage_mult": 1.8,
+        "techs": [
+          "GuardWarWagons",
+          "ImperialWarWagons"
+        ],
         "name": "帝国马战车"
       }
     },
     "xpaenna": {
       "3": {
-        "hp_mult": 1.25,
-        "damage_mult": 1.25,
+        "techs": [
+          "EliteAennas"
+        ],
         "name": "精锐艾那弓箭步兵"
       },
       "4": {
-        "hp_mult": 1.5,
-        "damage_mult": 1.5,
+        "techs": [
+          "EliteAennas",
+          "ChampionAennas"
+        ],
         "name": "风云艾那弓箭步兵"
       },
       "5": {
-        "hp_mult": 2.0,
-        "damage_mult": 2.0,
+        "techs": [
+          "EliteAennas",
+          "ChampionAennas",
+          "ImpLegendaryAennas"
+        ],
         "name": "传奇艾那弓箭步兵"
       }
     },
     "xparrowknight": {
       "4": {
-        "hp_mult": 1.25,
-        "damage_mult": 1.25,
+        "techs": [
+          "ChampionArrowKnight"
+        ],
         "name": "风云弓箭武士"
       },
       "5": {
-        "hp_mult": 1.75,
-        "damage_mult": 1.75,
+        "techs": [
+          "ChampionArrowKnight",
+          "ImpLegendaryArrowKnights"
+        ],
         "name": "传奇弓箭武士"
       }
     },
     "xpaxerider": {
       "3": {
-        "hp_mult": 1.25,
-        "damage_mult": 1.25,
+        "techs": [
+          "EliteAxeRiders"
+        ],
         "name": "精锐斧骑兵"
       },
       "4": {
-        "hp_mult": 1.5,
-        "damage_mult": 1.5,
+        "techs": [
+          "EliteAxeRiders",
+          "ChampionAxeRiders"
+        ],
         "name": "风云斧骑兵"
       },
       "5": {
-        "hp_mult": 2.0,
-        "damage_mult": 2.0,
+        "techs": [
+          "EliteAxeRiders",
+          "ChampionAxeRiders",
+          "ImpLegendaryAxeRiders"
+        ],
         "name": "传奇斧骑兵"
       }
     },
     "xpbowrider": {
       "3": {
-        "hp_mult": 1.25,
-        "damage_mult": 1.25,
-        "action_mult_add": {
-          "BowAttack": {
-            "AbstractArtillery": 0.5
-          },
-          "BuildingAttack": {
-            "AbstractArtillery": 0.5
-          },
-          "ChargeAttack": {
-            "AbstractArtillery": 0.5
-          }
-        },
+        "techs": [
+          "EliteBowRider"
+        ],
         "name": "精锐弓骑士"
       },
       "4": {
-        "hp_mult": 1.5,
-        "damage_mult": 1.5,
-        "action_mult_add": {
-          "BowAttack": {
-            "AbstractArtillery": 0.5
-          },
-          "BuildingAttack": {
-            "AbstractArtillery": 0.5
-          },
-          "ChargeAttack": {
-            "AbstractArtillery": 0.5
-          }
-        },
+        "techs": [
+          "EliteBowRider",
+          "ChampionBowRider"
+        ],
         "name": "风云弓骑士"
       },
       "5": {
-        "hp_mult": 2.0,
-        "damage_mult": 2.0,
-        "action_mult_add": {
-          "BowAttack": {
-            "AbstractArtillery": 0.5
-          },
-          "BuildingAttack": {
-            "AbstractArtillery": 0.5
-          },
-          "ChargeAttack": {
-            "AbstractArtillery": 0.5
-          }
-        },
+        "techs": [
+          "EliteBowRider",
+          "ChampionBowRider",
+          "ImpLegendaryBowRider"
+        ],
         "name": "传奇弓骑士"
       }
     },
     "xpcouprider": {
       "4": {
-        "hp_mult": 1.25,
-        "damage_mult": 1.25,
+        "techs": [
+          "ChampionCoupRiders"
+        ],
         "name": "风云塔斯云坎游荡者"
       },
       "5": {
-        "hp_mult": 1.5,
-        "damage_mult": 1.5,
+        "techs": [
+          "ChampionCoupRiders",
+          "ImpLegendaryCoupRiders"
+        ],
         "name": "传奇塔斯云坎游荡者"
       }
     },
     "xpcoyoteman": {
       "3": {
-        "hp_mult": 1.25,
-        "damage_mult": 1.25,
+        "techs": [
+          "EliteCoyotemen"
+        ],
         "name": "精锐郊狼游击兵"
       },
       "4": {
-        "hp_mult": 1.5,
-        "damage_mult": 1.5,
+        "techs": [
+          "EliteCoyotemen",
+          "ChampionCoyotemen"
+        ],
         "name": "风云郊狼游击兵"
       },
       "5": {
-        "hp_mult": 2.0,
-        "damage_mult": 2.0,
+        "techs": [
+          "EliteCoyotemen",
+          "ChampionCoyotemen",
+          "ImpLegendaryCoyoteMen"
+        ],
         "name": "传奇郊狼游击兵"
       }
     },
     "xpdogsoldier": {
       "3": {
-        "hp_mult": 1.25,
-        "damage_mult": 1.25,
+        "techs": [
+          "EliteDogSoldierShadow"
+        ],
         "name": "精锐托卡拉士兵"
       },
       "4": {
-        "hp_mult": 1.5,
-        "damage_mult": 1.5,
+        "techs": [
+          "EliteDogSoldierShadow",
+          "ChampionDogSoldierShadow"
+        ],
         "name": "风云托卡拉士兵"
       },
       "5": {
-        "hp_mult": 2.0,
-        "damage_mult": 2.0,
+        "techs": [
+          "EliteDogSoldierShadow",
+          "ChampionDogSoldierShadow",
+          "LegendaryDogSoldierShadow"
+        ],
         "name": "传奇托卡拉士兵"
       }
     },
     "xpeagleknight": {
       "4": {
-        "hp_mult": 1.25,
-        "damage_mult": 1.25,
+        "techs": [
+          "ChampionEagleKnight"
+        ],
         "name": "风云鹰武士"
       },
       "5": {
-        "hp_mult": 1.75,
-        "damage_mult": 1.75,
+        "techs": [
+          "ChampionEagleKnight",
+          "ImpLegendaryEagleKnights"
+        ],
         "name": "传奇鹰游击武士"
       }
     },
     "xpgatlinggun": {
       "4": {
-        "hp_mult": 1.25,
-        "damage_mult": 1.25,
+        "techs": [
+          "HeavyGatlingGun"
+        ],
         "name": "重装加特林机枪"
       },
       "5": {
-        "hp_mult": 1.75,
-        "damage_mult": 1.75,
+        "techs": [
+          "HeavyGatlingGun",
+          "ImperialGatlingGun"
+        ],
         "name": "帝国加特林机枪"
       }
     },
     "xphorseartillery": {
       "4": {
-        "hp_mult": 1.25,
-        "damage_mult": 1.25,
+        "techs": [
+          "HeavyHorseArtillery"
+        ],
         "name": "重型马炮"
       },
       "5": {
-        "hp_mult": 1.75,
-        "damage_mult": 1.75,
+        "techs": [
+          "HeavyHorseArtillery",
+          "ImperialHorseArtillery"
+        ],
         "name": "帝国马炮"
       }
     },
     "xphorseman": {
       "3": {
-        "hp_mult": 1.25,
-        "damage_mult": 1.25,
+        "techs": [
+          "EliteHorsemen"
+        ],
         "name": "精锐坎亚骑兵"
       },
       "4": {
-        "hp_mult": 1.5,
-        "damage_mult": 1.5,
+        "techs": [
+          "EliteHorsemen",
+          "ChampionHorsemen"
+        ],
         "name": "风云坎亚骑兵"
       },
       "5": {
-        "hp_mult": 2.0,
-        "damage_mult": 2.0,
+        "techs": [
+          "EliteHorsemen",
+          "ChampionHorsemen",
+          "ImpLegendaryHorsemen"
+        ],
         "name": "传奇坎亚骑兵"
       }
     },
     "xpironclad": {
       "4": {
-        "hp_mult": 1.25,
-        "damage_mult": 1.25,
+        "techs": [
+          "DEShipHowitzersAmerican"
+        ],
         "name": "重型装甲军舰"
       },
       "5": {
-        "hp_mult": 1.75,
-        "damage_mult": 1.75,
+        "techs": [
+          "DEShipHowitzersAmerican",
+          "DEImperialIronclads"
+        ],
         "name": "帝国水上炮台"
       }
     },
     "xpjaguarknight": {
       "4": {
-        "hp_mult": 1.25,
-        "damage_mult": 1.25,
+        "techs": [
+          "ChampionJaguarKnight"
+        ],
         "name": "风云豹游荡武士"
       },
       "5": {
-        "hp_mult": 1.75,
-        "damage_mult": 1.75,
+        "techs": [
+          "ChampionJaguarKnight",
+          "ImpLegendaryJaguarKnights"
+        ],
         "name": "传奇豹游荡武士"
       }
     },
     "xplightcannon": {
       "4": {
-        "hp_mult": 1.25,
-        "damage_mult": 1.25,
+        "techs": [
+          "FieldCannon"
+        ],
         "name": "野战加农炮"
       },
       "5": {
-        "hp_mult": 1.75,
-        "damage_mult": 1.75,
+        "techs": [
+          "FieldCannon",
+          "ImpLegendaryLightCannon"
+        ],
         "name": "传奇轻型加农炮"
       }
     },
     "xpmacehualtin": {
       "3": {
-        "hp_mult": 1.25,
-        "damage_mult": 1.25,
+        "techs": [
+          "EliteMacehualtins"
+        ],
         "name": "精锐奥托米掷石绳兵"
       },
       "4": {
-        "hp_mult": 1.5,
-        "damage_mult": 1.5,
+        "techs": [
+          "EliteMacehualtins",
+          "ChampionMacehualtins"
+        ],
         "name": "风云奥托米掷石绳兵"
       },
       "5": {
-        "hp_mult": 2.0,
-        "damage_mult": 2.0,
-        "action_range_add": {
-          "VolleyRangedAttack": 1.0,
-          "DefendRangedAttack": 1.0,
-          "StaggerRangedAttack": 1.0
-        },
+        "techs": [
+          "EliteMacehualtins",
+          "ChampionMacehualtins",
+          "ImpLegendaryMacehualtins"
+        ],
         "name": "传奇奥托米掷石绳兵"
       }
     },
     "xpmantlet": {
       "4": {
-        "hp_mult": 1.25,
-        "damage_mult": 1.25,
+        "techs": [
+          "ChampionMantlets"
+        ],
         "name": "风云防弹盾"
       },
       "5": {
-        "hp_mult": 1.75,
-        "damage_mult": 1.75,
+        "techs": [
+          "ChampionMantlets",
+          "ImpLegendaryMantlets"
+        ],
         "name": "传奇防弹盾"
       }
     },
     "xpmusketrider": {
       "3": {
-        "hp_mult": 1.25,
-        "damage_mult": 1.25,
+        "techs": [
+          "EliteMusketRiderShadow"
+        ],
         "name": "精锐火枪骑兵"
       },
       "4": {
-        "hp_mult": 1.5,
-        "damage_mult": 1.5,
+        "techs": [
+          "EliteMusketRiderShadow",
+          "ChampionMusketRiders"
+        ],
         "name": "风云火枪骑兵"
       },
       "5": {
-        "hp_mult": 2.0,
-        "damage_mult": 2.0,
+        "techs": [
+          "EliteMusketRiderShadow",
+          "ChampionMusketRiders",
+          "ImpLegendaryMusketRiders"
+        ],
         "name": "传奇火枪骑兵"
       }
     },
     "xpmusketwarrior": {
       "3": {
-        "hp_mult": 1.25,
-        "damage_mult": 1.25,
+        "techs": [
+          "EliteMusketWarriorShadow"
+        ],
         "name": "精锐森林游荡者"
       },
       "4": {
-        "hp_mult": 1.5,
-        "damage_mult": 1.5,
+        "techs": [
+          "EliteMusketWarriorShadow",
+          "ChampionMusketWarriors"
+        ],
         "name": "风云森林游荡者"
       },
       "5": {
-        "hp_mult": 2.0,
-        "damage_mult": 2.0,
+        "techs": [
+          "EliteMusketWarriorShadow",
+          "ChampionMusketWarriors",
+          "ImpLegendaryMusketWarriors"
+        ],
         "name": "传奇森林游荡者"
       }
     },
     "xppumaman": {
       "3": {
-        "hp_mult": 1.25,
-        "damage_mult": 1.25,
+        "techs": [
+          "ElitePumaMen"
+        ],
         "name": "精锐美洲狮长矛兵"
       },
       "4": {
-        "hp_mult": 1.5,
-        "damage_mult": 1.5,
+        "techs": [
+          "ElitePumaMen",
+          "ChampionPumaMen"
+        ],
         "name": "风云美洲狮长矛兵"
       },
       "5": {
-        "hp_mult": 2.0,
-        "damage_mult": 2.0,
+        "techs": [
+          "ElitePumaMen",
+          "ChampionPumaMen",
+          "ImpLegendaryPumaMen"
+        ],
         "name": "传奇美洲狮长矛兵"
       }
     },
     "xpram": {
       "4": {
-        "hp_mult": 1.25,
-        "damage_mult": 1.25,
+        "techs": [
+          "ChampionRams"
+        ],
         "name": "风云攻城槌"
       },
       "5": {
-        "hp_mult": 1.75,
-        "damage_mult": 1.75,
+        "techs": [
+          "ChampionRams",
+          "ImpLegendaryRams"
+        ],
         "name": "传奇攻城槌"
       }
     },
     "xpriflerider": {
       "3": {
-        "hp_mult": 1.25,
-        "damage_mult": 1.25,
+        "techs": [
+          "EliteRifleRiderShadow"
+        ],
         "name": "精锐步枪骑士"
       },
       "4": {
-        "hp_mult": 1.5,
-        "damage_mult": 1.5,
+        "techs": [
+          "EliteRifleRiderShadow",
+          "ChampionRifleRiders"
+        ],
         "name": "风云步枪骑士"
       },
       "5": {
-        "hp_mult": 2.0,
-        "damage_mult": 2.0,
+        "techs": [
+          "EliteRifleRiderShadow",
+          "ChampionRifleRiders",
+          "ImpLegendaryRifleRiders"
+        ],
         "name": "传奇步枪骑士"
       }
     },
     "xpskullknight": {
       "3": {
-        "hp_mult": 1.25,
-        "damage_mult": 1.25,
+        "techs": [
+          "EliteSkullKnightShadow"
+        ],
         "name": "精锐骷髅武士"
       },
       "4": {
-        "hp_mult": 1.5,
-        "damage_mult": 1.5,
+        "techs": [
+          "EliteSkullKnightShadow",
+          "ChampionSkullKnightShadow"
+        ],
         "name": "风云骷髅武士"
       },
       "5": {
-        "hp_mult": 2.0,
-        "damage_mult": 2.0,
+        "techs": [
+          "EliteSkullKnightShadow",
+          "ChampionSkullKnightShadow",
+          "LegendarySkullKnightShadow"
+        ],
         "name": "传奇骷髅武士"
       }
     },
     "xpspccolonialmilitia": {
       "2": {
-        "hp_mult": 1.2,
-        "damage_mult": 1.2,
+        "techs": [
+          "VeteranColonialMilitia"
+        ],
         "name": "老练殖民地民兵"
       },
       "3": {
-        "hp_mult": 1.5,
-        "damage_mult": 1.5,
+        "techs": [
+          "VeteranColonialMilitia",
+          "GuardColonialMilitia"
+        ],
         "name": "护卫殖民地民兵"
       }
     },
     "xptlaloccanoe": {
       "3": {
-        "damage_mult": 1.25
+        "techs": [
+          "DEWarCanoeDamage"
+        ]
       },
       "5": {
-        "hp_mult": 1.25,
-        "damage_mult": 1.5
+        "techs": [
+          "DEWarCanoeDamage",
+          "DELegendaryWarCanoes"
+        ]
       }
     },
     "xptomahawk": {
       "3": {
-        "hp_mult": 1.25,
-        "damage_mult": 1.25,
+        "techs": [
+          "EliteTomahawks"
+        ],
         "name": "精锐战斧兵"
       },
       "4": {
-        "hp_mult": 1.5,
-        "damage_mult": 1.5,
+        "techs": [
+          "EliteTomahawks",
+          "ChampionTomahawk"
+        ],
         "name": "风云战斧兵"
       },
       "5": {
-        "hp_mult": 2.0,
-        "damage_mult": 2.0,
+        "techs": [
+          "EliteTomahawks",
+          "ChampionTomahawk",
+          "ImpLegendaryTomahawks"
+        ],
         "name": "传奇战斧兵"
       }
     },
     "xpwarbow": {
       "3": {
-        "hp_mult": 1.25,
-        "damage_mult": 1.25,
+        "techs": [
+          "EliteWarBows"
+        ],
         "name": "精锐鹰神弓箭手"
       },
       "4": {
-        "hp_mult": 1.5,
-        "damage_mult": 1.5,
+        "techs": [
+          "EliteWarBows",
+          "ChampionWarBows"
+        ],
         "name": "风云鹰神弓箭手"
       },
       "5": {
-        "hp_mult": 2.0,
-        "damage_mult": 2.0,
+        "techs": [
+          "EliteWarBows",
+          "ChampionWarBows",
+          "ImpLegendaryWarBows"
+        ],
         "name": "传奇鹰神弓箭手"
       }
     },
     "xpwarcanoe": {
       "3": {
-        "damage_mult": 1.25
+        "techs": [
+          "DEWarCanoeDamage"
+        ]
       },
       "5": {
-        "hp_mult": 1.25,
-        "damage_mult": 1.5
+        "techs": [
+          "DEWarCanoeDamage",
+          "DELegendaryWarCanoes"
+        ]
       }
     },
     "xpwarclub": {
       "3": {
-        "hp_mult": 1.25,
-        "damage_mult": 1.25,
+        "techs": [
+          "EliteWarClubs"
+        ],
         "name": "精锐持棍战士"
       },
       "4": {
-        "hp_mult": 1.5,
-        "damage_mult": 1.5,
+        "techs": [
+          "EliteWarClubs",
+          "ChampionWarClubs"
+        ],
         "name": "风云持棍战士"
       },
       "5": {
-        "hp_mult": 2.0,
-        "damage_mult": 2.0,
+        "techs": [
+          "EliteWarClubs",
+          "ChampionWarClubs",
+          "ImpLegendaryWarClubs"
+        ],
         "name": "传奇持棍战士"
       }
     },
     "xpwarrifle": {
       "3": {
-        "hp_mult": 1.25,
-        "damage_mult": 1.25,
+        "techs": [
+          "EliteWarRifleShadow"
+        ],
         "name": "精锐瓦其那步枪兵"
       },
       "4": {
-        "hp_mult": 1.5,
-        "damage_mult": 1.5,
+        "techs": [
+          "EliteWarRifleShadow",
+          "ChampionWarRifles"
+        ],
         "name": "风云瓦其那步枪兵"
       },
       "5": {
-        "hp_mult": 2.0,
-        "damage_mult": 2.0,
-        "action_range_add": {
-          "VolleyRangedAttack": 1.0,
-          "DefendRangedAttack": 1.0,
-          "StaggerRangedAttack": 1.0
-        },
+        "techs": [
+          "EliteWarRifleShadow",
+          "ChampionWarRifles",
+          "ImpLegendaryWarRifles"
+        ],
         "name": "传奇瓦其那步枪兵"
       }
     },
     "yparquebusier": {
       "3": {
-        "hp_mult": 1.2,
-        "damage_mult": 1.2,
+        "techs": [
+          "ypDisciplinedArquebusierShadow"
+        ],
         "name": "纪律严明的火绳枪兵"
       },
       "4": {
-        "hp_mult": 1.5,
-        "damage_mult": 1.5,
+        "techs": [
+          "ypDisciplinedArquebusierShadow",
+          "YPHonoredArquebusier"
+        ],
         "name": "光荣的火绳枪兵"
       },
       "5": {
-        "hp_mult": 2.0,
-        "damage_mult": 2.0,
+        "techs": [
+          "ypDisciplinedArquebusierShadow",
+          "YPHonoredArquebusier",
+          "YPExaltedArquebusier"
+        ],
         "name": "高贵的火绳枪兵"
       }
     },
     "ypashigaru": {
       "3": {
-        "hp_mult": 1.2,
-        "damage_mult": 1.2,
+        "techs": [
+          "YPDisciplinedAshigaru"
+        ],
         "name": "纪律严明的日本火枪步兵"
       },
       "4": {
-        "hp_mult": 1.5,
-        "damage_mult": 1.5,
+        "techs": [
+          "YPDisciplinedAshigaru",
+          "YPHonoredAshigaru"
+        ],
         "name": "光荣的日本火枪步兵"
       },
       "5": {
-        "hp_mult": 2.0,
-        "damage_mult": 2.0,
+        "techs": [
+          "YPDisciplinedAshigaru",
+          "YPHonoredAshigaru",
+          "YPExaltedAshigaru"
+        ],
         "name": "高贵的日本火枪步兵"
       }
     },
     "ypcatamaran": {
       "4": {
-        "hp_mult": 1.3,
-        "damage_mult": 1.3
+        "techs": [
+          "DEGuardOutlawShadow"
+        ]
       },
       "5": {
-        "hp_mult": 1.8,
-        "damage_mult": 1.8
+        "techs": [
+          "DEGuardOutlawShadow",
+          "DEImperialOutlawShadow"
+        ]
       }
     },
     "ypchangdao": {
       "3": {
-        "hp_mult": 1.2,
-        "damage_mult": 1.2,
+        "techs": [
+          "ypDisciplinedChangdaoShadow"
+        ],
         "name": "纪律严明的长刀兵"
       },
       "4": {
-        "hp_mult": 1.5,
-        "damage_mult": 1.5,
+        "techs": [
+          "ypDisciplinedChangdaoShadow",
+          "YPHonoredChangdao"
+        ],
         "name": "光荣的长刀兵"
       },
       "5": {
-        "hp_mult": 2.0,
-        "damage_mult": 2.0,
+        "techs": [
+          "ypDisciplinedChangdaoShadow",
+          "YPHonoredChangdao",
+          "YPExaltedChangdao"
+        ],
         "name": "高贵的长刀兵"
       }
     },
     "ypchukonu": {
       "3": {
-        "hp_mult": 1.2,
-        "damage_mult": 1.2,
+        "techs": [
+          "YPDisciplinedChuKoNu"
+        ],
         "name": "纪律严明的中国连弩兵"
       },
       "4": {
-        "hp_mult": 1.5,
-        "damage_mult": 1.5,
+        "techs": [
+          "YPDisciplinedChuKoNu",
+          "YPHonoredChuKoNu"
+        ],
         "name": "光荣的中国连弩兵"
       },
       "5": {
-        "hp_mult": 2.0,
-        "damage_mult": 2.0,
+        "techs": [
+          "YPDisciplinedChuKoNu",
+          "YPHonoredChuKoNu",
+          "YPExaltedChuKoNu"
+        ],
         "name": "高贵的中国连弩兵"
       }
     },
     "ypdaimyokiyomasa": {
       "3": {
-        "hp_mult": 1.2,
-        "damage_mult": 1.2
+        "techs": [
+          "ypDisciplinedDaimyoShadow"
+        ]
       },
       "4": {
-        "hp_mult": 1.5,
-        "damage_mult": 1.5
+        "techs": [
+          "ypDisciplinedDaimyoShadow",
+          "ypHonoredDaimyoShadow"
+        ]
       },
       "5": {
-        "hp_mult": 2.0,
-        "damage_mult": 2.0
+        "techs": [
+          "ypDisciplinedDaimyoShadow",
+          "ypHonoredDaimyoShadow",
+          "ypExaltedDaimyoShadow"
+        ]
       }
     },
     "ypdaimyomasamune": {
       "3": {
-        "hp_mult": 1.2,
-        "damage_mult": 1.2
+        "techs": [
+          "ypDisciplinedDaimyoShadow"
+        ]
       },
       "4": {
-        "hp_mult": 1.5,
-        "damage_mult": 1.5
+        "techs": [
+          "ypDisciplinedDaimyoShadow",
+          "ypHonoredDaimyoShadow"
+        ]
       },
       "5": {
-        "hp_mult": 2.0,
-        "damage_mult": 2.0
+        "techs": [
+          "ypDisciplinedDaimyoShadow",
+          "ypHonoredDaimyoShadow",
+          "ypExaltedDaimyoShadow"
+        ]
       }
     },
     "ypdaimyomototada": {
       "3": {
-        "hp_mult": 1.2,
-        "damage_mult": 1.2
+        "techs": [
+          "ypDisciplinedDaimyoShadow"
+        ]
       },
       "4": {
-        "hp_mult": 1.5,
-        "damage_mult": 1.5
+        "techs": [
+          "ypDisciplinedDaimyoShadow",
+          "ypHonoredDaimyoShadow"
+        ]
       },
       "5": {
-        "hp_mult": 2.0,
-        "damage_mult": 2.0
+        "techs": [
+          "ypDisciplinedDaimyoShadow",
+          "ypHonoredDaimyoShadow",
+          "ypExaltedDaimyoShadow"
+        ]
       }
     },
     "ypdaimyoregicide": {
       "3": {
-        "hp_mult": 1.2,
-        "damage_mult": 1.2
+        "techs": [
+          "ypDisciplinedDaimyoShadow"
+        ]
       },
       "4": {
-        "hp_mult": 1.5,
-        "damage_mult": 1.5
+        "techs": [
+          "ypDisciplinedDaimyoShadow",
+          "ypHonoredDaimyoShadow"
+        ]
       },
       "5": {
-        "hp_mult": 2.0,
-        "damage_mult": 2.0
+        "techs": [
+          "ypDisciplinedDaimyoShadow",
+          "ypHonoredDaimyoShadow",
+          "ypExaltedDaimyoShadow"
+        ]
       }
     },
     "ypflamethrower": {
       "3": {
-        "hp_mult": 1.2,
-        "damage_mult": 1.2,
+        "techs": [
+          "YPDisciplinedFlameThrower"
+        ],
         "name": "纪律严明的喷火车"
       },
       "4": {
-        "hp_mult": 1.5,
-        "damage_mult": 1.5,
+        "techs": [
+          "YPDisciplinedFlameThrower",
+          "YPHonoredFlameThrower"
+        ],
         "name": "光荣的喷火车"
       },
       "5": {
-        "hp_mult": 2.0,
-        "damage_mult": 2.0,
+        "techs": [
+          "YPDisciplinedFlameThrower",
+          "YPHonoredFlameThrower",
+          "YPExaltedFlameThrower"
+        ],
         "name": "高贵的喷火车"
       }
     },
     "ypflamingarrow": {
       "4": {
-        "hp_mult": 1.25,
-        "damage_mult": 1.25,
-        "action_mult_add": {
-          "CannonAttack": {
-            "AbstractArtillery": 0.5
-          }
-        },
+        "techs": [
+          "YPHonoredFlamingArrow"
+        ],
         "name": "光荣的火焰之箭"
       },
       "5": {
-        "hp_mult": 1.75,
-        "damage_mult": 1.75,
-        "action_range_add": {
-          "CannonAttack": 2.0
-        },
-        "action_mult_add": {
-          "CannonAttack": {
-            "AbstractArtillery": 0.5
-          }
-        },
+        "techs": [
+          "YPHonoredFlamingArrow",
+          "YPExaltedFlamingArrow"
+        ],
         "name": "高贵的火焰之箭"
       }
     },
     "ypflyingcrow": {
       "5": {
-        "hp_mult": 1.5,
-        "damage_mult": 1.5,
+        "techs": [
+          "YPExaltedFlyingCrow"
+        ],
         "name": "高贵的神火飞鸦"
       }
     },
     "ypfuchuan": {
       "5": {
-        "hp_mult": 1.5,
-        "damage_mult": 1.5,
+        "techs": [
+          "YPExaltedFuchuan"
+        ],
         "name": "高贵的福船"
       }
     },
     "ypgreatwhiteshark": {
       "4": {
-        "hp_mult": 1.3,
-        "damage_mult": 1.3
+        "techs": [
+          "DEGuardOutlawShadow"
+        ]
       },
       "5": {
-        "hp_mult": 1.8,
-        "damage_mult": 1.8
+        "techs": [
+          "DEGuardOutlawShadow",
+          "DEImperialOutlawShadow"
+        ]
       }
     },
     "yphandmortar": {
       "4": {
-        "hp_mult": 1.25,
-        "damage_mult": 1.25,
+        "techs": [
+          "YPHonoredHandMortar"
+        ],
         "name": "光荣的轻型迫击炮"
       },
       "5": {
-        "hp_mult": 1.75,
-        "damage_mult": 1.75,
+        "techs": [
+          "YPHonoredHandMortar",
+          "YPExaltedHandMortar"
+        ],
         "name": "高贵的轻型迫击炮"
       }
     },
     "yphowdah": {
       "3": {
-        "hp_mult": 1.2,
-        "damage_mult": 1.2,
+        "techs": [
+          "ypDisciplinedHowdahShadow"
+        ],
         "name": "纪律严明的象轿兵"
       },
       "4": {
-        "hp_mult": 1.5,
-        "damage_mult": 1.5,
+        "techs": [
+          "ypDisciplinedHowdahShadow",
+          "YPHonoredHowdah"
+        ],
         "name": "光荣的象轿兵"
       },
       "5": {
-        "hp_mult": 2.0,
-        "damage_mult": 2.0,
+        "techs": [
+          "ypDisciplinedHowdahShadow",
+          "YPHonoredHowdah",
+          "YPExaltedHowdah"
+        ],
         "name": "高贵的象轿兵"
       }
     },
     "yphowdahmansabdar": {
       "3": {
-        "hp_mult": 1.2,
-        "damage_mult": 1.2
+        "techs": [
+          "ypDisciplinedHowdahShadow"
+        ]
       },
       "4": {
-        "hp_mult": 1.5,
-        "damage_mult": 1.5
+        "techs": [
+          "ypDisciplinedHowdahShadow",
+          "YPHonoredHowdah"
+        ]
       },
       "5": {
-        "hp_mult": 2.0,
-        "damage_mult": 2.0
+        "techs": [
+          "ypDisciplinedHowdahShadow",
+          "YPHonoredHowdah",
+          "YPExaltedHowdah"
+        ]
       }
     },
     "ypironflail": {
       "3": {
-        "hp_mult": 1.2,
-        "damage_mult": 1.2,
+        "techs": [
+          "ypDisciplinedIronFlailShadow"
+        ],
         "name": "纪律严明的铁连枷兵"
       },
       "4": {
-        "hp_mult": 1.5,
-        "damage_mult": 1.5,
+        "techs": [
+          "ypDisciplinedIronFlailShadow",
+          "YPHonoredIronFlail"
+        ],
         "name": "光荣的铁连枷兵"
       },
       "5": {
-        "hp_mult": 2.0,
-        "damage_mult": 2.0,
+        "techs": [
+          "ypDisciplinedIronFlailShadow",
+          "YPHonoredIronFlail",
+          "YPExaltedIronFlail"
+        ],
         "name": "高贵的铁连枷兵"
       }
     },
     "ypkensei": {
       "3": {
-        "hp_mult": 1.2,
-        "damage_mult": 1.2,
+        "techs": [
+          "YPDisciplinedSamurai"
+        ],
         "name": "纪律严明的日本武士"
       },
       "4": {
-        "hp_mult": 1.5,
-        "damage_mult": 1.5,
+        "techs": [
+          "YPDisciplinedSamurai",
+          "YPHonoredSamurai"
+        ],
         "name": "光荣的日本武士"
       },
       "5": {
-        "hp_mult": 2.0,
-        "damage_mult": 2.0,
+        "techs": [
+          "YPDisciplinedSamurai",
+          "YPHonoredSamurai",
+          "YPExaltedSamurai"
+        ],
         "name": "高贵的日本武士"
       }
     },
     "ypkeshik": {
       "3": {
-        "hp_mult": 1.2,
-        "damage_mult": 1.2,
-        "action_mult_add": {
-          "BowAttack": {
-            "AbstractArtillery": 0.75
-          },
-          "BuildingAttack": {
-            "AbstractArtillery": 0.75
-          },
-          "ChargeAttack": {
-            "AbstractArtillery": 0.75
-          }
-        },
+        "techs": [
+          "YPDisciplinedKeshik"
+        ],
         "name": "纪律严明的怯薛"
       },
       "4": {
-        "hp_mult": 1.5,
-        "damage_mult": 1.5,
-        "action_mult_add": {
-          "BowAttack": {
-            "AbstractArtillery": 0.75
-          },
-          "BuildingAttack": {
-            "AbstractArtillery": 0.75
-          },
-          "ChargeAttack": {
-            "AbstractArtillery": 0.75
-          }
-        },
+        "techs": [
+          "YPDisciplinedKeshik",
+          "YPHonoredKeshik"
+        ],
         "name": "光荣的怯薛"
       },
       "5": {
-        "hp_mult": 2.0,
-        "damage_mult": 2.0,
-        "action_mult_add": {
-          "BowAttack": {
-            "AbstractArtillery": 0.75
-          },
-          "BuildingAttack": {
-            "AbstractArtillery": 0.75
-          },
-          "ChargeAttack": {
-            "AbstractArtillery": 0.75
-          }
-        },
+        "techs": [
+          "YPDisciplinedKeshik",
+          "YPHonoredKeshik",
+          "YPExaltedKeshik"
+        ],
         "name": "高贵的怯薛"
       }
     },
     "ypmahout": {
       "3": {
-        "hp_mult": 1.2,
-        "damage_mult": 1.2,
+        "techs": [
+          "ypDisciplinedMahoutShadow"
+        ],
         "name": "纪律严明的象夫"
       },
       "4": {
-        "hp_mult": 1.5,
-        "damage_mult": 1.5,
+        "techs": [
+          "ypDisciplinedMahoutShadow",
+          "YPHonoredMahout"
+        ],
         "name": "光荣的象夫"
       },
       "5": {
-        "hp_mult": 2.0,
-        "damage_mult": 2.0,
+        "techs": [
+          "ypDisciplinedMahoutShadow",
+          "YPHonoredMahout",
+          "YPExaltedMahout"
+        ],
         "name": "高贵的象夫"
       }
     },
     "ypmahoutmansabdar": {
       "3": {
-        "hp_mult": 1.2,
-        "damage_mult": 1.2
+        "techs": [
+          "ypDisciplinedMahoutShadow"
+        ]
       },
       "4": {
-        "hp_mult": 1.5,
-        "damage_mult": 1.5
+        "techs": [
+          "ypDisciplinedMahoutShadow",
+          "YPHonoredMahout"
+        ]
       },
       "5": {
-        "hp_mult": 2.0,
-        "damage_mult": 2.0
+        "techs": [
+          "ypDisciplinedMahoutShadow",
+          "YPHonoredMahout",
+          "YPExaltedMahout"
+        ]
       }
     },
     "ypmarathancatamaran": {
       "5": {
-        "hp_mult": 1.25
+        "techs": [
+          "DEImperialMercCaptainsAfricanShadow"
+        ]
       }
     },
     "ypmercflailiphant": {
       "3": {
-        "hp_mult": 1.2,
-        "damage_mult": 1.2,
+        "techs": [
+          "YPDisciplinedFlailElephant"
+        ],
         "name": "纪律严明的连枷象"
       },
       "4": {
-        "hp_mult": 1.5,
-        "damage_mult": 1.5,
+        "techs": [
+          "YPDisciplinedFlailElephant",
+          "YPHonoredFlailElephant"
+        ],
         "name": "光荣的连枷象"
       },
       "5": {
-        "hp_mult": 2.0,
-        "damage_mult": 2.0,
+        "techs": [
+          "YPDisciplinedFlailElephant",
+          "YPHonoredFlailElephant",
+          "YPExaltedFlailElephant"
+        ],
         "name": "高贵的连枷象"
       }
     },
     "ypmercflailiphantmansabdar": {
       "3": {
-        "hp_mult": 1.2,
-        "damage_mult": 1.2
+        "techs": [
+          "YPDisciplinedFlailElephant"
+        ]
       },
       "4": {
-        "hp_mult": 1.5,
-        "damage_mult": 1.5
+        "techs": [
+          "YPDisciplinedFlailElephant",
+          "YPHonoredFlailElephant"
+        ]
       },
       "5": {
-        "hp_mult": 2.0,
-        "damage_mult": 2.0
+        "techs": [
+          "YPDisciplinedFlailElephant",
+          "YPHonoredFlailElephant",
+          "YPExaltedFlailElephant"
+        ]
       }
     },
     "ypmercyojimbo": {
       "5": {
-        "hp_mult": 1.5,
-        "damage_mult": 1.5,
+        "techs": [
+          "YPExaltedYojimbo"
+        ],
         "name": "高贵的保镖"
       }
     },
     "ypmeteorhammer": {
       "3": {
-        "hp_mult": 1.2,
-        "damage_mult": 1.2,
+        "techs": [
+          "ypDisciplinedMeteorHammerShadow"
+        ],
         "name": "纪律严明的流星锤兵"
       },
       "4": {
-        "hp_mult": 1.5,
-        "damage_mult": 1.5,
+        "techs": [
+          "ypDisciplinedMeteorHammerShadow",
+          "YPHonoredMeteorHammer"
+        ],
         "name": "光荣的流星锤兵"
       },
       "5": {
-        "hp_mult": 2.0,
-        "damage_mult": 2.0,
+        "techs": [
+          "ypDisciplinedMeteorHammerShadow",
+          "YPHonoredMeteorHammer",
+          "YPExaltedMeteorHammer"
+        ],
         "name": "高贵的流星锤兵"
       }
     },
     "ypmorutaru": {
       "4": {
-        "hp_mult": 1.25,
-        "damage_mult": 1.25,
+        "techs": [
+          "YPHonoredMorutaru"
+        ],
         "name": "光荣的日本迫击炮"
       },
       "5": {
-        "hp_mult": 1.75,
-        "damage_mult": 1.75,
+        "techs": [
+          "YPHonoredMorutaru",
+          "YPExaltedMorutaru"
+        ],
         "name": "高贵的日本迫击炮"
       }
     },
     "ypnaginatarider": {
       "3": {
-        "hp_mult": 1.2,
-        "damage_mult": 1.2,
+        "techs": [
+          "YPDisciplinedNaginataRider"
+        ],
         "name": "纪律严明的薙刀骑兵"
       },
       "4": {
-        "hp_mult": 1.5,
-        "damage_mult": 1.5,
+        "techs": [
+          "YPDisciplinedNaginataRider",
+          "YPHonoredNaginataRider"
+        ],
         "name": "光荣的薙刀骑兵"
       },
       "5": {
-        "hp_mult": 2.0,
-        "damage_mult": 2.0,
+        "techs": [
+          "YPDisciplinedNaginataRider",
+          "YPHonoredNaginataRider",
+          "YPExaltedNaginataRider"
+        ],
         "name": "高贵的薙刀骑兵"
       }
     },
     "ypnatchakram": {
       "3": {
-        "hp_mult": 1.25,
-        "damage_mult": 1.25,
+        "techs": [
+          "ypNatDisciplinedUdasi"
+        ],
         "name": "纪律严明的轮刃兵"
       },
       "4": {
-        "hp_mult": 1.6,
-        "damage_mult": 1.6,
+        "techs": [
+          "ypNatDisciplinedUdasi",
+          "ypNatHonoredUdasi"
+        ],
         "name": "光荣的轮刃兵"
       }
     },
     "ypnatconquistador": {
       "3": {
-        "hp_mult": 1.25,
-        "damage_mult": 1.25,
+        "techs": [
+          "ypNatDisciplinedJesuit"
+        ],
         "name": "老练西班牙征服者"
       },
       "4": {
-        "hp_mult": 1.6,
-        "damage_mult": 1.6,
+        "techs": [
+          "ypNatDisciplinedJesuit",
+          "ypNatHonoredJesuit"
+        ],
         "name": "护卫西班牙征服者"
       }
     },
     "ypnatmercchakram": {
       "3": {
-        "hp_mult": 1.25,
-        "damage_mult": 1.25,
+        "techs": [
+          "ypNatDisciplinedUdasi"
+        ],
         "name": "纪律严明的轮刃兵"
       },
       "4": {
-        "hp_mult": 1.6,
-        "damage_mult": 1.6,
+        "techs": [
+          "ypNatDisciplinedUdasi",
+          "ypNatHonoredUdasi"
+        ],
         "name": "光荣的轮刃兵"
       }
     },
     "ypnatmercconquistador": {
       "3": {
-        "hp_mult": 1.25,
-        "damage_mult": 1.25,
+        "techs": [
+          "ypNatDisciplinedJesuit"
+        ],
         "name": "老练西班牙征服者"
       },
       "4": {
-        "hp_mult": 1.6,
-        "damage_mult": 1.6,
+        "techs": [
+          "ypNatDisciplinedJesuit",
+          "ypNatHonoredJesuit"
+        ],
         "name": "护卫西班牙征服者"
       }
     },
     "ypnatmercgurkha": {
       "3": {
-        "hp_mult": 1.2,
-        "damage_mult": 1.2,
-        "action_range_add": {
-          "VolleyRangedAttack": 1.0,
-          "DefendRangedAttack": 1.0,
-          "StaggerRangedAttack": 1.0
-        },
+        "techs": [
+          "YPDisciplinedGurkha"
+        ],
         "name": "纪律严明的廓尔喀兵"
       },
       "4": {
-        "hp_mult": 1.5,
-        "damage_mult": 1.5,
-        "action_range_add": {
-          "VolleyRangedAttack": 2.0,
-          "DefendRangedAttack": 2.0,
-          "StaggerRangedAttack": 2.0
-        },
+        "techs": [
+          "YPDisciplinedGurkha",
+          "YPHonoredGurkha"
+        ],
         "name": "光荣的廓尔喀兵"
       },
       "5": {
-        "hp_mult": 2.0,
-        "damage_mult": 2.0,
-        "action_range_add": {
-          "VolleyRangedAttack": 3.0,
-          "DefendRangedAttack": 3.0,
-          "StaggerRangedAttack": 3.0
-        },
+        "techs": [
+          "YPDisciplinedGurkha",
+          "YPHonoredGurkha",
+          "YPExaltedGurkha"
+        ],
         "name": "高贵的廓尔喀兵"
       }
     },
     "ypnatmercgurkhajemadar": {
       "3": {
-        "hp_mult": 1.2,
-        "damage_mult": 1.2,
-        "action_range_add": {
-          "VolleyRangedAttack": 1.0,
-          "DefendRangedAttack": 1.0,
-          "StaggerRangedAttack": 1.0
-        }
+        "techs": [
+          "YPDisciplinedGurkha"
+        ]
       },
       "4": {
-        "hp_mult": 1.5,
-        "damage_mult": 1.5,
-        "action_range_add": {
-          "VolleyRangedAttack": 2.0,
-          "DefendRangedAttack": 2.0,
-          "StaggerRangedAttack": 2.0
-        }
+        "techs": [
+          "YPDisciplinedGurkha",
+          "YPHonoredGurkha"
+        ]
       },
       "5": {
-        "hp_mult": 2.0,
-        "damage_mult": 2.0,
-        "action_range_add": {
-          "VolleyRangedAttack": 3.0,
-          "DefendRangedAttack": 3.0,
-          "StaggerRangedAttack": 3.0
-        }
+        "techs": [
+          "YPDisciplinedGurkha",
+          "YPHonoredGurkha",
+          "YPExaltedGurkha"
+        ]
       }
     },
     "ypnatmercrattanshield": {
       "3": {
-        "hp_mult": 1.25,
-        "damage_mult": 1.25,
+        "techs": [
+          "ypNatDisciplinedShaolin"
+        ],
         "name": "纪律严明的藤盾兵"
       },
       "4": {
-        "hp_mult": 1.6,
-        "damage_mult": 1.6,
+        "techs": [
+          "ypNatDisciplinedShaolin",
+          "ypNatHonoredShaolin"
+        ],
         "name": "光荣的藤盾兵"
       }
     },
     "ypnatmercsohei": {
       "3": {
-        "hp_mult": 1.25,
-        "damage_mult": 1.25,
+        "techs": [
+          "ypNatDisciplinedZen"
+        ],
         "name": "纪律严明的薙刀僧兵"
       },
       "4": {
-        "hp_mult": 1.6,
-        "damage_mult": 1.6,
+        "techs": [
+          "ypNatDisciplinedZen",
+          "ypNatHonoredZen"
+        ],
         "name": "光荣的薙刀僧兵"
       }
     },
     "ypnatmerctigerclaw": {
       "3": {
-        "hp_mult": 1.25,
-        "damage_mult": 1.25,
+        "techs": [
+          "ypNatDisciplinedBhakti"
+        ],
         "name": "纪律严明的虎爪兵"
       },
       "4": {
-        "hp_mult": 1.6,
-        "damage_mult": 1.6,
+        "techs": [
+          "ypNatDisciplinedBhakti",
+          "ypNatHonoredBhakti"
+        ],
         "name": "光荣的虎爪兵"
       }
     },
     "ypnatmercwarelephant": {
       "3": {
-        "hp_mult": 1.25,
-        "damage_mult": 1.25,
+        "techs": [
+          "ypNatDisciplinedBhakti"
+        ],
         "name": "纪律严明的战象"
       },
       "4": {
-        "hp_mult": 1.6,
-        "damage_mult": 1.6,
+        "techs": [
+          "ypNatDisciplinedBhakti",
+          "ypNatHonoredBhakti"
+        ],
         "name": "光荣的战象"
       }
     },
     "ypnatrattanshield": {
       "3": {
-        "hp_mult": 1.25,
-        "damage_mult": 1.25,
+        "techs": [
+          "ypNatDisciplinedShaolin"
+        ],
         "name": "纪律严明的藤盾兵"
       },
       "4": {
-        "hp_mult": 1.6,
-        "damage_mult": 1.6,
+        "techs": [
+          "ypNatDisciplinedShaolin",
+          "ypNatHonoredShaolin"
+        ],
         "name": "光荣的藤盾兵"
       }
     },
     "ypnatsohei": {
       "3": {
-        "hp_mult": 1.25,
-        "damage_mult": 1.25,
+        "techs": [
+          "ypNatDisciplinedZen"
+        ],
         "name": "纪律严明的薙刀僧兵"
       },
       "4": {
-        "hp_mult": 1.6,
-        "damage_mult": 1.6,
+        "techs": [
+          "ypNatDisciplinedZen",
+          "ypNatHonoredZen"
+        ],
         "name": "光荣的薙刀僧兵"
       }
     },
     "ypnattigerclaw": {
       "3": {
-        "hp_mult": 1.25,
-        "damage_mult": 1.25,
+        "techs": [
+          "ypNatDisciplinedBhakti"
+        ],
         "name": "纪律严明的虎爪兵"
       },
       "4": {
-        "hp_mult": 1.6,
-        "damage_mult": 1.6,
+        "techs": [
+          "ypNatDisciplinedBhakti",
+          "ypNatHonoredBhakti"
+        ],
         "name": "光荣的虎爪兵"
       }
     },
     "ypnatwarelephant": {
       "3": {
-        "hp_mult": 1.25,
-        "damage_mult": 1.25,
+        "techs": [
+          "ypNatDisciplinedBhakti"
+        ],
         "name": "纪律严明的战象"
       },
       "4": {
-        "hp_mult": 1.6,
-        "damage_mult": 1.6,
+        "techs": [
+          "ypNatDisciplinedBhakti",
+          "ypNatHonoredBhakti"
+        ],
         "name": "光荣的战象"
       }
     },
     "yporca": {
       "4": {
-        "hp_mult": 1.3,
-        "damage_mult": 1.3
+        "techs": [
+          "DEGuardOutlawShadow"
+        ]
       },
       "5": {
-        "hp_mult": 1.8,
-        "damage_mult": 1.8
+        "techs": [
+          "DEGuardOutlawShadow",
+          "DEImperialOutlawShadow"
+        ]
       }
     },
     "ypqiangpikeman": {
       "3": {
-        "hp_mult": 1.2,
-        "damage_mult": 1.2,
-        "action_range_add": {
-          "MeleeHandAttack": 0.5,
-          "DefendHandAttack": 0.5,
-          "CoverHandAttack": 0.5
-        },
+        "techs": [
+          "YPDisciplinedQiangPikeman"
+        ],
         "name": "纪律严明的中国长矛兵"
       },
       "4": {
-        "hp_mult": 1.5,
-        "damage_mult": 1.5,
-        "action_range_add": {
-          "MeleeHandAttack": 1.0,
-          "DefendHandAttack": 1.0,
-          "CoverHandAttack": 1.0
-        },
+        "techs": [
+          "YPDisciplinedQiangPikeman",
+          "YPHonoredQiangPikeman"
+        ],
         "name": "光荣的中国长矛兵"
       },
       "5": {
-        "hp_mult": 2.0,
-        "damage_mult": 2.0,
-        "action_range_add": {
-          "MeleeHandAttack": 1.5,
-          "DefendHandAttack": 1.5,
-          "CoverHandAttack": 1.5
-        },
+        "techs": [
+          "YPDisciplinedQiangPikeman",
+          "YPHonoredQiangPikeman",
+          "YPExaltedQiangPikeman"
+        ],
         "name": "高贵的中国长矛兵"
       }
     },
     "yprajput": {
       "3": {
-        "hp_mult": 1.2,
-        "damage_mult": 1.2,
+        "techs": [
+          "YPDisciplinedRajput"
+        ],
         "name": "纪律严明的拉杰普特人"
       },
       "4": {
-        "hp_mult": 1.5,
-        "damage_mult": 1.5,
+        "techs": [
+          "YPDisciplinedRajput",
+          "YPHonoredRajput"
+        ],
         "name": "光荣的拉杰普特人"
       },
       "5": {
-        "hp_mult": 2.0,
-        "damage_mult": 2.0,
+        "techs": [
+          "YPDisciplinedRajput",
+          "YPHonoredRajput",
+          "YPExaltedRajput"
+        ],
         "name": "高贵的拉杰普特人"
       }
     },
     "yprajputmansabdar": {
       "3": {
-        "hp_mult": 1.2,
-        "damage_mult": 1.2
+        "techs": [
+          "YPDisciplinedRajput"
+        ]
       },
       "4": {
-        "hp_mult": 1.5,
-        "damage_mult": 1.5
+        "techs": [
+          "YPDisciplinedRajput",
+          "YPHonoredRajput"
+        ]
       },
       "5": {
-        "hp_mult": 2.0,
-        "damage_mult": 2.0
+        "techs": [
+          "YPDisciplinedRajput",
+          "YPHonoredRajput",
+          "YPExaltedRajput"
+        ]
       }
     },
     "ypsepoy": {
       "3": {
-        "hp_mult": 1.2,
-        "damage_mult": 1.2,
+        "techs": [
+          "YPDisciplinedSepoy"
+        ],
         "name": "纪律严明的印度兵"
       },
       "4": {
-        "hp_mult": 1.5,
-        "damage_mult": 1.5,
+        "techs": [
+          "YPDisciplinedSepoy",
+          "YPHonoredSepoy"
+        ],
         "name": "光荣的印度兵"
       },
       "5": {
-        "hp_mult": 2.0,
-        "damage_mult": 2.0,
+        "techs": [
+          "YPDisciplinedSepoy",
+          "YPHonoredSepoy",
+          "YPExaltedSepoy"
+        ],
         "name": "高贵的印度兵"
       }
     },
     "ypsepoymansabdar": {
       "3": {
-        "hp_mult": 1.2,
-        "damage_mult": 1.2
+        "techs": [
+          "YPDisciplinedSepoy"
+        ]
       },
       "4": {
-        "hp_mult": 1.5,
-        "damage_mult": 1.5
+        "techs": [
+          "YPDisciplinedSepoy",
+          "YPHonoredSepoy"
+        ]
       },
       "5": {
-        "hp_mult": 2.0,
-        "damage_mult": 2.0
+        "techs": [
+          "YPDisciplinedSepoy",
+          "YPHonoredSepoy",
+          "YPExaltedSepoy"
+        ]
       }
     },
     "ypshinobihorse": {
       "3": {
-        "hp_mult": 1.2,
-        "damage_mult": 1.2,
+        "techs": [
+          "YPDisciplinedShinobiShadow"
+        ],
         "name": "纪律严明的密探"
       },
       "4": {
-        "hp_mult": 1.5,
-        "damage_mult": 1.5,
+        "techs": [
+          "YPDisciplinedShinobiShadow",
+          "YPHonoredShinobiShadow"
+        ],
         "name": "光荣的密探"
       },
       "5": {
-        "hp_mult": 2.0,
-        "damage_mult": 2.0,
+        "techs": [
+          "YPDisciplinedShinobiShadow",
+          "YPHonoredShinobiShadow",
+          "ypExaltedShinobiShadow"
+        ],
         "name": "高贵的密探"
       }
     },
     "ypshoguntokugawa": {
       "3": {
-        "hp_mult": 1.2,
-        "damage_mult": 1.2
+        "techs": [
+          "ypDisciplinedDaimyoShadow"
+        ]
       },
       "4": {
-        "hp_mult": 1.5,
-        "damage_mult": 1.5
+        "techs": [
+          "ypDisciplinedDaimyoShadow",
+          "ypHonoredDaimyoShadow"
+        ]
       },
       "5": {
-        "hp_mult": 2.0,
-        "damage_mult": 2.0
+        "techs": [
+          "ypDisciplinedDaimyoShadow",
+          "ypHonoredDaimyoShadow",
+          "ypExaltedDaimyoShadow"
+        ]
       }
     },
     "ypsiegeelephant": {
       "4": {
-        "hp_mult": 1.25,
-        "damage_mult": 1.25,
+        "techs": [
+          "YPHonoredSiegeElephant"
+        ],
         "name": "光荣的攻城大象"
       },
       "5": {
-        "hp_mult": 1.75,
-        "damage_mult": 1.75,
-        "action_range_add": {
-          "CannonAttack": 2.0
-        },
+        "techs": [
+          "YPHonoredSiegeElephant",
+          "YPExaltedSiegeElephant"
+        ],
         "name": "高贵的攻城大象"
       }
     },
     "ypsiegeelephantmansabdar": {
       "4": {
-        "hp_mult": 1.25,
-        "damage_mult": 1.25
+        "techs": [
+          "YPHonoredSiegeElephant"
+        ]
       },
       "5": {
-        "hp_mult": 1.75,
-        "damage_mult": 1.75,
-        "action_range_add": {
-          "CannonAttack": 2.0
-        }
+        "techs": [
+          "YPHonoredSiegeElephant",
+          "YPExaltedSiegeElephant"
+        ]
       }
     },
     "ypsowar": {
       "3": {
-        "hp_mult": 1.2,
-        "damage_mult": 1.2,
+        "techs": [
+          "YPDisciplinedCamel"
+        ],
         "name": "纪律严明的印度重装骑兵"
       },
       "4": {
-        "hp_mult": 1.5,
-        "damage_mult": 1.5,
+        "techs": [
+          "YPDisciplinedCamel",
+          "YPHonoredCamel"
+        ],
         "name": "光荣的印度重装骑兵"
       },
       "5": {
-        "hp_mult": 2.0,
-        "damage_mult": 2.0,
+        "techs": [
+          "YPDisciplinedCamel",
+          "YPHonoredCamel",
+          "YPExaltedCamel"
+        ],
         "name": "高贵的印度重装骑兵"
       }
     },
     "ypsowarmansabdar": {
       "3": {
-        "hp_mult": 1.2,
-        "damage_mult": 1.2
+        "techs": [
+          "YPDisciplinedCamel"
+        ]
       },
       "4": {
-        "hp_mult": 1.5,
-        "damage_mult": 1.5
+        "techs": [
+          "YPDisciplinedCamel",
+          "YPHonoredCamel"
+        ]
       },
       "5": {
-        "hp_mult": 2.0,
-        "damage_mult": 2.0
+        "techs": [
+          "YPDisciplinedCamel",
+          "YPHonoredCamel",
+          "YPExaltedCamel"
+        ]
       }
     },
     "ypspcdaimyokiyomasa": {
       "3": {
-        "hp_mult": 1.2,
-        "damage_mult": 1.2
+        "techs": [
+          "ypDisciplinedDaimyoShadow"
+        ]
       },
       "4": {
-        "hp_mult": 1.5,
-        "damage_mult": 1.5
+        "techs": [
+          "ypDisciplinedDaimyoShadow",
+          "ypHonoredDaimyoShadow"
+        ]
       },
       "5": {
-        "hp_mult": 2.0,
-        "damage_mult": 2.0
+        "techs": [
+          "ypDisciplinedDaimyoShadow",
+          "ypHonoredDaimyoShadow",
+          "ypExaltedDaimyoShadow"
+        ]
       }
     },
     "ypspcdaimyomasamune": {
       "3": {
-        "hp_mult": 1.2,
-        "damage_mult": 1.2
+        "techs": [
+          "ypDisciplinedDaimyoShadow"
+        ]
       },
       "4": {
-        "hp_mult": 1.5,
-        "damage_mult": 1.5
+        "techs": [
+          "ypDisciplinedDaimyoShadow",
+          "ypHonoredDaimyoShadow"
+        ]
       },
       "5": {
-        "hp_mult": 2.0,
-        "damage_mult": 2.0
+        "techs": [
+          "ypDisciplinedDaimyoShadow",
+          "ypHonoredDaimyoShadow",
+          "ypExaltedDaimyoShadow"
+        ]
       }
     },
     "ypspcdaimyotadaoki": {
       "3": {
-        "hp_mult": 1.2,
-        "damage_mult": 1.2
+        "techs": [
+          "ypDisciplinedDaimyoShadow"
+        ]
       },
       "4": {
-        "hp_mult": 1.5,
-        "damage_mult": 1.5
+        "techs": [
+          "ypDisciplinedDaimyoShadow",
+          "ypHonoredDaimyoShadow"
+        ]
       },
       "5": {
-        "hp_mult": 2.0,
-        "damage_mult": 2.0
+        "techs": [
+          "ypDisciplinedDaimyoShadow",
+          "ypHonoredDaimyoShadow",
+          "ypExaltedDaimyoShadow"
+        ]
       }
     },
     "ypspcishida": {
       "3": {
-        "hp_mult": 1.2,
-        "damage_mult": 1.2
+        "techs": [
+          "ypDisciplinedDaimyoShadow"
+        ]
       },
       "4": {
-        "hp_mult": 1.5,
-        "damage_mult": 1.5
+        "techs": [
+          "ypDisciplinedDaimyoShadow",
+          "ypHonoredDaimyoShadow"
+        ]
       },
       "5": {
-        "hp_mult": 2.0,
-        "damage_mult": 2.0
+        "techs": [
+          "ypDisciplinedDaimyoShadow",
+          "ypHonoredDaimyoShadow",
+          "ypExaltedDaimyoShadow"
+        ]
       }
     },
     "ypstepperider": {
       "3": {
-        "hp_mult": 1.2,
-        "damage_mult": 1.2,
+        "techs": [
+          "YPDisciplinedSteppeRider"
+        ],
         "name": "纪律严明的草原骑兵"
       },
       "4": {
-        "hp_mult": 1.5,
-        "damage_mult": 1.5,
+        "techs": [
+          "YPDisciplinedSteppeRider",
+          "YPHonoredSteppeRider"
+        ],
         "name": "光荣的草原骑兵"
       },
       "5": {
-        "hp_mult": 1.9,
-        "damage_mult": 1.9,
+        "techs": [
+          "YPDisciplinedSteppeRider",
+          "YPHonoredSteppeRider",
+          "YPExaltedSteppeRider"
+        ],
         "name": "高贵的草原骑兵"
       }
     },
     "yptekkousen": {
       "5": {
-        "hp_mult": 1.5,
-        "damage_mult": 1.5,
+        "techs": [
+          "YPExaltedTekkousen"
+        ],
         "name": "高贵的铁甲船"
       }
     },
     "ypurumi": {
       "3": {
-        "hp_mult": 1.2,
-        "damage_mult": 1.2,
+        "techs": [
+          "YPDisciplinedUrumi"
+        ],
         "name": "安卡索立软剑兵"
       },
       "4": {
-        "hp_mult": 1.5,
-        "damage_mult": 1.5,
+        "techs": [
+          "YPDisciplinedUrumi",
+          "YPHonoredUrumi"
+        ],
         "name": "弗鲁凯软剑兵"
       },
       "5": {
-        "hp_mult": 2.0,
-        "damage_mult": 2.0,
+        "techs": [
+          "YPDisciplinedUrumi",
+          "YPHonoredUrumi",
+          "YPExaltedUrumi"
+        ],
         "name": "库鲁卡尔软剑兵"
       }
     },
     "ypurumimansabdar": {
       "3": {
-        "hp_mult": 1.2,
-        "damage_mult": 1.2
+        "techs": [
+          "YPDisciplinedUrumi"
+        ]
       },
       "4": {
-        "hp_mult": 1.5,
-        "damage_mult": 1.5
+        "techs": [
+          "YPDisciplinedUrumi",
+          "YPHonoredUrumi"
+        ]
       },
       "5": {
-        "hp_mult": 2.0,
-        "damage_mult": 2.0
+        "techs": [
+          "YPDisciplinedUrumi",
+          "YPHonoredUrumi",
+          "YPExaltedUrumi"
+        ]
       }
     },
     "ypwokouarmy": {
       "4": {
-        "hp_mult": 1.3,
-        "damage_mult": 1.3
+        "techs": [
+          "DEGuardOutlawShadow"
+        ]
       },
       "5": {
-        "hp_mult": 1.8,
-        "damage_mult": 1.8
+        "techs": [
+          "DEGuardOutlawShadow",
+          "DEImperialOutlawShadow"
+        ]
       }
     },
     "ypwokoujunk": {
       "5": {
-        "hp_mult": 1.25
+        "techs": [
+          "DEImperialMercCaptainsAfricanShadow"
+        ]
       }
     },
     "ypyabusame": {
       "3": {
-        "hp_mult": 1.2,
-        "damage_mult": 1.2,
+        "techs": [
+          "ypDisciplinedYabusameShadow"
+        ],
         "name": "纪律严明的流镝马射手"
       },
       "4": {
-        "hp_mult": 1.5,
-        "damage_mult": 1.5,
+        "techs": [
+          "ypDisciplinedYabusameShadow",
+          "YPHonoredYabusame"
+        ],
         "name": "光荣的流镝马射手"
       },
       "5": {
-        "hp_mult": 2.0,
-        "damage_mult": 2.0,
+        "techs": [
+          "ypDisciplinedYabusameShadow",
+          "YPHonoredYabusame",
+          "YPExaltedYabusame"
+        ],
         "name": "高贵的流镝马射手"
       }
     },
     "ypyamabushi": {
       "2": {
-        "hp_mult": 1.3,
-        "damage_mult": 1.3
+        "techs": [
+          "YPAge2YamabushiShadow"
+        ]
       },
       "3": {
-        "hp_mult": 1.5,
-        "damage_mult": 1.5,
+        "techs": [
+          "YPAge2YamabushiShadow",
+          "YPDisciplinedYamabushiShadow"
+        ],
         "name": "纪律严明的山伏"
       },
       "4": {
-        "hp_mult": 1.8,
-        "damage_mult": 1.8,
+        "techs": [
+          "YPAge2YamabushiShadow",
+          "YPDisciplinedYamabushiShadow",
+          "YPHonoredYamabushiShadow"
+        ],
         "name": "光荣的山伏"
       },
       "5": {
-        "hp_mult": 2.3,
-        "damage_mult": 2.3,
+        "techs": [
+          "YPAge2YamabushiShadow",
+          "YPDisciplinedYamabushiShadow",
+          "YPHonoredYamabushiShadow",
+          "YPExaltedYamabushiShadow"
+        ],
         "name": "高贵的山伏"
       }
     },
     "ypyumi": {
       "3": {
-        "hp_mult": 1.2,
-        "damage_mult": 1.2,
+        "techs": [
+          "YPDisciplinedYumi"
+        ],
         "name": "纪律严明的日本长弓兵"
       },
       "4": {
-        "hp_mult": 1.5,
-        "damage_mult": 1.5,
+        "techs": [
+          "YPDisciplinedYumi",
+          "YPHonoredYumi"
+        ],
         "name": "光荣的日本长弓兵"
       },
       "5": {
-        "hp_mult": 2.0,
-        "damage_mult": 2.0,
+        "techs": [
+          "YPDisciplinedYumi",
+          "YPHonoredYumi",
+          "YPExaltedYumi"
+        ],
         "name": "高贵的日本步弓兵"
       }
     },
     "ypzamburak": {
       "3": {
-        "hp_mult": 1.2,
-        "damage_mult": 1.2,
-        "action_mult_add": {
-          "StaggerRangedAttack": {
-            "AbstractArtillery": 1.25
-          },
-          "BuildingAttack": {
-            "AbstractArtillery": 1.25
-          },
-          "DefendRangedAttack": {
-            "AbstractArtillery": 1.25
-          },
-          "MeleeHandAttack": {
-            "AbstractArtillery": 1.25
-          }
-        },
+        "techs": [
+          "YPDisciplinedCamelGun"
+        ],
         "name": "纪律严明的骆驼骑兵"
       },
       "4": {
-        "hp_mult": 1.5,
-        "damage_mult": 1.5,
-        "action_mult_add": {
-          "StaggerRangedAttack": {
-            "AbstractArtillery": 1.25
-          },
-          "BuildingAttack": {
-            "AbstractArtillery": 1.25
-          },
-          "DefendRangedAttack": {
-            "AbstractArtillery": 1.25
-          },
-          "MeleeHandAttack": {
-            "AbstractArtillery": 1.25
-          }
-        },
+        "techs": [
+          "YPDisciplinedCamelGun",
+          "YPHonoredCamelGun"
+        ],
         "name": "光荣的骆驼骑兵"
       },
       "5": {
-        "hp_mult": 2.0,
-        "damage_mult": 2.0,
-        "action_mult_add": {
-          "StaggerRangedAttack": {
-            "AbstractArtillery": 1.25
-          },
-          "BuildingAttack": {
-            "AbstractArtillery": 1.25
-          },
-          "DefendRangedAttack": {
-            "AbstractArtillery": 1.25
-          },
-          "MeleeHandAttack": {
-            "AbstractArtillery": 1.25
-          }
-        },
+        "techs": [
+          "YPDisciplinedCamelGun",
+          "YPHonoredCamelGun",
+          "YPExaltedCamelGun"
+        ],
         "name": "高贵的骆驼骑兵"
       }
     },
     "ypzamburakmansabdar": {
       "3": {
-        "hp_mult": 1.2,
-        "damage_mult": 1.2,
-        "action_mult_add": {
-          "StaggerRangedAttack": {
-            "AbstractArtillery": 1.25
-          },
-          "BuildingAttack": {
-            "AbstractArtillery": 1.25
-          },
-          "DefendRangedAttack": {
-            "AbstractArtillery": 1.25
-          },
-          "MeleeHandAttack": {
-            "AbstractArtillery": 1.25
-          }
-        }
+        "techs": [
+          "YPDisciplinedCamelGun"
+        ]
       },
       "4": {
-        "hp_mult": 1.5,
-        "damage_mult": 1.5,
-        "action_mult_add": {
-          "StaggerRangedAttack": {
-            "AbstractArtillery": 1.25
-          },
-          "BuildingAttack": {
-            "AbstractArtillery": 1.25
-          },
-          "DefendRangedAttack": {
-            "AbstractArtillery": 1.25
-          },
-          "MeleeHandAttack": {
-            "AbstractArtillery": 1.25
-          }
-        }
+        "techs": [
+          "YPDisciplinedCamelGun",
+          "YPHonoredCamelGun"
+        ]
       },
       "5": {
-        "hp_mult": 2.0,
-        "damage_mult": 2.0,
-        "action_mult_add": {
-          "StaggerRangedAttack": {
-            "AbstractArtillery": 1.25
-          },
-          "BuildingAttack": {
-            "AbstractArtillery": 1.25
-          },
-          "DefendRangedAttack": {
-            "AbstractArtillery": 1.25
-          },
-          "MeleeHandAttack": {
-            "AbstractArtillery": 1.25
-          }
-        }
+        "techs": [
+          "YPDisciplinedCamelGun",
+          "YPHonoredCamelGun",
+          "YPExaltedCamelGun"
+        ]
       }
     }
   },
   "category": {
     "AbstractOutlaw": {
-      "3": {
-        "hp_mult": 1.2,
-        "damage_mult": 1.2
-      },
-      "4": {
-        "hp_mult": 1.5,
-        "damage_mult": 1.5
-      },
-      "5": {
-        "hp_mult": 2.0,
-        "damage_mult": 2.0
-      }
+      "3": [
+        "SaloonWildWest"
+      ],
+      "4": [
+        "SaloonWildWest",
+        "DEGuardOutlawShadow"
+      ],
+      "5": [
+        "SaloonWildWest",
+        "DEGuardOutlawShadow",
+        "DEImperialOutlawShadow"
+      ]
     },
     "AbstractNativeWarrior": {
-      "5": {
-        "hp_mult": 1.5,
-        "damage_mult": 1.5
-      }
+      "5": [
+        "ypImpLegendaryNatives"
+      ]
     },
     "Mercenary": {
-      "5": {
-        "hp_mult": 1.5,
-        "damage_mult": 1.5
-      }
+      "5": [
+        "DEPoliticianMercContractor"
+      ]
     }
   }
 }

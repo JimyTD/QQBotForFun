@@ -87,12 +87,16 @@ def expand(tech_ids: Iterable[str], *, age: int) -> list[str]:
 
 
 def _ready_shadows(tech: str, active: set[str], waiting: dict, links: dict) -> list[str]:
-    return [
-        shadow
-        for shadow in waiting.get(tech, ())
-        if shadow not in active
-        and all(prereq in active for prereq in links[shadow].get("requires") or ())
-    ]
+    ready = []
+    for shadow in waiting.get(tech, ()):
+        if shadow in active:
+            continue
+        row = links[shadow]
+        requires = row.get("requires") or ()
+        met = (any if row.get("or_prereqs") else all)(prereq in active for prereq in requires)
+        if met:
+            ready.append(shadow)
+    return ready
 
 
 def _visit(tech: str, active: set[str], links: dict, waiting: dict) -> list[str]:

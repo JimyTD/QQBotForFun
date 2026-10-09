@@ -112,6 +112,28 @@
   `unit_upgrades.json` 改为 `units[uid][age] = {techs: [累计 id], name}`、`category[tag][age] = [累计 id]`；
   `civ_unit_upgrades.json` 的 `techs` 改为累计 id 全列表。选线规则不变。`DIRTY_EFFECTS` 删除：
   原始数据里投石索兵现在是 +8 射程，不再有 +147。
+- 第 2 步进行中（未提交）：两个升级 parser 已改为输出累计科技 id；`upgrades.py` 已重写为
+  “id → expand → 科技池 op → settle_unit”。全量对比（`%TEMP%/aoe3_upgrades_diff.json`）发现：
+  - 预期修正：土著/佣兵/亡命徒 5 时代（141 个）；民兵 `VeteranSnaphaner` 是 `Percent` 1.2（旧只认
+    BasePercent）；游骑兵帝国档无类型护甲 +0.05；铁帽炮兵乌鲁菲利金币 −5；投石索兵 +8 射程。
+  - 新加 `AgeResolver.age_reachable`：只收“到时代就能拿到”的升级（前置全是时代科技或同类升级档），
+    排除议会链 `DESejmHetmanRevolution`（大元帅 500→1800 的错误来源）。
+  - 原始数据有 `OrPrereqs` 标记（99 条，任一前置即可），例：`GuardDragoons` 前置
+    `DEMilitaryIndustrialAgeEnable`（工业时代 或 某革命）。`age_reachable` 与 `tech_links` 已支持；
+    `tech_links.json` 需重新生成（新增 `or_prereqs`）。修前 `age_reachable` 错误排除了护卫/帝王
+    枪骑兵、劫匪等 20 多个兵的 4/5 时代档。
+  下一步：重新生成三份种子 → 再跑全量对比，逐类核对。
+- 全量对比已逐类核对完（173 条变化，全部有原始数据依据）。新增规则：同一时代多条候选时，
+  “只有革命科技能开放的档”排最后（`_revolution_only_techs`）：大元帅选议会线 750/1250/2750
+  （原 500；议会线是否算时代科技待 Owner 定，与传奇土著同类）；州民兵选志愿军、迫击炮战船选
+  舰载榴弹炮。另：海螺信使精锐印加伤害 Absolute +8、塞巴斯托波帝国档建筑攻击 +175（旧只认 BasePercent）。
+  对比脚本：`%TEMP%/aoe3_cmp.py`。下一步：全量测试 → 接入国战/配兵 → 文档。
+- 第 2 步完成（提交见 git log）：aoe3 全部非慢测试通过；`test_upgrades.py` 按新规则重写。
+  补充修正：通用线不得使用“前置要求文明专属科技”的档（帝国红衫军不进通用火枪兵线）；
+  非当前阵型的攻击列表按各自攻击名结算（奥斯曼枪手防御阵型射程 +4 生效）。
+  迫击炮 5 时代名字改为“帝国榴弹炮”（通用线），原“帝国皇家迫击炮”是丹麦皇家线漏入。
+  下一步（第 3 步）：国战/配兵结算改为 `apply_upgrades(unit, age, civ_id, tech_ids=选中科技)`，
+  一次结算；`MatchedTech.unlocked` 的“已在时代升级里跳过”随之由同一 id 去重保证。
 
 ## 暂缓（最后再看）
 

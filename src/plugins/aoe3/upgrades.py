@@ -1,23 +1,19 @@
-"""AoE3 单位改良（科技加成）运行时应用。
+"""AoE3 时代升级运行时。
 
-读取 ``seeds/aoe3/unit_upgrades.json``（由 ``scripts/crawler/aoe3_upgrades_parser.py``
-离线生成），对 ``Unit`` 按指定时代叠加血/攻加成，返回**副本**（不改全局 seed）。
-
-设计依据：docs/games/aoe3-battle.md §3.10。要点：
-  - 逐兵 id 链与**类别科技**（亡命徒/佣兵/土著，按标签）各取该时代条目，
-    **取较大者整包**（不混不叠）：既避免土著「逐兵传奇 + 类别传奇」double，
-    也避免共享单位的小额文明逐兵档顶掉更大的类别加成。
-  - 指定时代 N → 取该兵 ≤N 的最高档 cumulative mult（BasePercent 已在生成期累加）。
-  - 2 时代（及以下）默认无军改，原样返回。
+``seeds/aoe3/unit_upgrades.json`` / ``civ_unit_upgrades.json`` 记录每个兵、每个时代
+已生效的**科技 id**（逐兵线 + 类别科技），由 ``scripts/crawler`` 下的升级 parser 生成。
+运行时把这些科技连同它们解锁的科技合并去重，效果按统一算符一次结算
+（docs/games/aoe3-battle.md §3.10）：同一科技只生效一次，不同科技全部叠加，没有取大。
+2 时代（及以下）没有时代升级。
 """
 from __future__ import annotations
 
 import dataclasses
 import json
 import logging
+from collections.abc import Iterable
 from pathlib import Path
 
-from .attack_actions import AttackAction
 from .models import Unit
 
 logger = logging.getLogger("aoe3.upgrades")
@@ -26,6 +22,7 @@ _DATA_PATH = Path(__file__).resolve().parents[3] / "seeds" / "aoe3" / "unit_upgr
 _CIV_DATA_PATH = (
     Path(__file__).resolve().parents[3] / "seeds" / "aoe3" / "civ_unit_upgrades.json"
 )
+_POOL_PATH = Path(__file__).resolve().parents[3] / "seeds" / "aoe3" / "civ_war_tech_pool.json"
 
 # 类别标签 → 中文展示名（押注简报「已激活类别科技」用）
 CATEGORY_LABELS = {
@@ -82,228 +79,138 @@ def _pick(table: dict[str, dict], age: int) -> dict | None:
     return table.get(str(best_key)) if best_key is not None else None
 
 
-def _category_tag(unit: Unit) -> str | None:
+def _category_tags(unit: Unit) -> list[str]:
     cats = _load().get("category", {})
-    for tag in unit.type:
-        if tag in cats:
-            return tag
-    return None
+    return [tag for tag in unit.type if tag in cats]
 
 
-def get_multipliers(
-    unit: Unit,
-    age: int,
-    civ_id: str | None = None,
-) -> tuple[float, float, str | None]:
-    """返回 (hp_mult, damage_mult, source)。
-
-    source: "unit"（逐兵链）/ 类别标签名 / None（无加成）。
-    """
+def age_tech_ids(unit: Unit, age: int, civ_id: str | None = None) -> list[str]:
+    """这个兵在本时代已生效的时代升级科技 id（逐兵线 + 类别），去重、保持顺序。"""
     if age is None or age < 2:
-        return 1.0, 1.0, None
-    data = _load()
-
-    # 逐兵链与类别科技各取该时代条目，**取较大者整包**（不混不叠）：
-    #   - 避免土著「逐兵传奇 +50」与「类别传奇 +50」叠成 +100（double）；
-    #   - 避免共享单位的小额文明逐兵档（如瑞士长枪荷兰 Waardgelders +10）
-    #     顶掉更大的类别加成（佣兵 +50）。
-    candidates: list[tuple[float, float, str]] = []
-    per_id = _unit_upgrade_table(unit, civ_id)
-    if per_id:
-        e = _pick(per_id, age)
-        if e:
-            candidates.append((e.get("hp_mult", 1.0), e.get("damage_mult", 1.0), "unit"))
-    tag = _category_tag(unit)
-    if tag:
-        e = _pick(data["category"][tag], age)
-        if e:
-            candidates.append((e.get("hp_mult", 1.0), e.get("damage_mult", 1.0), tag))
-    if not candidates:
-        return 1.0, 1.0, None
-    # 取 hp_mult 较大的整包；source 用于展示
-    return max(candidates, key=lambda c: c[0])
+        return []
+    ids: list[str] = []
+    entry = _pick(_unit_upgrade_table(unit, civ_id), age) or {}
+    for tech in entry.get("techs") or ():
+        if tech not in ids:
+            ids.append(tech)
+    cats = _load().get("category", {})
+    for tag in _category_tags(unit):
+        for tech in _pick_list(cats[tag], age):
+            if tech not in ids:
+                ids.append(tech)
+    return ids
 
 
-def _unit_extras(unit: Unit, age: int, civ_id: str | None = None) -> dict:
-    """取逐兵链在 ≤age 的 extras 整包（range/aoe/rof/速度/护甲/倍率）。
-
-    extras 只挂在逐兵条目（"units"）上；类别科技不带这些字段。
-    """
-    if age is None or age < 2:
-        return {}
-    per_id = _unit_upgrade_table(unit, civ_id)
-    if not per_id:
-        return {}
-    return _pick(per_id, age) or {}
-
-
-def _apply_mult_add(mults: list, mult_add_vs: dict[str, float]) -> list | None:
-    """按 vs 累加 delta；无条目视为隐含 1.0 倍并创建；返回新列表（无改动则 None）。"""
-    if not mult_add_vs:
-        return None
-    from .models import Multiplier
-    out = list(mults)
-    remaining = dict(mult_add_vs)
-    for i, m in enumerate(out):
-        if m.vs in remaining:
-            out[i] = dataclasses.replace(
-                m,
-                value=round(m.value + remaining.pop(m.vs), 4),
-            )
-    for vs, delta in remaining.items():
-        out.append(Multiplier(vs=vs, value=round(1.0 + delta, 4)))
-    return out if out != list(mults) else None
+def _pick_list(table: dict[str, list], age: int) -> list[str]:
+    best = None
+    for key in table:
+        try:
+            value = int(key)
+        except ValueError:
+            continue
+        if value <= age and (best is None or value > best):
+            best = value
+    return list(table.get(str(best), ())) if best is not None else []
 
 
 def age_upgrade_line(unit: Unit, civ_id: str | None = None) -> tuple[set[str], set[str]]:
-    """The unit's age-upgrade line. None of these tiers is a composition choice.
+    """The unit's age-upgrade line at every tier: tech ids and display names.
 
-    Civ overrides record the tech ids on that line. The shared table records
-    each tier's display name.
+    None of these is a composition choice.
     """
-    table = _unit_upgrade_table(unit, civ_id)
     tech_ids: set[str] = set()
     names: set[str] = set()
-    for key, entry in table.items():
+    for key, entry in _unit_upgrade_table(unit, civ_id).items():
         try:
             int(key)
         except ValueError:
             continue
-        for tech_id in entry.get("techs") or ():
-            tech_ids.add(str(tech_id))
-        name = entry.get("name")
-        if name:
-            names.add(str(name))
+        tech_ids.update(str(tech) for tech in entry.get("techs") or ())
+        if entry.get("name"):
+            names.add(str(entry["name"]))
     return tech_ids, names
 
 
 def _unit_age_name(unit: Unit, age: int, civ_id: str | None = None) -> str | None:
-    """取该单位在指定时代的升级名（SetName），无则 None。"""
-    per_id = _unit_upgrade_table(unit, civ_id)
-    if not per_id:
-        return None
-    e = _pick(per_id, age)
-    return e.get("name") if e else None
+    entry = _pick(_unit_upgrade_table(unit, civ_id), age)
+    return entry.get("name") if entry else None
 
 
-def _action_number(table: dict, name: str) -> float:
-    if not table:
-        return 0.0
-    return float(table.get(name) or 0.0)
-
-
-def _upgraded_action(
-    action: AttackAction,
-    dmg_mult: float,
-    extras: dict,
-) -> AttackAction:
-    kwargs: dict = {}
-    if dmg_mult != 1.0:
-        kwargs["damage"] = round(action.damage * dmg_mult, 2)
-        if action.damage_cap:
-            kwargs["damage_cap"] = round(action.damage_cap * dmg_mult, 2)
-    range_add = _action_number(extras.get("action_range_add") or {}, action.name)
-    if range_add and action.range_max > 0:
-        kwargs["range_max"] = round(action.range_max + range_add, 2)
-    aoe_add = _action_number(extras.get("action_aoe_add") or {}, action.name)
-    if aoe_add:
-        kwargs["aoe_radius"] = round(action.aoe_radius + aoe_add, 2)
-    rof_set = extras.get("action_rof_set") or {}
-    rof_add = extras.get("action_rof_add") or {}
-    if action.name in rof_set:
-        kwargs["rof"] = round(float(rof_set[action.name]), 3)
-    elif action.name in rof_add and action.rof:
-        kwargs["rof"] = round(max(0.1, action.rof + float(rof_add[action.name])), 3)
-    mult_add = (extras.get("action_mult_add") or {}).get(action.name)
-    if mult_add:
-        new_m = _apply_mult_add(list(action.multipliers), mult_add)
-        if new_m is not None:
-            kwargs["multipliers"] = tuple(new_m)
-    if not kwargs:
-        return action
-    return dataclasses.replace(action, **kwargs)
-
-
-def _upgraded_action_lists(
+def apply_upgrades(
     unit: Unit,
-    dmg_mult: float,
-    extras: dict,
-) -> dict:
-    changes: dict = {}
-    if unit.attack_actions:
-        updated = [_upgraded_action(action, dmg_mult, extras) for action in unit.attack_actions]
-        if updated != list(unit.attack_actions):
-            changes["attack_actions"] = updated
-    if unit.attack_actions_by_tactic:
-        updated_tactics = {
-            name: [_upgraded_action(action, dmg_mult, extras) for action in actions]
-            for name, actions in unit.attack_actions_by_tactic.items()
-        }
-        if updated_tactics != unit.attack_actions_by_tactic:
-            changes["attack_actions_by_tactic"] = updated_tactics
-    return changes
+    age: int,
+    *,
+    civ_id: str | None = None,
+    tech_ids: Iterable[str] = (),
+) -> Unit:
+    """结算时代升级（以及调用方给的额外科技），返回 Unit 副本；无变化返回原对象。
 
-
-def apply_upgrades(unit: Unit, age: int, *, civ_id: str | None = None) -> Unit:
-    """按时代叠加改良，返回 Unit 副本（无加成时返回原对象）。
-
-    血/攻取逐兵与类别 max 整包；range/aoe/rof/速度/护甲/倍率 取逐兵链整包。
+    时代升级科技、``tech_ids`` 与它们解锁的科技合并去重，同一科技只生效一次，
+    全部效果按统一算符一次结算（``tech_effects.settle_unit``）。
     """
-    hp_mult, dmg_mult, _ = get_multipliers(unit, age, civ_id)
-    extras = _unit_extras(unit, age, civ_id)
-    upgraded_name = _unit_age_name(unit, age, civ_id)
-    if hp_mult == 1.0 and dmg_mult == 1.0 and not extras and not upgraded_name:
+    from .tech_effects import runtime_op, settle_unit
+    from .tech_links import expand
+
+    ids = expand([*age_tech_ids(unit, age, civ_id), *tech_ids], age=age or 0)
+    if not ids:
         return unit
+    rows = tech_pool_rows()
+    ops = []
+    for tech in ids:
+        row = rows.get(tech)
+        if row is None:
+            continue
+        for op in (*row.get("combat_ops", ()), *row.get("cost_ops", ())):
+            translated = runtime_op(op)
+            if translated is not None:
+                ops.append(translated)
+    upgraded = settle_unit(unit, ops, unit)
+    name = _unit_age_name(unit, age, civ_id)
+    if name and name != upgraded.name:
+        upgraded = dataclasses.replace(upgraded, name=name)
+    return upgraded
 
-    changes: dict = {}
-    if upgraded_name:
-        changes["name"] = upgraded_name
-    if hp_mult != 1.0:
-        changes["hp"] = round(unit.hp * hp_mult, 1)
-    if extras.get("cost") is not None:
-        changes["cost"] = dict(extras["cost"])
 
-    # --- extras（整包，relativity 已在生成期换算）---
-    armor_add = extras.get("armor_add", {})
-    if armor_add.get("melee"):
-        changes["armor_melee"] = round(unit.armor_melee + armor_add["melee"], 3)
-    if armor_add.get("ranged"):
-        changes["armor_ranged"] = round(unit.armor_ranged + armor_add["ranged"], 3)
+_pool_rows: dict[str, dict] | None = None
 
-    speed = unit.speed
-    if extras.get("speed_set") is not None:
-        speed = float(extras["speed_set"])
-    speed = speed * extras.get("speed_mult", 1.0) + extras.get("speed_add", 0.0)
-    if abs(speed - unit.speed) > 1e-9:
-        changes["speed"] = round(speed, 3)
 
-    changes.update(_upgraded_action_lists(unit, dmg_mult, extras))
-
-    if not changes:
-        return unit
-    return dataclasses.replace(unit, **changes)
+def tech_pool_rows() -> dict[str, dict]:
+    """科技池（seeds/aoe3/civ_war_tech_pool.json）按 id 索引。"""
+    global _pool_rows
+    if _pool_rows is None:
+        try:
+            payload = json.loads(_POOL_PATH.read_text(encoding="utf-8"))
+            _pool_rows = {row["id"]: row for row in payload["techs"]}
+        except (OSError, json.JSONDecodeError, KeyError) as e:
+            logger.warning("加载 civ_war_tech_pool.json 失败：%s（时代升级不生效）", e)
+            _pool_rows = {}
+    return _pool_rows
 
 
 def active_category_techs(units: list[Unit], age: int) -> list[tuple[str, float]]:
-    """返回本局已激活的类别科技 [(中文名, hp_mult)]，用于押注简报展示。
-
-    仅当本局存在该类别且**该类别单位走类别科技**（即未被逐兵链覆盖）时列出。
-    """
+    """本局有该类别单位时，列出已生效的类别科技 [(中文名, 生命倍率)]（押注简报用）。"""
     if age is None or age <= 2:
         return []
-    data = _load()
-    cats = data.get("category", {})
-    seen: set[str] = set()
+    cats = _load().get("category", {})
+    rows = tech_pool_rows()
     out: list[tuple[str, float]] = []
-    for u in units:
-        # 仅当该单位实际「吃到」类别科技（max 取胜方为类别标签）时才展示，
-        # 避免逐兵档更高时仍误报类别加成。
-        _, _, source = get_multipliers(u, age)
-        if source is None or source == "unit" or source in seen:
-            continue
-        entry = _pick(cats[source], age)
-        if not entry:
-            continue
-        seen.add(source)
-        out.append((CATEGORY_LABELS.get(source, source), entry.get("hp_mult", 1.0)))
+    seen: set[str] = set()
+    for unit in units:
+        for tag in _category_tags(unit):
+            if tag in seen:
+                continue
+            ids = _pick_list(cats[tag], age)
+            if not ids:
+                continue
+            seen.add(tag)
+            inc = 0.0
+            for tech in ids:
+                for op in (rows.get(tech) or {}).get("combat_ops", ()):
+                    if (
+                        op.get("subtype") in {"Hitpoints", "HitPoints"}
+                        and op.get("relativity") == "BasePercent"
+                        and any(t.get("value") == tag for t in op.get("targets") or ())
+                    ):
+                        inc += float(op["amount"]) - 1.0
+            out.append((CATEGORY_LABELS.get(tag, tag), round(1.0 + inc, 4)))
     return out
