@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import threading
 from pathlib import Path
+from types import SimpleNamespace
 from unittest.mock import patch
 
 import pytest
@@ -14,6 +15,7 @@ from scripts.aoe3_battle_viewer_2d import (
     SimulationSupersededError,
     _attach_visual_events,
     _build_custom_simulator,
+    _tech_mechanisms,
     loadout_options,
 )
 
@@ -33,6 +35,30 @@ def test_superseded_run_cannot_publish_an_error_over_new_frames():
     with pytest.raises(SimulationSupersededError):
         runner._publish(1, threading.Event(), {"tick": 1})
     assert store.history() == [frame]
+
+
+def test_tech_mechanisms_use_current_terminology():
+    tech = SimpleNamespace(
+        combat_ops=(
+            {
+                "subtype": "ActionEnable",
+                "amount": 1.0,
+                "action": "VolleyRangedAttack",
+            },
+            {
+                "subtype": "InitialTactic",
+                "amount": 1.0,
+                "tactic": "Volley",
+            },
+            {"subtype": "RechargeTime", "amount": 0.8},
+        ),
+        cost_ops=(),
+    )
+    assert _tech_mechanisms(tech) == [
+        "开启攻击：远程攻击",
+        "切换攻击方式 Volley",
+        "调整蓄力冷却",
+    ]
 
 
 def test_viewer_labels_timeline_as_frame_axis():

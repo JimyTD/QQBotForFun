@@ -351,7 +351,7 @@ def test_summary_drops_effects_that_miss_the_lineup() -> None:
         priority=(2, 0),
         lineup_keys=("AbstractArtillery", "falconet"),
     )
-    assert tech.summary == "【鹰炮】飞炮：移速+1.1，射击间隔-10%"
+    assert tech.summary == "【鹰炮】飞炮：移速+1.1，全部攻击：攻击间隔-10%"
 
 
 def test_revolution_card_stays_out_even_if_generic_pool_lists_it() -> None:

@@ -134,9 +134,25 @@ def _runtime_op(op: dict[str, Any]) -> dict[str, Any] | None:
         return None
     match subtype:
         case "Hitpoints" | "HitPoints":
-            stat, kind = "hp", "add" if relation == "Absolute" else "mult"
+            stat = "hp"
+            kind = {
+                "BasePercent": "mult",
+                "Absolute": "add",
+                "Assign": "set",
+                "Percent": "percent",
+            }.get(relation)
+            if kind is None:
+                return None
         case "Damage":
-            stat, kind = "damage", "mult"
+            stat = "damage"
+            kind = {
+                "BasePercent": "mult",
+                "Absolute": "add",
+                "Assign": "set",
+                "Percent": "percent",
+            }.get(relation)
+            if kind is None:
+                return None
         case "DamageBonus":
             stat, kind = "mult", "add"
         case "DamageArea":
@@ -162,7 +178,16 @@ def _runtime_op(op: dict[str, Any]) -> dict[str, Any] | None:
         case "ArmorSpecific" | "Armor":
             stat, kind = "armor", "add"
         case "Cost":
-            stat, kind = "cost", "mult" if relation == "BasePercent" else "add"
+            stat = "cost"
+            kind = {
+                "BasePercent": "mult",
+                "Absolute": "add",
+                "Assign": "set",
+                "Override": "set",
+                "Percent": "percent",
+            }.get(relation)
+            if kind is None:
+                return None
         case "ActionEnable":
             stat, kind = "action_enable", "set"
         case "InitialTactic":

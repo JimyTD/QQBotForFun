@@ -296,7 +296,7 @@ def test_wizard_tech_menu_shows_effect_summary():
     )
     assert wizard.step == WizardStep.TECHS
     assert "【火枪兵】细细的红线：生命+20%，移速-10%（专属）" in text
-    assert "【轻骑兵】骑兵战斗力：生命+15%，攻击+15%（通用）" in text
+    assert "【轻骑兵】骑兵战斗力：生命+15%，全部攻击：伤害+15%（通用）" in text
 
 
 def test_wizard_custom_picks_weights_and_one_tech():

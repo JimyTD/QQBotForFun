@@ -7,11 +7,10 @@
 from __future__ import annotations
 
 import dataclasses
-from typing import Sequence
+from collections.abc import Sequence
 
 from .attack_actions import AttackAction
 from .models import Multiplier, Unit
-
 
 # ------------------------------------------------------------------
 # 应用
@@ -30,7 +29,11 @@ def _op_dedup_key(op: dict, unit: Unit) -> tuple[str, ...]:
     kind = op["kind"]
 
     if stat in ("range", "aoe", "rof"):
-        return (f"{stat}:{kind}",)
+        # 同一科技常为多个动作各写一条；键必须带动作名与 subtype，
+        # 否则只剩第一行生效。allactions 没有动作名，仍由应用阶段统一展开。
+        return (
+            f"{stat}:{kind}:{op.get('subtype', '')}:{op.get('action', '')}",
+        )
     if stat == "mult":
         vs = op.get("vs", "")
         action = op.get("action", "")
@@ -133,8 +136,8 @@ def _retarget_actions(changes: dict, unit: Unit, base: Unit, op: dict, mapper) -
 
 def _stat_winners(ops: list[dict], action_names: set[str]) -> list[tuple[str, dict]]:
     """同一动作、同一项效果只留数值最大的一条。allactions 覆盖当前列表里的每一条。"""
-    best: dict[tuple[str, str, str, str], dict] = {}
-    order: list[tuple[str, str, str, str]] = []
+    best: dict[tuple[str, str, str, str, str], dict] = {}
+    order: list[tuple[str, str, str, str, str]] = []
     for op in ops:
         if op.get("stat") not in {"range", "aoe", "rof", "mult"}:
             continue
@@ -144,13 +147,19 @@ def _stat_winners(ops: list[dict], action_names: set[str]) -> list[tuple[str, di
             names = {str(op["action"])} & action_names
         vs = str(op.get("vs") or "") if op.get("stat") == "mult" else ""
         for name in names:
-            key = (str(op["stat"]), str(op["kind"]), vs, name)
+            key = (
+                str(op["stat"]),
+                str(op["kind"]),
+                vs,
+                str(op.get("subtype") or ""),
+                name,
+            )
             if key not in best:
                 best[key] = op
                 order.append(key)
             elif float(op["value"]) > float(best[key]["value"]):
                 best[key] = op
-    return [(key[3], best[key]) for key in order]
+    return [(key[4], best[key]) for key in order]
 
 
 def _apply_stat_to_action(
@@ -164,9 +173,12 @@ def _apply_stat_to_action(
     if stat == "range" and kind == "add":
         field_name = "range_min" if op.get("subtype") == "MinimumRange" else "range_max"
         current = float(getattr(action, field_name))
-        if current <= 0:
+        if current <= 0 and field_name != "range_min":
             return action
         return dataclasses.replace(action, **{field_name: round(current + val, 2)})
+    if stat == "range" and kind == "set":
+        field_name = "range_min" if op.get("subtype") == "MinimumRange" else "range_max"
+        return dataclasses.replace(action, **{field_name: round(val, 2)})
     if stat == "aoe" and kind == "add":
         return dataclasses.replace(action, aoe_radius=round(action.aoe_radius + val, 2))
     if stat == "rof":
@@ -256,25 +268,53 @@ def _apply_one_tech(unit: Unit, tech: dict, base: Unit) -> Unit:
             )
         elif stat == "hp" and kind == "add":
             changes["hp"] = round(changes.get("hp", unit.hp) + val, 1)
-        elif stat == "damage" and kind == "mult":
-            inc = val - 1.0
+        elif stat == "hp" and kind == "percent":
+            changes["hp"] = round(changes.get("hp", unit.hp) * val, 1)
+        elif stat == "hp" and kind == "set":
+            changes["hp"] = round(val, 1)
+        elif stat == "damage" and kind in {"mult", "add", "set", "percent"}:
+            def _next_damage(
+                action: AttackAction,
+                origin: AttackAction,
+                *,
+                kind: str = kind,
+                val: float = val,
+            ) -> AttackAction:
+                if kind == "mult":
+                    inc = val - 1.0
+                    return dataclasses.replace(
+                        action,
+                        damage=round(action.damage + origin.damage * inc, 2),
+                        damage_cap=(
+                            round(action.damage_cap + origin.damage_cap * inc, 2)
+                            if origin.damage_cap
+                            else action.damage_cap
+                        ),
+                    )
+                if kind == "add":
+                    return dataclasses.replace(action, damage=round(action.damage + val, 2))
+                if kind == "percent":
+                    return dataclasses.replace(
+                        action,
+                        damage=round(action.damage * val, 2),
+                    )
+                return dataclasses.replace(action, damage=round(val, 2))
+
             _retarget_actions(
                 changes,
                 unit,
                 base,
                 {**op, "action": "", "allactions": True},
-                lambda action, origin: dataclasses.replace(
-                    action,
-                    damage=round(action.damage + origin.damage * inc, 2),
-                    damage_cap=(
-                        round(action.damage_cap + origin.damage_cap * inc, 2)
-                        if origin.damage_cap
-                        else action.damage_cap
-                    ),
-                ),
+                _next_damage,
             )
         elif stat == "recharge" and _recharge_targets_unit(op, unit):
-            def _next_recharge(action: AttackAction, origin: AttackAction) -> AttackAction:
+            def _next_recharge(
+                action: AttackAction,
+                origin: AttackAction,
+                *,
+                kind: str = kind,
+                val: float = val,
+            ) -> AttackAction:
                 if not action.charge:
                     return action
                 if kind == "set":
@@ -326,18 +366,28 @@ def _apply_one_tech(unit: Unit, tech: dict, base: Unit) -> Unit:
             elif ak == "ranged":
                 changes["armor_ranged"] = round(
                     changes.get("armor_ranged", unit.armor_ranged) + val, 3)
-        elif stat == "cost" and kind == "mult":
+        elif stat == "cost":
             resource = op.get("resource", "")
-            if resource:
-                cur_cost = dict(changes.get("cost", unit.cost))
-                new_value = max(0, round(
-                    cur_cost.get(resource, unit.cost.get(resource, 0))
-                    + base.cost.get(resource, 0) * (val - 1.0)))
-                if new_value:
-                    cur_cost[resource] = new_value
-                else:
-                    cur_cost.pop(resource, None)
-                changes["cost"] = cur_cost
+            if not resource:
+                continue
+            cur_cost = dict(changes.get("cost", unit.cost))
+            current = cur_cost.get(resource, unit.cost.get(resource, 0))
+            if kind == "mult":
+                new_value = current + base.cost.get(resource, 0) * (val - 1.0)
+            elif kind == "add":
+                new_value = current + val
+            elif kind == "percent":
+                new_value = current * val
+            elif kind == "set":
+                new_value = val
+            else:
+                continue
+            new_value = max(0, round(new_value))
+            if new_value:
+                cur_cost[resource] = new_value
+            else:
+                cur_cost.pop(resource, None)
+            changes["cost"] = cur_cost
         # range / aoe / rof / mult 只经上面 _apply_named_action_stats 落到动作列表
 
     _apply_named_action_stats(changes, unit, base, tech["ops"])
@@ -378,65 +428,13 @@ def format_tech_lines(
     red_techs: list[dict], blue_techs: list[dict], *, title: str = "🔬 本局科技"
 ) -> list[str]:
     """生成已选科技展示行（嵌入到 VS banner）。"""
+    from src.plugins.games.aoe3_battle.tech_summary import format_runtime_tech_summary
+
     if not red_techs and not blue_techs:
         return []
     lines = [title + "："]
     for t in red_techs:
-        lines.append(f"   🔴 {t['name_zh']}（{_brief_desc(t)}）")
+        lines.append(f"   🔴 {format_runtime_tech_summary(t)}")
     for t in blue_techs:
-        lines.append(f"   🔵 {t['name_zh']}（{_brief_desc(t)}）")
+        lines.append(f"   🔵 {format_runtime_tech_summary(t)}")
     return lines
-
-
-def _brief_desc(tech: dict) -> str:
-    """一行简述科技效果。"""
-    parts = []
-    for op in tech["ops"]:
-        stat = op["stat"]
-        kind = op["kind"]
-        val = op["value"]
-        if stat == "hp" and kind == "mult":
-            pct = round((val - 1) * 100)
-            parts.append(f"血{'+' if pct > 0 else ''}{pct}%")
-        elif stat == "damage" and kind == "mult":
-            pct = round((val - 1) * 100)
-            parts.append(f"攻{'+' if pct > 0 else ''}{pct}%")
-        elif stat == "speed" and kind == "mult":
-            pct = round((val - 1) * 100)
-            parts.append(f"速{'+' if pct > 0 else ''}{pct}%")
-        elif stat == "speed" and kind == "add":
-            parts.append(f"速{'+' if val > 0 else ''}{val}")
-        elif stat == "range" and kind == "add":
-            parts.append(f"射程+{val}")
-        elif stat == "aoe" and kind == "add":
-            parts.append(f"AOE+{val}")
-        elif stat == "rof" and kind == "set":
-            parts.append(f"射击间隔改为{val:g}秒")
-        elif stat == "rof" and kind == "add":
-            parts.append(f"射击间隔{'+' if val > 0 else ''}{val:g}秒")
-        elif stat == "rof" and kind == "mult":
-            pct = round((val - 1) * 100)
-            parts.append(f"射击间隔{'+' if pct > 0 else ''}{pct}%")
-        elif stat == "armor" and kind == "add":
-            ak = op.get("armor_kind", "")
-            parts.append(f"{'近' if ak == 'melee' else '远'}防+{val}")
-        elif stat == "cost" and kind == "mult":
-            pct = round((val - 1) * 100)
-            res = op.get("resource", "")
-            parts.append(f"造价{res}{'+' if pct > 0 else ''}{pct}%")
-        elif stat == "mult" and kind == "add":
-            vs_short = op.get("vs", "").replace("Abstract", "")
-            parts.append(f"vs{vs_short}+{val}")
-        elif stat == "initial_tactic":
-            parts.append("换成阵型")
-        elif stat == "action_enable":
-            parts.append("解锁攻击" if val else "关闭攻击")
-        elif stat == "recharge" and kind == "mult":
-            pct = round((val - 1) * 100)
-            parts.append(f"蓄力冷却{'+' if pct > 0 else ''}{pct}%")
-        elif stat == "recharge" and kind == "add":
-            parts.append(f"蓄力冷却{'+' if val > 0 else ''}{val:g}秒")
-        elif stat == "recharge" and kind == "set":
-            parts.append(f"蓄力冷却改为{val:g}秒")
-    scope = "/".join(s.replace("Abstract", "") for s in tech["scope"])
-    return f"{scope}: {', '.join(parts)}" if parts else scope

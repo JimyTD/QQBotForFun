@@ -53,6 +53,7 @@ from plugins.games.aoe3_battle.simulator2d import (  # noqa: E402
     BattleSimulator2D,
     Simulation2DConfig,
 )
+from plugins.games.aoe3_battle.tech_summary import describe_action_enable  # noqa: E402
 
 VIEWER_DIR = _ROOT / "tools" / "aoe3_battle_viewer_2d"
 _ICON_PNG_CACHE: dict[str, bytes] = {}
@@ -584,9 +585,11 @@ def _tech_mechanisms(tech) -> list[str]:
         subtype = op.get("subtype")
         action = op.get("action")
         if subtype == "ActionEnable" and action:
-            mechanisms.append(f"开关动作 {action}")
+            label = describe_action_enable(action, float(op.get("amount") or 0))
+            if label:
+                mechanisms.append(label)
         elif subtype == "InitialTactic" and op.get("tactic"):
-            mechanisms.append(f"切换阵型 {op['tactic']}")
+            mechanisms.append(f"切换攻击方式 {op['tactic']}")
         elif subtype == "RechargeTime":
             mechanisms.append("调整蓄力冷却")
     return mechanisms

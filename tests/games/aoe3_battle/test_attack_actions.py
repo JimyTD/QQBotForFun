@@ -293,7 +293,7 @@ def test_reservistas_card_unlocks_the_insurgente_musket():
     chosen = select_attack(updated.attack_actions, 8, target_types=("Unit",))
     assert chosen is not None
     assert chosen.name == "VolleyRangedAttack"
-    assert "解锁攻击" in techs[0].summary
+    assert "开启攻击：远程攻击" in techs[0].summary
 
 
 def test_damage_upgrade_reaches_every_mode():

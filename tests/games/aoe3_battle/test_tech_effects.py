@@ -129,6 +129,39 @@ def test_apply_cost_effect(repo):
     assert up.cost["gold"] == expected
 
 
+def test_apply_cost_absolute_and_assign(repo):
+    """Cost 的 Absolute / Assign 都是固定值修正，不是百分比。"""
+    crossbow = repo.get_by_id("crossbowman")
+    lockbows = {
+        "scope": ["crossbowman"],
+        "ops": [
+            {"stat": "cost", "kind": "set", "value": 0, "resource": "food"},
+            {"stat": "cost", "kind": "add", "value": 20, "resource": "wood"},
+        ],
+    }
+    up = _apply_one_tech(crossbow, lockbows, base=crossbow)
+    assert up.cost.get("food", 0) == 0
+    assert up.cost["wood"] == crossbow.cost.get("wood", 0) + 20
+
+
+def test_apply_percent_relativity_multiplies(repo):
+    """Percent 是比例乘法：0.8 = -20%，不是 +0.8%。"""
+    crossbow = repo.get_by_id("crossbowman")
+    tech = {
+        "scope": ["crossbowman"],
+        "ops": [{"stat": "cost", "kind": "percent", "value": 0.8, "resource": "wood"}],
+    }
+    up = _apply_one_tech(crossbow, tech, base=crossbow)
+    assert up.cost["wood"] == round(crossbow.cost["wood"] * 0.8)
+
+    hp = {
+        "scope": ["crossbowman"],
+        "ops": [{"stat": "hp", "kind": "percent", "value": 1.15}],
+    }
+    up = _apply_one_tech(crossbow, hp, base=crossbow)
+    assert up.hp == round(crossbow.hp * 1.15, 1)
+
+
 def test_allocate_lineup_counts_single(repo):
     """allocate_lineup_counts 按当前 cost 分配数量 (单兵种)。
 
@@ -136,8 +169,11 @@ def test_allocate_lineup_counts_single(repo):
     见 lineup._unit_cost, a0295d8 起生效), 而不是 ``sum(cost.values())``。
     """
     import dataclasses
+
     from src.plugins.games.aoe3_battle.lineup import (
-        Lineup, UnitSlot, allocate_lineup_counts,
+        Lineup,
+        UnitSlot,
+        allocate_lineup_counts,
     )
     musk = repo.get_by_id("musketeer")
     budget = 1000
@@ -167,8 +203,39 @@ def test_format_tech_lines_content():
         {"stat": "hp", "kind": "mult", "value": 1.1}
     ]}
     lines = format_tech_lines([t], [])
-    assert any("骑兵胸甲" in l for l in lines)
-    assert any("🔴" in l for l in lines)
+    assert any("骑兵胸甲" in line for line in lines)
+    assert any("🔴" in line for line in lines)
+
+
+def test_runtime_tech_summary_uses_new_wording():
+    tech = {
+        "name_zh": "预备军",
+        "scope": ["deinsurgente"],
+        "ops": [
+            {
+                "stat": "action_enable",
+                "kind": "set",
+                "value": 1.0,
+                "action": "VolleyRangedAttack",
+            },
+            {"stat": "initial_tactic", "kind": "set", "value": 1.0, "tactic": "Volley"},
+        ],
+    }
+    text = format_tech_summary(
+        tech["name_zh"],
+        combat_ops=(
+            {
+                "subtype": "ActionEnable",
+                "amount": 1.0,
+                "relativity": "Assign",
+                "action": "VolleyRangedAttack",
+            },
+            {"subtype": "InitialTactic", "amount": 1.0, "relativity": "Assign"},
+        ),
+    )
+    assert text == "预备军：开启攻击：远程攻击，切换攻击方式"
+    assert "解锁攻击" not in text
+    assert "换成阵型" not in text
 
 
 def test_tech_summary_uses_player_facing_effect_names():
@@ -196,7 +263,7 @@ def test_tech_summary_uses_player_facing_effect_names():
         ),
         recipients=("诸葛弩", "轻骑兵"),
     )
-    assert pair == "【诸葛弩、轻骑兵】骑兵战斗力：生命+15%，攻击+15%"
+    assert pair == "【诸葛弩、轻骑兵】骑兵战斗力：生命+15%，全部攻击：伤害+15%"
 
 
 def test_tech_summary_describes_cost_and_counter():
@@ -218,7 +285,7 @@ def test_tech_summary_describes_cost_and_counter():
             },
         ),
     )
-    assert "对步兵伤害+1" in summary
+    assert "对步兵伤害倍率+1" in summary
     assert "食物造价+25%" in summary
 
 
@@ -289,6 +356,77 @@ def test_named_and_allactions_range_do_not_stack_on_one_action(repo):
     assert by_name["BuildingAttack"].range_max == 11
 
 
+def test_action_scoped_range_ops_are_not_deduped(repo):
+    """同一科技给多个动作各写一条时，每条都要落到自己的动作。"""
+    longbow = repo.get_by_id("longbowman")
+    tech = {
+        "scope": ["longbowman"],
+        "ops": [
+            {
+                "stat": "range",
+                "kind": "add",
+                "value": 4,
+                "subtype": "MaximumRange",
+                "action": "VolleyRangedAttack",
+            },
+            {
+                "stat": "range",
+                "kind": "add",
+                "value": 4,
+                "subtype": "MaximumRange",
+                "action": "RangedBuildingAttack",
+            },
+            {
+                "stat": "range",
+                "kind": "add",
+                "value": 3,
+                "subtype": "MaximumRange",
+                "action": "BuildingAttack",
+            },
+        ],
+    }
+    upgraded = _apply_one_tech(longbow, tech, base=longbow)
+    by_name = {action.name: action for action in upgraded.attack_actions}
+    assert by_name["VolleyRangedAttack"].range_max == 26
+    assert by_name["RangedBuildingAttack"].range_max == 26
+    assert by_name["BuildingAttack"].range_max == 9
+
+
+def test_minimum_and_maximum_range_on_same_action_both_apply(repo):
+    """DEHCFodioTactics 的 VolleyLongRangedAttack 同时改 min 与 max。"""
+    tech = {
+        "scope": ["defulawarrior"],
+        "ops": [
+            {
+                "stat": "range",
+                "kind": "add",
+                "value": 3,
+                "subtype": "MaximumRange",
+                "action": "VolleyLongRangedAttack",
+            },
+            {
+                "stat": "range",
+                "kind": "add",
+                "value": 3,
+                "subtype": "MinimumRange",
+                "action": "VolleyLongRangedAttack",
+            },
+        ],
+    }
+    unit = repo.get_by_id("defulawarrior")
+    before = next(
+        action for action in unit.attack_actions
+        if action.name == "VolleyLongRangedAttack"
+    )
+    upgraded = _apply_one_tech(unit, tech, base=unit)
+    after = next(
+        action for action in upgraded.attack_actions
+        if action.name == "VolleyLongRangedAttack"
+    )
+    assert after.range_max == before.range_max + 3
+    assert after.range_min == before.range_min + 3
+
+
 def test_tech_summary_keeps_velocity_and_rof_relativity():
     summary = format_tech_summary(
         "飞炮",
@@ -315,7 +453,201 @@ def test_tech_summary_keeps_velocity_and_rof_relativity():
             },
         ),
     )
-    assert summary == "飞炮：移速+1.1，射击间隔-10%，射击间隔-0.5秒，射击间隔改为 2.75 秒"
+    assert summary == (
+        "飞炮：移速+1.1，全部攻击："
+        "攻击间隔-10%、攻击间隔-0.5秒、攻击间隔改为 2.75 秒"
+    )
+
+
+def test_tech_summary_names_the_attack_modes_it_changes():
+    summary = format_tech_summary(
+        "火龙经",
+        combat_ops=(
+            {
+                "subtype": "RateOfFire",
+                "amount": 0.9,
+                "relativity": "BasePercent",
+                "action": "CannonAttack",
+            },
+            {
+                "subtype": "RateOfFire",
+                "amount": 0.9,
+                "relativity": "BasePercent",
+                "action": "FlameAttack",
+            },
+        ),
+    )
+    assert summary == "火龙经：火炮攻击：攻击间隔-10%，火焰攻击：攻击间隔-10%"
+
+    grouped = format_tech_summary(
+        "卡纳里援助",
+        combat_ops=(
+            {
+                "subtype": "RateOfFire",
+                "amount": 0.8,
+                "relativity": "BasePercent",
+                "action": "CoverHandAttack",
+            },
+            {
+                "subtype": "RateOfFire",
+                "amount": 0.8,
+                "relativity": "BasePercent",
+                "action": "DefendHandAttack",
+            },
+            {
+                "subtype": "RateOfFire",
+                "amount": 0.8,
+                "relativity": "BasePercent",
+                "action": "MeleeHandAttack",
+            },
+        ),
+    )
+    assert grouped == "卡纳里援助：近战攻击：攻击间隔-20%"
+
+
+def test_tech_summary_names_charge_and_action_targets():
+    summary = format_tech_summary(
+        "破甲剑",
+        combat_ops=(
+            {"subtype": "Damage", "amount": 1.1, "relativity": "BasePercent"},
+            {
+                "subtype": "DamageArea",
+                "amount": 1.0,
+                "relativity": "Absolute",
+                "action": "LanceChargeAttack",
+            },
+            {"subtype": "RechargeTime", "amount": 0.6, "relativity": "BasePercent"},
+            {
+                "subtype": "MaximumRange",
+                "amount": 2.0,
+                "relativity": "Absolute",
+                "action": "LanceChargeAttack",
+            },
+        ),
+    )
+    assert summary == (
+        "破甲剑：全部攻击：伤害+10%，"
+        "冲锋攻击：溅射范围+1、射程+2，蓄力冷却-40%"
+    )
+
+    opened = format_tech_summary(
+        "预备军",
+        combat_ops=(
+            {
+                "subtype": "ActionEnable",
+                "amount": 1.0,
+                "action": "VolleyRangedAttack",
+            },
+            {"subtype": "InitialTactic", "amount": 1.0},
+        ),
+    )
+    assert opened == "预备军：开启攻击：远程攻击，切换攻击方式"
+
+
+def test_tech_summary_uses_relativity_and_translated_types():
+    summary = format_tech_summary(
+        "锁弓",
+        combat_ops=(
+            {"subtype": "Damage", "amount": 1.3, "relativity": "BasePercent"},
+            {
+                "subtype": "ActionEnable",
+                "amount": 1.0,
+                "action": "LockRangedAttack",
+            },
+            {
+                "subtype": "ActionEnable",
+                "amount": 0.0,
+                "action": "VolleyRangedAttack",
+            },
+            {
+                "subtype": "MaximumRange",
+                "amount": -2.0,
+                "relativity": "Absolute",
+                "action": "LockRangedAttack",
+            },
+        ),
+        cost_ops=(
+            {
+                "subtype": "Cost",
+                "amount": 0.0,
+                "relativity": "Override",
+                "resource": "Food",
+            },
+            {
+                "subtype": "Cost",
+                "amount": 20.0,
+                "relativity": "Absolute",
+                "resource": "Wood",
+            },
+        ),
+    )
+    assert summary == (
+        "锁弓：全部攻击：伤害+30%，开启攻击：锁弓远程，"
+        "关闭攻击：远程攻击，食物造价改为 0，木材造价+20，"
+        "锁弓远程：射程-2"
+    )
+
+    bonus = format_tech_summary(
+        "反骑兵战术",
+        combat_ops=(
+            {
+                "subtype": "DamageBonus",
+                "amount": 1.0,
+                "relativity": "Absolute",
+                "action": "BowAttack",
+                "unittype": "AbstractHeavyCavalry",
+            },
+        ),
+    )
+    assert bonus.endswith("远程攻击：对重装骑兵伤害倍率+1")
+
+
+def test_tech_summary_hides_internal_abilities_and_caps_length():
+    summary = format_tech_summary(
+        "十字军骑士",
+        combat_ops=(
+            {"subtype": "ActionEnable", "amount": 1.0, "action": "Stealth"},
+            {"subtype": "ActionEnable", "amount": 1.0, "action": "Discover"},
+            {
+                "subtype": "ActionEnable",
+                "amount": 0.0,
+                "action": "IncreaseHPWithFortifications",
+            },
+            *(
+                {
+                    "subtype": "RateOfFire",
+                    "amount": 0.9,
+                    "relativity": "BasePercent",
+                    "action": action,
+                }
+                for action in (
+                    "CannonAttack",
+                    "FlameAttack",
+                    "BuildingAttack",
+                    "MeleeHandAttack",
+                    "VolleyRangedAttack",
+                        "ChargeAttack",
+                        "BowAttack",
+                        "BombardAttack",
+                        "CaseShotAttack",
+                        "BarrageAttack",
+                    )
+                ),
+        ),
+    )
+    assert "IncreaseHPWithFortifications" not in summary
+    assert "开启能力：潜行" in summary
+    assert "等 " in summary
+    assert len(summary) < 120
+
+
+def test_tech_summary_caps_recipient_list():
+    summary = format_tech_summary(
+        "西方改革",
+        combat_ops=({"subtype": "Damage", "amount": 1.08, "relativity": "BasePercent"},),
+        recipients=("中国连弩兵", "中国长矛兵", "火绳枪兵", "怯薛", "草原骑兵"),
+    )
+    assert summary == "【中国连弩兵、中国长矛兵、火绳枪兵 等 5 个兵种】西方改革：全部攻击：伤害+8%"
 
 
 def test_tech_summary_falls_back_to_name_for_unknown_ops():
