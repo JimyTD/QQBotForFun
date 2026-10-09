@@ -1,16 +1,20 @@
-"""AoE3 科技效果运行时应用。
+"""AoE3 科技效果结算。
 
-科技 parser 将游戏 ``techtreey.xml`` 的效果规整为 ``scope`` + ``ops`` 后，
-由本模块把**已明确选定**的科技作用到 Unit 副本。它不读取科技池、不选择科技、
-也不引入随机性；未来的文明科技树和主城国策共用这套效果语义。
+一份科技由若干效果（op）组成。结算规则（docs/wip/aoe3-tech-effects.md）：
 
-每一条 op 带自己的 ``targets``：只打写明的兵。``scope`` 只是整条科技的命中
-名单，用来快速跳过，不决定套哪几条 op。
+- 每一条 op 只打 ``targets`` 写明的兵；写了攻击名只改同名攻击，``allactions``
+  或没写攻击名改全部攻击。
+- 同一科技只生效一次（由调用方保证科技列表去重）。
+- 打到同一个量上的多条 op 按统一算符合并，没有“取大”：
+  ``mult``（BasePercent）各项增量相加后乘基础值；``percent`` 累乘；
+  ``add``（Absolute）相加；``set``（Assign）覆盖，后写的覆盖先写的。
+  合并顺序：先 set，再 mult 增量，再 percent，最后 add。
 """
 from __future__ import annotations
 
 import dataclasses
 from collections.abc import Iterable, Mapping, Sequence
+from dataclasses import dataclass, field
 
 from .attack_actions import AttackAction
 from .models import Multiplier, Unit
@@ -45,430 +49,355 @@ def ops_for_unit(ops: Iterable[Mapping], unit: Unit) -> list:
 
 
 # ------------------------------------------------------------------
-# 应用
+# 统一算符
 # ------------------------------------------------------------------
 
-def _op_dedup_key(op: dict, unit: Unit) -> tuple[str, ...]:
-    """为 op 生成去重键：同键的多条 op 只保留最强的一条。
+@dataclass
+class Stack:
+    """打到同一个量上的全部 op，按统一算符合并。"""
 
-    键的构成取决于 stat 类型：
-      - range/aoe/rof/mult: 按动作名，不是按槽
-      - 全局 (hp/damage/speed): (stat, kind)
-      - armor: (stat, kind, armor_kind)
-      - cost: (stat, kind, resource)
-    """
-    stat = op["stat"]
-    kind = op["kind"]
+    set_value: float | None = None
+    base_inc: float = 0.0
+    percent: float = 1.0
+    add: float = 0.0
+    touched: bool = False
+    ops: list = field(default_factory=list)
 
-    if stat in ("range", "aoe", "rof"):
-        # 同一科技常为多个动作各写一条；键必须带动作名与 subtype，
-        # 否则只剩第一行生效。allactions 没有动作名，仍由应用阶段统一展开。
-        return (
-            f"{stat}:{kind}:{op.get('subtype', '')}:{op.get('action', '')}",
-        )
-    if stat == "mult":
-        vs = op.get("vs", "")
-        action = op.get("action", "")
-        return (f"mult:{kind}:{action}:{vs}",)
-    if stat == "action_enable":
-        return (f"action_enable:{op.get('action', '')}",)
-    if stat == "initial_tactic":
-        return (f"initial_tactic:{op.get('tactic', '')}",)
-    if stat == "recharge":
-        return (f"recharge:{kind}:{op.get('action', '')}",)
-    if stat == "hand_damage":
-        return (f"hand_damage:{kind}",)
+    def push(self, kind: str, value: float) -> None:
+        self.touched = True
+        if kind == "set":
+            self.set_value = value
+        elif kind == "mult":
+            self.base_inc += value - 1.0
+        elif kind == "percent":
+            self.percent *= value
+        elif kind == "add":
+            self.add += value
+
+    def resolve(self, base: float, current: float) -> float:
+        """base：原始基础值（BasePercent 的基准）；current：本次结算前的值。"""
+        if not self.touched:
+            return current
+        start = current if self.set_value is None else self.set_value
+        origin = base if self.set_value is None else self.set_value
+        return (start + origin * self.base_inc) * self.percent + self.add
+
+
+# ------------------------------------------------------------------
+# 游戏效果 → 运行时效果
+# ------------------------------------------------------------------
+
+# 游戏 relativity → 统一算符。所有数值效果共用这一张表。
+RELATIVITY_KIND = {
+    "BasePercent": "mult",
+    "Percent": "percent",
+    "Absolute": "add",
+    "Assign": "set",
+    "Override": "set",
+}
+
+# 游戏 subtype → (运行时 stat, 攻击范围)。攻击范围 None 表示按 op 自己的 action。
+_NUMERIC_SUBTYPES: dict[str, tuple[str, str | None]] = {
+    "Hitpoints": ("hp", None),
+    "HitPoints": ("hp", None),
+    "Damage": ("damage", None),
+    "DamageForAllHandLogicActions": ("damage", "hand"),
+    "DamageForAllRangedLogicActions": ("damage", "ranged"),
+    "DamageCap": ("cap", None),
+    "DamageBonus": ("mult", None),
+    "DamageArea": ("aoe", None),
+    "MaximumRange": ("range_max", None),
+    "MinimumRange": ("range_min", None),
+    "RangeForAllRangedLogicActions": ("range_max", "ranged"),
+    "RateOfFire": ("rof", None),
+    "MaximumVelocity": ("speed", None),
+    "ArmorSpecific": ("armor", None),
+    "Armor": ("armor", None),
+    "Cost": ("cost", None),
+    "RechargeTime": ("recharge", None),
+}
+
+# 护甲按伤害类型。``Armor`` 没写类型时三种都加。
+_ARMOR_KINDS = {"Hand": "melee", "Melee": "melee", "Ranged": "ranged", "Siege": "siege"}
+
+
+def runtime_op(op: Mapping) -> dict | None:
+    """把科技池里的一条游戏效果换成运行时效果；结算不了的返回 None。"""
+    subtype = str(op.get("subtype") or "")
+    amount = op.get("amount")
+    if amount is None:
+        return None
+    result: dict = {
+        "subtype": subtype,
+        "value": float(amount),
+        "targets": list(op.get("targets") or ()),
+    }
+    for key in ("action", "allactions", "tactic"):
+        if op.get(key):
+            result[key] = op[key]
+    if subtype == "ActionEnable":
+        if not op.get("action"):
+            return None
+        result.update(stat="action_enable", kind="set")
+        return result
+    if subtype == "InitialTactic":
+        if not op.get("tactic"):
+            return None
+        result.update(stat="initial_tactic", kind="set")
+        return result
+    mapped = _NUMERIC_SUBTYPES.get(subtype)
+    kind = RELATIVITY_KIND.get(str(op.get("relativity") or ""))
+    if mapped is None or kind is None:
+        return None
+    stat, scope = mapped
+    result.update(stat=stat, kind=kind)
+    if scope:
+        result["attack_scope"] = scope
     if stat == "armor":
-        return (f"armor:{kind}:{op.get('armor_kind', '')}",)
-    if stat == "cost":
-        return (f"cost:{kind}:{op.get('resource', '')}",)
-    # hp, speed 等全局 stat
-    return (f"{stat}:{kind}",)
-
-
-def _deduplicate_ops(ops: list[dict], unit: Unit) -> list[dict]:
-    """同一科技内按去重键分组，每组只保留 value 最大的 op。
-
-    科技列出多条 action 变体是为覆盖不同兵种的代表动作名，对单个兵只应生效一次。
-    数据中偶有 parser 合并产生的重复（如同 stat 不同 value），取最大值。
-    """
-    seen: dict[str, dict] = {}  # key → best op
-    result_keys: list[str] = []  # 保持首次出现顺序
-
-    for op in ops:
-        keys = _op_dedup_key(op, unit)
-        for k in keys:
-            if k not in seen:
-                seen[k] = op
-                result_keys.append(k)
-            elif op["value"] > seen[k]["value"]:
-                seen[k] = op
-
-    # 同一 op 可能产生多个 key（多 slot），去重保留唯一 op
-    emitted: set[int] = set()
-    result: list[dict] = []
-    for k in result_keys:
-        op = seen[k]
-        op_id = id(op)
-        if op_id not in emitted:
-            emitted.add(op_id)
-            result.append(op)
+        if subtype == "Armor" and not op.get("newtype"):
+            result["armor_kind"] = "all"
+        else:
+            armor_kind = _ARMOR_KINDS.get(str(op.get("newtype") or ""))
+            if armor_kind is None:
+                return None
+            result["armor_kind"] = armor_kind
+    elif stat == "cost":
+        resource = str(op.get("resource") or "").lower()
+        if not resource:
+            return None
+        result["resource"] = resource
+    elif stat == "mult":
+        vs = str(op.get("unittype") or "")
+        if not vs:
+            return None
+        result["vs"] = vs
     return result
 
 
-_ROF_FLOOR = 0.1
-_ARMOR_FIELDS = {
-    "melee": "armor_melee",
-    "ranged": "armor_ranged",
-    "siege": "armor_siege",
-}
-
-
-def _action_names(op: dict, actions: list[AttackAction]) -> set[str] | None:
-    """None means every mode. A named mode that is not on this unit matches nothing."""
-    if op.get("allactions") or not op.get("action"):
+def unapplied_effect_key(op: Mapping) -> tuple[str, str, str] | None:
+    """结算不了时返回 ``(subtype, relativity, newtype)``，能结算返回 None。"""
+    if runtime_op(op) is not None:
         return None
-    return {str(op["action"])}
+    subtype = str(op.get("subtype") or "")
+    newtype = str(op.get("newtype") or "") if subtype in {"Armor", "ArmorSpecific"} else ""
+    return (subtype, str(op.get("relativity") or ""), newtype)
 
 
-def _retarget_actions(changes: dict, unit: Unit, base: Unit, op: dict, mapper) -> None:
-    current = list(changes.get("attack_actions", unit.attack_actions))
-    if not current:
-        return
-    names = _action_names(op, current)
-    origin_actions = changes.get("_attack_origin", base.attack_actions)
-    base_by = {action.name: action for action in origin_actions}
-    updated: list[AttackAction] = []
-    changed = False
-    for action in current:
-        if names is not None and action.name not in names:
-            updated.append(action)
-            continue
-        nxt = mapper(action, base_by.get(action.name, action))
-        updated.append(nxt)
-        changed = changed or nxt != action
-    if changed:
-        changes["attack_actions"] = updated
+# 结算不了的效果，逐项列明，防止静默丢弃。新出现未列明的效果测试失败。
+# 每一项是做还是移出可选名单，由 Owner 决定（docs/wip/aoe3-tech-effects.md）。
+UNAPPLIED_EFFECTS: frozenset[tuple[str, str, str]] = frozenset({
+    ("ActionAdd", "Absolute", ""),
+    ("ActionAddAttachingUnit", "Absolute", ""),
+    ("AddContainedBonusType", "Assign", ""),
+    ("AddContainedType", "Assign", ""),
+    ("ArmorType", "Absolute", ""),
+    ("AttackPriority", "Absolute", ""),
+    ("AutoAttackType", "Absolute", ""),
+    ("ContainedHitpointBonus", "Assign", ""),
+    ("ConversionDelay", "Absolute", ""),
+    ("ConversionResistance", "Percent", ""),
+    ("DamageMultiplier", "Assign", ""),
+    ("DodgeChance", "Assign", ""),
+    ("EnableDodge", "Assign", ""),
+    ("GarrisonBonusDamage", "Assign", ""),
+    ("HitPercent", "Absolute", ""),
+    ("HitPercent", "Assign", ""),
+    ("HitPercent", "BasePercent", ""),
+    ("HitPercent", "Percent", ""),
+    ("HitPercentType", "Absolute", ""),
+    ("ProtoActionAdd", "Assign", ""),
+    ("SelfDamageMultiplier", "Assign", ""),
+    ("SetActionFlag", "Absolute", ""),
+    ("SetProjectile", "Absolute", ""),
+    ("SetTacticDataOverride", "Assign", ""),
+    ("SetUnitType", "Assign", ""),
+    ("Snare", "Assign", ""),
+    ("SpeedModifier", "Absolute", ""),
+    ("SpeedModifier", "Assign", ""),
+    ("SpeedModifier", "BasePercent", ""),
+    ("TacticArmor", "Absolute", ""),
+    ("TacticEnable", "Absolute", ""),
+    ("TacticEnable", "Assign", ""),
+    ("UnitRegenAbsolute", "Assign", ""),
+    ("UnitRegenIgnoreOnStealth", "Absolute", ""),
+    ("UnitRegenRate", "Absolute", ""),
+    ("UnitRegenRate", "Assign", ""),
+    ("UnitRegenRate", "Percent", ""),
+    ("UnitRegenRateLimit", "Absolute", ""),
+    ("VeterancyBonus", "Assign", ""),
+    ("VeterancyEnable", "Absolute", ""),
+})
 
 
-def _retarget_hand_actions(changes: dict, unit: Unit, base: Unit, mapper) -> None:
-    """只改近战逻辑攻击（tactics 里 handlogic=1 的那几条）。"""
-    current = list(changes.get("attack_actions", unit.attack_actions))
-    if not current:
-        return
-    origin_actions = changes.get("_attack_origin", base.attack_actions)
-    base_by = {action.name: action for action in origin_actions}
-    updated: list[AttackAction] = []
-    changed = False
-    for action in current:
-        if not action.handlogic:
-            updated.append(action)
-            continue
-        nxt = mapper(action, base_by.get(action.name, action))
-        updated.append(nxt)
-        changed = changed or nxt != action
-    if changed:
-        changes["attack_actions"] = updated
+# ------------------------------------------------------------------
+# 结算到一个兵
+# ------------------------------------------------------------------
+
+_ROF_FLOOR = 0.1
+_ARMOR_FIELDS = {"melee": "armor_melee", "ranged": "armor_ranged", "siege": "armor_siege"}
+_ACTION_STATS = {"damage", "cap", "mult", "aoe", "range_max", "range_min", "rof", "recharge"}
 
 
-def _damage_mapper(kind: str, val: float):
-    def _next_damage(action: AttackAction, origin: AttackAction) -> AttackAction:
-        if kind == "mult":
-            inc = val - 1.0
-            return dataclasses.replace(
-                action,
-                damage=round(action.damage + origin.damage * inc, 2),
-                damage_cap=(
-                    round(action.damage_cap + origin.damage_cap * inc, 2)
-                    if origin.damage_cap
-                    else action.damage_cap
-                ),
-            )
-        if kind == "add":
-            return dataclasses.replace(action, damage=round(action.damage + val, 2))
-        if kind == "percent":
-            return dataclasses.replace(action, damage=round(action.damage * val, 2))
-        return dataclasses.replace(action, damage=round(val, 2))
-
-    return _next_damage
+def _op_action_names(op: Mapping, actions: Sequence[AttackAction]) -> list[str]:
+    """这条 op 落到的攻击名。"""
+    scope = op.get("attack_scope")
+    if scope == "hand":
+        return [a.name for a in actions if a.handlogic]
+    if scope == "ranged":
+        return [a.name for a in actions if a.rangedlogic]
+    if op.get("allactions") or not op.get("action"):
+        return [a.name for a in actions]
+    name = str(op["action"])
+    return [a.name for a in actions if a.name == name]
 
 
-def _apply_damage_ops(changes: dict, unit: Unit, base: Unit, ops: list[dict]) -> None:
-    """伤害按攻击名落到当前列表：写明攻击名只改那一条，没写改全部。
-
-    同一条攻击、同一种算法里，点名和全部攻击只留更大的数，不叠。
-    """
-    current = list(changes.get("attack_actions", unit.attack_actions))
-    if not current:
-        return
-    origin_actions = changes.get("_attack_origin", base.attack_actions)
-    base_by = {action.name: action for action in origin_actions}
-    names = {action.name for action in current}
-    best: dict[tuple[str, str], dict] = {}
-    order: list[tuple[str, str]] = []
+def _switch_actions(unit: Unit, base: Unit, ops: Sequence[Mapping]) -> tuple[list, list]:
+    """先换阵型，再开关攻击。返回（当前攻击列表，对应的基础攻击列表）。"""
+    current = list(unit.attack_actions)
+    origin = list(base.attack_actions)
     for op in ops:
-        if op.get("stat") != "damage" or op.get("kind") not in {"mult", "add", "set", "percent"}:
+        if op["stat"] != "initial_tactic":
             continue
-        if op.get("allactions") or not op.get("action"):
-            hit = names
-        else:
-            hit = {str(op["action"])} & names
-        for name in hit:
-            key = (str(op["kind"]), name)
-            if key not in best:
-                best[key] = op
-                order.append(key)
-            elif float(op["value"]) > float(best[key]["value"]):
-                best[key] = op
-    if not order:
-        return
-    updated = list(current)
-    changed = False
-    for kind, name in order:
-        op = best[(kind, name)]
-        mapper = _damage_mapper(kind, float(op["value"]))
-        for index, action in enumerate(updated):
-            if action.name != name:
-                continue
-            nxt = mapper(action, base_by.get(name, action))
-            if nxt != action:
-                updated[index] = nxt
-                changed = True
-    if changed:
-        changes["attack_actions"] = updated
-
-
-def _stat_winners(ops: list[dict], action_names: set[str]) -> list[tuple[str, dict]]:
-    """同一动作、同一项效果只留数值最大的一条。allactions 覆盖当前列表里的每一条。"""
-    best: dict[tuple[str, str, str, str, str], dict] = {}
-    order: list[tuple[str, str, str, str, str]] = []
+        tactic = str(op.get("tactic") or "")
+        if tactic in unit.attack_actions_by_tactic:
+            current = list(unit.attack_actions_by_tactic[tactic])
+            origin = list(base.attack_actions_by_tactic.get(tactic, current))
     for op in ops:
-        if op.get("stat") not in {"range", "aoe", "rof", "mult"}:
+        if op["stat"] != "action_enable":
             continue
-        if op.get("allactions") or not op.get("action"):
-            names = action_names
-        else:
-            names = {str(op["action"])} & action_names
-        vs = str(op.get("vs") or "") if op.get("stat") == "mult" else ""
-        for name in names:
-            key = (
-                str(op["stat"]),
-                str(op["kind"]),
-                vs,
-                str(op.get("subtype") or ""),
-                name,
-            )
-            if key not in best:
-                best[key] = op
-                order.append(key)
-            elif float(op["value"]) > float(best[key]["value"]):
-                best[key] = op
-    return [(key[4], best[key]) for key in order]
-
-
-def _apply_stat_to_action(
-    action: AttackAction,
-    origin: AttackAction,
-    op: dict,
-) -> AttackAction:
-    stat = op["stat"]
-    kind = op["kind"]
-    val = float(op["value"])
-    if stat == "range" and kind == "add":
-        field_name = "range_min" if op.get("subtype") == "MinimumRange" else "range_max"
-        current = float(getattr(action, field_name))
-        if current <= 0 and field_name != "range_min":
-            return action
-        return dataclasses.replace(action, **{field_name: round(current + val, 2)})
-    if stat == "range" and kind == "set":
-        field_name = "range_min" if op.get("subtype") == "MinimumRange" else "range_max"
-        return dataclasses.replace(action, **{field_name: round(val, 2)})
-    if stat == "aoe" and kind == "add":
-        return dataclasses.replace(action, aoe_radius=round(action.aoe_radius + val, 2))
-    if stat == "rof":
-        if kind == "set":
-            new = val
-        elif action.rof <= 0:
-            return action
-        elif kind == "add":
-            new = action.rof + val
-        elif kind == "mult":
-            new = action.rof + origin.rof * (val - 1.0)
-        else:
-            return action
-        return dataclasses.replace(action, rof=round(max(_ROF_FLOOR, new), 3))
-    if stat == "mult" and kind == "add":
-        vs = str(op.get("vs") or "")
-        if not vs:
-            return action
-        found = False
-        updated = []
-        for bonus in action.multipliers:
-            if bonus.vs == vs:
-                updated.append(dataclasses.replace(bonus, value=round(bonus.value + val, 4)))
-                found = True
-            else:
-                updated.append(bonus)
-        if not found:
-            updated.append(Multiplier(vs=vs, value=round(1.0 + val, 4)))
-        return dataclasses.replace(action, multipliers=tuple(updated))
-    return action
-
-
-def _apply_named_action_stats(changes: dict, unit: Unit, base: Unit, ops: list[dict]) -> None:
-    """射程、溅射、射速、倍率按动作名改当前列表。槽字段另走代表动作归桶。"""
-    current = list(changes.get("attack_actions", unit.attack_actions))
-    if not current:
-        return
-    origin_actions = changes.get("_attack_origin", base.attack_actions)
-    base_by = {action.name: action for action in origin_actions}
-    winners = _stat_winners(ops, {action.name for action in current})
-    if not winners:
-        return
-    updated = list(current)
-    changed = False
-    for name, op in winners:
-        origin = base_by.get(name)
-        for index, action in enumerate(updated):
-            if action.name != name:
-                continue
-            nxt = _apply_stat_to_action(action, origin or action, op)
-            if nxt != action:
-                updated[index] = nxt
-                changed = True
-    if changed:
-        changes["attack_actions"] = updated
-
-
-def _apply_one_tech(unit: Unit, tech: dict, base: Unit) -> Unit:
-    """把一条已选科技叠到单位上，返回新副本（无效不动）。
-
-    base: tier 升级前的原始 Unit，用于 BasePercent 加算（AoE3 所有 BasePercent
-    效果加算于原始基础值，而非乘在 tier 之后的值上）。
-
-    先挑出 targets 打到这个兵的 op，其余 op 与这个兵无关。
-    去重原则：剩下的 op 里，同一 (stat, kind, 目标键) 只生效一次，取最大值。
-    """
-    scope = set(tech["scope"])
-    unit_tags = set(unit.type) | {unit.id}
-    if not (scope & unit_tags):
-        return unit
-
-    own_ops = ops_for_unit(tech["ops"], unit)
-    if not own_ops:
-        return unit
-
-    # 预处理：按 (stat, kind, 目标键) 分组，每组只保留最强的一条 op
-    best_ops = _deduplicate_ops(own_ops, unit)
-    best_ops.sort(key=lambda op: op["stat"] != "initial_tactic")
-
-    changes: dict = {}
-    for op in best_ops:
-        stat = op["stat"]
-        kind = op["kind"]
-        val = op["value"]
-
-        if stat == "hp" and kind == "mult":
-            changes["hp"] = round(
-                changes.get("hp", unit.hp) + base.hp * (val - 1.0),
-                1,
-            )
-        elif stat == "hp" and kind == "add":
-            changes["hp"] = round(changes.get("hp", unit.hp) + val, 1)
-        elif stat == "hp" and kind == "percent":
-            changes["hp"] = round(changes.get("hp", unit.hp) * val, 1)
-        elif stat == "hp" and kind == "set":
-            changes["hp"] = round(val, 1)
-        elif stat == "hand_damage" and kind in {"mult", "add", "set", "percent"}:
-            _retarget_hand_actions(changes, unit, base, _damage_mapper(kind, val))
-        elif stat == "recharge":
-            def _next_recharge(
-                action: AttackAction,
-                origin: AttackAction,
-                *,
-                kind: str = kind,
-                val: float = val,
-            ) -> AttackAction:
-                if not action.charge:
-                    return action
-                if kind == "set":
-                    new = val
-                elif kind == "add":
-                    new = action.recharge + val
-                elif kind == "mult":
-                    new = action.recharge + origin.recharge * (val - 1.0)
-                else:
-                    return action
-                return dataclasses.replace(action, recharge=round(max(0.0, new), 4))
-
-            _retarget_actions(changes, unit, base, op, _next_recharge)
-        elif stat == "initial_tactic":
-            tactic = str(op.get("tactic") or "")
-            template = unit.attack_actions_by_tactic.get(tactic)
-            if template is None:
-                continue
-            origin = base.attack_actions_by_tactic.get(tactic, template)
-            changes["attack_actions"] = [
-                dataclasses.replace(action) for action in template
+        enabled = float(op["value"]) != 0.0
+        for name in _op_action_names(op, current):
+            current = [
+                dataclasses.replace(a, enabled=enabled) if a.name == name else a
+                for a in current
             ]
-            changes["_attack_origin"] = list(origin)
-        elif stat == "action_enable" and op.get("action"):
-            enabled = float(val) != 0.0
-            _retarget_actions(
-                changes,
-                unit,
-                base,
-                op,
-                lambda action, _origin, enabled=enabled: dataclasses.replace(
-                    action,
-                    enabled=enabled,
-                ),
+    return current, origin
+
+
+def _settle_action(action: AttackAction, origin: AttackAction, stacks: dict) -> AttackAction:
+    changes: dict = {}
+    damage = stacks.get("damage")
+    if damage:
+        changes["damage"] = round(max(0.0, damage.resolve(origin.damage, action.damage)), 2)
+        # 伤害倍率同时放大溅射池（basedamagecap）。
+        if origin.damage_cap and damage.base_inc:
+            changes["damage_cap"] = round(
+                action.damage_cap + origin.damage_cap * damage.base_inc, 2,
             )
-        elif stat == "speed":
-            cur = changes.get("speed", unit.speed)
-            if kind == "mult":
-                changes["speed"] = round(cur * val, 3)
-            elif kind == "add":
-                changes["speed"] = round(cur + val, 3)
-            elif kind == "set":
-                changes["speed"] = round(val, 3)
-        elif stat == "armor" and kind == "add":
-            field_name = _ARMOR_FIELDS.get(str(op.get("armor_kind") or ""))
-            if field_name is None:
-                raise ValueError(f"unknown armor kind: {op.get('armor_kind')!r}")
-            changes[field_name] = round(
-                changes.get(field_name, getattr(unit, field_name)) + val, 3)
-        elif stat == "cost":
-            resource = op.get("resource", "")
-            if not resource:
-                continue
-            cur_cost = dict(changes.get("cost", unit.cost))
-            current = cur_cost.get(resource, unit.cost.get(resource, 0))
-            if kind == "mult":
-                new_value = current + base.cost.get(resource, 0) * (val - 1.0)
-            elif kind == "add":
-                new_value = current + val
-            elif kind == "percent":
-                new_value = current * val
-            elif kind == "set":
-                new_value = val
-            else:
-                continue
-            new_value = max(0, round(new_value))
-            if new_value:
-                cur_cost[resource] = new_value
-            else:
-                cur_cost.pop(resource, None)
-            changes["cost"] = cur_cost
-        # damage / range / aoe / rof / mult 按攻击名落到动作列表，见下面两步
+    cap = stacks.get("cap")
+    if cap:
+        current_cap = changes.get("damage_cap", action.damage_cap)
+        changes["damage_cap"] = round(max(0.0, cap.resolve(origin.damage_cap, current_cap)), 2)
+    for stat, attr in (("aoe", "aoe_radius"), ("range_min", "range_min")):
+        stack = stacks.get(stat)
+        if stack:
+            changes[attr] = round(max(0.0, stack.resolve(getattr(origin, attr), getattr(action, attr))), 2)
+    range_max = stacks.get("range_max")
+    if range_max and action.range_max > 0:
+        changes["range_max"] = round(max(0.0, range_max.resolve(origin.range_max, action.range_max)), 2)
+    rof = stacks.get("rof")
+    if rof and (action.rof > 0 or rof.set_value is not None):
+        changes["rof"] = round(max(_ROF_FLOOR, rof.resolve(origin.rof, action.rof)), 3)
+    recharge = stacks.get("recharge")
+    if recharge and action.charge:
+        changes["recharge"] = round(max(0.0, recharge.resolve(origin.recharge, action.recharge)), 4)
+    mult_stacks = {key[1]: stack for key, stack in stacks.items() if isinstance(key, tuple)}
+    if mult_stacks:
+        base_values = {m.vs: m.value for m in origin.multipliers}
+        values = {m.vs: m.value for m in action.multipliers}
+        order = [m.vs for m in action.multipliers]
+        for vs, stack in mult_stacks.items():
+            current = values.get(vs, 1.0)
+            values[vs] = round(stack.resolve(base_values.get(vs, 1.0), current), 4)
+            if vs not in order:
+                order.append(vs)
+        changes["multipliers"] = tuple(Multiplier(vs=vs, value=values[vs]) for vs in order)
+    return dataclasses.replace(action, **changes) if changes else action
 
-    _apply_damage_ops(changes, unit, base, own_ops)
-    _apply_named_action_stats(changes, unit, base, own_ops)
 
-    if not changes:
+def settle_unit(unit: Unit, ops: Sequence[Mapping], base: Unit | None = None) -> Unit:
+    """把一组运行时 op 结算到一个兵上，返回副本；没有任何变化时返回原对象。
+
+    ``ops`` 是本局对这个兵生效的全部科技的 op（每个科技只出现一次）。
+    ``base`` 是 BasePercent 的基准（未升级前的单位），缺省用 ``unit``。
+    """
+    base = base or unit
+    own = [_normalized(op) for op in ops if op_targets_unit(op, unit)]
+    if not own:
         return unit
-    changes.pop("_attack_origin", None)
-    return dataclasses.replace(unit, **changes)
+    changes: dict = {}
+
+    unit_stacks: dict = {}
+    action_stacks: dict[str, dict] = {}
+    actions, origin_actions = _switch_actions(unit, base, own)
+    for op in own:
+        stat = op["stat"]
+        if stat in {"action_enable", "initial_tactic"}:
+            continue
+        if stat in _ACTION_STATS:
+            key = ("mult", op["vs"]) if stat == "mult" else stat
+            for name in _op_action_names(op, actions):
+                action_stacks.setdefault(name, {}).setdefault(key, Stack()).push(op["kind"], op["value"])
+            continue
+        if stat == "armor":
+            kinds = _ARMOR_FIELDS if op["armor_kind"] == "all" else {op["armor_kind"]: None}
+            for kind in kinds:
+                unit_stacks.setdefault(("armor", kind), Stack()).push(op["kind"], op["value"])
+            continue
+        if stat == "cost":
+            unit_stacks.setdefault(("cost", op["resource"]), Stack()).push(op["kind"], op["value"])
+            continue
+        unit_stacks.setdefault(stat, Stack()).push(op["kind"], op["value"])
+
+    if "hp" in unit_stacks:
+        changes["hp"] = round(max(1.0, unit_stacks["hp"].resolve(base.hp, unit.hp)), 1)
+    if "speed" in unit_stacks:
+        changes["speed"] = round(max(0.0, unit_stacks["speed"].resolve(base.speed, unit.speed)), 3)
+    for kind, attr in _ARMOR_FIELDS.items():
+        stack = unit_stacks.get(("armor", kind))
+        if stack:
+            changes[attr] = round(stack.resolve(getattr(base, attr), getattr(unit, attr)), 3)
+    cost = dict(unit.cost)
+    for key, stack in unit_stacks.items():
+        if isinstance(key, tuple) and key[0] == "cost":
+            resource = key[1]
+            value = max(0, round(stack.resolve(base.cost.get(resource, 0), cost.get(resource, 0))))
+            if value:
+                cost[resource] = value
+            else:
+                cost.pop(resource, None)
+    if cost != unit.cost:
+        changes["cost"] = cost
+
+    origin_by = {a.name: a for a in origin_actions}
+    settled = [
+        _settle_action(a, origin_by.get(a.name, a), action_stacks[a.name])
+        if a.name in action_stacks else a
+        for a in actions
+    ]
+    if settled != list(unit.attack_actions):
+        changes["attack_actions"] = settled
+    # 其余阵型的攻击列表同样吃到数值效果（开关与换阵型只作用于当前列表）。
+    if unit.attack_actions_by_tactic and action_stacks:
+        by_tactic = {}
+        for tactic, tactic_actions in unit.attack_actions_by_tactic.items():
+            base_by = {a.name: a for a in base.attack_actions_by_tactic.get(tactic, tactic_actions)}
+            by_tactic[tactic] = [
+                _settle_action(a, base_by.get(a.name, a), action_stacks[a.name])
+                if a.name in action_stacks else a
+                for a in tactic_actions
+            ]
+        if by_tactic != unit.attack_actions_by_tactic:
+            changes["attack_actions_by_tactic"] = by_tactic
+    return dataclasses.replace(unit, **changes) if changes else unit
+
+
+def _normalized(op: Mapping) -> Mapping:
+    """``stat: range`` + ``subtype`` 是射程的旧写法，换成 range_max / range_min。"""
+    if op.get("stat") != "range":
+        return op
+    stat = "range_min" if op.get("subtype") == "MinimumRange" else "range_max"
+    return {**op, "stat": stat}
 
 
 def apply_techs(
@@ -476,20 +405,24 @@ def apply_techs(
     techs: list[dict],
     base_units: Sequence[Unit] | None = None,
 ) -> list[Unit]:
-    """对一方的所有单位叠加已选科技列表，返回新副本列表。
+    """对一方的所有单位结算已选科技列表（每个科技一次），返回副本列表。
 
-    base_units: tier 升级前的原始 Unit 列表（与 units 同序），用于 BasePercent
-    加算。如果为 None 则用 units 自身作为 base（适用于无 tier 的场景）。
+    同一兵吃到的全部科技 op 先合并再结算，不按科技逐个取大。
     """
     if not techs:
         return list(units)
+    seen: set[str] = set()
+    ops: list = []
+    for tech in techs:
+        key = str(tech.get("id") or id(tech))
+        if key in seen:
+            continue
+        seen.add(key)
+        ops.extend(tech.get("ops") or ())
     result = []
-    for i, u in enumerate(units):
-        base = base_units[i] if base_units else u
-        cur = u
-        for t in techs:
-            cur = _apply_one_tech(cur, t, base)
-        result.append(cur)
+    for index, unit in enumerate(units):
+        base = base_units[index] if base_units else unit
+        result.append(settle_unit(unit, ops, base))
     return result
 
 

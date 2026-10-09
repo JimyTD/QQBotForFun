@@ -22,7 +22,7 @@ def _targeted(tech: dict) -> dict:
 
 
 def _apply_one_tech(unit, tech, base):
-    return tech_effects._apply_one_tech(unit, _targeted(tech), base)
+    return tech_effects.settle_unit(unit, _targeted(tech)["ops"], base)
 
 
 def apply_techs(units, techs, base_units=None):
@@ -338,7 +338,8 @@ def test_apply_rof_percent_and_absolute(repo):
     assert cannon.rof == 3.5
 
 
-def test_named_and_allactions_range_do_not_stack_on_one_action(repo):
+def test_named_and_allactions_range_add_up_on_one_action(repo):
+    """同一条攻击上的点名 +2 与全部攻击 +5 是两条 Absolute，相加；不取大。"""
     musk = repo.get_by_id("musketeer")
     tech = {
         "scope": ["musketeer"],
@@ -368,9 +369,10 @@ def test_named_and_allactions_range_do_not_stack_on_one_action(repo):
     }
     upgraded = _apply_one_tech(musk, tech, base=musk)
     by_name = {action.name: action for action in upgraded.attack_actions}
-    assert by_name["VolleyRangedAttack"].range_max == 17
-    assert by_name["VolleyHandAttack"].range_max == 6.75
-    assert by_name["BuildingAttack"].range_max == 11
+    base = {action.name: action for action in musk.attack_actions}
+    assert by_name["VolleyRangedAttack"].range_max == base["VolleyRangedAttack"].range_max + 7
+    assert by_name["VolleyHandAttack"].range_max == base["VolleyHandAttack"].range_max + 6
+    assert by_name["BuildingAttack"].range_max == base["BuildingAttack"].range_max + 5
 
 
 def test_action_scoped_range_ops_are_not_deduped(repo):

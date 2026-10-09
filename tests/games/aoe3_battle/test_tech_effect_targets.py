@@ -164,13 +164,12 @@ def test_runtime_ops_keep_their_own_targets():
     assert op["targets"] == [{"type": "ProtoUnit", "value": "deRanger"}]
 
 
-def test_armor_without_a_known_damage_type_is_listed_not_guessed():
-    """没写护甲类型的护甲加成（华卡纳、瑞士百人队）待确认，不猜成远程。"""
-    op = {
-        "subtype": "Armor",
-        "amount": 0.05,
-        "relativity": "Absolute",
-        "targets": [{"type": "ProtoUnit", "value": "AbstractInfantry"}],
-    }
-    assert cwt._runtime_op(op) is None
-    assert cwt.unapplied_effect_key(op) in cwt.UNAPPLIED_EFFECTS
+def test_untyped_armor_adds_all_three_armors(repo):
+    """华卡纳：数据只写护甲 +0.05 作用步兵、轻步兵，三种伤害类型的护甲都加。"""
+    tech, units = _resolve(repo, "deBigWarHutHualcana", "DEInca", ("deslinger",), age=3)
+    base = units["deslinger"]
+    after = _settle(tech, base)
+    # 投石索兵只是步兵，不是轻步兵：只吃一条 +0.05。
+    assert after.armor_melee == round(base.armor_melee + 0.05, 3)
+    assert after.armor_ranged == round(base.armor_ranged + 0.05, 3)
+    assert after.armor_siege == round(base.armor_siege + 0.05, 3)

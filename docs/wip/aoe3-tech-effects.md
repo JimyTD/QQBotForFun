@@ -93,7 +93,25 @@
   那种攻击；攻城护甲；`DamageForAllHandLogicActions` 按 `handlogic`；`UNAPPLIED_EFFECTS` 显式清单；
   摘要按兵种分写。文件：`tech_effects.py`、`civ_war_techs.py`、`tech_summary.py`、
   `tests/games/aoe3_battle/test_tech_effect_targets.py` 及几个测试适配。
-- 第 1 步：未开始。
+- 第 0 步已提交：`6493a78`。
+- 第 1 步进行中：`tech_effects.py` 已重写为统一核心（`Stack` 统一算符、`runtime_op` 统一换算、
+  `settle_unit` 一次结算全部 op、`apply_techs` 合并后结算）；`civ_war_techs` 改用它。
+  生成器新增 `build_tech_links()` → `seeds/aoe3/tech_links.json`（激活/前置图，尚未生成）。
+  改前全部兵种 3/4/5 时代数值快照：`%TEMP%/aoe3_upgrades_before.json`（2883 条）。
+  aoe3_battle 非慢测试已全部通过（测试按新规则改：点名+全部攻击相加、华卡纳三种护甲）。
+- 解锁闭包已写：`src/plugins/aoe3/tech_links.py` `expand(ids, age)`；`seeds/aoe3/tech_links.json`
+  已生成。判定：`activates` 递归；影子科技至少有一个非时代前置、全部前置满足才生效；只有时代
+  前置的影子属于时代升级，不在这里触发。核对：燃烧弹→+影子；华盛顿军团→燃烧弹+影子；
+  罗马战术 4 时代不触发影子、5 时代触发；红衫军→护卫火枪兵。
+- 闭包已接入 `MatchedTech.unlocked`（摘要与 `runtime_tech()` 都含被解锁科技）。核对：燃烧弹下
+  掷弹兵齐射溅射 3→4、迫击炮 3→3.5；墨西哥士兵齐射 0→0.5（+1−0.5）。
+  已知缺口：红衫军→护卫火枪兵没被跳过，因为通用时代表不记科技 id。第 2 步解决。
+- 第 2 步设计（定稿）：结算统一成“科技 id 列表 → `tech_links.expand` → 去重 → 科技池 op →
+  `settle_unit` 一次结算”。`apply_upgrades(unit, age, civ_id=None, tech_ids=())`：时代升级 id 与
+  国战选中科技 id 合并去重后一起结算，“已在时代升级里的跳过”自然成立。
+  `unit_upgrades.json` 改为 `units[uid][age] = {techs: [累计 id], name}`、`category[tag][age] = [累计 id]`；
+  `civ_unit_upgrades.json` 的 `techs` 改为累计 id 全列表。选线规则不变。`DIRTY_EFFECTS` 删除：
+  原始数据里投石索兵现在是 +8 射程，不再有 +147。
 
 ## 暂缓（最后再看）
 

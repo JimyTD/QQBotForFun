@@ -32,6 +32,7 @@ CIVS_PATH = ROOT / "seeds" / "aoe3" / "civs.json"
 HOMECITY_DIR = ROOT / "data" / "aoe3" / "raw" / "homecity"
 OUTPUT_PATH = ROOT / "seeds" / "aoe3" / "civ_war_tech_pool.json"
 GENERIC_PATH = ROOT / "seeds" / "aoe3" / "civ_war_generic_techs.json"
+LINKS_PATH = ROOT / "seeds" / "aoe3" / "tech_links.json"
 AVAILABLE_TECH_PATH = ROOT / "seeds" / "aoe3" / "civ_available_techs.json"
 
 sys.path.insert(0, str(ROOT / "src"))
@@ -824,6 +825,81 @@ def main() -> None:
         f"{sum(len(ids) for ids in generic['civs'].values())}"
     )
     print(f"wrote {GENERIC_PATH}")
+
+    links = build_tech_links()
+    LINKS_PATH.write_text(
+        json.dumps(links, ensure_ascii=False, indent=1) + "\n",
+        encoding="utf-8",
+    )
+    print(f"tech_links={len(links['techs'])}")
+    print(f"wrote {LINKS_PATH}")
+
+
+def build_tech_links() -> dict[str, Any]:
+    """Unlock graph from techtreey.xml, used to settle a tech with what it unlocks.
+
+    ``activates``: ``TechStatus active`` targets (the game researches them at once).
+    ``obtains``: ``TechStatus obtainable`` targets.
+    ``requires``: ``<techstatus status="Active">`` prerequisites.
+    ``other_prereq``: any prerequisite the battle cannot evaluate (unit counts,
+    stats, a specific age gate, or a non-Active status). Such a tech never fires
+    from prerequisites alone.
+    """
+    root = ET.parse(TECHTREE_PATH).getroot()
+    techs: dict[str, dict[str, Any]] = {}
+    for tech in root.findall("tech"):
+        name = (tech.get("name") or "").strip()
+        if not name:
+            continue
+        activates: list[str] = []
+        obtains: list[str] = []
+        for effect in tech.findall("./effects/effect"):
+            if effect.get("type") != "TechStatus":
+                continue
+            target = (effect.text or "").strip()
+            status = (effect.get("status") or "").lower()
+            if not target:
+                continue
+            if status == "active":
+                activates.append(target)
+            elif status == "obtainable":
+                obtains.append(target)
+        requires: list[str] = []
+        other = False
+        for prereq in tech.findall("./prereqs/*"):
+            if (
+                prereq.tag == "techstatus"
+                and (prereq.get("status") or "").lower() == "active"
+                and (prereq.text or "").strip()
+            ):
+                requires.append((prereq.text or "").strip())
+            else:
+                other = True
+        flags = {flag.text for flag in tech.findall("flag") if flag.text}
+        shadow = "Shadow" in flags
+        if not (activates or obtains or requires or other or shadow):
+            continue
+        row: dict[str, Any] = {}
+        if activates:
+            row["activates"] = activates
+        if obtains:
+            row["obtains"] = obtains
+        if requires:
+            row["requires"] = requires
+        if other:
+            row["other_prereq"] = True
+        if shadow:
+            row["shadow"] = True
+        if (tech.findtext("status") or "").strip().upper() == "OBTAINABLE":
+            row["obtainable"] = True
+        techs[name] = row
+    return {
+        "_meta": {
+            "source": "data/aoe3/raw/techtreey.xml",
+            "doc": "docs/wip/aoe3-tech-effects.md",
+        },
+        "techs": dict(sorted(techs.items())),
+    }
 
 
 if __name__ == "__main__":
