@@ -3,13 +3,30 @@ from __future__ import annotations
 
 import pytest
 
+from plugins.aoe3 import tech_effects
 from plugins.aoe3.repository import UnitRepo
-from plugins.aoe3.tech_effects import (
-    _apply_one_tech,
-    apply_techs,
-    format_tech_lines,
-)
+from plugins.aoe3.tech_effects import format_tech_lines
 from src.plugins.games.aoe3_battle.tech_summary import format_tech_summary
+
+
+def _targeted(tech: dict) -> dict:
+    """Hand-written techs below aim every op at the tech's scope."""
+    targets = [{"type": "ProtoUnit", "value": value} for value in tech["scope"]]
+    return {
+        **tech,
+        "ops": [
+            op if "targets" in op else {**op, "targets": targets}
+            for op in tech["ops"]
+        ],
+    }
+
+
+def _apply_one_tech(unit, tech, base):
+    return tech_effects._apply_one_tech(unit, _targeted(tech), base)
+
+
+def apply_techs(units, techs, base_units=None):
+    return tech_effects.apply_techs(units, [_targeted(tech) for tech in techs], base_units)
 
 
 @pytest.fixture(scope="module")

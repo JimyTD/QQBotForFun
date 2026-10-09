@@ -126,6 +126,7 @@ _IGNORED_ABILITY_ACTIONS = frozenset(
 
 _ATTACK_SCOPED_SUBTYPES = {
     "Damage",
+    "DamageForAllHandLogicActions",
     "DamageBonus",
     "DamageArea",
     "MaximumRange",
@@ -136,6 +137,7 @@ _ATTACK_SCOPED_SUBTYPES = {
 
 _ALL_ATTACKS = "__all_attacks__"
 _ALL_CHARGES = "__all_charges__"
+_HAND_ATTACKS = "__hand_attacks__"
 _MAX_EFFECTS = 6
 _MAX_RECIPIENTS = 3
 
@@ -210,9 +212,8 @@ def _attack_scope(op: Mapping[str, Any]) -> str | None:
     subtype = str(op.get("subtype") or "")
     if subtype not in _ATTACK_SCOPED_SUBTYPES:
         return None
-    # Damage 是整包伤害倍率，运行时固定打到当前每一条攻击。
-    if subtype == "Damage":
-        return _ALL_ATTACKS
+    if subtype == "DamageForAllHandLogicActions":
+        return _HAND_ATTACKS
     action = str(op.get("action") or "")
     if action:
         return action
@@ -226,6 +227,8 @@ def _scope_prefix(scope: str | None) -> str:
         return ""
     if scope == _ALL_ATTACKS:
         return "全部攻击："
+    if scope == _HAND_ATTACKS:
+        return "全部近战攻击："
     return f"{_action_label(scope)}："
 
 
@@ -277,6 +280,8 @@ def _describe_op(op: Mapping[str, Any]) -> str:
         return _stat_text("生命", value, str(op.get("relativity") or ""))
     if subtype == "Damage":
         return _stat_text("伤害", value, str(op.get("relativity") or ""))
+    if subtype == "DamageForAllHandLogicActions":
+        return _stat_text("伤害", value, str(op.get("relativity") or ""))
     if subtype == "DamageBonus":
         target = _target_summary(op)
         return (
@@ -301,7 +306,9 @@ def _describe_op(op: Mapping[str, Any]) -> str:
             "Melee": "近战",
             "Ranged": "远程",
             "Siege": "攻城",
-        }.get(armor_type, "远程")
+        }.get(armor_type)
+        if armor is None:
+            return ""
         return f"{armor}护甲{_signed(value)}"
     if subtype == "Cost":
         return _stat_text(
@@ -379,13 +386,7 @@ def format_tech_summary(
     """Return ``【units】name: effects``, or only the name when no wording exists."""
     effects = _format_effects((*tuple(combat_ops), *tuple(cost_ops)))
     body = f"{name}：{'，'.join(effects)}" if effects else name
-    names = _unique(str(unit) for unit in recipients)
-    if not names:
-        return body
-    if len(names) > _MAX_RECIPIENTS:
-        head = "、".join(names[:_MAX_RECIPIENTS])
-        return f"【{head} 等 {len(names)} 个兵种】{body}"
-    return f"【{'、'.join(names)}】{body}"
+    return _with_recipients(body, recipients)
 
 
 def format_runtime_tech_summary(tech: Mapping[str, Any]) -> str:
@@ -401,12 +402,61 @@ def format_runtime_tech_summary(tech: Mapping[str, Any]) -> str:
     )
 
 
+def format_grouped_tech_summary(
+    name: str,
+    per_unit: Iterable[
+        tuple[str, Iterable[Mapping[str, Any]], Iterable[Mapping[str, Any]]]
+    ],
+) -> str:
+    """Summarize a tech by the effects each unit actually receives.
+
+    ``per_unit`` is ``(unit name, combat ops, cost ops)`` with only the ops
+    that target that unit. Units that receive the same effects share one
+    group. One group renders as ``【units】name：effects``; several render as
+    ``name：【units】effects；【units】effects``.
+    """
+    groups: list[tuple[frozenset[str], list[str], tuple[str, ...]]] = []
+    for unit_name, combat_ops, cost_ops in per_unit:
+        effects = _format_effects((*tuple(combat_ops), *tuple(cost_ops)))
+        key = frozenset(effects)
+        for group_key, names, _effects in groups:
+            if group_key == key:
+                names.append(str(unit_name))
+                break
+        else:
+            groups.append((key, [str(unit_name)], effects))
+    if len(groups) <= 1:
+        names = groups[0][1] if groups else []
+        effects = groups[0][2] if groups else ()
+        body = f"{name}：{'，'.join(effects)}" if effects else name
+        return _with_recipients(body, names)
+    parts = [
+        _with_recipients("，".join(effects), names)
+        for _key, names, effects in groups
+        if effects
+    ]
+    if not parts:
+        return name
+    return f"{name}：{'；'.join(parts)}"
+
+
+def _with_recipients(body: str, recipients: Iterable[str]) -> str:
+    names = _unique(str(unit) for unit in recipients)
+    if not names:
+        return body
+    if len(names) > _MAX_RECIPIENTS:
+        head = "、".join(names[:_MAX_RECIPIENTS])
+        return f"【{head} 等 {len(names)} 个兵种】{body}"
+    return f"【{'、'.join(names)}】{body}"
+
+
 def _runtime_mapping(op: Mapping[str, Any]) -> Mapping[str, Any]:
     """Translate runtime field names back to the player-facing op schema."""
     stat = str(op.get("stat") or "")
     subtype = {
         "hp": "Hitpoints",
         "damage": "Damage",
+        "hand_damage": "DamageForAllHandLogicActions",
         "aoe": "DamageArea",
         "rof": "RateOfFire",
         "speed": "MaximumVelocity",
@@ -430,13 +480,14 @@ def _runtime_mapping(op: Mapping[str, Any]) -> Mapping[str, Any]:
         "amount": op.get("value"),
         "relativity": relation,
     }
-    for key in ("action", "resource", "vs", "tactic"):
+    for key in ("action", "allactions", "resource", "vs", "tactic"):
         if op.get(key):
             result[key] = op[key]
     if op.get("armor_kind"):
         result["newtype"] = {
             "melee": "Hand",
             "ranged": "Ranged",
+            "siege": "Siege",
         }.get(str(op["armor_kind"]), "")
     if op.get("vs"):
         result["unittype"] = op["vs"]

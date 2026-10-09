@@ -4,13 +4,17 @@ from __future__ import annotations
 
 import json
 from collections.abc import Iterable
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any, Protocol
 
 from src.plugins.aoe3.models import Unit
+from src.plugins.aoe3.tech_effects import op_targets_unit, ops_for_unit
 from src.plugins.aoe3.upgrades import age_upgrade_line
-from src.plugins.games.aoe3_battle.tech_summary import format_tech_summary
+from src.plugins.games.aoe3_battle.tech_summary import (
+    format_grouped_tech_summary,
+    format_tech_summary,
+)
 
 POOL_PATH = (
     Path(__file__).resolve().parents[4]
@@ -52,7 +56,8 @@ class MatchedTech:
     combat_ops: tuple[dict[str, Any], ...]
     cost_ops: tuple[dict[str, Any], ...]
     priority: tuple[int, ...]
-    lineup_keys: tuple[str, ...] = ()
+    # The lineup units this tech hits, for per-unit summaries.
+    matched_units: tuple[Unit, ...] = field(default=(), compare=False, repr=False)
 
     @property
     def match_count(self) -> int:
@@ -60,24 +65,33 @@ class MatchedTech:
 
     @property
     def summary(self) -> str:
-        """A short player-facing summary of effects that hit this lineup."""
-        combat_ops = self.combat_ops
-        cost_ops = self.cost_ops
-        if self.lineup_keys:
-            keys = set(self.lineup_keys)
-            combat_ops = tuple(
-                op for op in combat_ops if _op_hits_lineup(op, keys)
+        """A short player-facing summary: each unit with the effects that hit it."""
+        name = self.name_zh or self.id
+        if not self.matched_units:
+            return format_tech_summary(
+                name,
+                combat_ops=self.combat_ops,
+                cost_ops=self.cost_ops,
+                recipients=self.matched_unit_names,
             )
-            cost_ops = tuple(op for op in cost_ops if _op_hits_lineup(op, keys))
-        return format_tech_summary(
-            self.name_zh or self.id,
-            combat_ops=combat_ops,
-            cost_ops=cost_ops,
-            recipients=self.matched_unit_names,
+        return format_grouped_tech_summary(
+            name,
+            (
+                (
+                    unit.name,
+                    _ops_that_land(ops_for_unit(self.combat_ops, unit), unit),
+                    _ops_that_land(ops_for_unit(self.cost_ops, unit), unit),
+                )
+                for unit in self.matched_units
+            ),
         )
 
     def runtime_tech(self) -> dict[str, Any]:
-        """Translate pool ops into the runtime ``scope`` + ``ops`` contract."""
+        """Translate pool ops into the runtime ``scope`` + ``ops`` contract.
+
+        Every op keeps its own ``targets``. The runtime applies an op only to
+        the units those targets name; ``scope`` is just the matched list.
+        """
         ops: list[dict[str, Any]] = []
         for op in [*self.combat_ops, *self.cost_ops]:
             translated = _runtime_op(op)
@@ -102,112 +116,212 @@ def is_revolution_tech(tech_id: str, source_flags: Iterable[str] = ()) -> bool:
 
 
 def _target_matches(target: str, unit: Unit) -> bool:
-    return target.lower() == unit.id.lower() or target in unit.type
+    return op_targets_unit(
+        {"targets": [{"type": "ProtoUnit", "value": target}]},
+        unit,
+    )
 
 
-def _lineup_keys(units: tuple[Unit, ...] | list[Unit]) -> tuple[str, ...]:
-    keys: set[str] = set()
-    for unit in units:
-        keys.add(unit.id.lower())
-        keys.update(unit.type)
-    return tuple(sorted(keys))
+# Effects that change one attack mode. They only land when that mode is in the
+# unit's attack list after the tech's own tactic switch, as in settlement.
+_ATTACK_SUBTYPES = {
+    "Damage",
+    "DamageBonus",
+    "DamageArea",
+    "MaximumRange",
+    "MinimumRange",
+    "RateOfFire",
+}
 
 
-def _op_hits_lineup(op: dict[str, Any], keys: set[str]) -> bool:
-    targets = [
-        str(target.get("value") or "")
-        for target in op.get("targets") or ()
-        if isinstance(target, dict)
-        and target.get("type") == "ProtoUnit"
-        and target.get("value")
-    ]
-    if not targets:
-        return True
-    return any(value.lower() in keys or value in keys for value in targets)
+def _ops_that_land(ops: list[dict[str, Any]], unit: Unit) -> list[dict[str, Any]]:
+    """Drop attack effects this unit has no attack for, so the summary matches settlement."""
+    actions = list(unit.attack_actions)
+    by_tactic = unit.attack_actions_by_tactic or {}
+    for op in ops:
+        tactic = str(op.get("tactic") or "")
+        if op.get("subtype") == "InitialTactic" and tactic in by_tactic:
+            actions = list(by_tactic[tactic])
+    names = {action.name for action in actions}
+    has_hand = any(action.handlogic for action in actions)
+    result = []
+    for op in ops:
+        subtype = op.get("subtype")
+        if subtype == "DamageForAllHandLogicActions" and not has_hand:
+            continue
+        if (
+            subtype in _ATTACK_SUBTYPES
+            and op.get("action")
+            and not op.get("allactions")
+            and str(op["action"]) not in names
+        ):
+            continue
+        result.append(op)
+    return result
+
+
+# (game subtype, game relativity) -> (runtime stat, runtime kind).
+# An effect whose relativity is not listed here shows up in
+# ``unapplied_effect_key`` instead of being dropped silently.
+_RUNTIME_KINDS: dict[tuple[str, str], tuple[str, str]] = {
+    ("Hitpoints", "BasePercent"): ("hp", "mult"),
+    ("Hitpoints", "Absolute"): ("hp", "add"),
+    ("Hitpoints", "Assign"): ("hp", "set"),
+    ("Hitpoints", "Percent"): ("hp", "percent"),
+    ("HitPoints", "BasePercent"): ("hp", "mult"),
+    ("HitPoints", "Absolute"): ("hp", "add"),
+    ("HitPoints", "Assign"): ("hp", "set"),
+    ("HitPoints", "Percent"): ("hp", "percent"),
+    ("Damage", "BasePercent"): ("damage", "mult"),
+    ("Damage", "Absolute"): ("damage", "add"),
+    ("Damage", "Assign"): ("damage", "set"),
+    ("Damage", "Percent"): ("damage", "percent"),
+    ("DamageForAllHandLogicActions", "BasePercent"): ("hand_damage", "mult"),
+    ("DamageForAllHandLogicActions", "Absolute"): ("hand_damage", "add"),
+    ("DamageForAllHandLogicActions", "Assign"): ("hand_damage", "set"),
+    ("RateOfFire", "Assign"): ("rof", "set"),
+    ("RateOfFire", "Absolute"): ("rof", "add"),
+    ("RateOfFire", "BasePercent"): ("rof", "mult"),
+    ("MaximumVelocity", "Absolute"): ("speed", "add"),
+    ("MaximumVelocity", "Assign"): ("speed", "set"),
+    ("MaximumVelocity", "BasePercent"): ("speed", "mult"),
+    ("Cost", "BasePercent"): ("cost", "mult"),
+    ("Cost", "Absolute"): ("cost", "add"),
+    ("Cost", "Assign"): ("cost", "set"),
+    ("Cost", "Override"): ("cost", "set"),
+    ("Cost", "Percent"): ("cost", "percent"),
+    ("RechargeTime", "Assign"): ("recharge", "set"),
+    ("RechargeTime", "Absolute"): ("recharge", "add"),
+    ("RechargeTime", "BasePercent"): ("recharge", "mult"),
+}
+
+# These subtypes are still read as a plain addition whatever the relativity
+# says. What Assign / BasePercent should mean for them is an open question in
+# docs/wip/aoe3-tech-effects.md; this keeps the existing reading until then.
+_ADD_ANY_RELATIVITY = {
+    "DamageBonus": "mult",
+    "DamageArea": "aoe",
+    "MaximumRange": "range",
+    "MinimumRange": "range",
+    "ArmorSpecific": "armor",
+    "Armor": "armor",
+}
+
+# Subtypes whose effect is a switch, not an amount: any relativity works.
+_SWITCH_KINDS = {
+    "ActionEnable": ("action_enable", "set"),
+    "InitialTactic": ("initial_tactic", "set"),
+}
+
+# Armor effects name the damage type they resist.
+_ARMOR_KINDS = {
+    "Hand": "melee",
+    "Melee": "melee",
+    "Ranged": "ranged",
+    "Siege": "siege",
+}
+
+
+def unapplied_effect_key(op: dict[str, Any]) -> tuple[str, str, str] | None:
+    """``(subtype, relativity, newtype)`` when settlement cannot apply this op.
+
+    Every such effect must be listed in ``UNAPPLIED_EFFECTS``; a test fails on
+    any effect that is neither applied nor listed.
+    """
+    if _runtime_op(op) is not None:
+        return None
+    newtype = (
+        str(op.get("newtype") or "")
+        if op.get("subtype") in {"Armor", "ArmorSpecific"}
+        else ""
+    )
+    return (
+        str(op.get("subtype") or ""),
+        str(op.get("relativity") or ""),
+        newtype,
+    )
+
+
+# Effects the settlement does not apply yet, by (subtype, relativity, newtype).
+# Listed explicitly so nothing is dropped silently. Each one is a decision
+# for the Owner, see docs/wip/aoe3-tech-effects.md.
+UNAPPLIED_EFFECTS: frozenset[tuple[str, str, str]] = frozenset({
+    ("ActionAdd", "Absolute", ""),
+    ("ActionAddAttachingUnit", "Absolute", ""),
+    ("AddContainedBonusType", "Assign", ""),
+    ("AddContainedType", "Assign", ""),
+    ("Armor", "Absolute", ""),
+    ("Armor", "BasePercent", ""),
+    ("Armor", "Percent", ""),
+    ("ArmorType", "Absolute", ""),
+    ("AttackPriority", "Absolute", ""),
+    ("AutoAttackType", "Absolute", ""),
+    ("ContainedHitpointBonus", "Assign", ""),
+    ("ConversionDelay", "Absolute", ""),
+    ("ConversionResistance", "Percent", ""),
+    ("DamageCap", "BasePercent", ""),
+    ("DamageForAllRangedLogicActions", "Absolute", ""),
+    ("DamageForAllRangedLogicActions", "BasePercent", ""),
+    ("DamageMultiplier", "Assign", ""),
+    ("DodgeChance", "Assign", ""),
+    ("EnableDodge", "Assign", ""),
+    ("GarrisonBonusDamage", "Assign", ""),
+    ("HitPercent", "Absolute", ""),
+    ("HitPercent", "Assign", ""),
+    ("HitPercent", "BasePercent", ""),
+    ("HitPercent", "Percent", ""),
+    ("HitPercentType", "Absolute", ""),
+    ("ProtoActionAdd", "Assign", ""),
+    ("RangeForAllRangedLogicActions", "Absolute", ""),
+    ("SelfDamageMultiplier", "Assign", ""),
+    ("SetActionFlag", "Absolute", ""),
+    ("SetProjectile", "Absolute", ""),
+    ("SetTacticDataOverride", "Assign", ""),
+    ("SetUnitType", "Assign", ""),
+    ("Snare", "Assign", ""),
+    ("SpeedModifier", "Absolute", ""),
+    ("SpeedModifier", "Assign", ""),
+    ("SpeedModifier", "BasePercent", ""),
+    ("TacticArmor", "Absolute", ""),
+    ("TacticEnable", "Absolute", ""),
+    ("TacticEnable", "Assign", ""),
+    ("UnitRegenAbsolute", "Assign", ""),
+    ("UnitRegenIgnoreOnStealth", "Absolute", ""),
+    ("UnitRegenRate", "Absolute", ""),
+    ("UnitRegenRate", "Assign", ""),
+    ("UnitRegenRate", "Percent", ""),
+    ("UnitRegenRateLimit", "Absolute", ""),
+    ("VeterancyBonus", "Assign", ""),
+    ("VeterancyEnable", "Absolute", ""),
+})
 
 
 def _runtime_op(op: dict[str, Any]) -> dict[str, Any] | None:
-    subtype = op.get("subtype")
+    subtype = str(op.get("subtype") or "")
     amount = op.get("amount")
-    relation = op.get("relativity")
+    relation = str(op.get("relativity") or "")
     if amount is None:
         return None
-    match subtype:
-        case "Hitpoints" | "HitPoints":
-            stat = "hp"
-            kind = {
-                "BasePercent": "mult",
-                "Absolute": "add",
-                "Assign": "set",
-                "Percent": "percent",
-            }.get(relation)
-            if kind is None:
-                return None
-        case "Damage":
-            stat = "damage"
-            kind = {
-                "BasePercent": "mult",
-                "Absolute": "add",
-                "Assign": "set",
-                "Percent": "percent",
-            }.get(relation)
-            if kind is None:
-                return None
-        case "DamageBonus":
-            stat, kind = "mult", "add"
-        case "DamageArea":
-            stat, kind = "aoe", "add"
-        case "MaximumRange" | "MinimumRange":
-            stat, kind = "range", "add"
-        case "RateOfFire":
-            stat = "rof"
-            kind = {
-                "Assign": "set",
-                "Absolute": "add",
-                "BasePercent": "mult",
-            }.get(relation)
-            if kind is None:
-                return None
-        case "MaximumVelocity":
-            stat = "speed"
-            kind = {
-                "Absolute": "add",
-                "Assign": "set",
-                "BasePercent": "mult",
-            }.get(relation, "add")
-        case "ArmorSpecific" | "Armor":
-            stat, kind = "armor", "add"
-        case "Cost":
-            stat = "cost"
-            kind = {
-                "BasePercent": "mult",
-                "Absolute": "add",
-                "Assign": "set",
-                "Override": "set",
-                "Percent": "percent",
-            }.get(relation)
-            if kind is None:
-                return None
-        case "ActionEnable":
-            stat, kind = "action_enable", "set"
-        case "InitialTactic":
-            stat, kind = "initial_tactic", "set"
-        case "RechargeTime":
-            stat = "recharge"
-            kind = {
-                "Assign": "set",
-                "Absolute": "add",
-                "BasePercent": "mult",
-            }.get(relation)
-            if kind is None:
-                return None
-        case _:
+    if subtype in _SWITCH_KINDS:
+        stat, kind = _SWITCH_KINDS[subtype]
+    elif subtype in _ADD_ANY_RELATIVITY:
+        stat, kind = _ADD_ANY_RELATIVITY[subtype], "add"
+    else:
+        mapped = _RUNTIME_KINDS.get((subtype, relation))
+        if mapped is None:
+            return None
+        stat, kind = mapped
+    armor_kind = ""
+    if stat == "armor":
+        armor_kind = _ARMOR_KINDS.get(str(op.get("newtype") or ""), "")
+        if not armor_kind:
             return None
     result: dict[str, Any] = {
         "stat": stat,
         "kind": kind,
         "value": amount,
         "subtype": subtype,
+        "targets": list(op.get("targets") or ()),
     }
     for key in ("action", "allactions", "unittype", "resource", "newtype", "tactic"):
         if op.get(key):
@@ -216,45 +330,28 @@ def _runtime_op(op: dict[str, Any]) -> dict[str, Any] | None:
                 if key == "resource"
                 else op[key]
             )
-    if subtype in {"ArmorSpecific", "Armor"}:
-        result["armor_kind"] = {
-            "Hand": "melee",
-            "Melee": "melee",
-            "Ranged": "ranged",
-        }.get(op.get("newtype"), "")
+    if armor_kind:
+        result["armor_kind"] = armor_kind
     if subtype == "DamageBonus":
         result["vs"] = op.get("unittype", "")
-    if subtype == "RechargeTime":
-        result["targets"] = list(op.get("targets") or ())
     return result
-
-
-def _row_targets(row: dict[str, Any]) -> list[str]:
-    """Units that receive the tech.
-
-    ``unittype`` on an op is the counter, projectile, or attachment, not the
-    recipient. A longbow tech that bonuses damage against heavy infantry must
-    not be treated as a heavy-infantry tech.
-    """
-    values: set[str] = set()
-    for op in [*row.get("combat_ops", ()), *row.get("cost_ops", ())]:
-        for target in op.get("targets", ()):
-            if target.get("type") == "ProtoUnit" and target.get("value"):
-                values.add(str(target["value"]))
-    return sorted(values)
 
 
 def _matched_units(
     row: dict[str, Any],
     units: list[Unit],
 ) -> tuple[Unit, ...]:
-    targets = _row_targets(row)
-    if not targets:
-        return ()
+    """Units that receive at least one of the tech's effects.
+
+    This decides whether the tech can be picked. Which effects a unit gets is
+    decided per effect at settlement. ``unittype`` on an op is the counter,
+    projectile, or attachment, not the recipient.
+    """
+    ops = [*row.get("combat_ops", ()), *row.get("cost_ops", ())]
     return tuple(
         unit
         for unit in units
-        if any(_target_matches(target, unit) for target in targets)
+        if any(op_targets_unit(op, unit) for op in ops)
     )
 
 
@@ -377,7 +474,7 @@ def match_candidate_techs(
                     -len(matched_units),
                     *_priority(row, len(matched_units))[1:],
                 ),
-                lineup_keys=_lineup_keys(matched_units),
+                matched_units=matched_units,
             )
         )
     matched.sort(key=lambda tech: tech.priority)
@@ -428,7 +525,7 @@ def resolve_required_techs(
                 combat_ops=tuple(row.get("combat_ops", ())),
                 cost_ops=tuple(row.get("cost_ops", ())),
                 priority=(0, -len(matched_units), row["id"]),
-                lineup_keys=_lineup_keys(matched_units),
+                matched_units=matched_units,
             )
         )
     return resolved

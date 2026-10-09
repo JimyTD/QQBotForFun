@@ -14,10 +14,29 @@ from plugins.aoe3.attack_actions import (
 )
 from plugins.aoe3.models import Unit
 from plugins.aoe3.repository import UnitRepo
-from plugins.aoe3.tech_effects import apply_techs
+from plugins.aoe3.tech_effects import apply_techs as _apply_runtime_techs
 from plugins.games.aoe3_battle.battle_contract import EventType
 from plugins.games.aoe3_battle.civ_war_techs import resolve_required_techs
 from plugins.games.aoe3_battle.simulator2d import BattleSimulator2D
+
+
+def apply_techs(units, techs, base_units=None):
+    """Hand-written techs here aim every op at the tech's scope.
+
+    Payloads from ``runtime_tech()`` already carry per-op targets and pass
+    through unchanged.
+    """
+    aimed = []
+    for tech in techs:
+        targets = [{"type": "ProtoUnit", "value": value} for value in tech["scope"]]
+        aimed.append({
+            **tech,
+            "ops": [
+                op if "targets" in op else {**op, "targets": targets}
+                for op in tech["ops"]
+            ],
+        })
+    return _apply_runtime_techs(units, aimed, base_units)
 
 
 def _action(name, **kwargs):

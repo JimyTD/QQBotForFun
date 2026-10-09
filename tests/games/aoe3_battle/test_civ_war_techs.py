@@ -319,6 +319,7 @@ def test_rof_relativity_maps_to_runtime_kind() -> None:
 
 
 def test_summary_drops_effects_that_miss_the_lineup() -> None:
+    repo = UnitRepo.get()
     tech = MatchedTech(
         id="DEHCREVFlyingBattery",
         name_zh="飞炮",
@@ -349,7 +350,7 @@ def test_summary_drops_effects_that_miss_the_lineup() -> None:
         ),
         cost_ops=(),
         priority=(2, 0),
-        lineup_keys=("AbstractArtillery", "falconet"),
+        matched_units=(_unit(repo, "falconet"),),
     )
     assert tech.summary == "【鹰炮】飞炮：移速+1.1，全部攻击：攻击间隔-10%"
 
