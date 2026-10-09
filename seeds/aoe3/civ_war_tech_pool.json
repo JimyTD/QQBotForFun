@@ -1,6 +1,6 @@
 {
   "_meta": {
-    "generated_at": "2026-09-29T09:51:11.914301+00:00",
+    "generated_at": "2026-10-09T10:26:19.898558+00:00",
     "source": "data/aoe3/raw/techtreey.xml",
     "doc": "docs/games/aoe3-civ-war-wip.md",
     "combat_subtypes": [
@@ -39821,6 +39821,20 @@
           ]
         },
         {
+          "amount": 1.0,
+          "tactic": "Bombard",
+          "subtype": "InitialTactic",
+          "forceapply": "true",
+          "relativity": "Assign",
+          "effect_type": "Data",
+          "targets": [
+            {
+              "type": "ProtoUnit",
+              "value": "OrganGun"
+            }
+          ]
+        },
+        {
           "amount": 0.0,
           "tactic": "Limber",
           "subtype": "TacticEnable",
@@ -39837,20 +39851,6 @@
           "amount": 1.0,
           "tactic": "Bombard",
           "subtype": "SpeedModifier",
-          "relativity": "Assign",
-          "effect_type": "Data",
-          "targets": [
-            {
-              "type": "ProtoUnit",
-              "value": "OrganGun"
-            }
-          ]
-        },
-        {
-          "amount": 1.0,
-          "tactic": "Bombard",
-          "subtype": "InitialTactic",
-          "forceapply": "true",
           "relativity": "Assign",
           "effect_type": "Data",
           "targets": [
@@ -55011,6 +55011,20 @@
           ]
         },
         {
+          "amount": 1.0,
+          "tactic": "PolicyFood",
+          "subtype": "InitialTactic",
+          "forceapply": "true",
+          "relativity": "Assign",
+          "effect_type": "Data",
+          "targets": [
+            {
+              "type": "ProtoUnit",
+              "value": "Capitol"
+            }
+          ]
+        },
+        {
           "action": "AutoGatherFoodPopulation",
           "amount": 1.0,
           "subtype": "ActionEnable",
@@ -55041,20 +55055,6 @@
           "amount": 1.0,
           "subtype": "ActionEnable",
           "relativity": "Absolute",
-          "effect_type": "Data",
-          "targets": [
-            {
-              "type": "ProtoUnit",
-              "value": "Capitol"
-            }
-          ]
-        },
-        {
-          "amount": 1.0,
-          "tactic": "PolicyFood",
-          "subtype": "InitialTactic",
-          "forceapply": "true",
-          "relativity": "Assign",
           "effect_type": "Data",
           "targets": [
             {
@@ -57837,6 +57837,20 @@
           ]
         },
         {
+          "amount": 1.0,
+          "tactic": "Volley",
+          "subtype": "InitialTactic",
+          "forceapply": "true",
+          "relativity": "Assign",
+          "effect_type": "Data",
+          "targets": [
+            {
+              "type": "ProtoUnit",
+              "value": "xpSpy"
+            }
+          ]
+        },
+        {
           "amount": 0.0,
           "subtype": "SetUnitType",
           "unittype": "AbstractHandInfantry",
@@ -57853,20 +57867,6 @@
           "amount": 1.0,
           "subtype": "SetUnitType",
           "unittype": "AbstractRangedInfantry",
-          "relativity": "Assign",
-          "effect_type": "Data",
-          "targets": [
-            {
-              "type": "ProtoUnit",
-              "value": "xpSpy"
-            }
-          ]
-        },
-        {
-          "amount": 1.0,
-          "tactic": "Volley",
-          "subtype": "InitialTactic",
-          "forceapply": "true",
           "relativity": "Assign",
           "effect_type": "Data",
           "targets": [
@@ -58510,6 +58510,20 @@
           ]
         },
         {
+          "amount": 1.0,
+          "tactic": "Volley",
+          "subtype": "InitialTactic",
+          "forceapply": "true",
+          "relativity": "Assign",
+          "effect_type": "Data",
+          "targets": [
+            {
+              "type": "ProtoUnit",
+              "value": "SaloonPirate"
+            }
+          ]
+        },
+        {
           "amount": 3.0,
           "subtype": "DamageBonus",
           "unittype": "Guardian",
@@ -58569,20 +58583,6 @@
           "amount": 1.0,
           "subtype": "ActionEnable",
           "relativity": "Absolute",
-          "effect_type": "Data",
-          "targets": [
-            {
-              "type": "ProtoUnit",
-              "value": "SaloonPirate"
-            }
-          ]
-        },
-        {
-          "amount": 1.0,
-          "tactic": "Volley",
-          "subtype": "InitialTactic",
-          "forceapply": "true",
-          "relativity": "Assign",
           "effect_type": "Data",
           "targets": [
             {
@@ -77741,10 +77741,11 @@
       ],
       "combat_ops": [
         {
-          "amount": 0.0,
-          "tactic": "GiftDance",
-          "subtype": "TacticEnable",
-          "relativity": "Absolute",
+          "amount": 1.0,
+          "tactic": "FertilityDance",
+          "subtype": "InitialTactic",
+          "forceapply": "true",
+          "relativity": "Assign",
           "effect_type": "Data",
           "targets": [
             {
@@ -77754,11 +77755,10 @@
           ]
         },
         {
-          "amount": 1.0,
-          "tactic": "FertilityDance",
-          "subtype": "InitialTactic",
-          "forceapply": "true",
-          "relativity": "Assign",
+          "amount": 0.0,
+          "tactic": "GiftDance",
+          "subtype": "TacticEnable",
+          "relativity": "Absolute",
           "effect_type": "Data",
           "targets": [
             {
@@ -78579,6 +78579,20 @@
           ]
         },
         {
+          "amount": 1.0,
+          "tactic": "Volley",
+          "subtype": "InitialTactic",
+          "forceapply": "true",
+          "relativity": "Assign",
+          "effect_type": "Data",
+          "targets": [
+            {
+              "type": "ProtoUnit",
+              "value": "xpSpy"
+            }
+          ]
+        },
+        {
           "amount": 0.0,
           "subtype": "SetUnitType",
           "unittype": "AbstractHandInfantry",
@@ -78679,20 +78693,6 @@
             {
               "type": "ProtoUnit",
               "value": "deLegionGrenadier"
-            }
-          ]
-        },
-        {
-          "amount": 1.0,
-          "tactic": "Volley",
-          "subtype": "InitialTactic",
-          "forceapply": "true",
-          "relativity": "Assign",
-          "effect_type": "Data",
-          "targets": [
-            {
-              "type": "ProtoUnit",
-              "value": "xpSpy"
             }
           ]
         }
@@ -92022,19 +92022,6 @@
           ]
         },
         {
-          "action": "Discover",
-          "amount": 1.0,
-          "subtype": "ActionEnable",
-          "relativity": "Absolute",
-          "effect_type": "Data",
-          "targets": [
-            {
-              "type": "ProtoUnit",
-              "value": "deREVFilibuster"
-            }
-          ]
-        },
-        {
           "amount": 1.0,
           "tactic": "QuakerGunFalconet",
           "subtype": "InitialTactic",
@@ -92044,6 +92031,19 @@
             {
               "type": "ProtoUnit",
               "value": "deQuakerGun"
+            }
+          ]
+        },
+        {
+          "action": "Discover",
+          "amount": 1.0,
+          "subtype": "ActionEnable",
+          "relativity": "Absolute",
+          "effect_type": "Data",
+          "targets": [
+            {
+              "type": "ProtoUnit",
+              "value": "deREVFilibuster"
             }
           ]
         }
