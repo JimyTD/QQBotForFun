@@ -14,7 +14,6 @@ from types import SimpleNamespace
 
 from core.render import join_sections
 from src.plugins.aoe3.repository import UnitRepo
-from src.plugins.aoe3.tech_effects import apply_techs
 from src.plugins.aoe3.upgrades import apply_upgrades
 from src.plugins.games.aoe3_battle.civ_war_civs import (
     CIV_PROFILES,
@@ -386,23 +385,12 @@ def _shares(weights: tuple[int, ...]) -> tuple[float, ...]:
 
 
 def _apply_combat(units: tuple, techs: tuple[MatchedTech, ...], age: int, civ_id: str):
-    bases = tuple(units)
-    upgraded = tuple(apply_upgrades(unit, age, civ_id=civ_id) for unit in bases)
-    if not techs:
-        return upgraded
-    applied = []
-    for unit, base in zip(upgraded, bases, strict=True):
-        payloads = [
-            tech.runtime_tech()
-            for tech in techs
-            if unit.id in tech.matched_unit_ids
-        ]
-        payloads = [payload for payload in payloads if payload["ops"]]
-        if payloads:
-            applied.append(apply_techs([unit], payloads, base_units=[base])[0])
-        else:
-            applied.append(unit)
-    return tuple(applied)
+    """时代升级与选中科技一次结算：同一科技只生效一次，效果按统一算符合并。"""
+    tech_ids = tuple(tech.id for tech in techs)
+    return tuple(
+        apply_upgrades(unit, age, civ_id=civ_id, tech_ids=tech_ids)
+        for unit in units
+    )
 
 
 def _compile(

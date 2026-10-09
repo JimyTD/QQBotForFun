@@ -1401,22 +1401,15 @@ protoy 伤害包 + tactics 定义取出，不跨动作拼装。每个阵型各�
 
 > **`DamageBonus`**：`subtype="DamageBonus"`，`unittype` 是被克制的类型，`amount` 是加上的数。只对已有的正倍率（>1）相加，不新建条目，不改小于 1 的惩罚。按动作名打到列表里的每一条，见 §3.10.3。
 
-##### 落地方式：「整包随代表科技」而非全局扫 stat（关键修正 v15）
+##### 落地方式：时代升级 = 科技 id 列表 + 统一结算（2026-10-09 起）
 
-range/aoe/rof/速度/护甲/倍率 **不单独全局扫描**，而是**每条已被 §3.10.5 选中的代表科技（tier 线/Shadow），把它自带的这些 effect 一并整包提取进该档**——完全对齐铁律「整包进出」。理由：
+生成器 `aoe3_upgrades_parser.py` / `aoe3_civ_upgrades_parser.py` 只记录每个兵、每个时代**已生效的科技 id**（累计），不预合并倍率。运行时 `apply_upgrades(unit, age, civ_id=None, tech_ids=())` 把这些科技、调用方给的科技（国战/配兵选中的），以及它们解锁的科技（`TechStatus active`、前置全部满足的影子科技，见 `src/plugins/aoe3/tech_links.py`）合并去重，再用 `src/plugins/aoe3/tech_effects.py` 一次结算：
 
-- 这些 effect 多为 `Absolute`(delta) / `Assign`(覆盖) / `BasePercent`(倍率)，**不是**血攻那种 BasePercent 累乘；按 relativity 分别处理：`Absolute`→沿链累加 delta、`Assign`→取 ≤age 最新覆盖、`BasePercent`→累乘。
-- **绝大多数 `DamageBonus`/`MaximumRange` 是兵工厂可研发科技（Rifling/HeatedShot/Paper Cartridge…）和土著舞蹈** —— 它们是玩家主动选择、无「N 时代自动生效」语义，属 §3.10.4 暂缓的「广谱兵工厂白名单」。**只纳入 tier 线/Shadow 自带的**，独立兵工厂研发科技仍暂缓。
-- 落地结果（有界）：`action_range_add` 命中 40 档（阿布枪 +1/2/4、azap +2/4/6、皮革炮…）、`speed_add` 2 档（皮革炮 +0.5/1.0）、`action_mult_add` 10 档（投石/弓骑 对火炮 +0.5）；`aoe/rof/armor` 因只来自兵工厂/文明 age-up 科技 → **0 命中**（符合暂缓约定）。
-
-##### 脏数据护栏（v15 复核结论）
-
-DE 部分科技含**离谱占位值**，无法靠语义识别（6074 条）：
-
-- 例：`DEEliteSlingersShadow` 给投石手 `VolleyRangedAttack` **+147 射程**（同 tech 里其余动作才 +7）——代表动作恰是 Volley 会漏进来。
-- **处理方式：精确点名丢弃**（`aoe3_upgrades_parser.py :: DIRTY_EFFECTS`，键为 `(tech_name, subtype)`）。不用数值上限一刀切，以免误伤真实大改良。当前名单仅此 1 条。
-  > 注：文档早期提到的 `SANE_CAP`（射程 ≤10 / AOE ≤4 / 速度 ≤12 / 护甲 ≤0.5 / 倍率 ≤5 的「合理上限」机制）**已随 v15 重构移除**，代码中不存在，现由 `DIRTY_EFFECTS` 取代（2026-09-17 核对）。
-- **削弱档复核**：血攻 `<1` 的增量是兵工厂护甲副作用/置换（如 azap 胸甲 −10%），**不是 tier 线**；tier 线（`DEVeteran/Guard/ImperialAzaps` +20/30/50）另被正确捕获 → azap = 100/120/150/200。丢弃负增量正确。
+- **同一个科技只生效一次；不同科技全部叠加，没有取大。**
+- 统一算符（所有同类数据一致）：`BasePercent` 按基础值、各项增量相加；`Percent` 按当前值累乘；`Absolute` 相加；`Assign`/`Override` 覆盖。
+- 每一项效果只打写明的兵（id 或标签），写了攻击名只改同名攻击；护甲按伤害类型，`Armor` 没写类型三种都加。
+- 候选只收“到了时代就能拿到”的档：前置全是时代科技或同类升级档（`OrPrereqs` 任一即可）。只能由革命科技开放的档排在普通档之后（大元帅：议会线优先于革命线）。通用线不使用前置要求文明专属科技的档。
+- 原始数据照算，没有脏数据名单：精锐投石索兵现为射程 +8（早期版本的 +147 已不存在）。
 - **按动作名去重**：同一 effect 常对 Volley/Defend/Stagger/BuildingAttack 各出一条；每一条落到同名动作上，各记各的，不合并成一条，见 §3.10.3。
 - 全量扫描：对所有有攻击单位 ×age{3,4,5} apply 后，**升级造成的越界 = 0**（基础数据自带的海军 x10/间谍 x40 等不在升级范围内，未被触碰）。
 
@@ -1516,12 +1509,10 @@ DE 部分科技含**离谱占位值**，无法靠语义识别（6074 条）：
 }
 ```
 
-> **已落地字段**（v15，cumulative 预合并；只挂在逐兵 `units` 上，类别表仅血/攻）：
-> `hp_mult` / `damage_mult` / `range_add{ranged,melee}` / `aoe_add{...}` / `rof_set{...}`（覆盖）/ `armor_add{melee,ranged}` / `speed_add` / `speed_mult` / `speed_set` / `mult_add{slot:{vs:delta}}`。选链与 relativity 累加在**生成期**完成，运行时只做乘/加/覆盖。
+> 种子格式：`units[id][age] = {techs: [累计科技 id], name}`，`category[tag][age] = [累计科技 id]`；文明覆盖 `civ_unit_upgrades.json` 同格式。
 
-- **类别科技**（土著/亡命徒/佣兵）另存一张小表（按标签 × 时代给 +X%），运行时对带对应标签的兵叠加。
-- **逐兵 vs 类别 = 按时代取较大者整包（`max`，v15 修正）**：不再「逐兵优先否则类别」。原规则会让**共享单位的小额文明逐兵档顶掉更大的类别加成**（瑞士长枪有荷兰 Waardgelders +10% 逐兵档，5 时代本应吃佣兵 +50%，旧逻辑只给 +10%）。改为逐兵链与类别各取该档条目、取 hp_mult 较大的整包：既修瑞士长枪、又稳解土著「逐兵传奇 +50 与类别传奇 +50」的 double（取 max=一份，不叠成 +100）。
-- **运行时**：`apply_upgrades(unit, age) -> Unit`（`dataclasses.replace` 出副本，不改全局 seed；多倍率列表新建，不原地改），在进 `BattleSimulator2D` 前、阵容生成后应用；血/攻取 max 整包，range/aoe/rof/速度/护甲/倍率取逐兵链整包；兵种卡用副本渲染。
+- **类别科技**（土著/亡命徒/佣兵）按标签取该时代的科技 id，与逐兵线**一起叠加**。例：阿坎安科比亚 5 时代 = 精英 +25% + 风云 +35% + 传奇土著 +50% = ×2.1。早期“逐兵与类别取大”的规则是错误的，已于 2026-10-09 推翻。
+- **运行时**：`apply_upgrades(unit, age, civ_id=None, tech_ids=())` 出副本（不改全局 seed），在进 `BattleSimulator2D` 前、阵容生成后应用；全部效果一次结算，见上文“落地方式”；兵种卡用副本渲染。
 - **兵池过滤**：阵容生成入口按 `unit.age ≤ N` 过滤候选池（各 `get_*_pool` 加时代上限参数）。
 
 ---
@@ -2063,24 +2054,24 @@ DE 部分科技含**离谱占位值**，无法靠语义识别（6074 条）：
 - ✅ **指令 `斗蛐蛐 N时代`（N=2~5）**：双方**同档**，**所有模式**可带（§3.10.6）
 - ✅ **兵池按时代限定**：只抽 `unit.age ≤ N`；早登场单位是文明特权，照常出现；**不**因兵少做特殊过滤；默认 **3 时代**（693 兵，默认即有改良）
 - ✅ **三大类「类别科技」（标签匹配，做）**：土著 `AbstractNativeWarrior`（age5 +50%）、亡命徒 `AbstractOutlaw`（age3 +20%→age5 +50%）、佣兵 `Mercenary`（age5 +50%，源自 `AgeUpgrade` 政客 `DEPoliticianMercContractor`）；其余广谱兵工厂科技暂不做（§3.10.4）
-- ✅ **更正**：佣兵 +50% 实为升帝王政客选项（非仅 +15/20% 主城卡）；土著 age5 类别 `ImpLegendaryNatives` 与逐兵传奇升级 age5 **去重**只算一次
+- ✅ **更正**：佣兵 +50% 实为升帝王政客选项（非仅 +15/20% 主城卡）；土著 age5 类别 `ImpLegendaryNatives` 与逐兵传奇升级 age5 **去重**只算一次 ⚠️ **已推翻（2026-10-09）**：没有取大/去重，不同科技全部叠加，见 §3.10“落地方式”。
 - ✅ **倍率升级 `DamageBonus` 做**：缩放该兵已有正倍率（每条 ≥1 的 += amount），排除火堆舞蹈 `BigFirepitBattleAnger`（§3.10.2）
 - ✅ **预先结算**：开战前算进 `Unit` 副本（先逐兵链、再类别科技），模拟器与兵种卡都用加成后数据；`_create_soldier` 不感知科技
 - ✅ **展示**：兵种卡显示**加成后**面板、**不逐条列**独立升级；押注简报写明**本局时代** + 已激活类别科技
 - ✅ **实现分层**：parser 离线生成 `seeds/aoe3/unit_upgrades.json`（逐兵 id × 时代）+ 类别科技小表；运行时 `apply_upgrades(unit, age)` 出副本 + 兵池按 age 过滤（§3.10.7）
 - ✅ **`Shadow` 自动档必须纳入候选（关键修订）**：部分精锐/近卫/帝王是 `Shadow` 隐藏档（随时代自动激活、UI 不显示），不是可研究 `UpgradeTech`。选链候选 = `UpgradeTech` ∪ 通用 `Shadow`，按 prereq 解时代、排除文明专属 `Shadow`（`Age0*`/`Imperialize<civ>`/`*AfricanShadow`/`Swedish*Shadow`/`DEAge0*`/`YPAA*StartingTechs`），同档可研究与 `Shadow` 二选一不重复（§3.10.5）
 - ✅ **散兵更正为标准曲线 100/120/150/200**：精锐 = `VeteranSkirmishersShadow`(age3 +20%)，先前误算 180%（只扫 `UpgradeTech` 漏了 `Shadow`）；散兵裸值=未精锐化「二时代级」，升 age3 由 `Shadow` 自动加（非代码写死）（§3.10.1/3.10.5）
-- ✅ **各类别曲线封板**：标准/散兵/土著/亡命徒 100/120/150/200；炮兵 100/100/125/175；佣兵 100/100/100/150（§3.10.1 表）
+- ✅ **各类别曲线封板**：标准/散兵/土著/亡命徒 100/120/150/200；炮兵 100/100/125/175；佣兵 100/100/100/150（§3.10.1 表） ⚠️ **已推翻（2026-10-09）**：没有取大/去重，不同科技全部叠加，见 §3.10“落地方式”。
 - ✅ **亡命徒升级来源澄清**：4 种建筑（西部酒馆/欧洲酒馆/亚洲寺院/非洲）各 1 条 age3 +20% 精锐变体（合并为一档）+ `Shadow` 自动近卫 age4 +30/帝王 age5 +50；主城卡 `DEHCGeneralAmericans`+50% 不取（§3.10.4）
 - ✅ **已实现 MVP（2026-05-29）**：
   - `scripts/crawler/aoe3_upgrades_parser.py` → `seeds/aoe3/unit_upgrades.json`（逐兵 284 + 类别 3：亡命徒/土著/佣兵）；含 `Shadow` 候选、`SetAge` 政客（佣兵 allowlist）、文明专属过滤、负增量过滤。
-  - `src/plugins/aoe3/upgrades.py`：`apply_upgrades(unit, age)` 出副本（逐兵/类别按时代 `max` 取整包，见下修正）+ `active_category_techs()` 展示。
+  - `src/plugins/aoe3/upgrades.py`：`apply_upgrades(unit, age)` 出副本（逐兵/类别按时代 `max` 取整包，见下修正）+ `active_category_techs()` 展示。 ⚠️ **已推翻（2026-10-09）**：没有取大/去重，不同科技全部叠加，见 §3.10“落地方式”。
   - `lineup.py`：`get_*_pool(age)` 按 `unit.age≤N` 过滤；各 `generate_*` 叠加改良；`MatchLineup.age`；VS 简报展示时代 + 已激活类别科技。
   - `game.py`：默认 3 时代（`AGE_DEFAULT`）；`handlers.py`/`rival_pick.py` 解析 `N时代`（N=2~5）贯穿 bet/duel/custom/rival（黑名单乱斗不启用）。
   - 校验：`tests/games/aoe3_battle/test_upgrades.py`（标准/炮兵/类别曲线 + 帝王火枪 HP=300 oracle + 上界/负增量断言 + 出副本）。
 - ✅ **全字段落地（2026-05-29，v15）**：`range/aoe/rof/速度/护甲/倍率(DamageBonus)` 已实现，方式 = **整包随代表科技**（每条被选中的 tier 线/Shadow，把它自带的这些 effect 一并提取），按 relativity 分别 `Absolute`累加/`Assign`覆盖/`BasePercent`累乘，按 `action` 匹配代表动作落槽。结果有界：range 40 档 / speed 2 档 / mult 10 档；aoe/rof/armor 仅来自兵工厂/文明 age-up 科技 → 0 命中（暂缓）。`unit_upgrades.json` 新增 `range_add/aoe_add/rof_set/armor_add/speed_add/speed_mult/speed_set/mult_add`。
-- ✅ **脏数据复核结论（用户关注点）**：① 血攻负增量过滤正确（azap 验证：负值是胸甲副作用，非 tier 线；tier 线另捕获 → 100/120/150/200）；② `DEEliteSlingersShadow` +147 射程等离谱占位值用 `SANE_CAP` 上限丢弃；③ 同 effect 的 Volley/Defend/Stagger 多动作只取代表动作那一条（不相加）；④ 全量 apply 后升级造成的越界=0。
-- ✅ **逐兵/类别 `max` 去重修正**：旧「逐兵优先否则类别」会让瑞士长枪荷兰专属 +10% 逐兵档顶掉佣兵 +50% 类别加成；改为按时代取较大整包，兼修土著 double（§3.10.4/3.10.7）。
+- ✅ **脏数据复核结论（用户关注点）**：① 血攻负增量过滤正确（azap 验证：负值是胸甲副作用，非 tier 线；tier 线另捕获 → 100/120/150/200）；② `DEEliteSlingersShadow` +147 射程等离谱占位值用 `SANE_CAP` 上限丢弃；③ 同 effect 的 Volley/Defend/Stagger 多动作只取代表动作那一条（不相加）；④ 全量 apply 后升级造成的越界=0。 ⚠️ **已推翻（2026-10-09）**：没有取大/去重，不同科技全部叠加，见 §3.10“落地方式”。
+- ✅ **逐兵/类别 `max` 去重修正**：旧「逐兵优先否则类别」会让瑞士长枪荷兰专属 +10% 逐兵档顶掉佣兵 +50% 类别加成；改为按时代取较大整包，兼修土著 double（§3.10.4/3.10.7）。 ⚠️ **已推翻（2026-10-09）**：没有取大/去重，不同科技全部叠加，见 §3.10“落地方式”。
 - ✅ **细红线类「研发科技」归属厘清（2026-05-29，方案甲修正版）**：细红线 = `ChurchThinRedLine`，flag 是 **`UniqueTech`（教堂主动研发的独有科技）**，不是 tier 升级也不是卡 → 当前不在范围（火枪 +20%血未给）。它与兵工厂研发科技（Rifling 等）**同类：玩家主动研发、不随时代自动生效**。决议：**统一归入后续「通用/研发科技白名单」，且绝不随时代自动生效**（作为可选/手动启用），届时严格如实带副作用（细红线 = +20%血 −10%速一起算）。
 - ✅ **革命「搭便车」混入已厘清并排除**：tier 自动档靠 `Shadow` 标记捞，而革命/开局/文明专属隐藏档复用同一 `Shadow` 标记 → 误入候选；按 `Rev*`/`DEREV*`/`DEHCREV*` 等前缀排除（§3.10.5 第 6 步）。
 - ✅ **随机通用科技系统已退役（2026-09-21）**：普通斗蛐蛐不再随机抽取横向增益；科技效果应用能力迁入 `src/plugins/aoe3/tech_effects.py`，留待国战文明科技树与主城国策调用。

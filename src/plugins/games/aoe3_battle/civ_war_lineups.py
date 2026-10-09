@@ -7,7 +7,6 @@ from dataclasses import dataclass
 
 from src.plugins.aoe3.models import Unit
 from src.plugins.aoe3.repository import UnitRepo
-from src.plugins.aoe3.tech_effects import apply_techs
 from src.plugins.aoe3.upgrades import apply_upgrades
 from src.plugins.games.aoe3_battle.civ_war_roles import (
     NATIONAL_TACTICS,
@@ -374,10 +373,6 @@ def allocate_candidate_with_techs(
     techs: tuple[MatchedTech, ...] | None = None,
 ) -> tuple[Lineup, tuple[MatchedTech, ...]]:
     """Apply age upgrades and allocate quantities using the candidate's own policy."""
-    upgraded = tuple(
-        apply_upgrades(unit, age, civ_id=candidate.civ_id)
-        for unit in candidate.units
-    )
     resolved_techs = (
         techs
         if techs is not None
@@ -385,19 +380,12 @@ def allocate_candidate_with_techs(
         if candidate.required_tech_ids
         else tuple(select_candidate_techs(candidate, age=age))
     )
-    if resolved_techs:
-        upgraded = tuple(
-            apply_techs(
-                [unit],
-                [
-                    tech.runtime_tech()
-                    for tech in resolved_techs
-                    if unit.id in tech.matched_unit_ids
-                ],
-                base_units=[base],
-            )[0]
-            for unit, base in zip(upgraded, candidate.units, strict=True)
-        )
+    # 时代升级与选中科技一次结算：同一科技只生效一次，效果按统一算符合并。
+    tech_ids = tuple(tech.id for tech in resolved_techs)
+    upgraded = tuple(
+        apply_upgrades(unit, age, civ_id=candidate.civ_id, tech_ids=tech_ids)
+        for unit in candidate.units
+    )
     if candidate.allocation.kind == "resource_shares":
         counts = _allocate_resource_shares(upgraded, budget, candidate.allocation.values)
     elif candidate.allocation.kind == "fixed_ratio":
