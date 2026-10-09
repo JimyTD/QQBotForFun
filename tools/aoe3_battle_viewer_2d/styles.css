@@ -850,6 +850,13 @@ button.active {
   font-size: 11px;
 }
 
+/* setup-panel label 用 grid 排布，勾选类控件要覆盖回一行 */
+.setup-panel label.toggle {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
 .hint {
   color: #8b9aa0;
   font-size: 10px;
