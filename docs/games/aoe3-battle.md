@@ -1261,11 +1261,14 @@ AOE3 有三种伤害类型，每种只被对应的抗性减免：
 - `type` 不是 `Attack`，并且没有 `attackaction=1`，不收。治疗、自动采集、施法因此不进。四辆彩蛋卡车的 `TruckAttack` 标了 `attackaction=1`，收。
 - 阵型里有这个动作，单位自己的 proto 包没有同名伤害，或伤害小于等于 0，不收。不拿阵型文件里的伤害来补。
 - `InflictsNoDamage` 的单位列表是空的。
-- 不按动作名整类删。没有标成蓄力的 `Charge` 就是普通攻击。骑兵碾压在另一份 `Trample` 阵型里，出生阵型范围已经把它留在外面。
+- **按动作名排除英雄技 / 一次性技能 / 召唤类**：黑名单 `NON_DPS_RANGED_ATTACKS`，定义在 `scripts/crawler/aoe3_gamedata_parser.py`，当前含 `SharpshooterAttack`（狙击手攻击）、`CrackshotAttack`（神枪手攻击）、`SwashbucklerAttack`（扫荡攻击）、`HeavenlyFireBomb`（天火）、`Stun`（击昏）、`Chaos`（混沌）。原因见下。
+- 除上面这条黑名单外，不按动作名整类删。没有标成蓄力的 `Charge` 就是普通攻击。骑兵碾压在另一份 `Trample` 阵型里，出生阵型范围已经把它留在外面。
 - 不按目标类型预先删。`<rate type>` 对不上当前目标时，出手那一步不用它。`All` 打得到人。
 - 单位 proto 包写了 `<active>`、`<chargeaction>`、`<auxchargeaction>` 时，以单位自己的为准，盖过共用阵型文件。没写就用阵型文件的。`active=0` 留在列表里，标成关着，直到一份真正打到这个单位的科技把它打开。
 
 共享阵型文件是模板。同名 proto 包只在写出上述开关时覆盖。
+
+**为什么保留这份黑名单**：这 6 个是被排除单位手动释放的主动技，不进全自动斗蛐蛐的常态输出循环。原始数据里没有能按动作读取的冷却：单位级 `<rechargetime>` / `<auxrechargetime>` 只在动作标了 `chargeaction` / `auxchargeaction` 时才写进 `recharge`，而这 6 个动作在 `data/aoe3/raw/tactics/*.tactics` 里一个都没有标蓄力。所以它们没有可用的冷却门，一旦进列表就会被当成普攻循环。实测去掉黑名单后的危害：`SwashbucklerAttack`（36~150 伤害、射程 2）和 `Stun`（30 伤害、射程 14）能通过其余全部筛选真的开火，17 个单位 × 8 个常见兵种的 136 场里 34 场结果改变、9 场直接翻盘。`SharpshooterAttack`、`CrackshotAttack`、`HeavenlyFireBomb`、`Chaos` 靠 `rate` / `hits_soldiers` / `active` 本来也基本打不到普通兵，但仍一并列出，避免以后数据变动时漏网。新增同类英雄技时，把动作名追加进这个集合。
 
 打得中人：类型不是 `Attack` 且没有 `attackaction=1` 的不算。目标类型里带 `Guardian`、`Building`、`Ship`、`Crate`，或正好是 `Herdable`、`Tree`、`Huntable`、`Resource`、`Fish`、`BerryBush` 的不算。没写目标类型、类型是 `Attack` 的算。`Unit`、`All`、`Military` 算。
 
@@ -2114,8 +2117,8 @@ DE 部分科技含**离谱占位值**，无法靠语义识别（6074 条）：
 - ✅ **`warwagon` / `demercgatlingcamel` 等官方重做**：照搬新数据，不做人工干预。
 - 📌 **规则级修正复核（2026-09-17）**：本项目**没有**手工编辑过 `units.json` 等生成物（P0 零 diff 证明）；所有属性修正都以「代码规则」形式存在，刷新后自动生效。本次逐条核对：
   - 臼炮系 `BarrageAttack` 优先（`ARTILLERY_RANGED_PRIORITY`）→ `mortar` 仍选 BarrageAttack ✅
-  - 英雄技 / 一次性射击不进 DPS 循环（`NON_DPS_RANGED_ATTACKS`）→ 审计脚本通过 ✅
-  - `Charge` / `Trample` 跳过（`aoe3_gamedata_parser._parse_attacks`）→ 仍生效（本次 +4 辆卡车白名单）✅
+  - 英雄技 / 一次性射击不进 DPS 循环（`NON_DPS_RANGED_ATTACKS`）→ 规则与原因见 §3.9「攻击列表」，由列表解析统一排除 ✅
+  - `Charge` / `Trample` 不整类按名跳过；出生阵型范围已把 `Trample` 挡在外面，未标蓄力的 `Charge` 按普通攻击处理（详见 §3.9）✅
   - 投石手 `DEEliteSlingersShadow` +147 射程丢弃（`DIRTY_EFFECTS`）→ 该科技仍存在，投石手升级射程为 +1/+2 ✅
   - 战役 / 代币 / 守护者排除（`repository._EXCLUDED_IDS` + `is_excluded_unit`）→ 25 个 id 全部仍存在 ✅
   - 对战黑名单（`lineup.BLACKLIST` / `BATTLE_BLACKLIST`）→ 全部仍存在（本次 +4）✅
