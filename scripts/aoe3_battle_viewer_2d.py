@@ -33,14 +33,15 @@ from plugins.aoe3.models import Unit  # noqa: E402
 from plugins.aoe3.repository import UnitRepo  # noqa: E402
 from plugins.games.aoe3_battle.civ_war_civs import (  # noqa: E402
     CIV_PROFILES,
-)
-from plugins.games.aoe3_battle.civ_war_matchup import (  # noqa: E402
-    generate_civ_war_lineup,
+    resolve_civ,
 )
 from plugins.games.aoe3_battle.civ_war_lineups import (  # noqa: E402
     _allocate_resource_shares,
 )
-from plugins.games.aoe3_battle.civ_war_civs import resolve_civ  # noqa: E402
+from plugins.games.aoe3_battle.civ_war_matchup import (  # noqa: E402
+    generate_civ_war_lineup,
+)
+from plugins.games.aoe3_battle.lineup import _unit_cost, get_bet_pool  # noqa: E402
 from plugins.games.aoe3_battle.lineup_draft import (  # noqa: E402
     _apply_combat,
     _shares,
@@ -48,7 +49,6 @@ from plugins.games.aoe3_battle.lineup_draft import (  # noqa: E402
     draft_units,
     list_selectable_techs,
 )
-from plugins.games.aoe3_battle.lineup import _unit_cost  # noqa: E402
 from plugins.games.aoe3_battle.simulator2d import (  # noqa: E402
     BattleSimulator2D,
     Simulation2DConfig,
@@ -426,6 +426,7 @@ class ViewerHandler(BaseHTTPRequestHandler):
                     for unit_id in params.get("units", "").split(",")
                     if unit_id
                 ],
+                full_pool=params.get("full_pool") == "1",
             )
         except (ValueError, KeyError) as exc:
             self._send_bytes(
@@ -523,8 +524,14 @@ def loadout_options(
     civ_id: str | None,
     age: int,
     unit_ids: list[str],
+    full_pool: bool = False,
 ) -> dict[str, Any]:
-    """Units and techs a civilization can field at ``age`` for this lineup."""
+    """Units and techs a civilization can field at ``age`` for this lineup.
+
+    ``full_pool`` swaps the civilization's regular army for the whole battle
+    pool (mercenaries, natives, outlaws, heroes), so a development lineup can
+    mix unit classes. The civilization still decides which techs apply.
+    """
     repo = UnitRepo.get()
     if civ_id:
         civ = resolve_civ(civ_id)
@@ -532,7 +539,10 @@ def loadout_options(
             raise ValueError(f"未知文明：{civ_id}")
     else:
         raise ValueError("缺少文明")
-    available = draft_units(repo, civ.id, age)
+    if full_pool:
+        available = sorted(get_bet_pool(repo, age=age), key=lambda unit: unit.name)
+    else:
+        available = draft_units(repo, civ.id, age)
     by_id = {unit.id: unit for unit in available}
     chosen = tuple(by_id[unit_id] for unit_id in unit_ids if unit_id in by_id)
     techs = list_selectable_techs(civ.id, chosen, age) if chosen else []
@@ -540,6 +550,7 @@ def loadout_options(
         "civ_id": civ.id,
         "civ_name": civ.name,
         "age": age,
+        "full_pool": full_pool,
         "units": [
             {
                 "id": unit.id,
@@ -547,6 +558,7 @@ def loadout_options(
                 "name_en": unit.name_en,
                 "cost": sum(unit.cost.values()),
                 "pop": unit.pop,
+                "kind": _unit_kind(unit),
             }
             for unit in available
         ],
@@ -578,6 +590,22 @@ def _tech_mechanisms(tech) -> list[str]:
         elif subtype == "RechargeTime":
             mechanisms.append("调整蓄力冷却")
     return mechanisms
+
+
+def _unit_kind(unit: Unit) -> str:
+    """Player-facing class label for the full-pool picker."""
+    tags = set(unit.type)
+    if "Mercenary" in tags:
+        return "佣兵"
+    if "AbstractOutlaw" in tags:
+        return "亡命徒"
+    if "Hero" in tags:
+        return "英雄"
+    if "AbstractNativeWarrior" in tags:
+        return "原住民"
+    if "AbstractPet" in tags:
+        return "宠物"
+    return ""
 
 
 def _auto_balance_counts(
@@ -614,13 +642,17 @@ def _build_custom_simulator(
         unit_ids = tuple(str(item) for item in raw.get("units") or ())
         counts = [int(item) for item in raw.get("counts") or ()]
         unit_tech_ids = tuple(str(item) for item in raw.get("techs") or ())
-        available = draft_units(repo, civ.id, age)
+        if bool(raw.get("full_pool")):
+            available = get_bet_pool(repo, age=age)
+        else:
+            available = draft_units(repo, civ.id, age)
         by_id = {unit.id: unit for unit in available}
         chosen = []
         for unit_id in unit_ids:
             unit = by_id.get(unit_id)
             if unit is None:
-                raise ValueError(f"{civ.name} 在 {age} 时代没有 {unit_id}")
+                where = "全兵种池" if raw.get("full_pool") else f"{civ.name} {age} 时代"
+                raise ValueError(f"{where}里没有 {unit_id}")
             chosen.append(unit)
         if not chosen:
             raise ValueError("每方至少选择 1 个兵种")

@@ -15,16 +15,10 @@ const armyCards = {
 };
 const matchLabel = document.getElementById("match-label");
 const restartButton = document.getElementById("restart");
-const unitOptions = document.getElementById("unit-options");
-const redUnitInput = document.getElementById("red-unit");
-const blueUnitInput = document.getElementById("blue-unit");
-const redCountInput = document.getElementById("red-count");
-const blueCountInput = document.getElementById("blue-count");
 const redCivSelect = document.getElementById("red-civ");
 const blueCivSelect = document.getElementById("blue-civ");
 const ageSelect = document.getElementById("age");
 const seedInput = document.getElementById("seed");
-const unitsSetup = document.getElementById("units-setup");
 const customSetup = document.getElementById("custom-setup");
 const civWarSetup = document.getElementById("civ-war-setup");
 const balanceBlue = document.getElementById("balance-blue");
@@ -83,8 +77,8 @@ const state = {
   trails: new Map(),
   unitIcons: new Map(),
   custom: {
-    red: { civ: null, units: [], counts: [], techs: new Set(), available: null, age: 3 },
-    blue: { civ: null, units: [], counts: [], techs: new Set(), available: null, age: 3 },
+    red: { civ: null, units: [], counts: [], techs: new Set(), available: null, age: 3, fullPool: false },
+    blue: { civ: null, units: [], counts: [], techs: new Set(), available: null, age: 3, fullPool: false },
   },
   attackEvents: [],
   seenEvents: new Set(),
@@ -126,12 +120,7 @@ async function bootstrapCatalog() {
     if (!response.ok) throw new Error(`catalog HTTP ${response.status}`);
     const catalog = await response.json();
     state.catalog = catalog;
-    unitOptions.innerHTML = "";
     for (const unit of catalog.units || []) {
-      const option = document.createElement("option");
-      option.value = unit.id;
-      option.label = `${unit.name} · ${unit.name_en}`;
-      unitOptions.appendChild(option);
       if (unit.icon_url) state.unitIcons.set(unit.id, unit.icon_url);
     }
     populateCivSelects(catalog.civs || []);
@@ -677,7 +666,6 @@ function setMode(mode) {
     button.classList.toggle("active", button.dataset.mode === mode);
   });
   customSetup.classList.toggle("hidden", mode !== "custom");
-  unitsSetup.classList.toggle("hidden", mode !== "units");
   civWarSetup.classList.toggle("hidden", mode !== "civ_war");
 }
 
@@ -688,7 +676,7 @@ async function refreshLoadout(side) {
   const units = entry.units.filter(Boolean).join(",");
   try {
     const response = await fetch(
-      `/api/loadout?civ=${encodeURIComponent(civ)}&age=${entry.age}&units=${encodeURIComponent(units)}`,
+      `/api/loadout?civ=${encodeURIComponent(civ)}&age=${entry.age}&units=${encodeURIComponent(units)}&full_pool=${entry.fullPool ? 1 : 0}`,
       { cache: "no-store" },
     );
     if (!response.ok) throw new Error("loadout failed");
@@ -719,23 +707,37 @@ function renderCustomSide(side) {
   const container = document.querySelector(`.custom-units[data-side="${side}"]`);
   if (!container) return;
   const available = entry.available?.units || [];
+  const byId = new Map(available.map((unit) => [unit.id, unit]));
   const maxUnits = 3;
   if (entry.units.length > maxUnits) entry.units = entry.units.slice(0, maxUnits);
+
+  const datalist = document.getElementById(`unit-options-${side}`);
+  if (datalist) {
+    datalist.innerHTML = available
+      .map((unit) => {
+        const kind = unit.kind ? `[${unit.kind}] ` : "";
+        const zh = `<option value="${escapeHtml(unit.name)}" label="${escapeHtml(`${kind}${unit.name_en || ""}`)}"></option>`;
+        const en = unit.name_en && unit.name_en !== unit.name
+          ? `<option value="${escapeHtml(unit.name_en)}" label="${escapeHtml(`${kind}${unit.name}`)}"></option>`
+          : "";
+        return zh + en;
+      })
+      .join("");
+  }
+
   container.innerHTML = entry.units
     .map(
-      (selectedId, index) => `
+      (selectedId, index) => {
+        const selected = byId.get(selectedId);
+        const value = selected ? selected.name : selectedId;
+        const kind = selected?.kind ? ` · ${selected.kind}` : "";
+        return `
       <div class="unit-row">
-        <select class="unit-pick" data-side="${side}" data-index="${index}">
-          ${available
-            .map(
-              (unit) =>
-                `<option value="${unit.id}" ${unit.id === selectedId ? "selected" : ""}>${escapeHtml(unit.name)}</option>`,
-            )
-            .join("")}
-        </select>
+        <input class="unit-search" list="unit-options-${side}" data-side="${side}" data-index="${index}" value="${escapeHtml(value)}" title="${escapeHtml(`${value}${kind}`)}" placeholder="搜索兵种…" autocomplete="off" />
         <input class="unit-count" type="number" min="1" max="1000" value="${entry.counts[index] || 20}" data-side="${side}" data-index="${index}" />
         <button type="button" class="remove" data-side="${side}" data-index="${index}" title="移除">×</button>
-      </div>`,
+      </div>`;
+      },
     )
     .join("");
   const addButton = document.querySelector(`.add-unit[data-side="${side}"]`);
@@ -783,6 +785,7 @@ function customPayload() {
       units: entry.units,
       counts,
       techs: Array.from(entry.techs),
+      full_pool: entry.fullPool,
     };
   };
   return {
@@ -803,13 +806,6 @@ async function restartSimulation() {
       red_civ: redCivSelect.value,
       blue_civ: blueCivSelect.value,
       age: Number(ageSelect.value),
-      seed: Number(seedInput.value),
-    };
-  } else {
-    payload = {
-      mode: "units",
-      red: `${redUnitInput.value.trim()}:${Number(redCountInput.value)}`,
-      blue: `${blueUnitInput.value.trim()}:${Number(blueCountInput.value)}`,
       seed: Number(seedInput.value),
     };
   }
@@ -920,6 +916,16 @@ document.querySelectorAll(".side-age").forEach((select) => {
     refreshLoadout(side);
   });
 });
+document.querySelectorAll(".full-pool-toggle").forEach((toggle) => {
+  toggle.addEventListener("change", () => {
+    const side = toggle.dataset.side;
+    state.custom[side].fullPool = toggle.checked;
+    state.custom[side].units = [];
+    state.custom[side].counts = [];
+    state.custom[side].techs.clear();
+    refreshLoadout(side);
+  });
+});
 document.querySelectorAll(".add-unit").forEach((button) => {
   button.addEventListener("click", () => {
     const side = button.dataset.side;
@@ -942,8 +948,17 @@ customSetup.addEventListener("change", (event) => {
   if (!side) return;
   const index = Number(target.dataset.index);
   const entry = state.custom[side];
-  if (target.classList.contains("unit-pick")) {
-    entry.units[index] = target.value;
+  if (target.classList.contains("unit-search")) {
+    const available = entry.available?.units || [];
+    const query = target.value.trim().toLowerCase();
+    const match = available.find((unit) => unit.name.toLowerCase() === query)
+      || available.find((unit) => (unit.name_en || "").toLowerCase() === query)
+      || available.find((unit) => unit.id === query);
+    if (!match) {
+      target.value = entry.units[index] || "";
+      return;
+    }
+    entry.units[index] = match.id;
     entry.techs.clear();
     refreshLoadout(side);
   } else if (target.classList.contains("unit-count")) {

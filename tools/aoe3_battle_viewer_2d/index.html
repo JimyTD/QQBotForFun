@@ -8,7 +8,7 @@
     <meta http-equiv="Expires" content="0" />
     <title>帝国3斗蛐蛐 · 二维实时战场</title>
     <link rel="icon" href="data:," />
-    <link rel="stylesheet" href="styles.css?v=20261008-1" />
+    <link rel="stylesheet" href="styles.css?v=20261009-1" />
   </head>
   <body>
     <header class="topbar">
@@ -29,7 +29,6 @@
         </div>
         <div class="mode-tabs" role="tablist" aria-label="模拟模式">
           <button type="button" class="mode-tab active" data-mode="custom">自选阵容</button>
-          <button type="button" class="mode-tab" data-mode="units">快速单挑</button>
           <button type="button" class="mode-tab" data-mode="civ_war">国战随机</button>
         </div>
 
@@ -46,7 +45,9 @@
                 </select>
               </label>
             </div>
+            <label class="toggle small"><input type="checkbox" class="full-pool-toggle" data-side="red" /><span>全兵种（佣兵 / 原住民 / 亡命徒）</span></label>
             <div class="custom-units" data-side="red"></div>
+            <datalist id="unit-options-red"></datalist>
             <button type="button" class="ghost-button add-unit" data-side="red">+ 添加兵种</button>
             <div class="tech-select" data-side="red"></div>
           </div>
@@ -62,29 +63,12 @@
                 </select>
               </label>
             </div>
+            <label class="toggle small"><input type="checkbox" class="full-pool-toggle" data-side="blue" /><span>全兵种（佣兵 / 原住民 / 亡命徒）</span></label>
             <div class="custom-units" data-side="blue"></div>
+            <datalist id="unit-options-blue"></datalist>
             <button type="button" class="ghost-button add-unit" data-side="blue">+ 添加兵种</button>
             <div class="tech-select" data-side="blue"></div>
           </div>
-        </section>
-
-        <section class="setup-panel hidden" id="units-setup">
-          <label>
-            <span>红方兵种</span>
-            <input id="red-unit" list="unit-options" value="musketeer" autocomplete="off" />
-          </label>
-          <label class="count-field">
-            <span>数量</span>
-            <input id="red-count" type="number" min="1" max="1000" value="40" />
-          </label>
-          <label>
-            <span>蓝方兵种</span>
-            <input id="blue-unit" list="unit-options" value="pikeman" autocomplete="off" />
-          </label>
-          <label class="count-field">
-            <span>数量</span>
-            <input id="blue-count" type="number" min="1" max="1000" value="40" />
-          </label>
         </section>
 
         <section class="setup-panel hidden" id="civ-war-setup">
@@ -212,7 +196,6 @@
       </aside>
     </main>
 
-    <datalist id="unit-options"></datalist>
-    <script src="viewer.js?v=20261008-1"></script>
+    <script src="viewer.js?v=20261009-1"></script>
   </body>
 </html>

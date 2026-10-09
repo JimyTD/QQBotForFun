@@ -56,6 +56,49 @@ def test_loadout_options_lists_units_and_techs_for_civ():
     assert all("summary" in tech and "id" in tech for tech in options["techs"])
 
 
+def test_loadout_options_full_pool_reaches_mercenaries_and_natives():
+    options = loadout_options(
+        civ_id="DEMaltese",
+        age=3,
+        unit_ids=["dehoopthrower", "demercamazon"],
+        full_pool=True,
+    )
+    units = {unit["id"]: unit for unit in options["units"]}
+    assert options["full_pool"] is True
+    assert len(units) > 200
+    assert units["dehoopthrower"]["kind"] == ""
+    assert units["demercamazon"]["kind"] == "佣兵"
+    # The lineup includes a full-pool mercenary, so its techs must still resolve.
+    assert any(tech["id"] == "DEHCFlameThrowers" for tech in options["techs"])
+
+
+def test_custom_simulator_accepts_mixed_classes_in_full_pool():
+    simulator = _build_custom_simulator(
+        {
+            "red": {
+                "civ": "DEMaltese",
+                "age": 3,
+                "units": ["dehoopthrower"],
+                "counts": [4],
+                "techs": [],
+                "full_pool": True,
+            },
+            "blue": {
+                "civ": "DEHausa",
+                "age": 3,
+                "units": ["demercamazon"],
+                "counts": [2],
+                "techs": [],
+                "full_pool": True,
+            },
+        },
+        frame_callback=lambda _frame: None,
+        seed=1,
+    )
+    assert simulator.red_army[0].unit.id == "dehoopthrower"
+    assert simulator.blue_army[0].unit.id == "demercamazon"
+
+
 def test_custom_simulator_builds_requested_lineup():
     frames: list[dict] = []
     simulator = _build_custom_simulator(

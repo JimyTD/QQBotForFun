@@ -694,6 +694,7 @@ button.active {
 }
 
 .unit-row select,
+.unit-row .unit-search,
 .unit-row input {
   min-height: 32px;
 }
