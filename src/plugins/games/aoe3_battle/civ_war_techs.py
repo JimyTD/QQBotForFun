@@ -194,6 +194,10 @@ def _matched_units(
     This decides whether the tech can be picked. Which effects a unit gets is
     decided per effect at settlement. ``unittype`` on an op is the counter,
     projectile, or attachment, not the recipient.
+
+    An effect only counts when it lands on this unit: an attack effect needs
+    the unit to have that attack (same rule as the summary). A tech that names
+    a unit but changes nothing on it is not offered (Owner, 2026-10-10).
     """
     ops = [
         op
@@ -203,7 +207,7 @@ def _matched_units(
     return tuple(
         unit
         for unit in units
-        if any(op_targets_unit(op, unit) for op in ops)
+        if _ops_that_land(ops_for_unit(ops, unit), unit)
     )
 
 

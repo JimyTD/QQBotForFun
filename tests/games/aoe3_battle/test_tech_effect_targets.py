@@ -192,6 +192,24 @@ def test_selection_and_labels_include_unlocked_techs(repo):
     assert "Rifling" in {t.id for t in list_selectable_techs("DEMaltese", (flamer,), 3)}
 
 
+def test_tech_that_changes_nothing_on_a_unit_is_not_offered(repo):
+    """写明打到这个兵、但这个兵没有被打的那种攻击：不可选。"""
+    from plugins.games.aoe3_battle.lineup_draft import list_selectable_techs
+
+    falconet = repo.get_by_id("falconet")
+    assert "YPHCMeleeDamageIndians" not in {
+        t.id for t in list_selectable_techs("Indians", (falconet,), 5)
+    }
+    rajput = repo.get_by_id("yprajput")
+    assert "YPHCMeleeDamageIndians" in {
+        t.id for t in list_selectable_techs("Indians", (rajput,), 5)
+    }
+    guard = repo.get_by_id("demaltesemusketeer")
+    assert "IncendiaryGrenades" not in {
+        t.id for t in list_selectable_techs("DEMaltese", (guard,), 3)
+    }
+
+
 def test_untyped_armor_adds_all_three_armors(repo):
     """华卡纳：数据只写护甲 +0.05 作用步兵、轻步兵，三种伤害类型的护甲都加。"""
     tech, units = _resolve(repo, "deBigWarHutHualcana", "DEInca", ("deslinger",), age=3)
