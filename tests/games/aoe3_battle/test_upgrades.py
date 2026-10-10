@@ -105,6 +105,21 @@ def test_revolution_only_tier_is_never_an_age_upgrade(data):
     assert "DEImperialMonitors" not in monitor["5"]["techs"]
 
 
+def test_research_shadows_never_enter_age_upgrades(data):
+    """研究科技的影子档要先研究主科技，不是时代升级（靠生成器“正百分比生命/伤害”门槛挡住）。"""
+    research_shadows = {
+        "RiflingShadow", "CaracoleShadow", "IncendiaryGrenadesShadow", "BayonetShadow",
+        "HeatedShotShadow", "DEAzapShadowInfantryBreastplate", "PaperCartridgeShadow",
+    }
+    used = {
+        tech
+        for tiers in data["units"].values()
+        for entry in tiers.values()
+        for tech in entry["techs"]
+    }
+    assert used.isdisjoint(research_shadows)
+
+
 def test_age_upgrade_is_settled_once_per_tech(repo):
     musk = repo.get_by_id("musketeer")
     ids = age_tech_ids(musk, 5)

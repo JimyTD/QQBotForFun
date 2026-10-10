@@ -277,6 +277,11 @@ def build_unit_upgrades(
     # 收集：id -> age -> list[(line_priority, hp_inc, dmg_inc, tech_name, setname_proto)]
     # setname_proto: SetName 查找时需要用原始大小写 proto 名
     per_id: dict[str, dict[int, list]] = {}
+    # 候选门槛里的“必须给这个兵加正百分比生命/伤害”不能删（2026-10-10 实测）：
+    # 时代升级档都带它；研究科技的影子档（RiflingShadow、CaracoleShadow、
+    # IncendiaryGrenadesShadow、BayonetShadow 等）不带，它们的前置是一个 UpgradeTech，
+    # 会被 age_reachable 判成时代可达，只靠这条挡住。原始数据没有“时代升级”字段，
+    # 按钮面板 + 时代前置也覆盖不全（帝王加农炮的按钮在工厂、游骑兵跟随长弓兵线）。
     for name, block in blocks.items():
         flags = tech_flags(block)
         if is_excluded(name, flags):
