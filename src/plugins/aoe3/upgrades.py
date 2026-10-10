@@ -23,6 +23,7 @@ _CIV_DATA_PATH = (
     Path(__file__).resolve().parents[3] / "seeds" / "aoe3" / "civ_unit_upgrades.json"
 )
 _POOL_PATH = Path(__file__).resolve().parents[3] / "seeds" / "aoe3" / "civ_war_tech_pool.json"
+_CIVS_PATH = Path(__file__).resolve().parents[3] / "seeds" / "aoe3" / "civs.json"
 
 # 类别标签 → 中文展示名（押注简报「已激活类别科技」用）
 CATEGORY_LABELS = {
@@ -33,6 +34,7 @@ CATEGORY_LABELS = {
 
 _cache: dict | None = None
 _civ_cache: dict | None = None
+_civ_age_techs: dict[str, list[str]] | None = None
 
 
 def _load() -> dict:
@@ -64,6 +66,27 @@ def _unit_upgrade_table(unit: Unit, civ_id: str | None) -> dict[str, dict]:
         if override:
             return {**base, **override}
     return base
+
+
+def civ_age_roots(civ_id: str | None, age: int) -> list[tuple[int, str]]:
+    """文明开局与升时代自动激活的科技根（civs.xml ``agetech``）：[(时代, 科技 id)]。
+
+    ``agetech`` 依次是 Age0..Age4，对应游戏时代 1..5；只取不超过本局时代的。
+    """
+    global _civ_age_techs
+    if not civ_id:
+        return []
+    if _civ_age_techs is None:
+        try:
+            civs = json.loads(_CIVS_PATH.read_text(encoding="utf-8"))["civs"]
+            _civ_age_techs = {
+                key: list(row.get("age_techs") or ()) for key, row in civs.items()
+            }
+        except (OSError, json.JSONDecodeError, KeyError) as e:
+            logger.warning("加载 civs.json 失败：%s（文明开局科技不生效）", e)
+            _civ_age_techs = {}
+    roots = _civ_age_techs.get(civ_id, ())
+    return [(index + 1, tech) for index, tech in enumerate(roots) if index + 1 <= age]
 
 
 def _pick(table: dict[str, dict], age: int) -> dict | None:
@@ -99,6 +122,27 @@ def age_tech_ids(unit: Unit, age: int, civ_id: str | None = None) -> list[str]:
             if tech not in ids:
                 ids.append(tech)
     return ids
+
+
+def _age_tech_tiers(unit: Unit, age: int, civ_id: str | None) -> list[tuple[int, str]]:
+    """本时代已生效的时代升级科技，带它最早进入的那一档时代：[(时代, 科技 id)]。"""
+    if age is None or age < 2:
+        return []
+    first: dict[str, int] = {}
+
+    def collect(table: dict, getter) -> None:
+        for key in sorted((k for k in table if k.isdigit()), key=int):
+            tier = int(key)
+            if tier > age:
+                continue
+            for tech in getter(table[key]):
+                first.setdefault(tech, tier)
+
+    collect(_unit_upgrade_table(unit, civ_id), lambda entry: entry.get("techs") or ())
+    cats = _load().get("category", {})
+    for tag in _category_tags(unit):
+        collect(cats[tag], lambda entry: entry)
+    return [(tier, tech) for tech, tier in first.items()]
 
 
 def _pick_list(table: dict[str, list], age: int) -> list[str]:
@@ -145,16 +189,27 @@ def apply_upgrades(
 ) -> Unit:
     """结算时代升级（以及调用方给的额外科技），返回 Unit 副本；无变化返回原对象。
 
-    时代升级科技、``tech_ids`` 与它们解锁的科技合并去重，同一科技只生效一次，
-    全部效果按统一算符一次结算（``tech_effects.settle_unit``）。
+    有文明（``civ_id``）时，文明开局与升时代自动激活的科技也生效；普通斗蛐蛐没有文明。
+    这些科技、时代升级科技、``tech_ids`` 与它们解锁的科技合并去重，同一科技只生效一次，
+    按研究先后逐条结算（``tech_effects.settle_unit``）：时代从低到高；同一时代内
+    文明自动激活 → 时代升级 → ``tech_ids``（按给定顺序）。
     """
     from .tech_effects import runtime_op, settle_unit
     from .tech_links import expand
 
-    ids = expand([*age_tech_ids(unit, age, civ_id), *tech_ids], age=age or 0)
+    rows = tech_pool_rows()
+    ordered: list[tuple[int, int, int, str]] = []
+    for index, (tier, tech) in enumerate(civ_age_roots(civ_id, age or 0)):
+        ordered.append((tier, 0, index, tech))
+    for index, (tier, tech) in enumerate(_age_tech_tiers(unit, age, civ_id)):
+        ordered.append((tier, 1, index, tech))
+    for index, tech in enumerate(tech_ids):
+        tier = (rows.get(tech) or {}).get("min_age") or 1
+        ordered.append((int(tier), 2, index, tech))
+    ordered.sort()
+    ids = expand([tech for *_, tech in ordered], age=age or 0)
     if not ids:
         return unit
-    rows = tech_pool_rows()
     ops = []
     for tech in ids:
         row = rows.get(tech)

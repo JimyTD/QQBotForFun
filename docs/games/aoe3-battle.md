@@ -1406,7 +1406,9 @@ protoy 伤害包 + tactics 定义取出，不跨动作拼装。每个阵型各�
 生成器 `aoe3_upgrades_parser.py` / `aoe3_civ_upgrades_parser.py` 只记录每个兵、每个时代**已生效的科技 id**（累计），不预合并倍率。运行时 `apply_upgrades(unit, age, civ_id=None, tech_ids=())` 把这些科技、调用方给的科技（国战/配兵选中的），以及它们解锁的科技（`TechStatus active`、前置全部满足且原始状态为可获得的影子科技；`obtainable` 开放研究/造兵不生效，见 `src/plugins/aoe3/tech_links.py`）合并去重，再用 `src/plugins/aoe3/tech_effects.py` 一次结算：
 
 - **同一个科技只生效一次；不同科技全部叠加，没有取大。**
-- 统一算符（所有同类数据一致）：`BasePercent` 按基础值、各项增量相加；`Percent` 按当前值累乘；`Absolute` 相加；`Assign`/`Override` 覆盖。
+- 统一算符（所有同类数据一致）：`Assign`/`Override` 设为该值；`Absolute` 在当前值上加；`Percent` 在当前值上乘；`BasePercent` 在当前值上加 `原型值 × (amount − 1)`，**基准永远是原型值**，`Assign` 不改基准，所以多条 BasePercent 之间先后无关、增量相加。
+- **按研究先后逐条结算**（混用算符时顺序决定结果）：时代从低到高；同一时代内，文明开局/升时代自动激活的科技 → 时代升级 → 国战/配兵选中的科技（按选择先后）；同一科技内按数据顺序。依据：HeavenGames 论坛《Exact meaning of relativity='BasePercent'》、hawkaoe 帝国3 modding 教程。例：丹麦燧发枪手（原型 200）开局设为 120，3 时代老练燧发枪手 Percent ×1.2 → 144，4 时代自由枪手 BasePercent 1.3 → 144 + 60 = 204（与骑马形态 170×1.2 一致），5 时代帝国自由枪手 BasePercent 1.5 → 304。
+- **有文明时文明自动激活的科技生效**（civs.xml `agetech` 的 Age0..Age4，只取不超过本局时代的，按 `TechStatus active` 展开）：俄国开局生命/伤害 BasePercent 0.8，俄国重装步兵 2 时代 120；亚洲领事馆兵 +10% 等。普通斗蛐蛐没有文明，不生效。
 - 每一项效果只打写明的兵（id 或标签），写了攻击名只改同名攻击；护甲按伤害类型，`Armor` 没写类型三种都加。
 - 候选只收“到了时代就能拿到”的档：前置全是时代科技或同类升级档（`OrPrereqs` 任一即可）。只能由革命科技开放的档**不是时代升级**，直接排除。普通斗蛐蛐（无文明）只用通用线，通用线不使用文明专属档或前置要求文明专属科技的档；有文明时（国战、选国家的配兵）优先用该文明的独特科技，它经 `TechStatus active` 激活的通用档一并生效。
 - 原始数据照算，没有脏数据名单：精锐投石索兵现为射程 +8（早期版本的 +147 已不存在）。

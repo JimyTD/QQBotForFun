@@ -54,33 +54,46 @@ def ops_for_unit(ops: Iterable[Mapping], unit: Unit) -> list:
 
 @dataclass
 class Stack:
-    """打到同一个量上的全部 op，按统一算符合并。"""
+    """打到同一个量上的全部 op，按研究先后逐条结算。
 
-    set_value: float | None = None
-    base_inc: float = 0.0
-    percent: float = 1.0
-    add: float = 0.0
-    touched: bool = False
-    ops: list = field(default_factory=list)
+    - ``set``（Assign/Override）：设为该值。
+    - ``mult``（BasePercent）：加 ``原型值 × (amount − 1)``；基准永远是原型值，设为不改基准。
+    - ``percent``：在当前值上乘。
+    - ``add``（Absolute）：在当前值上加。
+    """
+
+    steps: list = field(default_factory=list)
 
     def push(self, kind: str, value: float) -> None:
-        self.touched = True
-        if kind == "set":
-            self.set_value = value
-        elif kind == "mult":
-            self.base_inc += value - 1.0
-        elif kind == "percent":
-            self.percent *= value
-        elif kind == "add":
-            self.add += value
+        if kind in {"set", "mult", "percent", "add"}:
+            self.steps.append((kind, value))
+
+    @property
+    def touched(self) -> bool:
+        return bool(self.steps)
+
+    @property
+    def has_set(self) -> bool:
+        return any(kind == "set" for kind, _ in self.steps)
+
+    @property
+    def base_inc(self) -> float:
+        """全部 BasePercent 增量之和（溅射池随伤害放大用）。"""
+        return sum(value - 1.0 for kind, value in self.steps if kind == "mult")
 
     def resolve(self, base: float, current: float) -> float:
-        """base：原始基础值（BasePercent 的基准）；current：本次结算前的值。"""
-        if not self.touched:
-            return current
-        start = current if self.set_value is None else self.set_value
-        origin = base if self.set_value is None else self.set_value
-        return (start + origin * self.base_inc) * self.percent + self.add
+        """base：原型值（BasePercent 的基准）；current：本次结算前的值。"""
+        value = current
+        for kind, amount in self.steps:
+            if kind == "set":
+                value = amount
+            elif kind == "mult":
+                value += base * (amount - 1.0)
+            elif kind == "percent":
+                value *= amount
+            else:
+                value += amount
+        return value
 
 
 # ------------------------------------------------------------------
@@ -296,7 +309,7 @@ def _settle_action(action: AttackAction, origin: AttackAction, stacks: dict) -> 
     if range_max and action.range_max > 0:
         changes["range_max"] = round(max(0.0, range_max.resolve(origin.range_max, action.range_max)), 2)
     rof = stacks.get("rof")
-    if rof and (action.rof > 0 or rof.set_value is not None):
+    if rof and (action.rof > 0 or rof.has_set):
         changes["rof"] = round(max(_ROF_FLOOR, rof.resolve(origin.rof, action.rof)), 3)
     recharge = stacks.get("recharge")
     if recharge and action.charge:

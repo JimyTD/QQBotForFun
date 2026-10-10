@@ -92,6 +92,34 @@ def test_percent_relativity_age_upgrade_applies(repo):
     assert _hp_ratio(repo, "minuteman", 3) == 1.2
 
 
+def test_settles_in_research_order_with_prototype_base(repo):
+    """按研究先后逐条结算；BasePercent 永远按原型值，Assign 不改基准。
+
+    普通斗蛐蛐（无文明）燧发枪手原型 200：3 时代 Percent ×1.2 → 240，4 时代 BasePercent 1.3
+    → 240 + 60 = 300（旧固定顺序 312）。
+    """
+    minuteman = repo.get_by_id("minuteman")
+    assert [apply_upgrades(minuteman, age).hp for age in (3, 4, 5)] == [240.0, 300.0, 400.0]
+
+
+def test_civ_age_roots_settle_before_age_upgrades(repo):
+    """有文明时开局/升时代自动激活的科技也生效，且先于时代升级结算。
+
+    丹麦开局把燧发枪手设为 120，之后 Percent ×1.2、BasePercent 1.3/1.5 按原型 200：
+    120 / 144 / 204 / 304。俄国开局 BasePercent 0.8，重装步兵 150：120 / 150 / 195 / 270。
+    """
+    minuteman = repo.get_by_id("minuteman")
+    assert [apply_upgrades(minuteman, age, civ_id="DEDanish").hp for age in (2, 3, 4, 5)] == [
+        120.0, 144.0, 204.0, 304.0,
+    ]
+    musketeer = repo.get_by_id("derussianmusketeer")
+    assert [apply_upgrades(musketeer, age, civ_id="Russians").hp for age in (2, 3, 4, 5)] == [
+        120.0, 150.0, 195.0, 270.0,
+    ]
+    # 普通斗蛐蛐没有文明，开局科技不生效。
+    assert apply_upgrades(musketeer, 3).hp == 180.0
+
+
 def test_council_line_preferred_over_revolution_only_tier(repo):
     """大元帅：议会线（+250/+500/+1500），不选只有革命能开放的 +1300 档。"""
     hetman = repo.get_by_id("dehetman")
