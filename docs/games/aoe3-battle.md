@@ -1287,7 +1287,7 @@ AOE3 有三种伤害类型，每种只被对应的抗性减免：
 
 一份科技里的每一条效果都带自己的作用对象（`ProtoUnit` 目标），只打写明的兵：兵种 id 不分大小写相等，或兵种标签相等。整条科技命中的兵种名单只决定这条科技能不能选，不决定一个兵吃到哪些效果。没写兵种的效果不打任何兵。
 
-`InitialTactic` 把该阵型的动作整份换成当前列表。`ActionEnable` 和 `RechargeTime` 按动作名打到当前列表。伤害、射程、溅射、攻速、倍率也按动作名打到当前列表：写了攻击名只改那一条，写 `allactions` 或没写攻击名改全部；同一条上，点名和 `allactions` 只留更大的数，不叠。伤害倍率同时改伤害和溅射池。「所有近战攻击伤害」（`DamageForAllHandLogicActions`）只改阵型里标了近战逻辑（`handlogic`）的攻击。
+`InitialTactic` 把该阵型的动作整份换成当前列表。`ActionEnable` 和 `RechargeTime` 按动作名打到当前列表。伤害、射程、溅射、攻速、倍率也按动作名打到当前列表：写了攻击名只改那一条，写 `allactions` 或没写攻击名改全部；同一条上，点名和 `allactions` 按统一算符**相加**，不取大。伤害倍率同时改伤害和溅射池。「所有近战攻击伤害」（`DamageForAllHandLogicActions`）只改阵型里标了近战逻辑（`handlogic`）的攻击。
 
 护甲效果按写明的伤害类型改对应护甲：近战（`Hand`）→ 近战护甲，远程（`Ranged`）→ 远程护甲，攻城（`Siege`）→ 攻城护甲。
 
@@ -1417,7 +1417,7 @@ protoy 伤害包 + tactics 定义取出，不跨动作拼装。每个阵型各�
 
 `Damage` / `MaximumRange` / `DamageArea` / `DamageBonus` 都带 `action=`，按动作名作用。
 
-时代档按动作名写入 `action_range_add`、`action_aoe_add`、`action_rof_set`、`action_rof_add`、`action_mult_add`。点名打到同名模式。`allactions` 在解析时展开到这个单位列表和各阵型副本里的每一个动作名。同一条上，点名和 `allactions` 只留更大的数，再跨时代相加。`rof_set` 后一档覆盖同名。伤害百分比打到每一条的伤害和溅射池。
+时代升级与科技都按动作名结算：写了攻击名只改同名攻击（当前列表与各阵型副本各自按名匹配），`allactions` 或没写攻击名改全部。打到同一条攻击、同一个量上的多条效果按统一算符合并，点名与 `allactions` **相加，不取大**。伤害百分比同时改伤害和溅射池。
 
 阿布枪帝王档：`VolleyRangedAttack`、`DefendRangedAttack`、`StaggerRangedAttack` 各 +4。`VolleyHandAttack` 不加。
 
@@ -1497,14 +1497,14 @@ protoy 伤害包 + tactics 定义取出，不跨动作拼装。每个阵型各�
 
 #### 3.10.7 实现分层（落地约定）
 
-- **离线**（parser，无需游戏）：扫 `techtreey.xml` 生成 `seeds/aoe3/unit_upgrades.json`，结构按 id 索引、按时代给出选定链的合并增量，例如：
+- **离线**（parser，无需游戏）：扫 `techtreey.xml` 生成 `seeds/aoe3/unit_upgrades.json`，按 id 索引、按时代给出**累计科技 id**，例如：
 
 ```json
 {
   "musketeer": {
-    "3": { "hp_mult": 1.20, "damage_mult": 1.20 },
-    "4": { "hp_mult": 1.50, "damage_mult": 1.50 },
-    "5": { "hp_mult": 2.00, "damage_mult": 2.00 }
+    "3": { "techs": ["VeteranMusketeers"], "name": "老练火枪兵" },
+    "4": { "techs": ["VeteranMusketeers", "GuardMusketeers"], "name": "护卫火枪兵" },
+    "5": { "techs": ["VeteranMusketeers", "GuardMusketeers", "ImperialMusketeers"], "name": "帝国火枪兵" }
   }
 }
 ```
@@ -2127,4 +2127,4 @@ protoy 伤害包 + tactics 定义取出，不跨动作拼装。每个阵型各�
   - **单位改良（tier）**：覆盖 319 → **342** 个单位（新增 25 个随新单位入选，失去 2 个随翼骑兵旧 id 消失）。15 条数据变化里 12 条只是中文名更新（都卜勒武士→双酬剑士、突厥骑射→西帕希…），**3 条影响战斗数值**：`deuscavalry` 射程加成 2.0→1.0（3/4/5 档）、`strelet` **新增**射程加成（+1/+2/+3）、`mercswisspikeman` 精锐档攻/血 1.1→1.2 并新增速度 +0.25。
   - **类别科技**（土著/亡命徒/佣兵）：3 条全部无变化。
   - 横向科技池的历史变化不再影响普通斗蛐蛐；该玩法已于 2026-09-21 退役，未来仅按文明科技树与主城国策重新建模。
-- ✅ **图标侧复核（2026-09-17）**：PNG **新增 203 / 更新 170 / 删除 0**（战斗单位：新增 64、更新 122）。其中 122 个"更新"经**像素级比对**只有 **11 个是真换图**（`demercbattleship`、`spccherokeechief`、`despcoutlawmusketeer`、`mercmameluke`/`yprepentantmameluke`、`wardog`、`derevolutionaryscout`、`desaloonoutlawarsonist` 等 4 个火兵系），其余 111 个是 Pillow 重新编码的字节差异（显示效果不变）。新增的 65 个战斗单位**图标全覆盖、无 missing**。
+时代升级与科技都按动作名结算：写了攻击名只改同名攻击（当前列表与各阵型副本各自按名匹配），`allactions` 或没写攻击名改全部。打到同一条攻击、同一个量上的多条效果按统一算符合并，点名与 `allactions` **相加，不取大**。伤害百分比同时改伤害和溅射池。

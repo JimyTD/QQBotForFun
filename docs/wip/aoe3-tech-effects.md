@@ -102,6 +102,19 @@ civ_id, tech_ids)`；配兵 `_apply_combat`、国战 `allocate_candidate_with_te
 
 ## 待 Owner 决定
 
+## 第 5 步（2/3/4 已完成；1 待讨论）
+
+- 2：删除升级 parser 里不再被调用的旧代码（`DIRTY_EFFECTS`、`tech_extra_effects`、`_resolve_action_*`、
+  `_accumulate*`、`_attack_names`、文明 parser 的 `_stage_extras`/`_apply_cost_effects`/`_merge_stage`/
+  `_entry_from_state`）。仍在用的 `hp_dmg_increments`/`_hp_damage_increment` 暂留（第 1 项再定）。
+- 3：配兵“专属/通用”、可选判定、开发网页“机制”都按“主科技 + 它解锁的科技”看。例：墨西哥燃烧弹对墨西哥士兵
+  标专属；马耳他燃烧弹（卫士）、反步兵步枪（火焰兵）能选到。
+- 4：正式文档 §3.10 其余旧描述对齐，然后准备收口。
+- 完成情况：2 删除后两份升级种子重新生成内容完全不变；3 改为 `MatchedTech.all_combat_ops/all_cost_ops`
+  （主科技+解锁）用于选兵、专属标记、摘要、开发网页机制，选兵仍按“写明打到这个兵”判定（与以前同口径，
+  只是加上解锁的科技）；4 §3.9/§3.10 的“点名与 allactions 取大”改为相加，种子示例改为科技 id。
+- 1（待讨论）：候选不再看效果种类；“时代可达”不认需要先研究的主科技；文明开局自带档是否在有文明时生效。
+
 已定（2026-10-09 续）：大元帅议会线保留；之前完全没做过的效果先不管。
 
 ## 第 4 步（Owner 已确认，已完成）

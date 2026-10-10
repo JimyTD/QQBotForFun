@@ -12,7 +12,6 @@ Usage:
 
 from __future__ import annotations
 
-import copy
 import json
 import re
 import sys
@@ -100,81 +99,13 @@ def _hp_damage_increment(blocks_for_stage: list[str], unit: dict) -> tuple[float
     return hp, damage
 
 
-def _stage_extras(tech_names: list[str], blocks: dict[str, str], unit: dict) -> dict:
-    out = {
-        "armor_add": {},
-        "action_range_add": {},
-        "action_aoe_add": {},
-        "action_rof_set": {},
-        "action_rof_add": {},
-        "action_mult_add": {},
-        "speed_add": 0.0,
-        "speed_mult": 1.0,
-        "speed_set": None,
-    }
-    for tech_name in tech_names:
-        block = blocks[tech_name]
-        parsed = base_parser.tech_extra_effects(block, unit, tech_name)
-        for key in ("armor_add",):
-            for slot, value in parsed[key].items():
-                out[key][slot] = out[key].get(slot, 0.0) + value
-        for name, value in parsed["action_range_add"].items():
-            out["action_range_add"][name] = round(
-                out["action_range_add"].get(name, 0.0) + value, 3
-            )
-        for name, value in parsed["action_aoe_add"].items():
-            out["action_aoe_add"][name] = round(
-                out["action_aoe_add"].get(name, 0.0) + value, 3
-            )
-        for name, value in parsed["action_rof_add"].items():
-            out["action_rof_add"][name] = round(
-                out["action_rof_add"].get(name, 0.0) + value, 3
-            )
-        out["action_rof_set"].update(parsed["action_rof_set"])
-        for name, bonuses in parsed["action_mult_add"].items():
-            bucket = out["action_mult_add"].setdefault(name, {})
-            for vs, value in bonuses.items():
-                bucket[vs] = round(bucket.get(vs, 0.0) + value, 3)
-        out["speed_add"] += parsed["speed_add"]
-        out["speed_mult"] *= parsed["speed_mult"]
-        if parsed["speed_set"] is not None:
-            out["speed_set"] = parsed["speed_set"]
-    return out
-
-
-def _apply_cost_effects(
-    cost: dict[str, float],
-    tech_names: list[str],
-    blocks: dict[str, str],
-    unit: dict,
-) -> dict[str, int]:
-    result = {resource: float(value) for resource, value in cost.items()}
-    for tech_name in tech_names:
-        for attrs, target in base_parser.iter_effects(blocks[tech_name]):
-            if not _target_matches(target, unit):
-                continue
-            if base_parser._attr(attrs, "type") != "Data":
-                continue
-            if base_parser._attr(attrs, "subtype") != "Cost":
-                continue
-            resource = (base_parser._attr(attrs, "resource") or "").lower()
-            raw_amount = base_parser._attr(attrs, "amount")
-            relativity = base_parser._attr(attrs, "relativity")
-            if not resource or raw_amount is None:
-                continue
-            amount = float(raw_amount)
-            current = result.get(resource, 0.0)
-            if relativity == "BasePercent":
-                result[resource] = current * amount
-            elif relativity == "Absolute":
-                result[resource] = current + amount
-            elif relativity == "Assign":
-                result[resource] = amount
-    return {
-        resource: max(0, round(value))
-        for resource, value in result.items()
-        if round(value) > 0
-    }
+def _closure_touches_unit(blocks_for_stage: list[str], unit: dict) -> bool:
+    """这组科技里至少有一条 Data 效果写明打到这个兵（id 或标签）。"""
+    for block in blocks_for_stage:
+        for attrs, target in base_parser.iter_effects(block):
+            if _target_matches(target, unit) and base_parser._attr(attrs, "type") == "Data":
+                return True
+    return False
 
 
 def _set_name(
@@ -195,52 +126,6 @@ def _set_name(
             if name:
                 return name
     return None
-
-
-def _merge_stage(state: dict, stage: dict) -> None:
-    state["hp_mult"] += stage["hp_inc"]
-    state["damage_mult"] += stage["damage_inc"]
-    for key in ("armor_add",):
-        for slot, value in stage[key].items():
-            state[key][slot] = state[key].get(slot, 0.0) + value
-    for key in ("action_range_add", "action_aoe_add", "action_rof_add"):
-        for name, value in stage[key].items():
-            state[key][name] = round(state[key].get(name, 0.0) + value, 3)
-    state["action_rof_set"].update(stage["action_rof_set"])
-    for name, bonuses in stage["action_mult_add"].items():
-        bucket = state["action_mult_add"].setdefault(name, {})
-        for vs, value in bonuses.items():
-            bucket[vs] = round(bucket.get(vs, 0.0) + value, 3)
-    state["speed_add"] += stage["speed_add"]
-    state["speed_mult"] *= stage["speed_mult"]
-    if stage["speed_set"] is not None:
-        state["speed_set"] = stage["speed_set"]
-    state["cost"] = stage["cost"]
-    if stage["name"]:
-        state["name"] = stage["name"]
-
-
-def _entry_from_state(state: dict) -> dict:
-    entry: dict = {
-        "hp_mult": round(state["hp_mult"], 4),
-        "damage_mult": round(state["damage_mult"], 4),
-        "techs": list(state["techs"]),
-    }
-    for key in ("armor_add", "action_range_add", "action_aoe_add",
-                "action_rof_set", "action_rof_add", "action_mult_add"):
-        if state[key]:
-            entry[key] = copy.deepcopy(state[key])
-    if abs(state["speed_add"]) > 1e-9:
-        entry["speed_add"] = round(state["speed_add"], 3)
-    if abs(state["speed_mult"] - 1.0) > 1e-9:
-        entry["speed_mult"] = round(state["speed_mult"], 4)
-    if state["speed_set"] is not None:
-        entry["speed_set"] = round(state["speed_set"], 3)
-    if state["cost"] != state["base_cost"]:
-        entry["cost"] = dict(state["cost"])
-    if state["name"]:
-        entry["name"] = state["name"]
-    return entry
 
 
 def main() -> None:
@@ -282,29 +167,15 @@ def main() -> None:
                 closure = _tech_closure(tech_name, blocks)
                 closure_blocks = [blocks[name] for name in closure]
                 hp_inc, damage_inc = _hp_damage_increment(closure_blocks, unit)
-                extras = _stage_extras(closure, blocks, unit)
-                cost = _apply_cost_effects(unit.get("cost", {}), closure, blocks, unit)
                 name = _set_name(closure, blocks, unit_id, strings)
-                has_extras = any(
-                    extras[key]
-                    for key in (
-                        "armor_add",
-                        "action_range_add", "action_aoe_add", "action_rof_set",
-                        "action_rof_add", "action_mult_add",
-                    )
-                ) or extras["speed_set"] is not None or extras["speed_add"] or (
-                    extras["speed_mult"] != 1.0
-                )
-                if not (hp_inc or damage_inc or has_extras or name or cost != unit.get("cost", {})):
+                if not _closure_touches_unit(closure_blocks, unit):
                     continue
                 candidates[age].append({
                     "tech": tech_name,
                     "closure": closure,
                     "hp_inc": hp_inc,
                     "damage_inc": damage_inc,
-                    "cost": cost,
                     "name": name,
-                    **extras,
                 })
 
             if not candidates[4]:

@@ -171,9 +171,9 @@ def tactics_for(
 
 
 def targets_fielded_unit(tech: MatchedTech, units: tuple) -> bool:
-    """True when an effect names one of these units, not only a class."""
+    """True when an effect, including what the tech unlocks, names one of these units."""
     fielded = {unit.id.lower() for unit in units}
-    for op in (*tech.combat_ops, *tech.cost_ops):
+    for op in (*tech.all_combat_ops, *tech.all_cost_ops):
         for target in op.get("targets") or ():
             if (
                 target.get("type") == "ProtoUnit"

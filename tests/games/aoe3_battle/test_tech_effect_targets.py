@@ -181,6 +181,17 @@ def test_unlocks_follow_techstatus_active_and_obtainable_shadows():
     assert expand(["DEHCRomanTactics"], age=5) == ["DEHCRomanTactics", "DERomanTacticsShadow"]
 
 
+def test_selection_and_labels_include_unlocked_techs(repo):
+    """燃烧弹的效果主要在影子科技里：选兵、专属标记都按“主科技 + 解锁”看。"""
+    from plugins.games.aoe3_battle.lineup_draft import list_selectable_techs, targets_fielded_unit
+
+    soldado = repo.get_by_id("desoldado")
+    techs = {t.id: t for t in list_selectable_techs("DEMexicans", (soldado,), 3)}
+    assert targets_fielded_unit(techs["IncendiaryGrenades"], (soldado,))
+    flamer = repo.get_by_id("dehoopthrower")
+    assert "Rifling" in {t.id for t in list_selectable_techs("DEMaltese", (flamer,), 3)}
+
+
 def test_untyped_armor_adds_all_three_armors(repo):
     """华卡纳：数据只写护甲 +0.05 作用步兵、轻步兵，三种伤害类型的护甲都加。"""
     tech, units = _resolve(repo, "deBigWarHutHualcana", "DEInca", ("deslinger",), age=3)

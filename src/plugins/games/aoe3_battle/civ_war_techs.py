@@ -187,14 +187,19 @@ __all__ = ["UNAPPLIED_EFFECTS", "unapplied_effect_key"]
 def _matched_units(
     row: dict[str, Any],
     units: list[Unit],
+    unlocked: Iterable[dict[str, Any]] = (),
 ) -> tuple[Unit, ...]:
-    """Units that receive at least one of the tech's effects.
+    """Units that receive at least one effect of the tech or of what it unlocks.
 
     This decides whether the tech can be picked. Which effects a unit gets is
     decided per effect at settlement. ``unittype`` on an op is the counter,
     projectile, or attachment, not the recipient.
     """
-    ops = [*row.get("combat_ops", ()), *row.get("cost_ops", ())]
+    ops = [
+        op
+        for source in (row, *unlocked)
+        for op in (*source.get("combat_ops", ()), *source.get("cost_ops", ()))
+    ]
     return tuple(
         unit
         for unit in units
@@ -327,7 +332,8 @@ def match_candidate_techs(
             continue
         if row["id"] not in priority and row["id"] not in allowed_generic:
             continue
-        matched_units = _matched_units(row, list(candidate.units))
+        unlocked = _unlocked_rows(row["id"], rows_by_id, age=age, skip=blocked_ids)
+        matched_units = _matched_units(row, list(candidate.units), unlocked)
         if not matched_units:
             continue
         if not row.get("combat_ops") and not row.get("cost_ops"):
@@ -349,7 +355,7 @@ def match_candidate_techs(
                     *_priority(row, len(matched_units))[1:],
                 ),
                 matched_units=matched_units,
-                unlocked=_unlocked_rows(row["id"], rows_by_id, age=age, skip=blocked_ids),
+                unlocked=unlocked,
             )
         )
     matched.sort(key=lambda tech: tech.priority)
@@ -383,7 +389,8 @@ def resolve_required_techs(
             )
         if not _within_age(row, age):
             raise ValueError(f"required tech {tech_id} is not available at age {age}")
-        matched_units = _matched_units(row, units)
+        unlocked = _unlocked_rows(row["id"], rows_by_id, age=age, skip=age_lines)
+        matched_units = _matched_units(row, units, unlocked)
         if not matched_units:
             raise ValueError(
                 f"required tech {tech_id} does not hit any unit in "
@@ -402,7 +409,7 @@ def resolve_required_techs(
                 cost_ops=tuple(row.get("cost_ops", ())),
                 priority=(0, -len(matched_units), row["id"]),
                 matched_units=matched_units,
-                unlocked=_unlocked_rows(row["id"], rows_by_id, age=age, skip=age_lines),
+                unlocked=unlocked,
             )
         )
     return resolved

@@ -581,7 +581,10 @@ def loadout_options(
 
 def _tech_mechanisms(tech) -> list[str]:
     mechanisms: list[str] = []
-    for op in (*tech.combat_ops, *tech.cost_ops):
+    # 包括它解锁的科技（MatchedTech.all_*）；只有自身效果的对象也能用。
+    combat_ops = getattr(tech, "all_combat_ops", tech.combat_ops)
+    cost_ops = getattr(tech, "all_cost_ops", tech.cost_ops)
+    for op in (*combat_ops, *cost_ops):
         subtype = op.get("subtype")
         action = op.get("action")
         if subtype == "ActionEnable" and action:
