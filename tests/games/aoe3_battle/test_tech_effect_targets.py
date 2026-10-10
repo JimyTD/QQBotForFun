@@ -1,6 +1,6 @@
 """每一条科技效果只打它写明的兵、写明的攻击，不认识的效果不能静默丢掉。
 
-例子都是能在配兵或国战里选到的真实科技，见 docs/wip/aoe3-tech-effects.md。
+例子都是能在配兵或国战里选到的真实科技，见 docs/games/aoe3-battle.md §3.10。
 """
 
 from __future__ import annotations

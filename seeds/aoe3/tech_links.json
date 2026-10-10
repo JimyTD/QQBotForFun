@@ -1,7 +1,7 @@
 {
  "_meta": {
   "source": "data/aoe3/raw/techtreey.xml",
-  "doc": "docs/wip/aoe3-tech-effects.md"
+  "doc": "docs/games/aoe3-battle.md"
  },
  "techs": {
   "AANativeStartingTechs": {

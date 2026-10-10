@@ -1,14 +1,13 @@
 """AoE3 科技效果结算。
 
-一份科技由若干效果（op）组成。结算规则（docs/wip/aoe3-tech-effects.md）：
+一份科技由若干效果（op）组成。结算规则（docs/games/aoe3-battle.md §3.10）：
 
 - 每一条 op 只打 ``targets`` 写明的兵；写了攻击名只改同名攻击，``allactions``
   或没写攻击名改全部攻击。
 - 同一科技只生效一次（由调用方保证科技列表去重）。
-- 打到同一个量上的多条 op 按统一算符合并，没有“取大”：
-  ``mult``（BasePercent）各项增量相加后乘基础值；``percent`` 累乘；
-  ``add``（Absolute）相加；``set``（Assign）覆盖，后写的覆盖先写的。
-  合并顺序：先 set，再 mult 增量，再 percent，最后 add。
+- 打到同一个量上的多条 op 按调用方给的顺序（研究先后）逐条结算，没有“取大”：
+  ``set``（Assign）设为；``add``（Absolute）加；``percent`` 乘当前值；
+  ``mult``（BasePercent）加 ``原型值 × (amount − 1)``，基准永远是原型值。
 """
 from __future__ import annotations
 
@@ -197,7 +196,7 @@ def unapplied_effect_key(op: Mapping) -> tuple[str, str, str] | None:
 
 
 # 结算不了的效果，逐项列明，防止静默丢弃。新出现未列明的效果测试失败。
-# 每一项是做还是移出可选名单，由 Owner 决定（docs/wip/aoe3-tech-effects.md）。
+# 当前都不做（docs/games/aoe3-battle.md §3.10.2c）。
 UNAPPLIED_EFFECTS: frozenset[tuple[str, str, str]] = frozenset({
     ("ActionAdd", "Absolute", ""),
     ("ActionAddAttachingUnit", "Absolute", ""),

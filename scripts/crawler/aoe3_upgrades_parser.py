@@ -158,7 +158,7 @@ class AgeResolver:
     def age_reachable(self, name: str, _seen: frozenset[str] = frozenset()) -> bool:
         """到了时代就能拿到：每个前置都是时代科技，或本身也是这样的升级档。
 
-        需要先研究某个别的科技才触发的（如波兰议会选项 ``DESejmHetman1``）不算时代升级。
+        需要先研究某个别的普通科技才触发的不算时代升级。``OrPrereqs`` 任一前置满足即可。
         """
         block = self.blocks.get(name)
         if block is None or name in _seen:

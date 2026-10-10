@@ -1,7 +1,7 @@
 """科技解锁图：一个科技生效时，连带生效的科技。
 
 数据：``seeds/aoe3/tech_links.json``（由 ``scripts/crawler/aoe3_civ_war_tech_pool.py``
-从 ``techtreey.xml`` 生成）。规则见 docs/wip/aoe3-tech-effects.md：
+从 ``techtreey.xml`` 生成）。规则见 docs/games/aoe3-battle.md §3.10.2b：
 
 - ``TechStatus active`` 激活的科技立即生效（影子或普通科技都算；主城卡的免费升级即此类）。
   ``obtainable``（开放研究、开放造兵）不生效。

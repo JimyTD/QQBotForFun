@@ -898,7 +898,7 @@ def build_tech_links() -> dict[str, Any]:
     return {
         "_meta": {
             "source": "data/aoe3/raw/techtreey.xml",
-            "doc": "docs/wip/aoe3-tech-effects.md",
+            "doc": "docs/games/aoe3-battle.md",
         },
         "techs": dict(sorted(techs.items())),
     }
