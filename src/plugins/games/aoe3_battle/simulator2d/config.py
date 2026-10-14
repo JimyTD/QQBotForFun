@@ -66,6 +66,11 @@ class Simulation2DConfig:
     navigation_max_obstacles: int = 24
     navigation_max_expansions: int = 96
     navigation_max_stretch: float = 2.5
+    long_ellipse_flank: bool = True
+    long_ellipse_min_aspect: float = 1.35
+    long_ellipse_max_blockers: int = 64
+    long_ellipse_flank_cooldown_ticks: int = 30
+    long_ellipse_flank_dynamic_cooldown_ticks: int = 6
     progress_window_ticks: int = 20
 
     candidate_angles_degrees: tuple[float, ...] = (

@@ -130,6 +130,7 @@ class Soldier2D:
     last_motion_log_tick: int = -1000
     detour_replans: int = 0
     detour_shortcuts: int = 0
+    long_ellipse_flank_cooldown_until: int = 0
     last_steer_reason: str = "init"
 
     has_ranged: bool = False

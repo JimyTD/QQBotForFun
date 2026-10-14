@@ -817,6 +817,8 @@ class BattleSimulator2D:
 
     def _sidestep(self, soldier: Soldier2D, target: Soldier2D) -> bool:
         """Aim one step to the emptier side. Steering still refuses overlaps."""
+        if self._long_ellipse_flank(soldier, target):
+            return True
         forward = (target.pos - soldier.pos).normalized()
         if forward.length_sq() < 1e-12:
             return False
@@ -865,6 +867,191 @@ class BattleSimulator2D:
         soldier.detour_waypoint_x = point.x
         soldier.detour_waypoint_y = point.y
         soldier.detour_remaining.clear()
+        soldier.detour_target_id = target.id
+        soldier.detour_active_ticks = 0
+        soldier.detour_ticks = self.config.detour_commit_ticks
+        soldier.no_progress_ticks = 0
+        return True
+
+    def _long_ellipse_flank(self, soldier: Soldier2D, target: Soldier2D) -> bool:
+        """Route a long unit around the visible front instead of through it.
+
+        Only long ellipses use this path. Circle-shaped units and every other
+        shape keep the legacy single-step sidestep unchanged.
+        """
+        if not self.config.long_ellipse_flank:
+            return False
+        rx = soldier.unit.obstruction_radius_x
+        rz = soldier.unit.obstruction_radius_z
+        if rx <= 0.0 or rz <= 0.0:
+            return False
+        aspect = max(rx, rz) / min(rx, rz)
+        if aspect < self.config.long_ellipse_min_aspect:
+            return False
+        if (
+            self._tick < soldier.long_ellipse_flank_cooldown_until
+            and soldier.no_progress_ticks < self.config.blocked_window_ticks * 3
+        ):
+            return False
+
+        forward = (target.pos - soldier.pos).normalized()
+        if forward.length_sq() < 1e-12:
+            return False
+        lateral = Vec2(-forward.y, forward.x)
+        own_radius = max(rx, rz)
+        reach = max(self.config.avoidance_radius, own_radius * 4.0)
+        neighbors = self._spatial_hash.query_circle(
+            soldier.pos,
+            reach * 4.0,
+            predicate=lambda other: other.id != soldier.id and other.alive,
+        )
+        neighbors.sort(key=lambda other: (other.distance_sq_to(soldier), other.id))
+        neighbors = neighbors[: self.config.long_ellipse_max_blockers]
+
+        blockers: list[tuple[Soldier2D, float, float]] = []
+        for other in neighbors:
+            delta = other.pos - soldier.pos
+            forward_projection = delta.dot(forward)
+            lateral_projection = delta.dot(lateral)
+            other_radius = max(
+                other.unit.obstruction_radius_x,
+                other.unit.obstruction_radius_z,
+            )
+            if forward_projection < -own_radius * 0.5:
+                continue
+            if abs(lateral_projection) > reach * 3.5 + other_radius:
+                continue
+            blockers.append((other, forward_projection, lateral_projection))
+        if not blockers:
+            return False
+
+        min_lateral = min(
+            lateral_projection
+            - max(other.unit.obstruction_radius_x, other.unit.obstruction_radius_z)
+            for other, _forward_projection, lateral_projection in blockers
+        )
+        max_lateral = max(
+            lateral_projection
+            + max(other.unit.obstruction_radius_x, other.unit.obstruction_radius_z)
+            for other, _forward_projection, lateral_projection in blockers
+        )
+        front_reach = max(
+            forward_projection for _other, forward_projection, _lateral in blockers
+        )
+        margin = (
+            own_radius
+            + max(
+                max(other.unit.obstruction_radius_x, other.unit.obstruction_radius_z)
+                for other, _forward_projection, _lateral in blockers
+            )
+            + 0.4
+        )
+
+        def within_field(point: Vec2) -> bool:
+            return (
+                own_radius <= point.x <= self._field_width - own_radius
+                and own_radius <= point.y <= self._field_height - own_radius
+            )
+
+        def path_for(sign: int) -> tuple[list[Vec2], bool]:
+            side_offset = max_lateral + margin if sign > 0 else min_lateral - margin
+            points = [
+                soldier.pos
+                + lateral * (side_offset * 0.55)
+                + forward * (own_radius * 0.2),
+                soldier.pos + lateral * side_offset + forward * (own_radius * 0.5),
+                soldier.pos
+                + lateral * side_offset
+                + forward * (front_reach + own_radius * 2.0),
+                soldier.pos
+                + lateral * (side_offset * 0.45)
+                + forward * (front_reach + own_radius * 3.0),
+            ]
+            trimmed = [point for point in points if within_field(point)]
+            return trimmed, len(trimmed) == len(points)
+
+        def path_clear(points: list[Vec2]) -> bool:
+            if len(points) < 2:
+                return False
+            start = soldier.pos
+            for point in points:
+                midpoint = (start + point) * 0.5
+                other_radius = max(
+                    max(other.unit.obstruction_radius_x, other.unit.obstruction_radius_z)
+                    for other, _forward_projection, _lateral in blockers
+                )
+                nearby = self._spatial_hash.query_circle(
+                    midpoint,
+                    (point - start).length() * 0.5 + own_radius + other_radius + 0.5,
+                    predicate=lambda other: other.id != soldier.id and other.alive,
+                )
+                shape = shape_for_unit(
+                    soldier.unit,
+                    soldier.x,
+                    soldier.y,
+                    soldier.facing,
+                    self.config.fallback_unit_radius,
+                )
+                obstacles = [
+                    shape_for_unit(
+                        other.unit,
+                        other.x,
+                        other.y,
+                        other.facing,
+                        self.config.fallback_unit_radius,
+                    )
+                    for other in nearby
+                ]
+                angle = (
+                    math.atan2(point.y - start.y, point.x - start.x)
+                    if (point - start).length_sq() > 1e-12
+                    else soldier.facing
+                )
+                motion = steering_motion(
+                    shape,
+                    point.x - start.x,
+                    point.y - start.y,
+                    angle,
+                    (point - start).length() / max(soldier.effective_speed, 1e-9),
+                    self.config.movement_turn_rate,
+                )
+                if not motion.clear(
+                    obstacles,
+                    field=(self._field_width, self._field_height),
+                    tolerance=self.config.separation_slop,
+                    padding=self.config.avoidance_margin * 0.5,
+                ):
+                    return False
+                start = point
+            return True
+
+        candidate_paths = sorted(
+            (path_for(1), path_for(-1)),
+            key=lambda item: (
+                abs(item[0][1].y - soldier.y) if len(item[0]) > 1 else math.inf,
+                abs(item[0][1].x - soldier.x) if len(item[0]) > 1 else math.inf,
+            ),
+        )
+        chosen = None
+        saw_complete = False
+        for path, complete in candidate_paths:
+            saw_complete = saw_complete or complete
+            if path_clear(path):
+                chosen = path
+                break
+        if chosen is None:
+            soldier.long_ellipse_flank_cooldown_until = self._tick + (
+                self.config.long_ellipse_flank_dynamic_cooldown_ticks
+                if saw_complete
+                else self.config.long_ellipse_flank_cooldown_ticks
+            )
+            return False
+
+        first, *remaining = chosen
+        soldier.detour_sign = 1 if (first - soldier.pos).dot(lateral) > 0 else -1
+        soldier.detour_waypoint_x = first.x
+        soldier.detour_waypoint_y = first.y
+        soldier.detour_remaining = list(remaining)
         soldier.detour_target_id = target.id
         soldier.detour_active_ticks = 0
         soldier.detour_ticks = self.config.detour_commit_ticks
