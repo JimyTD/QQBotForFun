@@ -48,7 +48,6 @@ MODULE_PATHS = {
     "scripts": (
         "tests/scripts",
         "tests/test_aoe3_battle_viewer_2d.py",
-        "tests/test_aoe3_aoe_audit_browser.py",
     ),
 }
 
