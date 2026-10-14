@@ -76,6 +76,18 @@ def attack_action_from_dict(raw: dict) -> AttackAction:
 _UNIVERSAL_RATES = frozenset({"unit", "all", "military"})
 
 
+def targets_guardians_only(action: AttackAction) -> bool:
+    """这条攻击是否专门对付宝藏守护者。
+
+    目标类型非空且全部含 ``Guardian`` 时成立。``Guardian`` 和
+    ``WaterGuardian`` 都算；同时还能打 ``Unit`` 等普通目标的动作不算。
+    没写目标类型时也不屏蔽。
+    """
+    if not action.rates:
+        return False
+    return all("guardian" in rate.lower() for rate in action.rates)
+
+
 def rate_matches(action: AttackAction, target_types: tuple[str, ...] | list[str] | set[str] | None) -> bool:
     """目标类型对得上才打这一下。没写目标类型的攻击打谁都行。"""
     if target_types is None or not action.rates:
@@ -108,7 +120,8 @@ def priority_shots(
             and action.range_max > 0
         )
     ]
-    ranked = sorted(enumerate(usable or actions), key=lambda item: (-item[1].priority, item[0]))
+    fallback = [action for action in actions if not targets_guardians_only(action)]
+    ranked = sorted(enumerate(usable or fallback), key=lambda item: (-item[1].priority, item[0]))
     return [action for _, action in ranked[:limit]]
 
 

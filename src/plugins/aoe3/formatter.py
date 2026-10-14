@@ -2,7 +2,12 @@
 
 from __future__ import annotations
 
-from .attack_actions import AttackAction, priority_shots, soldier_attacks
+from .attack_actions import (
+    AttackAction,
+    priority_shots,
+    soldier_attacks,
+    targets_guardians_only,
+)
 from .i18n import t, t_age, t_list, t_mult_vs
 from .models import Multiplier, Unit
 
@@ -130,7 +135,9 @@ def render_unit_card(unit: Unit) -> str:
         lines.append(" | ".join(stat_parts))
     lines.append(f"抗性：{_fmt_resist(unit)}")
 
-    for action in priority_shots(unit.attack_actions):
+    for action in unit.attack_actions:
+        if targets_guardians_only(action):
+            continue
         lines.append("")
         title = _action_name_zh(action.name) + ("（关）" if not action.enabled else "")
         lines.append(title)
