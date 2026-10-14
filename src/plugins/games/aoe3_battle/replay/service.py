@@ -22,6 +22,9 @@ REPLAY_DIR = Path(__file__).resolve().parents[5] / "logs" / "aoe3_battle" / "rep
 REPLAY_MAX_AGE_SECONDS = 24 * 60 * 60
 REPLAY_MAX_FILES = 50
 REPLAY_MAX_BYTES = 500 * 1024 * 1024
+# 单次回放编码的墙钟上限（秒）。正常一局输出只有几十秒，远超此值说明渲染
+# 异常；超时后放弃视频，让调用方照常发文字战报并结束对局。
+REPLAY_ENCODE_TIMEOUT_SECONDS = 180.0
 
 
 @dataclass(frozen=True)
@@ -104,11 +107,17 @@ def render_replay_file(replay: Replay, path: Path) -> Path:
 
 async def generate_replay_video(replay: Replay) -> bytes:
     """Render without blocking the bot event loop."""
-    return await asyncio.to_thread(render_replay, replay)
+    return await asyncio.wait_for(
+        asyncio.to_thread(render_replay, replay),
+        timeout=REPLAY_ENCODE_TIMEOUT_SECONDS,
+    )
 
 async def generate_replays_video(replays: list[Replay]) -> bytes:
     """Render one or more replays without blocking the bot event loop."""
-    return await asyncio.to_thread(render_replays, replays)
+    return await asyncio.wait_for(
+        asyncio.to_thread(render_replays, replays),
+        timeout=REPLAY_ENCODE_TIMEOUT_SECONDS * max(1, len(replays)),
+    )
 
 
 async def broadcast_replay_video(group_id: int, video: bytes) -> ReplayDelivery:

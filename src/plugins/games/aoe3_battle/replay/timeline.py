@@ -11,6 +11,11 @@ from .model import Replay, ReplayEvent
 WINDOW_SECONDS = 0.5
 SHORT_BATTLE_SECONDS = 40.0
 TARGET_TOTAL_SECONDS = 36.0
+# Hard ceiling for one replay's output length. `_fit_to_target` can fail to reach
+# TARGET_TOTAL_SECONDS when nearly every window is combat (the per-window speed
+# caps are low), which used to turn pathological battles into tens of thousands
+# of rendered frames. This cap is absolute: it may scale key/slow windows too.
+MAX_OUTPUT_SECONDS = 60.0
 INTRO_SECONDS = 2.0
 OUTRO_SECONDS = 3.0
 SPEED_STEP = 0.1
@@ -111,6 +116,7 @@ def build_playback_plan(
     *,
     target_total_seconds: float = TARGET_TOTAL_SECONDS,
     short_battle_seconds: float = SHORT_BATTLE_SECONDS,
+    max_output_seconds: float = MAX_OUTPUT_SECONDS,
 ) -> PlaybackPlan:
     """Build an event-density-driven playback plan for one replay."""
     duration = max(0.0, replay.duration)
@@ -124,6 +130,7 @@ def build_playback_plan(
             window.slow = False
             window.category = "normal"
         _apply_slow_windows(windows, replay)
+        _enforce_output_cap(windows, max_output_seconds)
         return _plan_from_windows(duration, windows)
 
     _apply_slow_windows(windows, replay)
@@ -136,6 +143,7 @@ def build_playback_plan(
         target_total_seconds - INTRO_SECONDS - OUTRO_SECONDS,
     )
     _fit_to_target(windows, target_battle_seconds)
+    _enforce_output_cap(windows, max_output_seconds)
     return _plan_from_windows(duration, windows)
 
 
@@ -459,6 +467,24 @@ def _fit_to_target(windows: list[_Window], target_seconds: float) -> None:
                 return
         if not changed:
             return
+
+
+def _enforce_output_cap(windows: list[_Window], max_seconds: float) -> None:
+    """Scale every speed up so the output never exceeds ``max_seconds``.
+
+    ``_fit_to_target`` only raises speeds up to each window's ``speed_cap``; when
+    all windows are combat the caps can keep the output far above the target.
+    This is the last-resort guard that guarantees a bounded frame count.
+    """
+    if max_seconds <= 0 or not windows:
+        return
+    output_duration = _window_output_duration(windows)
+    if output_duration <= max_seconds:
+        return
+    scale = output_duration / max_seconds
+    for window in windows:
+        window.speed = max(window.speed, 1e-6) * scale
+        window.speed_cap = window.speed
 
 
 def _window_output_duration(windows: list[_Window]) -> float:

@@ -76,6 +76,9 @@ AGE_DEFAULT = 3              # 默认时代（§3.10.6：693 兵，默认即有�
 BATTLE_LOG_DIR = Path(__file__).resolve().parents[4] / "logs" / "aoe3_battle"
 BATTLE_PERF_LOG = BATTLE_LOG_DIR / "perf.jsonl"
 BATTLE_LOG_KEEP = 5          # 保留最近 N 局（精简+完整各算一个文件）
+# 回放编码兜底上限（秒）。正常一局回放只有几十秒输出，远超这个值说明渲染
+# 出了异常；此时放弃视频、照常发文字战报并结束对局，绝不能让这一局把群占死。
+REPLAY_ENCODE_TIMEOUT = 180.0
 
 
 class _StageTimer:
@@ -1076,7 +1079,22 @@ class AoE3BattleGame(GameBase):
 
             perf.start("replay_encode")
             try:
-                video = await replay_task
+                video = await asyncio.wait_for(
+                    replay_task, timeout=REPLAY_ENCODE_TIMEOUT
+                )
+            except asyncio.TimeoutError:
+                perf.stop("replay_encode")
+                logger.warning(
+                    "[aoe3_battle] %s 回放编码超时（>%.0fs），跳过视频",
+                    ctx.session_id,
+                    REPLAY_ENCODE_TIMEOUT,
+                )
+                metrics["replay_encode_ok"] = False
+                metrics["replay_encode_timeout"] = True
+                await session.broadcast(
+                    ctx.group_id,
+                    "⚠️ 战场回放生成超时，只发送文字战报。",
+                )
             except Exception as exc:  # noqa: BLE001
                 perf.stop("replay_encode")
                 logger.warning(

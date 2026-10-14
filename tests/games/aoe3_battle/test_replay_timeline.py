@@ -7,7 +7,10 @@ from src.plugins.games.aoe3_battle.replay.model import (
     ReplayEvent,
     ReplayFrame,
 )
-from src.plugins.games.aoe3_battle.replay.timeline import build_playback_plan
+from src.plugins.games.aoe3_battle.replay.timeline import (
+    MAX_OUTPUT_SECONDS,
+    build_playback_plan,
+)
 
 
 def _frame(time: float) -> ReplayFrame:
@@ -153,3 +156,21 @@ def test_output_samples_cover_compressed_timeline() -> None:
     ) + 1
     assert samples[0] == (0.0, 0.0)
     assert samples[-1] == (plan.output_duration, plan.source_duration)
+
+
+def test_constant_combat_battle_output_is_capped() -> None:
+    """A battle where every window is combat used to blow past the target.
+
+    Per-window speed caps keep `_fit_to_target` from compressing such a replay,
+    so without a hard ceiling a 4000s battle would render ~16000 frames.
+    """
+    duration = 4000.0
+    events = [
+        _event(time, "ATTACK")
+        for time in _range(0.0, duration, 0.5)
+    ]
+    replay = _replay(duration, events)
+
+    plan = build_playback_plan(replay)
+
+    assert plan.output_duration <= MAX_OUTPUT_SECONDS
