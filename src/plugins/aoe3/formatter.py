@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from .attack_actions import AttackAction, priority_shots, soldier_attacks
-from .i18n import t_age, t_list, t_mult_vs
+from .i18n import t, t_age, t_list, t_mult_vs
 from .models import Multiplier, Unit
 
 _DAMAGE_TYPE_ZH = {"Siege": "攻城", "Hand": "近战", "Ranged": "远程"}
@@ -11,6 +11,11 @@ _DAMAGE_TYPE_ZH = {"Siege": "攻城", "Hand": "近战", "Ranged": "远程"}
 
 def _damage_type_zh(damage_type: str) -> str:
     return _DAMAGE_TYPE_ZH.get(damage_type, damage_type or "-")
+
+
+def _action_name_zh(name: str) -> str:
+    """攻击动作名直译；没有对应项时保留原始名字。"""
+    return t("actions", name) if name else name
 
 
 def _range_text(action: AttackAction) -> str:
@@ -35,7 +40,7 @@ def _brief_attacks(unit: Unit) -> str:
     if not soldier_attacks(unit.attack_actions):
         return ""
     return " / ".join(
-        f"{action.name} {action.damage:g}"
+        f"{_action_name_zh(action.name)} {action.damage:g}"
         for action in priority_shots(unit.attack_actions)
     )
 
@@ -127,7 +132,7 @@ def render_unit_card(unit: Unit) -> str:
 
     for action in priority_shots(unit.attack_actions):
         lines.append("")
-        title = action.name + ("（关）" if not action.enabled else "")
+        title = _action_name_zh(action.name) + ("（关）" if not action.enabled else "")
         lines.append(title)
         damage = f"{action.damage:g}"
         if action.num_projectiles > 1:
@@ -233,8 +238,8 @@ def render_compare(a: Unit, b: Unit) -> str:
         lines.append("")
         lines.append(_row(
             f"攻击{index + 1}",
-            left.name if left else "-",
-            right.name if right else "-",
+            _action_name_zh(left.name) if left else "-",
+            _action_name_zh(right.name) if right else "-",
         ))
         lines.append(_row(
             "  伤害",

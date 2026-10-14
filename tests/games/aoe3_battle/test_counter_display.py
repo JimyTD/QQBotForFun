@@ -69,7 +69,7 @@ def test_incoming_multipliers_show_complete_product(repo: UnitRepo) -> None:
 def test_priority_shots_keep_tactic_order_on_a_tie():
     from plugins.aoe3.attack_actions import AttackAction
 
-    def _action(name: str, priority: int) -> AttackAction:
+    def _action(name: str, priority: int, *, hits_soldiers: bool = True) -> AttackAction:
         return AttackAction(
             name=name,
             priority=priority,
@@ -78,24 +78,42 @@ def test_priority_shots_keep_tactic_order_on_a_tie():
             range_min=0,
             range_max=6,
             rof=3,
+            hits_soldiers=hits_soldiers,
         )
 
     shots = priority_shots([
         _action("VolleyRangedAttack", 100),
-        _action("BuildingAttack", 75),
+        _action("BuildingAttack", 75, hits_soldiers=False),
         _action("VolleyHandAttack", 75),
     ])
-    assert [action.name for action in shots] == ["VolleyRangedAttack", "BuildingAttack"]
+    assert [action.name for action in shots] == ["VolleyRangedAttack", "VolleyHandAttack"]
 
 
-def test_unit_card_shows_the_two_highest_priority_actions(repo: UnitRepo) -> None:
+def test_unit_card_shows_only_actions_that_can_hit_units(repo: UnitRepo) -> None:
     musk = repo.get_by_id("musketeer")
     assert musk is not None
     card = render_unit_card(musk)
-    assert "VolleyRangedAttack" in card
-    assert "BuildingAttack" in card
-    assert "VolleyHandAttack" not in card
-    assert "远程攻击" not in card
+    assert "远程攻击" in card
+    assert "近战攻击" in card
+    assert "建筑攻击" not in card
     compared = render_compare(musk, musk)
-    assert "攻击1" in compared and "VolleyRangedAttack" in compared
-    assert "远程攻击" not in compared
+    assert "攻击1" in compared and "远程攻击" in compared
+    assert "建筑攻击" not in compared
+
+
+def test_tapir_card_shows_its_unit_attack_not_special_target_attacks(repo: UnitRepo) -> None:
+    tapir = repo.get_by_id("flyingpurpletapir")
+    assert tapir is not None
+    card = render_unit_card(tapir)
+    assert "近战攻击" in card
+    assert "建筑攻击" not in card
+    assert "守卫攻击" not in card
+
+
+def test_melee_cavalry_card_does_not_show_special_target_attacks(repo: UnitRepo) -> None:
+    hussar = repo.get_by_id("hussar")
+    assert hussar is not None
+    card = render_unit_card(hussar)
+    assert "近战攻击" in card
+    assert "建筑攻击" not in card
+    assert "守卫攻击" not in card

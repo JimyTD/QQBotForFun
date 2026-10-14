@@ -93,8 +93,22 @@ def priority_shots(
     *,
     limit: int = 2,
 ) -> list[AttackAction]:
-    """当前阵型里按优先级取最多两条。同优先级保持阵型里的先后。"""
-    ranked = sorted(enumerate(actions), key=lambda item: (-item[1].priority, item[0]))
+    """当前阵型里按优先级取最多两条。同优先级保持阵型里的先后。
+
+    优先展示打得到普通单位、当前开启且伤害大于 0 的动作。没有这种动作时，
+    才回退到建筑、守卫等特殊目标动作。原始列表和战斗逻辑不受影响。
+    """
+    usable = [
+        action
+        for action in actions
+        if (
+            action.enabled
+            and action.hits_soldiers
+            and action.damage > 0
+            and action.range_max > 0
+        )
+    ]
+    ranked = sorted(enumerate(usable or actions), key=lambda item: (-item[1].priority, item[0]))
     return [action for _, action in ranked[:limit]]
 
 
