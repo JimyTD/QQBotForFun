@@ -581,8 +581,38 @@ class LocalAvoidance:
 
             if not sweep_clear(velocity):
                 velocity = Vec2(0.0, 0.0)
-                for angle in (math.pi, 2.5, -2.5, math.pi / 2, -math.pi / 2):
+                # A turning ellipse that cannot continue must not undo the
+                # previous step: backing off and re-advancing repeats every
+                # tick. Sidesteps keep last tick's side, and backward
+                # candidates wait for the blocked window like the ORCA
+                # recovery above. blocked_ticks restarts on target switches,
+                # so it is not enough on its own: steer_stuck_ticks counts
+                # consecutive fallback ticks with no forward move and lets a
+                # unit pinned in a pocket back out after the same window.
+                left = desired.rotated(math.pi / 2)
+                side = -1.0 if soldier.velocity.dot(left) < 0.0 else 1.0
+                angles = [0.0, side * math.pi / 2, -side * math.pi / 2]
+                patient = (
+                    max(blocked_ticks, soldier.steer_stuck_ticks)
+                    < self.config.blocked_window_ticks
+                )
+                if not patient:
+                    angles += [math.pi, side * 2.5, -side * 2.5]
+                previous = soldier.velocity
+                # Full speed along the blocked heading already failed above.
+                # Probe its shortest step first and skip 65% when that fails;
+                # in recorded battles the slower steps almost never clear.
+                for angle in angles:
                     direction = desired.rotated(angle).normalized()
+                    if patient and direction.dot(previous) < 0.0:
+                        continue
+                    if angle == 0.0:
+                        short = direction * (max_speed * 0.35)
+                        if not sweep_clear(short):
+                            continue
+                        longer = direction * (max_speed * 0.65)
+                        velocity = longer if sweep_clear(longer) else short
+                        break
                     for scale in (1.0, 0.65, 0.35):
                         candidate = direction * (max_speed * scale)
                         if sweep_clear(candidate):
@@ -590,6 +620,12 @@ class LocalAvoidance:
                             break
                     if velocity.length_sq() > 1e-12:
                         break
+                if velocity.dot(desired) > 0.0:
+                    soldier.steer_stuck_ticks = 0
+                else:
+                    soldier.steer_stuck_ticks += 1
+            else:
+                soldier.steer_stuck_ticks = 0
 
         if perf_enabled():
             perf_inc("steer.tested", len(lines))

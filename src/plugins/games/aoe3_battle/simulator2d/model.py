@@ -131,6 +131,9 @@ class Soldier2D:
     detour_replans: int = 0
     detour_shortcuts: int = 0
     long_ellipse_flank_cooldown_until: int = 0
+    # Consecutive ellipse-sweep fallbacks without a forward move. Unlike
+    # no_progress_ticks it survives target switches.
+    steer_stuck_ticks: int = 0
     last_steer_reason: str = "init"
 
     has_ranged: bool = False
