@@ -79,6 +79,32 @@ def test_two_soldier_duel_runs_to_a_winner() -> None:
     assert any(event.event_type == EventType.BATTLE_END for event in result.events)
 
 
+def test_attack_and_death_events_carry_on_event_coordinates() -> None:
+    """Events must stamp true positions; replays must not reconstruct them."""
+    unit = _unit("duelist", hp=80, attack_melee=20)
+    result = BattleSimulator2D(
+        red_army=[(unit, 1)],
+        blue_army=[(unit, 1)],
+        seed=7,
+    ).run()
+
+    attacks = [event for event in result.events if event.event_type == EventType.ATTACK]
+    deaths = [event for event in result.events if event.event_type == EventType.DEATH]
+    assert attacks and deaths
+
+    for event in (*attacks, *deaths):
+        for key in ("attacker_x", "attacker_y", "target_x", "target_y"):
+            assert isinstance(event.data.get(key), float)
+
+    lethal = deaths[0]
+    distance = math.hypot(
+        lethal.data["attacker_x"] - lethal.data["target_x"],
+        lethal.data["attacker_y"] - lethal.data["target_y"],
+    )
+    # A melee kill must be recorded at melee range, not across the map.
+    assert distance <= 1.5 + 1e-6
+
+
 def test_ten_seconds_without_damage_ends_the_battle() -> None:
     unit = _unit("idle", hp=100, speed=0.0, attack_melee=10)
     result = BattleSimulator2D(

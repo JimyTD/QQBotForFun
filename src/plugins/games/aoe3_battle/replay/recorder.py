@@ -8,6 +8,27 @@ from ..battle_contract import BattleResult
 from .model import Replay, ReplayEvent, ReplayFrame
 
 
+def _data_coords(
+    data: dict[str, Any],
+) -> tuple[float, float, float, float] | None:
+    """Return the coordinates the simulator stamped on an event, if any.
+
+    ``ATTACK`` and ``DEATH`` events carry the attacker and target positions at
+    the moment they happened.  That is the authoritative value; the recorder
+    only reconstructs positions from frame snapshots for legacy events that
+    predate this field.
+    """
+    keys = ("attacker_x", "attacker_y", "target_x", "target_y")
+    if any(data.get(key) is None for key in keys):
+        return None
+    return (
+        float(data["attacker_x"]),
+        float(data["attacker_y"]),
+        float(data["target_x"]),
+        float(data["target_y"]),
+    )
+
+
 class ReplayRecorder:
     """Frame-callback adapter that keeps only public replay data."""
 
@@ -93,6 +114,7 @@ class ReplayRecorder:
         for event in result.events:
             position = None
             event_type = event.event_type.value
+            stamped = _data_coords(event.data)
             while (
                 frame_index + 1 < len(self.frames)
                 and self.frames[frame_index + 1].time <= event.time
@@ -141,33 +163,37 @@ class ReplayRecorder:
                 attacker_id = event.data.get("attacker_id")
                 target_id = event.data.get("target_id")
                 if target_id is not None:
-                    attacker_position = None
-                    if attacker_id is not None:
-                        attacker_position = unit_positions.get(int(attacker_id))
-                        if attacker_position is None:
-                            attacker = next(
-                                (
-                                    unit
-                                    for unit in (
-                                        event_frame.units
-                                        if event_frame is not None
-                                        else []
-                                    )
-                                    if int(unit.get("id", -1)) == int(attacker_id)
-                                ),
-                                None,
-                            )
-                            if attacker is not None:
-                                attacker_position = (
-                                    float(attacker.get("x", 0.0)),
-                                    float(attacker.get("y", 0.0)),
+                    if stamped is not None:
+                        attacker_position = (stamped[0], stamped[1])
+                        target_position = (stamped[2], stamped[3])
+                    else:
+                        attacker_position = None
+                        if attacker_id is not None:
+                            attacker_position = unit_positions.get(int(attacker_id))
+                            if attacker_position is None:
+                                attacker = next(
+                                    (
+                                        unit
+                                        for unit in (
+                                            event_frame.units
+                                            if event_frame is not None
+                                            else []
+                                        )
+                                        if int(unit.get("id", -1)) == int(attacker_id)
+                                    ),
+                                    None,
                                 )
-                    target_position = (
-                        unit_positions.get(int(target_id))
-                        or previous_unit_positions.get(int(target_id))
-                        or position
-                        or attacker_position
-                    )
+                                if attacker is not None:
+                                    attacker_position = (
+                                        float(attacker.get("x", 0.0)),
+                                        float(attacker.get("y", 0.0)),
+                                    )
+                        target_position = (
+                            unit_positions.get(int(target_id))
+                            or previous_unit_positions.get(int(target_id))
+                            or position
+                            or attacker_position
+                        )
                     if attacker_position is None and target_position is not None:
                         attacker_position = target_position
                     if attacker_position is not None and target_position is not None:
@@ -178,6 +204,8 @@ class ReplayRecorder:
                             target_position[0],
                             target_position[1],
                         )
+                        event.data.setdefault("visual_attacker_x", attacker_position[0])
+                        event.data.setdefault("visual_attacker_y", attacker_position[1])
             if (
                 position is None
                 and event_type == "AOE_SPLASH"
@@ -191,7 +219,11 @@ class ReplayRecorder:
             elif event_type == "DEATH":
                 soldier_id = event.data.get("soldier_id")
                 if soldier_id is not None:
-                    attack_position = last_attack_position.get(int(soldier_id))
+                    attack_position = (
+                        stamped
+                        if stamped is not None
+                        else last_attack_position.get(int(soldier_id))
+                    )
                     if attack_position is not None:
                         position = (attack_position[2], attack_position[3])
                         event.data["visual_attacker_x"] = attack_position[0]

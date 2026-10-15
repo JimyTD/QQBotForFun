@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import asyncio
+import math
 from dataclasses import dataclass
 from io import BytesIO
 from types import SimpleNamespace
@@ -186,6 +187,107 @@ def test_recorder_keeps_only_public_replay_fields() -> None:
     assert death.data["visual_attacker_y"] == 12.0
     assert death.data["visual_target_x"] == 15.0
     assert death.data["visual_target_y"] == 12.0
+
+
+def test_recorder_uses_event_coordinates_for_first_death() -> None:
+    """First kill must land where the victim fell, not at its spawn point.
+
+    Reproduces the 紫貘 vs 瑞士长矛兵 replay bug: the first unit to die is gone
+    from the event-time frame, so frame reconstruction fell back to the stale
+    opening position and drew a fake long-range kill.  Event-stamped
+    coordinates must win.
+    """
+    session = ReplaySession(
+        session_id="first-death",
+        mode="custom",
+        red_count=1,
+        blue_count=1,
+    )
+    # Opening frame parks the victim far away; it never appears in a later
+    # event frame because the very first event kills it.
+    session.frame_callback(
+        {
+            "tick": 0,
+            "time": 0.0,
+            "status": "running",
+            "winner": None,
+            "field": {"width": 52.0, "height": 52.0},
+            "sides": {},
+            "units": [
+                {
+                    "id": 1,
+                    "side": "red",
+                    "name": "会飞的紫貘",
+                    "x": 27.0,
+                    "y": 19.0,
+                    "hp": 600.0,
+                    "max_hp": 600.0,
+                    "radius": 0.45,
+                },
+                {
+                    "id": 2,
+                    "side": "blue",
+                    "name": "瑞士长矛兵",
+                    "x": 9.9,
+                    "y": 21.4,
+                    "hp": 487.5,
+                    "max_hp": 487.5,
+                    "radius": 0.45,
+                },
+            ],
+        }
+    )
+    result = _Result(
+        winner=None,
+        events=[
+            _Event(
+                1,
+                0.1,
+                EventType.ATTACK,
+                {
+                    "attacker_id": 1,
+                    "target_id": 2,
+                    "attacker_x": 27.0,
+                    "attacker_y": 19.0,
+                    "target_x": 25.8,
+                    "target_y": 19.9,
+                },
+            ),
+            _Event(
+                1,
+                0.1,
+                EventType.DEATH,
+                {
+                    "soldier_id": 2,
+                    "soldier_name": "瑞士长矛兵",
+                    "killer_id": 1,
+                    "attacker_x": 27.0,
+                    "attacker_y": 19.0,
+                    "target_x": 25.8,
+                    "target_y": 19.9,
+                },
+            ),
+        ],
+        ticks=1,
+        duration=0.1,
+        red_alive=[],
+        blue_alive=[],
+        red_dead=[],
+        blue_dead=[],
+        red_army=[],
+        blue_army=[],
+        red_count=1,
+        blue_count=1,
+    )
+    replay = session.finish(result)
+
+    death = next(event for event in replay.events if event.event_type == "DEATH")
+    assert (death.x, death.y) == (25.8, 19.9)
+    distance = math.hypot(
+        death.data["visual_attacker_x"] - death.data["visual_target_x"],
+        death.data["visual_attacker_y"] - death.data["visual_target_y"],
+    )
+    assert distance <= 2.0
 
 
 def test_recorder_result_contains_replay_outro_summary() -> None:

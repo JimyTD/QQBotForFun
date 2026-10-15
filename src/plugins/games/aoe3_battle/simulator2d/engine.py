@@ -1681,6 +1681,12 @@ class BattleSimulator2D:
                 "target_hp_before": round(old_hp, 1),
                 "target_hp_after": round(max(0.0, target.hp), 1),
                 "is_splash": is_splash,
+                # Record where the blow actually landed so replay/display
+                # layers never have to reconstruct it from frame snapshots.
+                "attacker_x": round(attacker.x, 3),
+                "attacker_y": round(attacker.y, 3),
+                "target_x": round(target.x, 3),
+                "target_y": round(target.y, 3),
             },
         )
 
@@ -1707,6 +1713,12 @@ class BattleSimulator2D:
                     "remaining": side_alive,
                     "total": side_total,
                     "overkill": round(overkill, 1),
+                    # Death location is a first-class fact: capture it here so
+                    # the corpse mark lands where the soldier fell.
+                    "attacker_x": round(attacker.x, 3),
+                    "attacker_y": round(attacker.y, 3),
+                    "target_x": round(target.x, 3),
+                    "target_y": round(target.y, 3),
                 },
             )
             logger.info(
