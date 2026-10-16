@@ -8,7 +8,14 @@ from plugins.games.aoe3_battle.simulator2d.model import Side, Vec2
 from plugins.games.aoe3_battle.simulator2d.movement import LocalAvoidance
 
 
-def _wall_scene(repo, mover_id: str, *, block_count: int = 8, field_height: float = 24.0):
+def _wall_scene(
+    repo,
+    mover_id: str,
+    *,
+    block_count: int = 8,
+    field_height: float = 24.0,
+    blocker_side: Side = Side.BLUE,
+):
     base = repo.get_by_id("pikeman")
     mover_unit = repo.get_by_id(mover_id)
     sim = BattleSimulator2D(
@@ -28,9 +35,10 @@ def _wall_scene(repo, mover_id: str, *, block_count: int = 8, field_height: floa
     target = sim._create_soldier(2, Side.BLUE, base, Vec2(34.0, 12.0))
     target.stopped = True
     sim._soldiers.extend((mover, target))
+    sim._soldier_map.update({mover.id: mover, target.id: target})
     for index in range(block_count):
         y = 12.0 + (index - (block_count - 1) / 2.0) * 1.25
-        blocker = sim._create_soldier(10 + index, Side.BLUE, base, Vec2(14.0, y))
+        blocker = sim._create_soldier(10 + index, blocker_side, base, Vec2(14.0, y))
         blocker.stopped = True
         sim._soldiers.append(blocker)
         sim._soldier_map[blocker.id] = blocker
@@ -47,7 +55,9 @@ def _wall_scene(repo, mover_id: str, *, block_count: int = 8, field_height: floa
 
 def test_long_ellipse_flank_routes_around_a_blocked_front() -> None:
     repo = UnitRepo.get()
-    sim, mover, _target = _wall_scene(repo, "ypmahout")
+    # Friendly blockers: the mover must get past them to its target. With
+    # enemy blockers a melee mover simply stops and fights the wall.
+    sim, mover, _target = _wall_scene(repo, "ypmahout", blocker_side=Side.RED)
 
     for tick in range(240):
         sim._tick = tick

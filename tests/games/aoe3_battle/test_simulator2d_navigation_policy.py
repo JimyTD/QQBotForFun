@@ -86,9 +86,13 @@ def test_every_shape_has_a_reverse_escape_action(radii):
     mover, target = sim._soldiers
     mover.x, mover.y, mover.facing = 10, 10, 0
     target.x, target.y, target.stopped = 20, 10, True
+    # XML x is the width (across facing), z the length (along facing).
+    along, across = radii[1], radii[0]
     obstacles = [
         Soldier2D(10 + i, Side.RED, unit, 100, 100, x, y, stopped=True)
-        for i, (x, y) in enumerate([(11, 10), (10, 10 + 2 * radii[1]), (10, 10 - 2 * radii[1])])
+        for i, (x, y) in enumerate(
+            [(10 + 2 * along, 10), (10, 10 + 2 * across), (10, 10 - 2 * across)]
+        )
     ]
     sim._soldiers.extend(obstacles)
     sim._spatial_hash.rebuild(sim._soldiers)
@@ -123,10 +127,11 @@ def test_shared_recovery_does_not_force_a_step_when_fully_enclosed(radii):
     mover, target = sim._soldiers
     mover.x, mover.y, mover.facing = 10, 10, 0
     target.x, target.y, target.stopped = 20, 10, True
+    along, across = radii[1], radii[0]
     sim._soldiers.extend(
         Soldier2D(10 + i, Side.RED, unit, 100, 100, 10 + x, 10 + y, stopped=True)
         for i, (x, y) in enumerate(
-            [(2 * radii[0], 0), (-2 * radii[0], 0), (0, 2 * radii[1]), (0, -2 * radii[1])]
+            [(2 * along, 0), (-2 * along, 0), (0, 2 * across), (0, -2 * across)]
         )
     )
     sim._spatial_hash.rebuild(sim._soldiers)

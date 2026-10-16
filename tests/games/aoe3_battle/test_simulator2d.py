@@ -343,10 +343,11 @@ def test_larger_units_use_their_real_obstruction_radius() -> None:
 
 
 def test_ellipse_contact_uses_minimum_translation_not_deepest_axis() -> None:
+    # XML z is the body length and lies along facing.
     elephant = _unit(
         "elephant",
-        obstruction_radius_x=1.49,
-        obstruction_radius_z=0.49,
+        obstruction_radius_x=0.49,
+        obstruction_radius_z=1.49,
     )
     first = shape_for_unit(elephant, 0.0, 0.0, 0.0, 0.45)
     second = shape_for_unit(elephant, 1.0, 0.0, 0.0, 0.45)
@@ -367,8 +368,8 @@ def test_ellipse_contact_uses_minimum_translation_not_deepest_axis() -> None:
 def test_rotated_ellipse_uses_long_axis_extent() -> None:
     elephant = _unit(
         "elephant",
-        obstruction_radius_x=1.49,
-        obstruction_radius_z=0.49,
+        obstruction_radius_x=0.49,
+        obstruction_radius_z=1.49,
     )
     horizontal = shape_for_unit(elephant, 0.0, 0.0, 0.0, 0.45)
     rotated = shape_for_unit(elephant, 0.0, 0.0, 1.5707963267948966, 0.45)

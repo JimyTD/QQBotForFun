@@ -25,11 +25,17 @@ def _ellipse_matrix(rx: float, ry: float, angle: float) -> tuple[float, float, f
 
 
 def _unit_axes(unit: Unit, fallback: float) -> tuple[float, float]:
-    """Return physical obstruction radii as ``(lateral, longitudinal)``."""
+    """Return obstruction radii as ``(along facing, across facing)``.
+
+    AoE3 ``obstructionradiusz`` is the body length and ``obstructionradiusx``
+    the width: elephants, mahouts and trade carts are longer in Z, walls and
+    gates wider in X. Shape-local x follows the facing angle, so the length
+    goes there; a charging elephant is narrow toward its target.
+    """
     radius_x = unit.obstruction_radius_x
     radius_z = unit.obstruction_radius_z
     if radius_x > 0 and radius_z > 0:
-        return radius_x, radius_z
+        return radius_z, radius_x
     radius = unit.collision_radius or fallback
     radius = max(radius, _EPSILON)
     return radius, radius
@@ -45,6 +51,11 @@ def unit_bounding_radius(unit: Unit, fallback: float) -> float:
     return max(_unit_axes(unit, fallback))
 
 
+def shape_radii(unit: Unit, fallback: float) -> tuple[float, float]:
+    """Return collision radii ``(along facing, across facing)``."""
+    return _unit_axes(unit, fallback)
+
+
 def combined_radius(first: Unit, second: Unit, fallback: float) -> float:
     """Return the equivalent-circular non-overlap distance."""
     return unit_radius(first, fallback) + unit_radius(second, fallback)
@@ -52,7 +63,11 @@ def combined_radius(first: Unit, second: Unit, fallback: float) -> float:
 
 @dataclass(frozen=True)
 class CollisionShape:
-    """An oriented ellipse in local ``(x=lateral, z=longitudinal)`` axes."""
+    """An oriented ellipse. ``radius_x`` lies along ``angle``; ``radius_z`` across it.
+
+    These are shape-local axes, not the unit XML fields: ``shape_for_unit``
+    maps the XML body length onto ``radius_x``.
+    """
 
     x: float
     y: float

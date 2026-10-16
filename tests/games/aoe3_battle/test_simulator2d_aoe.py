@@ -151,8 +151,8 @@ def test_footprint_gap_uses_ellipse_orientation() -> None:
         id="long",
         name="long",
         name_en="long",
-        obstruction_radius_x=1.49,
-        obstruction_radius_z=0.49,
+        obstruction_radius_x=0.49,
+        obstruction_radius_z=1.49,
     )
     target = Soldier2D(2, Side.BLUE, long_unit, 100.0, 100.0, 3.0, 0.0)
 

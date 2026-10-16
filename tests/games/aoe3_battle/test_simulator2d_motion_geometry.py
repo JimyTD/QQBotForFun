@@ -24,7 +24,8 @@ from plugins.games.aoe3_battle.simulator2d.navigation import plan_detour, route_
 from tests.games.aoe3_battle.unit_factory import build_attack_actions
 
 
-def _unit(x=2.0, y=0.3):
+def _unit(length=2.0, width=0.3):
+    """``length`` lies along facing (XML ``obstructionradiusz``), ``width`` across."""
     return Unit(
         id="elongated",
         name="elongated",
@@ -34,8 +35,8 @@ def _unit(x=2.0, y=0.3):
         attack_actions=build_attack_actions(
             attack_melee=10, melee_range=1.5, rof_melee=1.0
         ),
-        obstruction_radius_x=x,
-        obstruction_radius_z=y,
+        obstruction_radius_x=width,
+        obstruction_radius_z=length,
     )
 
 

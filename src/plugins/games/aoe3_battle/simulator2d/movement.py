@@ -25,6 +25,9 @@ from .spatial import SpatialHash
 
 logger = logging.getLogger("aoe3_battle.simulator2d.movement")
 
+# Headings relative to the desired direction for the no-turn slide fallback.
+_SLIDE_ANGLES = (0.0, 0.5, -0.5, 1.0, -1.0, math.pi / 2, -math.pi / 2)
+
 
 def _pose_collision_time(
     motion: PoseMotion,
@@ -566,19 +569,21 @@ class LocalAvoidance:
                 velocity = max(options, key=lambda item: (item.dot(base), item.length_sq()))
         if elliptical_shapes:
 
-            def sweep_clear(candidate: Vec2) -> bool:
+            def sweep_clear(candidate: Vec2, *, turn: bool = True) -> bool:
                 if candidate.length_sq() <= 1e-12:
                     return True
                 solved = steering_motion(
                     own_shape,
                     candidate.x * self.config.tick_interval,
                     candidate.y * self.config.tick_interval,
-                    math.atan2(candidate.y, candidate.x),
+                    math.atan2(candidate.y, candidate.x) if turn else soldier.facing,
                     self.config.tick_interval,
                     self.config.movement_turn_rate,
                 )
                 return solved.clear(elliptical_shapes, tolerance=self.config.separation_slop)
 
+        hold_facing = False
+        if elliptical_shapes:
             if not sweep_clear(velocity):
                 velocity = Vec2(0.0, 0.0)
                 # A turning ellipse that cannot continue must not undo the
@@ -620,6 +625,26 @@ class LocalAvoidance:
                             break
                     if velocity.length_sq() > 1e-12:
                         break
+                if velocity.length_sq() <= 1e-12:
+                    # Every turning move swings the long body into a
+                    # neighbor. Slide without turning instead: a body brushing
+                    # its neighbor often cannot swing toward the target yet
+                    # but can still move past it. Without this, packed rear
+                    # elephants stood still for most of a battle.
+                    # Backing straight out without turning follows the same
+                    # blocked-window rule as the turning reverse above.
+                    slide_angles = _SLIDE_ANGLES if patient else (*_SLIDE_ANGLES, math.pi)
+                    for angle in slide_angles:
+                        direction = desired.rotated(angle).normalized()
+                        if patient and direction.dot(previous) < 0.0:
+                            continue
+                        for scale in (1.0, 0.5):
+                            candidate = direction * (max_speed * scale)
+                            if sweep_clear(candidate, turn=False):
+                                velocity, hold_facing = candidate, True
+                                break
+                        if hold_facing:
+                            break
                 if velocity.dot(desired) > 0.0:
                     soldier.steer_stuck_ticks = 0
                 else:
@@ -644,6 +669,14 @@ class LocalAvoidance:
                 reason,
                 blocked_by=(blocked_by,) if blocked_by is not None else (),
                 facing=soldier.facing,
+            )
+        if hold_facing:
+            return SteeringResult(
+                velocity,
+                "slide",
+                blocked_by=(blocked_by,) if blocked_by is not None else (),
+                facing=soldier.facing,
+                turn_fraction=1.0,
             )
         heading = math.atan2(velocity.y, velocity.x)
         motion = steering_motion(

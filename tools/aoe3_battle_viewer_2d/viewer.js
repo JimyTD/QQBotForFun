@@ -448,42 +448,50 @@ function drawFrame(frame) {
   }
 
   for (const unit of units) {
-    const radius = Math.max(4, Math.min(32, Math.round((unit.radius || 0.46) * scale)));
     const point = toScreen(unit.x, unit.y);
+    // Collision ellipse in screen pixels: rx along facing, ry across it.
+    const [along, across] = Array.isArray(unit.shape) && unit.shape.length === 2
+      ? unit.shape
+      : [unit.radius || 0.46, unit.radius || 0.46];
+    const rx = Math.max(4, Math.min(40, along * scale));
+    const ry = Math.max(4, Math.min(40, across * scale));
+    const angle = Number(unit.facing) || 0;
+    const radius = Math.max(4, Math.min(32, Math.round(Math.sqrt(rx * ry))));
+    const body = (grow) => {
+      ctx.beginPath();
+      ctx.ellipse(point.x, point.y, rx + grow, ry + grow, angle, 0, Math.PI * 2);
+    };
     const hpRatio = unit.max_hp > 0 ? unit.hp / unit.max_hp : 0;
     const color = unit.side === "red" ? "#ef5350" : "#4c8dff";
     const icon = unitIcon(unit);
 
     if (icon) {
       ctx.save();
-      ctx.beginPath();
-      ctx.arc(point.x, point.y, radius, 0, Math.PI * 2);
+      body(0);
       ctx.clip();
       ctx.globalAlpha = 0.42 + hpRatio * 0.58;
-      ctx.drawImage(icon, point.x - radius, point.y - radius, radius * 2, radius * 2);
+      const side = Math.max(rx, ry);
+      ctx.drawImage(icon, point.x - side, point.y - side, side * 2, side * 2);
       ctx.restore();
     } else {
-      ctx.beginPath();
       ctx.fillStyle = color;
       ctx.globalAlpha = 0.42 + hpRatio * 0.58;
-      ctx.arc(point.x, point.y, radius, 0, Math.PI * 2);
+      body(0);
       ctx.fill();
     }
     ctx.globalAlpha = 1;
 
-    ctx.beginPath();
     ctx.strokeStyle = color;
     ctx.lineWidth = 2;
-    ctx.arc(point.x, point.y, radius + 1, 0, Math.PI * 2);
+    body(1);
     ctx.stroke();
 
     if (showCharge.checked) drawChargeRing(unit, point, radius);
 
     if (unit.id === state.selectedUnitId) {
-      ctx.beginPath();
       ctx.strokeStyle = "#62d68b";
       ctx.lineWidth = 2;
-      ctx.arc(point.x, point.y, radius + 4.5, 0, Math.PI * 2);
+      body(4.5);
       ctx.stroke();
     }
   }

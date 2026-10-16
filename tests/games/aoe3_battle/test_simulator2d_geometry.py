@@ -128,7 +128,7 @@ def test_circle_analytic_contact_is_unchanged():
 @pytest.mark.parametrize("separation", [1.2, 0.9])
 def test_collision_resolver_moves_only_real_overlaps_outward(separation):
     unit = Unit(id="ellipse", name="ellipse", name_en="ellipse", hp=100,
-                obstruction_radius_x=2.0, obstruction_radius_z=0.5)
+                obstruction_radius_x=0.5, obstruction_radius_z=2.0)
     first = Soldier2D(1, Side.RED, unit, 100, 100, 10, 10)
     second = Soldier2D(2, Side.BLUE, unit, 100, 100, 10, 10 + separation)
     config = Simulation2DConfig(max_known_unit_radius=2.0)

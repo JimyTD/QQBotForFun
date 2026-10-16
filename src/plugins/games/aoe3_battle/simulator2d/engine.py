@@ -23,6 +23,7 @@ from .geometry import (
     PoseMotion,
     angle_delta,
     shape_for_unit,
+    shape_radii,
     steering_motion,
     unit_bounding_radius,
     unit_radius,
@@ -574,6 +575,10 @@ class BattleSimulator2D:
                         "steer_reason": soldier.last_steer_reason,
                         "no_progress_ticks": soldier.no_progress_ticks,
                         "radius": unit_radius(soldier.unit, self.config.fallback_unit_radius),
+                        # Collision ellipse: along / across the facing angle.
+                        "shape": list(
+                            shape_radii(soldier.unit, self.config.fallback_unit_radius)
+                        ),
                         "facing": soldier.facing,
                         "velocity": [round(soldier.velocity_x, 3), round(soldier.velocity_y, 3)],
                         "detour_sign": soldier.detour_sign,
