@@ -27,6 +27,9 @@ logger = logging.getLogger("aoe3_battle.simulator2d.movement")
 
 # Headings relative to the desired direction for the no-turn slide fallback.
 _SLIDE_ANGLES = (0.0, 0.5, -0.5, 1.0, -1.0, math.pi / 2, -math.pi / 2)
+# A non-overlapping ellipse pair is modelled as discs whose radii sum to at
+# most this share of the centre distance, so ORCA never treats it as overlap.
+_ORCA_TOUCH_RATIO = 0.98
 
 
 def _pose_collision_time(
@@ -504,12 +507,29 @@ class LocalAvoidance:
                 elliptical_shapes.append(other_shape)
                 if preferred_motion.clear((other_shape,), tolerance=self.config.separation_slop):
                     continue
-            other_radius = other_shape.bounding_radius
             other_velocity = Vec2(0.0, 0.0) if other.stopped else other.velocity
             if discs:
+                plane_radius, other_radius = own_radius, other_shape.bounding_radius
                 overlapping = soldier.distance_sq_to(other) <= (own_radius + other_radius) ** 2
             else:
                 overlapping = shape_contact(own_shape, other_shape) is not None
+                # The disc model needs one contact distance per pair. Bounding
+                # circles overstate it badly for long bodies side by side (2.58
+                # for two Aiz elephants that touch at 1.38), so ORCA reported
+                # them as overlapping and pushed them back every other tick.
+                # Use each ellipse's thickness along the centre line instead,
+                # and never more than the centre distance unless the real
+                # shapes do overlap.
+                offset = other.pos - soldier.pos
+                plane_radius = own_shape.extent(offset.x, offset.y)
+                other_radius = other_shape.extent(-offset.x, -offset.y)
+                if not overlapping:
+                    limit = offset.length() * _ORCA_TOUCH_RATIO
+                    total = plane_radius + other_radius
+                    if total > limit:
+                        scale = limit / total
+                        plane_radius *= scale
+                        other_radius *= scale
             if participants is None:
                 reciprocal = other.alive and not other.stopped and other.effective_speed > 1e-8
             else:
@@ -520,7 +540,7 @@ class LocalAvoidance:
             plane = _orca_half_plane(
                 soldier.pos,
                 soldier.velocity,
-                own_radius,
+                plane_radius,
                 other.pos,
                 other_velocity,
                 other_radius,
@@ -638,7 +658,8 @@ class LocalAvoidance:
                         direction = desired.rotated(angle).normalized()
                         if patient and direction.dot(previous) < 0.0:
                             continue
-                        for scale in (1.0, 0.5):
+                        # Tight pockets often clear only a short step.
+                        for scale in (1.0, 0.5, 0.25):
                             candidate = direction * (max_speed * scale)
                             if sweep_clear(candidate, turn=False):
                                 velocity, hold_facing = candidate, True

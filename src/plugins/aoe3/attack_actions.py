@@ -7,6 +7,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
+from functools import lru_cache
 
 from .models import Multiplier
 
@@ -92,12 +93,29 @@ def rate_matches(action: AttackAction, target_types: tuple[str, ...] | list[str]
     """目标类型对得上才打这一下。没写目标类型的攻击打谁都行。"""
     if target_types is None or not action.rates:
         return True
-    lowered = {item.lower() for item in target_types}
+    lowered = _lowered_types(target_types)
     for rate in action.rates:
         key = rate.lower()
         if key in _UNIVERSAL_RATES or key in lowered:
             return True
     return False
+
+
+def _lowered_types(target_types: tuple[str, ...] | list[str] | set[str]) -> frozenset[str]:
+    # Every attack-range check lowercases the same few unit type lists; cache
+    # them by content. Sets have no stable order, so sort them first.
+    if isinstance(target_types, tuple):
+        key = target_types
+    elif isinstance(target_types, list):
+        key = tuple(target_types)
+    else:
+        key = tuple(sorted(target_types))
+    return _lowered_types_cached(key)
+
+
+@lru_cache(maxsize=1024)
+def _lowered_types_cached(target_types: tuple[str, ...]) -> frozenset[str]:
+    return frozenset(item.lower() for item in target_types)
 
 
 def priority_shots(
