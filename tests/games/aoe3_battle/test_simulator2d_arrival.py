@@ -36,10 +36,14 @@ def _scene(distance, *, mirror=False, dt=0.1, speed=6.25):
 def test_shotel_runs_at_nominal_speed_until_the_final_step(distance, mirror):
     sim, mover, target = _scene(distance, mirror=mirror)
     before = mover.pos
-    expected = min(
-        mover.unit.speed,
-        (distance - mover.effective_melee_range + sim.config.stop_check_slack)
-        / sim.config.tick_interval,
+    # Ranges are body gaps, so the stop point adds both bodies back.
+    stop = mover.effective_melee_range + mover.body_offset_to(target, 0.45)
+    expected = max(
+        0.0,
+        min(
+            mover.unit.speed,
+            (distance - stop + sim.config.stop_check_slack) / sim.config.tick_interval,
+        ),
     )
     summary = sim._process_movement()
     assert mover.velocity.length() == pytest.approx(expected, abs=1e-6)
@@ -54,20 +58,21 @@ def test_shotel_runs_at_nominal_speed_until_the_final_step(distance, mirror):
 @pytest.mark.parametrize("speed", [4.0, 6.25, 7.25])
 def test_clear_contact_time_matches_distance_over_speed(dt, speed):
     sim, mover, target = _scene(8.0, dt=dt, speed=speed)
+    stop = mover.effective_melee_range + mover.body_offset_to(target, 0.45)
     allowed_ticks = math.ceil(
-        (8.0 - mover.effective_melee_range + sim.config.stop_check_slack) / (speed * dt)
+        (8.0 - stop + sim.config.stop_check_slack) / (speed * dt)
     )
     for tick in range(allowed_ticks):
         sim._tick = tick
         before_distance = mover.distance_to(target)
         sim._process_movement()
-        if before_distance - mover.effective_melee_range >= speed * dt:
+        if before_distance - stop >= speed * dt:
             assert mover.velocity.length() == pytest.approx(speed, abs=1e-6)
         assert mover.y == pytest.approx(12.0)
         assert mover.distance_to(target) >= mover.radius(0.45) + target.radius(0.45)
-        if mover.distance_to(target) <= mover.effective_melee_range:
+        if mover.gap_to(target, 0.45) <= mover.effective_melee_range:
             break
-    assert mover.distance_to(target) <= mover.effective_melee_range
+    assert mover.gap_to(target, 0.45) <= mover.effective_melee_range
     sim._refresh_stopped()
     assert mover.stopped
 

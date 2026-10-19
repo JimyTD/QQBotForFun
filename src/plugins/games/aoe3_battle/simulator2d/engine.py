@@ -656,7 +656,7 @@ class BattleSimulator2D:
             nearest = self._nearest_enemy(soldier)
             if (
                 nearest is not None
-                and soldier.distance_to(nearest) < soldier.effective_ranged_range_min
+                and self._combat.gap(soldier, nearest) < soldier.effective_ranged_range_min
             ):
                 self._clear_detour(soldier)
                 soldier.motion_samples.clear()
@@ -806,7 +806,7 @@ class BattleSimulator2D:
         if (
             soldier.has_ranged
             and not soldier.has_melee
-            and distance < soldier.effective_ranged_range_min
+            and self._combat.gap(soldier, target) < soldier.effective_ranged_range_min
         ):
             return Vec2(0.0, 0.0), target
         desired_distance = self._approach_range(soldier, target)
@@ -1064,17 +1064,21 @@ class BattleSimulator2D:
         return True
 
     def _approach_range(self, soldier: Soldier2D, target: Soldier2D) -> float:
+        """Centre distance to stop at. Ranges are body gaps, so add both bodies back."""
+        assert self._combat is not None
+        offset = soldier.body_offset_to(target, self.config.fallback_unit_radius)
+        gap = max(0.0, soldier.distance_to(target) - offset)
         if soldier.unit.attack_actions:
-            return approach_distance(
+            return offset + approach_distance(
                 soldier.unit.attack_actions,
-                soldier.distance_to(target),
+                gap,
                 now=self._tick * self.config.tick_interval,
                 charge_ready_at=soldier.charge_ready_at,
                 target_types=target.unit.type,
             )
-        if soldier.has_ranged and soldier.distance_to(target) > soldier.effective_ranged_range:
-            return soldier.effective_ranged_range
-        return soldier.effective_melee_range
+        if soldier.has_ranged and gap > soldier.effective_ranged_range:
+            return offset + soldier.effective_ranged_range
+        return offset + soldier.effective_melee_range
 
     def _shorten_detour(self, soldier: Soldier2D, target: Soldier2D) -> None:
         if soldier.detour_waypoint_x is None:
@@ -1281,7 +1285,7 @@ class BattleSimulator2D:
                     and soldier.has_ranged
                     and not soldier.has_melee
                     and soldier.move_target_id in self._soldier_map
-                    and soldier.distance_to(self._soldier_map[soldier.move_target_id])
+                    and self._combat.gap(soldier, self._soldier_map[soldier.move_target_id])
                     < soldier.effective_ranged_range_min
                 ):
                     soldier.last_steer_reason = "minimum_range"

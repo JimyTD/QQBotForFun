@@ -56,6 +56,44 @@ def shape_radii(unit: Unit, fallback: float) -> tuple[float, float]:
     return _unit_axes(unit, fallback)
 
 
+def body_extent(
+    unit: Unit,
+    angle: float,
+    nx: float,
+    ny: float,
+    fallback: float,
+) -> float:
+    """Return a unit's footprint extent along the unit vector ``(nx, ny)``.
+
+    Same result as ``shape_for_unit(...).extent`` without building a shape;
+    circular bodies skip the trigonometry.
+    """
+    along, across = _unit_axes(unit, fallback)
+    if abs(along - across) <= 1e-6:
+        return along
+    c, s = math.cos(angle), math.sin(angle)
+    return math.hypot(along * (c * nx + s * ny), across * (c * ny - s * nx))
+
+
+def body_offset(
+    first_unit: Unit,
+    first_angle: float,
+    second_unit: Unit,
+    second_angle: float,
+    dx: float,
+    dy: float,
+    fallback: float,
+) -> float:
+    """Return both bodies' combined thickness along the centre line ``first -> second``."""
+    length = math.hypot(dx, dy)
+    if length <= _EPSILON:
+        return max(_unit_axes(first_unit, fallback)) + max(_unit_axes(second_unit, fallback))
+    nx, ny = dx / length, dy / length
+    return body_extent(first_unit, first_angle, nx, ny, fallback) + body_extent(
+        second_unit, second_angle, -nx, -ny, fallback
+    )
+
+
 def combined_radius(first: Unit, second: Unit, fallback: float) -> float:
     """Return the equivalent-circular non-overlap distance."""
     return unit_radius(first, fallback) + unit_radius(second, fallback)

@@ -117,11 +117,26 @@ def test_attack_permission_does_not_allow_hits_beyond_range():
     sim._init_soldiers()
     attacker, target = sim._soldiers
     attacker.x, attacker.y = 10, 10
-    target.x, target.y = 11.80, 10
+    # Range is measured between bodies: 0.9 of body plus 0.05 beyond the reach.
+    target.x, target.y = 10 + attacker.effective_melee_range + 0.9 + 0.05, 10
     sim._spatial_hash.rebuild(sim._soldiers)
     sim._refresh_stopped()
     assert not attacker.stopped
     assert sim._combat.determine_attack_mode(attacker, target) is None
+
+
+def test_attack_range_is_measured_between_bodies():
+    sim = BattleSimulator2D(_unit(), 1, _unit(), 1)
+    sim._init_soldiers()
+    attacker, target = sim._soldiers
+    attacker.x, attacker.y = 10, 10
+    # Centre distance exceeds the reach, but the body gap is inside it.
+    target.x, target.y = 10 + attacker.effective_melee_range + 0.9 - 0.05, 10
+    sim._spatial_hash.rebuild(sim._soldiers)
+    assert attacker.distance_to(target) > attacker.effective_melee_range
+    assert sim._combat.determine_attack_mode(attacker, target) == AttackMode.MELEE
+    sim._refresh_stopped()
+    assert attacker.stopped
 
 
 @pytest.mark.parametrize(
@@ -134,12 +149,13 @@ def test_attack_permission_does_not_allow_hits_beyond_range():
     ],
 )
 def test_ranged_only_units_obey_actual_minimum_range(minimum, distance, expected):
+    """``distance`` is the body gap; the two 0.45 bodies add 0.9 of centre distance."""
     gun = _unit("gun", attack_melee=0, attack_ranged=20, range=15, range_min=minimum)
     sim = BattleSimulator2D(gun, 1, _unit(), 1)
     sim._init_soldiers()
     attacker, target = sim._soldiers
     attacker.x = 10
-    target.x = 10 + distance
+    target.x = 10 + distance + 0.9
     target.y = attacker.y
     assert sim._combat.determine_attack_mode(attacker, target) == expected
     if expected is not None:

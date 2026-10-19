@@ -225,9 +225,15 @@ def _search_detour_impl(
         for other in bodies
     ]
     field = (field_width, field_height)
+    # Ranges are body gaps; goal sampling works in centre distance.
+    body_offset = soldier.body_offset_to(target, config.fallback_unit_radius)
     stop_distance = max(
         0.0,
-        (soldier.effective_melee_range if arrival_distance is None else arrival_distance)
+        (
+            body_offset + soldier.effective_melee_range
+            if arrival_distance is None
+            else arrival_distance
+        )
         - config.stop_check_slack,
     )
     travel = min(reach * 0.8, max(0.0, soldier.distance_to(target) - stop_distance))
@@ -288,8 +294,11 @@ def _search_detour_impl(
             distance = (nodes[index] - target.pos).length()
             if distance <= stop_distance and (
                 not soldier.has_ranged
-                or distance >= soldier.effective_ranged_range_min
-                or (soldier.has_melee and distance <= soldier.effective_melee_range)
+                or distance >= body_offset + soldier.effective_ranged_range_min
+                or (
+                    soldier.has_melee
+                    and distance <= body_offset + soldier.effective_melee_range
+                )
             ):
                 goal_indices.add(index)
         goals = [nodes[index] for index in sorted(goal_indices)]

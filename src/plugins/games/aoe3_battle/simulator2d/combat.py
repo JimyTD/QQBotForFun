@@ -16,6 +16,7 @@ from ....aoe3.attack_actions import (
 from .aoe import resolve_aoe
 from .compat import EventType
 from .config import Simulation2DConfig
+from .geometry import unit_bounding_radius
 from .model import AttackMode, Soldier2D
 from .spatial import SpatialHash
 
@@ -106,6 +107,10 @@ class CombatSystem:
     def now(self) -> float:
         return self.tick_getter() * self.config.tick_interval
 
+    def gap(self, soldier: Soldier2D, target: Soldier2D) -> float:
+        """Range distance: clearance between the two bodies, not centre distance."""
+        return soldier.gap_to(target, self.config.fallback_unit_radius)
+
     def interrupt_preparation(self, soldier: Soldier2D) -> None:
         """A movement command cancels preparation, never the weapon cooldown."""
         soldier.aim_ready_at = None
@@ -124,7 +129,7 @@ class CombatSystem:
             return False
         if not soldier.can_attack:
             return False
-        distance = soldier.distance_to(target)
+        distance = self.gap(soldier, target)
         if mode == AttackMode.MELEE:
             return soldier.has_melee and distance <= soldier.effective_melee_range
         return (
@@ -136,6 +141,7 @@ class CombatSystem:
         self,
         soldier: Soldier2D,
         target: Soldier2D,
+        gap: float | None = None,
     ) -> AttackAction | None:
         if not soldier.unit.attack_actions:
             return None
@@ -143,7 +149,7 @@ class CombatSystem:
             return None
         return select_attack(
             soldier.unit.attack_actions,
-            soldier.distance_to(target),
+            self.gap(soldier, target) if gap is None else gap,
             now=self.now,
             charge_ready_at=soldier.charge_ready_at,
             target_types=target.unit.type,
@@ -183,7 +189,7 @@ class CombatSystem:
         cycle.  While a shot is still being prepared, a still-legal prepared
         action is kept even if distance jitter would pick another one.
         """
-        distance = soldier.distance_to(target)
+        distance = self.gap(soldier, target)
         if (
             not soldier.reconsider_attack_mode
             and soldier.prepared_action_name
@@ -197,10 +203,18 @@ class CombatSystem:
                 and prepared.range_min - 1e-6 <= distance <= prepared.range_max + 1e-6
             ):
                 return prepared
-        return self._selected_action(soldier, target)
+        return self._selected_action(soldier, target, distance)
 
     def _search_radius(self, soldier: Soldier2D) -> float:
-        return soldier_search_range(soldier.unit.attack_actions)
+        """Centre-distance query radius that covers every body within range."""
+        reach = soldier_search_range(soldier.unit.attack_actions)
+        if reach <= 0:
+            return 0.0
+        return (
+            reach
+            + unit_bounding_radius(soldier.unit, self.config.fallback_unit_radius)
+            + max(self.config.max_known_unit_radius, self.config.fallback_unit_radius)
+        )
 
     def attack_candidates(self, soldier: Soldier2D) -> list[Soldier2D]:
         """Return living enemies currently inside a legal attack envelope."""
@@ -221,6 +235,7 @@ class CombatSystem:
         for enemy in enemies:
             if self.determine_attack_mode(soldier, enemy) is not None:
                 result.append(enemy)
+        # Lock order stays nearest-by-centre (target selection is out of scope).
         result.sort(key=lambda item: (item.distance_sq_to(soldier), item.id))
         return result
 
@@ -258,7 +273,7 @@ class CombatSystem:
             return False
         if soldier.has_melee and not soldier.has_ranged:
             return any(
-                soldier.distance_to(target) <= soldier.effective_melee_range
+                self.gap(soldier, target) <= soldier.effective_melee_range
                 for target in candidates
             )
         return True

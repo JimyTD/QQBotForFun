@@ -219,9 +219,9 @@ def test_fast_cavalry_brakes_into_attack_range_instead_of_strafing():
         previous = mover.pos
         sim._process_movement()
         path += (mover.pos - previous).length()
-        if mover.distance_to(target) <= mover.effective_melee_range:
+        if mover.gap_to(target, 0.45) <= mover.effective_melee_range:
             break
-    assert mover.distance_to(target) <= mover.effective_melee_range
+    assert mover.gap_to(target, 0.45) <= mover.effective_melee_range
     assert path < 1.0
     assert mover.distance_to(target) >= mover.radius(0.45) + target.radius(0.45)
 

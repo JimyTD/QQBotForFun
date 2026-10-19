@@ -101,8 +101,9 @@ def test_attack_and_death_events_carry_on_event_coordinates() -> None:
         lethal.data["attacker_x"] - lethal.data["target_x"],
         lethal.data["attacker_y"] - lethal.data["target_y"],
     )
-    # A melee kill must be recorded at melee range, not across the map.
-    assert distance <= 1.5 + 1e-6
+    # A melee kill must be recorded at melee range, not across the map. Range
+    # is a body gap, so the centres sit up to two default 0.45 bodies farther.
+    assert distance <= 1.5 + 0.9 + 1e-6
 
 
 def test_ten_seconds_without_damage_ends_the_battle() -> None:

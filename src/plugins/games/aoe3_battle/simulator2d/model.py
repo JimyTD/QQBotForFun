@@ -8,7 +8,7 @@ from enum import StrEnum
 
 from ....aoe3.models import Unit
 from .compat import Side
-from .geometry import unit_radius
+from .geometry import body_offset, unit_radius
 
 
 class AttackMode(StrEnum):
@@ -185,6 +185,22 @@ class Soldier2D:
 
     def distance_to(self, other: Soldier2D) -> float:
         return math.sqrt(self.distance_sq_to(other))
+
+    def body_offset_to(self, other: Soldier2D, fallback: float) -> float:
+        """Both bodies' thickness along the centre line toward ``other``."""
+        return body_offset(
+            self.unit,
+            self.facing,
+            other.unit,
+            other.facing,
+            other.x - self.x,
+            other.y - self.y,
+            fallback,
+        )
+
+    def gap_to(self, other: Soldier2D, fallback: float) -> float:
+        """Clearance between the two bodies. Attack ranges are measured on it."""
+        return max(0.0, self.distance_to(other) - self.body_offset_to(other, fallback))
 
     def radius(self, fallback: float) -> float:
         return unit_radius(self.unit, fallback)
