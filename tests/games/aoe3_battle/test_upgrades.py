@@ -22,6 +22,10 @@ def _action(unit, name):
     return next(a for a in unit.attack_actions if a.name == name)
 
 
+def _melee_damage(unit):
+    return next(a for a in unit.attack_actions if a.damage_type == "Hand").damage
+
+
 def _max_ranged_damage(unit):
     return max(
         (a.damage for a in unit.attack_actions if a.damage_type != "Hand" and a.hits_soldiers),
@@ -60,11 +64,46 @@ def test_artillery_curve(repo):
     assert [_hp_ratio(repo, "falconet", age) for age in (2, 3, 4, 5)] == [1.0, 1.0, 1.25, 1.75]
 
 
+def test_consulate_infantry_curve_keeps_both_category_lines(repo):
+    """领事馆步兵：基础 +10%；要塞 +20%；工业 +30%；帝王 +50%，逐条累计。"""
+    gendarme = repo.get_by_id("ypconsulategendarmes")
+    assert [apply_upgrades(gendarme, age).hp for age in (2, 3, 4, 5)] == [
+        467.5, 552.5, 680.0, 892.5,
+    ]
+    assert [_melee_damage(apply_upgrades(gendarme, age)) for age in (2, 3, 4, 5)] == [
+        27.5, 32.5, 40.0, 52.5,
+    ]
+
+
+def test_consulate_non_colonial_unit_starts_its_tier_in_industrial_age(repo):
+    """只带 AbstractConsulateUnit 的领事馆兵不拿要塞档，从工业时代开始升级。"""
+    ninja = repo.get_by_id("ypconsulateninja")
+    assert [apply_upgrades(ninja, age).hp for age in (2, 3, 4, 5)] == [
+        440.0, 440.0, 560.0, 960.0,
+    ]
+
+
+def test_consulate_artillery_uses_its_own_category_tiers(repo):
+    """领事馆炮兵走独立标签：要塞炮从工业起升，工业炮走帝王档。"""
+    culverin = repo.get_by_id("ypconsulateculverin")
+    assert [apply_upgrades(culverin, age).hp for age in (2, 3, 4, 5)] == [
+        308.0, 308.0, 378.0, 518.0,
+    ]
+    cannon = repo.get_by_id("ypconsulatecannon")
+    assert [apply_upgrades(cannon, age).hp for age in (2, 3, 4, 5)] == [
+        522.5, 522.5, 522.5, 760.0,
+    ]
+
+
 def test_seed_records_tech_ids_not_multipliers(data):
     entry = data["units"]["musketeer"]["5"]
     assert entry["techs"] == ["VeteranMusketeers", "GuardMusketeers", "ImperialMusketeers"]
     assert "hp_mult" not in entry
     assert data["category"]["AbstractNativeWarrior"]["5"]
+    assert data["category"]["AbstractConsulateUnit"]["5"] == [
+        "YPAAAsianStartingTechs", "Industrialize", "Imperialize",
+    ]
+    assert data["category"]["AbstractConsulateUnitColonial"]["3"] == ["Fortressize"]
 
 
 def test_imperial_musketeer_hp_oracle(repo):

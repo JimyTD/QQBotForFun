@@ -164,6 +164,22 @@ def test_runtime_ops_keep_their_own_targets():
     assert op["targets"] == [{"type": "ProtoUnit", "value": "deRanger"}]
 
 
+def test_consulate_age_effects_only_settle_on_the_named_category(repo):
+    """领事馆时代科技同时写了多个兵种标签，只结算当前兵命中的那几条。"""
+    from plugins.aoe3.tech_effects import op_targets_unit, runtime_op, settle_unit
+    from plugins.aoe3.upgrades import tech_pool_rows
+
+    gendarme = repo.get_by_id("ypconsulategendarmes")
+    fortress_ops = [
+        op
+        for raw in tech_pool_rows()["Fortressize"]["combat_ops"]
+        if (op := runtime_op(raw)) is not None
+        and op_targets_unit(op, gendarme)
+    ]
+    after = settle_unit(gendarme, fortress_ops, gendarme)
+    assert after.hp == 510.0
+
+
 def test_unlocks_follow_techstatus_active_and_obtainable_shadows():
     """active 直接给（含主城卡免费升级）；obtainable 只开放研究，不生效；
     影子科技靠前置自动生效时，原始状态必须是可获得。"""

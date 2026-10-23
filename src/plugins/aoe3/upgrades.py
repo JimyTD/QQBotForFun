@@ -25,6 +25,15 @@ _CIV_DATA_PATH = (
 _POOL_PATH = Path(__file__).resolve().parents[3] / "seeds" / "aoe3" / "civ_war_tech_pool.json"
 _CIVS_PATH = Path(__file__).resolve().parents[3] / "seeds" / "aoe3" / "civs.json"
 
+# These age roots carry concrete consulate-unit stat changes. ``tech_links.expand``
+# normally treats age roots as prerequisites and omits their own effects.
+_CONSULATE_AGE_ROOT_TECHS = {
+    "YPAAAsianStartingTechs",
+    "Fortressize",
+    "Industrialize",
+    "Imperialize",
+}
+
 # 类别标签 → 中文展示名（押注简报「已激活类别科技」用）
 CATEGORY_LABELS = {
     "AbstractOutlaw": "亡命徒强化",
@@ -207,7 +216,13 @@ def apply_upgrades(
         tier = (rows.get(tech) or {}).get("min_age") or 1
         ordered.append((int(tier), 2, index, tech))
     ordered.sort()
-    ids = expand([tech for *_, tech in ordered], age=age or 0)
+    requested = [tech for *_, tech in ordered]
+    expanded = expand(requested, age=age or 0)
+    # ``expand`` treats age-root techs as prerequisites and omits their own
+    # effects. Consulate units use these generic age roots as their actual stat
+    # curve, so preserve only those requested roots alongside the expanded chain.
+    kept_roots = [tech for tech in requested if tech in _CONSULATE_AGE_ROOT_TECHS]
+    ids = list(dict.fromkeys([*kept_roots, *expanded]))
     if not ids:
         return unit
     ops = []

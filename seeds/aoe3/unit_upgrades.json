@@ -1,6 +1,6 @@
 {
   "_meta": {
-    "generated_at": "2026-10-10T02:30:12.426987+00:00",
+    "generated_at": "2026-10-23T06:33:35.940328+00:00",
     "source": "data/aoe3/raw/techtreey.xml",
     "doc": "docs/games/aoe3-battle.md §3.10",
     "rule": "units[id][age].techs / category[tag][age] = 该时代已生效的累计科技 id；效果在运行时按统一算符结算，同一科技只生效一次",
@@ -5880,6 +5880,48 @@
     "Mercenary": {
       "5": [
         "DEPoliticianMercContractor"
+      ]
+    },
+    "AbstractConsulateUnit": {
+      "2": [
+        "YPAAAsianStartingTechs"
+      ],
+      "4": [
+        "YPAAAsianStartingTechs",
+        "Industrialize"
+      ],
+      "5": [
+        "YPAAAsianStartingTechs",
+        "Industrialize",
+        "Imperialize"
+      ]
+    },
+    "AbstractConsulateUnitColonial": {
+      "3": [
+        "Fortressize"
+      ]
+    },
+    "AbstractConsulateSiegeFortress": {
+      "2": [
+        "YPAAAsianStartingTechs"
+      ],
+      "4": [
+        "YPAAAsianStartingTechs",
+        "Industrialize"
+      ],
+      "5": [
+        "YPAAAsianStartingTechs",
+        "Industrialize",
+        "Imperialize"
+      ]
+    },
+    "AbstractConsulateSiegeIndustrial": {
+      "2": [
+        "YPAAAsianStartingTechs"
+      ],
+      "5": [
+        "YPAAAsianStartingTechs",
+        "Imperialize"
       ]
     }
   }

@@ -42,8 +42,15 @@ AGE_STATUS = {
     "Imperialize": 5,
 }
 
-# 类别科技标签（按标签匹配，不按 id）
+# 类别科技标签（按标签匹配，不按 id）。
+# 领事馆单位另走 Age0 自动科技 + 通用时代科技，见 CONSULATE_CATEGORY_TAGS。
 CATEGORY_TAGS = ("AbstractOutlaw", "AbstractNativeWarrior", "Mercenary")
+CONSULATE_CATEGORY_TAGS = (
+    "AbstractConsulateUnit",
+    "AbstractConsulateUnitColonial",
+    "AbstractConsulateSiegeFortress",
+    "AbstractConsulateSiegeIndustrial",
+)
 
 # 佣兵唯一的逐时代加成来自升帝王政客（AgeUpgrade，靠 SetAge 定时代）。
 # 政客是「一档一选」的文明选项，自动扫描会混入文明专属政客（如 FederalNewYork +25），
@@ -202,6 +209,26 @@ def is_excluded(name: str, flags: set[str]) -> bool:
                         "Industrialize", "Imperialize")):
         return True
     return False
+
+
+def _is_consulate_age_tech(name: str) -> bool:
+    """领事馆单位的通用时代倍率（基础/要塞/工业/帝王）。"""
+    return name in {
+        "YPAAAsianStartingTechs",
+        "Fortressize",
+        "Industrialize",
+        "Imperialize",
+    }
+
+
+def _consulate_age_tech_age(name: str) -> int | None:
+    """原始数据里这三条通用时代科技没有前置标签，按科技名定时代。"""
+    return {
+        "YPAAAsianStartingTechs": 2,
+        "Fortressize": 3,
+        "Industrialize": 4,
+        "Imperialize": 5,
+    }.get(name)
 
 
 def is_candidate_flags(flags: set[str], *, allow_age_upgrade: bool) -> bool:
@@ -365,13 +392,13 @@ def build_unit_upgrades(
 def build_category_upgrades(blocks, resolver):
     """返回 {tag: {age: [累计科技 id]}}，按标签匹配。"""
     out: dict[str, dict] = {}
-    for tag in CATEGORY_TAGS:
+    for tag in (*CATEGORY_TAGS, *CONSULATE_CATEGORY_TAGS):
         tag_lower = tag.lower()
         is_merc = tag == "Mercenary"
         by_age: dict[int, list] = {}
         for name, block in blocks.items():
             flags = tech_flags(block)
-            if is_excluded(name, flags):
+            if not _is_consulate_age_tech(name) and is_excluded(name, flags):
                 continue
             if has_setage(block):
                 # 政客升时代：佣兵走精选 allowlist；其余类别一律不取政客
@@ -379,7 +406,7 @@ def build_category_upgrades(blocks, resolver):
                     continue
             elif not is_candidate_flags(flags, allow_age_upgrade=False):
                 continue
-            age = resolver.resolve(name)
+            age = _consulate_age_tech_age(name) or resolver.resolve(name)
             if age is None or age not in (2, 3, 4, 5):
                 continue
             hp_inc, dmg_inc = hp_dmg_increments(block, tag_lower)

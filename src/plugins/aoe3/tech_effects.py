@@ -142,7 +142,11 @@ def runtime_op(op: Mapping) -> dict | None:
     result: dict = {
         "subtype": subtype,
         "value": float(amount),
-        "targets": list(op.get("targets") or ()),
+        "targets": [
+            dict(target)
+            for target in (op.get("targets") or ())
+            if isinstance(target, Mapping)
+        ],
     }
     for key in ("action", "allactions", "tactic"):
         if op.get(key):

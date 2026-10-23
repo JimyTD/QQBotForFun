@@ -1468,6 +1468,20 @@ protoy 伤害包 + tactics 定义取出，不跨动作拼装。每个阵型各�
 | 土著 | `AbstractNativeWarrior` | `ypImpLegendaryNatives` | 5 时代 +50% |
 | 亡命徒 | `AbstractOutlaw` | `SaloonWildWest`、`DEGuardOutlawShadow`、`DEImperialOutlawShadow` | 3/4/5 时代 +20% / +30% / +50% |
 | 佣兵 | `Mercenary` | `DEPoliticianMercContractor`（升帝王政客） | 5 时代 +50% |
+| 领事馆步兵 | `AbstractConsulateUnit` | `YPAAAsianStartingTechs`、`Industrialize`、`Imperialize` | 2 时代 +10%、4 时代 +30%、5 时代 +50% |
+| 领事馆要塞步兵 | `AbstractConsulateUnitColonial` | `Fortressize` | 3 时代 +20% |
+| 领事馆要塞炮 | `AbstractConsulateSiegeFortress` | `YPAAAsianStartingTechs`、`Industrialize`、`Imperialize` | 2 时代 +10%、4 时代 +25%、5 时代 +50% |
+| 领事馆工业炮 | `AbstractConsulateSiegeIndustrial` | `YPAAAsianStartingTechs`、`Imperialize` | 2 时代 +10%、5 时代 +50% |
+
+领事馆的类别科技按原始 `BasePercent` **累计**，不是 wiki 页面容易误读成的“按档替换”。
+例如领事馆胸甲骑兵同时命中 `AbstractConsulateUnit` 与 `AbstractConsulateUnitColonial`，
+五时代总倍率为 `1.1 × 1.2 × 1.3 × 1.5 = 2.574`。只带通用标签的忍者、旗本武士等
+不拿三时代要塞档。
+
+`Fortressize / Industrialize / Imperialize` 在原始数据里没有前置标签，升级生成器按
+科技名映射到 3 / 4 / 5 时代；它们承载的是通用类别效果，不是逐兵升级名。
+运行时展开科技链路时，这四条领事馆时代根科技必须保留自身效果；`tech_links.expand()`
+用于其他时代科技时仍按原约定只把根科技当前置、不返回自身。
 
 亡命徒在西部酒馆、欧洲酒馆、亚洲寺院、非洲四种建筑里各有一条 3 时代 +20% 变体，同一档只取一条。传奇土著和佣兵承包商在游戏里不是必然生效的科技，是我们补充成时代科技的设计。主城卡加成不取。
 
