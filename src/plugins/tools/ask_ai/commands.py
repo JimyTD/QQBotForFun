@@ -23,7 +23,7 @@ from src.plugins.tools.ask_ai.orchestrator import answer
 
 _cmd = on_command(
     "查资料",
-    aliases={"问AI", "问ai", "ai", "AI", "搜索", "搜一下", "search"},
+    aliases={"问AI", "ai", "搜索", "搜一下", "search"},
     rule=to_me(),
     priority=3,
     block=True,
