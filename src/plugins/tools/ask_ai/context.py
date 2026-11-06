@@ -16,7 +16,6 @@ class Turn:
     question: str
     answer: str
     search_query: str = ""
-    image_urls: list[str] | None = None
     created_at: float = 0.0
 
 
@@ -34,14 +33,12 @@ def remember(
     question: str,
     answer: str,
     search_query: str = "",
-    image_urls: list[str] | None = None,
 ) -> None:
     _store[_key(group_id, user_id)].append(
         Turn(
             question=question[:1000],
             answer=answer[:3000],
             search_query=search_query[:200],
-            image_urls=(image_urls or [])[:2],
             created_at=time.time(),
         )
     )

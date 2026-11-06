@@ -38,8 +38,6 @@ class AssistantInput:
 class AskResult:
     answer: str = ""
     sources: list[str] = field(default_factory=list)
-    images: list[str] = field(default_factory=list)
-    image_caption: str = ""
     used_search: bool = False
     search_state: SearchState = SearchState.NOT_USED
     truncated: bool = False

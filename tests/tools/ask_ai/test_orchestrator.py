@@ -12,12 +12,7 @@ from core.llm import LLMResponse
 from src.plugins.tools.ask_ai import context
 from src.plugins.tools.ask_ai.models import AssistantInput, SearchState
 from src.plugins.tools.ask_ai.orchestrator import answer
-from src.plugins.tools.web_search.models import (
-    ImageResult,
-    SearchBundle,
-    SearchError,
-    SearchResult,
-)
+from src.plugins.tools.web_search.models import SearchBundle, SearchError, SearchResult
 
 
 def setup_function() -> None:
@@ -30,7 +25,7 @@ def _png() -> bytes:
     return out.getvalue()
 
 
-def _bundle(*, web: bool = True, images: bool = True) -> SearchBundle:
+def _bundle(*, web: bool = True) -> SearchBundle:
     return SearchBundle(
         query="测试",
         web_results=[
@@ -42,16 +37,6 @@ def _bundle(*, web: bool = True, images: bool = True) -> SearchBundle:
             )
         ]
         if web
-        else [],
-        images=[
-            ImageResult(
-                title="测试图片",
-                content_url="https://example.com/a.jpg",
-                width=800,
-                height=600,
-            )
-        ]
-        if images
         else [],
     )
 
@@ -71,6 +56,31 @@ async def test_chat_does_not_search() -> None:
         )
     assert result.answer
     assert result.search_state == SearchState.NOT_USED
+
+
+@pytest.mark.asyncio
+async def test_chat_follow_up_includes_previous_turn() -> None:
+    context.remember(1, 10, question="第一轮问题", answer="第一轮回答")
+    captured: list[list] = []
+
+    async def fake_chat(*_a, **kwargs):
+        captured.append(kwargs["messages"])
+        return LLMResponse(content="第二轮回答", model="mock")
+
+    with patch(
+        "src.plugins.tools.ask_ai.orchestrator.llm.chat",
+        AsyncMock(side_effect=fake_chat),
+    ):
+        result = await answer(
+            AssistantInput(text="继续展开第二点", group_id=1, user_id=10),
+            classify_with_llm=False,
+        )
+    assert result.answer == "第二轮回答"
+    context_text = "\n".join(
+        str(m.content) for m in captured[0] if isinstance(m.content, str)
+    )
+    assert "第一轮问题" in context_text
+    assert "第一轮回答" in context_text
 
 
 @pytest.mark.asyncio
@@ -139,34 +149,10 @@ async def test_image_understanding_uses_vision_scene() -> None:
 
 
 @pytest.mark.asyncio
-async def test_image_search_returns_base64_image() -> None:
-    with patch(
-        "src.plugins.tools.ask_ai.orchestrator.search_images",
-        AsyncMock(return_value=_bundle(web=False).images),
-    ), patch(
-        "src.plugins.tools.ask_ai.orchestrator.download_valid_image",
-        AsyncMock(return_value=(_png(), "image/png", _bundle().images[0])),
-    ):
-        result = await answer(
-            AssistantInput(text="找一张测试图", group_id=1, user_id=10),
-            classify_with_llm=False,
-        )
-    assert result.images
-    assert result.images[0].startswith("base64://")
-
-
-@pytest.mark.asyncio
-async def test_image_search_reports_unavailable_without_fake_image() -> None:
-    from src.plugins.tools.ask_ai.image_search import ImageSearchFailedError
-
-    with patch(
-        "src.plugins.tools.ask_ai.orchestrator.search_images",
-        AsyncMock(side_effect=ImageSearchFailedError("图片搜索暂不可用。")),
-    ):
-        result = await answer(
-            AssistantInput(text="找一张测试图", group_id=1, user_id=10),
-            classify_with_llm=False,
-        )
-    assert not result.images
-    assert result.error == "image_search_failed"
-    assert "没有找到" in result.answer
+async def test_image_search_is_explicitly_unavailable() -> None:
+    result = await answer(
+        AssistantInput(text="找一张测试图", group_id=1, user_id=10),
+        classify_with_llm=False,
+    )
+    assert result.error == "image_search_unavailable"
+    assert "暂不支持" in result.answer

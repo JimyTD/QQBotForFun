@@ -46,7 +46,6 @@ src/plugins/tools/ask_ai/
 ├── orchestrator.py   # 意图 → 能力 → 结果
 ├── intent.py         # 内部意图判断
 ├── media.py          # QQ 图片读取、校验、压缩
-├── image_search.py   # 图片搜索能力状态
 ├── context.py        # 短上下文
 ├── models.py         # AssistantInput / AskResult
 └── prompts.py        # 聊天、检索、视觉提示词
@@ -63,4 +62,4 @@ src/plugins/tools/web_search/
 uv run pytest tests/tools/ask_ai -q
 ```
 
-文字搜索恢复、原入口保留、图片输入读取和视觉场景均为必测项。
+原入口保留、文字搜索、图片输入读取、视觉场景和上下文隔离均为必测项。

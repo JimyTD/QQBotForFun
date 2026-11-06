@@ -19,26 +19,9 @@ class SearchResult:
 
 
 @dataclass
-class ImageResult:
-    title: str
-    content_url: str
-    page_url: str = ""
-    width: int = 0
-    height: int = 0
-    source: str = "image"
-
-    @property
-    def aspect_ratio(self) -> float:
-        if not self.width or not self.height:
-            return 0.0
-        return self.width / self.height
-
-
-@dataclass
 class SearchBundle:
     query: str
     web_results: list[SearchResult] = field(default_factory=list)
-    images: list[ImageResult] = field(default_factory=list)
 
 
 def format_results_for_llm(results: list[SearchResult]) -> str:

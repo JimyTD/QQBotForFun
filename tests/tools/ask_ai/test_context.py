@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import time
+
 from src.plugins.tools.ask_ai import context
 
 
@@ -37,3 +39,16 @@ def test_build_context_respects_char_limit() -> None:
     context.remember(1, 10, question="q", answer="a" * 100)
     text = context.build_context_text(context.history(1, 10), max_chars=30)
     assert len(text) <= 30
+
+
+def test_expired_context_is_removed(monkeypatch) -> None:
+    context.remember(1, 10, question="old", answer="old answer")
+    monkeypatch.setattr(context, "IDLE_SECONDS", 1)
+    turns = context._store[(1, 10)]
+    turns[0].created_at = time.time() - 2
+    assert context.history(1, 10) == []
+
+
+def test_follow_up_uses_previous_turn(monkeypatch) -> None:
+    context.remember(1, 10, question="第一轮问题", answer="第一轮回答")
+    assert context.last(1, 10).question == "第一轮问题"

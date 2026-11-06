@@ -8,7 +8,6 @@ from nonebot.adapters.onebot.v11 import (
     GroupMessageEvent,
     Message,
     MessageEvent,
-    MessageSegment,
 )
 from nonebot.matcher import Matcher
 from nonebot.params import CommandArg
@@ -23,7 +22,7 @@ from src.plugins.tools.ask_ai.orchestrator import answer
 
 _cmd = on_command(
     "查资料",
-    aliases={"问AI", "ai", "搜索", "搜一下", "search"},
+    aliases={"问AI", "问ai", "ai", "AI", "搜索", "搜一下", "search"},
     rule=to_me(),
     priority=3,
     block=True,
@@ -36,10 +35,10 @@ _HELP = [
     "示例：",
     "  @我 ai 解释一下量子纠缠",
     "  @我 ai 今天有什么科技新闻",
-    "  @我 ai 找一张少女前线2奇塔的图",
     "  @我 ai 这张截图里的报错怎么解决",
     "",
-    "追问：继续 / 第二点展开 / 换一张",
+    "追问：继续 / 第二点展开",
+    "图片搜索：暂不支持",
     "清空：@我 ai 清空",
 ]
 
@@ -112,25 +111,16 @@ async def _handle(
 def _status_for(kind: TaskKind) -> str:
     return {
         TaskKind.WEB_SEARCH: "🔎 AI 正在查资料…",
-        TaskKind.IMAGE_SEARCH: "🖼️ AI 正在找图…",
         TaskKind.IMAGE_UNDERSTAND: "👀 AI 正在看图…",
     }.get(kind, "💭 AI 正在思考…")
 
 
 async def _deliver(matcher: Matcher, result: AskResult) -> None:
-    if result.images:
-        msg = Message(result.image_caption or "给你找了一张图。")
-        for image in result.images:
-            msg += MessageSegment.image(image)
-        if result.sources:
-            msg += Message("\n来源：" + "；".join(result.sources[:2]))
-        await matcher.finish(msg)
-        return
-
     if not result.answer:
         reason = {
             "vision_unavailable": "图片理解服务暂时不可用。",
             "llm_unavailable": "AI 暂时不可用，请稍后再试。",
+            "image_search_unavailable": "图片搜索暂不支持。",
         }.get(result.error, "AI 暂时没想好怎么回答，请换个问法试试。")
         await matcher.finish("⚠️ " + reason)
         return

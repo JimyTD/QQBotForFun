@@ -14,12 +14,6 @@ from src.plugins.tools.web_search.models import (
 from src.plugins.tools.web_search.service import search
 
 from . import context
-from .image_search import (
-    ImageSearchFailedError,
-    download_valid_image,
-    image_mime_to_base64,
-    search_images,
-)
 from .intent import classify, image_query
 from .media import ImageInputError, prepare_image, resolve_image_source
 from .models import AskResult, AssistantInput, SearchState, TaskKind
@@ -55,14 +49,10 @@ async def answer(
         text = image_query(text)
 
     if kind == TaskKind.IMAGE_SEARCH:
-        previous = context.last(user_input.group_id, user_input.user_id)
-        query = text or (previous.search_query if previous else "")
-        if not query:
-            return AskResult(
-                answer="告诉我想找什么图，我就帮你找。",
-                error="missing_image_query",
-            )
-        return await _answer_image_search(query, user_input)
+        return AskResult(
+            answer="图片搜索暂不支持。可以发图片让我帮你理解，或直接问文字问题。",
+            error="image_search_unavailable",
+        )
 
     if kind == TaskKind.IMAGE_UNDERSTAND:
         return await _answer_image_understand(text, user_input, history)
@@ -274,46 +264,6 @@ async def _answer_image_understand(
         user_input.user_id,
         question=text or "[图片]",
         answer=answer,
-    )
-    return result
-
-
-async def _answer_image_search(query: str, user_input: AssistantInput) -> AskResult:
-    if "换一张" in query or "再来一张" in query or "再找一张" in query:
-        previous = context.last(user_input.group_id, user_input.user_id)
-        query = previous.search_query if previous else query
-    previous = context.last(user_input.group_id, user_input.user_id)
-    exclude: set[str] = set()
-    if previous and previous.image_urls:
-        exclude = set(previous.image_urls)
-    try:
-        candidates = await search_images(query)
-        raw, mime, chosen = await download_valid_image(candidates, exclude_urls=exclude)
-    except (SearchError, ImageSearchFailedError) as e:
-        logger.info(f"[ask_ai] 图片搜索失败 q={query!r}: {e}")
-        return AskResult(
-            answer="没有找到可直接发送的合适图片，换个关键词再试试。",
-            search_state=SearchState.FAILED,
-            error="image_search_failed",
-        )
-
-    encoded = image_mime_to_base64(raw, mime)
-    caption = f"给你找了一张：{chosen.title[:60]}" if chosen.title else "给你找了一张图。"
-    result = AskResult(
-        answer="",
-        images=[encoded],
-        image_caption=caption,
-        sources=[chosen.page_url] if chosen.page_url else [],
-        used_search=True,
-        search_state=SearchState.USED,
-    )
-    context.remember(
-        user_input.group_id,
-        user_input.user_id,
-        question=query,
-        answer=caption,
-        search_query=query,
-        image_urls=[chosen.content_url],
     )
     return result
 
