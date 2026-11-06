@@ -68,7 +68,7 @@ QQBotForFun/
 │  └─ test-runs/                        (验收流水归档)
 ├─ config/
 │  ├─ llm.yaml
-│  └─ searxng/
+│  └─ web_search/                     # 博查 API + 搜索数据契约
 ├─ scripts/
 │  ├─ play_cli.py                       (CLI 统一入口)
 │  ├─ cli_adapters/                     (各游戏/工具 CLI 适配器)

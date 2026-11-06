@@ -42,9 +42,9 @@ from src.settings import get_settings
 @dataclass
 class LLMMessage:
     role: Literal["system", "user", "assistant"]
-    content: str
+    content: str | list[dict[str, Any]]
 
-    def to_dict(self) -> dict[str, str]:
+    def to_dict(self) -> dict[str, Any]:
         return {"role": self.role, "content": self.content}
 
 
@@ -785,7 +785,7 @@ async def _call_slot(
     slot_index: int,
     scene: _SceneConf,
     scene_name: str,
-    messages: list[dict[str, str]],
+    messages: list[dict[str, Any]],
     temperature: float,
     max_tokens: int,
     json_mode: bool,
@@ -1018,11 +1018,13 @@ def _extract_json_block(text: str) -> str | None:
     return None
 
 
-def _ensure_json_hint(messages: list[dict[str, str]]) -> None:
+def _ensure_json_hint(messages: list[dict[str, Any]]) -> None:
     hint = "You MUST respond with valid JSON only. Do not include markdown code fences."
     if messages and messages[0]["role"] == "system":
-        if "json" not in messages[0]["content"].lower():
-            messages[0]["content"] += "\n\n" + hint
+        content = messages[0]["content"]
+        if isinstance(content, str):
+            if "json" not in content.lower():
+                messages[0]["content"] = content + "\n\n" + hint
     else:
         messages.insert(0, {"role": "system", "content": hint})
 

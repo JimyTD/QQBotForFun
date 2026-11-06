@@ -48,6 +48,7 @@ vec = await llm.embedding("文本", scene="default")
 | `trivia_host` | 趣味问答补题 | `tokenhub:qwen3.5-plus` | 12 | ✓ | temp=0.9，创意型 |
 | `web_search` | 查资料 · 搜索总结 | `tokenhub:qwen3.5-plus` | 12 | ✗ | temp=0.3，长文吃上下文 |
 | `ask_ai` | 查资料 · 纯 LLM 兜底 | `tokenhub:qwen3.5-plus` | 12 | ✗ | temp=0.7 |
+| `vision` | AI问答 · 图片理解 | `tokenhub:hy-vision-2.0-instruct` | 3 | ✗ | 链上全部为实测支持 `image_url` 的视觉模型 |
 | `finance_report` | 经济天气播报 | `tokenhub:qwen3.5-plus` | 12 | ✗ | temp=0.7 |
 | `silent_mark_ai` | 静夜标记 AI 玩家决策（高频） | `tokenhub:qwen3.5-plus` | 14 | ✓ | temp=0.3，**timeout=30s**，含角色扮演档 |
 | `silent_mark_ai_name` | 静夜标记 AI 取名 | `tokenhub:qwen3.5-flash` | 10 | ✗ | temp=0.9，输出仅 20 token |

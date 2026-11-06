@@ -26,7 +26,7 @@ FAST_PATHS = (
     "tests/games/silent_mark/test_m5_review.py",
     "tests/games/trivia/test_answer_matcher.py",
     "tests/games/turtle_soup/test_flow.py",
-    "tests/tools/ask_ai/test_service.py",
+    "tests/tools/ask_ai/test_intent.py",
     "tests/tools/finance/test_reporter.py",
 )
 

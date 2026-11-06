@@ -5,7 +5,7 @@ from __future__ import annotations
 import re
 from datetime import date, datetime, timedelta, timezone
 
-from src.plugins.tools.web_search.searxng import SearchResult
+from src.plugins.tools.web_search.models import SearchResult
 
 _CN_TZ = timezone(timedelta(hours=8))
 
@@ -111,7 +111,7 @@ def _is_stale(
     vers = _versions(text)
     if corpus_max_ver and vers:
         mine = max(vers)
-        if mine[0] < corpus_max_ver[0]:
+        if mine < corpus_max_ver:
             return True
     return False
 

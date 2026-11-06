@@ -1,7 +1,7 @@
-"""AI 助手（ai / 查资料）。
+"""AI 问答助手。
 
-触发：@机器人 ai/查资料/搜索 <问题>
-行为：联网取材料后写成能用的回答；搜不到再纯模型兜底。
+触发：@机器人 AI问答 <问题>，可带图片；兼容 ai / 查资料等旧入口。
+行为：按任务选择直接回答、联网检索、图片搜索或图片理解。
 """
 
 from __future__ import annotations
@@ -9,9 +9,9 @@ from __future__ import annotations
 from nonebot.plugin import PluginMetadata
 
 __plugin_meta__ = PluginMetadata(
-    name="ask_ai",
-    description="AI 助手：ai 起手，后面的话联网取材料后作答",
-    usage="@机器人 ai 你的问题",
+    name="AI问答",
+    description="群聊 AI 助手：问答、联网检索、图片搜索与图片理解",
+    usage="@机器人 AI问答 你的问题（也可以附带图片）",
 )
 
 try:

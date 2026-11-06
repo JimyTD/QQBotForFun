@@ -48,6 +48,11 @@ class Settings(BaseSettings):
     # 注意：广州站与新加坡站的 Key 不互通（本项对应广州站的 base_url）。
     tokenhub_api_key: str = ""
 
+    # ---------- AI 助手搜索 ----------
+    # 博查 AI 搜索：中国大陆服务器可直连，网页与图片结果共用此 Key。
+    # https://bocha-ai.feishu.cn/wiki/RXdbwRyASiShtDkyydcbKHVHn3f
+    bocha_api_key: str = ""
+
     # ---------- Games（所有游戏统一）----------
     # 整局兜底超时（小时）。为什么必须有：**真人没有单步超时**（大原则：
     # 「AI 有超时，真实玩家没有」），所以"有人挂机"只会僵住这一局，只剩这层收尾。

@@ -643,8 +643,12 @@ def test_project_llm_yaml_loads_and_every_scene_ends_with_zhipu() -> None:
 
     for name, sc in conf.scenes.items():
         assert sc.chain, f"scene '{name}' 的链为空"
-        # 尾档必须是智谱：TokenHub 那边额度用完/下线后总要有东西接住
-        assert sc.chain[-1].provider == "zhipu", f"scene '{name}' 的尾档不是智谱兜底"
+        # 文本场景的尾档必须是智谱：TokenHub 额度用完/下线后要有东西接住。
+        # vision 不能接纯文本智谱模型，否则会把图片发给不支持 image_url 的模型。
+        if name != "vision":
+            assert sc.chain[-1].provider == "zhipu", (
+                f"scene '{name}' 的尾档不是智谱兜底"
+            )
         assert all(s.model for s in sc.chain), f"scene '{name}' 有空模型名"
 
 
