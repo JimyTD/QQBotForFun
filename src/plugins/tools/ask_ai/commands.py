@@ -24,12 +24,10 @@ from src.plugins.tools.ask_ai.orchestrator import answer
 _cmd = on_command(
     "AI问答",
     aliases={
-        "AI问答",
         "ai问答",
         "问AI",
         "问ai",
         "ai",
-        "AI",
         "查资料",
         "搜索",
         "搜一下",
