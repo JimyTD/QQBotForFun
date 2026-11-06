@@ -7,8 +7,10 @@ import io
 import tempfile
 from dataclasses import dataclass
 from pathlib import Path
+from urllib.parse import unquote, urlparse
 
 import httpx
+from anyio import to_thread
 from nonebot import logger
 from PIL import Image, UnidentifiedImageError
 
@@ -53,6 +55,68 @@ async def fetch_image(url: str) -> bytes:
         logger.info(f"[ask_ai] 图片下载失败: {url[:80]} {e}")
         raise ImageInputError("图片下载失败，请重新发送或改用文字描述。") from e
     return b"".join(chunks)
+
+
+def _read_local_image_sync(path: str) -> bytes:
+    candidate = _local_path(path)
+    if not candidate.is_file():
+        raise ImageInputError("找不到这张图片，请重新发送。")
+    if candidate.stat().st_size > MAX_IMAGE_BYTES:
+        raise ImageInputError("图片超过 8 MB，请压缩后再发。")
+    return candidate.read_bytes()
+
+
+def _local_path(value: str) -> Path:
+    if not value.startswith("file://"):
+        return Path(value).expanduser()
+    parsed = urlparse(value)
+    path = unquote(parsed.path)
+    if parsed.netloc:
+        path = f"//{parsed.netloc}{path}"
+    if path.startswith("/") and len(path) >= 3 and path[2] == ":":
+        path = path[1:]
+    return Path(path).expanduser()
+
+
+async def read_local_image(path: str) -> bytes:
+    return await to_thread.run_sync(_read_local_image_sync, path)
+
+
+async def read_bot_image(bot: object, file_id: str) -> bytes:
+    """通过 OneBot 标准 get_image 接口解析图片文件标识。"""
+    try:
+        data = await bot.call_api("get_image", file=file_id)  # type: ignore[attr-defined]
+    except Exception as e:  # noqa: BLE001
+        logger.info(f"[ask_ai] get_image 失败: {file_id[:80]} {e}")
+        raise ImageInputError("无法读取这张图片，请重新发送。") from e
+    if not isinstance(data, dict):
+        raise ImageInputError("图片接口没有返回有效内容。")
+    local = str(data.get("file") or "").strip()
+    if local:
+        candidate = await to_thread.run_sync(lambda: _local_path(local))
+        if await to_thread.run_sync(candidate.is_file):
+            return await read_local_image(str(candidate))
+        if local.startswith(("http://", "https://")):
+            return await fetch_image(local)
+    remote = str(data.get("url") or "").strip()
+    if remote.startswith(("http://", "https://")):
+        return await fetch_image(remote)
+    raise ImageInputError("图片接口没有返回可读取的图片。")
+
+
+async def resolve_image_source(source: str, *, bot: object | None = None) -> bytes:
+    """读取 URL、本地路径或 OneBot 图片文件标识。"""
+    value = source.strip()
+    if value.startswith(("http://", "https://")):
+        return await fetch_image(value)
+    if value.startswith("file://"):
+        return await read_local_image(value)
+    path = await to_thread.run_sync(lambda: Path(value).expanduser())
+    if await to_thread.run_sync(path.is_file):
+        return await read_local_image(value)
+    if bot is not None:
+        return await read_bot_image(bot, value)
+    raise ImageInputError("无法读取这张图片，请重新发送。")
 
 
 def prepare_image(raw: bytes) -> PreparedImage:

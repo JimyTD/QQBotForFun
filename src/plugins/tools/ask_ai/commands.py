@@ -1,4 +1,4 @@
-"""AI 问答命令入口：文字、图片、引用和图片交付。"""
+"""查资料 / ai 命令入口：文字、图片、引用和图片交付。"""
 
 from __future__ import annotations
 
@@ -17,38 +17,30 @@ from nonebot.rule import to_me
 from core import render
 from src.plugins.tools.ask_ai import context
 from src.plugins.tools.ask_ai.intent import classify
-from src.plugins.tools.ask_ai.message import image_urls, plain_text
+from src.plugins.tools.ask_ai.message import image_sources, plain_text
 from src.plugins.tools.ask_ai.models import AskResult, AssistantInput, SearchState, TaskKind
 from src.plugins.tools.ask_ai.orchestrator import answer
 
 _cmd = on_command(
-    "AI问答",
-    aliases={
-        "ai问答",
-        "问AI",
-        "问ai",
-        "查资料",
-        "搜索",
-        "搜一下",
-        "search",
-    },
+    "查资料",
+    aliases={"问AI", "问ai", "ai", "AI", "搜索", "搜一下", "search"},
     rule=to_me(),
     priority=3,
     block=True,
 )
 
 _HELP = [
-    "用法：@我 AI问答 你的问题",
-    "也可以直接发图后问：@我 AI问答 这是什么",
+    "用法：@我 ai 你的问题",
+    "也可以直接发图后问：@我 ai 这是什么",
     "",
     "示例：",
-    "  @我 AI问答 解释一下量子纠缠",
-    "  @我 AI问答 今天有什么科技新闻",
-    "  @我 AI问答 找一张少女前线2奇塔的图",
-    "  @我 AI问答 这张截图里的报错怎么解决",
+    "  @我 ai 解释一下量子纠缠",
+    "  @我 ai 今天有什么科技新闻",
+    "  @我 ai 找一张少女前线2奇塔的图",
+    "  @我 ai 这张截图里的报错怎么解决",
     "",
     "追问：继续 / 第二点展开 / 换一张",
-    "清空：@我 AI问答 清空",
+    "清空：@我 ai 清空",
 ]
 
 
@@ -78,38 +70,40 @@ async def _handle(
     args: Message = CommandArg(),
 ) -> None:
     raw_text = plain_text(args)
-    input_images = image_urls(args)
+    input_urls, input_files = image_sources(args)
     quoted = await _quoted(bot, event)
     quoted_text = plain_text(quoted)
-    quoted_images = image_urls(quoted)
-    if quoted_images:
-        input_images = (input_images + quoted_images)[:2]
+    quoted_urls, quoted_files = image_sources(quoted)
+    if quoted_urls or quoted_files:
+        input_urls = (input_urls + quoted_urls)[:2]
+        input_files = (input_files + quoted_files)[:2]
     text = raw_text or quoted_text
 
     user_id = int(event.user_id)
     group_id = int(event.group_id) if isinstance(event, GroupMessageEvent) else None
 
-    if text in ("清空", "清除", "重置") and not input_images:
+    if text in ("清空", "清除", "重置") and not (input_urls or input_files):
         context.clear(group_id, user_id)
         await matcher.finish("🧠 当前对话上下文已清空。")
         return
 
-    if not text and not input_images:
+    if not text and not (input_urls or input_files):
         await matcher.finish(render.text_card("AI 问答", _HELP, emoji="🤖"))
         return
 
-    kind = classify(text, has_image=bool(input_images))
+    kind = classify(text, has_image=bool(input_urls or input_files))
     status = _status_for(kind)
     await matcher.send(status)
 
     result = await answer(
         AssistantInput(
             text=text,
-            image_urls=input_images,
+            image_sources=[*input_urls, *input_files][:2],
             quoted_text=quoted_text,
             group_id=group_id,
             user_id=user_id,
             message_id=str(getattr(event, "message_id", "") or ""),
+            bot=bot,
         )
     )
     await _deliver(matcher, result)

@@ -22,15 +22,16 @@ class SearchState(StrEnum):
 @dataclass
 class AssistantInput:
     text: str = ""
-    image_urls: list[str] = field(default_factory=list)
+    image_sources: list[str] = field(default_factory=list)
     quoted_text: str = ""
+    bot: object | None = None
     group_id: int | None = None
     user_id: int = 0
     message_id: str | None = None
 
     @property
     def has_image(self) -> bool:
-        return bool(self.image_urls)
+        return bool(self.image_sources)
 
 
 @dataclass

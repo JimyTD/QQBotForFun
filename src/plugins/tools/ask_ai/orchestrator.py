@@ -22,7 +22,7 @@ from .image_search import (
     search_images,
 )
 from .intent import classify, image_query
-from .media import ImageInputError, fetch_image, prepare_image
+from .media import ImageInputError, prepare_image, resolve_image_source
 from .models import AskResult, AssistantInput, SearchState, TaskKind
 from .prompts import (
     build_chat_system_prompt,
@@ -150,10 +150,11 @@ async def _answer_web_search(
     try:
         bundle = await search(search_q)
     except SearchNotConfiguredError:
-        fallback = await _answer_chat(text, user_input, history)
-        fallback.search_state = SearchState.FAILED
-        fallback.error = "search_not_configured"
-        return fallback
+        return AskResult(
+            answer="联网检索暂不可用，无法确认这类时效信息。请管理员配置搜索服务后再试。",
+            search_state=SearchState.FAILED,
+            error="search_not_configured",
+        )
     except SearchError:
         fallback = await _answer_chat(text, user_input, history)
         fallback.search_state = SearchState.FAILED
@@ -237,7 +238,7 @@ async def _answer_image_understand(
     user_input: AssistantInput,
     history: list[context.Turn],
 ) -> AskResult:
-    if not user_input.image_urls:
+    if not user_input.has_image:
         return AskResult(answer="把要看的图片和问题一起发给我。")
     texts = [text or "看看这张图是什么，并说明关键细节。"]
     if history:
@@ -245,8 +246,8 @@ async def _answer_image_understand(
 
     content: list[dict] = [{"type": "text", "text": "\n\n".join(texts)}]
     try:
-        for url in user_input.image_urls[:2]:
-            raw = await fetch_image(url)
+        for source in user_input.image_sources[:2]:
+            raw = await resolve_image_source(source, bot=user_input.bot)
             prepared = prepare_image(raw)
             content.append(
                 {"type": "image_url", "image_url": {"url": prepared.data_url}}

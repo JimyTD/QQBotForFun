@@ -1,4 +1,4 @@
-"""CLI 测试器对接 AI问答：与 Bot 共用同一编排逻辑。"""
+"""CLI 测试器对接 AI：与 Bot 共用同一编排逻辑。"""
 
 from __future__ import annotations
 
@@ -6,14 +6,14 @@ from cli_adapters.base import C, GameMode, box, info, prompt
 
 
 class WebSearchCLIAdapter:
-    game_name = "🤖 AI问答"
+    game_name = "🤖 AI"
 
     MODES: list[GameMode] = [
         GameMode(
             id="default",
-            name="AI问答",
+            name="AI",
             description="问答、联网检索和图片搜索",
-            aliases=("AI问答", "查资料", "搜索", "search", "ai", "default"),
+            aliases=("ai", "default"),
         ),
     ]
 
@@ -42,7 +42,7 @@ class WebSearchCLIAdapter:
             if result.sources:
                 body += "\n\n来源：" + "\n".join(result.sources)
             body += "\n\n（CLI 不显示图片，Bot 会发送实际图片）"
-            box("🤖 AI问答", body, color=C.CYAN)
+            box("🤖 AI", body, color=C.CYAN)
             return
         if not result.answer:
             print(f"{C.RED}{result.error or 'AI 没有返回有效回答。'}{C.R}")
@@ -52,4 +52,4 @@ class WebSearchCLIAdapter:
             body += "\n\n📎 来源：\n" + "\n".join(result.sources)
         if result.truncated:
             body += "\n\n（回答达到长度上限，可继续追问）"
-        box("🤖 AI问答", body, color=C.CYAN)
+        box("🤖 AI", body, color=C.CYAN)

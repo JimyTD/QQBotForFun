@@ -16,6 +16,7 @@ from src.plugins.tools.web_search.models import (
     ImageResult,
     SearchBundle,
     SearchError,
+    SearchNotConfiguredError,
     SearchResult,
 )
 
@@ -111,6 +112,24 @@ async def test_search_failure_falls_back_with_accurate_state() -> None:
 
 
 @pytest.mark.asyncio
+async def test_unconfigured_search_does_not_fake_realtime_answer() -> None:
+    with patch(
+        "src.plugins.tools.ask_ai.orchestrator.search",
+        AsyncMock(side_effect=SearchNotConfiguredError("missing")),
+    ), patch(
+        "src.plugins.tools.ask_ai.orchestrator.llm.chat",
+        AsyncMock(side_effect=AssertionError("时效题不能静默改成模型直答")),
+    ):
+        result = await answer(
+            AssistantInput(text="今天有什么新闻", group_id=1, user_id=10),
+            classify_with_llm=False,
+        )
+    assert result.search_state == SearchState.FAILED
+    assert result.error == "search_not_configured"
+    assert "无法确认" in result.answer
+
+
+@pytest.mark.asyncio
 async def test_image_understanding_uses_vision_scene() -> None:
     calls: list[str] = []
 
@@ -119,7 +138,7 @@ async def test_image_understanding_uses_vision_scene() -> None:
         return LLMResponse(content="图中是一个红色方块。", model="vision")
 
     with patch(
-        "src.plugins.tools.ask_ai.orchestrator.fetch_image",
+        "src.plugins.tools.ask_ai.orchestrator.resolve_image_source",
         AsyncMock(return_value=_png()),
     ), patch(
         "src.plugins.tools.ask_ai.orchestrator.llm.chat",
@@ -128,7 +147,7 @@ async def test_image_understanding_uses_vision_scene() -> None:
         result = await answer(
             AssistantInput(
                 text="这是什么",
-                image_urls=["https://example.com/a.png"],
+                image_sources=["https://example.com/a.png"],
                 group_id=1,
                 user_id=10,
             ),
