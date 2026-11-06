@@ -9,10 +9,6 @@ class SearchError(RuntimeError):
     """搜索服务不可用。消息可直接展示给用户。"""
 
 
-class SearchNotConfiguredError(SearchError):
-    """没有配置搜索 API。"""
-
-
 @dataclass
 class SearchResult:
     title: str

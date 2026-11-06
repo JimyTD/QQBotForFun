@@ -16,7 +16,6 @@ from src.plugins.tools.web_search.models import (
     ImageResult,
     SearchBundle,
     SearchError,
-    SearchNotConfiguredError,
     SearchResult,
 )
 
@@ -112,24 +111,6 @@ async def test_search_failure_falls_back_with_accurate_state() -> None:
 
 
 @pytest.mark.asyncio
-async def test_unconfigured_search_does_not_fake_realtime_answer() -> None:
-    with patch(
-        "src.plugins.tools.ask_ai.orchestrator.search",
-        AsyncMock(side_effect=SearchNotConfiguredError("missing")),
-    ), patch(
-        "src.plugins.tools.ask_ai.orchestrator.llm.chat",
-        AsyncMock(side_effect=AssertionError("时效题不能静默改成模型直答")),
-    ):
-        result = await answer(
-            AssistantInput(text="今天有什么新闻", group_id=1, user_id=10),
-            classify_with_llm=False,
-        )
-    assert result.search_state == SearchState.FAILED
-    assert result.error == "search_not_configured"
-    assert "无法确认" in result.answer
-
-
-@pytest.mark.asyncio
 async def test_image_understanding_uses_vision_scene() -> None:
     calls: list[str] = []
 
@@ -172,3 +153,20 @@ async def test_image_search_returns_base64_image() -> None:
         )
     assert result.images
     assert result.images[0].startswith("base64://")
+
+
+@pytest.mark.asyncio
+async def test_image_search_reports_unavailable_without_fake_image() -> None:
+    from src.plugins.tools.ask_ai.image_search import ImageSearchFailedError
+
+    with patch(
+        "src.plugins.tools.ask_ai.orchestrator.search_images",
+        AsyncMock(side_effect=ImageSearchFailedError("图片搜索暂不可用。")),
+    ):
+        result = await answer(
+            AssistantInput(text="找一张测试图", group_id=1, user_id=10),
+            classify_with_llm=False,
+        )
+    assert not result.images
+    assert result.error == "image_search_failed"
+    assert "没有找到" in result.answer

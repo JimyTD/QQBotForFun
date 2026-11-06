@@ -129,7 +129,6 @@ async def _deliver(matcher: Matcher, result: AskResult) -> None:
 
     if not result.answer:
         reason = {
-            "search_not_configured": "联网搜索尚未配置，暂时不能查资料。",
             "vision_unavailable": "图片理解服务暂时不可用。",
             "llm_unavailable": "AI 暂时不可用，请稍后再试。",
         }.get(result.error, "AI 暂时没想好怎么回答，请换个问法试试。")

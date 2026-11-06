@@ -58,7 +58,6 @@ copy .env.example .env
 #   ADMIN_QQ（你的主号）
 #   ZHIPU_API_KEY
 #   LONGCAT_API_KEY（模型兜底，可选）
-#   BOCHA_API_KEY（AI问答联网与图片搜索，必需）
 notepad .env
 ```
 

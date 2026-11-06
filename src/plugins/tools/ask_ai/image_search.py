@@ -10,7 +10,6 @@ from nonebot import logger
 from PIL import Image
 
 from src.plugins.tools.web_search.models import ImageResult, SearchError
-from src.plugins.tools.web_search.service import search
 
 MAX_BYTES = 8 * 1024 * 1024
 MIN_BYTES = 8 * 1024
@@ -23,17 +22,8 @@ class ImageSearchFailedError(SearchError):
 
 
 async def search_images(query: str, *, count: int = 6) -> list[ImageResult]:
-    bundle = await search(query, count=count)
-    usable = [
-        img
-        for img in bundle.images
-        if (not img.width or not img.height)
-        or (
-            min(img.width, img.height) >= MIN_EDGE
-            and max(img.width, img.height) / min(img.width, img.height) <= MAX_EDGE_RATIO
-        )
-    ]
-    return usable[:count]
+    _ = query, count
+    raise ImageSearchFailedError("图片搜索暂不可用。")
 
 
 async def download_valid_image(

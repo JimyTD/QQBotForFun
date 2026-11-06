@@ -7,7 +7,6 @@ from nonebot import logger
 from core import llm
 from src.plugins.tools.web_search.models import (
     SearchError,
-    SearchNotConfiguredError,
     SearchResult,
     format_results_for_llm,
     format_sources_for_user,
@@ -149,12 +148,6 @@ async def _answer_web_search(
     search_q = rewrite_search_query(query)
     try:
         bundle = await search(search_q)
-    except SearchNotConfiguredError:
-        return AskResult(
-            answer="联网检索暂不可用，无法确认这类时效信息。请管理员配置搜索服务后再试。",
-            search_state=SearchState.FAILED,
-            error="search_not_configured",
-        )
     except SearchError:
         fallback = await _answer_chat(text, user_input, history)
         fallback.search_state = SearchState.FAILED
@@ -296,12 +289,6 @@ async def _answer_image_search(query: str, user_input: AssistantInput) -> AskRes
     try:
         candidates = await search_images(query)
         raw, mime, chosen = await download_valid_image(candidates, exclude_urls=exclude)
-    except SearchNotConfiguredError:
-        return AskResult(
-            answer="图片和联网搜索尚未配置。请在服务器 .env 填入 BOCHA_API_KEY 后重启 bot。",
-            search_state=SearchState.FAILED,
-            error="search_not_configured",
-        )
     except (SearchError, ImageSearchFailedError) as e:
         logger.info(f"[ask_ai] 图片搜索失败 q={query!r}: {e}")
         return AskResult(
